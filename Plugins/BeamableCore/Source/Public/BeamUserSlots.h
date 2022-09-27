@@ -42,6 +42,16 @@ struct FUserSlotSerializedData
 	FString Pid;
 };
 
+UENUM(BlueprintType)
+enum EUserSlotClearedReason
+{
+	Manual,
+	FailedAutomaticAuthentication,
+};
+
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FUserSlotClearedCodeHandler, const EUserSlotClearedReason&, const FUserSlot&, const FBeamRealmUser&);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FUserSlotClearedHandler, const EUserSlotClearedReason&, Reason, const FUserSlot&, ClearedSlot, const FBeamRealmUser&, SlotContentsOnClear);
+
 /**
  * 
  */
@@ -50,6 +60,10 @@ class BEAMABLECORE_API UBeamUserSlots : public UEngineSubsystem
 {
 	GENERATED_BODY()
 
+	// Forward declaration of the Automated Testing class so we can make it a friend and make it easier to test internal state.
+	// Also, mock request types declared for Automated Testing purposes.
+	friend class FBeamUserSlotsSpec;
+	
 private:
 	/**
 	 * @brief List of all currently authenticated users paired with the realms they are authenticated with.
@@ -71,22 +85,26 @@ public:
 
 	/** Cleans up the system.  */
 	virtual void Deinitialize() override;
+	
 
 	/**
 	 * @brief Gets the file path for the serialized state of the given user slot.
 	 */
+	UFUNCTION(BlueprintPure)
 	static FString GetSavedSlotPath(const FUserSlot& SlotId);
 
 	/**
 	 * @brief Tries to get the user currently  mapped to the given slot.	  
 	 * @return True, if there is a user mapped. False, if no user mapped was found. 
 	 */
+	UFUNCTION(BlueprintPure)
 	bool GetUserDataAtSlot(const FUserSlot& SlotId, FBeamRealmUser& OutUserData) const;
 
 	/**
 	 * @brief Tries to get the user currently  mapped to the given slot.	  
 	 * @return True, if there is a user mapped. False, if no user mapped was found. 
 	 */
+	UFUNCTION(BlueprintPure)
 	bool GetUserDataWithRefreshTokenAndPid(const FString& RefreshToken, const FString& Pid, FBeamRealmUser& OutUserData, FUserSlot& OutUserSlot) const;
 
 	/**
@@ -97,17 +115,45 @@ public:
 	/**
 	 * @brief Sets AND serializes the given authentication token + realm data into the given user slot.
 	 */
-	void AuthenticateUserAtSlot(const FUserSlot& SlotId, const FString& AccessToken, const FString& RefreshToken, const int64& ExpiresIn, const FString& Cid, const FString& Pid);
+	void SaveUserAtSlot(const FUserSlot& SlotId, const FString& AccessToken, const FString& RefreshToken, const int64& ExpiresIn, const FString& Cid, const FString& Pid);
 
 	/**
 	 * @brief Clears the user and realm data at the give slot id.
 	 */
-	void ClearUserAtSlot(const FUserSlot& SlotId);
+	void ClearUserAtSlot(const FUserSlot& SlotId, const EUserSlotClearedReason& Reason = Manual, const bool& bShouldRemoveSavedData = false);
 
 
 	/**
 	 * @brief Attempts to quickly authenticate a user with locally stored, serialized data.	  
 	 * @return True, if there was a user authenticated at that slot. False, if no serialized user slot file was found or if the file does not contain a refresh token.  
 	 */
-	bool TryAuthenticateSavedUserAtSlot(const FUserSlot& SlotId);
+	bool TryLoadSavedUserAtSlot(const FUserSlot& SlotId);
+
+	/**
+	 
+  _    _                  _____ _       _      _____      _ _ _                _        
+ | |  | |                / ____| |     | |    / ____|    | | | |              | |       
+ | |  | |___  ___ _ __  | (___ | | ___ | |_  | |     __ _| | | |__   __ _  ___| | _____ 
+ | |  | / __|/ _ \ '__|  \___ \| |/ _ \| __| | |    / _` | | | '_ \ / _` |/ __| |/ / __|
+ | |__| \__ \  __/ |     ____) | | (_) | |_  | |___| (_| | | | |_) | (_| | (__|   <\__ \
+  \____/|___/\___|_|    |_____/|_|\___/ \__|  \_____\__,_|_|_|_.__/ \__,_|\___|_|\_\___/																						
+																						
+	 */
+
+	/**	 
+	 * @brief A global handler delegate that'll be called when a UserSlot gets cleared.
+	 * It'll have access to the data associated with that slot at the time when it was cleared out but the slot itself will be empty
+	 * (as in, you can safely authenticate new users into that slot if you want to).
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FUserSlotClearedHandler GlobalUserSlotClearedHandler;
+
+	/**
+	 * \copybrief GlobalUserSlotClearedHandler
+	 * This only exists so that you can write code binding lambdas to this callback. All the same properties of the above are guaranteed
+	 * (this is invoked before the BP-compatible handlers).
+	 *
+	 * PREFER USING THE BP-COMPATIBLE HANDLERS WHENEVER POSSIBLE!! THIS IS A QUALITY OF LIFE THING TO ENABLE FASTER ITERATION!
+	 */
+	FUserSlotClearedCodeHandler GlobalUserSlotClearedCodeHandler;
 };

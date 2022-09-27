@@ -1,5 +1,6 @@
 ﻿#include "RawAPIs/BeamSharedTypes.h"
 
+#include "BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 
 void FTokenResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
@@ -7,15 +8,15 @@ void FTokenResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) 
 	Serializer->WriteValue(TEXT("access_token"), AccessToken);
 	Serializer->WriteValue(TEXT("token_type"), TokenType);
 	Serializer->WriteValue(TEXT("refresh_token"), RefreshToken);
-	Serializer->WriteValue(TEXT("expires_in"), ExpiresIn);
+	Serializer->WriteValue(TEXT("expires_in"), ExpiresIn);	
 }
 
 void FTokenResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	AccessToken = Bag->GetStringField(TEXT("access_token"));
 	TokenType = Bag->GetStringField(TEXT("token_type"));
-	RefreshToken = Bag->GetStringField(TEXT("refresh_token"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("expires_in")), ExpiresIn);
+	RefreshToken = Bag->GetStringField(TEXT("refresh_token"));	
+	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("expires_in")), ExpiresIn);	
 }
 
 /**

@@ -2,17 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "HttpModule.h"
-#include "Json/Public/Serialization/JsonWriter.h"
-#include "Json/Public/Serialization/JsonReader.h"
-#include "Json/Public/Serialization/JsonSerializerMacros.h"
 
 #include "BeamCoreTypes.generated.h"
-
-//Declare all Beamable Log Categories Here
-// TODO: Move to BeamLogging.h
-DECLARE_LOG_CATEGORY_EXTERN(LogBeamBackend, Log, All);
-
-
 
 /**
  * @brief Semantic separation for strings representing a Beamable User Slot.
@@ -23,17 +14,17 @@ struct FUserSlot
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString SlotName;
+	FString Name;
 
 	explicit FUserSlot()
 	{
 	}
 
-	FUserSlot(const FString& x) { SlotName = x; }
+	FUserSlot(const FString& x) { Name = x; }
 
 	FUserSlot& operator=(const FString& x)
 	{
-		this->SlotName = x;
+		this->Name = x;
 		return *this;
 	}
 
@@ -41,15 +32,16 @@ struct FUserSlot
 	{
 		return Equals(Other);
 	}
-	
+
 	bool Equals(const FUserSlot& Other) const
 	{
-		return SlotName.Equals(Other.SlotName);
+		return Name.Equals(Other.Name);
 	}
 
-	operator FString() { return SlotName; }
+	operator FString() { return Name; }
 };
-FORCEINLINE uint32 GetTypeHash(const FUserSlot& UserSlot) { return GetTypeHash(UserSlot.SlotName); }
+
+FORCEINLINE uint32 GetTypeHash(const FUserSlot& UserSlot) { return GetTypeHash(UserSlot.Name); }
 
 USTRUCT(BlueprintType)
 struct FRequestType
@@ -57,17 +49,17 @@ struct FRequestType
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString RequestName;
+	FString Name;
 
 	explicit FRequestType()
 	{
 	}
 
-	FRequestType(const FString& x) { RequestName = x; }
+	FRequestType(const FString& x) { Name = x; }
 
 	FRequestType& operator=(const FString& x)
 	{
-		this->RequestName = x;
+		this->Name = x;
 		return *this;
 	}
 
@@ -75,15 +67,16 @@ struct FRequestType
 	{
 		return Equals(Other);
 	}
-	
+
 	bool Equals(const FRequestType& Other) const
 	{
-		return RequestName.Equals(Other.RequestName);
+		return Name.Equals(Other.Name);
 	}
 
-	operator FString() { return RequestName; }
+	operator FString() { return Name; }
 };
-FORCEINLINE uint32 GetTypeHash(const FRequestType& RequestType) { return GetTypeHash(RequestType.RequestName); }
+
+FORCEINLINE uint32 GetTypeHash(const FRequestType& RequestType) { return GetTypeHash(RequestType.Name); }
 
 /**
  * @brief Semantic separation for ints representing an active Beamable User Idx.
@@ -108,14 +101,9 @@ typedef TSharedRef<IHttpRequest, ESPMode::ThreadSafe> TUnrealRequest;
 typedef TSharedPtr<IHttpRequest, ESPMode::ThreadSafe> TUnrealRequestPtr;
 
 /**
- * @brief Shorter name for the default Unreal Json Writer.
+ * @brief Shorter name for unreal's request status.
  */
-typedef TSharedRef<TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>> TUnrealJsonSerializer;
-
-/**
- * @brief Shorter name for the default Unreal Json Deserializer.
- */
-typedef TSharedRef<TJsonReader<TCHAR>> TUnrealJsonDeserializer;
+typedef EHttpRequestStatus::Type TUnrealRequestStatus;
 
 /**
  * @brief Semantic separation for the Functor declaration representing a Beamable Request Processor.
@@ -135,6 +123,18 @@ struct FBeamAuthToken
 	FString RefreshToken;
 	UPROPERTY(BlueprintReadOnly)
 	int64 ExpiresIn;
+
+	friend bool operator==(const FBeamAuthToken& Lhs, const FBeamAuthToken& RHS)
+	{
+		return Lhs.AccessToken == RHS.AccessToken
+			&& Lhs.RefreshToken == RHS.RefreshToken
+			&& Lhs.ExpiresIn == RHS.ExpiresIn;
+	}
+
+	friend bool operator!=(const FBeamAuthToken& Lhs, const FBeamAuthToken& RHS)
+	{
+		return !(Lhs == RHS);
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -147,6 +147,17 @@ struct FBeamRealmHandle
 
 	UPROPERTY(BlueprintReadOnly)
 	FString Pid;
+
+	friend bool operator==(const FBeamRealmHandle& Lhs, const FBeamRealmHandle& RHS)
+	{
+		return Lhs.Cid == RHS.Cid
+			&& Lhs.Pid == RHS.Pid;
+	}
+
+	friend bool operator!=(const FBeamRealmHandle& Lhs, const FBeamRealmHandle& RHS)
+	{
+		return !(Lhs == RHS);
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -173,10 +184,7 @@ struct FBeamConnectivity
 	bool IsConnected;
 
 	UPROPERTY(BlueprintReadOnly)
-	float LastTimeSinceSuccessfulRequest;
-
-	UPROPERTY(BlueprintReadWrite)
-	float IdleTimeForConnectionVerification;
+	int64 LastTimeSinceSuccessfulRequest;
 };
 
 /**
@@ -195,6 +203,18 @@ struct FBeamRetryConfig
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int RetryMaxAttempt = -1;
+
+	friend bool operator==(const FBeamRetryConfig& Lhs, const FBeamRetryConfig& RHS)
+	{
+		return Lhs.Timeout == RHS.Timeout
+			&& Lhs.RetryFalloffValues == RHS.RetryFalloffValues
+			&& Lhs.RetryMaxAttempt == RHS.RetryMaxAttempt;
+	}
+
+	friend bool operator!=(const FBeamRetryConfig& Lhs, const FBeamRetryConfig& RHS)
+	{
+		return !(Lhs == RHS);
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -207,40 +227,6 @@ struct FBeamRequestContext
 
 	UPROPERTY(BlueprintReadWrite)
 	FBeamRealmHandle Handle;
-};
-
-USTRUCT(BlueprintType)
-struct FBeamJsonSerializable
-{
-	GENERATED_BODY()
-	virtual ~FBeamJsonSerializable() = default;
-
-	virtual void BeamSerialize(TUnrealJsonSerializer& Serializer) const
-	{
-		Serializer->WriteObjectStart();
-		BeamSerializeProperties(Serializer);
-		Serializer->WriteObjectEnd();
-	}
-
-	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
-	{
-		ensure(false);
-	}
-
-	virtual void BeamDeserialize(const FString& JsonString)
-	{
-		auto Bag = FJsonDataBag{};
-		UE_LOG(LogTemp, Display, TEXT("Deserializing Json String=%s"), *JsonString);
-
-		Bag.FromJson(JsonString);
-		const auto JsonBag = Bag.JsonObject;
-		BeamDeserializeProperties(JsonBag);
-	}
-
-	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
-	{
-		ensure(false);
-	}
 };
 
 
@@ -310,6 +296,7 @@ enum EBeamFullResponseState
 	Success,
 	Error,
 	Cancelled,
+	Retrying,
 };
 
 
@@ -352,6 +339,9 @@ DECLARE_DELEGATE_ThreeParams(FBeamMakeRequestDelegate, const FBeamRequestContext
 DECLARE_DELEGATE_TwoParams(FGlobalRequestErrorCodeHandler, const int64&, const FBeamErrorResponse&);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGlobalRequestErrorHandler, const int64&, ActiveRequestId, const FBeamErrorResponse&, Error);
 
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FGlobalConnectivityChangedCodeHandler, const int64&, const FRequestType&, const bool);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FGlobalConnectivityChangedHandler, const int64&, ActiveRequestId, const FRequestType&, FailedRequestType, const bool, bConnected);
+
 template <typename TRequestData, typename TResponseData>
 using TBeamFullResponseHandler = TDelegate<void(FBeamFullResponse<TRequestData, TResponseData>)>;
 
@@ -369,56 +359,30 @@ struct FRequestToRetry
 {
 	FBeamRequestId RequestId = 0;
 	int IsBlueprint;
+	int ResponseCode;
 
 	FBeamRealmHandle RealmHandle;
 	FBeamAuthToken AuthToken;
+
+	friend bool operator==(const FRequestToRetry& Lhs, const FRequestToRetry& RHS)
+	{
+		return Lhs.RequestId == RHS.RequestId
+			&& Lhs.IsBlueprint == RHS.IsBlueprint
+			&& Lhs.ResponseCode == RHS.ResponseCode
+			&& Lhs.RealmHandle == RHS.RealmHandle
+			&& Lhs.AuthToken == RHS.AuthToken;
+	}
+
+	friend bool operator!=(const FRequestToRetry& Lhs, const FRequestToRetry& RHS)
+	{
+		return !(Lhs == RHS);
+	}
 };
 
 struct FProcessingRequestRetry
 {
-	FRequestToRetry RetryHandle;
+	FRequestToRetry RequestToRetry;
 
 	float TimeToWait;
 	float AccumulatedTime;
-};
-
-USTRUCT(BlueprintType)
-struct FBeamOptional
-{
-	GENERATED_BODY()
-	virtual ~FBeamOptional() = default;
-
-	UPROPERTY(BlueprintReadOnly)
-	bool IsSet = false;
-
-	virtual const void* GetAddr() const
-	{
-		ensure(false);
-		return nullptr;
-	}
-
-	virtual bool TryGet(void* OutData, size_t& OutSize) const
-	{
-		ensure(false);
-		return false;
-	};
-
-	virtual void Set(const void* Data)
-	{
-		ensure(false);
-	}
-
-	template <typename T>
-	static void Set(FBeamOptional* Optional, const T* Data) { Optional->Set(static_cast<const void*>(Data)); }
-
-	template <typename T>
-	static void Reset(FBeamOptional* Optional)
-	{
-		T defaultVal = T{};
-		Optional->Set(static_cast<void*>(&defaultVal));
-		Optional->IsSet = false;
-	}
-
-	template <typename T>
-	static const T& GetValue(const FBeamOptional* Optional) { return *static_cast<const T*>(Optional->GetAddr()); }
 };

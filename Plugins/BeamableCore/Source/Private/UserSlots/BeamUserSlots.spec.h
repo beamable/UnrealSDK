@@ -1,0 +1,14 @@
+﻿#pragma once
+
+#include "BeamUserSlots.h"
+
+class UBeamUserSlotsTestCallbacks;
+
+
+BEGIN_DEFINE_SPEC(FBeamUserSlotsSpec, "BeamableUnreal.BeamUserSlots", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+	UBeamUserSlots* BeamUserSlots;
+	TArray<FDelegateHandle> AddedTestHandlers;
+	TArray<FName> AddedUObjectTestHandlers;
+
+	UBeamUserSlotsTestCallbacks* Callbacks;
+END_DEFINE_SPEC(FBeamUserSlotsSpec)

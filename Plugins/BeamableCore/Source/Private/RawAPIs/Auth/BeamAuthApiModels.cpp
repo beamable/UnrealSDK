@@ -62,20 +62,20 @@ void FMeResponseBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer)
 {
 	Serializer->WriteValue(TEXT("id"), Id);
 	Serializer->WriteValue(TEXT("email"), Email);	
-	FBeamJsonUtils::SerializeOptional<FString>(TEXT("language"), &Language, Serializer);	
-	FBeamJsonUtils::SerializeArray<FString>(TEXT("scopes"), Scopes, Serializer);
-	FBeamJsonUtils::SerializeArray<FString>(TEXT("thirdPartyAppAssociations"), ThirdPartyAppAssociations, Serializer);
-	FBeamJsonUtils::SerializeArray<FString>(TEXT("deviceIds"), DeviceIds, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("language"), &Language, Serializer);	
+	UBeamJsonUtils::SerializeArray<FString>(TEXT("scopes"), Scopes, Serializer);
+	UBeamJsonUtils::SerializeArray<FString>(TEXT("thirdPartyAppAssociations"), ThirdPartyAppAssociations, Serializer);
+	UBeamJsonUtils::SerializeArray<FString>(TEXT("deviceIds"), DeviceIds, Serializer);
 }
 
 void FMeResponseBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("id")), Id);
 	Email = Bag->GetStringField(TEXT("email"));
-	FBeamJsonUtils::DeserializeOptional<FString>(TEXT("language"), Bag, Language);	
-	FBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("scopes")), Scopes);
-	FBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("thirdPartyAppAssociations")), ThirdPartyAppAssociations);
-	FBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("deviceIds")), DeviceIds);
+	UBeamJsonUtils::DeserializeOptional<FString>(TEXT("language"), Bag, Language);	
+	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("scopes")), Scopes);
+	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("thirdPartyAppAssociations")), ThirdPartyAppAssociations);
+	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("deviceIds")), DeviceIds);
 	
 }
 
