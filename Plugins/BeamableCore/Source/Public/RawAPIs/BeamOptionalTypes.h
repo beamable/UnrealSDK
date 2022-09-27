@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamJsonUtils.h"
 
 #include "BeamOptionalTypes.generated.h"
 
 // Has Native Make/Break require static blueprint pure functions to present as nodes that
 // don't require an execution pin connection. This is super relevant for Blueprint UX. 
-USTRUCT(BlueprintType, meta=(HasNativeMake="BeamableEngine.BeamOptionalTypesLibrary.MakeOptionalInt"))
+USTRUCT(BlueprintType, meta=(HasNativeMake="BeamableCore.BeamOptionalTypesLibrary.MakeOptionalInt"))
 struct FOptionalInt : public FBeamOptional
 {
 	GENERATED_BODY()
@@ -28,7 +28,7 @@ struct FOptionalInt : public FBeamOptional
 
 // Has Native Make/Break require static blueprint pure functions to present as nodes that
 // don't require an execution pin connection. This is super relevant for Blueprint UX. 
-USTRUCT(BlueprintType, meta=(HasNativeMake="BeamableEngine.BeamOptionalTypesLibrary.MakeOptionalString"))
+USTRUCT(BlueprintType, meta=(HasNativeMake="BeamableCore.BeamOptionalTypesLibrary.MakeOptionalString"))
 struct FOptionalString : public FBeamOptional
 {
 	GENERATED_BODY()

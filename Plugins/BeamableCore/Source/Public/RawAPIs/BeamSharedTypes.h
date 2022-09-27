@@ -9,6 +9,7 @@
 #pragma once
 
 #include "BeamCoreTypes.h"
+#include "BeamJsonUtils.h"
 
 #include "BeamSharedTypes.generated.h"
 
@@ -17,16 +18,16 @@ struct FTokenResponse : public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString AccessToken;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString TokenType;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString RefreshToken;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int64 ExpiresIn;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
@@ -64,11 +65,11 @@ struct FLoginRefreshTokenRequestBody : public FBeamJsonSerializable
 USTRUCT(BlueprintType)
 struct FLoginRefreshTokenRequest : public FBeamBaseRequest
 {
-	GENERATED_BODY()	
+	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FLoginRefreshTokenRequestBody Body;
-	
+
 	virtual void BuildVerb(FString& VerbString) const override;
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;

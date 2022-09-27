@@ -3,6 +3,8 @@
 
 #include "RawAPIs/BeamOptionalTypesLibrary.h"
 
+#include "BeamJsonUtils.h"
+
 FOptionalInt UBeamOptionalTypesLibrary::MakeOptionalInt(const int& Value)
 {
 	FOptionalInt OptionalInt;

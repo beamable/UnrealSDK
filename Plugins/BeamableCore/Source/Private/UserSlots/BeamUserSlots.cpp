@@ -3,11 +3,12 @@
 
 #include "BeamUserSlots.h"
 
+#include "BeamLogging.h"
 #include "JsonObjectConverter.h"
 
 void UBeamUserSlots::Initialize(FSubsystemCollectionBase& Collection)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Initializing UBeamBackend Subsystem!"));
+	UE_LOG(LogBeamUserSlots, Display, TEXT("Initializing UBeamUserSlots Subsystem!"));
 
 	// Prepare data structures to hold all authenticated user data. 
 	AuthenticatedUsers.Reserve(128);
@@ -26,6 +27,8 @@ bool UBeamUserSlots::GetUserDataAtSlot(const FUserSlot& SlotId, FBeamRealmUser& 
 	{
 		const auto idx = AuthenticatedUserMapping.FindChecked(SlotId);
 		OutUserData = AuthenticatedUsers[idx];
+
+		UE_LOG(LogBeamUserSlots, Verbose, TEXT("Found User Data At Slot!\nUSER_SLOT=%s"), *SlotId.Name);
 		return true;
 	}
 	OutUserData.AuthToken = FBeamAuthToken{TEXT(""), TEXT(""), 0};
@@ -41,6 +44,7 @@ bool UBeamUserSlots::GetUserDataWithRefreshTokenAndPid(const FString& RefreshTok
 		if (OutUserData.AuthToken.RefreshToken == RefreshToken && OutUserData.RealmHandle.Pid == Pid)
 		{
 			OutUserSlot = UserMapping.Key;
+			UE_LOG(LogBeamUserSlots, Verbose, TEXT("Found User Data with PID and RefreshToken At Slot!\nUSER_SLOT=%s"), *OutUserSlot.Name);
 			return true;
 		}
 	}
@@ -60,6 +64,8 @@ void UBeamUserSlots::SetUserAtSlot(const FUserSlot& SlotId, const FString& Acces
 	{
 		AuthenticatedUsers.Add(RealmUser);
 		AuthenticatedUserMapping.Add(SlotId, AuthenticatedUsers.Num() - 1);
+
+		UE_LOG(LogBeamUserSlots, Verbose, TEXT("Added User Data to slot!\nUSER_SLOT=%s"), *SlotId.Name);
 	}
 	else
 	{
@@ -67,12 +73,14 @@ void UBeamUserSlots::SetUserAtSlot(const FUserSlot& SlotId, const FString& Acces
 		auto& ExistingRealmUser = AuthenticatedUsers[UserSlotIdx];
 		ExistingRealmUser.RealmHandle = UserRealmData;
 		ExistingRealmUser.AuthToken = AuthenticatedUser;
+
+		UE_LOG(LogBeamUserSlots, Verbose, TEXT("Updated User Data at slot!\nUSER_SLOT=%s"), *SlotId.Name);
 	}
 }
 
-void UBeamUserSlots::AuthenticateUserAtSlot(const FUserSlot& SlotId,
-                                            const FString& AccessToken, const FString& RefreshToken, const int64& ExpiresIn,
-                                            const FString& Cid, const FString& Pid)
+void UBeamUserSlots::SaveUserAtSlot(const FUserSlot& SlotId,
+                                    const FString& AccessToken, const FString& RefreshToken, const int64& ExpiresIn,
+                                    const FString& Cid, const FString& Pid)
 {
 	SetUserAtSlot(SlotId, AccessToken, RefreshToken, ExpiresIn, Cid, Pid);
 
@@ -88,21 +96,50 @@ void UBeamUserSlots::AuthenticateUserAtSlot(const FUserSlot& SlotId,
 	FString JsonSerializedDefaultData;
 	ensureAlways(FJsonObjectConverter::UStructToJsonObjectString(DataForSlot, JsonSerializedDefaultData));
 
-	UE_LOG(LogTemp, Verbose, TEXT("Creating Default %s File\n\n%s"), *SlotId.SlotName, *JsonSerializedDefaultData);
-	FFileHelper::SaveStringToFile(*JsonSerializedDefaultData, *SavedUserDataPath);
+	if (FFileHelper::SaveStringToFile(*JsonSerializedDefaultData, *SavedUserDataPath))
+	{
+		UE_LOG(LogBeamUserSlots, Verbose, TEXT("Saved User Slot File!\nUSER_SLOT=%s\nFILE_PATH=%s\nFILE_CONTENTS=%s"), *SlotId.Name, *SavedUserDataPath, *JsonSerializedDefaultData);
+	}
+	else
+	{
+		UE_LOG(LogBeamUserSlots, Error, TEXT("Failed to create Saved User Slot File!\nUSER_SLOT=%s\nFILE_PATH=%s\nFILE_CONTENTS=%s"), *SlotId.Name, *SavedUserDataPath, *JsonSerializedDefaultData);
+	}
 }
 
-void UBeamUserSlots::ClearUserAtSlot(const FUserSlot& SlotId)
+void UBeamUserSlots::ClearUserAtSlot(const FUserSlot& SlotId, const EUserSlotClearedReason& Reason, const bool& bShouldRemoveSavedData)
 {
-	AuthenticateUserAtSlot(SlotId, TEXT(""), TEXT(""), 0, TEXT(""),TEXT(""));
+	if (FBeamRealmUser ClearedUserData; GetUserDataAtSlot(SlotId, ClearedUserData))
+	{
+		// Clear serialized data
+		if (bShouldRemoveSavedData)
+		{
+			SaveUserAtSlot(SlotId, TEXT(""), TEXT(""), 0, TEXT(""),TEXT(""));
+			UE_LOG(LogBeamUserSlots, Verbose, TEXT("Cleared Saved User Slot!\nUSER_SLOT=%s"), *SlotId.Name);
+		}
+
+		// Remove Slot from list of loaded slots
+		const auto LoadedAtIdx = AuthenticatedUserMapping.FindChecked(SlotId);
+		AuthenticatedUsers.RemoveAt(LoadedAtIdx);
+		AuthenticatedUserMapping.Remove(SlotId);
+
+		// Broadcast events
+		GlobalUserSlotClearedCodeHandler.Broadcast(Reason, SlotId, ClearedUserData);
+		GlobalUserSlotClearedHandler.Broadcast(Reason, SlotId, ClearedUserData);
+
+		UE_LOG(LogBeamUserSlots, Verbose, TEXT("Cleared Authenticated User at Slot!\nUSER_SLOT=%s"), *SlotId.Name);
+	}
+	else
+	{
+		UE_LOG(LogBeamUserSlots, Verbose, TEXT("No Authenticated User is loaded at Slot!\nUSER_SLOT=%s"), *SlotId.Name);
+	}
 }
 
 FString UBeamUserSlots::GetSavedSlotPath(const FUserSlot& SlotId)
 {
-	return FPaths::ProjectSavedDir() / TEXT("Beamable") / TEXT("UserSlots") / SlotId.SlotName + TEXT(".json");
+	return FPaths::ProjectSavedDir() / TEXT("Beamable") / TEXT("UserSlots") / SlotId.Name + TEXT(".json");
 }
 
-bool UBeamUserSlots::TryAuthenticateSavedUserAtSlot(const FUserSlot& SlotId)
+bool UBeamUserSlots::TryLoadSavedUserAtSlot(const FUserSlot& SlotId)
 {
 	FString SlotFile;
 	const auto SavedUserDataPath = GetSavedSlotPath(SlotId);
@@ -113,7 +150,7 @@ bool UBeamUserSlots::TryAuthenticateSavedUserAtSlot(const FUserSlot& SlotId)
 		// We try to deserialize the user slot data
 		FUserSlotSerializedData SlotSerializedData;
 		const auto DidDeserialize = FJsonObjectConverter::JsonObjectStringToUStruct(SlotFile, &SlotSerializedData);
-		ensureAlwaysMsgf(DidDeserialize, TEXT("Failed deserialization of %s.json file.\nPath=%s"), *SlotId.SlotName, *SavedUserDataPath);
+		ensureAlwaysMsgf(DidDeserialize, TEXT("Failed deserialization of %s.json file.\nPath=%s"), *SlotId.Name, *SavedUserDataPath);
 
 		// If the refresh token is there, we can do a quick authentication. 
 		if (!SlotSerializedData.RefreshToken.IsEmpty())
@@ -125,11 +162,12 @@ bool UBeamUserSlots::TryAuthenticateSavedUserAtSlot(const FUserSlot& SlotId)
 			const auto Pid = SlotSerializedData.Pid;
 
 			SetUserAtSlot(SlotId, AccessToken, RefreshToken, ExpiresIn, Cid, Pid);
+			UE_LOG(LogBeamUserSlots, Verbose, TEXT("Loaded user saved at slot!\nUSER_SLOT=%s, CID=%s, PID=%s"), *SlotId.Name, *Cid, *Pid);
 			return true;
 		}
 
 		// If the refresh token ISN'T there, we fail the fast path for authentication of the user slot. 
-		UE_LOG(LogTemp, Verbose, TEXT("No user saved at slot %s."), *SlotId.SlotName);
+		UE_LOG(LogBeamUserSlots, Verbose, TEXT("No user saved at slot!\nUSER_SLOT=%s."), *SlotId.Name);
 		return false;
 	}
 
@@ -145,9 +183,10 @@ bool UBeamUserSlots::TryAuthenticateSavedUserAtSlot(const FUserSlot& SlotId)
 	FString JsonSerializedDefaultData;
 	ensureAlways(FJsonObjectConverter::UStructToJsonObjectString(DefaultDataForSlot, JsonSerializedDefaultData));
 
-	UE_LOG(LogTemp, Verbose, TEXT("No user saved at slot %s."), *SlotId.SlotName);
-	UE_LOG(LogTemp, Verbose, TEXT("Creating Default %s File\n\n%s"), *SlotId.SlotName, *JsonSerializedDefaultData);
+	UE_LOG(LogBeamUserSlots, Verbose, TEXT("No user saved at slot!\nUSER_SLOT=%s."), *SlotId.Name);
+
 	FFileHelper::SaveStringToFile(*JsonSerializedDefaultData, *SavedUserDataPath);
+	UE_LOG(LogBeamUserSlots, Verbose, TEXT("Saved Default Empty User Slot File!\nUSER_SLOT=%s\nFILE_PATH=%s\nFILE_CONTENTS=%s"), *SlotId.Name, *SavedUserDataPath, *JsonSerializedDefaultData);
 
 	return false;
 }

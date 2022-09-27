@@ -82,7 +82,7 @@ void UBeamAuthApi::CPP_MeRequest(const FBeamRealmHandle& TargetRealm, const FBea
 {
 	// AUTO-GENERATED...
 	int64 OutRequestId;
-	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
+	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
 	// Binds the handler to the static response handler (pre-generated)	
 	auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor
 		<FMeRequest, FMeResponse>
@@ -97,10 +97,10 @@ void UBeamAuthApi::CPP_MeRequest(const FBeamRealmHandle& TargetRealm, const FBea
 
 
 void UBeamAuthApi::CPP_RegisterCustomerRequest(const FRegisterCustomerRequest& Request,
-                                           const FOnRegisterCustomerFullResponse& Handler) const
+                                               const FOnRegisterCustomerFullResponse& Handler) const
 {
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfig<FRegisterCustomerRequest>(RetryConfig);
+	Backend->GetRetryConfigForRequestType(FRegisterCustomerRequest::StaticStruct()->GetName(), RetryConfig);
 
 	CPP_RegisterCustomerRequest(Backend->UnauthenticatedRequestsTargetRealm, RetryConfig,
 	                            Backend->CurrentConnectivityStatus, Request, Handler);
@@ -112,7 +112,7 @@ void UBeamAuthApi::RegisterCustomerRequest(const FRegisterCustomerRequest& Reque
 	// AUTO-GENERATED...	
 	const auto TargetRealm = Backend->UnauthenticatedRequestsTargetRealm;
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfig<FRegisterCustomerRequest>(RetryConfig);
+	Backend->GetRetryConfigForRequestType(FRegisterCustomerRequest::StaticStruct()->GetName(), RetryConfig);
 	BP_RegisterCustomerRequest(TargetRealm, RetryConfig, Request,
 	                           Backend->CurrentConnectivityStatus,
 	                           OnSuccess, OnError, OnComplete, OutRequestId);
@@ -131,15 +131,15 @@ void UBeamAuthApi::RegisterCustomerWithContext(const FBeamRequestContext& Reques
 /** MeRequest **/
 
 void UBeamAuthApi::CPP_MeRequest(const FString& UserSlotId,
-                             const FMeRequest& Request,
-                             const FOnMeFullResponse& Handler) const
+                                 const FMeRequest& Request,
+                                 const FOnMeFullResponse& Handler) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlotId, AuthenticatedUser);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfig<FMeRequest>(UserSlotId, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(FMeRequest::StaticStruct()->GetName(), UserSlotId, RetryConfig);
 
 	CPP_MeRequest(AuthenticatedUser.RealmHandle,
 	              RetryConfig,
@@ -158,7 +158,7 @@ void UBeamAuthApi::MeRequest(const FString& UserSlotId, const FMeRequest& Reques
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlotId, AuthenticatedUser);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfig<FMeRequest>(UserSlotId, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(FMeRequest::StaticStruct()->GetName(), UserSlotId, RetryConfig);
 
 	BP_MeRequest(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, RequestData, Backend->CurrentConnectivityStatus, OnSuccess, OnError, OnComplete, OutRequestId);
 }

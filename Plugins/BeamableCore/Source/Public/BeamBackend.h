@@ -12,10 +12,6 @@
 #include "BeamBackend.generated.h"
 
 
-// Forward declaration of the Automated Testing class so we can make it a friend and make it easier to test internal state.
-class FBeamBackendSpec;
-
-
 /**
  * 
  */
@@ -24,8 +20,9 @@ class BEAMABLECORE_API UBeamBackend : public UEngineSubsystem
 {
 	GENERATED_BODY()
 
-	// Makes the Automated Testing class a friend so we can write tests more easily.
-	friend FBeamBackendSpec;
+	// Forward declaration of the Automated Testing class so we can make it a friend and make it easier to test internal state.
+	// Also, mock request types declared for Automated Testing purposes.
+	friend class FBeamBackendSpec;
 
 private:
 	/**
@@ -53,7 +50,13 @@ private:
 	bool TickRetryQueue(float DeltaTime);
 
 public:
-	const static FString ACCEPT_HEADER;
+	static const FString HEADER_CONTENT_TYPE;
+	static const FString HEADER_ACCEPT;
+	static const FString HEADER_VALUE_ACCEPT_CONTENT_TYPE;
+	static const FString HEADER_AUTHORIZATION;
+	static const FString HEADER_VALUE_AUTHORIZATION;
+	static const FString HEADER_CLIENT_ID;
+	static const FString HEADER_PROJECT_ID;
 
 	/**
 	 * @brief Since it only actually makes sense to retry errors in some cases, we keep a list of the error codes that we do try again. 
@@ -101,11 +104,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FBeamRealmHandle UnauthenticatedRequestsTargetRealm;
 
-	/**
-	* @brief The current state of internet connection as detected by Beamable. This is updated automatically on every non-timeout request.
-	*/
-	UPROPERTY(BlueprintReadOnly)
-	FBeamConnectivity CurrentConnectivityStatus;
 
 	/**
 	 * @brief A delegate wrapper so we can easily replace the code that sends the request by assertions over the request data. 
@@ -144,7 +142,7 @@ public:
 
 	/**
 	 * \copydoc GlobalRequestErrorHandler	
-	 * @brief Another global request handler --- this one can be used to bind lambdas from code.	 
+	 * @brief Another global request handler --- this one can be used to bind lambdas from code. Use the other handler if you can.	 
 	 */
 	FGlobalRequestErrorCodeHandler GlobalRequestErrorCodeHandler;
 
@@ -199,7 +197,7 @@ public:
 	 * 
 	 * @return A TUnrealRequest object that will be tracked by UBeamBackend.
 	 */
-	template <typename TRequestData>
+	template <class TRequestData>
 	TUnrealRequestPtr CreateRequest(int64& OutRequestId, const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const TRequestData& RequestData);
 
 	/**
@@ -320,7 +318,7 @@ public:
 	 * @brief Callback that MakeBlueprintRequestProcessor uses to handle un-authenticated requests.	  
 	 */
 	template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename TCompleteCallback>
-	void ProcessBlueprintRequest(const int32& ResponseCode, const FString& ContentAsString, const bool bWasSent,
+	void ProcessBlueprintRequest(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus,
 	                             const int64& RequestId, const TRequestData& RequestData,
 	                             TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete);
 
@@ -349,7 +347,7 @@ public:
 	 * @brief Callback that MakeAuthenticatedBlueprintRequestProcessor uses to handle authenticated requests. 
 	 */
 	template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename TCompleteCallback>
-	void ProcessAuthenticatedBlueprintRequest(const int32& ResponseCode, const FString& ContentAsString, const bool bWasSent,
+	void ProcessAuthenticatedBlueprintRequest(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus,
 	                                          const int64& RequestId, const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken,
 	                                          const TRequestData& RequestData, TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete);
 
@@ -372,7 +370,7 @@ public:
 	 * @brief Callback that MakeCodeRequestProcessor uses to handle requests that don't require authentication.	  
 	 */
 	template <typename TRequestData, typename TResponseData>
-	void ProcessCodeRequest(const int32& ResponseCode, const FString& ContentAsString, const bool bWasSent,
+	void ProcessCodeRequest(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus,
 	                        const int64& RequestId, const TRequestData& RequestData, TBeamFullResponseHandler<TRequestData, TResponseData> ResponseHandler);
 
 	/**
@@ -397,7 +395,7 @@ public:
 	 * @brief Callback that MakeAuthenticatedCodeRequestProcessor uses to handle authenticated request's responses.
 	 */
 	template <typename TRequestData, typename TResponseData>
-	void ProcessAuthenticatedCodeRequest(const int32& ResponseCode, const FString& ContentAsString, const bool bWasSent, const int64& RequestId,
+	void ProcessAuthenticatedCodeRequest(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus, const int64& RequestId,
 	                                     const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken, const TRequestData& RequestData,
 	                                     const TBeamFullResponseHandler<TRequestData, TResponseData>& ResponseHandler);
 
@@ -440,21 +438,36 @@ public:
 	TMap<FUserSlot, FBeamRetryConfig> PerUserRetryConfig;
 
 	/**
-	 * @brief Modifies a request context to use the correct fallback retry configuration.  Called for authenticated requests.
-	 * @tparam TRequestData A type that implements the FBeamBaseRequest struct.
-	 * @param UserSlotId The UserSlotId that is making the request.
-	 * @param Config The request context we are modifying.
+	 * @brief Gets the retry configuration associated with all requests of this type. 
+	 * @param RequestType Any FBeamRequest::StaticStruct()->GetName() (basically the name of any request struct).
+	 * In BP-Land, you can call a static function to get one of these.
+	 * 
+	 * @param Config The RetryConfiguration.
+	 * 
+	 * @return True, if the returned config was the one you asked for. False, if a fallback was returned (happens if you call this without ever having set the retry configuration).
 	 */
-	template <typename TRequestData>
-	void GetRetryConfig(const FUserSlot& UserSlotId, FBeamRetryConfig& Config);
+	UFUNCTION(BlueprintPure, meta=(AutoCreateRefTerm="RequestType"))
+	bool GetRetryConfigForRequestType(const FRequestType& RequestType, FBeamRetryConfig& Config) const;
 
 	/**
-	 * @brief Modifies a request context to use the correct fallback retry configuration. Called for non-authenticated requests.
-	 * @tparam TRequestData A type that implements the FBeamBaseRequest struct.	 
-	 * @param Config The request context we are modifying. 
+	 * @brief Gets the retry configuration associated with all requests made by this user.
+	 * @param Slot Any valid UserSlot. 
+	 * @param Config The RetryConfiguration.
+	 * @return True, if the returned config was the one you asked for. False, if a fallback was returned (happens if you call this without ever having set the retry configuration).
 	 */
-	template <typename TRequestData>
-	void GetRetryConfig(FBeamRetryConfig& Config);
+	UFUNCTION(BlueprintPure, meta=(AutoCreateRefTerm="Slot"))
+	bool GetRetryConfigForUserSlot(const FUserSlot& Slot, FBeamRetryConfig& Config) const;
+
+	/**
+	 * @brief Gets the retry configuration associated with all requests of this type made by the given user slot.
+	 * @param RequestType Any FBeamRequest::StaticStruct()->GetName() (basically the name of any request struct).
+	 * @param Slot Any valid UserSlot. 
+	 * @param Config The RetryConfiguration.
+	 * @return True, if the returned config was the one you asked for. False, if a fallback was returned (happens if you call this without ever having set the retry configuration).
+	 */
+	UFUNCTION(BlueprintPure, meta=(AutoCreateRefTerm="RequestType,Slot"))
+	bool GetRetryConfigForUserSlotAndRequestType(const FRequestType& RequestType, const FUserSlot& Slot, FBeamRetryConfig& Config) const;
+
 
 	/**
 	 * @brief Sets the retry configuration for a given request type's requests.
@@ -470,7 +483,7 @@ public:
 	 * @param RetryConfig The retry config you wish that user to use.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void SetRetryConfigForUser(const FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig);
+	void SetRetryConfigForUserSlot(const FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig);
 
 	/**
 	 * @brief Sets the retry configuration for a given user + request type combination's requests.
@@ -479,7 +492,7 @@ public:
 	 * @param RetryConfig The retry config you wish that user + request type combination to use.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void SetRetryConfigForUserAndRequestType(const FUserSlot& UserSlot, const FRequestType& RequestType, const FBeamRetryConfig& RetryConfig);
+	void SetRetryConfigForUserSlotAndRequestType(const FUserSlot& UserSlot, const FRequestType& RequestType, const FBeamRetryConfig& RetryConfig);
 
 	/**
 	 * @brief Resets the Retry Configuration for the given request type  back to the default retry configuration.
@@ -493,7 +506,7 @@ public:
 	 * @param UserSlot The user slot whose retry configuration you wish to reset.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void ResetRetryConfigForUser(const FUserSlot& UserSlot);
+	void ResetRetryConfigForUserSlot(const FUserSlot& UserSlot);
 
 	/**
 	 * @brief Resets the Retry Configuration for the given user and request type combination back to the default retry configuration.	 
@@ -501,5 +514,47 @@ public:
 	 * @param RequestType The Request type whose retry configuration you wish to reset.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void ResetRetryConfigForUserAndRequestType(const FUserSlot& UserSlot, const FRequestType& RequestType);
+	void ResetRetryConfigForUserSlotAndRequestType(const FUserSlot& UserSlot, const FRequestType& RequestType);
+
+	/**
+	 
+	_____                            _   _       _ _         
+  / ____|                          | | (_)     (_) |        
+ | |     ___  _ __  _ __   ___  ___| |_ ___   ___| |_ _   _ 
+ | |    / _ \| '_ \| '_ \ / _ \/ __| __| \ \ / / | __| | | |
+ | |___| (_) | | | | | | |  __/ (__| |_| |\ V /| | |_| |_| |
+  \_____\___/|_| |_|_| |_|\___|\___|\__|_| \_/ |_|\__|\__, |
+													   __/ |
+													  |___/ 
+	 */
+
+
+private:
+	void UpdateConnectivity(const int64& RequestId, const TUnrealRequestStatus RequestStatus, const FRequestType RequestType);
+
+public:
+	/**
+	* @brief The current state of internet connection as detected by Beamable. This is updated automatically on every non-timeout request.
+	*/
+	UPROPERTY(BlueprintReadOnly)
+	FBeamConnectivity CurrentConnectivityStatus;
+
+	/**
+	 * @brief A global request handler delegate that'll be called ONCE when we fail a request due to connection problems. 
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FGlobalConnectivityChangedHandler GlobalConnectivityChangedHandler;
+
+	/**
+	 * \copydoc GlobalRequestErrorHandler	
+	 * @brief Another global request handler --- this one can be used to bind lambdas from code. Use the other handler if you can.	 
+	 */
+	FGlobalConnectivityChangedCodeHandler GlobalConnectivityChangedCodeHandler;
+
+
+	/**	 
+	 * @return Whether or not the last request made from BeamBackend was able to connect to the server it was trying to reach.
+	 */
+	UFUNCTION(BlueprintPure)
+	bool IsConnected() const;
 };
