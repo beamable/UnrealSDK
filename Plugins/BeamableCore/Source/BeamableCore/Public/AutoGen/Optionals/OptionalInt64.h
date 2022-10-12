@@ -1,0 +1,27 @@
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Serialization/BeamOptional.h"
+
+
+#include "OptionalInt64.generated.h"
+
+// Has Native Make/Break require static blueprint pure functions to present as nodes that
+// don't require an execution pin connection. This is super relevant for Blueprint UX. 
+USTRUCT(BlueprintType, meta=(HasNativeMake="BeamableCore.OptionalInt64Library.MakeOptionalInt64"))
+struct FOptionalInt64 : public FBeamOptional
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	int64 Val;
+
+	FOptionalInt64();
+
+	explicit FOptionalInt64(int64 Val);
+
+	virtual const void* GetAddr() const override;
+
+	virtual void Set(const void* Data) override;
+};

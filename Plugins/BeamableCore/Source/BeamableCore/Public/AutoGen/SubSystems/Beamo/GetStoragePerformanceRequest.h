@@ -1,0 +1,59 @@
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "BeamCoreTypes.h"
+
+#include "AutoGen/Optionals/OptionalString.h"
+
+#include "AutoGen/PerformanceResponse.h"
+
+#include "GetStoragePerformanceRequest.generated.h"
+
+UCLASS(BlueprintType)
+class BEAMABLECORE_API UGetStoragePerformanceRequest : public UObject, public IBeamBaseRequestInterface
+{
+	GENERATED_BODY()
+	
+public:
+
+	// Path Params
+	
+	
+	// Query Params
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="End Date")
+	FOptionalString EndDate;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Storage Object Name")
+	FString StorageObjectName;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Granularity")
+	FString Granularity;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Start Date")
+	FOptionalString StartDate;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Period")
+	FOptionalString Period;
+
+	// Body Params
+	
+
+	// Beam Base Request Declaration
+	UGetStoragePerformanceRequest() = default;
+
+	virtual void BuildVerb(FString& VerbString) const override;
+	virtual void BuildRoute(FString& RouteString) const override;
+	virtual void BuildBody(FString& BodyString) const override;
+
+	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_EndDate,_StartDate,_Period,Outer"))
+	static UGetStoragePerformanceRequest* MakeGetStoragePerformanceRequest(FOptionalString _EndDate, FString _StorageObjectName, FString _Granularity, FOptionalString _StartDate, FOptionalString _Period, UObject* Outer);
+};
+
+UDELEGATE(BlueprintAuthorityOnly)
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetStoragePerformanceSuccess, FBeamRequestContext, Context, UGetStoragePerformanceRequest*, Request, UPerformanceResponse*, Response);
+
+UDELEGATE(BlueprintAuthorityOnly)
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetStoragePerformanceError, FBeamRequestContext, Context, UGetStoragePerformanceRequest*, Request, FBeamErrorResponse, Error);
+
+UDELEGATE(BlueprintAuthorityOnly)
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnGetStoragePerformanceComplete, FBeamRequestContext, Context, UGetStoragePerformanceRequest*, Request);
+
+using FGetStoragePerformanceFullResponse = FBeamFullResponse<UGetStoragePerformanceRequest*, UPerformanceResponse*>;
+DECLARE_DELEGATE_OneParam(FOnGetStoragePerformanceFullResponse, FGetStoragePerformanceFullResponse);

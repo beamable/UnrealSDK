@@ -1,0 +1,27 @@
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Serialization/BeamOptional.h"
+#include "AutoGen/Schedule.h"
+
+#include "OptionalSchedule.generated.h"
+
+// Has Native Make/Break require static blueprint pure functions to present as nodes that
+// don't require an execution pin connection. This is super relevant for Blueprint UX. 
+USTRUCT(BlueprintType, meta=(HasNativeMake="BeamableCore.OptionalScheduleLibrary.MakeOptionalSchedule"))
+struct FOptionalSchedule : public FBeamOptional
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	USchedule* Val;
+
+	FOptionalSchedule();
+
+	explicit FOptionalSchedule(USchedule* Val);
+
+	virtual const void* GetAddr() const override;
+
+	virtual void Set(const void* Data) override;
+};

@@ -1,0 +1,19 @@
+
+#include "AutoGen/BatchReadStatsResponse.h"
+#include "Serialization/BeamJsonUtils.h"
+
+
+void UBatchReadStatsResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+{
+	UBeamJsonUtils::SerializeArray<UNetworkSerializable*>(TEXT("results"), Results, Serializer);
+}
+
+void UBatchReadStatsResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
+{
+	UBeamJsonUtils::SerializeArray<UNetworkSerializable*>(TEXT("results"), Results, Serializer);		
+}
+
+void UBatchReadStatsResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+{
+	UBeamJsonUtils::DeserializeArray<UNetworkSerializable*>(Bag->GetArrayField(TEXT("results")), Results, OuterOwner);
+}
