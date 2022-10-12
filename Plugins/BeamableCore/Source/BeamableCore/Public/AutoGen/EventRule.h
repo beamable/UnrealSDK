@@ -1,0 +1,24 @@
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Serialization/BeamJsonSerializable.h"
+
+
+#include "EventRule.generated.h"
+
+UCLASS(BlueprintType)
+class UEventRule : public UObject, public FBeamJsonSerializable
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rule")
+	FString Rule;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Value")
+	FString Value;
+
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override;
+};

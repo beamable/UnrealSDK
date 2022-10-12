@@ -1,0 +1,49 @@
+
+#include "AutoGen/Customer.h"
+#include "Serialization/BeamJsonUtils.h"
+#include "Misc/DefaultValueHelper.h"
+
+void UCustomer ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+{
+	Serializer->WriteValue(TEXT("name"), Name);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("paymentStatus"), &PaymentStatus, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("image"), &Image, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("contact"), &Contact, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("alias"), &Alias, Serializer);
+	Serializer->WriteValue(TEXT("cid"), Cid);
+	UBeamJsonUtils::SerializeOptional<int64>(TEXT("updated"), &Updated, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("crm_link"), &CrmLink, Serializer);
+	UBeamJsonUtils::SerializeArray<UProject*>(TEXT("projects"), Projects, Serializer);
+	UBeamJsonUtils::SerializeArray<URealmsBasicAccount*>(TEXT("accounts"), Accounts, Serializer);
+	UBeamJsonUtils::SerializeOptional<int64>(TEXT("created"), &Created, Serializer);
+}
+
+void UCustomer::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
+{
+	Serializer->WriteValue(TEXT("name"), Name);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("paymentStatus"), &PaymentStatus, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("image"), &Image, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("contact"), &Contact, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("alias"), &Alias, Serializer);
+	Serializer->WriteValue(TEXT("cid"), Cid);
+	UBeamJsonUtils::SerializeOptional<int64>(TEXT("updated"), &Updated, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("crm_link"), &CrmLink, Serializer);
+	UBeamJsonUtils::SerializeArray<UProject*>(TEXT("projects"), Projects, Serializer);
+	UBeamJsonUtils::SerializeArray<URealmsBasicAccount*>(TEXT("accounts"), Accounts, Serializer);
+	UBeamJsonUtils::SerializeOptional<int64>(TEXT("created"), &Created, Serializer);		
+}
+
+void UCustomer ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+{
+	Name = Bag->GetStringField(TEXT("name"));
+	UBeamJsonUtils::DeserializeOptional<FString>("paymentStatus", Bag, PaymentStatus, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FString>("image", Bag, Image, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FString>("contact", Bag, Contact, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FString>("alias", Bag, Alias, OuterOwner);
+	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("cid")), Cid);
+	UBeamJsonUtils::DeserializeOptional<int64>("updated", Bag, Updated, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FString>("crm_link", Bag, CrmLink, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UProject*>(Bag->GetArrayField(TEXT("projects")), Projects, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<URealmsBasicAccount*>(Bag->GetArrayField(TEXT("accounts")), Accounts, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<int64>("created", Bag, Created, OuterOwner);
+}
