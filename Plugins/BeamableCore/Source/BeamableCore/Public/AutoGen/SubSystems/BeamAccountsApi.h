@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamBackend.h"
+#include "BeamBackend/BeamBackend.h"
 
 #include "Accounts/GetGetPersonallyIdentifiableInformationRequest.h"
 #include "Accounts/GetAvailableThirdPartyRequest.h"
@@ -863,8 +863,8 @@ public:
 	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Accounts", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete"))
-	void GetAvailableRoles(UGetAvailableRolesRequest* Request, const FOnGetAvailableRolesSuccess& OnSuccess, const FOnGetAvailableRolesError& OnError, const FOnGetAvailableRolesComplete& OnComplete,
-								 int64& OutRequestId);
+	void GetAvailableRoles(UGetAvailableRolesRequest* Request, const FOnGetAvailableRolesSuccess& OnSuccess, const FOnGetAvailableRolesError& OnError, const FOnGetAvailableRolesComplete& OnComplete, FBeamRequestContext&
+	                       OutRequestContext);
 
 
 	
@@ -890,10 +890,11 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Accounts", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void GetMe(const FUserSlot& UserSlot, UBasicAccountsGetMeRequest* Request, const FOnBasicAccountsGetMeSuccess& OnSuccess, const FOnBasicAccountsGetMeError& OnError, const FOnBasicAccountsGetMeComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Accounts", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetMe(FUserSlot UserSlot, UBasicAccountsGetMeRequest* Request, const FOnBasicAccountsGetMeSuccess& OnSuccess, const FOnBasicAccountsGetMeError& OnError,
+	           const FOnBasicAccountsGetMeComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**

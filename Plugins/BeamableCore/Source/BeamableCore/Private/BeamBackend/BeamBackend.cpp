@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BeamBackend.h"
+#include "BeamBackend/BeamBackend.h"
 
 #include "BeamBackendTestCallbacks.h"
 #include "BeamCoreSettings.h"
@@ -29,7 +29,7 @@ const FString UBeamBackend::HEADER_VALUE_AUTHORIZATION = FString(TEXT("Bearer {0
 const FString UBeamBackend::HEADER_CLIENT_ID = FString(TEXT("X-KS-CLIENTID"));
 const FString UBeamBackend::HEADER_PROJECT_ID = FString(TEXT("X-KS-PROJECTID"));
 const TArray<int> UBeamBackend::NON_AUTH_REQUESTS_RETRY_ALLOWED_ERRORS = TArray<int>{503, 504};
-const TArray<int> UBeamBackend::AUTH_REQUESTS_RETRY_ALLOWED_ERRORS = TArray<int>{401, 403, 503, 504};
+const TArray<int> UBeamBackend::AUTH_REQUESTS_RETRY_ALLOWED_ERRORS = TArray<int>{401, 503, 504};
 
 void UBeamBackend::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -39,9 +39,17 @@ void UBeamBackend::Initialize(FSubsystemCollectionBase& Collection)
 	InFlightRequestId = new long();
 	*InFlightRequestId = -1;
 
-	// TODO: Define time offset for ticking so we don't tick every frame 
-	TickDelegateHandle = FTSTicker::GetCoreTicker()
-		.AddTicker(FTickerDelegate::CreateUObject(this, &UBeamBackend::TickRetryQueue));
+	WaitHandleId = new long();
+	*WaitHandleId = -1;
+
+	// Set up the retry ticking to run at 15 ticks / second TODO: expose these as settings
+	RetryQueueTickHandle = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &UBeamBackend::TickRetryQueue), 4 / 60);
+
+	// Set up the retry ticking to run at 30 ticks / second TODO: expose these as settings
+	WaitHandleTickHandle = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &UBeamBackend::TickWaitHandles), 2 / 60);
+
+	// Set up the cleanup ticking to run at 1 tick / second TODO: expose these as settings
+	CleanupRequestsTickHandle = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &UBeamBackend::TickCleanUp), 1);
 
 	// Get subsystem dependency...
 	BeamEnvironment = Cast<UBeamEnvironment>(Collection.InitializeDependency(UBeamEnvironment::StaticClass()));
@@ -52,6 +60,17 @@ void UBeamBackend::Initialize(FSubsystemCollectionBase& Collection)
 
 	// Initialize a buffer of 16 simultaneous requests.
 	InFlightRequests.Reserve(16);
+	InFlightRequestContexts.Reserve(16);
+	InFlightFailureCount.Reserve(16);
+	InFlightRequestsCancelled.Reserve(16);
+	InFlightProcessingRequests.Reserve(16);
+	InFlightRequestsToDependedOnMap.Reserve(16);
+
+	// Initialize a buffer of 4 wait handles
+	ActiveWaitHandles.Reserve(4);
+	ActiveWaitHandleCallbacks.Reserve(4);
+	ActiveDependenciesForWaitHandles.Reserve(4);
+
 
 	// Binds the default implementation to the DefaultExecuteRequestImpl method of the subsystem.
 	ExecuteRequestDelegate.BindUFunction(this, "DefaultExecuteRequestImpl");
@@ -66,9 +85,12 @@ void UBeamBackend::Initialize(FSubsystemCollectionBase& Collection)
 
 void UBeamBackend::Deinitialize()
 {
-	FTSTicker::GetCoreTicker().RemoveTicker(TickDelegateHandle);
+	FTSTicker::GetCoreTicker().RemoveTicker(RetryQueueTickHandle);
+	FTSTicker::GetCoreTicker().RemoveTicker(WaitHandleTickHandle);
+	FTSTicker::GetCoreTicker().RemoveTicker(CleanupRequestsTickHandle);
 
 	delete InFlightRequestId;
+	delete WaitHandleId;
 }
 
 
@@ -132,6 +154,17 @@ TUnrealRequestPtr UBeamBackend::CreateRequest(int64& OutRequestId, const FBeamRe
 	PrepareBeamableRequestToRealm(Req, TargetRealm);
 	PrepareBeamableRequestVerbRouteBody<TRequestData>(Req, RequestData, BeamEnvironment->Data->APIUrl);
 
+	const auto RequestContext = FBeamRequestContext{ReqId, RetryConfig, TargetRealm, -1, FUserSlot(""), None};
+
+	// Keep track of this request and it's data. 
+	InFlightRequestContexts.Add(ReqId, RequestContext);
+	InFlightRequestData.Add(RequestContext, TScriptInterface<IBeamBaseRequestInterface>(const_cast<TRequestData*>(RequestData)));
+
+	// Store make sure we have a slot waiting for the response/error value to be added
+	InFlightResponseBodyData.Add(RequestContext, nullptr);
+	InFlightResponseErrorData.Add(RequestContext, FBeamErrorResponse{});
+
+
 	INC_DWORD_STAT(STATID_RequestStarted)
 	OutRequestId = ReqId;
 	return Req;
@@ -149,6 +182,21 @@ TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64& OutRequestId, 
 	PrepareBeamableRequestToRealmWithAuthToken(Req, TargetRealm, AuthToken);
 	PrepareBeamableRequestVerbRouteBody<TRequestData>(Req, RequestData, BeamEnvironment->Data->APIUrl);
 
+	// Add to the InFlight request list
+	FUserSlot OutUserSlot;
+	FBeamRealmUser OutUserData;
+	BeamUserSlots->GetUserDataWithRefreshTokenAndPid(AuthToken.RefreshToken, TargetRealm.Pid, OutUserData, OutUserSlot);
+
+	const auto RequestContext = FBeamRequestContext{ReqId, RetryConfig, TargetRealm, -1, OutUserSlot, None};
+
+	// Keep track of this request and it's data. 
+	InFlightRequestContexts.Add(ReqId, RequestContext);
+	InFlightRequestData.Add(RequestContext, TScriptInterface<IBeamBaseRequestInterface>(const_cast<TRequestData*>(RequestData)));
+
+	// Store make sure we have a slot waiting for the response/error value to be added
+	InFlightResponseBodyData.Add(RequestContext, nullptr);
+	InFlightResponseErrorData.Add(RequestContext, FBeamErrorResponse{});
+
 	OutRequestId = ReqId;
 	return Req;
 }
@@ -165,7 +213,6 @@ TUnrealRequestPtr UBeamBackend::CreateUnpreparedRequest(int64& OutRequestId, con
 
 	// Prepares the Backend system to handle this request.
 	InFlightRequests.Add(OutRequestId, Req);
-	InFlightRetryConfigs.Add(OutRequestId, RetryConfig);
 	InFlightFailureCount.Add(OutRequestId, 0);
 	return Req;
 }
@@ -173,7 +220,7 @@ TUnrealRequestPtr UBeamBackend::CreateUnpreparedRequest(int64& OutRequestId, con
 void UBeamBackend::DiscardUnsentRequest(const int64& RequestId)
 {
 	InFlightRequests.Remove(RequestId);
-	InFlightRetryConfigs.Remove(RequestId);
+	InFlightRequestContexts.Remove(RequestId);
 	InFlightFailureCount.Remove(RequestId);
 }
 
@@ -300,14 +347,16 @@ void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FStr
 	StaticCheckForRequestType<TRequestData>();
 	StaticCheckForResponseType<TResponseData>();
 
+	// Update the context to pass into the response callbacks.
+	auto Context = InFlightRequestContexts.Find(RequestId);
+	Context->ResponseCode = ResponseCode;
+
 	// Get retry stuff
 	const auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
-	const auto RetryConfig = InFlightRetryConfigs.FindChecked(RequestId);
+	const auto RetryConfig = Context->RetryConfiguration;
 	const auto ShouldRetryIfFail = RetryConfig.RetryMaxAttempt == -1 || CurrFailedCount < RetryConfig.RetryMaxAttempt;
 	const auto bWillRetry = ShouldRetryIfFail && NON_AUTH_REQUESTS_RETRY_ALLOWED_ERRORS.Contains(ResponseCode);
 
-	// Build the context to pass into the response callbacks.
-	const auto Context = FBeamRequestContext{RequestId, InFlightRetryConfigs[RequestId], UnauthenticatedRequestsTargetRealm, ResponseCode, FString("")};
 
 	// If the request was cancelled, we'll only run the OnComplete call 
 	if (InFlightRequestsCancelled.Contains(RequestId))
@@ -315,26 +364,14 @@ void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FStr
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Ignoring Request Response since it was cancelled. REQUEST_ID=%d"), RequestId);
 
 		// Execute the handler if it's bound.
-		const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(Context, RequestData);
+		const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(*Context, RequestData);
 		if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 		{
 			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Canceled | REQUEST_ID=%d, NUM_FAILURES=%d"), RequestId, InFlightFailureCount.FindRef(RequestId));
 		}
 
-		// Clean request up from InFlightRequest map
-		InFlightRequests.Remove(RequestId);
-
-		// Clean retry config up for this request
-		InFlightRetryConfigs.Remove(RequestId);
-
-		// Clean up Failed Counts on this request id.				
-		InFlightFailureCount.Remove(RequestId);
-
-		// Clean up the Request cancelled data.
-		InFlightRequestsCancelled.Remove(RequestId);
-
-		// Mark Request Data as Garbage.		
-		RequestData->ConditionalBeginDestroy();
+		// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
+		Context->BeamStatus = Completed;
 
 		return;
 	}
@@ -350,8 +387,11 @@ void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FStr
 		SuccessData->OuterOwner = RequestData;
 		SuccessData->BeamDeserialize(ContentAsString);
 
+		// Store it so wait handles can grab at it later
+		InFlightResponseBodyData[*Context] = SuccessData;
+
 		// Run the callsite handler
-		const auto ExecutedCallsiteHandler = OnSuccess.ExecuteIfBound(Context, RequestData, SuccessData);
+		const auto ExecutedCallsiteHandler = OnSuccess.ExecuteIfBound(*Context, RequestData, SuccessData);
 
 		// We only log the response if no callsite is given or if we are configured to always run it.
 		if (AlwaysLogSuccessResponses || !ExecutedCallsiteHandler)
@@ -365,6 +405,9 @@ void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FStr
 		// Otherwise, parse the body as an error response callback and store it in the full response data.
 		FBeamErrorResponse ErrorData;
 		FJsonObjectConverter::JsonObjectStringToUStruct(*ContentAsString, &ErrorData);
+
+		// Store it so wait handles can grab at it later
+		InFlightResponseErrorData[*Context] = ErrorData;
 
 		// Bump the failed count associated with this request id.					
 		InFlightFailureCount[RequestId] = CurrFailedCount + 1;
@@ -381,14 +424,14 @@ void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FStr
 		}
 
 		// Run the callsite handler, if any.
-		const auto ExecutedCallsiteHandler = OnError.ExecuteIfBound(Context, RequestData, ErrorData);
+		const auto ExecutedCallsiteHandler = OnError.ExecuteIfBound(*Context, RequestData, ErrorData);
 
 		// We fallback to global handler only if we didn't run the callsite one OR if we are configured to always run it.
 		bool bExecutedGlobalHandler = false;
 		if (AlwaysRunGlobalHandlers || !ExecutedCallsiteHandler && (GlobalRequestErrorHandler.IsBound() || GlobalRequestErrorCodeHandler.IsBound()))
 		{
-			GlobalRequestErrorHandler.Broadcast(Context, ErrorData);
-			const auto _ = GlobalRequestErrorCodeHandler.ExecuteIfBound(Context, ErrorData);
+			GlobalRequestErrorHandler.Broadcast(*Context, ErrorData);
+			const auto _ = GlobalRequestErrorCodeHandler.ExecuteIfBound(*Context, ErrorData);
 
 			bExecutedGlobalHandler = true;
 		}
@@ -406,27 +449,18 @@ void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FStr
 	if (bWasSuccess || !bWillRetry)
 	{
 		// Update Connectivity Status
-		UpdateConnectivity(Context, RequestStatus, FRequestType{TRequestData::StaticClass()->GetName()});
+		UpdateConnectivity(*Context, RequestStatus, FRequestType{TRequestData::StaticClass()->GetName()});
 
 		// Execute the handler if it's bound.
-		const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(Context, RequestData);
+		const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(*Context, RequestData);
 		if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 		{
 			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Completed | REQUEST_ID=%d, RESPONSE_CODE=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
 			       RequestId, ResponseCode, bWasSuccess ? TEXT("true") : TEXT("false"), CurrFailedCount);
 		}
 
-		// Clean request up from InFlightRequest map
-		InFlightRequests.Remove(RequestId);
-
-		// Clean retry config up for this request
-		InFlightRetryConfigs.Remove(RequestId);
-
-		// Clean up Failed Counts on this request id.				
-		InFlightFailureCount.Remove(RequestId);
-
-		// Mark Request Data as Garbage.
-		RequestData->ConditionalBeginDestroy();
+		// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
+		Context->BeamStatus = Completed;
 	}
 }
 
@@ -477,8 +511,10 @@ void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCod
 	FUserSlot UserSlot;
 	const auto bWasMadeWithUserSlot = BeamUserSlots->GetUserDataWithRefreshTokenAndPid(AuthToken.RefreshToken, RealmHandle.Pid, User, UserSlot);
 
-	// Create the context to pass into the callbacks
-	const auto Context = FBeamRequestContext{RequestId, InFlightRetryConfigs[RequestId], RealmHandle, ResponseCode, bWasMadeWithUserSlot ? UserSlot.Name : FString("")};
+	// Create the context to pass into the callbacks	
+	auto Context = InFlightRequestContexts.Find(RequestId);
+	Context->ResponseCode = ResponseCode;
+	Context->UserSlot = bWasMadeWithUserSlot ? UserSlot : FUserSlot("");
 
 	// If the request was cancelled, we'll only run the OnComplete call 
 	if (InFlightRequestsCancelled.Contains(RequestId))
@@ -486,27 +522,15 @@ void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCod
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Ignoring Request Response since it was cancelled. REQUEST_ID=%d"), RequestId);
 
 		// Execute the handler if it's bound.		
-		const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(Context, RequestData);
+		const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(*Context, RequestData);
 		if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 		{
 			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Canceled | REQUEST_ID=%d, USER_SLOT=%s, NUM_FAILURES=%d"),
 			       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : *FString(TEXT("Made Without UserSlot")), InFlightFailureCount.FindRef(RequestId));
 		}
 
-		// Clean request up from InFlightRequest map
-		InFlightRequests.Remove(RequestId);
-
-		// Clean retry config up for this request
-		InFlightRetryConfigs.Remove(RequestId);
-
-		// Clean up Failed Counts on this request id.				
-		InFlightFailureCount.Remove(RequestId);
-
-		// Clean up the Request cancelled data.
-		InFlightRequestsCancelled.Remove(RequestId);
-
-		// Mark Request Data as Garbage.
-		RequestData->ConditionalBeginDestroy();
+		// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
+		Context->BeamStatus = Completed;
 
 		return;
 	}
@@ -515,7 +539,7 @@ void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCod
 
 	// Get retry stuff
 	const auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
-	const auto RetryConfig = InFlightRetryConfigs.FindChecked(RequestId);
+	const auto RetryConfig = Context->RetryConfiguration;
 	const auto bShouldRetryIfFail = RetryConfig.RetryMaxAttempt == -1 || CurrFailedCount < RetryConfig.RetryMaxAttempt;
 
 	// Stores whether or not the request was successful
@@ -534,8 +558,11 @@ void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCod
 		SuccessData->OuterOwner = RequestData;
 		SuccessData->BeamDeserialize(ContentAsString);
 
+		// Store it so wait handles can grab at it later
+		InFlightResponseBodyData[*Context] = SuccessData;
+
 		// Run the callsite handler
-		const auto ExecutedCallsiteHandler = OnSuccess.ExecuteIfBound(Context, RequestData, SuccessData);
+		const auto ExecutedCallsiteHandler = OnSuccess.ExecuteIfBound(*Context, RequestData, SuccessData);
 
 		// We only log the response if no callsite is given or if we are configured to always run it.
 		if (AlwaysLogSuccessResponses || !ExecutedCallsiteHandler)
@@ -549,6 +576,9 @@ void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCod
 		// Otherwise, parse the body as an error response callback and store it in the full response data.
 		FBeamErrorResponse ErrorData;
 		FJsonObjectConverter::JsonObjectStringToUStruct(*ContentAsString, &ErrorData);
+
+		// Store it so wait handles can grab at it later
+		InFlightResponseErrorData[*Context] = ErrorData;
 
 		// Bump the failed count associated with this request id.					
 		InFlightFailureCount[RequestId] = bWillReAuth ? CurrFailedCount : CurrFailedCount + 1;
@@ -571,14 +601,14 @@ void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCod
 		if (!bWillReAuth)
 		{
 			// Run the callsite handler, if any.
-			const auto ExecutedCallsiteHandler = OnError.ExecuteIfBound(Context, RequestData, ErrorData);
+			const auto ExecutedCallsiteHandler = OnError.ExecuteIfBound(*Context, RequestData, ErrorData);
 
 			// We fallback to global handler only if we didn't run the callsite one OR if we are configured to always run it.
 			bool bExecutedGlobalHandler = false;
 			if (AlwaysRunGlobalHandlers || !ExecutedCallsiteHandler && (GlobalRequestErrorHandler.IsBound() || GlobalRequestErrorCodeHandler.IsBound()))
 			{
-				GlobalRequestErrorHandler.Broadcast(Context, ErrorData);
-				const auto _ = GlobalRequestErrorCodeHandler.ExecuteIfBound(Context, ErrorData);
+				GlobalRequestErrorHandler.Broadcast(*Context, ErrorData);
+				const auto _ = GlobalRequestErrorCodeHandler.ExecuteIfBound(*Context, ErrorData);
 
 				bExecutedGlobalHandler = true;
 			}
@@ -597,27 +627,18 @@ void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCod
 	if (bWasSuccess || !bWillRetry)
 	{
 		// Update Connectivity Status
-		UpdateConnectivity(Context, RequestStatus, FRequestType{TRequestData::StaticClass()->GetName()});
+		UpdateConnectivity(*Context, RequestStatus, FRequestType{TRequestData::StaticClass()->GetName()});
 
 		// Execute the handler if it's bound.
-		const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(Context, RequestData);
+		const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(*Context, RequestData);
 		if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 		{
 			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Completed | REQUEST_ID=%d, USER_SLOT=%s, RESPONSE_CODE=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
 			       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : TEXT("Made Without UserSlot"), ResponseCode, bWasSuccess ? TEXT("true") : TEXT("false"), CurrFailedCount);
 		}
 
-		// Clean request up from InFlightRequest map
-		InFlightRequests.Remove(RequestId);
-
-		// Clean retry config up for this request
-		InFlightRetryConfigs.Remove(RequestId);
-
-		// Clean up Failed Counts on this request id.				
-		InFlightFailureCount.Remove(RequestId);
-
-		// Mark Request Data as Garbage.
-		RequestData->ConditionalBeginDestroy();
+		// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
+		Context->BeamStatus = Completed;
 	}
 }
 
@@ -668,8 +689,11 @@ void UBeamBackend::ProcessCodeRequest(const int32& ResponseCode, const FString& 
 
 	auto FullResponse = FBeamFullResponse<TRequestData*, TResponseData*>();
 
-	// Sets the request id for the request
-	FullResponse.Context = FBeamRequestContext{RequestId, InFlightRetryConfigs[RequestId], UnauthenticatedRequestsTargetRealm, ResponseCode, FString("")};
+	// Update and sets the request id for the request
+	auto Context = InFlightRequestContexts.Find(RequestId);
+	Context->ResponseCode = ResponseCode;
+	Context->UserSlot = FUserSlot("");
+	FullResponse.Context = *Context;
 
 	// Store the Request's data into the full response
 	FullResponse.RequestData = RequestData;
@@ -683,7 +707,7 @@ void UBeamBackend::ProcessCodeRequest(const int32& ResponseCode, const FString& 
 
 	// Get retry stuff
 	const auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
-	const auto RetryConfig = InFlightRetryConfigs.FindChecked(RequestId);
+	const auto RetryConfig = Context->RetryConfiguration;
 	const auto bShouldRetryIfFail = !bIsCancelled && RetryConfig.RetryMaxAttempt == -1 || RetryConfig.RetryMaxAttempt > CurrFailedCount;
 	const auto bWillRetry = bShouldRetryIfFail && NON_AUTH_REQUESTS_RETRY_ALLOWED_ERRORS.Contains(ResponseCode);
 
@@ -697,11 +721,17 @@ void UBeamBackend::ProcessCodeRequest(const int32& ResponseCode, const FString& 
 		FullResponse.SuccessData = NewObject<TResponseData>(RequestData);
 		FullResponse.SuccessData->OuterOwner = RequestData;
 		FullResponse.SuccessData->BeamDeserialize(ContentAsString);
+
+		// Store it so wait handles can grab at it later
+		InFlightResponseBodyData[*Context] = FullResponse.SuccessData;
 	}
 	else if (FullResponse.State == Error)
 	{
 		// Otherwise, parse the body as an error response callback and store it in the full response data.				
 		FJsonObjectConverter::JsonObjectStringToUStruct(*ContentAsString, &FullResponse.ErrorData);
+
+		// Store it so wait handles can grab at it later
+		InFlightResponseErrorData[*Context] = FullResponse.ErrorData;
 
 		// Bump the failed count associated with this request id.					
 		InFlightFailureCount[RequestId] = CurrFailedCount + 1;
@@ -777,20 +807,8 @@ void UBeamBackend::ProcessCodeRequest(const int32& ResponseCode, const FString& 
 			}
 		}
 
-		// Clean request up from InFlightRequest map
-		InFlightRequests.Remove(RequestId);
-
-		// Clean retry config up for this request
-		InFlightRetryConfigs.Remove(RequestId);
-
-		// Clean up Failed Counts on this request id.				
-		InFlightFailureCount.Remove(RequestId);
-
-		// Clean up from cancelled list if the request...				
-		InFlightRequestsCancelled.Remove(RequestId);
-
-		// Mark Request Data as Garbage.
-		RequestData->ConditionalBeginDestroy();
+		// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
+		Context->BeamStatus = Completed;
 	}
 }
 
@@ -844,7 +862,10 @@ void UBeamBackend::ProcessAuthenticatedCodeRequest(const int32& ResponseCode, co
 	auto FullResponse = FBeamFullResponse<TRequestData*, TResponseData*>();
 
 	// Sets the request id for the request
-	FullResponse.Context = FBeamRequestContext{RequestId, InFlightRetryConfigs[RequestId], RealmHandle, ResponseCode, bWasMadeWithUserSlot ? UserSlot.Name : FString("")};
+	auto Context = InFlightRequestContexts.Find(RequestId);
+	Context->ResponseCode = ResponseCode;
+	Context->UserSlot = bWasMadeWithUserSlot ? UserSlot : FUserSlot("");
+	FullResponse.Context = *Context;
 
 	// Store the Request's data into the full response
 	FullResponse.RequestData = RequestData;
@@ -857,7 +878,7 @@ void UBeamBackend::ProcessAuthenticatedCodeRequest(const int32& ResponseCode, co
 		FullResponse.State = ResponseCode == 200 ? Success : Error;
 
 	const auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
-	const auto RetryConfig = InFlightRetryConfigs.FindChecked(RequestId);
+	const auto RetryConfig = Context->RetryConfiguration;
 	const auto bShouldRetryIfFail = !bIsCancelled && RetryConfig.RetryMaxAttempt == -1 || RetryConfig.RetryMaxAttempt > CurrFailedCount;
 	const auto bWillRetry = bShouldRetryIfFail && AUTH_REQUESTS_RETRY_ALLOWED_ERRORS.Contains(ResponseCode);
 	const auto bWillReAuth = ResponseCode == 401 && bShouldRetryIfFail;
@@ -872,11 +893,17 @@ void UBeamBackend::ProcessAuthenticatedCodeRequest(const int32& ResponseCode, co
 		FullResponse.SuccessData = NewObject<TResponseData>(RequestData);
 		FullResponse.SuccessData->OuterOwner = RequestData;
 		FullResponse.SuccessData->BeamDeserialize(ContentAsString);
+
+		// Store it so wait handles can grab at it later
+		InFlightResponseBodyData[*Context] = FullResponse.SuccessData;
 	}
 	else if (FullResponse.State == Error)
 	{
 		// Otherwise, parse the body as an error response callback and store it in the full response data.				
 		FJsonObjectConverter::JsonObjectStringToUStruct(*ContentAsString, &FullResponse.ErrorData);
+
+		// Store it so wait handles can grab at it later
+		InFlightResponseErrorData[*Context] = FullResponse.ErrorData;
 
 		// Bump the failed count associated with this request id.					
 		InFlightFailureCount[RequestId] = bWillReAuth ? CurrFailedCount : CurrFailedCount + 1;
@@ -963,34 +990,26 @@ void UBeamBackend::ProcessAuthenticatedCodeRequest(const int32& ResponseCode, co
 			}
 		}
 
-
-		// Clean request up from InFlightRequest map
-		InFlightRequests.Remove(RequestId);
-
-		// Clean retry config up for this request
-		InFlightRetryConfigs.Remove(RequestId);
-
-		// Clean up Failed Counts on this request id.				
-		InFlightFailureCount.Remove(RequestId);
-
-		// Clean up from cancelled list if the request was cancelled...
-		InFlightRequestsCancelled.Remove(RequestId);
-
-		// Mark Request Data as Garbage.
-		RequestData->ConditionalBeginDestroy();
+		// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
+		Context->BeamStatus = Completed;
 	}
 }
 
-void UBeamBackend::DefaultExecuteRequestImpl(const FBeamRequestContext& RequestContext, FBeamConnectivity& Connectivity, int64 ActiveRequestId)
+void UBeamBackend::DefaultExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity)
 {
 	UE_LOG(LogBeamBackend, Verbose, TEXT("Sending Request via Unreal HttpRequest's ProcessRequest. REQUEST_ID=%llu"), ActiveRequestId);
-	InFlightRequests[ActiveRequestId]->ProcessRequest();
+	if (InFlightRequests[ActiveRequestId]->ProcessRequest())
+	{
+		auto Context = InFlightRequestContexts.FindRef(ActiveRequestId);
+		Context.BeamStatus = InFlight;
+		InFlightRequestContexts[ActiveRequestId] = Context;
+	}
 }
 
 
 bool UBeamBackend::TickRetryQueue(float DeltaTime)
 {
-	DECLARE_SCOPE_CYCLE_COUNTER(TEXT("UBeamBackend.TickBeamBackend"), STATID_TickBeamBackend, STATGROUP_BeamBackend)
+	DECLARE_SCOPE_CYCLE_COUNTER(TEXT("UBeamBackend.TickRetry"), STATID_TickBeamBackend, STATGROUP_BeamBackend)
 
 	FRequestToRetry FailedRequestCtx;
 	while (EnqueuedRetries.Dequeue(FailedRequestCtx))
@@ -999,7 +1018,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 		const auto ReqAuthToken = FailedRequestCtx.AuthToken;
 
 		// Get the retry configuration for the given request
-		const auto RetryConfig = InFlightRetryConfigs.FindChecked(ReqId);
+		const auto RetryConfig = InFlightRequestContexts.FindChecked(ReqId).RetryConfiguration;
 		const auto CurrRetryIdx = InFlightFailureCount.FindChecked(ReqId) - 1;
 		const auto RetryFalloffIdx = CurrRetryIdx >= RetryConfig.RetryFalloffValues.Num() ? RetryConfig.RetryFalloffValues.Num() - 1 : CurrRetryIdx;
 		const auto TimeToWait = RetryFalloffIdx >= 0 ? RetryConfig.RetryFalloffValues[CurrRetryIdx] : 0;
@@ -1025,7 +1044,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 
 			// 401 Unauthorized ("InvalidTokenError") and 403 Forbidden ("ExpiredTokenError") special-case handling.
 			// Basically, our Auth model requires us to 
-			if (RequestToRetry.ResponseCode == 401 || RequestToRetry.ResponseCode == 403)
+			if (RequestToRetry.ResponseCode == 401)// || RequestToRetry.ResponseCode == 403)
 			{
 				// Make sure that any request to Beamable that fails due to unauthorized access actually sent a user in the first place. 
 				check(!ReqAuthToken.RefreshToken.IsEmpty())
@@ -1130,30 +1149,18 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 							// Make it so it'll fail immediately instead of trying to the request again and then re-process the request.
 							// This is an extremely rare case and should not impact request numbers for our customers.
 							// This will make the original request fail with a 401-Error Code that people not using UserSlots can check for and
-							// handle this edge case.								
-							auto RetryConfig = InFlightRetryConfigs[ReqId];
+							// handle this edge case.
+							const auto Context = InFlightRequestContexts.Find(ReqId);
+							auto& RetryConfig = Context->RetryConfiguration;
 							RetryConfig.RetryMaxAttempt = 0;
-							InFlightRetryConfigs[ReqId] = RetryConfig;
 							FailedReq->ProcessRequest();
 
-							// Clean request up from InFlightRequest map
-							InFlightRequests.Remove(ReqId);
-
-							// Clean retry config up for this request
-							InFlightRetryConfigs.Remove(ReqId);
-
-							// Clean up Failed Counts on this request id.				
-							InFlightFailureCount.Remove(ReqId);
-
-							// Clean up the Request cancelled data.
-							InFlightRequestsCancelled.Remove(ReqId);
+							// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
+							Context->BeamStatus = Completed;
 						}
 					});
 
 				ReAuthRequest->ProcessRequest();
-
-				// Clean up this request as we won't need this instance any more (this request is a one off and fully transparent to the user).				
-				Request->ConditionalBeginDestroy();
 			}
 
 			// 503 Service Unavailable and 504 Gateway Timeout are the types of errors that make sense retrying at all.
@@ -1185,6 +1192,190 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 	return true;
 }
 
+bool UBeamBackend::TickWaitHandles(float)
+{
+	for (auto& ActiveWaitHandle : ActiveWaitHandles)
+	{
+		if (ActiveWaitHandle.Status == Completed)
+		{
+			UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable WaitHandle | WaitHandle is already completed and awaiting clean up. WAIT_HANDLE=%llu"), ActiveWaitHandle.WaitHandleId);
+			continue;
+		}
+
+		TArray<FBeamRequestId> DependedOnIds;
+		ActiveDependenciesForWaitHandles.MultiFind(ActiveWaitHandle, DependedOnIds);
+
+		// We sort the dependencies so that they are returned in the order they were made.
+		DependedOnIds.Sort();
+
+		// Handle the All case: Basically, all the dependency nodes need to be completed in order for us to fire off the wait event.
+		if (ActiveWaitHandle.Mode == All)
+		{
+			auto bAreAllDepsDone = true;
+			for (const auto& DependedOnId : DependedOnIds)
+			{
+				const auto& DependedOnCtx = InFlightRequestContexts.FindRef(DependedOnId);
+				bAreAllDepsDone = bAreAllDepsDone && DependedOnCtx.BeamStatus == Completed;
+			}
+
+			// If all dependencies are done, let's call the WaitCompleted callback with all the dependencies correctly set up!
+			if (bAreAllDepsDone)
+			{
+				TArray<FBeamRequestContext> Contexts;
+				TArray<TScriptInterface<IBeamBaseRequestInterface>> RequestData;
+				TArray<UObject*> ResponseBodies;
+				TArray<FBeamErrorResponse> ResponseErrors;
+
+				// String builder so we can log all the ids
+				FString IdList;
+				IdList.Reserve(DependedOnIds.Num() * 2);
+
+				// Go through ids
+				for (const auto& DependedOnId : DependedOnIds)
+				{
+					const auto DependedOnContext = InFlightRequestContexts.FindRef(DependedOnId);
+
+					Contexts.Add(DependedOnContext);
+					RequestData.Add(InFlightRequestData.FindRef(DependedOnContext));
+					ResponseBodies.Add(InFlightResponseBodyData.FindRef(DependedOnContext));
+					ResponseErrors.Add(InFlightResponseErrorData.FindRef(DependedOnContext));
+					IdList += FString::Printf(TEXT("%llu, "), DependedOnId);
+				}
+
+				UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable WaitHandles | Completed WAIT_HANDLE=%llu, REQUEST_IDS=[%s]"), ActiveWaitHandle.WaitHandleId, *IdList);
+
+				const auto& OnComplete = ActiveWaitHandleCallbacks.FindRef(ActiveWaitHandle);
+				auto _ = OnComplete.ExecuteIfBound(Contexts, RequestData, ResponseBodies, ResponseErrors);
+				ActiveWaitHandle.Status = Completed;
+			}
+		}
+	}
+
+	return true;
+}
+
+bool UBeamBackend::TickCleanUp(float)
+{
+	DECLARE_SCOPE_CYCLE_COUNTER(TEXT("UBeamBackend.TickCleanup"), STATID_TickBeamBackend, STATGROUP_BeamBackend)
+
+	// We start by cleaning up all the WaitHandle's that have completed
+	TArray<FBeamRequestWaitHandle> WaitHandlesToCleanUp;
+	for (const auto& ActiveWaitHandle : ActiveWaitHandles)
+	{
+		if (ActiveWaitHandle.Status == Completed)
+			WaitHandlesToCleanUp.Add(ActiveWaitHandle);
+	}
+
+	for (const auto& HandleToCleanUp : WaitHandlesToCleanUp)
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable CleanUp | Cleaning Up Data associated with WaitHandle. WAIT_HANDLE_ID=%llu"), HandleToCleanUp.WaitHandleId);
+
+		// Clear the handle from active ones
+		if (ActiveWaitHandles.Contains(HandleToCleanUp)) ActiveWaitHandles.Remove(HandleToCleanUp);
+
+		// Clear them from the map we keep tying Reqs to the Handles that depend on them
+		TArray<FBeamRequestId> DependedOnIds;
+		ActiveDependenciesForWaitHandles.MultiFind(HandleToCleanUp, DependedOnIds);
+		for (const auto& DependedOnId : DependedOnIds)
+		{
+			if (InFlightRequestsToDependedOnMap.Contains(DependedOnId))
+				InFlightRequestsToDependedOnMap.RemoveSingle(DependedOnId, HandleToCleanUp);
+		}
+
+		// Clear the handle from the map of dependencies for them.
+		ActiveDependenciesForWaitHandles.Remove(HandleToCleanUp);
+
+		// Clear the callback associated with the handle
+		ActiveWaitHandleCallbacks.Remove(HandleToCleanUp);
+	}
+
+	// Build a list of all requests that can be cleaned up
+	TArray<FBeamRequestId> ReqIdsToCleanUp;
+	for (const auto& Kvp : InFlightRequestContexts)
+	{
+		const auto Ctx = Kvp.Value;
+		if (Ctx.BeamStatus == Completed)
+		{
+			ReqIdsToCleanUp.Add(Kvp.Key);
+		}
+	}
+
+	// We filter out all requests that have WaitHandles depending on them that have yet to be completed.
+	for (int i = ReqIdsToCleanUp.Num() - 1; i >= 0; --i)
+	{
+		const auto& IdToCleanUp = ReqIdsToCleanUp[i];
+		if (InFlightRequestsToDependedOnMap.Contains(IdToCleanUp))
+			ReqIdsToCleanUp.RemoveAt(i);
+	}
+
+
+	// Clean up all associated data with requests that are ready to be cleaned up.
+	for (const auto& IdToCleanUp : ReqIdsToCleanUp)
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable CleanUp | Cleaning up all Request Data associated with Request. REQUEST_ID=%llu"), IdToCleanUp);
+
+		if (InFlightRequests.Contains(IdToCleanUp))
+			InFlightRequests.Remove(IdToCleanUp);
+
+		if (InFlightRequestContexts.Contains(IdToCleanUp))
+		{
+			// Get the context
+			auto Ctx = InFlightRequestContexts.FindRef(IdToCleanUp);
+
+			// Clean up the Active Request and Response data associated with the Request Id.
+			if (InFlightRequestData.Contains(Ctx)) InFlightRequestData.Remove(Ctx);
+			if (InFlightResponseBodyData.Contains(Ctx)) InFlightResponseBodyData.Remove(Ctx);
+			if (InFlightResponseErrorData.Contains(Ctx)) InFlightResponseBodyData.Remove(Ctx);
+
+			// Clean up the Request Context.
+			InFlightRequestContexts.Remove(IdToCleanUp);
+		}
+
+		if (InFlightFailureCount.Contains(IdToCleanUp))
+			InFlightFailureCount.Remove(IdToCleanUp);
+
+		if (InFlightRequestsCancelled.Contains(IdToCleanUp))
+			InFlightRequestsCancelled.Remove(IdToCleanUp);
+	}
+
+	// Return true since we don't ever want to stop cleaning up requests
+	return true;
+}
+
+/*
+
+__          __   _ _     _____                            _   
+\ \        / /  (_) |   |  __ \                          | |  
+\ \  /\  / /_ _ _| |_  | |__) |___  __ _ _   _  ___  ___| |_ 
+\ \/  \/ / _` | | __| |  _  // _ \/ _` | | | |/ _ \/ __| __|
+\  /\  / (_| | | |_  | | \ \  __/ (_| | |_| |  __/\__ \ |_ 
+ \/  \/ \__,_|_|\__| |_|  \_\___|\__, |\__,_|\___||___/\__|
+									| |                    
+									|_|                    
+*/
+
+FBeamRequestWaitHandle UBeamBackend::WaitAll(const TArray<FBeamRequestContext>& Contexts, FOnWaitComplete OnComplete)
+{
+	// Ensures we get a valid Next Id even if requests get made from multiple threads.
+	const auto NextId = _InterlockedIncrement(WaitHandleId);
+	const auto WaitHandle = FBeamRequestWaitHandle{NextId, this, All};
+
+	ActiveWaitHandles.Add(WaitHandle);
+
+	for (const auto& Context : Contexts)
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Adding WaitHandle with dependency. WAIT_HANDLE=%llu, REQUEST_ID=%llu"), NextId, Context.RequestId);
+
+		ActiveDependenciesForWaitHandles.AddUnique(WaitHandle, Context.RequestId);
+		InFlightRequestsToDependedOnMap.AddUnique(Context.RequestId, WaitHandle);
+	}
+
+	ActiveWaitHandleCallbacks.Add(WaitHandle, OnComplete);
+
+	return WaitHandle;
+}
+
+
 /*
  
  _____      _                 _____             __ _       
@@ -1197,6 +1388,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 				  |___/                           |___/ 
 
  */
+
 
 bool UBeamBackend::GetRetryConfigForRequestType(const FRequestType& RequestType, FBeamRetryConfig& Config) const
 {
@@ -1246,7 +1438,7 @@ bool UBeamBackend::GetRetryConfigForUserSlotAndRequestType(const FRequestType& R
 	else
 	{
 		// If there's a retry config for this specific type of request...
-		if (const auto bRequestHasSpecialConfig = PerTypeRetryConfigs.Contains(RequestType))
+		if (PerTypeRetryConfigs.Contains(RequestType))
 		{
 			UE_LOG(LogBeamBackend, Verbose, TEXT("Falling back to RequestType-only Config when getting config for User Slot and Request Type!\nUSER_SLOT=%s, REQUEST_TYPE=%s"), *Slot.Name,
 			       *RequestType.Name);
@@ -1255,7 +1447,7 @@ bool UBeamBackend::GetRetryConfigForUserSlotAndRequestType(const FRequestType& R
 		else
 		{
 			// If there's a retry config for requests from this user...
-			if (const auto bUserHasSpecialConfig = PerUserRetryConfig.Contains(Slot.Name))
+			if (PerUserRetryConfig.Contains(Slot.Name))
 			{
 				UE_LOG(LogBeamBackend, Verbose, TEXT("Falling back to User-only Config when getting config for User Slot and Request Type!\nUSER_SLOT=%s, REQUEST_TYPE=%s"), *Slot.Name,
 				       *RequestType.Name);

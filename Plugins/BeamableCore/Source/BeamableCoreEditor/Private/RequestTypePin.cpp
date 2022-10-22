@@ -1,24 +1,23 @@
-﻿#include "SUserSlotPin.h"
+﻿#include "RequestTypePin.h"
 
-#include "BeamCoreSettings.h"
+#include "BeamCoreTypes.h"
 #include "EdGraph/EdGraphPin.h"
 #include "EdGraph/EdGraphSchema.h"
 #include "SNameComboBox.h"
 #include "ScopedTransaction.h"
 #include "Kismet2/BlueprintEditorUtils.h"
-#include "UserSlots/UserSlot.h"
 
-void SUserSlotPin::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj)
+void SRequestTypePin::Construct(const FArguments& InArgs, UEdGraphPin* InGraphPinObj)
 {
 	SGraphPin::Construct(SGraphPin::FArguments(), InGraphPinObj);
 }
 
-TSharedRef<SWidget> SUserSlotPin::GetDefaultValueWidget()
+TSharedRef<SWidget> SRequestTypePin::GetDefaultValueWidget()
 {
 	GetNames(AttributesList);
 
 	// retrieve the previous value selected (or the first value as default)
-	TSharedPtr<FName> InitialSelectedName = GetSelectedName();
+	const TSharedPtr<FName> InitialSelectedName = GetSelectedName();
 	if (InitialSelectedName.IsValid())
 	{
 		SetPropertyWithName(*InitialSelectedName.Get());
@@ -28,11 +27,11 @@ TSharedRef<SWidget> SUserSlotPin::GetDefaultValueWidget()
         .ContentPadding(FMargin(6.0f, 2.0f)) // you can stylize how you want by the way, check Slate library
         .OptionsSource(&AttributesList) // this to create all possibilities
         .InitiallySelectedItem(InitialSelectedName) // the default or previous selected value
-        .OnComboBoxOpening(this, &SUserSlotPin::OnComboBoxOpening) // this event is defined by the SNameComboBox
-        .OnSelectionChanged(this, &SUserSlotPin::OnAttributeSelected); // dito
+        .OnComboBoxOpening(this, &SRequestTypePin::OnComboBoxOpening) // this event is defined by the SNameComboBox
+        .OnSelectionChanged(this, &SRequestTypePin::OnAttributeSelected); // dito
 }
 
-void SUserSlotPin::OnAttributeSelected(TSharedPtr<FName> ItemSelected, ESelectInfo::Type SelectInfo)
+void SRequestTypePin::OnAttributeSelected(TSharedPtr<FName> ItemSelected, ESelectInfo::Type SelectInfo) const
 {
 	if (ItemSelected.IsValid())
 	{
@@ -40,9 +39,9 @@ void SUserSlotPin::OnAttributeSelected(TSharedPtr<FName> ItemSelected, ESelectIn
 	}
 }
 
-void SUserSlotPin::OnComboBoxOpening()
+void SRequestTypePin::OnComboBoxOpening() const
 {
-	TSharedPtr<FName> SelectedName = GetSelectedName();
+	const TSharedPtr<FName> SelectedName = GetSelectedName();
 	if (SelectedName.IsValid())
 	{
 		check(NameComboBox.IsValid());
@@ -50,10 +49,10 @@ void SUserSlotPin::OnComboBoxOpening()
 	}
 }
 
-void SUserSlotPin::SetPropertyWithName(const FName& Name)
+void SRequestTypePin::SetPropertyWithName(const FName& Name) const
 {
 	check(GraphPinObj);
-	check(GraphPinObj->PinType.PinSubCategoryObject == FUserSlot::StaticStruct());
+	check(GraphPinObj->PinType.PinSubCategoryObject == FRequestType::StaticStruct());
 
 	// To set the property we need to use a FString
 	// using this format: (MyPropertyName="My Value")
@@ -62,12 +61,12 @@ void SUserSlotPin::SetPropertyWithName(const FName& Name)
 	PinString += *Name.ToString();
 	PinString += TEXT("\")");
 
-	FString CurrentDefaultValue = GraphPinObj->GetDefaultAsString();
+	const FString CurrentDefaultValue = GraphPinObj->GetDefaultAsString();
 
 	if (CurrentDefaultValue != PinString)
 	{
 		const FScopedTransaction Transaction(
-			NSLOCTEXT("Beamable", "ChangeUserSlotFromSettings", "Change UserSlot From Settings"));
+			NSLOCTEXT("Beamable", "ChangeRequestType", "Change RequestType"));
 		GraphPinObj->Modify();
 
 		UE_LOG(LogTemp, Verbose, TEXT("Verify values old: \"%s\" chosen: \"%s\""), *CurrentDefaultValue, *PinString);
@@ -82,12 +81,12 @@ void SUserSlotPin::SetPropertyWithName(const FName& Name)
 	}
 }
 
-TSharedPtr<FName> SUserSlotPin::GetSelectedName() const
+TSharedPtr<FName> SRequestTypePin::GetSelectedName() const
 {
 	const int32 NameCount = AttributesList.Num();
 	if (NameCount <= 0)
 	{
-		return NULL;
+		return nullptr;
 	}
 
 	FName Name;
@@ -104,10 +103,10 @@ TSharedPtr<FName> SUserSlotPin::GetSelectedName() const
 	return AttributesList[0];
 }
 
-void SUserSlotPin::GetPropertyAsName(FName& OutName) const
+void SRequestTypePin::GetPropertyAsName(FName& OutName) const
 {
 	check(GraphPinObj);
-	check(GraphPinObj->PinType.PinSubCategoryObject == FUserSlot::StaticStruct());
+	check(GraphPinObj->PinType.PinSubCategoryObject == FRequestType::StaticStruct());
 
 	// As we saw in the SListNameFromConfigPin::SetPropertyWithName()
 	// The value is saved in the format (MyPropertyName="My Value") as a FString.
@@ -133,23 +132,17 @@ void SUserSlotPin::GetPropertyAsName(FName& OutName) const
 	}
 }
 
-void SUserSlotPin::GetNames(TArray<TSharedPtr<FName>>& ShareableNames) const
+void SRequestTypePin::GetNames(TArray<TSharedPtr<FName>>& ShareableNames) const
 {
-	static const UBeamCoreSettings* StaticObject = GetDefault<UBeamCoreSettings>();	
+	TArray<UClass*> RequestClasses;
+	for (TObjectIterator<UClass> It; It; ++It)
+	{		
+		if(It->ImplementsInterface(UBeamBaseRequestInterface::StaticClass()))
+			RequestClasses.Add(*It);	
+	}
 
-	if(FBlueprintEditorUtils::IsEditorUtilityBlueprint(FBlueprintEditorUtils::FindBlueprintForGraphChecked(GraphPinObj->GetOwningNode()->GetGraph())))
+	for (const auto& RequestClass : RequestClasses)
 	{
-		for (FString Name : StaticObject->EditorUserSlots)
-		{
-			ShareableNames.Add(MakeShareable(new FName(Name)));
-		}
-	}
-	else
-	{
-		for (FString Name : StaticObject->RuntimeUserSlots)
-		{
-			ShareableNames.Add(MakeShareable(new FName(Name)));
-		}
-	}
-	
+		ShareableNames.Add(MakeShareable(new FName(RequestClass->GetName())));
+	}	
 }

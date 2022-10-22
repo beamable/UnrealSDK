@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamBackend.h"
+#include "BeamBackend/BeamBackend.h"
 
 #include "ChatV2/GetRoomsRequest.h"
 #include "ChatV2/PostRoomsRequest.h"

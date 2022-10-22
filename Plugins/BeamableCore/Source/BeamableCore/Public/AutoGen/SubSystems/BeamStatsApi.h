@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamBackend.h"
+#include "BeamBackend/BeamBackend.h"
 
 #include "Stats/GetClientBatchRequest.h"
 #include "Stats/PostClientStringlistRequest.h"

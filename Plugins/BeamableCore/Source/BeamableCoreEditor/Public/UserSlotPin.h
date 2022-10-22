@@ -22,11 +22,13 @@ protected:
 	virtual TSharedRef<SWidget> GetDefaultValueWidget() override;
 	void OnAttributeSelected(TSharedPtr<FName> ItemSelected, ESelectInfo::Type SelectInfo);
 	void OnComboBoxOpening();
-
+	
 	TSharedPtr<FName> GetSelectedName() const;
 
 	void SetPropertyWithName(const FName& Name);
 	void GetPropertyAsName(FName& OutName) const;
+
+	virtual EVisibility GetDefaultValueVisibility() const override;
 
 private:
 	TArray<TSharedPtr<FName>> AttributesList;

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamBackend.h"
+#include "BeamBackend/BeamBackend.h"
 
 #include "Payments/PostWindowsPurchaseTrackRequest.h"
 #include "Payments/GetAuditsRequest.h"

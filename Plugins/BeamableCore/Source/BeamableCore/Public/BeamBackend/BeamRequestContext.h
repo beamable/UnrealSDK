@@ -1,0 +1,115 @@
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+
+#include "BeamBackend/BeamRealmHandle.h"
+#include "BeamBackend/BeamRetryConfig.h"
+#include "UserSlots/UserSlot.h"
+
+#include "BeamRequestContext.generated.h"
+
+
+UENUM()
+enum EBeamRequestStatus { None = 0, InFlight, Completed };
+
+
+USTRUCT(BlueprintType)
+struct FBeamRequestContext
+{
+	GENERATED_BODY()
+
+	/**
+	 * @brief A per-session unique identifier (counts requests from 0 every session) for this request. Never persist this value.  
+	 */
+	UPROPERTY(BlueprintReadOnly)
+	int64 RequestId;
+
+	/**
+	 * @brief The retry configuration used for this request.
+	 * By default, it's the one found at Project Settings > Beamable Core.
+	 */
+	UPROPERTY(BlueprintReadOnly)
+	FBeamRetryConfig RetryConfiguration;
+
+	/**
+	 * @brief The realm handle (which realm --- normally, between dev/staging/prod, but can be any realm) that you are targeting.
+	 * If you are making the request with a user slot, this will always target the realm on which that user was authenticated unless specified otherwise. 
+	 */
+	UPROPERTY(BlueprintReadOnly)
+	FBeamRealmHandle Handle;
+
+	/**
+	 * @brief The response code (only available in OnSuccess/OnError/OnComplete). In the synchronous flow, is always -1.
+	 */
+	UPROPERTY(BlueprintReadOnly)
+	int32 ResponseCode;
+
+	/**
+	 * @brief The this request was made with --- only exists for requests that are made with one.
+	 */
+	UPROPERTY(BlueprintReadOnly)
+	FUserSlot UserSlot;
+
+
+	/**
+	 * @brief Used to keep track of the request and when it can be cleared.
+	 */
+	EBeamRequestStatus BeamStatus;
+
+	FBeamRequestContext() = default;
+
+	explicit FBeamRequestContext(int64 RequestId)
+		: RequestId(RequestId), RetryConfiguration(), ResponseCode(-1), BeamStatus(None)
+	{
+	}
+
+	explicit FBeamRequestContext(int64 RequestId, const FBeamRetryConfig& RetryConfiguration, const FBeamRealmHandle& Handle, int32 ResponseCode, const FUserSlot& UserSlot,
+	                             EBeamRequestStatus BeamStatus)
+		: RequestId(RequestId),
+		  RetryConfiguration(RetryConfiguration),
+		  Handle(Handle),
+		  ResponseCode(ResponseCode),
+		  UserSlot(UserSlot),
+		  BeamStatus(BeamStatus)
+	{
+	}
+
+	friend bool operator==(const FBeamRequestContext& Lhs, const FBeamRequestContext& RHS)
+	{
+		return Lhs.RequestId == RHS.RequestId;
+	}
+
+	friend bool operator!=(const FBeamRequestContext& Lhs, const FBeamRequestContext& RHS)
+	{
+		return !(Lhs == RHS);
+	}
+};
+
+FORCEINLINE uint32 GetTypeHash(const FBeamRequestContext& Context) { return GetTypeHash(Context.RequestId); }
+
+// TODO: Move this into a single file UBeamBackendBlueprintLibrary so that we don't need to pay a painful recompile every time we change this thing.
+// TODO: Move a bunch of the utitlity stuff in UBeamBackend to there too. Preferably keep only the data in UBeamBackend.
+// TODO: INVESTIGATE WHAT HAPPENED WITH THE ADD PIN button of the WaitAll Custom Node.
+UCLASS(BlueprintType)
+class UBeamRequestContextBlueprintLibrary : public UBlueprintFunctionLibrary
+{
+	GENERATED_BODY()
+public:
+	/**
+	 * @brief Whether or not the given request was successful.
+	 * @param Context The context to check.
+	 * @return TRUE If successful. False if not successful OR if InFlight. 
+	 */
+	UFUNCTION(BlueprintPure, Category="Beam")
+	static bool WasSuccess(const FBeamRequestContext& Context) { return Context.ResponseCode == 200; }
+
+	/**
+	 * @brief Whether or not the given request was not successful.
+	 * @param Context The context to check.
+	 * @return TRUE If NOT successful. False if successful OR if InFlight.
+	 */
+	UFUNCTION(BlueprintPure, Category="Beam")
+	static bool WasError(const FBeamRequestContext& Context) { return Context.ResponseCode != -1 && Context.ResponseCode != 200; }
+};

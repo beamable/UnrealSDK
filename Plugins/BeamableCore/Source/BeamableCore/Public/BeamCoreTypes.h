@@ -1,11 +1,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "HttpModule.h"
+#include "BeamBackend/BeamRealmHandle.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamRetryConfig.h"
 
 #include "BeamCoreTypes.generated.h"
-
-
 
 
 USTRUCT(BlueprintType)
@@ -44,16 +46,11 @@ struct FRequestType
 FORCEINLINE uint32 GetTypeHash(const FRequestType& RequestType) { return GetTypeHash(RequestType.Name); }
 
 /**
- * @brief Semantic separation for ints representing an active Beamable User Idx.
- * These are never guaranteed to be the same across sessions.
- */
-typedef int FBeamUserIdx;
-
-/**
  * @brief Semantic separation for longs representing a Beamable Request Id.
  * Every request sent out from any of the UBeam***Api subsystems gets one of these.
  */
 typedef int64 FBeamRequestId;
+
 
 /**
  * @brief Shorter name for Unreal's HttpRequest struct.
@@ -76,55 +73,6 @@ typedef EHttpRequestStatus::Type TUnrealRequestStatus;
  */
 typedef TFunction<void (FHttpRequestPtr request, FHttpResponsePtr response, bool success)> FBeamRequestProcessor;
 
-
-USTRUCT(BlueprintType)
-struct FBeamAuthToken
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadOnly)
-	FString AccessToken;
-	UPROPERTY(BlueprintReadOnly)
-	FString RefreshToken;
-	UPROPERTY(BlueprintReadOnly)
-	int64 ExpiresIn;
-
-	friend bool operator==(const FBeamAuthToken& Lhs, const FBeamAuthToken& RHS)
-	{
-		return Lhs.AccessToken == RHS.AccessToken
-			&& Lhs.RefreshToken == RHS.RefreshToken
-			&& Lhs.ExpiresIn == RHS.ExpiresIn;
-	}
-
-	friend bool operator!=(const FBeamAuthToken& Lhs, const FBeamAuthToken& RHS)
-	{
-		return !(Lhs == RHS);
-	}
-};
-
-USTRUCT(BlueprintType)
-struct FBeamRealmHandle
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadOnly)
-	FString Cid;
-
-	UPROPERTY(BlueprintReadOnly)
-	FString Pid;
-
-	friend bool operator==(const FBeamRealmHandle& Lhs, const FBeamRealmHandle& RHS)
-	{
-		return Lhs.Cid == RHS.Cid
-			&& Lhs.Pid == RHS.Pid;
-	}
-
-	friend bool operator!=(const FBeamRealmHandle& Lhs, const FBeamRealmHandle& RHS)
-	{
-		return !(Lhs == RHS);
-	}
-};
-
 /**
  * @brief Holds data regarding internet connectivity status for Beamable. 
  */
@@ -140,57 +88,6 @@ struct FBeamConnectivity
 	int64 LastTimeSinceSuccessfulRequest;
 };
 
-/**
- * @brief Holds data defining how a request needs to be sent out. 
- */
-USTRUCT(BlueprintType)
-struct FBeamRetryConfig
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int64 Timeout;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<float> RetryFalloffValues;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int RetryMaxAttempt = -1;
-
-	friend bool operator==(const FBeamRetryConfig& Lhs, const FBeamRetryConfig& RHS)
-	{
-		return Lhs.Timeout == RHS.Timeout
-			&& Lhs.RetryFalloffValues == RHS.RetryFalloffValues
-			&& Lhs.RetryMaxAttempt == RHS.RetryMaxAttempt;
-	}
-
-	friend bool operator!=(const FBeamRetryConfig& Lhs, const FBeamRetryConfig& RHS)
-	{
-		return !(Lhs == RHS);
-	}
-};
-
-USTRUCT(BlueprintType)
-struct FBeamRequestContext
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadOnly)
-	int64 RequestId;
-
-	UPROPERTY(BlueprintReadOnly)
-	FBeamRetryConfig RetryConfiguration;
-
-	UPROPERTY(BlueprintReadOnly)
-	FBeamRealmHandle Handle;
-
-	UPROPERTY(BlueprintReadOnly)
-	int32 ResponseCode;
-
-	UPROPERTY(BlueprintReadOnly)
-	FString UserSlotId;	
-};
-
 UINTERFACE(MinimalAPI, Blueprintable)
 class UBeamBaseRequestInterface : public UInterface
 {
@@ -198,15 +95,21 @@ class UBeamBaseRequestInterface : public UInterface
 };
 
 class IBeamBaseRequestInterface
-{    
+{
 	GENERATED_BODY()
 
 public:
-	virtual void BuildVerb(FString& VerbString) const{}
+	virtual void BuildVerb(FString& VerbString) const
+	{
+	}
 
-	virtual void BuildRoute(FString& RouteString) const{}
+	virtual void BuildRoute(FString& RouteString) const
+	{
+	}
 
-	virtual void BuildBody(FString& BodyString) const{}
+	virtual void BuildBody(FString& BodyString) const
+	{
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -283,7 +186,7 @@ struct FBeamFullResponse
 	int AttemptNumber;
 };
 
-DECLARE_DELEGATE_ThreeParams(FBeamMakeRequestDelegate, const FBeamRequestContext& /*RequestContext*/, FBeamConnectivity& /*Connectivity*/, int64 /*ActiveRequestId*/);
+DECLARE_DELEGATE_TwoParams(FBeamMakeRequestDelegate, int64 /*ActiveRequestId*/, FBeamConnectivity& /*Connectivity*/);
 
 DECLARE_DELEGATE_TwoParams(FGlobalRequestErrorCodeHandler, const FBeamRequestContext&, const FBeamErrorResponse&);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGlobalRequestErrorHandler, const FBeamRequestContext&, RequestContext, const FBeamErrorResponse&, Error);

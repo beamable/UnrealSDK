@@ -1,15 +1,18 @@
 ﻿#include "BeamableCoreEditor.h"
 
-#include "CustomPinFactory.h"
+#include "BeamableCoreGraphWidgetFactory.h"
 
 #define LOCTEXT_NAMESPACE "FBeamableCoreEditorModule"
 
 void FBeamableCoreEditorModule::StartupModule()
 {
-	// create your factory and shared pointer to it.
-	TSharedPtr<FCustomPinFactory> Factory = MakeShareable(new FCustomPinFactory());
-	// and now register it.
-	FEdGraphUtilities::RegisterVisualPinFactory(Factory);
+	// create your factories and shared pointer to them.
+	TSharedPtr<FBeamableCorePinFactory> PinFactory = MakeShareable(new FBeamableCorePinFactory());
+	TSharedPtr<FBeamableCoreGraphNodeFactory> NodeFactory = MakeShareable(new FBeamableCoreGraphNodeFactory());
+
+	// and now register them.
+	FEdGraphUtilities::RegisterVisualPinFactory(PinFactory);
+	FEdGraphUtilities::RegisterVisualNodeFactory(NodeFactory);
 }
 
 void FBeamableCoreEditorModule::ShutdownModule()

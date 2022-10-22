@@ -1,0 +1,508 @@
+﻿#include "BeamK2.h"
+
+#include "BeamCoreTypes.h"
+#include "BlueprintEditor.h"
+#include "K2Node_CallFunction.h"
+#include "K2Node_MakeArray.h"
+#include "BeamBackend/BeamBackend.h"
+#include "Kismet2/BlueprintEditorUtils.h"
+
+#define LOCTEXT_NAMESPACE "BeamK2"
+#define BEAM_K2_LOG_VERBOSITY Verbose
+//#define BEAM_K2_ADD_NOTES_TO_FLOW_NODES
+
+void BeamK2::GetPerBeamFlowNodes(const FKismetCompilerContext& CompilerContext, const UEdGraphNode* CustomNode,
+                                 const TArray<UEdGraphPin*>& CustomNodeStartPins, const TArray<FName> RelevantEventSpawningFunctionNames,
+                                 TArray<TArray<UEdGraphNode*>>& PerPinForwardFlow, TArray<TArray<UEdGraphNode*>>& PerPinConnectedEventFlows)
+{
+	// TODO: Then, go to GetPerFlowNodes and remove all the notes, swap queues for TArrays so that we can print their contents at key points and leave those as notes instead.
+	const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
+	check(CustomNode != nullptr)
+	check(CustomNodeStartPins.Num() > 0)
+
+	PerPinForwardFlow = TArray<TArray<UEdGraphNode*>>{};
+
+	// Here we do this for all the nodes that are part of the sub-chain of connections we moved to the intermediate event.
+	TArray<UEdGraphNode*> ToExpand;
+	TArray<UEdGraphNode*> ToExpandEvents;
+
+	TArray<UEdGraphNode*> ToParse;
+	TArray<UEdGraphNode*> ParsedNodes;
+
+	TArray<UEdGraphNode*> ToParseEvents;
+	TArray<UEdGraphNode*> ParsedNodesEvents;
+	for (const auto GraphStartPin : CustomNodeStartPins)
+	{
+		// We only allow getting sub-graphs with this if you start from exec pins.		
+		check(GraphStartPin->PinType.PinCategory == UEdGraphSchema_K2::PC_Exec)
+		const auto FlowName = CustomNode->GetName() + TEXT("_") + (GraphStartPin->GetDisplayName().ToString().IsEmpty() ? "Synchronous Flow" : GraphStartPin->GetDisplayName().ToString());
+
+		// Add the nodes connected to this starting pin to the Parse queue		
+		for (const auto LinkedTo : GraphStartPin->LinkedTo)
+		{
+			ToParse.Add(LinkedTo->GetOwningNode());
+		}
+
+		// Parse this initial list of nodes, finding all events connected to relevant functions.		
+		while (ToParse.Num() > 0)
+		{
+			const auto Parsing = ToParse[0];
+			ToParse.RemoveAt(0);
+
+			if (ParsedNodes.Contains(Parsing))
+				continue;
+
+			ParsedNodes.Add(Parsing);
+			ToExpand.Add(Parsing);
+			UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("%s - Storing Node to Expand %s"), *FlowName, *Parsing->GetDescriptiveCompiledName())
+			
+			if (Parsing == CustomNode)
+				continue;
+
+			// We add the next 
+			const auto OutputPins = Parsing->Pins.FilterByPredicate([=](const UEdGraphPin* P)
+			{
+				UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("%s - Looking at Pin %s to follow into  %s to Parse List. PinCategory=%s, Dir=%s"),
+				       *FlowName, *P->PinName.ToString(), *Parsing->GetDescriptiveCompiledName(),
+				       *P->PinType.PinCategory.ToString(), *UEnum::GetValueAsString(P->Direction))
+				return P->PinType.PinCategory == UEdGraphSchema_K2::PC_Exec; // P->PinName.ToString().StartsWith("On");
+			});
+			for (const auto& OnCallbackPin : OutputPins)
+			{
+				for (const auto LinkedTo : OnCallbackPin->LinkedTo)
+				{
+					const auto FollowNode = LinkedTo->GetOwningNode();
+					ToParse.Add(FollowNode);
+					UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("%s | %s - Following Pin %s -> %s into Node %s to Parse List"),
+						   *GraphStartPin->GetOwningNode()->GetDescriptiveCompiledName(), *FlowName, *OnCallbackPin->PinName.ToString(), *LinkedTo->PinName.ToString(), *FollowNode->GetDescriptiveCompiledName())
+				}				
+			}
+
+			// If we are parsing a node that has an input event that it will call...
+			for (const auto DelegatePin : Parsing->Pins.FilterByPredicate([&RelevantEventSpawningFunctionNames](const UEdGraphPin* P)
+			{
+				const auto AsCallFunctionNode = Cast<UK2Node_CallFunction>(P->GetOwningNode());
+
+				const auto bIsRelevantInputPin = P->Direction == EGPD_Input &&
+					P->PinType.PinCategory == UEdGraphSchema_K2::PC_Delegate || P->PinType.PinCategory == UEdGraphSchema_K2::PC_MCDelegate;
+
+				if (!AsCallFunctionNode)
+					return false;
+
+				const auto bIsRelevantFunction = RelevantEventSpawningFunctionNames.Num() == 0 || RelevantEventSpawningFunctionNames.Contains(AsCallFunctionNode->GetFunctionName());
+				const auto bIsAFlowFunction = AsCallFunctionNode->GetTargetFunction()->HasMetaData("BeamFlowStart");
+				return bIsRelevantInputPin && (bIsRelevantFunction || bIsAFlowFunction);
+			}))
+			{
+				for (const auto EventNodePin : DelegatePin->LinkedTo)
+				{
+					const auto EventNode = EventNodePin->GetOwningNode();
+					ToParseEvents.Add(EventNode);
+					UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("%s | %s - Adding Event Node %s to Parse List"), *GraphStartPin->GetOwningNode()->GetDescriptiveCompiledName(), *FlowName,
+					       *EventNode->GetDescriptiveCompiledName())
+				}
+			}
+		}
+
+		// Add found as notes
+		for (const auto& Expand : ToExpand)
+			UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("%s | %s - Found Node %s while following this Beam Flow"), *GraphStartPin->GetOwningNode()->GetDescriptiveCompiledName(), *FlowName,
+		       *Expand->GetDescriptiveCompiledName())
+
+		// // Parse all event flows that are connected to relevant function's delegates
+		while (ToParseEvents.Num() > 0)
+		{
+			const auto Parsing = ToParseEvents[0];
+			ToParseEvents.RemoveAt(0);
+
+			if (ParsedNodesEvents.Contains(Parsing))
+				continue;
+
+			ParsedNodesEvents.Add(Parsing);
+			ToExpandEvents.Add(Parsing);
+
+			// We add the next 
+			const auto OutputPins = Parsing->Pins.FilterByPredicate([=](const UEdGraphPin* P)
+			{
+				UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("%s - Looking at Pin %s to follow into  %s to Parse List. PinCategory=%s, Dir=%s"),
+					   *FlowName, *P->PinName.ToString(), *Parsing->GetDescriptiveCompiledName(),
+					   *P->PinType.PinCategory.ToString(), *UEnum::GetValueAsString(P->Direction))
+				return P->PinType.PinCategory == UEdGraphSchema_K2::PC_Exec; // P->PinName.ToString().StartsWith("On");
+			});
+			for (const auto& OnCallbackPin : OutputPins)
+			{
+				for (const auto LinkedTo : OnCallbackPin->LinkedTo)
+				{
+					const auto FollowNode = LinkedTo->GetOwningNode();
+					ToParseEvents.Add(FollowNode);
+					UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("%s | %s - Following Pin %s -> %s into Node %s to Parse List"),
+						   *GraphStartPin->GetOwningNode()->GetDescriptiveCompiledName(), *FlowName, *OnCallbackPin->PinName.ToString(), *LinkedTo->PinName.ToString(), *FollowNode->GetDescriptiveCompiledName())
+				}				
+			}
+
+			// If we are parsing a node that has an input event that it will call...
+			for (const auto DelegatePin : Parsing->Pins.FilterByPredicate([&RelevantEventSpawningFunctionNames, &CompilerContext, FlowName, GraphStartPin](const UEdGraphPin* P)
+			{
+				const auto AsCallFunctionNode = Cast<UK2Node_CallFunction>(P->GetOwningNode());
+				const auto bIsRelevantInputPin = P->Direction == EGPD_Input && P->PinType.PinCategory == UEdGraphSchema_K2::PC_Delegate;
+
+				if (P->PinType.PinCategory == UEdGraphSchema_K2::PC_MCDelegate)
+				{
+					CompilerContext
+						.MessageLog
+						.Warning(
+							*FString::Printf(TEXT("@@ | %s - You can't use BeamFlow pins in Multi-cast Delegates in node @@!"), *FlowName),
+							GraphStartPin->GetOwningNode(),
+							P->GetOwningNode()
+						);
+					return false;
+				}
+
+				if (!AsCallFunctionNode)
+					return false;
+
+
+				const auto bIsRelevantFunction = RelevantEventSpawningFunctionNames.Num() == 0 || RelevantEventSpawningFunctionNames.Contains(AsCallFunctionNode->GetFunctionName());
+				const auto bIsAFlowFunction = AsCallFunctionNode->GetTargetFunction()->HasMetaData("BeamFlowStart");
+				return bIsRelevantInputPin && (bIsRelevantFunction || bIsAFlowFunction);
+			}))
+			{
+				for (const auto EventNodePin : DelegatePin->LinkedTo)
+				{
+					const auto EventNode = EventNodePin->GetOwningNode();
+					ToParseEvents.Add(EventNode);
+					UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("%s | %s - Adding Event %s to Parse from Node %s"), *GraphStartPin->GetOwningNode()->GetDescriptiveCompiledName(), *FlowName,
+					       *EventNode->GetDescriptiveCompiledName(),
+					       *Parsing->GetDescriptiveCompiledName())
+				}
+			}
+		}
+
+		// Add logs as notes
+		for (const auto& Expand : ToExpand)
+			UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("%s | %s - Found Node %s while following this Beam Flow"),
+		       *GraphStartPin->GetOwningNode()->GetDescriptiveCompiledName(), *FlowName, *Expand->GetDescriptiveCompiledName())
+
+		// We'll store all the nodes that are considered to be in this flow here
+		TArray<UEdGraphNode*> FlowNodes;
+
+		// While we have nodes in this flow that we need to expand, continue doing so...		
+		while (ToExpand.Num() > 0)
+		{
+			const auto ExpandingNode = ToExpand[0];
+			ToExpand.RemoveAt(0);
+
+			// First, we simply add the expanding node to the one in the flow --- we don't add duplicates.
+			if (!FlowNodes.Contains(ExpandingNode))
+			{
+				FlowNodes.Add(ExpandingNode);
+				UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("%s | %s - Adding Node %s to this Beam Flow"), *GraphStartPin->GetOwningNode()->GetDescriptiveCompiledName(), *FlowName,
+				       *ExpandingNode->GetDescriptiveCompiledName())
+			}
+
+			// Then, we look backwards through all input pins so that we add all Pure Nodes (nodes that don't have an execution pin) that are considered to be in this flow into the list of nodes to expand.
+			for (const auto ConnectedPin : ExpandingNode->Pins.FilterByPredicate([](const UEdGraphPin* P)
+			{
+				return P->Direction == EGPD_Input && P->PinType.PinCategory != UEdGraphSchema_K2::PC_Exec;
+			}))
+			{
+				for (const auto LinkedTo : ConnectedPin->LinkedTo)
+				{
+					// Get the node we are connected to
+					const auto LinkedToNode = LinkedTo->GetOwningNode();
+
+					// We don't ever backfill past ourselves					
+					const auto bIsNotSelf = LinkedToNode != CustomNode;
+
+					// We don't cyclically expand the node if we have already added it to the list of nodes in this flow.
+					const auto NotCyclical = !FlowNodes.Contains(LinkedToNode);
+
+					UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("%s | %s - Trying to Backfill node %s connected to input pin %s into this Beam Flow -- %s, %s"),
+					       *GraphStartPin->GetOwningNode()->GetDescriptiveCompiledName(), *FlowName, *LinkedToNode->GetDescriptiveCompiledName(), *ConnectedPin->GetName(),
+					       bIsNotSelf ? TEXT("true") : TEXT("false"), NotCyclical ? TEXT("true") : TEXT("false"))
+
+					// If we should expand this node, let's just add it to the list of nodes to expand.										
+					if (bIsNotSelf && NotCyclical)
+					{
+						ToExpand.Add(LinkedToNode);
+						UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("%s | %s - Backfilling node %s connected to input pin %s into this Beam Flow"),
+						       *GraphStartPin->GetOwningNode()->GetDescriptiveCompiledName(), *FlowName, *LinkedToNode->GetDescriptiveCompiledName(), *ConnectedPin->GetName())
+					}
+				}
+			}
+		}
+		// Add logs as notes			
+		PerPinForwardFlow.Add(FlowNodes);
+		for (const auto& FlowNode : FlowNodes)
+		{
+#ifdef BEAM_K2_ADD_NOTES_TO_FLOW_NODES
+			CompilerContext.MessageLog.Note(*FString::Printf(TEXT("@@ | %s - Found Node @@ while following this Beam Flow"), *FlowName), GraphStartPin->GetOwningNode(), FlowNode);
+#endif
+			UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("%s | %s - Found Node %s while following this Beam Flow"), *GraphStartPin->GetOwningNode()->GetDescriptiveCompiledName(), *FlowName,
+			       *FlowNode->GetDescriptiveCompiledName())
+		}
+
+		// We'll store all the nodes that are considered to be in this flow's Events here
+		TArray<UEdGraphNode*> EventsFlowNodes;
+		// While we have nodes on event flows that we need to expand (backfill nodes connected to input pins into the flow), continue doing so...
+		while (ToExpandEvents.Num() > 0)
+		{
+			const auto ExpandingNode = ToExpandEvents[0];
+			ToExpandEvents.RemoveAt(0);
+
+			// First, we simply add the expanding node to the one in the flow --- we don't add duplicates.
+			if (!EventsFlowNodes.Contains(ExpandingNode))
+			{
+				EventsFlowNodes.Add(ExpandingNode);
+				UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("%s | %s - Adding Node %s from an Event node while following this Beam Flow"),
+				       *GraphStartPin->GetOwningNode()->GetDescriptiveCompiledName(), *FlowName,
+				       *ExpandingNode->GetDescriptiveCompiledName())
+			}
+
+			// Then, we look backwards through all input pins so that we add all Pure Nodes (nodes that don't have an execution pin) that are considered to be in this flow into the list of nodes to expand.
+			for (const auto ConnectedPin : ExpandingNode->Pins.FilterByPredicate([](const UEdGraphPin* P)
+			{
+				return P->Direction == EGPD_Input && P->PinType.PinCategory != UEdGraphSchema_K2::PC_Exec;
+			}))
+			{
+				for (const auto LinkedTo : ConnectedPin->LinkedTo)
+				{
+					// Get the node we are connected to
+					const auto LinkedToNode = LinkedTo->GetOwningNode();
+
+					// We don't ever backfill past ourselves					
+					const auto bIsNotSelf = LinkedToNode != CustomNode;
+
+					// We don't cyclically expand the node if we have already added it to the list of nodes in this flow.
+					const auto NotCyclical = !EventsFlowNodes.Contains(LinkedToNode);
+
+					UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("%s | %s - Trying to Backfill node %s connected to input pin %s into this Beam Flow -- %s, %s"),
+					       *GraphStartPin->GetOwningNode()->GetDescriptiveCompiledName(), *FlowName, *LinkedToNode->GetDescriptiveCompiledName(), *ConnectedPin->GetName(),
+					       bIsNotSelf ? TEXT("true") : TEXT("false"), NotCyclical ? TEXT("true") : TEXT("false"))
+
+					// If we should expand this node, let's just add it to the list of nodes to expand.										
+					if (bIsNotSelf && NotCyclical)
+					{
+						ToExpandEvents.Add(LinkedToNode);
+						UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("%s | %s - Backfilling node %s connected to input pin %s into this Beam Flow"),
+						       *GraphStartPin->GetOwningNode()->GetDescriptiveCompiledName(), *FlowName, *LinkedToNode->GetDescriptiveCompiledName(), *ConnectedPin->GetName())
+					}
+				}
+			}
+		}
+		PerPinConnectedEventFlows.Add(EventsFlowNodes);
+		for (const auto& FlowNode : EventsFlowNodes)
+		{
+#ifdef BEAM_K2_ADD_NOTES_TO_FLOW_NODES
+			CompilerContext.MessageLog.Note(*FString::Printf(TEXT("@@ | %s - Found Node @@ while following Events passed in via this Beam Flow"), *FlowName), GraphStartPin->GetOwningNode(), FlowNode);
+#endif
+			UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("%s | %s - Found Node %s while following Events passed in via this Beam Flow"), *GraphStartPin->GetOwningNode()->GetDescriptiveCompiledName(),
+			       *FlowName,
+			       *FlowNode->GetDescriptiveCompiledName())
+		}
+	}
+}
+
+void BeamK2::ReplaceConnectionsOnBeamFlow(const TArray<UEdGraphNode*>& NodesToCorrect, const TArray<UEdGraphPin*>& From, const TArray<UEdGraphPin*>& To)
+{
+	const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
+	for (const auto GraphNode : NodesToCorrect)
+	{
+		for (const auto GraphPin : GraphNode->Pins)
+		{
+			for (int32 i = 0; i < From.Num(); i++)
+			{
+				const auto RelevantPin = From[i];
+				UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("Comparing Node's %s Pin %s connected to relevant pin %s = %s"),
+				       *GraphNode->GetDescriptiveCompiledName(), *GraphPin->PinName.ToString(), *RelevantPin->PinName.ToString(),
+				       GraphPin->LinkedTo.Contains(RelevantPin) ? TEXT("true") : TEXT("false"))
+				if (GraphPin->LinkedTo.Contains(RelevantPin))
+				{
+					UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("Correcting Node's %s Pin %s connected to relevant pin %s"),
+					       *GraphNode->GetDescriptiveCompiledName(), *GraphPin->PinName.ToString(), *RelevantPin->PinName.ToString())
+					GraphPin->BreakLinkTo(RelevantPin);
+					const auto bConnectedEventPins = K2Schema->TryCreateConnection(GraphPin, To[i]);
+					checkf(bConnectedEventPins, TEXT("Pin Name %s"), *To[i]->GetName());
+				}
+			}
+		}
+	}
+}
+
+UK2Node_MakeArray* BeamK2::CreateMakeArrayNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, int PinCount)
+{
+	UK2Node_MakeArray* ArrayNode = CompilerContext.SpawnIntermediateNode<UK2Node_MakeArray>(CustomNode, SourceGraph);
+	ArrayNode->NumInputs = PinCount;
+	ArrayNode->AllocateDefaultPins();
+	return ArrayNode;
+}
+
+
+UK2Node_Event* BeamK2::CreateEventNodeForDelegate(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const FString& DelegateName)
+{
+	// Adds the event node to the graph.
+	UK2Node_Event* EventNode = CompilerContext.SpawnIntermediateEventNode<UK2Node_Event>(Node, nullptr, SourceGraph);
+
+	// To ensure uniqueness per graph we use the owner custom node's name in this node as well.
+	const auto EventNodeName = FString::Printf(TEXT("%sHandler_%s_%s"), *DelegateName, *SourceGraph->GetName(), *Node->GetName());
+	EventNode->CustomFunctionName = FName(*EventNodeName);
+
+	// When wrapping a Custom Event node that expects a certain Dynamic Delegate, you need to pass in "DelegateName__DelegateSignature".
+	// The line below is from the Input node.
+	// 
+	//	InputActionEvent->EventReference.SetExternalDelegateMember(FName(TEXT("InputActionHandlerDynamicSignature__DelegateSignature")));
+	//
+	// This just makes a UK2Node_Event with the signature of the given delegate as the output pins.
+	EventNode->EventReference.SetExternalDelegateMember(FName(*FString::Printf(TEXT("%s__DelegateSignature"), *DelegateName)));
+
+	// Calling this builds the node pins correctly based on the given Delegate Signature
+	EventNode->AllocateDefaultPins();
+	// Return the node
+	return EventNode;
+}
+
+void BeamK2::MoveWrappedPin(const UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, const UEdGraphNode* TargetNode, const FName& PinName)
+{
+	const auto WrapperPin = CustomNode->FindPinChecked(PinName);
+	const auto TargetPin = TargetNode->FindPinChecked(PinName);
+	const auto Moved = CompilerContext.MovePinLinksToIntermediate(*WrapperPin, *TargetPin);
+	check(!Moved.IsFatal());
+}
+
+
+UK2Node_CallFunction* BeamK2::CreateCallFunctionNode(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph,
+                                                     FName FunctionName, UClass* UClass)
+{
+	UK2Node_CallFunction* GetSubsystem = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(Node, SourceGraph);
+	GetSubsystem->FunctionReference.SetExternalMember(FunctionName, UClass);
+	GetSubsystem->AllocateDefaultPins();
+	return GetSubsystem;
+}
+
+void BeamK2::ValidateOutputPinUsage(const FKismetCompilerContext& CompilerContext, const TArray<UEdGraphPin*>& InvalidPins, const TArray<FString>& InvalidPinErrorMessages,
+                                    const TArray<UEdGraphNode*>& NodesToSearchIn)
+{
+	const FString FlowError_InvalidPinUsageInBeamFlow = LOCTEXT("InvalidPinUsageInBeamExecuteNodeFlows_ErrorFollowUp", "Node @@ depends on an disallowed Pin coming from @@!").ToString();
+
+	for (const auto& FlowNode : NodesToSearchIn)
+	{
+		for (const auto& Pin : FlowNode->Pins)
+		{
+			for (int32 InvalidPinIdx = 0; InvalidPinIdx < InvalidPins.Num(); InvalidPinIdx++)
+			{
+				const auto InvalidPin = InvalidPins[InvalidPinIdx];
+				if (Pin->LinkedTo.Contains(InvalidPin))
+				{
+					CompilerContext.MessageLog.Error(*InvalidPinErrorMessages[InvalidPinIdx], FlowNode);
+					for (const auto& OutputPin : FlowNode->Pins)
+					{
+						if (OutputPin->Direction == EGPD_Output && OutputPin->LinkedTo.Num() > 0)
+						{
+							for (const auto& LinkedTo : OutputPin->LinkedTo)
+							{
+								const auto Node = LinkedTo->GetOwningNode();
+								if (NodesToSearchIn.Contains(Node))
+								{
+									CompilerContext.MessageLog.Error(*FlowError_InvalidPinUsageInBeamFlow, Node, FlowNode);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+bool BeamK2::IsMacroOrEventGraph(const UEdGraph* Graph)
+{
+	// This node expands into event nodes and must be placed in a Ubergraph
+	EGraphType const GraphType = Graph->GetSchema()->GetGraphType(Graph);
+	const bool bIsCompatible = (GraphType == EGraphType::GT_Ubergraph) || GraphType == GT_Macro;
+	return bIsCompatible;
+}
+
+void BeamK2::RemoveAllPins(UEdGraphNode* CustomNode, const TArray<FName> PinsToRemove)
+{
+	for (const auto ToRemove : PinsToRemove)
+	{
+		const auto Pin = CustomNode->FindPin(ToRemove);
+		Pin->BreakAllPinLinks();
+		CustomNode->RemovePin(Pin);
+	}
+}
+
+
+void BeamK2::ParseFunctionForNodeInputPins(UEdGraphNode* CustomNode, const UFunction* Function, TArray<FString>& WrappedPinNames,
+                                           const CheckParamIsValidForNodePredicate Predicate)
+{
+	const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
+	WrappedPinNames.Reset();
+	// Create the inputs and outputs		
+	for (TFieldIterator<FProperty> PropIt(Function); PropIt && (PropIt->PropertyFlags & CPF_Parm); ++PropIt)
+	{
+		const FProperty* Param = *PropIt;
+
+		// Don't create a new pin if one exists already or if it's a pin for one of the handlers, we skip them.
+		// The entire point of this node is to allow for "fake" sequential execution in blueprint (for better organizational purposes).
+		if (!Param || Predicate(CustomNode, Param))
+			continue;
+
+		// We filter out all output pins because we create them by hand after we get all the input ones.
+		constexpr EEdGraphPinDirection Direction = EGPD_Input;
+
+		// Create, store and configure the pin to be the correct type.
+		UEdGraphPin* Pin = CustomNode->CreatePin(Direction, NAME_None, Param->GetFName());
+
+		// Make sure it's a hide-able pin here, if it is a hide-able pin in the given function
+		Pin->bAdvancedView = Function->GetMetaData("AdvancedDisplay").Contains(Param->GetFName().ToString());
+
+		// Set up the pin type based on the parameter's property type.
+		const bool _ = K2Schema->ConvertPropertyToPinType(Param, /*out*/ Pin->PinType);
+		K2Schema->SetPinAutogeneratedDefaultValueBasedOnType(Pin);
+
+		// Generate the pin's tooltip from the function docs.
+		UK2Node_CallFunction::GeneratePinTooltipFromFunction(*Pin, Function);
+
+		// Keep track of the pins that come from the Request Function		
+		WrappedPinNames.Add(Pin->GetName());
+	}
+
+	
+}
+
+void BeamK2::ParseFunctionForNodeInputPins(UEdGraphNode* CustomNode, const UFunction* Function, const TArray<FName> PinsToAdd, bool bFailIfNotFound)
+{
+	const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
+
+	// Create the inputs and outputs
+	for (const auto ToAdd : PinsToAdd)
+	{
+		const FProperty* Param = Function->FindPropertyByName(ToAdd);
+		if (!Param)
+		{
+			if (bFailIfNotFound)
+				check(false)
+			else
+				continue;
+		}
+
+		// We filter out all output pins because we create them by hand after we get all the input ones.
+		constexpr EEdGraphPinDirection Direction = EGPD_Input;
+
+		// Create, store and configure the pin to be the correct type.
+		UEdGraphPin* Pin = CustomNode->CreatePin(Direction, NAME_None, Param->GetFName());
+
+		// Make sure it's a hide-able pin here, if it is a hide-able pin in the given function
+		Pin->bAdvancedView = Function->GetMetaData("AdvancedDisplay").Contains(Param->GetFName().ToString());
+
+		// Set up the pin type based on the parameter's property type.
+		const bool _ = K2Schema->ConvertPropertyToPinType(Param, /*out*/ Pin->PinType);
+		K2Schema->SetPinAutogeneratedDefaultValueBasedOnType(Pin);
+
+		// Generate the pin's tooltip from the function docs.
+		UK2Node_CallFunction::GeneratePinTooltipFromFunction(*Pin, Function);
+	}
+}
+
+#undef LOCTEXT_NAMESPACE

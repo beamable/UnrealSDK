@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "BeamBackend.h"
+#include "BeamBackend/BeamBackend.h"
 #include "Serialization/BeamJsonUtils.h"
 
 #include "BeamBackendTestCallbacks.generated.h"

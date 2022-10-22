@@ -7,6 +7,7 @@
 
 #include "BeamCoreTypes.h"
 #include "BeamEnvironment.h"
+#include "BeamRequestWaitHandle.h"
 #include "UserSlots/BeamUserSlots.h"
 
 #include "BeamBackend.generated.h"
@@ -15,7 +16,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(NotBlueprintable)
 class BEAMABLECORE_API UBeamBackend : public UEngineSubsystem
 {
 	GENERATED_BODY()
@@ -31,9 +32,24 @@ private:
 	long volatile* InFlightRequestId;
 
 	/**
-	 * @brief Delegate handle to the tick function of the UBeamBackend sub-system.
+	 * @brief  Just an Auto-Increment ID of each running request.
 	 */
-	FTSTicker::FDelegateHandle TickDelegateHandle;
+	long volatile* WaitHandleId;
+
+	/**
+	 * @brief Delegate handle to the tick function of the UBeamBackend sub-system used to update and handle retry requests.
+	 */
+	FTSTicker::FDelegateHandle RetryQueueTickHandle;
+
+	/**
+	 * @brief Delegate handle to the tick function of the UBeamBackend sub-system used to update and notify the wait handles. 
+	 */
+	FTSTicker::FDelegateHandle WaitHandleTickHandle;
+
+	/**
+	 * @brief Delegate handle to the tick function of the UBeamBackend sub-system used to clean up completed requests.
+	 */
+	FTSTicker::FDelegateHandle CleanupRequestsTickHandle;
 
 	/**
 	 * @brief Queue of failed requests that we must retry.
@@ -49,7 +65,15 @@ private:
 
 	bool TickRetryQueue(float DeltaTime);
 
+	bool TickWaitHandles(float);
+
+	bool TickCleanUp(float deltaTime);
+
+
 public:
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly)
+	static UBeamBackend* GetSelf() { return GEngine->GetEngineSubsystem<UBeamBackend>(); }
+
 	static const FString HEADER_CONTENT_TYPE;
 	static const FString HEADER_ACCEPT;
 	static const FString HEADER_VALUE_ACCEPT_CONTENT_TYPE;
@@ -58,12 +82,12 @@ public:
 	static const FString HEADER_VALUE_AUTHORIZATION;
 	static const FString HEADER_CLIENT_ID;
 	static const FString HEADER_PROJECT_ID;
-	
+
 	/**
 	 * @brief Since it only actually makes sense to retry errors in some cases for non-authenticated requests, we keep a list of the error codes that we do try again. 
 	 */
 	const static TArray<int> NON_AUTH_REQUESTS_RETRY_ALLOWED_ERRORS;
-	
+
 	/**
 	 * @brief Since it only actually makes sense to retry errors in some cases, we keep a list of the error codes that we do try again. 
 	 */
@@ -81,6 +105,7 @@ public:
 	 */
 	UPROPERTY()
 	UBeamUserSlots* BeamUserSlots;
+
 
 	/** @brief Initializes the auto-increment Id and binds the ExecuteRequestDelegate to DefaultExecuteRequestImpl  */
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
@@ -107,7 +132,7 @@ public:
 	* To see how to send authenticated requests by hand, take a look at the BeamUserSlot SubSystem as well as any
 	* authenticated request from the AutoGen API. 
 	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	FBeamRealmHandle UnauthenticatedRequestsTargetRealm;
 
 
@@ -119,31 +144,31 @@ public:
 	/**
 	 * @brief When set to true, the Global Request Error Handlers will run IN ADDITION to the one provided at the callsite. 
 	 */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="Beam|Config")
 	bool AlwaysRunGlobalHandlers;
 
 	/**
 	 * @brief When set to true, we will log all success responses regardless of whether or not you passed in a handler. 
 	 */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="Beam|Config")
 	bool AlwaysLogSuccessResponses;
 
 	/**
 	 * @brief When set to true, we will log all error responses regardless of whether or not you passed in a handler. 
 	 */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="Beam|Config")
 	bool AlwaysLogErrorResponses;
 
 	/**
 	 * @brief When set to true, we will log all completed requests. 
 	 */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="Beam|Config")
 	bool AlwaysLogCompleteResponses;
 
 	/**
 	 * @brief A global request handler delegate that'll be called 
 	 */
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category="Beam|Config")
 	FGlobalRequestErrorHandler GlobalRequestErrorHandler;
 
 	/**
@@ -158,22 +183,6 @@ public:
 	TMap<FBeamRequestId, TUnrealRequestPtr> InFlightRequests;
 
 	/**
-	 * @brief Tracking of overriden retry configurations per-request. If a Request Id does not exist here, fall back to the DefaultRetryConfig.
-	 */
-	TMap<FBeamRequestId, FBeamRetryConfig> InFlightRetryConfigs;
-
-	/**
-	 * @brief Tracking of all requests that failed and have started processing.
-	 * Processing is just waiting for the correct amount of time, before actually trying again.
-	 */
-	TMap<FBeamRequestId, FProcessingRequestRetry> InFlightProcessingRequests;
-
-	/**
-	 * @brief Map of @see {FBeamRequestId} to the number of times a request with that id failed. Used to do exponential back-off.
-	 */
-	TMap<FBeamRequestId, int> InFlightFailureCount;
-
-	/**
 	 * @brief Tracking of all request ids that were cancelled by the user.
 	 * In BP-land, a cancelled request will simply discard it's response and call OnComplete.
 	 * You can use IsRequestCancelled(RequestId) during the callback to handle cancelled requests.
@@ -184,12 +193,51 @@ public:
 	TArray<FBeamRequestId> InFlightRequestsCancelled;
 
 	/**
+	 * @brief Tracking of all request contexts used to send out Beamable requests. 
+	 */
+	TMap<FBeamRequestId, FBeamRequestContext> InFlightRequestContexts;
+
+	/**
+	 * @brief When we create a new request, authenticated or otherwise, we store it's RequestData object here.
+	 * When it and WaitHandles that depend on it are completed, we remove it from here.
+	 */
+	UPROPERTY(BlueprintReadOnly, Category="Beam")
+	TMap<FBeamRequestContext, TScriptInterface<IBeamBaseRequestInterface>> InFlightRequestData;
+
+	/**
+	 * @brief When we create a new request, authenticated or otherwise, we store it's deserialized response object here.
+	 * When it and WaitHandles that depend on it are completed, we remove it from here.
+	 * TODO: Declare an actual interface called IBeamBaseResponseBodyInterface and store it here instead
+	 */
+	UPROPERTY(BlueprintReadOnly, Category="Beam")
+	TMap<FBeamRequestContext, UObject*> InFlightResponseBodyData;
+
+	/**
+	 * @brief When we create a new request, authenticated or otherwise, we store it's deserialized error object here.
+	 * When it and WaitHandles that depend on it are completed, we remove it from here.	 
+	 */
+	UPROPERTY(BlueprintReadOnly, Category="Beam")
+	TMap<FBeamRequestContext, FBeamErrorResponse> InFlightResponseErrorData;
+
+	/**
+	 * @brief Map of @see {FBeamRequestId} to the number of times a request with that id failed. Used to do exponential back-off.
+	 */
+	TMap<FBeamRequestId, int> InFlightFailureCount;
+
+	/**
+	 * @brief Tracking of all requests that failed and have started processing.
+	 * Processing is just waiting for the correct amount of time, before actually trying again.
+	 */
+	TMap<FBeamRequestId, FProcessingRequestRetry> InFlightProcessingRequests;
+
+
+	/**
 	 *  @brief Used only as delegate set in ExecuteRequestDelegate.
 	 *  When testing, this is [optionally] swapped out so we can assert the state of the TUnrealRequest instance that would be sent out.
 	 *  
 	 */
 	UFUNCTION()
-	void DefaultExecuteRequestImpl(const FBeamRequestContext& RequestContext, FBeamConnectivity& Connectivity, int64 ActiveRequestId);
+	void DefaultExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity);
 
 	/**
 	 * @brief Creates a request and prepares it to be sent out. This does not bind the lambda --- see any auto-generated API to understand how to manually make
@@ -240,12 +288,12 @@ public:
 
 	/**
 	 * @brief This is mainly used in Unit tests where we want to build the request and not send it.
-	 * However, if a request is ever created manually by a user and never sent, they need to call this otherwise
+	 * However, if a request is ever created manually by a user (not via one of our API Subsystems) and never sent, they need to call this otherwise
 	 * they'll "leak" some memory (the data associated with the request here will never be cleared).
 	 * 
 	 * @param RequestId The RequestId of the request you wish to discard.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void DiscardUnsentRequest(const int64& RequestId);
 
 	/**
@@ -254,7 +302,7 @@ public:
 	 * 
 	 * @param RequestId The RequestId of the request you wish to cancel.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void CancelRequest(int64 RequestId);
 
 	/**
@@ -262,7 +310,7 @@ public:
 	 * This does not track inactive request ids (that have been discard and/or completed). This is only valid while a
 	 * request is in-fact in flight and during it's callback executions.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintPure, Category="Beam")
 	bool IsRequestCancelled(int64 RequestId) const;
 
 	/**
@@ -272,7 +320,7 @@ public:
 	 * @param RequestId The RequestId of the request.
 	 * @return The number of times this request has failed.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintPure, Category="Beam")
 	int GetRequestFailureCount(int64 RequestId) const;
 
 	/**
@@ -406,6 +454,33 @@ public:
 	                                     const TBeamFullResponseHandler<TRequestData*, TResponseData*>& ResponseHandler);
 
 	/*
+ 
+ __          __   _ _     _____                            _   
+ \ \        / /  (_) |   |  __ \                          | |  
+  \ \  /\  / /_ _ _| |_  | |__) |___  __ _ _   _  ___  ___| |_ 
+   \ \/  \/ / _` | | __| |  _  // _ \/ _` | | | |/ _ \/ __| __|
+	\  /\  / (_| | | |_  | | \ \  __/ (_| | |_| |  __/\__ \ |_ 
+	 \/  \/ \__,_|_|\__| |_|  \_\___|\__, |\__,_|\___||___/\__|
+										| |                    
+										|_|                    
+	*/
+
+	/**
+	 * @brief List of wait handles that are currently being waited on.
+	 */
+	TArray<FBeamRequestWaitHandle> ActiveWaitHandles;
+
+	TMultiMap<FBeamRequestWaitHandle, FBeamRequestId> ActiveDependenciesForWaitHandles;
+
+	TMultiMap<FBeamRequestId, FBeamRequestWaitHandle> InFlightRequestsToDependedOnMap;
+
+	TMap<FBeamRequestWaitHandle, FOnWaitComplete> ActiveWaitHandleCallbacks;
+
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(BeamFlowStart))
+	FBeamRequestWaitHandle WaitAll(const TArray<FBeamRequestContext>& Contexts, FOnWaitComplete OnComplete);
+
+
+	/*
 	 
   _____      _                 _____             __ _       
  |  __ \    | |               / ____|           / _(_)      
@@ -421,26 +496,26 @@ public:
 	/**
 	* @brief Retry configuration data. Can be overriden at the request level. 
 	*/
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category="Beam|Config")
 	FBeamRetryConfig DefaultRetryConfig;
 
 	/**
 	 * @brief Key is the request struct type's GetName() call. Value can be set by users. 
 	 */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="Beam|Config")
 	TMap<FRequestType, FBeamRetryConfig> PerTypeRetryConfigs;
 
 	/**
 	 * @brief Key is the request struct type's GetName() call and the UserSlotId for which this configuration is set separated by '₢'.
 	 * Value can be set by users.
 	 */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="Beam|Config")
 	TMap<FString, FBeamRetryConfig> PerUserPerTypeRetryConfig;
 
 	/**
 	 * @brief Key is the UserSlotId for which this configuration is set. Value can be set by users.
 	 */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="Beam|Config")
 	TMap<FUserSlot, FBeamRetryConfig> PerUserRetryConfig;
 
 	/**
@@ -452,7 +527,7 @@ public:
 	 * 
 	 * @return True, if the returned config was the one you asked for. False, if a fallback was returned (happens if you call this without ever having set the retry configuration).
 	 */
-	UFUNCTION(BlueprintPure, meta=(AutoCreateRefTerm="RequestType"))
+	UFUNCTION(BlueprintPure, Category="Beam|Config", meta=(AutoCreateRefTerm="RequestType"))
 	bool GetRetryConfigForRequestType(const FRequestType& RequestType, FBeamRetryConfig& Config) const;
 
 	/**
@@ -461,7 +536,7 @@ public:
 	 * @param Config The RetryConfiguration.
 	 * @return True, if the returned config was the one you asked for. False, if a fallback was returned (happens if you call this without ever having set the retry configuration).
 	 */
-	UFUNCTION(BlueprintPure, meta=(AutoCreateRefTerm="Slot"))
+	UFUNCTION(BlueprintPure, Category="Beam|Config", meta=(AutoCreateRefTerm="Slot"))
 	bool GetRetryConfigForUserSlot(const FUserSlot& Slot, FBeamRetryConfig& Config) const;
 
 	/**
@@ -471,7 +546,7 @@ public:
 	 * @param Config The RetryConfiguration.
 	 * @return True, if the returned config was the one you asked for. False, if a fallback was returned (happens if you call this without ever having set the retry configuration).
 	 */
-	UFUNCTION(BlueprintPure, meta=(AutoCreateRefTerm="RequestType,Slot"))
+	UFUNCTION(BlueprintPure, Category="Beam|Config", meta=(AutoCreateRefTerm="RequestType,Slot"))
 	bool GetRetryConfigForUserSlotAndRequestType(const FRequestType& RequestType, const FUserSlot& Slot, FBeamRetryConfig& Config) const;
 
 
@@ -480,7 +555,7 @@ public:
 	 * @param RequestType The Request type whose retry configuration you wish to reset.
 	 * @param RetryConfig The retry config you wish that request type to use.
 	 */
-	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="RequestType"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Config", meta=(AutoCreateRefTerm="RequestType"))
 	void SetRetryConfigForRequestType(const FRequestType& RequestType, const FBeamRetryConfig& RetryConfig);
 
 	/**
@@ -488,7 +563,7 @@ public:
 	 * @param Slot The user slot whose retry configuration you wish to set.
 	 * @param RetryConfig The retry config you wish that user to use.
 	 */
-	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="Slot"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Config", meta=(AutoCreateRefTerm="Slot"))
 	void SetRetryConfigForUserSlot(const FUserSlot Slot, const FBeamRetryConfig& RetryConfig);
 
 	/**
@@ -497,21 +572,21 @@ public:
 	 * @param RequestType The Request type whose retry configuration you wish to reset. 
 	 * @param RetryConfig The retry config you wish that user + request type combination to use.
 	 */
-	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="RequestType,Slot"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Config", meta=(AutoCreateRefTerm="RequestType,Slot"))
 	void SetRetryConfigForUserSlotAndRequestType(const FUserSlot& Slot, const FRequestType& RequestType, const FBeamRetryConfig& RetryConfig);
 
 	/**
 	 * @brief Resets the Retry Configuration for the given request type  back to the default retry configuration.
 	 * @param RequestType The Request type whose retry configuration you wish to reset.
 	 */
-	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="RequestType"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Config", meta=(AutoCreateRefTerm="RequestType"))
 	void ResetRetryConfigForRequestType(const FRequestType& RequestType);
 
 	/**
 	 * @brief Resets the Retry Configuration for the given user back to the default retry configuration.
 	 * @param Slot The user slot whose retry configuration you wish to reset.
 	 */
-	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="Slot"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Config", meta=(AutoCreateRefTerm="Slot"))
 	void ResetRetryConfigForUserSlot(const FUserSlot& Slot);
 
 	/**
@@ -519,7 +594,7 @@ public:
 	 * @param Slot The user slot whose retry configuration you wish to reset.
 	 * @param RequestType The Request type whose retry configuration you wish to reset.
 	 */
-	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="RequestType,Slot"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Config", meta=(AutoCreateRefTerm="RequestType,Slot"))
 	void ResetRetryConfigForUserSlotAndRequestType(const FUserSlot& Slot, const FRequestType& RequestType);
 
 	/**
@@ -542,13 +617,13 @@ public:
 	/**
 	* @brief The current state of internet connection as detected by Beamable. This is updated automatically on every non-timeout request.
 	*/
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="Beam|Status")
 	FBeamConnectivity CurrentConnectivityStatus;
 
 	/**
 	 * @brief A global request handler delegate that'll be called ONCE when we fail a request due to connection problems. 
 	 */
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category="Beam|Status")
 	FGlobalConnectivityChangedHandler GlobalConnectivityChangedHandler;
 
 	/**
@@ -561,6 +636,6 @@ public:
 	/**	 
 	 * @return Whether or not the last request made from BeamBackend was able to connect to the server it was trying to reach.
 	 */
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category="Beam|Status")
 	bool IsConnected() const;
 };

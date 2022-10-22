@@ -3,7 +3,7 @@
 #include "Engine/Engine.h"
 #include "Misc/AutomationTest.h"
 
-#include "BeamBackend.h"
+#include "BeamBackend/BeamBackend.h"
 #include "BeamUserSlotsTestCallbacks.h"
 #include "JsonObjectConverter.h"
 
