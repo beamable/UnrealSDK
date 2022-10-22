@@ -88,28 +88,3 @@ struct FBeamRequestContext
 };
 
 FORCEINLINE uint32 GetTypeHash(const FBeamRequestContext& Context) { return GetTypeHash(Context.RequestId); }
-
-// TODO: Move this into a single file UBeamBackendBlueprintLibrary so that we don't need to pay a painful recompile every time we change this thing.
-// TODO: Move a bunch of the utitlity stuff in UBeamBackend to there too. Preferably keep only the data in UBeamBackend.
-// TODO: INVESTIGATE WHAT HAPPENED WITH THE ADD PIN button of the WaitAll Custom Node.
-UCLASS(BlueprintType)
-class UBeamRequestContextBlueprintLibrary : public UBlueprintFunctionLibrary
-{
-	GENERATED_BODY()
-public:
-	/**
-	 * @brief Whether or not the given request was successful.
-	 * @param Context The context to check.
-	 * @return TRUE If successful. False if not successful OR if InFlight. 
-	 */
-	UFUNCTION(BlueprintPure, Category="Beam")
-	static bool WasSuccess(const FBeamRequestContext& Context) { return Context.ResponseCode == 200; }
-
-	/**
-	 * @brief Whether or not the given request was not successful.
-	 * @param Context The context to check.
-	 * @return TRUE If NOT successful. False if successful OR if InFlight.
-	 */
-	UFUNCTION(BlueprintPure, Category="Beam")
-	static bool WasError(const FBeamRequestContext& Context) { return Context.ResponseCode != -1 && Context.ResponseCode != 200; }
-};

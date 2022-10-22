@@ -7,9 +7,10 @@
 #include "BeamBackend/BeamBackend.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 
-#define LOCTEXT_NAMESPACE "BeamK2"
 #define BEAM_K2_LOG_VERBOSITY Verbose
 //#define BEAM_K2_ADD_NOTES_TO_FLOW_NODES
+
+#define LOCTEXT_NAMESPACE "BeamK2"
 
 void BeamK2::GetPerBeamFlowNodes(const FKismetCompilerContext& CompilerContext, const UEdGraphNode* CustomNode,
                                  const TArray<UEdGraphPin*>& CustomNodeStartPins, const TArray<FName> RelevantEventSpawningFunctionNames,
@@ -55,7 +56,7 @@ void BeamK2::GetPerBeamFlowNodes(const FKismetCompilerContext& CompilerContext, 
 			ParsedNodes.Add(Parsing);
 			ToExpand.Add(Parsing);
 			UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("%s - Storing Node to Expand %s"), *FlowName, *Parsing->GetDescriptiveCompiledName())
-			
+
 			if (Parsing == CustomNode)
 				continue;
 
@@ -74,8 +75,9 @@ void BeamK2::GetPerBeamFlowNodes(const FKismetCompilerContext& CompilerContext, 
 					const auto FollowNode = LinkedTo->GetOwningNode();
 					ToParse.Add(FollowNode);
 					UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("%s | %s - Following Pin %s -> %s into Node %s to Parse List"),
-						   *GraphStartPin->GetOwningNode()->GetDescriptiveCompiledName(), *FlowName, *OnCallbackPin->PinName.ToString(), *LinkedTo->PinName.ToString(), *FollowNode->GetDescriptiveCompiledName())
-				}				
+					       *GraphStartPin->GetOwningNode()->GetDescriptiveCompiledName(), *FlowName, *OnCallbackPin->PinName.ToString(), *LinkedTo->PinName.ToString(),
+					       *FollowNode->GetDescriptiveCompiledName())
+				}
 			}
 
 			// If we are parsing a node that has an input event that it will call...
@@ -125,8 +127,8 @@ void BeamK2::GetPerBeamFlowNodes(const FKismetCompilerContext& CompilerContext, 
 			const auto OutputPins = Parsing->Pins.FilterByPredicate([=](const UEdGraphPin* P)
 			{
 				UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("%s - Looking at Pin %s to follow into  %s to Parse List. PinCategory=%s, Dir=%s"),
-					   *FlowName, *P->PinName.ToString(), *Parsing->GetDescriptiveCompiledName(),
-					   *P->PinType.PinCategory.ToString(), *UEnum::GetValueAsString(P->Direction))
+				       *FlowName, *P->PinName.ToString(), *Parsing->GetDescriptiveCompiledName(),
+				       *P->PinType.PinCategory.ToString(), *UEnum::GetValueAsString(P->Direction))
 				return P->PinType.PinCategory == UEdGraphSchema_K2::PC_Exec; // P->PinName.ToString().StartsWith("On");
 			});
 			for (const auto& OnCallbackPin : OutputPins)
@@ -136,8 +138,9 @@ void BeamK2::GetPerBeamFlowNodes(const FKismetCompilerContext& CompilerContext, 
 					const auto FollowNode = LinkedTo->GetOwningNode();
 					ToParseEvents.Add(FollowNode);
 					UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("%s | %s - Following Pin %s -> %s into Node %s to Parse List"),
-						   *GraphStartPin->GetOwningNode()->GetDescriptiveCompiledName(), *FlowName, *OnCallbackPin->PinName.ToString(), *LinkedTo->PinName.ToString(), *FollowNode->GetDescriptiveCompiledName())
-				}				
+					       *GraphStartPin->GetOwningNode()->GetDescriptiveCompiledName(), *FlowName, *OnCallbackPin->PinName.ToString(), *LinkedTo->PinName.ToString(),
+					       *FollowNode->GetDescriptiveCompiledName())
+				}
 			}
 
 			// If we are parsing a node that has an input event that it will call...
@@ -467,8 +470,6 @@ void BeamK2::ParseFunctionForNodeInputPins(UEdGraphNode* CustomNode, const UFunc
 		// Keep track of the pins that come from the Request Function		
 		WrappedPinNames.Add(Pin->GetName());
 	}
-
-	
 }
 
 void BeamK2::ParseFunctionForNodeInputPins(UEdGraphNode* CustomNode, const UFunction* Function, const TArray<FName> PinsToAdd, bool bFailIfNotFound)

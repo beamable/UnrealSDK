@@ -3,9 +3,10 @@
 #include "KismetCompiler.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 
-#define LOCTEXT_NAMESPACE "BeamK2"
 
 class UK2Node_MakeArray;
+
+#define LOCTEXT_NAMESPACE "BeamK2"
 
 namespace BeamK2
 {

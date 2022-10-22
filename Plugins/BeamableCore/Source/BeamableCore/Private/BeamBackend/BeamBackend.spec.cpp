@@ -468,7 +468,7 @@ void FBeamBackendSpec::Define()
 					FRequestToRetry RetryReq;
 					TestTrue("Test that the Retry was enqueued", BeamBackendSystem->EnqueuedRetries.Dequeue(RetryReq));
 					TestTrue("Enqueued Retry's Request Id is equal", RetryReq.RequestId == ReqId);
-					TestTrue("Enqueued Retry's IsBlueprint is on", RetryReq.IsBlueprint == 1);
+					TestTrue("Enqueued Retry's IsBlueprint is on", RetryReq.IsBlueprintCompatible == 1);
 				}
 
 
@@ -498,7 +498,7 @@ void FBeamBackendSpec::Define()
 					FRequestToRetry RetryReq;
 					TestTrue("Test that the Retry was enqueued", BeamBackendSystem->EnqueuedRetries.Dequeue(RetryReq));
 					TestTrue("Enqueued Retry's Request Id is equal", RetryReq.RequestId == ReqId);
-					TestTrue("Enqueued Retry's IsBlueprint is off", RetryReq.IsBlueprint == 0);
+					TestTrue("Enqueued Retry's IsBlueprint is off", RetryReq.IsBlueprintCompatible == 0);
 				}
 			}
 
@@ -543,7 +543,7 @@ void FBeamBackendSpec::Define()
 					TestTrue("Enqueued Retry's Request Id is equal", RetryReq.RequestId == ReqId);
 					TestTrue("Enqueued Retry's Realm Handle is the same", RetryReq.RealmHandle == FakeRealmHandle);
 					TestTrue("Enqueued Retry's AuthToken is the same", RetryReq.AuthToken == FakeAuthToken);
-					TestTrue("Enqueued Retry's IsBlueprint is on", RetryReq.IsBlueprint == 1);
+					TestTrue("Enqueued Retry's IsBlueprint is on", RetryReq.IsBlueprintCompatible == 1);
 					if (bIsAutomaticReAuth)
 					{
 						TestTrue("Test that the Retry was enqueued but with no failure count",
@@ -588,7 +588,7 @@ void FBeamBackendSpec::Define()
 					TestTrue("Enqueued Retry's Request Id is equal", RetryReq.RequestId == ReqId);
 					TestTrue("Enqueued Retry's Realm Handle is the same", RetryReq.RealmHandle == FakeRealmHandle);
 					TestTrue("Enqueued Retry's AuthToken is the same", RetryReq.AuthToken == FakeAuthToken);
-					TestTrue("Enqueued Retry's IsBlueprint is off", RetryReq.IsBlueprint == 0);
+					TestTrue("Enqueued Retry's IsBlueprint is off", RetryReq.IsBlueprintCompatible == 0);
 					if (bIsAutomaticReAuth)
 					{
 						TestTrue("Test that the Retry was enqueued but with no failure count",

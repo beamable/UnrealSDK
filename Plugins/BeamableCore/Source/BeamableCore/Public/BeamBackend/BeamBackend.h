@@ -207,7 +207,7 @@ public:
 	/**
 	 * @brief When we create a new request, authenticated or otherwise, we store it's deserialized response object here.
 	 * When it and WaitHandles that depend on it are completed, we remove it from here.
-	 * TODO: Declare an actual interface called IBeamBaseResponseBodyInterface and store it here instead
+	 * TODO: Code gen all possible responses with this interface (IBeamBaseResponseBodyInterface) being implemented and then change it here.
 	 */
 	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	TMap<FBeamRequestContext, UObject*> InFlightResponseBodyData;
@@ -310,7 +310,7 @@ public:
 	 * This does not track inactive request ids (that have been discard and/or completed). This is only valid while a
 	 * request is in-fact in flight and during it's callback executions.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam")
+	UFUNCTION(BlueprintGetter, Category="Beam")
 	bool IsRequestCancelled(int64 RequestId) const;
 
 	/**
@@ -320,7 +320,7 @@ public:
 	 * @param RequestId The RequestId of the request.
 	 * @return The number of times this request has failed.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam")
+	UFUNCTION(BlueprintGetter, Category="Beam")
 	int GetRequestFailureCount(int64 RequestId) const;
 
 	/**
@@ -470,12 +470,28 @@ public:
 	 */
 	TArray<FBeamRequestWaitHandle> ActiveWaitHandles;
 
+
+	/**
+	 * @brief Maps all Active WaitHandles to the RequestIds that are being waited on.
+	 */
 	TMultiMap<FBeamRequestWaitHandle, FBeamRequestId> ActiveDependenciesForWaitHandles;
 
+	/**
+	 * @brief Maps each InFlight Requests to all WaitHandles that are waiting on them.
+	 */
 	TMultiMap<FBeamRequestId, FBeamRequestWaitHandle> InFlightRequestsToDependedOnMap;
 
+	/**
+	 * @brief Maps each WaitHandle to their WaitComplete callback.
+	 */
 	TMap<FBeamRequestWaitHandle, FOnWaitComplete> ActiveWaitHandleCallbacks;
 
+	/**
+	 * @brief Given a set of contexts, waits until the frame they are all done and then calls OnComplete. 
+	 * @param Contexts The set of Request Contexts to wait for.
+	 * @param OnComplete What to do when all those requests are done.
+	 * @return A Wait Handle identifying this wait all command.
+	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(BeamFlowStart))
 	FBeamRequestWaitHandle WaitAll(const TArray<FBeamRequestContext>& Contexts, FOnWaitComplete OnComplete);
 
@@ -527,7 +543,7 @@ public:
 	 * 
 	 * @return True, if the returned config was the one you asked for. False, if a fallback was returned (happens if you call this without ever having set the retry configuration).
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Config", meta=(AutoCreateRefTerm="RequestType"))
+	UFUNCTION(BlueprintGetter, Category="Beam|Config", meta=(AutoCreateRefTerm="RequestType"))
 	bool GetRetryConfigForRequestType(const FRequestType& RequestType, FBeamRetryConfig& Config) const;
 
 	/**
@@ -536,7 +552,7 @@ public:
 	 * @param Config The RetryConfiguration.
 	 * @return True, if the returned config was the one you asked for. False, if a fallback was returned (happens if you call this without ever having set the retry configuration).
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Config", meta=(AutoCreateRefTerm="Slot"))
+	UFUNCTION(BlueprintGetter, Category="Beam|Config", meta=(AutoCreateRefTerm="Slot"))
 	bool GetRetryConfigForUserSlot(const FUserSlot& Slot, FBeamRetryConfig& Config) const;
 
 	/**
@@ -546,7 +562,7 @@ public:
 	 * @param Config The RetryConfiguration.
 	 * @return True, if the returned config was the one you asked for. False, if a fallback was returned (happens if you call this without ever having set the retry configuration).
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Config", meta=(AutoCreateRefTerm="RequestType,Slot"))
+	UFUNCTION(BlueprintGetter, Category="Beam|Config", meta=(AutoCreateRefTerm="RequestType,Slot"))
 	bool GetRetryConfigForUserSlotAndRequestType(const FRequestType& RequestType, const FUserSlot& Slot, FBeamRetryConfig& Config) const;
 
 
@@ -611,6 +627,9 @@ public:
 
 
 private:
+	/**
+	* @brief Called whenever a request is completed in order to update our connectivity status in accordance with UE's output codes.
+	*/
 	void UpdateConnectivity(const FBeamRequestContext& RequestContext, const TUnrealRequestStatus RequestStatus, const FRequestType RequestType);
 
 public:
@@ -636,6 +655,6 @@ public:
 	/**	 
 	 * @return Whether or not the last request made from BeamBackend was able to connect to the server it was trying to reach.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Status")
+	UFUNCTION(BlueprintGetter, Category="Beam|Status")
 	bool IsConnected() const;
 };
