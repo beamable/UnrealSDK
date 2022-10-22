@@ -418,7 +418,7 @@ void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FStr
 			// Enqueue a request to try again
 			FRequestToRetry Retry;
 			Retry.RequestId = RequestId;
-			Retry.IsBlueprint = 1;
+			Retry.IsBlueprintCompatible = 1;
 			Retry.ResponseCode = ResponseCode;
 			EnqueuedRetries.Enqueue(Retry);
 		}
@@ -590,7 +590,7 @@ void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCod
 			Retry.RequestId = RequestId;
 			Retry.AuthToken = AuthToken;
 			Retry.RealmHandle = RealmHandle;
-			Retry.IsBlueprint = 1;
+			Retry.IsBlueprintCompatible = 1;
 			Retry.ResponseCode = ResponseCode;
 			EnqueuedRetries.Enqueue(Retry);
 		}
@@ -742,7 +742,7 @@ void UBeamBackend::ProcessCodeRequest(const int32& ResponseCode, const FString& 
 			// Enqueue a request to try again
 			FRequestToRetry Retry;
 			Retry.RequestId = RequestId;
-			Retry.IsBlueprint = 0;
+			Retry.IsBlueprintCompatible = 0;
 			Retry.ResponseCode = ResponseCode;
 			EnqueuedRetries.Enqueue(Retry);
 
@@ -916,7 +916,7 @@ void UBeamBackend::ProcessAuthenticatedCodeRequest(const int32& ResponseCode, co
 			Retry.RequestId = RequestId;
 			Retry.AuthToken = AuthToken;
 			Retry.RealmHandle = RealmHandle;
-			Retry.IsBlueprint = 0;
+			Retry.IsBlueprintCompatible = 0;
 			Retry.ResponseCode = ResponseCode;
 			EnqueuedRetries.Enqueue(Retry);
 

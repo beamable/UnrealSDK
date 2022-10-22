@@ -10,6 +10,9 @@
 #include "BeamCoreTypes.generated.h"
 
 
+/**
+ * @brief Semantic separation for strings representing each Beamable Request Type (each endpoint). 
+ */
 USTRUCT(BlueprintType)
 struct FRequestType
 {
@@ -81,19 +84,33 @@ struct FBeamConnectivity
 {
 	GENERATED_BODY()
 
+	/**
+	 * @brief Whether or not the last request was successful (true) or failed due to connectivity issues (false).
+	 */
 	UPROPERTY(BlueprintReadOnly)
 	bool IsConnected;
 
+	/**
+	 * @brief The time in ticks since the last successful request occurred.
+	 */
 	UPROPERTY(BlueprintReadOnly)
 	int64 LastTimeSinceSuccessfulRequest;
 };
 
+/**
+ * @brief Wraps around all Request UObjects that we codegen.
+ * Enables UBeamBackend to provide guarantees about the lifecycle of every request that goes out while maintaining BP compatibility and keeping compile times low. 
+ */
 UINTERFACE(MinimalAPI, Blueprintable)
 class UBeamBaseRequestInterface : public UInterface
 {
 	GENERATED_BODY()
 };
 
+/**
+ * @brief Wraps around all Request UObjects that we codegen.
+ * Enables UBeamBackend to provide guarantees about the lifecycle of every request that goes out while maintaining BP compatibility and keeping compile times low. 
+ */
 class IBeamBaseRequestInterface
 {
 	GENERATED_BODY()
@@ -112,32 +129,54 @@ public:
 	}
 };
 
+/**
+ * @brief Wraps around all Beamable Serializable types that we codegen and are used as responses.
+ * Enables UBeamBackend to provide guarantees about the lifecycle of every response that goes out while maintaining BP compatibility and keeping compile times low. 
+ */
+UINTERFACE(MinimalAPI, Blueprintable)
+class UBeamBaseResponseBodyInterface : public UInterface
+{
+	GENERATED_BODY()
+};
+
+/**
+ * @brief Wraps around all Beamable Serializable types that we codegen and are used as responses.
+ * Enables UBeamBackend to provide guarantees about the lifecycle of every response that goes out while maintaining BP compatibility and keeping compile times low. 
+ */
+class IBeamBaseResponseBodyInterface
+{
+	GENERATED_BODY()
+};
+
+/**
+ * @brief Maps to the response our server sends when a request fails. 
+ */
 USTRUCT(BlueprintType)
 struct FBeamErrorResponse
 {
 	GENERATED_BODY()
 
-	/// <summary>
-	/// The http status code
-	/// </summary>
+	/**
+	 * @brief The HTTP Status Code. 
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int64 status;
 
-	/// <summary>
-	/// The Beamable error code.
-	/// </summary>
+	/**
+	 * @brief Beamable's own Error Code.
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FString error;
 
-	/// <summary>
-	/// The Beamable service where the error originated
-	/// </summary>
+	/**
+	 * @brief The Beamable service where the error originated.
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FString service;
 
-	/// <summary>
-	/// A more detailed message about the error.
-	/// </summary>
+	/**
+	 * @brief A more detailed message about the error.
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FString message;
 };
@@ -151,7 +190,9 @@ enum EBeamFullResponseState
 	Retrying,
 };
 
-
+/**
+ * @brief Templated wrapper for use in code ONLY WHEN YOU NEED LAMBDAS. ALWAYS PREFER THE BP COMPATIBLE VERSIONS!  
+ */
 template <typename TRequestData, typename TResponseData>
 struct FBeamFullResponse
 {
@@ -207,19 +248,40 @@ template <typename TRequestData>
 using TBlueprintRequestCompleteHandler = TBaseDynamicDelegate<FWeakObjectPtr, void, TRequestData>;
 
 
+/**
+ * @brief Handle to an Enqueued Request that needs to be retried.
+ */
 struct FRequestToRetry
 {
+	/**
+	 * @brief The unique request id.
+	 */
 	FBeamRequestId RequestId = 0;
-	int IsBlueprint;
-	int ResponseCode;
 
+	/**
+	 * @brief Whether or not the request was made with a blueprint compatible handler. 
+	 */
+	int32 IsBlueprintCompatible;
+
+	/**
+	 * @brief The HTTP status code.
+	 */
+	int32 ResponseCode;
+
+	/**
+	 * @brief The realm the request was targeted to.
+	 */
 	FBeamRealmHandle RealmHandle;
+
+	/**
+	 * @brief The authentication token used in the request, if any.
+	 */
 	FBeamAuthToken AuthToken;
 
 	friend bool operator==(const FRequestToRetry& Lhs, const FRequestToRetry& RHS)
 	{
 		return Lhs.RequestId == RHS.RequestId
-			&& Lhs.IsBlueprint == RHS.IsBlueprint
+			&& Lhs.IsBlueprintCompatible == RHS.IsBlueprintCompatible
 			&& Lhs.ResponseCode == RHS.ResponseCode
 			&& Lhs.RealmHandle == RHS.RealmHandle
 			&& Lhs.AuthToken == RHS.AuthToken;
@@ -231,10 +293,23 @@ struct FRequestToRetry
 	}
 };
 
+/**
+ * @brief Data needed to decided when enough time has passed that we should retry again.
+ */
 struct FProcessingRequestRetry
 {
+	/**
+	 * @brief The handle defining which request we are processing.
+	 */
 	FRequestToRetry RequestToRetry;
 
+	/**
+	 * @brief How long (in seconds) should we wait before trying the request again.
+	 */
 	float TimeToWait;
+
+	/**
+	 * @brief How long (in seconds) have we waited for this retry.
+	 */
 	float AccumulatedTime;
 };
