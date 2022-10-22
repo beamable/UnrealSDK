@@ -9,15 +9,15 @@
 #include "UserSlotPin.h"
 #include "BeamCoreTypes.h"
 #include "GraphNodeBaseBeam.h"
+#include "BeamFlow/K2BeamNode_BeamFlow.h"
 #include "UserSlots/UserSlot.h"
-#include "WaitHandleNodes/K2BeamNode_WaitAll.h"
 
 struct BEAMABLECOREEDITOR_API FBeamableCoreGraphNodeFactory : public FGraphPanelNodeFactory
 {
 	virtual TSharedPtr<class SGraphNode> CreateNode(class UEdGraphNode* InNode) const override
 	{
-		if (InNode->GetClass()->HasMetaData("BeamFlow"))
-		{			
+		if (Cast<UK2BeamNode_BeamFlow>(InNode) || InNode->GetClass()->HasMetaData("BeamFlow"))
+		{
 			return SNew(SGraphNodeBaseBeam, InNode);
 		}
 
