@@ -4,7 +4,9 @@
 #include "GraphNodeBaseBeam.h"
 
 #include "BeamableCoreStyle.h"
+#include "K2Node_AddPinInterface.h"
 #include "K2Node_Timeline.h"
+#include "BeamFlow/K2BeamNode_BeamFlow.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "Kismet2/Breakpoint.h"
 #include "Kismet2/KismetDebugUtilities.h"
@@ -12,11 +14,62 @@
 
 void SGraphNodeBaseBeam::Construct(const FArguments& InArgs, UEdGraphNode* InNode)
 {
+	bImplementsAddPinInterface = InNode->GetClass()->ImplementsInterface(UK2Node_AddPinInterface::StaticClass());
 	this->GraphNode = InNode;
 
 	this->SetCursor(EMouseCursor::CardinalCross);
 
 	this->UpdateGraphNode();
+}
+
+inline void SGraphNodeBaseBeam::CreateOutputSideAddButton(TSharedPtr<SVerticalBox> OutputBox)
+{
+	if (!bImplementsAddPinInterface)
+		return;
+
+	TSharedRef<SWidget> AddPinButton = AddPinButtonContent(
+		NSLOCTEXT("SequencerNode", "SequencerNodeAddPinButton", "Add pin"),
+		NSLOCTEXT("SequencerNode", "SequencerNodeAddPinButton_ToolTip", "Add new pin"));
+
+	FMargin AddPinPadding = Settings->GetOutputPinPadding();
+	AddPinPadding.Top += 6.0f;
+
+	OutputBox->AddSlot()
+	         .AutoHeight()
+	         .VAlign(VAlign_Center)
+	         .HAlign(HAlign_Right)
+	         .Padding(AddPinPadding)
+	[
+		AddPinButton
+	];
+}
+
+FReply SGraphNodeBaseBeam::OnAddPin()
+{
+	if (!bImplementsAddPinInterface)
+		return FReply::Handled();
+
+	IK2Node_AddPinInterface* AddPinNode = Cast<IK2Node_AddPinInterface>(GraphNode);
+	ensure(AddPinNode);
+	if (AddPinNode && AddPinNode->CanAddPin())
+	{
+		FScopedTransaction Transaction(NSLOCTEXT("SequencerNode", "AddPinTransaction", "Add Pin"));
+
+		AddPinNode->AddInputPin();
+		UpdateGraphNode();
+		GraphNode->GetGraph()->NotifyGraphChanged();
+	}
+
+	return FReply::Handled();
+}
+
+EVisibility SGraphNodeBaseBeam::IsAddPinButtonVisible() const
+{
+	if (!bImplementsAddPinInterface) return EVisibility::Collapsed;
+
+	IK2Node_AddPinInterface* AddPinNode = Cast<IK2Node_AddPinInterface>(GraphNode);
+	ensure(AddPinNode);
+	return ((AddPinNode && AddPinNode->CanAddPin()) ? EVisibility::Visible : EVisibility::Collapsed);
 }
 
 void SGraphNodeBaseBeam::GetOverlayBrushes(bool bSelected, const FVector2D WidgetSize, TArray<FOverlayBrushInfo>& Brushes) const
@@ -106,7 +159,7 @@ void SGraphNodeBaseBeam::GetOverlayBrushes(bool bSelected, const FVector2D Widge
 	// Display an  icon depending on the type of node and it's settings
 	if (const UK2Node* K2Node = Cast<const UK2Node>(GraphNode))
 	{
-		if (K2Node->GetClass()->HasMetaData("BeamFlow"))
+		if (Cast<UK2BeamNode_BeamFlow>(K2Node) || K2Node->GetClass()->HasMetaData("BeamFlow"))
 		{
 			auto ClientIcon = K2Node->GetCornerIcon();
 			auto Brush = FBeamableCoreStyle::Get().GetBrush(ClientIcon);

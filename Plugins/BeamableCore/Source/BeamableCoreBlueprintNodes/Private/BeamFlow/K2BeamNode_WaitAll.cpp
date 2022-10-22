@@ -1,11 +1,11 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "WaitHandleNodes/K2BeamNode_WaitAll.h"
+#include "BeamFlow/K2BeamNode_WaitAll.h"
 
 
 #include "BeamK2.h"
-#include "ExecuteRequestNodes/BeamK2ExecuteRequest.h"
+#include "BeamFlow/ExecuteRequest/K2BeamNode_ApiRequest.h"
 
 #include "BlueprintNodeSpawner.h"
 #include "BlueprintActionDatabaseRegistrar.h"
@@ -17,7 +17,7 @@
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "Misc/DefaultValueHelper.h"
 
-#define LOCTEXT_NAMESPACE "K2Node_BeamAccount_GetMeRequest"
+#define LOCTEXT_NAMESPACE "K2BeamNode_WaitAll"
 
 
 using namespace BeamK2;
@@ -31,54 +31,14 @@ const FName UK2BeamNode_WaitAll::P_Requests = FName("Requests");
 const FName UK2BeamNode_WaitAll::P_Responses = FName("Responses");
 const FName UK2BeamNode_WaitAll::P_Errors = FName("Errors");
 
-bool UK2BeamNode_WaitAll::IsNodeSafeToIgnore() const
-{
-	return true;
-}
-
-
-bool UK2BeamNode_WaitAll::IsCompatibleWithGraph(const UEdGraph* Graph) const
-{
-	return IsMacroOrEventGraph(Graph) && Super::IsCompatibleWithGraph(Graph);
-}
-
-void UK2BeamNode_WaitAll::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const
-{
-	UClass* ActionKey = GetClass();
-	if (ActionRegistrar.IsOpenForRegistration(ActionKey))
-	{
-		UBlueprintNodeSpawner* NodeSpawner = UBlueprintNodeSpawner::Create(GetClass());
-		check(NodeSpawner != nullptr);
-
-		ActionRegistrar.AddBlueprintAction(ActionKey, NodeSpawner);
-	}
-}
-
 FText UK2BeamNode_WaitAll::GetMenuCategory() const
 {
-	return LOCTEXT("BeamNodeCategory", "Beam|API Utility Nodes");
+	return LOCTEXT("BeamNodeCategory", "Beam|Flow");
 }
 
 FText UK2BeamNode_WaitAll::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	return LOCTEXT("BeamNodeTitle", "Beam Backend - Wait All");
-}
-
-FSlateIcon UK2BeamNode_WaitAll::GetIconAndTint(FLinearColor& OutColor) const
-{
-	const auto Icon = Super::GetIconAndTint(OutColor);
-	OutColor = FLinearColor::FromSRGBColor(FColor::FromHex("#826CCF"));
-	return FSlateIcon(TEXT("BeamableCore"), "BeamIcon");
-}
-
-FLinearColor UK2BeamNode_WaitAll::GetNodeTitleColor() const
-{
-	return FLinearColor::FromSRGBColor(FColor::FromHex("#674CC5"));
-}
-
-FName UK2BeamNode_WaitAll::GetCornerIcon() const
-{
-	return FName("BeamIconSpaceship");
+	return LOCTEXT("BeamNodeTitle", "Flow - Utils - Wait All");
 }
 
 void UK2BeamNode_WaitAll::AllocateDefaultPins()
@@ -272,6 +232,7 @@ void UK2BeamNode_WaitAll::ExpandNode(FKismetCompilerContext& CompilerContext, UE
 void UK2BeamNode_WaitAll::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const
 {
 	Super::GetNodeContextMenuActions(Menu, Context);
+
 	if (!Context->bIsDebugging)
 	{
 		static auto WaitAllNodeName = FName("WaitAllNode");
@@ -279,23 +240,7 @@ void UK2BeamNode_WaitAll::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeC
 
 		FToolMenuSection& Section = Menu->AddSection(WaitAllNodeName, WaitAllNodeNameStr);
 
-		const FName MenuEntryName = !bIsInBeamFlowMode ? "EnterBeamFlowMode" : "ExitBeamFlowMode";
-		const FText MenuEntryLabel = !bIsInBeamFlowMode ? LOCTEXT("EnterBeamFlowMode", "Enter Beam Flow Mode") : LOCTEXT("ExitBeamFlowMode", "Exit Beam Flow Mode");
-		const FText MenuEntryTooltip = LOCTEXT("RemovePinTooltip", "Toggles Event Mode. Basically, decides whether you want a sequential flow or the ability to use create event.");
-
-		const FUIAction MenuAction = !bIsInBeamFlowMode
-			                             ? FUIAction(
-				                             FExecuteAction::CreateUObject(const_cast<UK2BeamNode_WaitAll*>(this),
-				                                                           &UK2BeamNode_WaitAll::EnterBeamFlowMode)
-			                             )
-			                             : FUIAction(
-				                             FExecuteAction::CreateUObject(const_cast<UK2BeamNode_WaitAll*>(this),
-				                                                           &UK2BeamNode_WaitAll::ExitBeamFlowMode)
-			                             );
-
-		Section.AddMenuEntry(MenuEntryName, MenuEntryLabel, MenuEntryTooltip, FSlateIcon(), MenuAction);
-
-		if (Context->Pin != NULL)
+		if (Context->Pin != nullptr)
 		{
 			if (CanRemovePin(Context->Pin))
 			{
@@ -325,40 +270,29 @@ void UK2BeamNode_WaitAll::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeC
 	}
 }
 
-void UK2BeamNode_WaitAll::ExitBeamFlowMode()
+void UK2BeamNode_WaitAll::CreateBeamFlowModePins()
 {
-	FScopedTransaction Transaction(LOCTEXT("ExitBeamFlowModeTx", "ExitBeamFlowMode"));
-	Modify();
+	FCreatePinParams PinParams;
+	PinParams.ContainerType = EPinContainerType::Array;
 
+	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, P_CompleteCallback);
+	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Struct, FBeamRequestContext::StaticStruct(), P_Contexts, PinParams);
+	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Interface, UBeamBaseRequestInterface::StaticClass(), P_Requests, PinParams);
+	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Object, UObject::StaticClass(), P_Responses, PinParams);
+	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Struct, FBeamErrorResponse::StaticStruct(), P_Errors, PinParams);
+}
+
+void UK2BeamNode_WaitAll::EnterBeamFlowModeImpl()
+{
+	RemoveAllPins(this, {P_CompleteCallback});
+	CreateBeamFlowModePins();
+}
+
+void UK2BeamNode_WaitAll::ExitBeamFlowModeImpl()
+{
 	const auto WaitAll = FindFunctionByName<UBeamBackend>(WaitAllFunctionName);
 	RemoveAllPins(this, {P_CompleteCallback, P_Contexts, P_Requests, P_Responses, P_Errors});
 	ParseFunctionForNodeInputPins(this, WaitAll, {P_CompleteCallback}, true);
-
-	bIsInBeamFlowMode = false;
-	FBlueprintEditorUtils::MarkBlueprintAsStructurallyModified(GetBlueprint());
-}
-
-void UK2BeamNode_WaitAll::CreateBeamFlowModePins()
-{
-	UEdGraphNode::FCreatePinParams PinParams;
-	PinParams.ContainerType = EPinContainerType::Array;
-	const auto OnCompletePin = CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, P_CompleteCallback);
-	const auto ContextsPin = CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Struct, FBeamRequestContext::StaticStruct(), P_Contexts, PinParams);
-	const auto RequestsPin = CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Interface, UBeamBaseRequestInterface::StaticClass(), P_Requests, PinParams);
-	const auto ResponsesPin = CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Object, UObject::StaticClass(), P_Responses, PinParams);
-	const auto ErrorsPin = CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Struct, FBeamErrorResponse::StaticStruct(), P_Errors, PinParams);
-}
-
-void UK2BeamNode_WaitAll::EnterBeamFlowMode()
-{
-	FScopedTransaction Transaction(LOCTEXT("EnterBeamFlowModeTx", "EnterBeamFlowMode"));
-	Modify();
-
-	RemoveAllPins(this, {P_CompleteCallback});
-	CreateBeamFlowModePins();
-
-	bIsInBeamFlowMode = true;
-	FBlueprintEditorUtils::MarkBlueprintAsStructurallyModified(GetBlueprint());
 }
 
 #undef LOCTEXT_NAMESPACE
