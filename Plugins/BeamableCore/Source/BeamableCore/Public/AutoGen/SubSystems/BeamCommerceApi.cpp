@@ -26,8 +26,8 @@ void UBeamCommerceApi::BP_GetSkusImpl(const FBeamRealmHandle& TargetRealm, const
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm, -1, FUserSlot(""), None};
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCommerceApi::CPP_GetSkusImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
@@ -42,8 +42,8 @@ void UBeamCommerceApi::CPP_GetSkusImpl(const FBeamRealmHandle& TargetRealm, cons
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -60,8 +60,8 @@ void UBeamCommerceApi::BP_GetCouponsCountImpl(const FBeamRealmHandle& TargetReal
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm, -1, FUserSlot(""), None};
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCommerceApi::CPP_GetCouponsCountImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
@@ -76,8 +76,8 @@ void UBeamCommerceApi::CPP_GetCouponsCountImpl(const FBeamRealmHandle& TargetRea
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 
@@ -94,8 +94,8 @@ void UBeamCommerceApi::BP_PostCatalogLegacyImpl(const FBeamRealmHandle& TargetRe
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCommerceApi::CPP_PostCatalogLegacyImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -110,8 +110,8 @@ void UBeamCommerceApi::CPP_PostCatalogLegacyImpl(const FBeamRealmHandle& TargetR
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -127,8 +127,8 @@ void UBeamCommerceApi::BP_GetCatalogImpl(const FBeamRealmHandle& TargetRealm, co
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCommerceApi::CPP_GetCatalogImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -143,8 +143,8 @@ void UBeamCommerceApi::CPP_GetCatalogImpl(const FBeamRealmHandle& TargetRealm, c
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -160,8 +160,8 @@ void UBeamCommerceApi::BP_PostSkusImpl(const FBeamRealmHandle& TargetRealm, cons
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCommerceApi::CPP_PostSkusImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -176,8 +176,8 @@ void UBeamCommerceApi::CPP_PostSkusImpl(const FBeamRealmHandle& TargetRealm, con
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -193,8 +193,8 @@ void UBeamCommerceApi::BP_GetCommerceImpl(const FBeamRealmHandle& TargetRealm, c
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCommerceApi::CPP_GetCommerceImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -209,8 +209,8 @@ void UBeamCommerceApi::CPP_GetCommerceImpl(const FBeamRealmHandle& TargetRealm, 
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -226,8 +226,8 @@ void UBeamCommerceApi::BP_PutListingsCooldownImpl(const FBeamRealmHandle& Target
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCommerceApi::CPP_PutListingsCooldownImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -242,8 +242,8 @@ void UBeamCommerceApi::CPP_PutListingsCooldownImpl(const FBeamRealmHandle& Targe
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -259,8 +259,8 @@ void UBeamCommerceApi::BP_GetOffersAdminImpl(const FBeamRealmHandle& TargetRealm
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCommerceApi::CPP_GetOffersAdminImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -275,8 +275,8 @@ void UBeamCommerceApi::CPP_GetOffersAdminImpl(const FBeamRealmHandle& TargetReal
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -292,8 +292,8 @@ void UBeamCommerceApi::BP_PostPurchaseImpl(const FBeamRealmHandle& TargetRealm, 
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCommerceApi::CPP_PostPurchaseImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -308,8 +308,8 @@ void UBeamCommerceApi::CPP_PostPurchaseImpl(const FBeamRealmHandle& TargetRealm,
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -325,8 +325,8 @@ void UBeamCommerceApi::BP_PutPurchaseImpl(const FBeamRealmHandle& TargetRealm, c
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCommerceApi::CPP_PutPurchaseImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -341,8 +341,8 @@ void UBeamCommerceApi::CPP_PutPurchaseImpl(const FBeamRealmHandle& TargetRealm, 
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -358,8 +358,8 @@ void UBeamCommerceApi::BP_GetListingsImpl(const FBeamRealmHandle& TargetRealm, c
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCommerceApi::CPP_GetListingsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -374,8 +374,8 @@ void UBeamCommerceApi::CPP_GetListingsImpl(const FBeamRealmHandle& TargetRealm, 
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -391,8 +391,8 @@ void UBeamCommerceApi::BP_DeleteStatusImpl(const FBeamRealmHandle& TargetRealm, 
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCommerceApi::CPP_DeleteStatusImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -407,8 +407,8 @@ void UBeamCommerceApi::CPP_DeleteStatusImpl(const FBeamRealmHandle& TargetRealm,
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -424,8 +424,8 @@ void UBeamCommerceApi::BP_PostCouponsImpl(const FBeamRealmHandle& TargetRealm, c
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCommerceApi::CPP_PostCouponsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -440,8 +440,8 @@ void UBeamCommerceApi::CPP_PostCouponsImpl(const FBeamRealmHandle& TargetRealm, 
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -457,8 +457,8 @@ void UBeamCommerceApi::BP_PostStatsUpdateImpl(const FBeamRealmHandle& TargetReal
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCommerceApi::CPP_PostStatsUpdateImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -473,8 +473,8 @@ void UBeamCommerceApi::CPP_PostStatsUpdateImpl(const FBeamRealmHandle& TargetRea
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -490,8 +490,8 @@ void UBeamCommerceApi::BP_GetOffersImpl(const FBeamRealmHandle& TargetRealm, con
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCommerceApi::CPP_GetOffersImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -506,8 +506,8 @@ void UBeamCommerceApi::CPP_GetOffersImpl(const FBeamRealmHandle& TargetRealm, co
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 

@@ -26,8 +26,8 @@ void UBeamCloudsavingApi::BP_GetCloudsavingImpl(const FBeamRealmHandle& TargetRe
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm, -1, FUserSlot(""), None};
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCloudsavingApi::CPP_GetCloudsavingImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
@@ -42,8 +42,8 @@ void UBeamCloudsavingApi::CPP_GetCloudsavingImpl(const FBeamRealmHandle& TargetR
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 
@@ -60,8 +60,8 @@ void UBeamCloudsavingApi::BP_PostDataReplaceImpl(const FBeamRealmHandle& TargetR
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCloudsavingApi::CPP_PostDataReplaceImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -76,8 +76,8 @@ void UBeamCloudsavingApi::CPP_PostDataReplaceImpl(const FBeamRealmHandle& Target
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -93,8 +93,8 @@ void UBeamCloudsavingApi::BP_DeleteDataImpl(const FBeamRealmHandle& TargetRealm,
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCloudsavingApi::CPP_DeleteDataImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -109,8 +109,8 @@ void UBeamCloudsavingApi::CPP_DeleteDataImpl(const FBeamRealmHandle& TargetRealm
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -126,8 +126,8 @@ void UBeamCloudsavingApi::BP_PostDataDownloadURLImpl(const FBeamRealmHandle& Tar
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCloudsavingApi::CPP_PostDataDownloadURLImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -142,8 +142,8 @@ void UBeamCloudsavingApi::CPP_PostDataDownloadURLImpl(const FBeamRealmHandle& Ta
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -159,8 +159,8 @@ void UBeamCloudsavingApi::BP_GetDataMetadataImpl(const FBeamRealmHandle& TargetR
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCloudsavingApi::CPP_GetDataMetadataImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -175,8 +175,8 @@ void UBeamCloudsavingApi::CPP_GetDataMetadataImpl(const FBeamRealmHandle& Target
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -192,8 +192,8 @@ void UBeamCloudsavingApi::BP_PostDataDownloadURLFromPortalImpl(const FBeamRealmH
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCloudsavingApi::CPP_PostDataDownloadURLFromPortalImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -208,8 +208,8 @@ void UBeamCloudsavingApi::CPP_PostDataDownloadURLFromPortalImpl(const FBeamRealm
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -225,8 +225,8 @@ void UBeamCloudsavingApi::BP_PutDataMoveImpl(const FBeamRealmHandle& TargetRealm
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCloudsavingApi::CPP_PutDataMoveImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -241,8 +241,8 @@ void UBeamCloudsavingApi::CPP_PutDataMoveImpl(const FBeamRealmHandle& TargetReal
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -258,8 +258,8 @@ void UBeamCloudsavingApi::BP_PutDataMoveFromPortalImpl(const FBeamRealmHandle& T
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCloudsavingApi::CPP_PutDataMoveFromPortalImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -274,8 +274,8 @@ void UBeamCloudsavingApi::CPP_PutDataMoveFromPortalImpl(const FBeamRealmHandle& 
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -291,8 +291,8 @@ void UBeamCloudsavingApi::BP_PostDataUploadURLFromPortalImpl(const FBeamRealmHan
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCloudsavingApi::CPP_PostDataUploadURLFromPortalImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -307,8 +307,8 @@ void UBeamCloudsavingApi::CPP_PostDataUploadURLFromPortalImpl(const FBeamRealmHa
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -324,8 +324,8 @@ void UBeamCloudsavingApi::BP_PutDataCommitManifestImpl(const FBeamRealmHandle& T
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCloudsavingApi::CPP_PutDataCommitManifestImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -340,8 +340,8 @@ void UBeamCloudsavingApi::CPP_PutDataCommitManifestImpl(const FBeamRealmHandle& 
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -357,8 +357,8 @@ void UBeamCloudsavingApi::BP_PostDataUploadURLImpl(const FBeamRealmHandle& Targe
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamCloudsavingApi::CPP_PostDataUploadURLImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -373,8 +373,8 @@ void UBeamCloudsavingApi::CPP_PostDataUploadURLImpl(const FBeamRealmHandle& Targ
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 

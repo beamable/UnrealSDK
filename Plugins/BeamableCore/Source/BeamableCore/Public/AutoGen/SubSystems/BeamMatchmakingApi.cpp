@@ -27,8 +27,8 @@ void UBeamMatchmakingApi::BP_PutTickImpl(const FBeamRealmHandle& TargetRealm, co
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamMatchmakingApi::CPP_PutTickImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -43,8 +43,8 @@ void UBeamMatchmakingApi::CPP_PutTickImpl(const FBeamRealmHandle& TargetRealm, c
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -60,8 +60,8 @@ void UBeamMatchmakingApi::BP_GetMatchImpl(const FBeamRealmHandle& TargetRealm, c
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamMatchmakingApi::CPP_GetMatchImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -76,8 +76,8 @@ void UBeamMatchmakingApi::CPP_GetMatchImpl(const FBeamRealmHandle& TargetRealm, 
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -93,8 +93,8 @@ void UBeamMatchmakingApi::BP_PostMatchImpl(const FBeamRealmHandle& TargetRealm, 
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamMatchmakingApi::CPP_PostMatchImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -109,8 +109,8 @@ void UBeamMatchmakingApi::CPP_PostMatchImpl(const FBeamRealmHandle& TargetRealm,
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -126,8 +126,8 @@ void UBeamMatchmakingApi::BP_DeleteMatchImpl(const FBeamRealmHandle& TargetRealm
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamMatchmakingApi::CPP_DeleteMatchImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -142,8 +142,8 @@ void UBeamMatchmakingApi::CPP_DeleteMatchImpl(const FBeamRealmHandle& TargetReal
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 

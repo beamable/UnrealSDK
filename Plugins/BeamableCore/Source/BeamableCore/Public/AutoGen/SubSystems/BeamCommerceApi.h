@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamBackend.h"
+#include "BeamBackend/BeamBackend.h"
 
 #include "Commerce/GetSkusRequest.h"
 #include "Commerce/GetCouponsCountRequest.h"

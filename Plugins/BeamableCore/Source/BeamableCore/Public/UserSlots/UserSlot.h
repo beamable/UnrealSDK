@@ -1,7 +1,10 @@
 ﻿#pragma once
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamAuthToken.h"
+#include "BeamBackend/BeamRealmHandle.h"
+
 
 #include "UserSlot.generated.h"
+
 
 /**
  * @brief Semantic separation for strings representing a Beamable User Slot.

@@ -26,8 +26,8 @@ void UBeamMailApi::BP_GetTemplateImpl(const FBeamRealmHandle& TargetRealm, const
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm, -1, FUserSlot(""), None};
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamMailApi::CPP_GetTemplateImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
@@ -42,8 +42,8 @@ void UBeamMailApi::CPP_GetTemplateImpl(const FBeamRealmHandle& TargetRealm, cons
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -60,8 +60,8 @@ void UBeamMailApi::BP_BasicMailGetMailImpl(const FBeamRealmHandle& TargetRealm, 
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm, -1, FUserSlot(""), None};
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamMailApi::CPP_BasicMailGetMailImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
@@ -76,8 +76,8 @@ void UBeamMailApi::CPP_BasicMailGetMailImpl(const FBeamRealmHandle& TargetRealm,
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -94,8 +94,8 @@ void UBeamMailApi::BP_GetDetailImpl(const FBeamRealmHandle& TargetRealm, const F
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm, -1, FUserSlot(""), None};
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamMailApi::CPP_GetDetailImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
@@ -110,8 +110,8 @@ void UBeamMailApi::CPP_GetDetailImpl(const FBeamRealmHandle& TargetRealm, const 
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -128,8 +128,8 @@ void UBeamMailApi::BP_GetCategoriesImpl(const FBeamRealmHandle& TargetRealm, con
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm, -1, FUserSlot(""), None};
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamMailApi::CPP_GetCategoriesImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
@@ -144,8 +144,8 @@ void UBeamMailApi::CPP_GetCategoriesImpl(const FBeamRealmHandle& TargetRealm, co
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -162,8 +162,8 @@ void UBeamMailApi::BP_PostSearchImpl(const FBeamRealmHandle& TargetRealm, const 
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm, -1, FUserSlot(""), None};
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamMailApi::CPP_PostSearchImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
@@ -178,8 +178,8 @@ void UBeamMailApi::CPP_PostSearchImpl(const FBeamRealmHandle& TargetRealm, const
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -196,8 +196,8 @@ void UBeamMailApi::BP_PutBulkImpl(const FBeamRealmHandle& TargetRealm, const FBe
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm, -1, FUserSlot(""), None};
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamMailApi::CPP_PutBulkImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
@@ -212,8 +212,8 @@ void UBeamMailApi::CPP_PutBulkImpl(const FBeamRealmHandle& TargetRealm, const FB
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -230,8 +230,8 @@ void UBeamMailApi::BP_PutAcceptManyImpl(const FBeamRealmHandle& TargetRealm, con
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm, -1, FUserSlot(""), None};
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamMailApi::CPP_PutAcceptManyImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
@@ -246,8 +246,8 @@ void UBeamMailApi::CPP_PutAcceptManyImpl(const FBeamRealmHandle& TargetRealm, co
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -264,8 +264,8 @@ void UBeamMailApi::BP_ObjectMailGetMailImpl(const FBeamRealmHandle& TargetRealm,
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm, -1, FUserSlot(""), None};
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamMailApi::CPP_ObjectMailGetMailImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
@@ -280,8 +280,8 @@ void UBeamMailApi::CPP_ObjectMailGetMailImpl(const FBeamRealmHandle& TargetRealm
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -298,8 +298,8 @@ void UBeamMailApi::BP_ObjectMailPutMailImpl(const FBeamRealmHandle& TargetRealm,
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig,TargetRealm, -1, FUserSlot(""), None};
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamMailApi::CPP_ObjectMailPutMailImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
@@ -314,8 +314,8 @@ void UBeamMailApi::CPP_ObjectMailPutMailImpl(const FBeamRealmHandle& TargetRealm
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 
@@ -332,8 +332,8 @@ void UBeamMailApi::BP_PutAttachmentsImpl(const FBeamRealmHandle& TargetRealm, co
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamMailApi::CPP_PutAttachmentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -348,8 +348,8 @@ void UBeamMailApi::CPP_PutAttachmentsImpl(const FBeamRealmHandle& TargetRealm, c
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -365,8 +365,8 @@ void UBeamMailApi::BP_BasicMailPutMailImpl(const FBeamRealmHandle& TargetRealm, 
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamMailApi::CPP_BasicMailPutMailImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -381,8 +381,8 @@ void UBeamMailApi::CPP_BasicMailPutMailImpl(const FBeamRealmHandle& TargetRealm,
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -398,8 +398,8 @@ void UBeamMailApi::BP_BasicMailPostBulkImpl(const FBeamRealmHandle& TargetRealm,
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamMailApi::CPP_BasicMailPostBulkImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -414,8 +414,8 @@ void UBeamMailApi::CPP_BasicMailPostBulkImpl(const FBeamRealmHandle& TargetRealm
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -431,8 +431,8 @@ void UBeamMailApi::BP_ObjectMailPostBulkImpl(const FBeamRealmHandle& TargetRealm
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamMailApi::CPP_ObjectMailPostBulkImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -447,8 +447,8 @@ void UBeamMailApi::CPP_ObjectMailPostBulkImpl(const FBeamRealmHandle& TargetReal
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 		
@@ -464,8 +464,8 @@ void UBeamMailApi::BP_PostMailImpl(const FBeamRealmHandle& TargetRealm, const FB
 	Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 void UBeamMailApi::CPP_PostMailImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -480,8 +480,8 @@ void UBeamMailApi::CPP_PostMailImpl(const FBeamRealmHandle& TargetRealm, const F
 	Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
-	const auto RequestContext = FBeamRequestContext{OutRequestId, RetryConfig, TargetRealm};
-	Backend->ExecuteRequestDelegate.ExecuteIfBound(RequestContext, ConnectivityStatus, OutRequestId);
+	
+	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
 }
 
 

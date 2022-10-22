@@ -5,12 +5,28 @@
 #include "EdGraphSchema_K2.h"
 #include "EdGraphUtilities.h"
 #include "SlateBasics.h"
-#include "SRequestTypePin.h"
-#include "SUserSlotPin.h"
+#include "RequestTypePin.h"
+#include "UserSlotPin.h"
 #include "BeamCoreTypes.h"
+#include "GraphNodeBaseBeam.h"
 #include "UserSlots/UserSlot.h"
+#include "WaitHandleNodes/K2BeamNode_WaitAll.h"
 
-class BEAMABLECOREEDITOR_API FCustomPinFactory : public FGraphPanelPinFactory
+struct BEAMABLECOREEDITOR_API FBeamableCoreGraphNodeFactory : public FGraphPanelNodeFactory
+{
+	virtual TSharedPtr<class SGraphNode> CreateNode(class UEdGraphNode* InNode) const override
+	{
+		if (InNode->GetClass()->HasMetaData("BeamFlow"))
+		{			
+			return SNew(SGraphNodeBaseBeam, InNode);
+		}
+
+		return nullptr;
+	}
+};
+
+
+struct BEAMABLECOREEDITOR_API FBeamableCorePinFactory : public FGraphPanelPinFactory
 {
 	virtual TSharedPtr<class SGraphPin> CreatePin(class UEdGraphPin* InPin) const override
 	{

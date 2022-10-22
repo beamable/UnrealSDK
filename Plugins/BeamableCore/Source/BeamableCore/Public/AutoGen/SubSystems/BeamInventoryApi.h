@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamBackend.h"
+#include "BeamBackend/BeamBackend.h"
 
 #include "Inventory/GetItemsRequest.h"
 #include "Inventory/GetCurrencyRequest.h"

@@ -6,6 +6,12 @@
 #include "UserSlot.h"
 #include "BeamUserSlots.generated.h"
 
+/**
+ * @brief Semantic separation for ints representing an active Beamable User Idx.
+ * These are never guaranteed to be the same across sessions.
+ */
+typedef int FBeamUserIdx;
+
 USTRUCT(BlueprintType)
 struct FUserSlotSerializedData
 {
@@ -63,7 +69,7 @@ class BEAMABLECORE_API UBeamUserSlots : public UEngineSubsystem
 	// Forward declaration of the Automated Testing class so we can make it a friend and make it easier to test internal state.
 	// Also, mock request types declared for Automated Testing purposes.
 	friend class FBeamUserSlotsSpec;
-	
+
 private:
 	/**
 	 * @brief List of all currently authenticated users paired with the realms they are authenticated with.
@@ -85,7 +91,7 @@ public:
 
 	/** Cleans up the system.  */
 	virtual void Deinitialize() override;
-	
+
 
 	/**
 	 * @brief Gets the file path for the serialized state of the given user slot.
@@ -127,7 +133,6 @@ public:
 	void ClearUserAtSlot(const FUserSlot& SlotId, const EUserSlotClearedReason& Reason = Manual, const bool& bShouldRemoveSavedData = false);
 
 
-	
 	/**
 	 * @brief Attempts to quickly authenticate a user with locally stored, serialized data.	  
 	 * @return True, if there was a user authenticated at that slot. False, if no serialized user slot file was found or if the file does not contain a refresh token.  

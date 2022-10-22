@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamBackend.h"
+#include "BeamBackend/BeamBackend.h"
 
 #include "Tournaments/PostSearchGroupsRequest.h"
 #include "Tournaments/BasicTournamentsGetTournamentsRequest.h"

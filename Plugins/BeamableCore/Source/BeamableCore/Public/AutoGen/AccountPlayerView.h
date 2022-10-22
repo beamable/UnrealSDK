@@ -8,7 +8,7 @@
 #include "AccountPlayerView.generated.h"
 
 UCLASS(BlueprintType)
-class UAccountPlayerView : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UAccountPlayerView : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 

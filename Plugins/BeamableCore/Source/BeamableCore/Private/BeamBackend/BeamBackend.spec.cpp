@@ -3,7 +3,7 @@
 #include "Engine/Engine.h"
 #include "Misc/AutomationTest.h"
 
-#include "BeamBackend.h"
+#include "BeamBackend/BeamBackend.h"
 #include "BeamBackendTestCallbacks.h"
 #include "JsonObjectConverter.h"
 #include "RawAPIs/BeamSharedTypes.h"
@@ -42,7 +42,7 @@ void FBeamBackendSpec::Define()
 			*BeamBackendSystem->InFlightRequestId = -1;
 			BeamBackendSystem->InFlightRequests.Reset();
 			BeamBackendSystem->InFlightFailureCount.Reset();
-			BeamBackendSystem->InFlightRetryConfigs.Reset();
+			BeamBackendSystem->InFlightRequestContexts.Reset();
 			BeamBackendSystem->InFlightRequestsCancelled.Reset();
 
 			// Clear all Enqueued Retries
@@ -69,7 +69,7 @@ void FBeamBackendSpec::Define()
 				TestTrue("Client ID Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_CLIENT_ID) == FakeRealmHandle.Cid);
 				TestTrue("Project ID Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_PROJECT_ID) == FakeRealmHandle.Pid);
 
-				const auto SetUpRetryConfig = BeamBackendSystem->InFlightRetryConfigs.FindRef(ReqId);
+				const auto SetUpRetryConfig = BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).RetryConfiguration;
 				TestTrue("InFlightRetryConfig was set up correctly for this request", SetUpRetryConfig == FakeNoRetryConfig);
 
 				TestTrue("VERB is Set Correctly = 'GET'", Request->GetVerb() == TEXT("GET"));
@@ -79,7 +79,7 @@ void FBeamBackendSpec::Define()
 				BeamBackendSystem->CancelRequest(ReqId);
 				TestTrue("ReqId no longer found in list of in flight requests", !BeamBackendSystem->InFlightRequests.Contains(ReqId));
 				TestTrue("ReqId no longer found in list of in flight processing requests", !BeamBackendSystem->InFlightProcessingRequests.Contains(ReqId));
-				TestTrue("ReqId no longer found in list of in flight retry configurations", !BeamBackendSystem->InFlightRetryConfigs.Contains(ReqId));
+				TestTrue("ReqId no longer found in list of in flight retry configurations", !BeamBackendSystem->InFlightRequestContexts.Contains(ReqId));
 				TestTrue("ReqId no longer found in list of in flight failure counts", !BeamBackendSystem->InFlightFailureCount.Contains(ReqId));
 				TestTrue("ReqId no longer found in list of cancelled in flight requests", !BeamBackendSystem->InFlightRequestsCancelled.Contains(ReqId));
 
@@ -102,7 +102,7 @@ void FBeamBackendSpec::Define()
 				TestTrue("Client ID Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_CLIENT_ID) == FakeRealmHandle.Cid);
 				TestTrue("Project ID Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_PROJECT_ID) == FakeRealmHandle.Pid);
 
-				const auto SetUpRetryConfig = BeamBackendSystem->InFlightRetryConfigs.FindRef(ReqId);
+				const auto SetUpRetryConfig = BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).RetryConfiguration;
 				TestEqual("InFlightRetryConfig was set up correctly for this request", SetUpRetryConfig, FakeNoRetryConfig);
 
 				TestTrue("VERB is Set Correctly = 'POST'", Request->GetVerb() == TEXT("POST"));
@@ -115,7 +115,7 @@ void FBeamBackendSpec::Define()
 				BeamBackendSystem->CancelRequest(ReqId);
 				TestTrue("ReqId no longer found in list of in flight requests", !BeamBackendSystem->InFlightRequests.Contains(ReqId));
 				TestTrue("ReqId no longer found in list of in flight processing requests", !BeamBackendSystem->InFlightProcessingRequests.Contains(ReqId));
-				TestTrue("ReqId no longer found in list of in flight retry configurations", !BeamBackendSystem->InFlightRetryConfigs.Contains(ReqId));
+				TestTrue("ReqId no longer found in list of in flight retry configurations", !BeamBackendSystem->InFlightRequestContexts.Contains(ReqId));
 				TestTrue("ReqId no longer found in list of in flight failure counts", !BeamBackendSystem->InFlightFailureCount.Contains(ReqId));
 				TestTrue("ReqId no longer found in list of cancelled in flight requests", !BeamBackendSystem->InFlightRequestsCancelled.Contains(ReqId));
 
@@ -144,7 +144,7 @@ void FBeamBackendSpec::Define()
 				TestTrue("Client ID Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_CLIENT_ID) == FakeRealmHandle.Cid);
 				TestTrue("Project ID Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_PROJECT_ID) == FakeRealmHandle.Pid);
 
-				const auto SetUpRetryConfig = BeamBackendSystem->InFlightRetryConfigs.FindRef(ReqId);
+				const auto SetUpRetryConfig = BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).RetryConfiguration;
 				TestTrue("InFlightRetryConfig was set up correctly for this request", SetUpRetryConfig == FakeNoRetryConfig);
 
 				TestTrue("VERB is Set Correctly = 'GET'", Request->GetVerb() == TEXT("GET"));
@@ -154,7 +154,7 @@ void FBeamBackendSpec::Define()
 				BeamBackendSystem->CancelRequest(ReqId);
 				TestTrue("ReqId no longer found in list of in flight requests", !BeamBackendSystem->InFlightRequests.Contains(ReqId));
 				TestTrue("ReqId no longer found in list of in flight processing requests", !BeamBackendSystem->InFlightProcessingRequests.Contains(ReqId));
-				TestTrue("ReqId no longer found in list of in flight retry configurations", !BeamBackendSystem->InFlightRetryConfigs.Contains(ReqId));
+				TestTrue("ReqId no longer found in list of in flight retry configurations", !BeamBackendSystem->InFlightRequestContexts.Contains(ReqId));
 				TestTrue("ReqId no longer found in list of in flight failure counts", !BeamBackendSystem->InFlightFailureCount.Contains(ReqId));
 				TestTrue("ReqId no longer found in list of cancelled in flight requests", !BeamBackendSystem->InFlightRequestsCancelled.Contains(ReqId));
 
@@ -182,7 +182,7 @@ void FBeamBackendSpec::Define()
 				TestTrue("Client ID Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_CLIENT_ID) == FakeRealmHandle.Cid);
 				TestTrue("Project ID Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_PROJECT_ID) == FakeRealmHandle.Pid);
 
-				const auto SetUpRetryConfig = BeamBackendSystem->InFlightRetryConfigs.FindRef(ReqId);
+				const auto SetUpRetryConfig = BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).RetryConfiguration;
 				TestEqual("InFlightRetryConfig was set up correctly for this request", SetUpRetryConfig, FakeNoRetryConfig);
 
 				TestTrue("VERB is Set Correctly = 'POST'", Request->GetVerb() == TEXT("POST"));
@@ -195,7 +195,7 @@ void FBeamBackendSpec::Define()
 				BeamBackendSystem->CancelRequest(ReqId);
 				TestTrue("ReqId no longer found in list of in flight requests", !BeamBackendSystem->InFlightRequests.Contains(ReqId));
 				TestTrue("ReqId no longer found in list of in flight processing requests", !BeamBackendSystem->InFlightProcessingRequests.Contains(ReqId));
-				TestTrue("ReqId no longer found in list of in flight retry configurations", !BeamBackendSystem->InFlightRetryConfigs.Contains(ReqId));
+				TestTrue("ReqId no longer found in list of in flight retry configurations", !BeamBackendSystem->InFlightRequestContexts.Contains(ReqId));
 				TestTrue("ReqId no longer found in list of in flight failure counts", !BeamBackendSystem->InFlightFailureCount.Contains(ReqId));
 				TestTrue("ReqId no longer found in list of cancelled in flight requests", !BeamBackendSystem->InFlightRequestsCancelled.Contains(ReqId));
 
@@ -208,15 +208,6 @@ void FBeamBackendSpec::Define()
 			UBeamMockGetRequest* FakeRequestData = NewObject<UBeamMockGetRequest>();
 			const int ExpectedFakeInt = 10;
 			const FString ResponseBody(FString::Format(TEXT("{\"fake_int\":{0}}"), {ExpectedFakeInt}));
-
-			auto AssertCleanup = [this](const int64& ReqId) -> void
-			{
-				TestFalse("Cleaned up InFlightRequest", BeamBackendSystem->InFlightRequests.Contains(ReqId));
-				TestFalse("Cleaned up InFlightRequest Retry Config", BeamBackendSystem->InFlightRetryConfigs.Contains(ReqId));
-				TestFalse("Cleaned up InFlightRequest Failure Count", BeamBackendSystem->InFlightFailureCount.Contains(ReqId));
-				TestFalse("Cleaned up InFlightRequest Retry Queue", BeamBackendSystem->InFlightProcessingRequests.Contains(ReqId));
-				TestFalse("Cleaned up InFlightRequest Retry Processing Queue", BeamBackendSystem->InFlightRequestsCancelled.Contains(ReqId));
-			};
 
 			// Un-Authenticated BP Handler
 			{
@@ -239,7 +230,7 @@ void FBeamBackendSpec::Define()
 				BeamBackendSystem->ProcessBlueprintRequest<UBeamMockGetRequest, UBeamMockGetRequestResponse>
 					(200, ResponseBody, TUnrealRequestStatus::Succeeded, ReqId, FakeRequestData, ResponseHandler, ResponseHandlerError, ResponseHandlerComplete);
 				TestTrue("Is Connected", BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
-				AssertCleanup(ReqId);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
 			}
 
 			// Authenticated BP Handler
@@ -263,7 +254,7 @@ void FBeamBackendSpec::Define()
 				BeamBackendSystem->ProcessAuthenticatedBlueprintRequest<UBeamMockGetRequest, UBeamMockGetRequestResponse>
 					(200, ResponseBody, TUnrealRequestStatus::Succeeded, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequestData, ResponseHandler, ResponseHandlerError, ResponseHandlerComplete);
 				TestTrue("Is Connected", BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
-				AssertCleanup(ReqId);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
 			}
 
 			// Un-Authenticated Code Handler 
@@ -285,7 +276,7 @@ void FBeamBackendSpec::Define()
 				// This should clean up the created request's data
 				BeamBackendSystem->ProcessCodeRequest<UBeamMockGetRequest, UBeamMockGetRequestResponse>(200, ResponseBody, TUnrealRequestStatus::Succeeded, ReqId, FakeRequestData, ResponseHandler);
 				TestTrue("Is Connected", BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
-				AssertCleanup(ReqId);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
 			}
 
 			// Authenticated Code Handler
@@ -309,7 +300,7 @@ void FBeamBackendSpec::Define()
 					<UBeamMockGetRequest, UBeamMockGetRequestResponse>
 					(200, ResponseBody, TUnrealRequestStatus::Succeeded, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequestData, ResponseHandler);
 				TestTrue("Is Connected", BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
-				AssertCleanup(ReqId);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
 			}
 
 			// Clean Up Fake Request Data
@@ -326,15 +317,6 @@ void FBeamBackendSpec::Define()
 			const FBeamErrorResponse Error = FBeamErrorResponse{500, TEXT("Internal Server Error"), TEXT("fake basic"), TEXT("Fake Error Message")};
 			FString ResponseBody;
 			FJsonObjectConverter::UStructToJsonObjectString(FBeamErrorResponse::StaticStruct(), &Error, ResponseBody);
-
-			auto AssertCleanup = [this](const int64& ReqId) -> void
-			{
-				TestFalse("Cleaned up InFlightRequest", BeamBackendSystem->InFlightRequests.Contains(ReqId));
-				TestFalse("Cleaned up InFlightRequest Retry Config", BeamBackendSystem->InFlightRetryConfigs.Contains(ReqId));
-				TestFalse("Cleaned up InFlightRequest Failure Count", BeamBackendSystem->InFlightFailureCount.Contains(ReqId));
-				TestFalse("Cleaned up InFlightRequest Retry Queue", BeamBackendSystem->InFlightProcessingRequests.Contains(ReqId));
-				TestFalse("Cleaned up InFlightRequest Retry Processing Queue", BeamBackendSystem->InFlightRequestsCancelled.Contains(ReqId));
-			};
 
 			// Un-Authenticated BP Handler
 			{
@@ -361,7 +343,7 @@ void FBeamBackendSpec::Define()
 				// This should clean up the created request's data
 				BeamBackendSystem->ProcessBlueprintRequest<UBeamMockGetRequest, UBeamMockGetRequestResponse>
 					(500, ResponseBody, TUnrealRequestStatus::Failed, ReqId, FakeRequest, ResponseHandler, ResponseHandlerError, ResponseHandlerComplete);
-				AssertCleanup(ReqId);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
 			}
 
 			// Authenticated BP Handler
@@ -388,7 +370,7 @@ void FBeamBackendSpec::Define()
 				// This should clean up the created request's data
 				BeamBackendSystem->ProcessAuthenticatedBlueprintRequest<UBeamMockGetRequest, UBeamMockGetRequestResponse>
 					(500, ResponseBody, TUnrealRequestStatus::Failed, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequest, ResponseHandler, ResponseHandlerError, ResponseHandlerComplete);
-				AssertCleanup(ReqId);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
 			}
 
 			// Un-Authenticated Code Handler 
@@ -412,7 +394,7 @@ void FBeamBackendSpec::Define()
 
 				// This should clean up the created request's data
 				BeamBackendSystem->ProcessCodeRequest(500, ResponseBody, TUnrealRequestStatus::Failed, ReqId, FakeRequest, ResponseHandler);
-				AssertCleanup(ReqId);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
 			}
 
 			// Authenticated Code Handler
@@ -436,7 +418,7 @@ void FBeamBackendSpec::Define()
 
 				// This should clean up the created request's data
 				BeamBackendSystem->ProcessAuthenticatedCodeRequest(500, ResponseBody, TUnrealRequestStatus::Failed, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequest, ResponseHandler);
-				AssertCleanup(ReqId);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
 			}
 
 			// Clean up Fake Request
@@ -630,15 +612,6 @@ void FBeamBackendSpec::Define()
 			FString ResponseBody;
 			FJsonObjectConverter::UStructToJsonObjectString(FBeamErrorResponse::StaticStruct(), &Error, ResponseBody);
 
-			auto AssertCleanup = [this](const int64& ReqId) -> void
-			{
-				TestFalse("Cleaned up InFlightRequest", BeamBackendSystem->InFlightRequests.Contains(ReqId));
-				TestFalse("Cleaned up InFlightRequest Retry Config", BeamBackendSystem->InFlightRetryConfigs.Contains(ReqId));
-				TestFalse("Cleaned up InFlightRequest Failure Count", BeamBackendSystem->InFlightFailureCount.Contains(ReqId));
-				TestFalse("Cleaned up InFlightRequest Retry Queue", BeamBackendSystem->InFlightProcessingRequests.Contains(ReqId));
-				TestFalse("Cleaned up InFlightRequest Retry Processing Queue", BeamBackendSystem->InFlightRequestsCancelled.Contains(ReqId));
-			};
-
 			// Un-Authenticated BP Handler
 			{
 				int64 ReqId;
@@ -666,7 +639,7 @@ void FBeamBackendSpec::Define()
 					(500, ResponseBody, TUnrealRequestStatus::Failed_ConnectionError, ReqId, FakeRequest, ResponseHandler, ResponseHandlerError, ResponseHandlerComplete);
 
 				TestTrue("Is No Longer Connected", !BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
-				AssertCleanup(ReqId);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
 			}
 
 			// Authenticated BP Handler
@@ -695,7 +668,7 @@ void FBeamBackendSpec::Define()
 				(500, ResponseBody, TUnrealRequestStatus::Failed_ConnectionError, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequest, ResponseHandler, ResponseHandlerError,
 				 ResponseHandlerComplete);
 				TestTrue("Is No Longer Connected", !BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
-				AssertCleanup(ReqId);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
 			}
 
 			// Un-Authenticated Code Handler 
@@ -720,7 +693,7 @@ void FBeamBackendSpec::Define()
 				// This should clean up the created request's data
 				BeamBackendSystem->ProcessCodeRequest(500, ResponseBody, TUnrealRequestStatus::Failed_ConnectionError, ReqId, FakeRequest, ResponseHandler);
 				TestTrue("Is No Longer Connected", !BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
-				AssertCleanup(ReqId);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
 			}
 
 			// Authenticated Code Handler
@@ -746,7 +719,7 @@ void FBeamBackendSpec::Define()
 				BeamBackendSystem->ProcessAuthenticatedCodeRequest(500, ResponseBody, TUnrealRequestStatus::Failed_ConnectionError, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequest,
 				                                                   ResponseHandler);
 				TestTrue("Is No Longer Connected", !BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
-				AssertCleanup(ReqId);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
 			}
 
 			FakeRequest->MarkAsGarbage();
@@ -888,6 +861,32 @@ void FBeamBackendSpec::Define()
 			// Test discarding unset data associated with InFlight Requests.
 			BeamBackendSystem->CancelRequest(ReqId);
 		});
+
+
+		It("should clean up requests tagged as completed", [=, this]()
+		{
+			UBeamMockGetRequest* FakeRequest = NewObject<UBeamMockGetRequest>();
+
+			// Authenticated Code Handler 
+			int64 ReqId;
+			const auto Request = BeamBackendSystem->CreateAuthenticatedRequest(ReqId, FakeRealmHandle, FakeSimpleRetryConfig, FakeAuthToken, FakeRequest);
+
+			// Pretend that the failure count was increased
+			BeamBackendSystem->InFlightFailureCount[ReqId] = 1;
+
+			const auto BeamRequestContext = BeamBackendSystem->InFlightRequestContexts.Find(ReqId);
+			BeamRequestContext->BeamStatus = Completed;
+			BeamBackendSystem->TickCleanUp(0);
+
+			TestFalse("In Flight Request was cleaned up", BeamBackendSystem->InFlightRequests.Contains(ReqId));
+			TestFalse("In Flight Request Context was cleaned up", BeamBackendSystem->InFlightRequestContexts.Contains(ReqId));
+			TestFalse("In Flight Failure Count Data was cleaned up", BeamBackendSystem->InFlightFailureCount.Contains(ReqId));
+			TestFalse("In Flight Req Id was removed from Cancelled List", BeamBackendSystem->InFlightRequestsCancelled.Contains(ReqId));
+			TestFalse("In Flight Request Data was cleaned up", BeamBackendSystem->InFlightRequestData.Contains(*BeamRequestContext));
+			TestFalse("In Flight Response Data was cleaned up", BeamBackendSystem->InFlightResponseBodyData.Contains(*BeamRequestContext));
+
+			FakeRequest->MarkAsGarbage();
+		});
 	});
 
 	Describe("Retry Configurations", [this]()
@@ -992,7 +991,7 @@ void FBeamBackendSpec::Define()
 			*BeamBackendSystem->InFlightRequestId = -1;
 			BeamBackendSystem->InFlightRequests.Reset();
 			BeamBackendSystem->InFlightFailureCount.Reset();
-			BeamBackendSystem->InFlightRetryConfigs.Reset();
+			BeamBackendSystem->InFlightRequestContexts.Reset();
 			BeamBackendSystem->InFlightRequestsCancelled.Reset();
 
 			// Clear all Enqueued Retries
@@ -1034,6 +1033,7 @@ void FBeamBackendSpec::Define()
 
 			FakeRequest->MarkAsGarbage();
 		});
+
 
 		TArray NonAuthRetryErrorCodes = UBeamBackend::NON_AUTH_REQUESTS_RETRY_ALLOWED_ERRORS;
 		TArray AuthRetryErrorCodes = UBeamBackend::AUTH_REQUESTS_RETRY_ALLOWED_ERRORS;

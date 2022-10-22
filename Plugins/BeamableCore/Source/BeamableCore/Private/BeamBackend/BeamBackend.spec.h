@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "BeamBackend.h"
+#include "BeamBackend/BeamBackend.h"
 class UBeamBackendTestCallbacks;
 
 BEGIN_DEFINE_SPEC(FBeamBackendSpec, "BeamableUnreal.BeamBackend", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
