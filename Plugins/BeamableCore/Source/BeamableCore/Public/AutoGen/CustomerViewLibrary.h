@@ -2,18 +2,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CustomerView.h"
+#include "AutoGen/CustomerView.h"
 
 #include "CustomerViewLibrary.generated.h"
 
 
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, Category="Beam")
 class BEAMABLECORE_API UCustomerViewLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Serialize CustomerView To JSON String")
-	static FString CustomerViewToJsonString(const UCustomerView* Serializable, const bool Pretty);		
+	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - CustomerView To JSON String")
+	static FString CustomerViewToJsonString(const UCustomerView* Serializable, const bool Pretty);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make CustomerView", meta=(DefaultToSelf="Outer", AdvancedDisplay="Alias, Outer", NativeMakeFunc))
+	static UCustomerView* Make(int64 Cid, FString Name, TArray<UProjectView*> Projects, FOptionalString Alias, UObject* Outer);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break CustomerView", meta=(NativeBreakFunc))
+	static void Break(const UCustomerView* Serializable, int64& Cid, FString& Name, TArray<UProjectView*>& Projects, FOptionalString& Alias);
 };

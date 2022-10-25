@@ -1,0 +1,38 @@
+
+#include "AutoGen/CurrencyContentResponseLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UCurrencyContentResponseLibrary::CurrencyContentResponseToJsonString(const UCurrencyContentResponse* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UCurrencyContentResponse* UCurrencyContentResponseLibrary::Make(TArray<UCurrencyArchetype*> Content, UObject* Outer)
+{
+	auto Serializable = NewObject<UCurrencyContentResponse>(Outer);
+	Serializable->Content = Content;
+	
+	return Serializable;
+}
+
+void UCurrencyContentResponseLibrary::Break(const UCurrencyContentResponse* Serializable, TArray<UCurrencyArchetype*>& Content)
+{
+	Content = Serializable->Content;
+		
+}
+

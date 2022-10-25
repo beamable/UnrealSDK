@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "LeaveRoomResponse.generated.h"
 
-UCLASS(BlueprintType)
-class ULeaveRoomResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API ULeaveRoomResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Removed")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Removed", Category="Beam")
 	FString Removed;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

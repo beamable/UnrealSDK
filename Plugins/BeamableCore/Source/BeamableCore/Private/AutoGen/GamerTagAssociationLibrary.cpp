@@ -1,0 +1,40 @@
+
+#include "AutoGen/GamerTagAssociationLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UGamerTagAssociationLibrary::GamerTagAssociationToJsonString(const UGamerTagAssociation* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UGamerTagAssociation* UGamerTagAssociationLibrary::Make(FString ProjectId, int64 GamerTag, UObject* Outer)
+{
+	auto Serializable = NewObject<UGamerTagAssociation>(Outer);
+	Serializable->ProjectId = ProjectId;
+	Serializable->GamerTag = GamerTag;
+	
+	return Serializable;
+}
+
+void UGamerTagAssociationLibrary::Break(const UGamerTagAssociation* Serializable, FString& ProjectId, int64& GamerTag)
+{
+	ProjectId = Serializable->ProjectId;
+	GamerTag = Serializable->GamerTag;
+		
+}
+

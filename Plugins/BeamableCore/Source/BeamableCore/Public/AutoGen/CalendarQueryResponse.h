@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/CalendarView.h"
 
 #include "CalendarQueryResponse.generated.h"
 
-UCLASS(BlueprintType)
-class UCalendarQueryResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UCalendarQueryResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Calendars")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Calendars", Category="Beam")
 	TArray<UCalendarView*> Calendars;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

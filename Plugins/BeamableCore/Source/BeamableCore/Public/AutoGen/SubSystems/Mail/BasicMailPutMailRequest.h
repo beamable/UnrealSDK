@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 #include "AutoGen/UpdateMailRequestBody.h"
 #include "AutoGen/MailSuccessResponse.h"
@@ -23,7 +26,7 @@ public:
 	
 
 	// Body Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
 	UUpdateMailRequestBody* Body;
 
 	// Beam Base Request Declaration
@@ -33,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_Body,_Expires,_Subject,_State,_Category,_bAcceptAttachments,Outer"))
-	static UBasicMailPutMailRequest* MakeBasicMailPutMailRequest(FOptionalString _Body, FOptionalString _Expires, FOptionalString _Subject, FOptionalString _State, int64 _MailId, FOptionalString _Category, FOptionalBool _bAcceptAttachments, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Mail", DisplayName="Beam - Make BasicMailPutMail",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_bAcceptAttachments,_Body,_Expires,_Subject,_State,_Category,Outer"))
+	static UBasicMailPutMailRequest* Make(int64 _MailId, FOptionalBool _bAcceptAttachments, FOptionalString _Body, FOptionalString _Expires, FOptionalString _Subject, FOptionalString _State, FOptionalString _Category, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

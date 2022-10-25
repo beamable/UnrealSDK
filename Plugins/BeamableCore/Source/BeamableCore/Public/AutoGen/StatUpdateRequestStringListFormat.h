@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalArrayOfStatStringListEntry.h"
 
 #include "StatUpdateRequestStringListFormat.generated.h"
 
-UCLASS(BlueprintType)
-class UStatUpdateRequestStringListFormat : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UStatUpdateRequestStringListFormat : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Set")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Set", Category="Beam")
 	FOptionalArrayOfStatStringListEntry Set;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

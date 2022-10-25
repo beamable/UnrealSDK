@@ -2,24 +2,25 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "LocalizedPrice.generated.h"
 
-UCLASS(BlueprintType)
-class ULocalizedPrice : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API ULocalizedPrice : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="To")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="To", Category="Beam")
 	int64 To;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Price")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Price", Category="Beam")
 	int64 Price;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Price Localized")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Price Localized", Category="Beam")
 	double PriceLocalized;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Price Localized String")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Price Localized String", Category="Beam")
 	FString PriceLocalizedString;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 #include "AutoGen/Optionals/OptionalInt32.h"
@@ -18,13 +21,13 @@ class BEAMABLECORE_API UGetDetailsRequest : public UObject, public IBeamBaseRequ
 public:
 
 	// Path Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
 	FString ObjectId;
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From", Category="Beam")
 	FOptionalInt32 From;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max", Category="Beam")
 	FOptionalInt32 Max;
 
 	// Body Params
@@ -37,8 +40,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_From,_Max,Outer"))
-	static UGetDetailsRequest* MakeGetDetailsRequest(FString _ObjectId, FOptionalInt32 _From, FOptionalInt32 _Max, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make GetDetails",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_From,_Max,Outer"))
+	static UGetDetailsRequest* Make(FString _ObjectId, FOptionalInt32 _From, FOptionalInt32 _Max, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

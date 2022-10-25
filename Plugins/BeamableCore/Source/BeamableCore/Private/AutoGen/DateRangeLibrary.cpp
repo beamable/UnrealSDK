@@ -1,0 +1,40 @@
+
+#include "AutoGen/DateRangeLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UDateRangeLibrary::DateRangeToJsonString(const UDateRange* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UDateRange* UDateRangeLibrary::Make(FString From, FString To, UObject* Outer)
+{
+	auto Serializable = NewObject<UDateRange>(Outer);
+	Serializable->From = From;
+	Serializable->To = To;
+	
+	return Serializable;
+}
+
+void UDateRangeLibrary::Break(const UDateRange* Serializable, FString& From, FString& To)
+{
+	From = Serializable->From;
+	To = Serializable->To;
+		
+}
+

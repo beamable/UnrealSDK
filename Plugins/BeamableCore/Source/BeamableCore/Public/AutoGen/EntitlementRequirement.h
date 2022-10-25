@@ -2,24 +2,25 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
 
 #include "EntitlementRequirement.generated.h"
 
-UCLASS(BlueprintType)
-class UEntitlementRequirement : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UEntitlementRequirement : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
 	FString Symbol;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Constraint")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Constraint", Category="Beam")
 	FString Constraint;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="State")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="State", Category="Beam")
 	FString State;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Specialization")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Specialization", Category="Beam")
 	FOptionalString Specialization;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

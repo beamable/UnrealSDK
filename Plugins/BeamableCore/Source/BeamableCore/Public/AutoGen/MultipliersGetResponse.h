@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/VipBonus.h"
 
 #include "MultipliersGetResponse.generated.h"
 
-UCLASS(BlueprintType)
-class UMultipliersGetResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UMultipliersGetResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Multipliers")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Multipliers", Category="Beam")
 	TArray<UVipBonus*> Multipliers;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

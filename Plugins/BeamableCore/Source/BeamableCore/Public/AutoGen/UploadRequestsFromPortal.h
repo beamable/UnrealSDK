@@ -2,21 +2,22 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/UploadRequestFromPortal.h"
 #include "AutoGen/Optionals/OptionalInt64.h"
 
 #include "UploadRequestsFromPortal.generated.h"
 
-UCLASS(BlueprintType)
-class UUploadRequestsFromPortal : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UUploadRequestsFromPortal : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Request")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Request", Category="Beam")
 	TArray<UUploadRequestFromPortal*> Request;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
 	FOptionalInt64 PlayerId;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

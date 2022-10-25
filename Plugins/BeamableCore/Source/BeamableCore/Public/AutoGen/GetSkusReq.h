@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalInt64.h"
 
 #include "GetSkusReq.generated.h"
 
-UCLASS(BlueprintType)
-class UGetSkusReq : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UGetSkusReq : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Version")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Version", Category="Beam")
 	FOptionalInt64 Version;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

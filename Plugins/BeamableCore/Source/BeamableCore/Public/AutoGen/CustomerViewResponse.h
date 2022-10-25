@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/CustomerView.h"
 
 #include "CustomerViewResponse.generated.h"
 
-UCLASS(BlueprintType)
-class UCustomerViewResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UCustomerViewResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Customer")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Customer", Category="Beam")
 	UCustomerView* Customer;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

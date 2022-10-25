@@ -1,0 +1,44 @@
+
+#include "AutoGen/StatsSearchRequestBodyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UStatsSearchRequestBodyLibrary::StatsSearchRequestBodyToJsonString(const UStatsSearchRequestBody* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UStatsSearchRequestBody* UStatsSearchRequestBodyLibrary::Make(FString Domain, FString Access, FString ObjectType, TArray<UStatsSearchCriteria*> Criteria, UObject* Outer)
+{
+	auto Serializable = NewObject<UStatsSearchRequestBody>(Outer);
+	Serializable->Domain = Domain;
+	Serializable->Access = Access;
+	Serializable->ObjectType = ObjectType;
+	Serializable->Criteria = Criteria;
+	
+	return Serializable;
+}
+
+void UStatsSearchRequestBodyLibrary::Break(const UStatsSearchRequestBody* Serializable, FString& Domain, FString& Access, FString& ObjectType, TArray<UStatsSearchCriteria*>& Criteria)
+{
+	Domain = Serializable->Domain;
+	Access = Serializable->Access;
+	ObjectType = Serializable->ObjectType;
+	Criteria = Serializable->Criteria;
+		
+}
+

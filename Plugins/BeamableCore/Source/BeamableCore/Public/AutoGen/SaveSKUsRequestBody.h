@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/SKU.h"
 
 #include "SaveSKUsRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class USaveSKUsRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API USaveSKUsRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Definitions")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Definitions", Category="Beam")
 	TArray<USKU*> Definitions;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

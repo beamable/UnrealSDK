@@ -2,34 +2,35 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/ItemCreateRequestBody.h"
 #include "AutoGen/CurrencyChange.h"
 
 #include "TrackPurchaseRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UTrackPurchaseRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UTrackPurchaseRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Price In Local Currency")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Price In Local Currency", Category="Beam")
 	double PriceInLocalCurrency;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sku Name")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sku Name", Category="Beam")
 	FString SkuName;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sku Product Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sku Product Id", Category="Beam")
 	FString SkuProductId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Store")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Store", Category="Beam")
 	FString Store;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain Items")
-	TArray<UItemCreateRequestBody*> ObtainItems;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain Currency")
-	TArray<UCurrencyChange*> ObtainCurrency;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Purchase Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Purchase Id", Category="Beam")
 	FString PurchaseId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Iso Currency Symbol")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Iso Currency Symbol", Category="Beam")
 	FString IsoCurrencySymbol;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain Items", Category="Beam")
+	TArray<UItemCreateRequestBody*> ObtainItems;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain Currency", Category="Beam")
+	TArray<UCurrencyChange*> ObtainCurrency;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

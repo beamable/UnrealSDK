@@ -1,0 +1,38 @@
+
+#include "AutoGen/GatewayLimitsLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UGatewayLimitsLibrary::GatewayLimitsToJsonString(const UGatewayLimits* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UGatewayLimits* UGatewayLimitsLibrary::Make(int32 MaxConcurrentRequests, UObject* Outer)
+{
+	auto Serializable = NewObject<UGatewayLimits>(Outer);
+	Serializable->MaxConcurrentRequests = MaxConcurrentRequests;
+	
+	return Serializable;
+}
+
+void UGatewayLimitsLibrary::Break(const UGatewayLimits* Serializable, int32& MaxConcurrentRequests)
+{
+	MaxConcurrentRequests = Serializable->MaxConcurrentRequests;
+		
+}
+

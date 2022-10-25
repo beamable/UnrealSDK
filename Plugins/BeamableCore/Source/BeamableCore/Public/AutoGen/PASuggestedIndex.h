@@ -2,26 +2,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "PASuggestedIndex.generated.h"
 
-UCLASS(BlueprintType)
-class UPASuggestedIndex : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UPASuggestedIndex : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Weight")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Weight", Category="Beam")
 	FString Weight;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Impact")
-	TArray<FString> Impact;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
 	FString Id;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Namespace")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Namespace", Category="Beam")
 	FString Namespace;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Index")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Impact", Category="Beam")
+	TArray<FString> Impact;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Index", Category="Beam")
 	TArray<FString> Index;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

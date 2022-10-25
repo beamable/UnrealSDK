@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/SendMailRequestBody.h"
 
 #include "BulkSendMailRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UBulkSendMailRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UBulkSendMailRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Send Mail Requests")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Send Mail Requests", Category="Beam")
 	TArray<USendMailRequestBody*> SendMailRequests;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

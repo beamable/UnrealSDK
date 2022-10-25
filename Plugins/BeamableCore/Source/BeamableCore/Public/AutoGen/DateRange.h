@@ -2,20 +2,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "DateRange.generated.h"
 
-UCLASS(BlueprintType)
-class UDateRange : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UDateRange : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From", Category="Beam")
 	FString From;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="To")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="To", Category="Beam")
 	FString To;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

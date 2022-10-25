@@ -2,18 +2,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PlayerOfferView.h"
+#include "AutoGen/PlayerOfferView.h"
 
 #include "PlayerOfferViewLibrary.generated.h"
 
 
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, Category="Beam")
 class BEAMABLECORE_API UPlayerOfferViewLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Serialize PlayerOfferView To JSON String")
-	static FString PlayerOfferViewToJsonString(const UPlayerOfferView* Serializable, const bool Pretty);		
+	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - PlayerOfferView To JSON String")
+	static FString PlayerOfferViewToJsonString(const UPlayerOfferView* Serializable, const bool Pretty);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make PlayerOfferView", meta=(DefaultToSelf="Outer", AdvancedDisplay="ButtonText, Outer", NativeMakeFunc))
+	static UPlayerOfferView* Make(int32 Coupons, UPrice* Price, FString Symbol, TArray<FString> Titles, TArray<UItemCreateRequestBody*> ObtainItems, TArray<UCurrencyChange*> ObtainCurrency, TArray<FString> Images, TArray<FString> Descriptions, TArray<FString> Obtain, FOptionalString ButtonText, UObject* Outer);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break PlayerOfferView", meta=(NativeBreakFunc))
+	static void Break(const UPlayerOfferView* Serializable, int32& Coupons, UPrice*& Price, FString& Symbol, TArray<FString>& Titles, TArray<UItemCreateRequestBody*>& ObtainItems, TArray<UCurrencyChange*>& ObtainCurrency, TArray<FString>& Images, TArray<FString>& Descriptions, TArray<FString>& Obtain, FOptionalString& ButtonText);
 };

@@ -2,28 +2,29 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
 #include "AutoGen/EventRewardState.h"
 
 #include "EventPlayerGroupState.generated.h"
 
-UCLASS(BlueprintType)
-class UEventPlayerGroupState : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UEventPlayerGroupState : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Group Score")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Group Score", Category="Beam")
 	double GroupScore;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Group Id")
-	FOptionalString GroupId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rank Rewards")
-	TArray<UEventRewardState*> RankRewards;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Group Rank")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Group Rank", Category="Beam")
 	int64 GroupRank;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Score Rewards")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rank Rewards", Category="Beam")
+	TArray<UEventRewardState*> RankRewards;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Score Rewards", Category="Beam")
 	TArray<UEventRewardState*> ScoreRewards;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Group Id", Category="Beam")
+	FOptionalString GroupId;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

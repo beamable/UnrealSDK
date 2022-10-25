@@ -1,0 +1,42 @@
+
+#include "AutoGen/LeaderboardCohortLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString ULeaderboardCohortLibrary::LeaderboardCohortToJsonString(const ULeaderboardCohort* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+ULeaderboardCohort* ULeaderboardCohortLibrary::Make(FString Id, TArray<UPlayerStatRequirement*> StatRequirements, FOptionalString Description, UObject* Outer)
+{
+	auto Serializable = NewObject<ULeaderboardCohort>(Outer);
+	Serializable->Id = Id;
+	Serializable->StatRequirements = StatRequirements;
+	Serializable->Description = Description;
+	
+	return Serializable;
+}
+
+void ULeaderboardCohortLibrary::Break(const ULeaderboardCohort* Serializable, FString& Id, TArray<UPlayerStatRequirement*>& StatRequirements, FOptionalString& Description)
+{
+	Id = Serializable->Id;
+	StatRequirements = Serializable->StatRequirements;
+	Description = Serializable->Description;
+		
+}
+

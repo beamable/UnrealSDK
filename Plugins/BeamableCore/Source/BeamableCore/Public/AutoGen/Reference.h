@@ -2,13 +2,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "Reference.generated.h"
 
-UCLASS(BlueprintType)
-class UReference : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UReference : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 

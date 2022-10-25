@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "MailQueryResponse.generated.h"
 
-UCLASS(BlueprintType)
-class UMailQueryResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UMailQueryResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Unread Count")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Unread Count", Category="Beam")
 	int64 UnreadCount;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

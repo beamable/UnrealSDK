@@ -1,0 +1,40 @@
+
+#include "AutoGen/EmailUpdateConfirmationLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UEmailUpdateConfirmationLibrary::EmailUpdateConfirmationToJsonString(const UEmailUpdateConfirmation* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UEmailUpdateConfirmation* UEmailUpdateConfirmationLibrary::Make(FString Code, FString Password, UObject* Outer)
+{
+	auto Serializable = NewObject<UEmailUpdateConfirmation>(Outer);
+	Serializable->Code = Code;
+	Serializable->Password = Password;
+	
+	return Serializable;
+}
+
+void UEmailUpdateConfirmationLibrary::Break(const UEmailUpdateConfirmation* Serializable, FString& Code, FString& Password)
+{
+	Code = Serializable->Code;
+	Password = Serializable->Password;
+		
+}
+

@@ -2,20 +2,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "BeamoLimits.generated.h"
 
-UCLASS(BlueprintType)
-class UBeamoLimits : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UBeamoLimits : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Container Size")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Container Size", Category="Beam")
 	FString MaxContainerSize;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Running Containers Per Service")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Running Containers Per Service", Category="Beam")
 	int32 MaxRunningContainersPerService;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

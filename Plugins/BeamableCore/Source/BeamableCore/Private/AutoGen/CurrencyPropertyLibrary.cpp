@@ -1,0 +1,40 @@
+
+#include "AutoGen/CurrencyPropertyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UCurrencyPropertyLibrary::CurrencyPropertyToJsonString(const UCurrencyProperty* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UCurrencyProperty* UCurrencyPropertyLibrary::Make(FString Name, FString Value, UObject* Outer)
+{
+	auto Serializable = NewObject<UCurrencyProperty>(Outer);
+	Serializable->Name = Name;
+	Serializable->Value = Value;
+	
+	return Serializable;
+}
+
+void UCurrencyPropertyLibrary::Break(const UCurrencyProperty* Serializable, FString& Name, FString& Value)
+{
+	Name = Serializable->Name;
+	Value = Serializable->Value;
+		
+}
+

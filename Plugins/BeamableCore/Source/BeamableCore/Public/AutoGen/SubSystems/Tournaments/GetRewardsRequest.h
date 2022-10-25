@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 #include "AutoGen/Optionals/OptionalString.h"
 #include "AutoGen/RewardsResponse.h"
@@ -20,9 +23,9 @@ public:
 	
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id", Category="Beam")
 	FOptionalString TournamentId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id", Category="Beam")
 	FOptionalString ContentId;
 
 	// Body Params
@@ -35,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_TournamentId,_ContentId,Outer"))
-	static UGetRewardsRequest* MakeGetRewardsRequest(FOptionalString _TournamentId, FOptionalString _ContentId, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", DisplayName="Beam - Make GetRewards",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_TournamentId,_ContentId,Outer"))
+	static UGetRewardsRequest* Make(FOptionalString _TournamentId, FOptionalString _ContentId, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

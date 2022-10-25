@@ -7,10 +7,11 @@
 #include "SlateBasics.h"
 #include "RequestTypePin.h"
 #include "UserSlotPin.h"
-#include "BeamCoreTypes.h"
 #include "GraphNodeBaseBeam.h"
 #include "BeamFlow/K2BeamNode_BeamFlow.h"
+
 #include "UserSlots/UserSlot.h"
+#include "BeamBackend/RequestType.h"
 
 struct BEAMABLECOREEDITOR_API FBeamableCoreGraphNodeFactory : public FGraphPanelNodeFactory
 {

@@ -137,7 +137,7 @@ public:
 	 * @brief Attempts to quickly authenticate a user with locally stored, serialized data.	  
 	 * @return True, if there was a user authenticated at that slot. False, if no serialized user slot file was found or if the file does not contain a refresh token.  
 	 */
-	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="SlotId"))
+	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="SlotId", ExpandBoolAsExecs="ReturnValue"))
 	bool TryLoadSavedUserAtSlot(const FUserSlot& SlotId);
 
 	/**

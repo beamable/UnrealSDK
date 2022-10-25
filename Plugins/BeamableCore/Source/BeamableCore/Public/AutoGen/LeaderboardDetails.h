@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalOrderRules.h"
 #include "AutoGen/Optionals/OptionalMetadataView.h"
@@ -9,24 +10,24 @@
 
 #include "LeaderboardDetails.generated.h"
 
-UCLASS(BlueprintType)
-class ULeaderboardDetails : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API ULeaderboardDetails : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Lbid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Lbid", Category="Beam")
 	FString Lbid;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Orules")
-	FOptionalOrderRules Orules;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Number Of Entries")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Number Of Entries", Category="Beam")
 	int32 NumberOfEntries;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Full Name")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Full Name", Category="Beam")
 	FString FullName;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Meta Data")
-	FOptionalMetadataView MetaData;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="View")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="View", Category="Beam")
 	ULeaderBoardView* View;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Orules", Category="Beam")
+	FOptionalOrderRules Orules;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Meta Data", Category="Beam")
+	FOptionalMetadataView MetaData;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

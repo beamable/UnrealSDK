@@ -2,33 +2,34 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
 #include "AutoGen/Optionals/OptionalInt64.h"
 
 #include "GroupUpdate.generated.h"
 
-UCLASS(BlueprintType)
-class UGroupUpdate : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UGroupUpdate : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
 	FOptionalString Name;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Enrollment Type")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Enrollment Type", Category="Beam")
 	FOptionalString EnrollmentType;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tag")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tag", Category="Beam")
 	FOptionalString Tag;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Slogan")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Slogan", Category="Beam")
 	FOptionalString Slogan;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Requirement")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Requirement", Category="Beam")
 	FOptionalInt64 Requirement;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Motd")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Motd", Category="Beam")
 	FOptionalString Motd;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Client Data")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Client Data", Category="Beam")
 	FOptionalString ClientData;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sub Group")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sub Group", Category="Beam")
 	FOptionalInt64 SubGroup;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

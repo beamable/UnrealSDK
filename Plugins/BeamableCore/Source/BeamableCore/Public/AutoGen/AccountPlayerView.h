@@ -2,29 +2,30 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
 
 #include "AccountPlayerView.generated.h"
 
-UCLASS(BlueprintType)
-class BEAMABLECORE_API UAccountPlayerView : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UAccountPlayerView : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Email")
-	FOptionalString Email;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Device Ids")
-	TArray<FString> DeviceIds;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scopes")
-	TArray<FString> Scopes;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
 	int64 Id;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Language")
-	FOptionalString Language;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Third Party App Associations")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Device Ids", Category="Beam")
+	TArray<FString> DeviceIds;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scopes", Category="Beam")
+	TArray<FString> Scopes;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Third Party App Associations", Category="Beam")
 	TArray<FString> ThirdPartyAppAssociations;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Email", Category="Beam")
+	FOptionalString Email;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Language", Category="Beam")
+	FOptionalString Language;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

@@ -2,22 +2,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "AliasAvailableResponse.generated.h"
 
-UCLASS(BlueprintType)
-class UAliasAvailableResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UAliasAvailableResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Alias")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Alias", Category="Beam")
 	FString Alias;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Available")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Available", Category="Beam")
 	bool bAvailable;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid", Category="Beam")
 	int64 Cid;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

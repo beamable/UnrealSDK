@@ -1,0 +1,42 @@
+
+#include "AutoGen/PlayerStatusUpdateLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UPlayerStatusUpdateLibrary::PlayerStatusUpdateToJsonString(const UPlayerStatusUpdate* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UPlayerStatusUpdate* UPlayerStatusUpdateLibrary::Make(FOptionalInt32 Tier, FOptionalInt32 Stage, FOptionalDouble Score, UObject* Outer)
+{
+	auto Serializable = NewObject<UPlayerStatusUpdate>(Outer);
+	Serializable->Tier = Tier;
+	Serializable->Stage = Stage;
+	Serializable->Score = Score;
+	
+	return Serializable;
+}
+
+void UPlayerStatusUpdateLibrary::Break(const UPlayerStatusUpdate* Serializable, FOptionalInt32& Tier, FOptionalInt32& Stage, FOptionalDouble& Score)
+{
+	Tier = Serializable->Tier;
+	Stage = Serializable->Stage;
+	Score = Serializable->Score;
+		
+}
+

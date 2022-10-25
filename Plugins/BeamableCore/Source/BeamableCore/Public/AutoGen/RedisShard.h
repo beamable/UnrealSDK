@@ -2,22 +2,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "RedisShard.generated.h"
 
-UCLASS(BlueprintType)
-class URedisShard : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API URedisShard : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Shard Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Shard Id", Category="Beam")
 	int32 ShardId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Master Host")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Master Host", Category="Beam")
 	FString MasterHost;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Slave Hosts")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Slave Hosts", Category="Beam")
 	TArray<FString> SlaveHosts;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

@@ -1,0 +1,40 @@
+
+#include "AutoGen/SaveCatalogRequestBodyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString USaveCatalogRequestBodyLibrary::SaveCatalogRequestBodyToJsonString(const USaveCatalogRequestBody* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+USaveCatalogRequestBody* USaveCatalogRequestBodyLibrary::Make(TArray<UStore*> Stores, TArray<UOfferDefinition*> OfferDefinitions, UObject* Outer)
+{
+	auto Serializable = NewObject<USaveCatalogRequestBody>(Outer);
+	Serializable->Stores = Stores;
+	Serializable->OfferDefinitions = OfferDefinitions;
+	
+	return Serializable;
+}
+
+void USaveCatalogRequestBodyLibrary::Break(const USaveCatalogRequestBody* Serializable, TArray<UStore*>& Stores, TArray<UOfferDefinition*>& OfferDefinitions)
+{
+	Stores = Serializable->Stores;
+	OfferDefinitions = Serializable->OfferDefinitions;
+		
+}
+

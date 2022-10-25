@@ -1,0 +1,40 @@
+
+#include "AutoGen/EventRewardObtainLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UEventRewardObtainLibrary::EventRewardObtainToJsonString(const UEventRewardObtain* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UEventRewardObtain* UEventRewardObtainLibrary::Make(FString Symbol, int32 Count, UObject* Outer)
+{
+	auto Serializable = NewObject<UEventRewardObtain>(Outer);
+	Serializable->Symbol = Symbol;
+	Serializable->Count = Count;
+	
+	return Serializable;
+}
+
+void UEventRewardObtainLibrary::Break(const UEventRewardObtain* Serializable, FString& Symbol, int32& Count)
+{
+	Symbol = Serializable->Symbol;
+	Count = Serializable->Count;
+		
+}
+

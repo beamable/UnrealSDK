@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 #include "AutoGen/AnnouncementDto.h"
 #include "AutoGen/EmptyResponse.h"
@@ -23,7 +26,7 @@ public:
 	
 
 	// Body Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
 	UAnnouncementDto* Body;
 
 	// Beam Base Request Declaration
@@ -33,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_StartDate,_Tags,_Gift,_StatRequirements,_ClientData,_EndDate,_Attachments,Outer"))
-	static UPostAnnouncementsRequest* MakePostAnnouncementsRequest(ULocalizationRef* _Body, FString _Channel, FOptionalString _StartDate, FOptionalArrayOfString _Tags, FOptionalPlayerReward _Gift, FOptionalArrayOfPlayerStatRequirement _StatRequirements, FString _Symbol, FOptionalMapOfString _ClientData, FOptionalString _EndDate, ULocalizationRef* _Title, FOptionalArrayOfAnnouncementAttachment _Attachments, ULocalizationRef* _Summary, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Announcements", DisplayName="Beam - Make PostAnnouncements",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_StartDate,_Gift,_EndDate,_Tags,_StatRequirements,_Attachments,_ClientData,Outer"))
+	static UPostAnnouncementsRequest* Make(ULocalizationRef* _Body, FString _Channel, FString _Symbol, ULocalizationRef* _Title, ULocalizationRef* _Summary, FOptionalString _StartDate, FOptionalPlayerReward _Gift, FOptionalString _EndDate, FOptionalArrayOfString _Tags, FOptionalArrayOfPlayerStatRequirement _StatRequirements, FOptionalArrayOfAnnouncementAttachment _Attachments, FOptionalMapOfString _ClientData, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

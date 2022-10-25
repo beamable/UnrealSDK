@@ -1,0 +1,38 @@
+
+#include "AutoGen/NewGameRequestBodyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UNewGameRequestBodyLibrary::NewGameRequestBodyToJsonString(const UNewGameRequestBody* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UNewGameRequestBody* UNewGameRequestBodyLibrary::Make(FString GameName, UObject* Outer)
+{
+	auto Serializable = NewObject<UNewGameRequestBody>(Outer);
+	Serializable->GameName = GameName;
+	
+	return Serializable;
+}
+
+void UNewGameRequestBodyLibrary::Break(const UNewGameRequestBody* Serializable, FString& GameName)
+{
+	GameName = Serializable->GameName;
+		
+}
+

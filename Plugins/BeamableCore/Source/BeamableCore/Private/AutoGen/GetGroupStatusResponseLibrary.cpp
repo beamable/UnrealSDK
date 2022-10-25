@@ -1,0 +1,38 @@
+
+#include "AutoGen/GetGroupStatusResponseLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UGetGroupStatusResponseLibrary::GetGroupStatusResponseToJsonString(const UGetGroupStatusResponse* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UGetGroupStatusResponse* UGetGroupStatusResponseLibrary::Make(TArray<UGroupStatus*> Statuses, UObject* Outer)
+{
+	auto Serializable = NewObject<UGetGroupStatusResponse>(Outer);
+	Serializable->Statuses = Statuses;
+	
+	return Serializable;
+}
+
+void UGetGroupStatusResponseLibrary::Break(const UGetGroupStatusResponse* Serializable, TArray<UGroupStatus*>& Statuses)
+{
+	Statuses = Serializable->Statuses;
+		
+}
+

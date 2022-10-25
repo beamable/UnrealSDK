@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 
@@ -21,9 +24,9 @@ public:
 	
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Template Name")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Template Name", Category="Beam")
 	FString TemplateName;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag", Category="Beam")
 	int64 GamerTag;
 
 	// Body Params
@@ -36,8 +39,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UGetTemplateRequest* MakeGetTemplateRequest(FString _TemplateName, int64 _GamerTag, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Mail", DisplayName="Beam - Make GetTemplate",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
+	static UGetTemplateRequest* Make(FString _TemplateName, int64 _GamerTag, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

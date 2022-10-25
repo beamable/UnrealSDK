@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 #include "AutoGen/Optionals/OptionalInt32.h"
@@ -22,15 +25,15 @@ public:
 	
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id", Category="Beam")
 	FString TournamentId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max", Category="Beam")
 	FOptionalInt32 Max;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Focus")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Focus", Category="Beam")
 	FOptionalInt64 Focus;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cycle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cycle", Category="Beam")
 	FOptionalInt32 Cycle;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From", Category="Beam")
 	FOptionalInt32 From;
 
 	// Body Params
@@ -43,8 +46,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_Max,_Focus,_Cycle,_From,Outer"))
-	static UGetStandingsGroupRequest* MakeGetStandingsGroupRequest(FString _TournamentId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalInt32 _Cycle, FOptionalInt32 _From, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", DisplayName="Beam - Make GetStandingsGroup",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Max,_Focus,_Cycle,_From,Outer"))
+	static UGetStandingsGroupRequest* Make(FString _TournamentId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalInt32 _Cycle, FOptionalInt32 _From, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

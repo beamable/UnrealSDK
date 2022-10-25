@@ -1,0 +1,42 @@
+
+#include "AutoGen/BatchReadStatsRequestBodyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UBatchReadStatsRequestBodyLibrary::BatchReadStatsRequestBodyToJsonString(const UBatchReadStatsRequestBody* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UBatchReadStatsRequestBody* UBatchReadStatsRequestBodyLibrary::Make(FString ObjectIds, FOptionalString Stats, FOptionalString Format, UObject* Outer)
+{
+	auto Serializable = NewObject<UBatchReadStatsRequestBody>(Outer);
+	Serializable->ObjectIds = ObjectIds;
+	Serializable->Stats = Stats;
+	Serializable->Format = Format;
+	
+	return Serializable;
+}
+
+void UBatchReadStatsRequestBodyLibrary::Break(const UBatchReadStatsRequestBody* Serializable, FString& ObjectIds, FOptionalString& Stats, FOptionalString& Format)
+{
+	ObjectIds = Serializable->ObjectIds;
+	Stats = Serializable->Stats;
+	Format = Serializable->Format;
+		
+}
+

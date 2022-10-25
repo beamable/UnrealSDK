@@ -2,14 +2,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 #include "AutoGen/Optionals/OptionalString.h"
 #include "AutoGen/Optionals/OptionalInt64.h"
 #include "AutoGen/Optionals/OptionalBool.h"
 #include "AutoGen/Optionals/OptionalInt32.h"
-
+#include "AutoGen/Enums/GroupType.h"
 #include "AutoGen/GroupSearchResponse.h"
 
 #include "ObjectGroupUsersGetSearchRequest.generated.h"
@@ -22,33 +25,33 @@ class BEAMABLECORE_API UObjectGroupUsersGetSearchRequest : public UObject, publi
 public:
 
 	// Path Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
 	int64 ObjectId;
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
 	FOptionalString Name;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Score Min")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Score Min", Category="Beam")
 	FOptionalInt64 ScoreMin;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sort Field")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sort Field", Category="Beam")
 	FOptionalString SortField;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="User Score")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="User Score", Category="Beam")
 	FOptionalInt64 UserScore;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Has Slots")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Has Slots", Category="Beam")
 	FOptionalBool bHasSlots;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Enrollment Types")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Enrollment Types", Category="Beam")
 	FOptionalString EnrollmentTypes;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Offset")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Offset", Category="Beam")
 	FOptionalInt32 Offset;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Score Max")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Score Max", Category="Beam")
 	FOptionalInt64 ScoreMax;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sub Group")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sub Group", Category="Beam")
 	FOptionalBool bSubGroup;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sort Value")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sort Value", Category="Beam")
 	FOptionalInt32 SortValue;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type")
-	TMap<FString, FString> Type;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
+	EGroupType Type;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit", Category="Beam")
 	FOptionalInt32 Limit;
 
 	// Body Params
@@ -61,8 +64,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_Name,_ScoreMin,_SortField,_UserScore,_bHasSlots,_EnrollmentTypes,_Offset,_ScoreMax,_bSubGroup,_SortValue,_Limit,Outer"))
-	static UObjectGroupUsersGetSearchRequest* MakeObjectGroupUsersGetSearchRequest(int64 _ObjectId, FOptionalString _Name, FOptionalInt64 _ScoreMin, FOptionalString _SortField, FOptionalInt64 _UserScore, FOptionalBool _bHasSlots, FOptionalString _EnrollmentTypes, FOptionalInt32 _Offset, FOptionalInt64 _ScoreMax, FOptionalBool _bSubGroup, FOptionalInt32 _SortValue, TMap<FString, FString> _Type, FOptionalInt32 _Limit, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", DisplayName="Beam - Make ObjectGroupUsersGetSearch",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Name,_ScoreMin,_SortField,_UserScore,_bHasSlots,_EnrollmentTypes,_Offset,_ScoreMax,_bSubGroup,_SortValue,_Limit,Outer"))
+	static UObjectGroupUsersGetSearchRequest* Make(int64 _ObjectId, FOptionalString _Name, FOptionalInt64 _ScoreMin, FOptionalString _SortField, FOptionalInt64 _UserScore, FOptionalBool _bHasSlots, FOptionalString _EnrollmentTypes, FOptionalInt32 _Offset, FOptionalInt64 _ScoreMax, FOptionalBool _bSubGroup, FOptionalInt32 _SortValue, EGroupType _Type, FOptionalInt32 _Limit, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

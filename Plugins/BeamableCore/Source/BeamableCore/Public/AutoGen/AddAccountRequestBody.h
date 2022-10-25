@@ -2,20 +2,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
 
 #include "AddAccountRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UAddAccountRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UAddAccountRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Email")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Email", Category="Beam")
 	FString Email;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Role")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Role", Category="Beam")
 	FOptionalString Role;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

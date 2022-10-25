@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 #include "AutoGen/LeaderBoardViewResponse.h"
@@ -17,11 +20,11 @@ class BEAMABLECORE_API UGetRanksRequest : public UObject, public IBeamBaseReques
 public:
 
 	// Path Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
 	FString ObjectId;
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Ids")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Ids", Category="Beam")
 	FString Ids;
 
 	// Body Params
@@ -34,8 +37,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UGetRanksRequest* MakeGetRanksRequest(FString _ObjectId, FString _Ids, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make GetRanks",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
+	static UGetRanksRequest* Make(FString _ObjectId, FString _Ids, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

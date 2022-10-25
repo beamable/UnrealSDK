@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBackend.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
 #include "Serialization/BeamJsonUtils.h"
 
 #include "BeamBackendTestCallbacks.generated.h"

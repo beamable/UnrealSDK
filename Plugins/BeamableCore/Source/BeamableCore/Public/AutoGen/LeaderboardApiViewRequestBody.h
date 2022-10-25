@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalInt32.h"
 #include "AutoGen/Optionals/OptionalInt64.h"
@@ -9,24 +10,24 @@
 
 #include "LeaderboardApiViewRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class ULeaderboardApiViewRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API ULeaderboardApiViewRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max")
-	FOptionalInt32 Max;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Focus")
-	FOptionalInt64 Focus;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Friends")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Friends", Category="Beam")
 	FOptionalBool bFriends;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From")
-	FOptionalInt32 From;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Outlier")
-	FOptionalInt64 Outlier;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Guild")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Guild", Category="Beam")
 	FOptionalBool bGuild;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max", Category="Beam")
+	FOptionalInt32 Max;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Focus", Category="Beam")
+	FOptionalInt64 Focus;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From", Category="Beam")
+	FOptionalInt32 From;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Outlier", Category="Beam")
+	FOptionalInt64 Outlier;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

@@ -1,10 +1,8 @@
 ﻿#include "BeamK2.h"
 
-#include "BeamCoreTypes.h"
 #include "BlueprintEditor.h"
 #include "K2Node_CallFunction.h"
 #include "K2Node_MakeArray.h"
-#include "BeamBackend/BeamBackend.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 
 #define BEAM_K2_LOG_VERBOSITY Verbose

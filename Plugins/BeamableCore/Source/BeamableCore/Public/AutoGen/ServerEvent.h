@@ -2,23 +2,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
 
 #include "ServerEvent.generated.h"
 
-UCLASS(BlueprintType)
-class UServerEvent : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UServerEvent : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Event")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Event", Category="Beam")
 	FString Event;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Payload")
-	FOptionalString Payload;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B To All")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B To All", Category="Beam")
 	bool bToAll;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Payload", Category="Beam")
+	FOptionalString Payload;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

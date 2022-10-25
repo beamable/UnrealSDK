@@ -2,18 +2,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FriendshipStatus.h"
+#include "AutoGen/FriendshipStatus.h"
 
 #include "FriendshipStatusLibrary.generated.h"
 
 
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, Category="Beam")
 class BEAMABLECORE_API UFriendshipStatusLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Serialize FriendshipStatus To JSON String")
-	static FString FriendshipStatusToJsonString(const UFriendshipStatus* Serializable, const bool Pretty);		
+	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - FriendshipStatus To JSON String")
+	static FString FriendshipStatusToJsonString(const UFriendshipStatus* Serializable, const bool Pretty);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make FriendshipStatus", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	static UFriendshipStatus* Make(bool bIsBlocked, FString FriendId, FString PlayerId, UObject* Outer);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break FriendshipStatus", meta=(NativeBreakFunc))
+	static void Break(const UFriendshipStatus* Serializable, bool& bIsBlocked, FString& FriendId, FString& PlayerId);
 };

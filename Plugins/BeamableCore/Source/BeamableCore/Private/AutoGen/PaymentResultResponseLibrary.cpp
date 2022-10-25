@@ -1,0 +1,38 @@
+
+#include "AutoGen/PaymentResultResponseLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UPaymentResultResponseLibrary::PaymentResultResponseToJsonString(const UPaymentResultResponse* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UPaymentResultResponse* UPaymentResultResponseLibrary::Make(FString Result, UObject* Outer)
+{
+	auto Serializable = NewObject<UPaymentResultResponse>(Outer);
+	Serializable->Result = Result;
+	
+	return Serializable;
+}
+
+void UPaymentResultResponseLibrary::Break(const UPaymentResultResponse* Serializable, FString& Result)
+{
+	Result = Serializable->Result;
+		
+}
+

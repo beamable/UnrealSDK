@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
 #include "AutoGen/Optionals/OptionalInt64.h"
@@ -10,33 +11,33 @@
 
 #include "Customer.generated.h"
 
-UCLASS(BlueprintType)
-class UCustomer : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UCustomer : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
 	FString Name;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Payment Status")
-	FOptionalString PaymentStatus;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Image")
-	FOptionalString Image;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Contact")
-	FOptionalString Contact;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Alias")
-	FOptionalString Alias;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid", Category="Beam")
 	int64 Cid;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Updated")
-	FOptionalInt64 Updated;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Crm Link")
-	FOptionalString CrmLink;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Projects")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Projects", Category="Beam")
 	TArray<UProject*> Projects;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Accounts")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Accounts", Category="Beam")
 	TArray<URealmsBasicAccount*> Accounts;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Payment Status", Category="Beam")
+	FOptionalString PaymentStatus;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Image", Category="Beam")
+	FOptionalString Image;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Contact", Category="Beam")
+	FOptionalString Contact;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Alias", Category="Beam")
+	FOptionalString Alias;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Updated", Category="Beam")
+	FOptionalInt64 Updated;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Crm Link", Category="Beam")
+	FOptionalString CrmLink;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
 	FOptionalInt64 Created;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

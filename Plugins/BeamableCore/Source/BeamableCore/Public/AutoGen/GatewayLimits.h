@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "GatewayLimits.generated.h"
 
-UCLASS(BlueprintType)
-class UGatewayLimits : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UGatewayLimits : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Concurrent Requests")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Concurrent Requests", Category="Beam")
 	int32 MaxConcurrentRequests;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

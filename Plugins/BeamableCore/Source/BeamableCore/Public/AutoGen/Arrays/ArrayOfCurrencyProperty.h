@@ -7,12 +7,12 @@
 
 #include "ArrayOfCurrencyProperty.generated.h"
 		
-USTRUCT(BlueprintType)
-struct FArrayOfCurrencyProperty : public FBeamArray
+USTRUCT(BlueprintType, Category="Beam|Wrappers|Arrays")
+struct BEAMABLECORE_API FArrayOfCurrencyProperty : public FBeamArray
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	TArray<UCurrencyProperty*> Values;
 
 	FArrayOfCurrencyProperty();

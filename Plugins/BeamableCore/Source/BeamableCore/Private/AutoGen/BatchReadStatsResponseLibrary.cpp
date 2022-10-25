@@ -1,0 +1,38 @@
+
+#include "AutoGen/BatchReadStatsResponseLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UBatchReadStatsResponseLibrary::BatchReadStatsResponseToJsonString(const UBatchReadStatsResponse* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UBatchReadStatsResponse* UBatchReadStatsResponseLibrary::Make(TArray<UNetworkSerializable*> Results, UObject* Outer)
+{
+	auto Serializable = NewObject<UBatchReadStatsResponse>(Outer);
+	Serializable->Results = Results;
+	
+	return Serializable;
+}
+
+void UBatchReadStatsResponseLibrary::Break(const UBatchReadStatsResponse* Serializable, TArray<UNetworkSerializable*>& Results)
+{
+	Results = Serializable->Results;
+		
+}
+

@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/PlayerStatus.h"
 
 #include "GetPlayerStatusResponse.generated.h"
 
-UCLASS(BlueprintType)
-class UGetPlayerStatusResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UGetPlayerStatusResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Statuses")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Statuses", Category="Beam")
 	TArray<UPlayerStatus*> Statuses;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

@@ -2,20 +2,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/FacebookUpdatedEntry.h"
 
 #include "FacebookPaymentUpdateRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UFacebookPaymentUpdateRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UFacebookPaymentUpdateRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object", Category="Beam")
 	FString Object;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Entry")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Entry", Category="Beam")
 	TArray<UFacebookUpdatedEntry*> Entry;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

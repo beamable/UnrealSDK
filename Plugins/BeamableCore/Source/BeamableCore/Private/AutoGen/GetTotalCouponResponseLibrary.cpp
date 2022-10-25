@@ -1,0 +1,38 @@
+
+#include "AutoGen/GetTotalCouponResponseLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UGetTotalCouponResponseLibrary::GetTotalCouponResponseToJsonString(const UGetTotalCouponResponse* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UGetTotalCouponResponse* UGetTotalCouponResponseLibrary::Make(int64 Count, UObject* Outer)
+{
+	auto Serializable = NewObject<UGetTotalCouponResponse>(Outer);
+	Serializable->Count = Count;
+	
+	return Serializable;
+}
+
+void UGetTotalCouponResponseLibrary::Break(const UGetTotalCouponResponse* Serializable, int64& Count)
+{
+	Count = Serializable->Count;
+		
+}
+

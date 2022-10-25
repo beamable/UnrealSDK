@@ -1,0 +1,42 @@
+
+#include "AutoGen/TransferRequestBodyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UTransferRequestBodyLibrary::TransferRequestBodyToJsonString(const UTransferRequestBody* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UTransferRequestBody* UTransferRequestBodyLibrary::Make(int64 RecipientPlayer, FOptionalString Transaction, FOptionalMapOfInt64 Currencies, UObject* Outer)
+{
+	auto Serializable = NewObject<UTransferRequestBody>(Outer);
+	Serializable->RecipientPlayer = RecipientPlayer;
+	Serializable->Transaction = Transaction;
+	Serializable->Currencies = Currencies;
+	
+	return Serializable;
+}
+
+void UTransferRequestBodyLibrary::Break(const UTransferRequestBody* Serializable, int64& RecipientPlayer, FOptionalString& Transaction, FOptionalMapOfInt64& Currencies)
+{
+	RecipientPlayer = Serializable->RecipientPlayer;
+	Transaction = Serializable->Transaction;
+	Currencies = Serializable->Currencies;
+		
+}
+

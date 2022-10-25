@@ -16,7 +16,7 @@ struct FUserSlot
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	FString Name;
 
 	explicit FUserSlot();
@@ -34,13 +34,13 @@ struct FUserSlot
 
 FORCEINLINE uint32 GetTypeHash(const FUserSlot& UserSlot) { return GetTypeHash(UserSlot.Name); }
 
-USTRUCT(BlueprintType)
+USTRUCT(BlueprintType, Category="Beam")
 struct FBeamRealmUser
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
 	FBeamRealmHandle RealmHandle;
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
 	FBeamAuthToken AuthToken;
 };

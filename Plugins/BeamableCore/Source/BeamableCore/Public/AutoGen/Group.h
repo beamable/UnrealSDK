@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalArrayOfInFlightMessage.h"
 #include "AutoGen/Optionals/OptionalArrayOfDonationRequestBody.h"
@@ -15,64 +16,64 @@
 
 #include "Group.generated.h"
 
-UCLASS(BlueprintType)
-class UGroup : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UGroup : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="In Flight")
-	FOptionalArrayOfInFlightMessage InFlight;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name")
-	FString Name;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Enrollment Type")
-	FString EnrollmentType;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Donations")
-	FOptionalArrayOfDonationRequestBody Donations;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Free Slots")
-	int32 FreeSlots;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Maybe Donations")
-	FOptionalMapOfDonationRequestBody MaybeDonations;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tag")
-	FOptionalString Tag;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Can Update MOTD")
-	FOptionalBool bCanUpdateMOTD;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Shard")
-	FOptionalString Shard;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Can Update Slogan")
-	FOptionalBool bCanUpdateSlogan;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Leader")
-	int64 Leader;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Slogan")
-	FString Slogan;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Requirement")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Requirement", Category="Beam")
 	int64 Requirement;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Motd")
-	FString Motd;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Version")
-	FOptionalInt32 Version;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id")
-	int64 Id;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Client Data")
-	FOptionalString ClientData;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Roles")
-	FOptionalArrayOfGroupRole Roles;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scores")
-	TMap<FString, FString> Scores;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Can Update Enrollment")
-	FOptionalBool bCanUpdateEnrollment;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Members")
-	TArray<UMember*> Members;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Can Disband")
-	FOptionalBool bCanDisband;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type")
-	EGroupType Type;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Size")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Size", Category="Beam")
 	int32 MaxSize;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sub Groups")
-	TArray<UGroup*> SubGroups;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
+	EGroupType Type;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
+	int64 Id;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Motd", Category="Beam")
+	FString Motd;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Slogan", Category="Beam")
+	FString Slogan;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Leader", Category="Beam")
+	int64 Leader;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
 	int64 Created;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
+	FString Name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Enrollment Type", Category="Beam")
+	FString EnrollmentType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Free Slots", Category="Beam")
+	int32 FreeSlots;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sub Groups", Category="Beam")
+	TArray<UGroup*> SubGroups;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Members", Category="Beam")
+	TArray<UMember*> Members;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scores", Category="Beam")
+	TMap<FString, FString> Scores;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Can Disband", Category="Beam")
+	FOptionalBool bCanDisband;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Can Update Enrollment", Category="Beam")
+	FOptionalBool bCanUpdateEnrollment;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Can Update MOTD", Category="Beam")
+	FOptionalBool bCanUpdateMOTD;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Can Update Slogan", Category="Beam")
+	FOptionalBool bCanUpdateSlogan;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Shard", Category="Beam")
+	FOptionalString Shard;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Client Data", Category="Beam")
+	FOptionalString ClientData;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Version", Category="Beam")
+	FOptionalInt32 Version;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tag", Category="Beam")
+	FOptionalString Tag;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Donations", Category="Beam")
+	FOptionalArrayOfDonationRequestBody Donations;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Roles", Category="Beam")
+	FOptionalArrayOfGroupRole Roles;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="In Flight", Category="Beam")
+	FOptionalArrayOfInFlightMessage InFlight;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Maybe Donations", Category="Beam")
+	FOptionalMapOfDonationRequestBody MaybeDonations;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

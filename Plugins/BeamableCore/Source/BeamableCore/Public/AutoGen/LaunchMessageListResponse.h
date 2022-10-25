@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "LaunchMessageListResponse.generated.h"
 
-UCLASS(BlueprintType)
-class ULaunchMessageListResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API ULaunchMessageListResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Files")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Files", Category="Beam")
 	TArray<FString> Files;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

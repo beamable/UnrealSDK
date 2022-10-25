@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 #include "AutoGen/GroupCreate.h"
@@ -18,14 +21,14 @@ class BEAMABLECORE_API UPostGroupRequest : public UObject, public IBeamBaseReque
 public:
 
 	// Path Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
 	int64 ObjectId;
 	
 	// Query Params
 	
 
 	// Body Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
 	UGroupCreate* Body;
 
 	// Beam Base Request Declaration
@@ -35,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_Tag,_ClientData,_Scores,_Time,_Group,Outer"))
-	static UPostGroupRequest* MakePostGroupRequest(int64 _ObjectId, FString _Name, FString _EnrollmentType, FOptionalString _Tag, int64 _Requirement, FOptionalString _ClientData, FOptionalArrayOfGroupScoreBinding _Scores, FOptionalInt32 _Time, EGroupType _Type, int32 _MaxSize, FOptionalInt64 _Group, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", DisplayName="Beam - Make PostGroup",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Tag,_ClientData,_Time,_Group,_Scores,Outer"))
+	static UPostGroupRequest* Make(int64 _ObjectId, FString _Name, FString _EnrollmentType, int64 _Requirement, EGroupType _Type, int32 _MaxSize, FOptionalString _Tag, FOptionalString _ClientData, FOptionalInt32 _Time, FOptionalInt64 _Group, FOptionalArrayOfGroupScoreBinding _Scores, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -1,0 +1,44 @@
+
+#include "AutoGen/SocialLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString USocialLibrary::SocialToJsonString(const USocial* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+USocial* USocialLibrary::Make(FString PlayerId, TArray<UFriend*> Friends, TArray<UPlayerId*> Blocked, TArray<UInvite*> Invites, UObject* Outer)
+{
+	auto Serializable = NewObject<USocial>(Outer);
+	Serializable->PlayerId = PlayerId;
+	Serializable->Friends = Friends;
+	Serializable->Blocked = Blocked;
+	Serializable->Invites = Invites;
+	
+	return Serializable;
+}
+
+void USocialLibrary::Break(const USocial* Serializable, FString& PlayerId, TArray<UFriend*>& Friends, TArray<UPlayerId*>& Blocked, TArray<UInvite*>& Invites)
+{
+	PlayerId = Serializable->PlayerId;
+	Friends = Serializable->Friends;
+	Blocked = Serializable->Blocked;
+	Invites = Serializable->Invites;
+		
+}
+

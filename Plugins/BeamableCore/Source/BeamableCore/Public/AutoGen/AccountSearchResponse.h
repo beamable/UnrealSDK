@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/AccountsBasicAccount.h"
 
 #include "AccountSearchResponse.generated.h"
 
-UCLASS(BlueprintType)
-class UAccountSearchResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UAccountSearchResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Accounts")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Accounts", Category="Beam")
 	TArray<UAccountsBasicAccount*> Accounts;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

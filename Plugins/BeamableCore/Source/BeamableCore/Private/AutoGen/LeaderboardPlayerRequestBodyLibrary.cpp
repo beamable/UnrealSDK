@@ -1,0 +1,38 @@
+
+#include "AutoGen/LeaderboardPlayerRequestBodyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString ULeaderboardPlayerRequestBodyLibrary::LeaderboardPlayerRequestBodyToJsonString(const ULeaderboardPlayerRequestBody* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+ULeaderboardPlayerRequestBody* ULeaderboardPlayerRequestBodyLibrary::Make(int64 Dbid, UObject* Outer)
+{
+	auto Serializable = NewObject<ULeaderboardPlayerRequestBody>(Outer);
+	Serializable->Dbid = Dbid;
+	
+	return Serializable;
+}
+
+void ULeaderboardPlayerRequestBodyLibrary::Break(const ULeaderboardPlayerRequestBody* Serializable, int64& Dbid)
+{
+	Dbid = Serializable->Dbid;
+		
+}
+

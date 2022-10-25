@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 #include "AutoGen/GetMetricsUrlRequestBody.h"
 #include "AutoGen/GetSignedUrlResponse.h"
@@ -23,7 +26,7 @@ public:
 	
 
 	// Body Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
 	UGetMetricsUrlRequestBody* Body;
 
 	// Beam Base Request Declaration
@@ -33,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_StartTime,_EndTime,_Period,Outer"))
-	static UPostMetricsUrlRequest* MakePostMetricsUrlRequest(FOptionalInt64 _StartTime, FString _ServiceName, FString _MetricName, FOptionalInt64 _EndTime, FOptionalInt32 _Period, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make PostMetricsUrl",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_StartTime,_EndTime,_Period,Outer"))
+	static UPostMetricsUrlRequest* Make(FString _ServiceName, FString _MetricName, FOptionalInt64 _StartTime, FOptionalInt64 _EndTime, FOptionalInt32 _Period, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

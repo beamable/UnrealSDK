@@ -1,0 +1,46 @@
+
+#include "AutoGen/ItemLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UItemLibrary::ItemToJsonString(const UItem* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UItem* UItemLibrary::Make(int64 Id, TArray<UItemProperty*> Properties, FOptionalInt64 UpdatedAt, FOptionalString ProxyId, FOptionalInt64 CreatedAt, UObject* Outer)
+{
+	auto Serializable = NewObject<UItem>(Outer);
+	Serializable->Id = Id;
+	Serializable->Properties = Properties;
+	Serializable->UpdatedAt = UpdatedAt;
+	Serializable->ProxyId = ProxyId;
+	Serializable->CreatedAt = CreatedAt;
+	
+	return Serializable;
+}
+
+void UItemLibrary::Break(const UItem* Serializable, int64& Id, TArray<UItemProperty*>& Properties, FOptionalInt64& UpdatedAt, FOptionalString& ProxyId, FOptionalInt64& CreatedAt)
+{
+	Id = Serializable->Id;
+	Properties = Serializable->Properties;
+	UpdatedAt = Serializable->UpdatedAt;
+	ProxyId = Serializable->ProxyId;
+	CreatedAt = Serializable->CreatedAt;
+		
+}
+

@@ -2,33 +2,34 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
 #include "AutoGen/Optionals/OptionalGamerTagAssociation.h"
 
 #include "AccountUpdate.generated.h"
 
-UCLASS(BlueprintType)
-class UAccountUpdate : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UAccountUpdate : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Third Party")
-	FOptionalString ThirdParty;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Has Third Party Token")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Has Third Party Token", Category="Beam")
 	bool bHasThirdPartyToken;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Country")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Third Party", Category="Beam")
+	FOptionalString ThirdParty;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Country", Category="Beam")
 	FOptionalString Country;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Language")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Language", Category="Beam")
 	FOptionalString Language;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag Assoc")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag Assoc", Category="Beam")
 	FOptionalGamerTagAssociation GamerTagAssoc;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Token")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Token", Category="Beam")
 	FOptionalString Token;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Device Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Device Id", Category="Beam")
 	FOptionalString DeviceId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="User Name")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="User Name", Category="Beam")
 	FOptionalString UserName;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

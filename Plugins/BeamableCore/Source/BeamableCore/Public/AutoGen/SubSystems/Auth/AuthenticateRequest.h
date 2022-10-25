@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 #include "AutoGen/TokenRequestWrapper.h"
 #include "AutoGen/TokenResponse.h"
@@ -23,7 +26,7 @@ public:
 	
 
 	// Body Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
 	UTokenRequestWrapper* Body;
 
 	// Beam Base Request Declaration
@@ -33,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_DeviceId,_Username,_Scope,_RefreshToken,_Context,_ThirdParty,_RedirectUri,_ClientId,_Code,_Token,_bCustomerScoped,_Password,Outer"))
-	static UAuthenticateRequest* MakeAuthenticateRequest(FOptionalString _DeviceId, FOptionalString _Username, FOptionalArrayOfString _Scope, FOptionalString _RefreshToken, FOptionalContextInfo _Context, FOptionalString _ThirdParty, FOptionalString _RedirectUri, FOptionalString _ClientId, FOptionalString _Code, FOptionalString _Token, FOptionalBool _bCustomerScoped, FString _GrantType, FOptionalString _Password, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", DisplayName="Beam - Make Authenticate",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_bCustomerScoped,_DeviceId,_Username,_RefreshToken,_Context,_ThirdParty,_RedirectUri,_ClientId,_Code,_Token,_Password,_Scope,Outer"))
+	static UAuthenticateRequest* Make(FString _GrantType, FOptionalBool _bCustomerScoped, FOptionalString _DeviceId, FOptionalString _Username, FOptionalString _RefreshToken, FOptionalContextInfo _Context, FOptionalString _ThirdParty, FOptionalString _RedirectUri, FOptionalString _ClientId, FOptionalString _Code, FOptionalString _Token, FOptionalString _Password, FOptionalArrayOfString _Scope, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

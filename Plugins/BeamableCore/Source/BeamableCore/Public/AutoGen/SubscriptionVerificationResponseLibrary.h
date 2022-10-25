@@ -2,18 +2,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SubscriptionVerificationResponse.h"
+#include "AutoGen/SubscriptionVerificationResponse.h"
 
 #include "SubscriptionVerificationResponseLibrary.generated.h"
 
 
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, Category="Beam")
 class BEAMABLECORE_API USubscriptionVerificationResponseLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Serialize SubscriptionVerificationResponse To JSON String")
-	static FString SubscriptionVerificationResponseToJsonString(const USubscriptionVerificationResponse* Serializable, const bool Pretty);		
+	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - SubscriptionVerificationResponse To JSON String")
+	static FString SubscriptionVerificationResponseToJsonString(const USubscriptionVerificationResponse* Serializable, const bool Pretty);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make SubscriptionVerificationResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	static USubscriptionVerificationResponse* Make(FString HubChallenge, FString ContentType, UObject* Outer);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break SubscriptionVerificationResponse", meta=(NativeBreakFunc))
+	static void Break(const USubscriptionVerificationResponse* Serializable, FString& HubChallenge, FString& ContentType);
 };

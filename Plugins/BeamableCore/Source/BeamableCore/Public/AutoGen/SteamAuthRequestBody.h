@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "SteamAuthRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class USteamAuthRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API USteamAuthRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Ticket")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Ticket", Category="Beam")
 	FString Ticket;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

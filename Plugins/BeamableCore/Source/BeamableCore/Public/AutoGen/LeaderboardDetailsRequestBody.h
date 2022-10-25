@@ -2,20 +2,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalInt32.h"
 
 #include "LeaderboardDetailsRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class ULeaderboardDetailsRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API ULeaderboardDetailsRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From", Category="Beam")
 	FOptionalInt32 From;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max", Category="Beam")
 	FOptionalInt32 Max;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

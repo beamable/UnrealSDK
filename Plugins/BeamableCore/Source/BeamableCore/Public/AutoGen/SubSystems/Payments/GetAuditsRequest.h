@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 #include "AutoGen/Optionals/OptionalString.h"
 #include "AutoGen/Optionals/OptionalInt64.h"
@@ -22,19 +25,19 @@ public:
 	
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Providerid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Providerid", Category="Beam")
 	FOptionalString Providerid;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Provider")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Provider", Category="Beam")
 	FOptionalString Provider;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="State")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="State", Category="Beam")
 	FOptionalString State;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Txid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Txid", Category="Beam")
 	FOptionalInt64 Txid;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player", Category="Beam")
 	FOptionalInt64 Player;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Start")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Start", Category="Beam")
 	FOptionalInt32 Start;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit", Category="Beam")
 	FOptionalInt32 Limit;
 
 	// Body Params
@@ -47,8 +50,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_Providerid,_Provider,_State,_Txid,_Player,_Start,_Limit,Outer"))
-	static UGetAuditsRequest* MakeGetAuditsRequest(FOptionalString _Providerid, FOptionalString _Provider, FOptionalString _State, FOptionalInt64 _Txid, FOptionalInt64 _Player, FOptionalInt32 _Start, FOptionalInt32 _Limit, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Payments", DisplayName="Beam - Make GetAudits",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Providerid,_Provider,_State,_Txid,_Player,_Start,_Limit,Outer"))
+	static UGetAuditsRequest* Make(FOptionalString _Providerid, FOptionalString _Provider, FOptionalString _State, FOptionalInt64 _Txid, FOptionalInt64 _Player, FOptionalInt32 _Start, FOptionalInt32 _Limit, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

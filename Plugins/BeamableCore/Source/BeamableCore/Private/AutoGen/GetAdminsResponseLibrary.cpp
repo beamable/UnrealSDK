@@ -1,0 +1,38 @@
+
+#include "AutoGen/GetAdminsResponseLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UGetAdminsResponseLibrary::GetAdminsResponseToJsonString(const UGetAdminsResponse* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UGetAdminsResponse* UGetAdminsResponseLibrary::Make(TArray<UAccountPortalView*> Accounts, UObject* Outer)
+{
+	auto Serializable = NewObject<UGetAdminsResponse>(Outer);
+	Serializable->Accounts = Accounts;
+	
+	return Serializable;
+}
+
+void UGetAdminsResponseLibrary::Break(const UGetAdminsResponse* Serializable, TArray<UAccountPortalView*>& Accounts)
+{
+	Accounts = Serializable->Accounts;
+		
+}
+

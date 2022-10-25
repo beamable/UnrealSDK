@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 
@@ -21,11 +24,11 @@ public:
 	
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Query")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Query", Category="Beam")
 	FString Query;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Page")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Page", Category="Beam")
 	int32 Page;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pagesize")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pagesize", Category="Beam")
 	int32 Pagesize;
 
 	// Body Params
@@ -38,8 +41,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UBasicAccountsGetSearchRequest* MakeBasicAccountsGetSearchRequest(FString _Query, int32 _Page, int32 _Pagesize, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make BasicAccountsGetSearch",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
+	static UBasicAccountsGetSearchRequest* Make(FString _Query, int32 _Page, int32 _Pagesize, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

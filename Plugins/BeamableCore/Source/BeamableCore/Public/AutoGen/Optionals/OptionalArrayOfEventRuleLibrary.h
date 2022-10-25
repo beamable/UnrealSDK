@@ -11,13 +11,40 @@ UCLASS(BlueprintType)
 class BEAMABLECORE_API UOptionalArrayOfEventRuleLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
-public:
-	/**
-	* @brief Constructs an FOptionalInt struct from the given value.	  
-	*/
-	UFUNCTION(BlueprintPure, Category="Beam Optional Makes")
-	static FOptionalArrayOfEventRule MakeOptionalArrayOfEventRule(TArray<UEventRule*> Value);
+public:	
 
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "TArray<UEventRule*> To Optional", CompactNodeTitle = "->", BlueprintAutocast), Category="Beam Optional Converters")
-	static FOptionalArrayOfEventRule Conv_OptionalArrayOfEventRuleFromValue(TArray<UEventRule*> Value);
+	/**
+	* @brief Constructs an FOptionalArrayOfEventRule struct from the given value.	  
+	*/
+	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Make Optional TArray<UEventRule*>", NativeMakeFunc))
+	static FOptionalArrayOfEventRule MakeOptional(TArray<UEventRule*> Value);
+
+	/**
+	 * @brief Converts an TArray<UEventRule*> into an FOptionalArrayOfEventRule automatically.
+	 * @param Value The TArray<UEventRule*> to convert.
+	 * @return An optional with the TArray<UEventRule*> set as it's value.
+	 */
+	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta = (DisplayName = "Beam - TArray<UEventRule*> To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	static FOptionalArrayOfEventRule Conv_OptionalFromValue(TArray<UEventRule*> Value);
+	
+	/**
+	 * @brief Use this when the behavior changes based on whether or not a value is set on the optional.
+	 * @param Optional The optional you wish to get data from.
+	 * @param Value The value in the optional. 
+	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Optionals", meta=(DisplayName="Beam - Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	static bool HasValue(const FOptionalArrayOfEventRule& Optional, TArray<UEventRule*>& Value);
+
+	/**
+	 * @brief Use this when the behaviour doesnt change based on whether or not the value is set, instead just provide a default value instead.
+	 * @param Optional The optional you wish to get data from.
+	 * @param DefaultValue The value that will be set if the Optional has no value in it.
+	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
+	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
+	 */
+	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Get Optional's TArray<UEventRule*> Value"))
+	static TArray<UEventRule*> GetOptionalValue(const FOptionalArrayOfEventRule& Optional, TArray<UEventRule*> DefaultValue, bool& WasSet);
+
+	
 };

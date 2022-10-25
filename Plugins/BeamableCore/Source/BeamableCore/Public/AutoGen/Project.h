@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
 #include "AutoGen/Optionals/OptionalArrayOfString.h"
@@ -11,40 +12,40 @@
 
 #include "Project.generated.h"
 
-UCLASS(BlueprintType)
-class UProject : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UProject : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Display Name")
-	FOptionalString DisplayName;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Secret")
-	FString Secret;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Parent")
-	FOptionalString Parent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Children")
-	FOptionalArrayOfString Children;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name")
-	FString Name;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Custom Charts")
-	TMap<FString, FString> CustomCharts;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Root")
-	bool bRoot;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Archived")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Archived", Category="Beam")
 	bool bArchived;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Config")
-	FOptionalMapOfString Config;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Status")
-	FOptionalString Status;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sharded")
-	FOptionalBool bSharded;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sigval")
-	FOptionalBool bSigval;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Plan")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Root", Category="Beam")
+	bool bRoot;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Secret", Category="Beam")
+	FString Secret;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
+	FString Name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Plan", Category="Beam")
 	FString Plan;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Custom Charts", Category="Beam")
+	TMap<FString, FString> CustomCharts;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sharded", Category="Beam")
+	FOptionalBool bSharded;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sigval", Category="Beam")
+	FOptionalBool bSigval;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Display Name", Category="Beam")
+	FOptionalString DisplayName;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Parent", Category="Beam")
+	FOptionalString Parent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Status", Category="Beam")
+	FOptionalString Status;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
 	FOptionalInt64 Created;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Children", Category="Beam")
+	FOptionalArrayOfString Children;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Config", Category="Beam")
+	FOptionalMapOfString Config;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

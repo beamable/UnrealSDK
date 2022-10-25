@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
 #include "AutoGen/Optionals/OptionalPlayerReward.h"
@@ -11,33 +12,33 @@
 
 #include "SendMailRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class USendMailRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API USendMailRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Body")
-	FOptionalString Body;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Expires")
-	FOptionalString Expires;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Rewards")
-	FOptionalPlayerReward PlayerRewards;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Receiver Gamer Tag")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Receiver Gamer Tag", Category="Beam")
 	int64 ReceiverGamerTag;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Subject")
-	FOptionalString Subject;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rewards")
-	FOptionalMailRewards Rewards;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id")
-	FOptionalInt64 Id;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sender Gamer Tag")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sender Gamer Tag", Category="Beam")
 	int64 SenderGamerTag;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Category")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Category", Category="Beam")
 	FString Category;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Body Ref")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Body", Category="Beam")
+	FOptionalString Body;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Expires", Category="Beam")
+	FOptionalString Expires;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Rewards", Category="Beam")
+	FOptionalPlayerReward PlayerRewards;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Subject", Category="Beam")
+	FOptionalString Subject;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rewards", Category="Beam")
+	FOptionalMailRewards Rewards;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
+	FOptionalInt64 Id;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Body Ref", Category="Beam")
 	FOptionalInt64 BodyRef;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Attachments")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Attachments", Category="Beam")
 	FOptionalArrayOfAttachmentRequestBody Attachments;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

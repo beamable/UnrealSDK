@@ -1,0 +1,42 @@
+
+#include "AutoGen/RealmPromotionLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString URealmPromotionLibrary::RealmPromotionToJsonString(const URealmPromotion* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+URealmPromotion* URealmPromotionLibrary::Make(FString Name, UPromotable* Source, UPromotable* Destination, UObject* Outer)
+{
+	auto Serializable = NewObject<URealmPromotion>(Outer);
+	Serializable->Name = Name;
+	Serializable->Source = Source;
+	Serializable->Destination = Destination;
+	
+	return Serializable;
+}
+
+void URealmPromotionLibrary::Break(const URealmPromotion* Serializable, FString& Name, UPromotable*& Source, UPromotable*& Destination)
+{
+	Name = Serializable->Name;
+	Source = Serializable->Source;
+	Destination = Serializable->Destination;
+		
+}
+

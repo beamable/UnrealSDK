@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalInt64.h"
 #include "AutoGen/Optionals/OptionalArrayOfString.h"
@@ -9,25 +10,25 @@
 
 #include "MailSearchClause.generated.h"
 
-UCLASS(BlueprintType)
-class UMailSearchClause : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UMailSearchClause : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="For Sender")
-	FOptionalInt64 ForSender;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name")
-	FString Name;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Only Count")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Only Count", Category="Beam")
 	bool bOnlyCount;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Categories")
-	FOptionalArrayOfString Categories;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Start")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
+	FString Name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="For Sender", Category="Beam")
+	FOptionalInt64 ForSender;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Start", Category="Beam")
 	FOptionalInt64 Start;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit", Category="Beam")
 	FOptionalInt32 Limit;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="States")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Categories", Category="Beam")
+	FOptionalArrayOfString Categories;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="States", Category="Beam")
 	FOptionalArrayOfString States;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

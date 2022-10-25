@@ -2,36 +2,37 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalArrayOfString.h"
 #include "AutoGen/RedisShardRequestBody.h"
 
 #include "CreatePlanRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UCreatePlanRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UCreatePlanRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name")
-	FString Name;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Message Bus Analytics")
-	FOptionalArrayOfString MessageBusAnalytics;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Memcached Hosts")
-	FString MemcachedHosts;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Mongo SSL")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Mongo SSL", Category="Beam")
 	bool bMongoSSL;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Platform JBDC")
-	FString PlatformJBDC;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sharded")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sharded", Category="Beam")
 	bool bSharded;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Mongo Hosts")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
+	FString Name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Memcached Hosts", Category="Beam")
+	FString MemcachedHosts;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Platform JBDC", Category="Beam")
+	FString PlatformJBDC;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Mongo Hosts", Category="Beam")
 	FString MongoHosts;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Message Bus Common")
-	FOptionalArrayOfString MessageBusCommon;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Redis Shards")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Redis Shards", Category="Beam")
 	TArray<URedisShardRequestBody*> RedisShards;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Message Bus Analytics", Category="Beam")
+	FOptionalArrayOfString MessageBusAnalytics;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Message Bus Common", Category="Beam")
+	FOptionalArrayOfString MessageBusCommon;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

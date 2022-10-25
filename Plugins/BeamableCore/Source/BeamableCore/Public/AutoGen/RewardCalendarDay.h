@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/EntitlementGenerator.h"
 
 #include "RewardCalendarDay.generated.h"
 
-UCLASS(BlueprintType)
-class URewardCalendarDay : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API URewardCalendarDay : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain", Category="Beam")
 	TArray<UEntitlementGenerator*> Obtain;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

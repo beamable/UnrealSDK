@@ -2,39 +2,40 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
 
 #include "PaymentDetailsEntryViewModel.generated.h"
 
-UCLASS(BlueprintType)
-class UPaymentDetailsEntryViewModel : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UPaymentDetailsEntryViewModel : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Reference")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Reference", Category="Beam")
 	FString Reference;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
 	FString Name;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Quantity")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Quantity", Category="Beam")
 	int32 Quantity;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sku")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sku", Category="Beam")
 	FString Sku;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Price")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Price", Category="Beam")
 	int32 Price;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Subcategory")
-	FOptionalString Subcategory;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gameplace")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gameplace", Category="Beam")
 	FString Gameplace;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Local Price")
-	FOptionalString LocalPrice;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Category")
-	FOptionalString Category;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Local Currency")
-	FOptionalString LocalCurrency;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Provider Product Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Provider Product Id", Category="Beam")
 	FString ProviderProductId;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Subcategory", Category="Beam")
+	FOptionalString Subcategory;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Local Price", Category="Beam")
+	FOptionalString LocalPrice;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Category", Category="Beam")
+	FOptionalString Category;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Local Currency", Category="Beam")
+	FOptionalString LocalCurrency;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

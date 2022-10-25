@@ -2,18 +2,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Group.h"
+#include "AutoGen/Group.h"
 
 #include "GroupLibrary.generated.h"
 
 
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, Category="Beam")
 class BEAMABLECORE_API UGroupLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Serialize Group To JSON String")
-	static FString GroupToJsonString(const UGroup* Serializable, const bool Pretty);		
+	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - Group To JSON String")
+	static FString GroupToJsonString(const UGroup* Serializable, const bool Pretty);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make Group", meta=(DefaultToSelf="Outer", AdvancedDisplay="bCanDisband, bCanUpdateEnrollment, bCanUpdateMOTD, bCanUpdateSlogan, Shard, ClientData, Version, Tag, Donations, Roles, InFlight, MaybeDonations, Outer", NativeMakeFunc))
+	static UGroup* Make(int64 Requirement, int32 MaxSize, EGroupType Type, int64 Id, FString Motd, FString Slogan, int64 Leader, int64 Created, FString Name, FString EnrollmentType, int32 FreeSlots, TArray<UGroup*> SubGroups, TArray<UMember*> Members, TMap<FString, FString> Scores, FOptionalBool bCanDisband, FOptionalBool bCanUpdateEnrollment, FOptionalBool bCanUpdateMOTD, FOptionalBool bCanUpdateSlogan, FOptionalString Shard, FOptionalString ClientData, FOptionalInt32 Version, FOptionalString Tag, FOptionalArrayOfDonationRequestBody Donations, FOptionalArrayOfGroupRole Roles, FOptionalArrayOfInFlightMessage InFlight, FOptionalMapOfDonationRequestBody MaybeDonations, UObject* Outer);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break Group", meta=(NativeBreakFunc))
+	static void Break(const UGroup* Serializable, int64& Requirement, int32& MaxSize, EGroupType& Type, int64& Id, FString& Motd, FString& Slogan, int64& Leader, int64& Created, FString& Name, FString& EnrollmentType, int32& FreeSlots, TArray<UGroup*>& SubGroups, TArray<UMember*>& Members, TMap<FString, FString>& Scores, FOptionalBool& bCanDisband, FOptionalBool& bCanUpdateEnrollment, FOptionalBool& bCanUpdateMOTD, FOptionalBool& bCanUpdateSlogan, FOptionalString& Shard, FOptionalString& ClientData, FOptionalInt32& Version, FOptionalString& Tag, FOptionalArrayOfDonationRequestBody& Donations, FOptionalArrayOfGroupRole& Roles, FOptionalArrayOfInFlightMessage& InFlight, FOptionalMapOfDonationRequestBody& MaybeDonations);
 };

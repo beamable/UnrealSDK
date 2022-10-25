@@ -2,9 +2,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
-
+#include "AutoGen/Optionals/OptionalArrayOfObjectRequestBody.h"
 #include "AutoGen/Optionals/OptionalInt64.h"
 #include "AutoGen/ObjectsMetadataResponse.h"
 
@@ -21,9 +24,9 @@ public:
 	
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Request")
-	TMap<FString, FString> Request;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Request", Category="Beam")
+	FOptionalArrayOfObjectRequestBody Request;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
 	FOptionalInt64 PlayerId;
 
 	// Body Params
@@ -36,8 +39,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_PlayerId,Outer"))
-	static UGetDataMetadataRequest* MakeGetDataMetadataRequest(TMap<FString, FString> _Request, FOptionalInt64 _PlayerId, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Cloudsaving", DisplayName="Beam - Make GetDataMetadata",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Request,_PlayerId,Outer"))
+	static UGetDataMetadataRequest* Make(FOptionalArrayOfObjectRequestBody _Request, FOptionalInt64 _PlayerId, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

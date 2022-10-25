@@ -2,28 +2,29 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalArrayOfRankEntryStat.h"
 #include "AutoGen/Optionals/OptionalDouble.h"
 
 #include "RankEntry.generated.h"
 
-UCLASS(BlueprintType)
-class URankEntry : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API URankEntry : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stats")
-	FOptionalArrayOfRankEntryStat Stats;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rank")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rank", Category="Beam")
 	int64 Rank;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Score")
-	FOptionalDouble Score;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Columns")
-	TMap<FString, int64> Columns;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gt")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gt", Category="Beam")
 	int64 Gt;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Columns", Category="Beam")
+	TMap<FString, int64> Columns;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Score", Category="Beam")
+	FOptionalDouble Score;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stats", Category="Beam")
+	FOptionalArrayOfRankEntryStat Stats;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

@@ -1,0 +1,40 @@
+
+#include "AutoGen/LeaderboardAssignmentInfoLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString ULeaderboardAssignmentInfoLibrary::LeaderboardAssignmentInfoToJsonString(const ULeaderboardAssignmentInfo* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+ULeaderboardAssignmentInfo* ULeaderboardAssignmentInfoLibrary::Make(int64 PlayerId, FString LeaderboardId, UObject* Outer)
+{
+	auto Serializable = NewObject<ULeaderboardAssignmentInfo>(Outer);
+	Serializable->PlayerId = PlayerId;
+	Serializable->LeaderboardId = LeaderboardId;
+	
+	return Serializable;
+}
+
+void ULeaderboardAssignmentInfoLibrary::Break(const ULeaderboardAssignmentInfo* Serializable, int64& PlayerId, FString& LeaderboardId)
+{
+	PlayerId = Serializable->PlayerId;
+	LeaderboardId = Serializable->LeaderboardId;
+		
+}
+

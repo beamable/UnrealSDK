@@ -1,0 +1,38 @@
+
+#include "AutoGen/PreviewVipBonusResponseLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UPreviewVipBonusResponseLibrary::PreviewVipBonusResponseToJsonString(const UPreviewVipBonusResponse* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UPreviewVipBonusResponse* UPreviewVipBonusResponseLibrary::Make(TArray<UCurrencyPreview*> Currencies, UObject* Outer)
+{
+	auto Serializable = NewObject<UPreviewVipBonusResponse>(Outer);
+	Serializable->Currencies = Currencies;
+	
+	return Serializable;
+}
+
+void UPreviewVipBonusResponseLibrary::Break(const UPreviewVipBonusResponse* Serializable, TArray<UCurrencyPreview*>& Currencies)
+{
+	Currencies = Serializable->Currencies;
+		
+}
+

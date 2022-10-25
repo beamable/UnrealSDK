@@ -10,7 +10,7 @@
 #include "JsonObjectConverter.h"
 #include "Interfaces/IHttpResponse.h"
 #include "Misc/DefaultValueHelper.h"
-#include "RawAPIs/BeamSharedTypes.h"
+#include "BeamBackend/BeamCustomRequests.h"
 
 DECLARE_STATS_GROUP(TEXT("BeamBackend"), STATGROUP_BeamBackend, STATCAT_Backend)
 

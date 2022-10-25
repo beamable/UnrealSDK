@@ -1,0 +1,38 @@
+
+#include "AutoGen/ListTagsRequestBodyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UListTagsRequestBodyLibrary::ListTagsRequestBodyToJsonString(const UListTagsRequestBody* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UListTagsRequestBody* UListTagsRequestBodyLibrary::Make(FOptionalString TagNameFilter, UObject* Outer)
+{
+	auto Serializable = NewObject<UListTagsRequestBody>(Outer);
+	Serializable->TagNameFilter = TagNameFilter;
+	
+	return Serializable;
+}
+
+void UListTagsRequestBodyLibrary::Break(const UListTagsRequestBody* Serializable, FOptionalString& TagNameFilter)
+{
+	TagNameFilter = Serializable->TagNameFilter;
+		
+}
+

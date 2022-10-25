@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/ServiceReference.h"
 #include "AutoGen/Optionals/OptionalString.h"
@@ -10,19 +11,19 @@
 
 #include "PostManifestRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UPostManifestRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UPostManifestRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Manifest")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Manifest", Category="Beam")
 	TArray<UServiceReference*> Manifest;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Comments")
-	FOptionalString Comments;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Auto Deploy")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Auto Deploy", Category="Beam")
 	FOptionalBool bAutoDeploy;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Storage References")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Comments", Category="Beam")
+	FOptionalString Comments;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Storage References", Category="Beam")
 	FOptionalArrayOfServiceStorageReference StorageReferences;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

@@ -1,0 +1,38 @@
+
+#include "AutoGen/ServiceTemplateLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UServiceTemplateLibrary::ServiceTemplateToJsonString(const UServiceTemplate* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UServiceTemplate* UServiceTemplateLibrary::Make(FString Id, UObject* Outer)
+{
+	auto Serializable = NewObject<UServiceTemplate>(Outer);
+	Serializable->Id = Id;
+	
+	return Serializable;
+}
+
+void UServiceTemplateLibrary::Break(const UServiceTemplate* Serializable, FString& Id)
+{
+	Id = Serializable->Id;
+		
+}
+

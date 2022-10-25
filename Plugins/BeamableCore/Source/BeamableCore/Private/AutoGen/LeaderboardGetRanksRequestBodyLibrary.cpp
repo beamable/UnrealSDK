@@ -1,0 +1,38 @@
+
+#include "AutoGen/LeaderboardGetRanksRequestBodyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString ULeaderboardGetRanksRequestBodyLibrary::LeaderboardGetRanksRequestBodyToJsonString(const ULeaderboardGetRanksRequestBody* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+ULeaderboardGetRanksRequestBody* ULeaderboardGetRanksRequestBodyLibrary::Make(FString Ids, UObject* Outer)
+{
+	auto Serializable = NewObject<ULeaderboardGetRanksRequestBody>(Outer);
+	Serializable->Ids = Ids;
+	
+	return Serializable;
+}
+
+void ULeaderboardGetRanksRequestBodyLibrary::Break(const ULeaderboardGetRanksRequestBody* Serializable, FString& Ids)
+{
+	Ids = Serializable->Ids;
+		
+}
+

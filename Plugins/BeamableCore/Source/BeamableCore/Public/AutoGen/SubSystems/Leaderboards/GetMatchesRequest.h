@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 
@@ -18,15 +21,15 @@ class BEAMABLECORE_API UGetMatchesRequest : public UObject, public IBeamBaseRequ
 public:
 
 	// Path Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
 	FString ObjectId;
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pool Size")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pool Size", Category="Beam")
 	int32 PoolSize;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Windows")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Windows", Category="Beam")
 	int32 Windows;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Window Size")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Window Size", Category="Beam")
 	int32 WindowSize;
 
 	// Body Params
@@ -39,8 +42,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UGetMatchesRequest* MakeGetMatchesRequest(FString _ObjectId, int32 _PoolSize, int32 _Windows, int32 _WindowSize, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make GetMatches",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
+	static UGetMatchesRequest* Make(FString _ObjectId, int32 _PoolSize, int32 _Windows, int32 _WindowSize, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

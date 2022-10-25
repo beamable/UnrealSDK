@@ -2,22 +2,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "SearchAccountsRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class USearchAccountsRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API USearchAccountsRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Query")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Query", Category="Beam")
 	FString Query;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Page")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Page", Category="Beam")
 	int32 Page;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pagesize")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pagesize", Category="Beam")
 	int32 Pagesize;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

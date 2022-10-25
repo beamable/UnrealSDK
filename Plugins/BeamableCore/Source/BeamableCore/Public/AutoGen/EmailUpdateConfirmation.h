@@ -2,20 +2,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "EmailUpdateConfirmation.generated.h"
 
-UCLASS(BlueprintType)
-class UEmailUpdateConfirmation : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UEmailUpdateConfirmation : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Code")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Code", Category="Beam")
 	FString Code;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Password")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Password", Category="Beam")
 	FString Password;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

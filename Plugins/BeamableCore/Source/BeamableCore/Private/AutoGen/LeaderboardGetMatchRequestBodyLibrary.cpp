@@ -1,0 +1,42 @@
+
+#include "AutoGen/LeaderboardGetMatchRequestBodyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString ULeaderboardGetMatchRequestBodyLibrary::LeaderboardGetMatchRequestBodyToJsonString(const ULeaderboardGetMatchRequestBody* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+ULeaderboardGetMatchRequestBody* ULeaderboardGetMatchRequestBodyLibrary::Make(int32 PoolSize, int32 Windows, int32 WindowSize, UObject* Outer)
+{
+	auto Serializable = NewObject<ULeaderboardGetMatchRequestBody>(Outer);
+	Serializable->PoolSize = PoolSize;
+	Serializable->Windows = Windows;
+	Serializable->WindowSize = WindowSize;
+	
+	return Serializable;
+}
+
+void ULeaderboardGetMatchRequestBodyLibrary::Break(const ULeaderboardGetMatchRequestBody* Serializable, int32& PoolSize, int32& Windows, int32& WindowSize)
+{
+	PoolSize = Serializable->PoolSize;
+	Windows = Serializable->Windows;
+	WindowSize = Serializable->WindowSize;
+		
+}
+

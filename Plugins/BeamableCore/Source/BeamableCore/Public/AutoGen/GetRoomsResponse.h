@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/RoomInfo.h"
 
 #include "GetRoomsResponse.generated.h"
 
-UCLASS(BlueprintType)
-class UGetRoomsResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UGetRoomsResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rooms")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rooms", Category="Beam")
 	TArray<URoomInfo*> Rooms;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

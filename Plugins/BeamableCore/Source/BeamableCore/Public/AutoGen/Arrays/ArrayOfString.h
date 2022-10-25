@@ -7,12 +7,12 @@
 
 #include "ArrayOfString.generated.h"
 		
-USTRUCT(BlueprintType)
-struct FArrayOfString : public FBeamArray
+USTRUCT(BlueprintType, Category="Beam|Wrappers|Arrays")
+struct BEAMABLECORE_API FArrayOfString : public FBeamArray
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	TArray<FString> Values;
 
 	FArrayOfString();

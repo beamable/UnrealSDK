@@ -1,0 +1,38 @@
+
+#include "AutoGen/AnnouncementQueryResponseLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UAnnouncementQueryResponseLibrary::AnnouncementQueryResponseToJsonString(const UAnnouncementQueryResponse* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UAnnouncementQueryResponse* UAnnouncementQueryResponseLibrary::Make(TArray<UAnnouncementView*> Announcements, UObject* Outer)
+{
+	auto Serializable = NewObject<UAnnouncementQueryResponse>(Outer);
+	Serializable->Announcements = Announcements;
+	
+	return Serializable;
+}
+
+void UAnnouncementQueryResponseLibrary::Break(const UAnnouncementQueryResponse* Serializable, TArray<UAnnouncementView*>& Announcements)
+{
+	Announcements = Serializable->Announcements;
+		
+}
+

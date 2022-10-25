@@ -1,0 +1,40 @@
+
+#include "AutoGen/TransferThirdPartyAssociationLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UTransferThirdPartyAssociationLibrary::TransferThirdPartyAssociationToJsonString(const UTransferThirdPartyAssociation* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UTransferThirdPartyAssociation* UTransferThirdPartyAssociationLibrary::Make(int64 FromAccountId, UThirdPartyAssociation* ThirdParty, UObject* Outer)
+{
+	auto Serializable = NewObject<UTransferThirdPartyAssociation>(Outer);
+	Serializable->FromAccountId = FromAccountId;
+	Serializable->ThirdParty = ThirdParty;
+	
+	return Serializable;
+}
+
+void UTransferThirdPartyAssociationLibrary::Break(const UTransferThirdPartyAssociation* Serializable, int64& FromAccountId, UThirdPartyAssociation*& ThirdParty)
+{
+	FromAccountId = Serializable->FromAccountId;
+	ThirdParty = Serializable->ThirdParty;
+		
+}
+

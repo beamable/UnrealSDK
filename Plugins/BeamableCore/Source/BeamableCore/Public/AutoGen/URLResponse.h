@@ -2,20 +2,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "URLResponse.generated.h"
 
-UCLASS(BlueprintType)
-class UURLResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UURLResponse : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Url")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Url", Category="Beam")
 	FString Url;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Key")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Key", Category="Beam")
 	FString ObjectKey;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

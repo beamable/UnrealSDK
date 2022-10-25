@@ -2,18 +2,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "OfferDefinition.h"
+#include "AutoGen/OfferDefinition.h"
 
 #include "OfferDefinitionLibrary.generated.h"
 
 
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, Category="Beam")
 class BEAMABLECORE_API UOfferDefinitionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Serialize OfferDefinition To JSON String")
-	static FString OfferDefinitionToJsonString(const UOfferDefinition* Serializable, const bool Pretty);		
+	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - OfferDefinition To JSON String")
+	static FString OfferDefinitionToJsonString(const UOfferDefinition* Serializable, const bool Pretty);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make OfferDefinition", meta=(DefaultToSelf="Outer", AdvancedDisplay="LootRoll, Metadata, ObtainItems, ObtainCurrency, Outer", NativeMakeFunc))
+	static UOfferDefinition* Make(FString Symbol, TArray<FString> Titles, TArray<FString> Images, TArray<FString> Descriptions, TArray<FString> Obtain, FOptionalCommerceLootRoll LootRoll, FOptionalString Metadata, FOptionalArrayOfItemCreateRequestBody ObtainItems, FOptionalArrayOfCurrencyChange ObtainCurrency, UObject* Outer);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break OfferDefinition", meta=(NativeBreakFunc))
+	static void Break(const UOfferDefinition* Serializable, FString& Symbol, TArray<FString>& Titles, TArray<FString>& Images, TArray<FString>& Descriptions, TArray<FString>& Obtain, FOptionalCommerceLootRoll& LootRoll, FOptionalString& Metadata, FOptionalArrayOfItemCreateRequestBody& ObtainItems, FOptionalArrayOfCurrencyChange& ObtainCurrency);
 };

@@ -1,0 +1,44 @@
+
+#include "AutoGen/CustomerViewLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UCustomerViewLibrary::CustomerViewToJsonString(const UCustomerView* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UCustomerView* UCustomerViewLibrary::Make(int64 Cid, FString Name, TArray<UProjectView*> Projects, FOptionalString Alias, UObject* Outer)
+{
+	auto Serializable = NewObject<UCustomerView>(Outer);
+	Serializable->Cid = Cid;
+	Serializable->Name = Name;
+	Serializable->Projects = Projects;
+	Serializable->Alias = Alias;
+	
+	return Serializable;
+}
+
+void UCustomerViewLibrary::Break(const UCustomerView* Serializable, int64& Cid, FString& Name, TArray<UProjectView*>& Projects, FOptionalString& Alias)
+{
+	Cid = Serializable->Cid;
+	Name = Serializable->Name;
+	Projects = Serializable->Projects;
+	Alias = Serializable->Alias;
+		
+}
+

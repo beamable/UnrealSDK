@@ -1,0 +1,40 @@
+
+#include "AutoGen/TournamentCurrencyRewardLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UTournamentCurrencyRewardLibrary::TournamentCurrencyRewardToJsonString(const UTournamentCurrencyReward* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UTournamentCurrencyReward* UTournamentCurrencyRewardLibrary::Make(FString Symbol, int64 Amount, UObject* Outer)
+{
+	auto Serializable = NewObject<UTournamentCurrencyReward>(Outer);
+	Serializable->Symbol = Symbol;
+	Serializable->Amount = Amount;
+	
+	return Serializable;
+}
+
+void UTournamentCurrencyRewardLibrary::Break(const UTournamentCurrencyReward* Serializable, FString& Symbol, int64& Amount)
+{
+	Symbol = Serializable->Symbol;
+	Amount = Serializable->Amount;
+		
+}
+

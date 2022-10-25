@@ -1,0 +1,40 @@
+
+#include "AutoGen/ThirdPartyAvailableRequestBodyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UThirdPartyAvailableRequestBodyLibrary::ThirdPartyAvailableRequestBodyToJsonString(const UThirdPartyAvailableRequestBody* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UThirdPartyAvailableRequestBody* UThirdPartyAvailableRequestBodyLibrary::Make(FString ThirdParty, FString Token, UObject* Outer)
+{
+	auto Serializable = NewObject<UThirdPartyAvailableRequestBody>(Outer);
+	Serializable->ThirdParty = ThirdParty;
+	Serializable->Token = Token;
+	
+	return Serializable;
+}
+
+void UThirdPartyAvailableRequestBodyLibrary::Break(const UThirdPartyAvailableRequestBody* Serializable, FString& ThirdParty, FString& Token)
+{
+	ThirdParty = Serializable->ThirdParty;
+	Token = Serializable->Token;
+		
+}
+

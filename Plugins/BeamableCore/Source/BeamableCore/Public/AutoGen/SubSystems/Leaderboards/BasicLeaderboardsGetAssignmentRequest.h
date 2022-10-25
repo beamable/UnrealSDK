@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 #include "AutoGen/Optionals/OptionalBool.h"
@@ -21,9 +24,9 @@ public:
 	
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Board Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Board Id", Category="Beam")
 	FString BoardId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Join Board")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Join Board", Category="Beam")
 	FOptionalBool bJoinBoard;
 
 	// Body Params
@@ -36,8 +39,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_bJoinBoard,Outer"))
-	static UBasicLeaderboardsGetAssignmentRequest* MakeBasicLeaderboardsGetAssignmentRequest(FString _BoardId, FOptionalBool _bJoinBoard, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make BasicLeaderboardsGetAssignment",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_bJoinBoard,Outer"))
+	static UBasicLeaderboardsGetAssignmentRequest* Make(FString _BoardId, FOptionalBool _bJoinBoard, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -1,0 +1,38 @@
+
+#include "AutoGen/GetLambdaURILibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UGetLambdaURILibrary::GetLambdaURIToJsonString(const UGetLambdaURI* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UGetLambdaURI* UGetLambdaURILibrary::Make(FString Uri, UObject* Outer)
+{
+	auto Serializable = NewObject<UGetLambdaURI>(Outer);
+	Serializable->Uri = Uri;
+	
+	return Serializable;
+}
+
+void UGetLambdaURILibrary::Break(const UGetLambdaURI* Serializable, FString& Uri)
+{
+	Uri = Serializable->Uri;
+		
+}
+

@@ -2,27 +2,28 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalInt32.h"
 #include "AutoGen/Optionals/OptionalInt64.h"
 
 #include "GetStandingsRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UGetStandingsRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UGetStandingsRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id", Category="Beam")
 	FString TournamentId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max", Category="Beam")
 	FOptionalInt32 Max;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Focus")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Focus", Category="Beam")
 	FOptionalInt64 Focus;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cycle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cycle", Category="Beam")
 	FOptionalInt32 Cycle;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From", Category="Beam")
 	FOptionalInt32 From;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

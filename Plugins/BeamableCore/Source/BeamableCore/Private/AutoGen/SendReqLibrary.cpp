@@ -1,0 +1,38 @@
+
+#include "AutoGen/SendReqLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString USendReqLibrary::SendReqToJsonString(const USendReq* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+USendReq* USendReqLibrary::Make(TArray<USendMsg*> Msgs, UObject* Outer)
+{
+	auto Serializable = NewObject<USendReq>(Outer);
+	Serializable->Msgs = Msgs;
+	
+	return Serializable;
+}
+
+void USendReqLibrary::Break(const USendReq* Serializable, TArray<USendMsg*>& Msgs)
+{
+	Msgs = Serializable->Msgs;
+		
+}
+

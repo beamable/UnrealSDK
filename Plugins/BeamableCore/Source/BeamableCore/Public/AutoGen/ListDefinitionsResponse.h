@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/AnnouncementDto.h"
 
 #include "ListDefinitionsResponse.generated.h"
 
-UCLASS(BlueprintType)
-class UListDefinitionsResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UListDefinitionsResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content", Category="Beam")
 	TArray<UAnnouncementDto*> Content;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

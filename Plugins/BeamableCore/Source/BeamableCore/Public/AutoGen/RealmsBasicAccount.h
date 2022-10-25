@@ -2,24 +2,25 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalInt64.h"
 
 #include "RealmsBasicAccount.generated.h"
 
-UCLASS(BlueprintType)
-class URealmsBasicAccount : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API URealmsBasicAccount : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="User")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="User", Category="Beam")
 	FString User;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Password")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Password", Category="Beam")
 	FString Password;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Projects")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Projects", Category="Beam")
 	TArray<FString> Projects;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
 	FOptionalInt64 Created;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

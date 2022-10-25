@@ -1,0 +1,46 @@
+
+#include "AutoGen/ServiceStatusLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UServiceStatusLibrary::ServiceStatusToJsonString(const UServiceStatus* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UServiceStatus* UServiceStatusLibrary::Make(bool bIsCurrent, bool bRunning, FString ServiceName, FString ImageId, FOptionalArrayOfServiceDependencyReference ServiceDependencyReferences, UObject* Outer)
+{
+	auto Serializable = NewObject<UServiceStatus>(Outer);
+	Serializable->bIsCurrent = bIsCurrent;
+	Serializable->bRunning = bRunning;
+	Serializable->ServiceName = ServiceName;
+	Serializable->ImageId = ImageId;
+	Serializable->ServiceDependencyReferences = ServiceDependencyReferences;
+	
+	return Serializable;
+}
+
+void UServiceStatusLibrary::Break(const UServiceStatus* Serializable, bool& bIsCurrent, bool& bRunning, FString& ServiceName, FString& ImageId, FOptionalArrayOfServiceDependencyReference& ServiceDependencyReferences)
+{
+	bIsCurrent = Serializable->bIsCurrent;
+	bRunning = Serializable->bRunning;
+	ServiceName = Serializable->ServiceName;
+	ImageId = Serializable->ImageId;
+	ServiceDependencyReferences = Serializable->ServiceDependencyReferences;
+		
+}
+

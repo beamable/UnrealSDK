@@ -2,22 +2,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
 
 #include "UpdateRole.generated.h"
 
-UCLASS(BlueprintType)
-class UUpdateRole : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UUpdateRole : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid", Category="Beam")
 	FOptionalString Cid;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Realm")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Realm", Category="Beam")
 	FOptionalString Realm;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Role")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Role", Category="Beam")
 	FOptionalString Role;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

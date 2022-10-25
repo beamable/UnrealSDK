@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 #include "AutoGen/Optionals/OptionalInt32.h"
@@ -20,21 +23,21 @@ class BEAMABLECORE_API UGetViewRequest : public UObject, public IBeamBaseRequest
 public:
 
 	// Path Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
 	FString ObjectId;
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max", Category="Beam")
 	FOptionalInt32 Max;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Focus")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Focus", Category="Beam")
 	FOptionalInt64 Focus;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Friends")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Friends", Category="Beam")
 	FOptionalBool bFriends;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From", Category="Beam")
 	FOptionalInt32 From;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Outlier")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Outlier", Category="Beam")
 	FOptionalInt64 Outlier;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Guild")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Guild", Category="Beam")
 	FOptionalBool bGuild;
 
 	// Body Params
@@ -47,8 +50,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_Max,_Focus,_bFriends,_From,_Outlier,_bGuild,Outer"))
-	static UGetViewRequest* MakeGetViewRequest(FString _ObjectId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalBool _bFriends, FOptionalInt32 _From, FOptionalInt64 _Outlier, FOptionalBool _bGuild, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make GetView",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Max,_Focus,_bFriends,_From,_Outlier,_bGuild,Outer"))
+	static UGetViewRequest* Make(FString _ObjectId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalBool _bFriends, FOptionalInt32 _From, FOptionalInt64 _Outlier, FOptionalBool _bGuild, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

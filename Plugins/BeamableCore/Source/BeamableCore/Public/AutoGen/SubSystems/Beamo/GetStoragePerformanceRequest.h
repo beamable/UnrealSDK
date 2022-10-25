@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 #include "AutoGen/Optionals/OptionalString.h"
 
@@ -21,15 +24,15 @@ public:
 	
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="End Date")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="End Date", Category="Beam")
 	FOptionalString EndDate;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Storage Object Name")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Storage Object Name", Category="Beam")
 	FString StorageObjectName;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Granularity")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Granularity", Category="Beam")
 	FString Granularity;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Start Date")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Start Date", Category="Beam")
 	FOptionalString StartDate;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Period")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Period", Category="Beam")
 	FOptionalString Period;
 
 	// Body Params
@@ -42,8 +45,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_EndDate,_StartDate,_Period,Outer"))
-	static UGetStoragePerformanceRequest* MakeGetStoragePerformanceRequest(FOptionalString _EndDate, FString _StorageObjectName, FString _Granularity, FOptionalString _StartDate, FOptionalString _Period, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make GetStoragePerformance",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_EndDate,_StartDate,_Period,Outer"))
+	static UGetStoragePerformanceRequest* Make(FOptionalString _EndDate, FString _StorageObjectName, FString _Granularity, FOptionalString _StartDate, FOptionalString _Period, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

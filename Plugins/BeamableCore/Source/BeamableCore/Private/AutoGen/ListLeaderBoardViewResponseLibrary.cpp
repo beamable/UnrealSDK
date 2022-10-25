@@ -1,0 +1,40 @@
+
+#include "AutoGen/ListLeaderBoardViewResponseLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UListLeaderBoardViewResponseLibrary::ListLeaderBoardViewResponseToJsonString(const UListLeaderBoardViewResponse* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UListLeaderBoardViewResponse* UListLeaderBoardViewResponseLibrary::Make(FString Result, TArray<ULeaderBoardView*> Lbs, UObject* Outer)
+{
+	auto Serializable = NewObject<UListLeaderBoardViewResponse>(Outer);
+	Serializable->Result = Result;
+	Serializable->Lbs = Lbs;
+	
+	return Serializable;
+}
+
+void UListLeaderBoardViewResponseLibrary::Break(const UListLeaderBoardViewResponse* Serializable, FString& Result, TArray<ULeaderBoardView*>& Lbs)
+{
+	Result = Serializable->Result;
+	Lbs = Serializable->Lbs;
+		
+}
+

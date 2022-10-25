@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 #include "AutoGen/LeaderboardCreateRequestBody.h"
@@ -18,14 +21,14 @@ class BEAMABLECORE_API UPostLeaderboardsRequest : public UObject, public IBeamBa
 public:
 
 	// Path Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
 	FString ObjectId;
 	
 	// Query Params
 	
 
 	// Body Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
 	ULeaderboardCreateRequestBody* Body;
 
 	// Beam Base Request Declaration
@@ -35,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_FreezeTime,_Derivatives,_ScoreName,_CohortSettings,_Permissions,_MaxEntries,_bPartitioned,_Ttl,Outer"))
-	static UPostLeaderboardsRequest* MakePostLeaderboardsRequest(FString _ObjectId, FOptionalInt64 _FreezeTime, FOptionalArrayOfString _Derivatives, FOptionalString _ScoreName, FOptionalLeaderboardCohortSettings _CohortSettings, FOptionalClientPermission _Permissions, FOptionalInt32 _MaxEntries, FOptionalBool _bPartitioned, bool _bSharded, FOptionalInt64 _Ttl, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make PostLeaderboards",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_bPartitioned,_FreezeTime,_ScoreName,_CohortSettings,_Permissions,_MaxEntries,_Ttl,_Derivatives,Outer"))
+	static UPostLeaderboardsRequest* Make(FString _ObjectId, bool _bSharded, FOptionalBool _bPartitioned, FOptionalInt64 _FreezeTime, FOptionalString _ScoreName, FOptionalLeaderboardCohortSettings _CohortSettings, FOptionalClientPermission _Permissions, FOptionalInt32 _MaxEntries, FOptionalInt64 _Ttl, FOptionalArrayOfString _Derivatives, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

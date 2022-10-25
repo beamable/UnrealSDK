@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/NetworkSerializable.h"
 
 #include "BatchReadStatsResponse.generated.h"
 
-UCLASS(BlueprintType)
-class UBatchReadStatsResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UBatchReadStatsResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Results")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Results", Category="Beam")
 	TArray<UNetworkSerializable*> Results;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

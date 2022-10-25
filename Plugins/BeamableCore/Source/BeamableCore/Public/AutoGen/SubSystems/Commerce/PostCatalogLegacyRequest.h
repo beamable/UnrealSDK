@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 #include "AutoGen/SaveCatalogRequestBody.h"
 #include "AutoGen/ResultResponse.h"
@@ -23,7 +26,7 @@ public:
 	
 
 	// Body Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
 	USaveCatalogRequestBody* Body;
 
 	// Beam Base Request Declaration
@@ -33,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UPostCatalogLegacyRequest* MakePostCatalogLegacyRequest(TArray<UStore*> _Stores, TArray<UOfferDefinition*> _OfferDefinitions, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Commerce", DisplayName="Beam - Make PostCatalogLegacy",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
+	static UPostCatalogLegacyRequest* Make(TArray<UStore*> _Stores, TArray<UOfferDefinition*> _OfferDefinitions, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

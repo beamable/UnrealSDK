@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalInt64.h"
 #include "AutoGen/Optionals/OptionalString.h"
@@ -10,24 +11,24 @@
 
 #include "UploadRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UUploadRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UUploadRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Key")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Key", Category="Beam")
 	FString ObjectKey;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Last Modified")
-	FOptionalInt64 LastModified;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Checksum")
-	FOptionalString Checksum;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Size In Bytes")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Size In Bytes", Category="Beam")
 	int64 SizeInBytes;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Metadata")
-	FOptionalArrayOfMetadataPair Metadata;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Deleted")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Deleted", Category="Beam")
 	FOptionalBool bDeleted;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Last Modified", Category="Beam")
+	FOptionalInt64 LastModified;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Checksum", Category="Beam")
+	FOptionalString Checksum;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Metadata", Category="Beam")
+	FOptionalArrayOfMetadataPair Metadata;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

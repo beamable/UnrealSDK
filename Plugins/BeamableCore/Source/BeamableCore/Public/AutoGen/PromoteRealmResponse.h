@@ -2,20 +2,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/PromotionScope.h"
 
 #include "PromoteRealmResponse.generated.h"
 
-UCLASS(BlueprintType)
-class UPromoteRealmResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UPromoteRealmResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Source Pid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Source Pid", Category="Beam")
 	FString SourcePid;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scopes")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scopes", Category="Beam")
 	TArray<UPromotionScope*> Scopes;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

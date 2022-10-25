@@ -18,7 +18,7 @@ void UBeamUserSlots::Initialize(FSubsystemCollectionBase& Collection)
 void UBeamUserSlots::Deinitialize()
 {
 	AuthenticatedUsers.Empty();
-	AuthenticatedUserMapping.Empty();
+	AuthenticatedUserMapping.Empty();	
 }
 
 bool UBeamUserSlots::GetUserDataAtSlot(const FUserSlot& SlotId, FBeamRealmUser& OutUserData) const
@@ -107,7 +107,7 @@ void UBeamUserSlots::SaveUserAtSlot(const FUserSlot& SlotId,
 }
 
 void UBeamUserSlots::ClearUserAtSlot(const FUserSlot& SlotId, const EUserSlotClearedReason& Reason, const bool& bShouldRemoveSavedData)
-{
+{	
 	if (FBeamRealmUser ClearedUserData; GetUserDataAtSlot(SlotId, ClearedUserData))
 	{
 		// Clear serialized data
