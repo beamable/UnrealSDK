@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 #include "AutoGen/GetLogsUrlRequestBody.h"
 #include "AutoGen/GetSignedUrlResponse.h"
@@ -23,7 +26,7 @@ public:
 	
 
 	// Body Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
 	UGetLogsUrlRequestBody* Body;
 
 	// Beam Base Request Declaration
@@ -33,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_StartTime,_NextToken,_Filter,_EndTime,_Limit,Outer"))
-	static UPostLogsUrlRequest* MakePostLogsUrlRequest(FOptionalInt64 _StartTime, FString _ServiceName, FOptionalString _NextToken, FOptionalString _Filter, FOptionalInt64 _EndTime, FOptionalInt32 _Limit, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make PostLogsUrl",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_StartTime,_NextToken,_Filter,_EndTime,_Limit,Outer"))
+	static UPostLogsUrlRequest* Make(FString _ServiceName, FOptionalInt64 _StartTime, FOptionalString _NextToken, FOptionalString _Filter, FOptionalInt64 _EndTime, FOptionalInt32 _Limit, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

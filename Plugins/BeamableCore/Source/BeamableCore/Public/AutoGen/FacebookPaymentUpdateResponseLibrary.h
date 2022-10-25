@@ -2,18 +2,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FacebookPaymentUpdateResponse.h"
+#include "AutoGen/FacebookPaymentUpdateResponse.h"
 
 #include "FacebookPaymentUpdateResponseLibrary.generated.h"
 
 
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, Category="Beam")
 class BEAMABLECORE_API UFacebookPaymentUpdateResponseLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Serialize FacebookPaymentUpdateResponse To JSON String")
-	static FString FacebookPaymentUpdateResponseToJsonString(const UFacebookPaymentUpdateResponse* Serializable, const bool Pretty);		
+	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - FacebookPaymentUpdateResponse To JSON String")
+	static FString FacebookPaymentUpdateResponseToJsonString(const UFacebookPaymentUpdateResponse* Serializable, const bool Pretty);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make FacebookPaymentUpdateResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	static UFacebookPaymentUpdateResponse* Make(FString Result, FString ContentType, UObject* Outer);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break FacebookPaymentUpdateResponse", meta=(NativeBreakFunc))
+	static void Break(const UFacebookPaymentUpdateResponse* Serializable, FString& Result, FString& ContentType);
 };

@@ -21,7 +21,7 @@
 /**
  * Subsystem containing request calls for the Social service.
  */
-UCLASS(BlueprintType)
+UCLASS(NotBlueprintType)
 class BEAMABLECORE_API UBeamSocialApi : public UEngineSubsystem
 {
 private:
@@ -274,10 +274,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void GetMy(const FUserSlot& UserSlot, UGetMyRequest* Request, const FOnGetMySuccess& OnSuccess, const FOnGetMyError& OnError, const FOnGetMyComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetMy(FUserSlot UserSlot, UGetMyRequest* Request, const FOnGetMySuccess& OnSuccess, const FOnGetMyError& OnError, const FOnGetMyComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -288,10 +288,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void PostFriendsInvite(const FUserSlot& UserSlot, UPostFriendsInviteRequest* Request, const FOnPostFriendsInviteSuccess& OnSuccess, const FOnPostFriendsInviteError& OnError, const FOnPostFriendsInviteComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostFriendsInvite(FUserSlot UserSlot, UPostFriendsInviteRequest* Request, const FOnPostFriendsInviteSuccess& OnSuccess, const FOnPostFriendsInviteError& OnError, const FOnPostFriendsInviteComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -302,10 +302,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void DeleteFriendsInvite(const FUserSlot& UserSlot, UDeleteFriendsInviteRequest* Request, const FOnDeleteFriendsInviteSuccess& OnSuccess, const FOnDeleteFriendsInviteError& OnError, const FOnDeleteFriendsInviteComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void DeleteFriendsInvite(FUserSlot UserSlot, UDeleteFriendsInviteRequest* Request, const FOnDeleteFriendsInviteSuccess& OnSuccess, const FOnDeleteFriendsInviteError& OnError, const FOnDeleteFriendsInviteComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -316,10 +316,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void DeleteFriends(const FUserSlot& UserSlot, UDeleteFriendsRequest* Request, const FOnDeleteFriendsSuccess& OnSuccess, const FOnDeleteFriendsError& OnError, const FOnDeleteFriendsComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void DeleteFriends(FUserSlot UserSlot, UDeleteFriendsRequest* Request, const FOnDeleteFriendsSuccess& OnSuccess, const FOnDeleteFriendsError& OnError, const FOnDeleteFriendsComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -330,10 +330,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void PostFriendsImport(const FUserSlot& UserSlot, UPostFriendsImportRequest* Request, const FOnPostFriendsImportSuccess& OnSuccess, const FOnPostFriendsImportError& OnError, const FOnPostFriendsImportComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostFriendsImport(FUserSlot UserSlot, UPostFriendsImportRequest* Request, const FOnPostFriendsImportSuccess& OnSuccess, const FOnPostFriendsImportError& OnError, const FOnPostFriendsImportComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -344,10 +344,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void PostFriendsMake(const FUserSlot& UserSlot, UPostFriendsMakeRequest* Request, const FOnPostFriendsMakeSuccess& OnSuccess, const FOnPostFriendsMakeError& OnError, const FOnPostFriendsMakeComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostFriendsMake(FUserSlot UserSlot, UPostFriendsMakeRequest* Request, const FOnPostFriendsMakeSuccess& OnSuccess, const FOnPostFriendsMakeError& OnError, const FOnPostFriendsMakeComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -358,10 +358,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void GetSocial(const FUserSlot& UserSlot, UGetSocialRequest* Request, const FOnGetSocialSuccess& OnSuccess, const FOnGetSocialError& OnError, const FOnGetSocialComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetSocial(FUserSlot UserSlot, UGetSocialRequest* Request, const FOnGetSocialSuccess& OnSuccess, const FOnGetSocialError& OnError, const FOnGetSocialComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -372,10 +372,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void PostBlocked(const FUserSlot& UserSlot, UPostBlockedRequest* Request, const FOnPostBlockedSuccess& OnSuccess, const FOnPostBlockedError& OnError, const FOnPostBlockedComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostBlocked(FUserSlot UserSlot, UPostBlockedRequest* Request, const FOnPostBlockedSuccess& OnSuccess, const FOnPostBlockedError& OnError, const FOnPostBlockedComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -386,9 +386,138 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void DeleteBlocked(const FUserSlot& UserSlot, UDeleteBlockedRequest* Request, const FOnDeleteBlockedSuccess& OnSuccess, const FOnDeleteBlockedError& OnError, const FOnDeleteBlockedComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void DeleteBlocked(FUserSlot UserSlot, UDeleteBlockedRequest* Request, const FOnDeleteBlockedSuccess& OnSuccess, const FOnDeleteBlockedError& OnError, const FOnDeleteBlockedComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 	
+
+	
+
+	
+	/**
+	 * @brief Makes an authenticated request to the Get /basic/social/my endpoint of the Social Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetMyWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UGetMyRequest* Request, const FOnGetMySuccess& OnSuccess, const FOnGetMyError& OnError, const FOnGetMyComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Post /basic/social/friends/invite endpoint of the Social Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostFriendsInviteWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostFriendsInviteRequest* Request, const FOnPostFriendsInviteSuccess& OnSuccess, const FOnPostFriendsInviteError& OnError, const FOnPostFriendsInviteComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Delete /basic/social/friends/invite endpoint of the Social Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void DeleteFriendsInviteWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UDeleteFriendsInviteRequest* Request, const FOnDeleteFriendsInviteSuccess& OnSuccess, const FOnDeleteFriendsInviteError& OnError, const FOnDeleteFriendsInviteComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Delete /basic/social/friends endpoint of the Social Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void DeleteFriendsWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UDeleteFriendsRequest* Request, const FOnDeleteFriendsSuccess& OnSuccess, const FOnDeleteFriendsError& OnError, const FOnDeleteFriendsComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Post /basic/social/friends/import endpoint of the Social Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostFriendsImportWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostFriendsImportRequest* Request, const FOnPostFriendsImportSuccess& OnSuccess, const FOnPostFriendsImportError& OnError, const FOnPostFriendsImportComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Post /basic/social/friends/make endpoint of the Social Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostFriendsMakeWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostFriendsMakeRequest* Request, const FOnPostFriendsMakeSuccess& OnSuccess, const FOnPostFriendsMakeError& OnError, const FOnPostFriendsMakeComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /basic/social/ endpoint of the Social Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetSocialWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UGetSocialRequest* Request, const FOnGetSocialSuccess& OnSuccess, const FOnGetSocialError& OnError, const FOnGetSocialComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Post /basic/social/blocked endpoint of the Social Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostBlockedWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostBlockedRequest* Request, const FOnPostBlockedSuccess& OnSuccess, const FOnPostBlockedError& OnError, const FOnPostBlockedComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Delete /basic/social/blocked endpoint of the Social Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Social", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void DeleteBlockedWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UDeleteBlockedRequest* Request, const FOnDeleteBlockedSuccess& OnSuccess, const FOnDeleteBlockedError& OnError, const FOnDeleteBlockedComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 };

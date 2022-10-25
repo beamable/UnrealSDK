@@ -1,0 +1,38 @@
+
+#include "AutoGen/ListDefinitionsResponseLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UListDefinitionsResponseLibrary::ListDefinitionsResponseToJsonString(const UListDefinitionsResponse* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UListDefinitionsResponse* UListDefinitionsResponseLibrary::Make(TArray<UAnnouncementDto*> Content, UObject* Outer)
+{
+	auto Serializable = NewObject<UListDefinitionsResponse>(Outer);
+	Serializable->Content = Content;
+	
+	return Serializable;
+}
+
+void UListDefinitionsResponseLibrary::Break(const UListDefinitionsResponse* Serializable, TArray<UAnnouncementDto*>& Content)
+{
+	Content = Serializable->Content;
+		
+}
+

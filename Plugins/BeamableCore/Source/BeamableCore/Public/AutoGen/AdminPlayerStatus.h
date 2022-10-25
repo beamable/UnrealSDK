@@ -2,35 +2,36 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/TournamentCurrencyReward.h"
 
 #include "AdminPlayerStatus.generated.h"
 
-UCLASS(BlueprintType)
-class UAdminPlayerStatus : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UAdminPlayerStatus : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id", Category="Beam")
 	FString TournamentId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stage")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stage", Category="Beam")
 	int32 Stage;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Unclaimed Rewards")
-	TArray<UTournamentCurrencyReward*> UnclaimedRewards;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tier")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tier", Category="Beam")
 	int32 Tier;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rank")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rank", Category="Beam")
 	int32 Rank;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Score")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Score", Category="Beam")
 	double Score;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
 	int64 PlayerId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id", Category="Beam")
 	FString ContentId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Next Cycle Start Ms")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Next Cycle Start Ms", Category="Beam")
 	int64 NextCycleStartMs;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Unclaimed Rewards", Category="Beam")
+	TArray<UTournamentCurrencyReward*> UnclaimedRewards;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

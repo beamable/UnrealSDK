@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 
@@ -21,9 +24,9 @@ public:
 	
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id", Category="Beam")
 	FString TournamentId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cycles")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cycles", Category="Beam")
 	int32 Cycles;
 
 	// Body Params
@@ -36,8 +39,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UGetChampionsRequest* MakeGetChampionsRequest(FString _TournamentId, int32 _Cycles, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", DisplayName="Beam - Make GetChampions",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
+	static UGetChampionsRequest* Make(FString _TournamentId, int32 _Cycles, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
 #include "AutoGen/RouteVariables.h"
@@ -10,24 +11,24 @@
 
 #include "WebhookComet.generated.h"
 
-UCLASS(BlueprintType)
-class UWebhookComet : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UWebhookComet : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Method")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Method", Category="Beam")
 	FString Method;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Description")
-	FOptionalString Description;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Variables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Variables", Category="Beam")
 	URouteVariables* Variables;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
 	FString Symbol;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Route")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Route", Category="Beam")
 	UServiceRoute* Route;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Parameters")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Parameters", Category="Beam")
 	URouteParameters* Parameters;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Description", Category="Beam")
+	FOptionalString Description;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

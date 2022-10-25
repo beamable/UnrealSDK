@@ -17,7 +17,7 @@
 /**
  * Subsystem containing request calls for the ChatV2 service.
  */
-UCLASS(BlueprintType)
+UCLASS(NotBlueprintType)
 class BEAMABLECORE_API UBeamChatV2Api : public UEngineSubsystem
 {
 private:
@@ -174,10 +174,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|ChatV2", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void GetRooms(const FUserSlot& UserSlot, UGetRoomsRequest* Request, const FOnGetRoomsSuccess& OnSuccess, const FOnGetRoomsError& OnError, const FOnGetRoomsComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|ChatV2", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetRooms(FUserSlot UserSlot, UGetRoomsRequest* Request, const FOnGetRoomsSuccess& OnSuccess, const FOnGetRoomsError& OnError, const FOnGetRoomsComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -188,10 +188,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|ChatV2", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void PostRooms(const FUserSlot& UserSlot, UPostRoomsRequest* Request, const FOnPostRoomsSuccess& OnSuccess, const FOnPostRoomsError& OnError, const FOnPostRoomsComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|ChatV2", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostRooms(FUserSlot UserSlot, UPostRoomsRequest* Request, const FOnPostRoomsSuccess& OnSuccess, const FOnPostRoomsError& OnError, const FOnPostRoomsComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -202,10 +202,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|ChatV2", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void DeleteRooms(const FUserSlot& UserSlot, UDeleteRoomsRequest* Request, const FOnDeleteRoomsSuccess& OnSuccess, const FOnDeleteRoomsError& OnError, const FOnDeleteRoomsComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|ChatV2", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void DeleteRooms(FUserSlot UserSlot, UDeleteRoomsRequest* Request, const FOnDeleteRoomsSuccess& OnSuccess, const FOnDeleteRoomsError& OnError, const FOnDeleteRoomsComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -216,10 +216,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|ChatV2", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void GetChatV2(const FUserSlot& UserSlot, UGetChatV2Request* Request, const FOnGetChatV2Success& OnSuccess, const FOnGetChatV2Error& OnError, const FOnGetChatV2Complete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|ChatV2", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetChatV2(FUserSlot UserSlot, UGetChatV2Request* Request, const FOnGetChatV2Success& OnSuccess, const FOnGetChatV2Error& OnError, const FOnGetChatV2Complete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -230,9 +230,82 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|ChatV2", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void PostMessages(const FUserSlot& UserSlot, UPostMessagesRequest* Request, const FOnPostMessagesSuccess& OnSuccess, const FOnPostMessagesError& OnError, const FOnPostMessagesComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|ChatV2", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostMessages(FUserSlot UserSlot, UPostMessagesRequest* Request, const FOnPostMessagesSuccess& OnSuccess, const FOnPostMessagesError& OnError, const FOnPostMessagesComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 	
+
+	
+
+	
+	/**
+	 * @brief Makes an authenticated request to the Get /object/chatV2/{objectId}/rooms endpoint of the ChatV2 Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|ChatV2", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetRoomsWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UGetRoomsRequest* Request, const FOnGetRoomsSuccess& OnSuccess, const FOnGetRoomsError& OnError, const FOnGetRoomsComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Post /object/chatV2/{objectId}/rooms endpoint of the ChatV2 Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|ChatV2", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostRoomsWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostRoomsRequest* Request, const FOnPostRoomsSuccess& OnSuccess, const FOnPostRoomsError& OnError, const FOnPostRoomsComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Delete /object/chatV2/{objectId}/rooms endpoint of the ChatV2 Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|ChatV2", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void DeleteRoomsWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UDeleteRoomsRequest* Request, const FOnDeleteRoomsSuccess& OnSuccess, const FOnDeleteRoomsError& OnError, const FOnDeleteRoomsComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /object/chatV2/{objectId}/ endpoint of the ChatV2 Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|ChatV2", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetChatV2WithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UGetChatV2Request* Request, const FOnGetChatV2Success& OnSuccess, const FOnGetChatV2Error& OnError, const FOnGetChatV2Complete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Post /object/chatV2/{objectId}/messages endpoint of the ChatV2 Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|ChatV2", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostMessagesWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostMessagesRequest* Request, const FOnPostMessagesSuccess& OnSuccess, const FOnPostMessagesError& OnError, const FOnPostMessagesComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 };

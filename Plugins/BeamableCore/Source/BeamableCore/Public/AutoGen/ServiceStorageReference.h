@@ -2,28 +2,29 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
 
 #include "ServiceStorageReference.generated.h"
 
-UCLASS(BlueprintType)
-class UServiceStorageReference : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UServiceStorageReference : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Archived")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Archived", Category="Beam")
 	bool bArchived;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Enabled")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Enabled", Category="Beam")
 	bool bEnabled;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Storage Type")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Storage Type", Category="Beam")
 	FString StorageType;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
 	FString Id;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Checksum")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Checksum", Category="Beam")
 	FString Checksum;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Template Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Template Id", Category="Beam")
 	FOptionalString TemplateId;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

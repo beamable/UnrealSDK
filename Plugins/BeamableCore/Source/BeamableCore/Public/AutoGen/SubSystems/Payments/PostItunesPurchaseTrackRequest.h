@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 #include "AutoGen/TrackPurchaseRequestBody.h"
 #include "AutoGen/PaymentResultResponse.h"
@@ -23,7 +26,7 @@ public:
 	
 
 	// Body Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
 	UTrackPurchaseRequestBody* Body;
 
 	// Beam Base Request Declaration
@@ -33,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UPostItunesPurchaseTrackRequest* MakePostItunesPurchaseTrackRequest(double _PriceInLocalCurrency, FString _SkuName, FString _SkuProductId, FString _Store, TArray<UItemCreateRequestBody*> _ObtainItems, TArray<UCurrencyChange*> _ObtainCurrency, FString _PurchaseId, FString _IsoCurrencySymbol, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Payments", DisplayName="Beam - Make PostItunesPurchaseTrack",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
+	static UPostItunesPurchaseTrackRequest* Make(double _PriceInLocalCurrency, FString _SkuName, FString _SkuProductId, FString _Store, FString _PurchaseId, FString _IsoCurrencySymbol, TArray<UItemCreateRequestBody*> _ObtainItems, TArray<UCurrencyChange*> _ObtainCurrency, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

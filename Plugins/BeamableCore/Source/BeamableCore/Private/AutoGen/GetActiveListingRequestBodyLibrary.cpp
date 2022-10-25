@@ -1,0 +1,42 @@
+
+#include "AutoGen/GetActiveListingRequestBodyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UGetActiveListingRequestBodyLibrary::GetActiveListingRequestBodyToJsonString(const UGetActiveListingRequestBody* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UGetActiveListingRequestBody* UGetActiveListingRequestBodyLibrary::Make(FString Listing, FOptionalString Store, FOptionalString Time, UObject* Outer)
+{
+	auto Serializable = NewObject<UGetActiveListingRequestBody>(Outer);
+	Serializable->Listing = Listing;
+	Serializable->Store = Store;
+	Serializable->Time = Time;
+	
+	return Serializable;
+}
+
+void UGetActiveListingRequestBodyLibrary::Break(const UGetActiveListingRequestBody* Serializable, FString& Listing, FOptionalString& Store, FOptionalString& Time)
+{
+	Listing = Serializable->Listing;
+	Store = Serializable->Store;
+	Time = Serializable->Time;
+		
+}
+

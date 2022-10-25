@@ -5,7 +5,7 @@
 
 #include "EventState.generated.h"
 
-UENUM(BlueprintType)
+UENUM(BlueprintType, Category="Beam|Enums")
 enum class EEventState : uint8
 {
 	Running UMETA(DisplayName="Running", SerializationName="running"),
@@ -15,13 +15,13 @@ enum class EEventState : uint8
 	Pending UMETA(DisplayName="Pending", SerializationName="pending")		
 };
 
-UCLASS(BlueprintType)
-class UEventStateLibrary : public UBlueprintFunctionLibrary
+UCLASS(BlueprintType, Category="Beam|Enums")
+class BEAMABLECORE_API UEventStateLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:		
 	
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "EventState To Serialization Name", CompactNodeTitle = "->"), Category="Beam Enum Converters")
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "Beam - EventState To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Enums")
 	static FString EventStateToSerializationName(EEventState Value)
 	{
 		const UEnum* Enum = StaticEnum<EEventState>();
@@ -31,7 +31,7 @@ public:
 		
 	}
 
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Serialization Name To EventState", CompactNodeTitle = "->"), Category="Beam Enum Converters")
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "Beam - Serialization Name To EventState", CompactNodeTitle = "->"), Category="Beam|Enums")
 	static EEventState SerializationNameToEventState(FString Value)
 	{
 		const UEnum* Enum = StaticEnum<EEventState>();

@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalCatalog.h"
 
 #include "GetCatalogResponse.generated.h"
 
-UCLASS(BlueprintType)
-class UGetCatalogResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UGetCatalogResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Catalog")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Catalog", Category="Beam")
 	FOptionalCatalog Catalog;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

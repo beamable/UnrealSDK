@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "GetPricesRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UGetPricesRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UGetPricesRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Steam Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Steam Id", Category="Beam")
 	int64 SteamId;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

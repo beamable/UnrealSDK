@@ -1,0 +1,38 @@
+
+#include "AutoGen/PurchaseRequestBodyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UPurchaseRequestBodyLibrary::PurchaseRequestBodyToJsonString(const UPurchaseRequestBody* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UPurchaseRequestBody* UPurchaseRequestBodyLibrary::Make(FString PurchaseId, UObject* Outer)
+{
+	auto Serializable = NewObject<UPurchaseRequestBody>(Outer);
+	Serializable->PurchaseId = PurchaseId;
+	
+	return Serializable;
+}
+
+void UPurchaseRequestBodyLibrary::Break(const UPurchaseRequestBody* Serializable, FString& PurchaseId)
+{
+	PurchaseId = Serializable->PurchaseId;
+		
+}
+

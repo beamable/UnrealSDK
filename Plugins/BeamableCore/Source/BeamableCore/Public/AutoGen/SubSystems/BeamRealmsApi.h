@@ -39,7 +39,7 @@
 /**
  * Subsystem containing request calls for the Realms service.
  */
-UCLASS(BlueprintType)
+UCLASS(NotBlueprintType)
 class BEAMABLECORE_API UBeamRealmsApi : public UEngineSubsystem
 {
 private:
@@ -724,11 +724,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete"))
-	void GetCustomerAliasAvailable(UGetCustomerAliasAvailableRequest* Request, const FOnGetCustomerAliasAvailableSuccess& OnSuccess, const FOnGetCustomerAliasAvailableError& OnError, const FOnGetCustomerAliasAvailableComplete& OnComplete,
-								 int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetCustomerAliasAvailable(UGetCustomerAliasAvailableRequest* Request, const FOnGetCustomerAliasAvailableSuccess& OnSuccess, const FOnGetCustomerAliasAvailableError& OnError, const FOnGetCustomerAliasAvailableComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -738,11 +737,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete"))
-	void GetProject(UGetProjectRequest* Request, const FOnGetProjectSuccess& OnSuccess, const FOnGetProjectError& OnError, const FOnGetProjectComplete& OnComplete,
-								 int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetProject(UGetProjectRequest* Request, const FOnGetProjectSuccess& OnSuccess, const FOnGetProjectError& OnError, const FOnGetProjectComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -752,11 +750,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete"))
-	void PostCustomer(UPostCustomerRequest* Request, const FOnPostCustomerSuccess& OnSuccess, const FOnPostCustomerError& OnError, const FOnPostCustomerComplete& OnComplete,
-								 int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostCustomer(UPostCustomerRequest* Request, const FOnPostCustomerSuccess& OnSuccess, const FOnPostCustomerError& OnError, const FOnPostCustomerComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -766,11 +763,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete"))
-	void GetIsCustomer(UGetIsCustomerRequest* Request, const FOnGetIsCustomerSuccess& OnSuccess, const FOnGetIsCustomerError& OnError, const FOnGetIsCustomerComplete& OnComplete,
-								 int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetIsCustomer(UGetIsCustomerRequest* Request, const FOnGetIsCustomerSuccess& OnSuccess, const FOnGetIsCustomerError& OnError, const FOnGetIsCustomerComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -780,11 +776,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete"))
-	void GetCustomers(UGetCustomersRequest* Request, const FOnGetCustomersSuccess& OnSuccess, const FOnGetCustomersError& OnError, const FOnGetCustomersComplete& OnComplete,
-								 int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetCustomers(UGetCustomersRequest* Request, const FOnGetCustomersSuccess& OnSuccess, const FOnGetCustomersError& OnError, const FOnGetCustomersComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 
 	
@@ -796,10 +791,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void PostProjectBeamable(const FUserSlot& UserSlot, UPostProjectBeamableRequest* Request, const FOnPostProjectBeamableSuccess& OnSuccess, const FOnPostProjectBeamableError& OnError, const FOnPostProjectBeamableComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostProjectBeamable(FUserSlot UserSlot, UPostProjectBeamableRequest* Request, const FOnPostProjectBeamableSuccess& OnSuccess, const FOnPostProjectBeamableError& OnError, const FOnPostProjectBeamableComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -810,10 +805,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void PostProject(const FUserSlot& UserSlot, UPostProjectRequest* Request, const FOnPostProjectSuccess& OnSuccess, const FOnPostProjectError& OnError, const FOnPostProjectComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostProject(FUserSlot UserSlot, UPostProjectRequest* Request, const FOnPostProjectSuccess& OnSuccess, const FOnPostProjectError& OnError, const FOnPostProjectComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -824,10 +819,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void PutProject(const FUserSlot& UserSlot, UPutProjectRequest* Request, const FOnPutProjectSuccess& OnSuccess, const FOnPutProjectError& OnError, const FOnPutProjectComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PutProject(FUserSlot UserSlot, UPutProjectRequest* Request, const FOnPutProjectSuccess& OnSuccess, const FOnPutProjectError& OnError, const FOnPutProjectComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -838,10 +833,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void DeleteProject(const FUserSlot& UserSlot, UDeleteProjectRequest* Request, const FOnDeleteProjectSuccess& OnSuccess, const FOnDeleteProjectError& OnError, const FOnDeleteProjectComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void DeleteProject(FUserSlot UserSlot, UDeleteProjectRequest* Request, const FOnDeleteProjectSuccess& OnSuccess, const FOnDeleteProjectError& OnError, const FOnDeleteProjectComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -852,10 +847,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void GetGames(const FUserSlot& UserSlot, UGetGamesRequest* Request, const FOnGetGamesSuccess& OnSuccess, const FOnGetGamesError& OnError, const FOnGetGamesComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetGames(FUserSlot UserSlot, UGetGamesRequest* Request, const FOnGetGamesSuccess& OnSuccess, const FOnGetGamesError& OnError, const FOnGetGamesComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -866,10 +861,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void GetConfig(const FUserSlot& UserSlot, UGetConfigRequest* Request, const FOnGetConfigSuccess& OnSuccess, const FOnGetConfigError& OnError, const FOnGetConfigComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetConfig(FUserSlot UserSlot, UGetConfigRequest* Request, const FOnGetConfigSuccess& OnSuccess, const FOnGetConfigError& OnError, const FOnGetConfigComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -880,10 +875,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void PutConfig(const FUserSlot& UserSlot, UPutConfigRequest* Request, const FOnPutConfigSuccess& OnSuccess, const FOnPutConfigError& OnError, const FOnPutConfigComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PutConfig(FUserSlot UserSlot, UPutConfigRequest* Request, const FOnPutConfigSuccess& OnSuccess, const FOnPutConfigError& OnError, const FOnPutConfigComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -894,10 +889,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void PutProjectRename(const FUserSlot& UserSlot, UPutProjectRenameRequest* Request, const FOnPutProjectRenameSuccess& OnSuccess, const FOnPutProjectRenameError& OnError, const FOnPutProjectRenameComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PutProjectRename(FUserSlot UserSlot, UPutProjectRenameRequest* Request, const FOnPutProjectRenameSuccess& OnSuccess, const FOnPutProjectRenameError& OnError, const FOnPutProjectRenameComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -908,10 +903,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void GetPlans(const FUserSlot& UserSlot, UGetPlansRequest* Request, const FOnGetPlansSuccess& OnSuccess, const FOnGetPlansError& OnError, const FOnGetPlansComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetPlans(FUserSlot UserSlot, UGetPlansRequest* Request, const FOnGetPlansSuccess& OnSuccess, const FOnGetPlansError& OnError, const FOnGetPlansComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -922,10 +917,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void PostPlans(const FUserSlot& UserSlot, UPostPlansRequest* Request, const FOnPostPlansSuccess& OnSuccess, const FOnPostPlansError& OnError, const FOnPostPlansComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostPlans(FUserSlot UserSlot, UPostPlansRequest* Request, const FOnPostPlansSuccess& OnSuccess, const FOnPostPlansError& OnError, const FOnPostPlansComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -936,10 +931,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void GetCustomer(const FUserSlot& UserSlot, UGetCustomerRequest* Request, const FOnGetCustomerSuccess& OnSuccess, const FOnGetCustomerError& OnError, const FOnGetCustomerComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetCustomer(FUserSlot UserSlot, UGetCustomerRequest* Request, const FOnGetCustomerSuccess& OnSuccess, const FOnGetCustomerError& OnError, const FOnGetCustomerComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -950,10 +945,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void GetLaunchMessage(const FUserSlot& UserSlot, UGetLaunchMessageRequest* Request, const FOnGetLaunchMessageSuccess& OnSuccess, const FOnGetLaunchMessageError& OnError, const FOnGetLaunchMessageComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetLaunchMessage(FUserSlot UserSlot, UGetLaunchMessageRequest* Request, const FOnGetLaunchMessageSuccess& OnSuccess, const FOnGetLaunchMessageError& OnError, const FOnGetLaunchMessageComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -964,10 +959,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void PostLaunchMessage(const FUserSlot& UserSlot, UPostLaunchMessageRequest* Request, const FOnPostLaunchMessageSuccess& OnSuccess, const FOnPostLaunchMessageError& OnError, const FOnPostLaunchMessageComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostLaunchMessage(FUserSlot UserSlot, UPostLaunchMessageRequest* Request, const FOnPostLaunchMessageSuccess& OnSuccess, const FOnPostLaunchMessageError& OnError, const FOnPostLaunchMessageComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -978,10 +973,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void DeleteLaunchMessage(const FUserSlot& UserSlot, UDeleteLaunchMessageRequest* Request, const FOnDeleteLaunchMessageSuccess& OnSuccess, const FOnDeleteLaunchMessageError& OnError, const FOnDeleteLaunchMessageComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void DeleteLaunchMessage(FUserSlot UserSlot, UDeleteLaunchMessageRequest* Request, const FOnDeleteLaunchMessageSuccess& OnSuccess, const FOnDeleteLaunchMessageError& OnError, const FOnDeleteLaunchMessageComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -992,10 +987,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void GetAdminCustomer(const FUserSlot& UserSlot, UGetAdminCustomerRequest* Request, const FOnGetAdminCustomerSuccess& OnSuccess, const FOnGetAdminCustomerError& OnError, const FOnGetAdminCustomerComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetAdminCustomer(FUserSlot UserSlot, UGetAdminCustomerRequest* Request, const FOnGetAdminCustomerSuccess& OnSuccess, const FOnGetAdminCustomerError& OnError, const FOnGetAdminCustomerComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -1006,10 +1001,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void GetGame(const FUserSlot& UserSlot, UGetGameRequest* Request, const FOnGetGameSuccess& OnSuccess, const FOnGetGameError& OnError, const FOnGetGameComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetGame(FUserSlot UserSlot, UGetGameRequest* Request, const FOnGetGameSuccess& OnSuccess, const FOnGetGameError& OnError, const FOnGetGameComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -1020,10 +1015,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void PostGame(const FUserSlot& UserSlot, UBasicRealmsPostGameRequest* Request, const FOnBasicRealmsPostGameSuccess& OnSuccess, const FOnBasicRealmsPostGameError& OnError, const FOnBasicRealmsPostGameComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostGame(FUserSlot UserSlot, UBasicRealmsPostGameRequest* Request, const FOnBasicRealmsPostGameSuccess& OnSuccess, const FOnBasicRealmsPostGameError& OnError, const FOnBasicRealmsPostGameComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -1034,10 +1029,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void PutGame(const FUserSlot& UserSlot, UPutGameRequest* Request, const FOnPutGameSuccess& OnSuccess, const FOnPutGameError& OnError, const FOnPutGameComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PutGame(FUserSlot UserSlot, UPutGameRequest* Request, const FOnPutGameSuccess& OnSuccess, const FOnPutGameError& OnError, const FOnPutGameComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -1048,10 +1043,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void GetProjectPromote(const FUserSlot& UserSlot, UGetProjectPromoteRequest* Request, const FOnGetProjectPromoteSuccess& OnSuccess, const FOnGetProjectPromoteError& OnError, const FOnGetProjectPromoteComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetProjectPromote(FUserSlot UserSlot, UGetProjectPromoteRequest* Request, const FOnGetProjectPromoteSuccess& OnSuccess, const FOnGetProjectPromoteError& OnError, const FOnGetProjectPromoteComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -1062,10 +1057,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void PostProjectPromote(const FUserSlot& UserSlot, UPostProjectPromoteRequest* Request, const FOnPostProjectPromoteSuccess& OnSuccess, const FOnPostProjectPromoteError& OnError, const FOnPostProjectPromoteComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostProjectPromote(FUserSlot UserSlot, UPostProjectPromoteRequest* Request, const FOnPostProjectPromoteSuccess& OnSuccess, const FOnPostProjectPromoteError& OnError, const FOnPostProjectPromoteComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -1076,10 +1071,10 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void GetPromotion(const FUserSlot& UserSlot, UGetPromotionRequest* Request, const FOnGetPromotionSuccess& OnSuccess, const FOnGetPromotionError& OnError, const FOnGetPromotionComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetPromotion(FUserSlot UserSlot, UGetPromotionRequest* Request, const FOnGetPromotionSuccess& OnSuccess, const FOnGetPromotionError& OnError, const FOnGetPromotionComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 		
 	/**
@@ -1090,9 +1085,384 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestId The Request Id -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|APIs|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete"))
-	void PostPromotion(const FUserSlot& UserSlot, UPostPromotionRequest* Request, const FOnPostPromotionSuccess& OnSuccess, const FOnPostPromotionError& OnError, const FOnPostPromotionComplete& OnComplete, int64& OutRequestId);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostPromotion(FUserSlot UserSlot, UPostPromotionRequest* Request, const FOnPostPromotionSuccess& OnSuccess, const FOnPostPromotionError& OnError, const FOnPostPromotionComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 	
+
+	
+	/**
+	 * @brief Makes a request to the Get /basic/realms/customer/alias/available endpoint of the Realms Service.
+	 *	 
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetCustomerAliasAvailableWithRetry(const FBeamRetryConfig& RetryConfig, UGetCustomerAliasAvailableRequest* Request, const FOnGetCustomerAliasAvailableSuccess& OnSuccess, const FOnGetCustomerAliasAvailableError& OnError, const FOnGetCustomerAliasAvailableComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes a request to the Get /basic/realms/project endpoint of the Realms Service.
+	 *	 
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetProjectWithRetry(const FBeamRetryConfig& RetryConfig, UGetProjectRequest* Request, const FOnGetProjectSuccess& OnSuccess, const FOnGetProjectError& OnError, const FOnGetProjectComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes a request to the Post /basic/realms/customer endpoint of the Realms Service.
+	 *	 
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostCustomerWithRetry(const FBeamRetryConfig& RetryConfig, UPostCustomerRequest* Request, const FOnPostCustomerSuccess& OnSuccess, const FOnPostCustomerError& OnError, const FOnPostCustomerComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes a request to the Get /basic/realms/is-customer endpoint of the Realms Service.
+	 *	 
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetIsCustomerWithRetry(const FBeamRetryConfig& RetryConfig, UGetIsCustomerRequest* Request, const FOnGetIsCustomerSuccess& OnSuccess, const FOnGetIsCustomerError& OnError, const FOnGetIsCustomerComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes a request to the Get /basic/realms/customers endpoint of the Realms Service.
+	 *	 
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetCustomersWithRetry(const FBeamRetryConfig& RetryConfig, UGetCustomersRequest* Request, const FOnGetCustomersSuccess& OnSuccess, const FOnGetCustomersError& OnError, const FOnGetCustomersComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+
+	
+	/**
+	 * @brief Makes an authenticated request to the Post /basic/realms/project/beamable endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostProjectBeamableWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostProjectBeamableRequest* Request, const FOnPostProjectBeamableSuccess& OnSuccess, const FOnPostProjectBeamableError& OnError, const FOnPostProjectBeamableComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Post /basic/realms/project endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostProjectWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostProjectRequest* Request, const FOnPostProjectSuccess& OnSuccess, const FOnPostProjectError& OnError, const FOnPostProjectComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Put /basic/realms/project endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PutProjectWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPutProjectRequest* Request, const FOnPutProjectSuccess& OnSuccess, const FOnPutProjectError& OnError, const FOnPutProjectComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Delete /basic/realms/project endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void DeleteProjectWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UDeleteProjectRequest* Request, const FOnDeleteProjectSuccess& OnSuccess, const FOnDeleteProjectError& OnError, const FOnDeleteProjectComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /basic/realms/games endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetGamesWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UGetGamesRequest* Request, const FOnGetGamesSuccess& OnSuccess, const FOnGetGamesError& OnError, const FOnGetGamesComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /basic/realms/config endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetConfigWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UGetConfigRequest* Request, const FOnGetConfigSuccess& OnSuccess, const FOnGetConfigError& OnError, const FOnGetConfigComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Put /basic/realms/config endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PutConfigWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPutConfigRequest* Request, const FOnPutConfigSuccess& OnSuccess, const FOnPutConfigError& OnError, const FOnPutConfigComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Put /basic/realms/project/rename endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PutProjectRenameWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPutProjectRenameRequest* Request, const FOnPutProjectRenameSuccess& OnSuccess, const FOnPutProjectRenameError& OnError, const FOnPutProjectRenameComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /basic/realms/plans endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetPlansWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UGetPlansRequest* Request, const FOnGetPlansSuccess& OnSuccess, const FOnGetPlansError& OnError, const FOnGetPlansComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Post /basic/realms/plans endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostPlansWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostPlansRequest* Request, const FOnPostPlansSuccess& OnSuccess, const FOnPostPlansError& OnError, const FOnPostPlansComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /basic/realms/customer endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetCustomerWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UGetCustomerRequest* Request, const FOnGetCustomerSuccess& OnSuccess, const FOnGetCustomerError& OnError, const FOnGetCustomerComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /basic/realms/launch-message endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetLaunchMessageWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UGetLaunchMessageRequest* Request, const FOnGetLaunchMessageSuccess& OnSuccess, const FOnGetLaunchMessageError& OnError, const FOnGetLaunchMessageComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Post /basic/realms/launch-message endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostLaunchMessageWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostLaunchMessageRequest* Request, const FOnPostLaunchMessageSuccess& OnSuccess, const FOnPostLaunchMessageError& OnError, const FOnPostLaunchMessageComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Delete /basic/realms/launch-message endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void DeleteLaunchMessageWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UDeleteLaunchMessageRequest* Request, const FOnDeleteLaunchMessageSuccess& OnSuccess, const FOnDeleteLaunchMessageError& OnError, const FOnDeleteLaunchMessageComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /basic/realms/admin/customer endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetAdminCustomerWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UGetAdminCustomerRequest* Request, const FOnGetAdminCustomerSuccess& OnSuccess, const FOnGetAdminCustomerError& OnError, const FOnGetAdminCustomerComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /basic/realms/game endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetGameWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UGetGameRequest* Request, const FOnGetGameSuccess& OnSuccess, const FOnGetGameError& OnError, const FOnGetGameComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Post /basic/realms/game endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostGameWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UBasicRealmsPostGameRequest* Request, const FOnBasicRealmsPostGameSuccess& OnSuccess, const FOnBasicRealmsPostGameError& OnError, const FOnBasicRealmsPostGameComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Put /basic/realms/game endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PutGameWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPutGameRequest* Request, const FOnPutGameSuccess& OnSuccess, const FOnPutGameError& OnError, const FOnPutGameComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /basic/realms/project/promote endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetProjectPromoteWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UGetProjectPromoteRequest* Request, const FOnGetProjectPromoteSuccess& OnSuccess, const FOnGetProjectPromoteError& OnError, const FOnGetProjectPromoteComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Post /basic/realms/project/promote endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostProjectPromoteWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostProjectPromoteRequest* Request, const FOnPostProjectPromoteSuccess& OnSuccess, const FOnPostProjectPromoteError& OnError, const FOnPostProjectPromoteComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /basic/realms/promotion endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void GetPromotionWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UGetPromotionRequest* Request, const FOnGetPromotionSuccess& OnSuccess, const FOnGetPromotionError& OnError, const FOnGetPromotionComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+		
+	/**
+	 * @brief Makes an authenticated request to the Post /basic/realms/promotion endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request.
+	 * @param RetryConfig The retry config for this specific request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
+	void PostPromotionWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostPromotionRequest* Request, const FOnPostPromotionSuccess& OnSuccess, const FOnPostPromotionError& OnError, const FOnPostPromotionComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 };

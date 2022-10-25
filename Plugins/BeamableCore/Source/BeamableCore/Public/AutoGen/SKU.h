@@ -2,24 +2,25 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "SKU.generated.h"
 
-UCLASS(BlueprintType)
-class USKU : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API USKU : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
 	FString Name;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Description")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Description", Category="Beam")
 	FString Description;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Real Price")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Real Price", Category="Beam")
 	int32 RealPrice;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Product Ids")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Product Ids", Category="Beam")
 	TMap<FString, FString> ProductIds;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

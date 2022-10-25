@@ -2,20 +2,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "ThirdPartyAvailableRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UThirdPartyAvailableRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UThirdPartyAvailableRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Third Party")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Third Party", Category="Beam")
 	FString ThirdParty;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Token")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Token", Category="Beam")
 	FString Token;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

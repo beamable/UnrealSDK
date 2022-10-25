@@ -2,21 +2,22 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/TournamentEntry.h"
 #include "AutoGen/Optionals/OptionalTournamentEntry.h"
 
 #include "GetStandingsResponse.generated.h"
 
-UCLASS(BlueprintType)
-class UGetStandingsResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UGetStandingsResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Entries")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Entries", Category="Beam")
 	TArray<UTournamentEntry*> Entries;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Me")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Me", Category="Beam")
 	FOptionalTournamentEntry Me;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

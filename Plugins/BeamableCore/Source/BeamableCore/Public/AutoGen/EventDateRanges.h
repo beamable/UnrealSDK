@@ -2,27 +2,28 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/DateRange.h"
 #include "AutoGen/Optionals/OptionalInt64.h"
 
 #include "EventDateRanges.generated.h"
 
-UCLASS(BlueprintType)
-class UEventDateRanges : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UEventDateRanges : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
 	FString Name;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="State")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="State", Category="Beam")
 	FString State;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
 	FString Id;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Dates")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Dates", Category="Beam")
 	TArray<UDateRange*> Dates;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created At")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created At", Category="Beam")
 	FOptionalInt64 CreatedAt;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

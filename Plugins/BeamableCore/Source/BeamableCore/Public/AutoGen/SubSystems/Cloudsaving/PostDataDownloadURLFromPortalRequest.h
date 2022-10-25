@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 #include "AutoGen/ObjectRequests.h"
 #include "AutoGen/URLSResponse.h"
@@ -23,7 +26,7 @@ public:
 	
 
 	// Body Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
 	UObjectRequests* Body;
 
 	// Beam Base Request Declaration
@@ -33,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_Request,_PlayerId,Outer"))
-	static UPostDataDownloadURLFromPortalRequest* MakePostDataDownloadURLFromPortalRequest(FOptionalArrayOfObjectRequestBody _Request, FOptionalInt64 _PlayerId, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Cloudsaving", DisplayName="Beam - Make PostDataDownloadURLFromPortal",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_PlayerId,_Request,Outer"))
+	static UPostDataDownloadURLFromPortalRequest* Make(FOptionalInt64 _PlayerId, FOptionalArrayOfObjectRequestBody _Request, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

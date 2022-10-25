@@ -1,0 +1,40 @@
+
+#include "AutoGen/GroupRoleLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UGroupRoleLibrary::GroupRoleToJsonString(const UGroupRole* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UGroupRole* UGroupRoleLibrary::Make(FString Name, TArray<FString> Permissions, UObject* Outer)
+{
+	auto Serializable = NewObject<UGroupRole>(Outer);
+	Serializable->Name = Name;
+	Serializable->Permissions = Permissions;
+	
+	return Serializable;
+}
+
+void UGroupRoleLibrary::Break(const UGroupRole* Serializable, FString& Name, TArray<FString>& Permissions)
+{
+	Name = Serializable->Name;
+	Permissions = Serializable->Permissions;
+		
+}
+

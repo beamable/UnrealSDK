@@ -2,18 +2,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PostManifestResponse.h"
+#include "AutoGen/PostManifestResponse.h"
 
 #include "PostManifestResponseLibrary.generated.h"
 
 
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, Category="Beam")
 class BEAMABLECORE_API UPostManifestResponseLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Serialize PostManifestResponse To JSON String")
-	static FString PostManifestResponseToJsonString(const UPostManifestResponse* Serializable, const bool Pretty);		
+	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - PostManifestResponse To JSON String")
+	static FString PostManifestResponseToJsonString(const UPostManifestResponse* Serializable, const bool Pretty);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make PostManifestResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Manifest, Outer", NativeMakeFunc))
+	static UPostManifestResponse* Make(FOptionalManifestChecksum Manifest, UObject* Outer);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break PostManifestResponse", meta=(NativeBreakFunc))
+	static void Break(const UPostManifestResponse* Serializable, FOptionalManifestChecksum& Manifest);
 };

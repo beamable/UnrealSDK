@@ -2,30 +2,31 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "ScheduleDefinition.generated.h"
 
-UCLASS(BlueprintType)
-class UScheduleDefinition : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UScheduleDefinition : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Day Of Week")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Day Of Week", Category="Beam")
 	TArray<FString> DayOfWeek;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Minute")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Minute", Category="Beam")
 	TArray<FString> Minute;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Day Of Month")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Day Of Month", Category="Beam")
 	TArray<FString> DayOfMonth;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Year")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Year", Category="Beam")
 	TArray<FString> Year;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Hour")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Hour", Category="Beam")
 	TArray<FString> Hour;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Second")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Second", Category="Beam")
 	TArray<FString> Second;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Month")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Month", Category="Beam")
 	TArray<FString> Month;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

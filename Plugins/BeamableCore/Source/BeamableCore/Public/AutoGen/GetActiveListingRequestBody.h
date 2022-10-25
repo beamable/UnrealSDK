@@ -2,22 +2,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
 
 #include "GetActiveListingRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UGetActiveListingRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UGetActiveListingRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Listing")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Listing", Category="Beam")
 	FString Listing;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Store")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Store", Category="Beam")
 	FOptionalString Store;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Time")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Time", Category="Beam")
 	FOptionalString Time;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

@@ -1,0 +1,40 @@
+
+#include "AutoGen/MailTemplateLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UMailTemplateLibrary::MailTemplateToJsonString(const UMailTemplate* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UMailTemplate* UMailTemplateLibrary::Make(FString Subject, FString Body, UObject* Outer)
+{
+	auto Serializable = NewObject<UMailTemplate>(Outer);
+	Serializable->Subject = Subject;
+	Serializable->Body = Body;
+	
+	return Serializable;
+}
+
+void UMailTemplateLibrary::Break(const UMailTemplate* Serializable, FString& Subject, FString& Body)
+{
+	Subject = Serializable->Subject;
+	Body = Serializable->Body;
+		
+}
+

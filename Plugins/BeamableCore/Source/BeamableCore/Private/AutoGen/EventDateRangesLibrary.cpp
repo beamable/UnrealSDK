@@ -1,0 +1,46 @@
+
+#include "AutoGen/EventDateRangesLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UEventDateRangesLibrary::EventDateRangesToJsonString(const UEventDateRanges* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UEventDateRanges* UEventDateRangesLibrary::Make(FString Name, FString State, FString Id, TArray<UDateRange*> Dates, FOptionalInt64 CreatedAt, UObject* Outer)
+{
+	auto Serializable = NewObject<UEventDateRanges>(Outer);
+	Serializable->Name = Name;
+	Serializable->State = State;
+	Serializable->Id = Id;
+	Serializable->Dates = Dates;
+	Serializable->CreatedAt = CreatedAt;
+	
+	return Serializable;
+}
+
+void UEventDateRangesLibrary::Break(const UEventDateRanges* Serializable, FString& Name, FString& State, FString& Id, TArray<UDateRange*>& Dates, FOptionalInt64& CreatedAt)
+{
+	Name = Serializable->Name;
+	State = Serializable->State;
+	Id = Serializable->Id;
+	Dates = Serializable->Dates;
+	CreatedAt = Serializable->CreatedAt;
+		
+}
+

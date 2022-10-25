@@ -1,0 +1,40 @@
+
+#include "AutoGen/ObjectRequestsLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UObjectRequestsLibrary::ObjectRequestsToJsonString(const UObjectRequests* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UObjectRequests* UObjectRequestsLibrary::Make(FOptionalInt64 PlayerId, FOptionalArrayOfObjectRequestBody Request, UObject* Outer)
+{
+	auto Serializable = NewObject<UObjectRequests>(Outer);
+	Serializable->PlayerId = PlayerId;
+	Serializable->Request = Request;
+	
+	return Serializable;
+}
+
+void UObjectRequestsLibrary::Break(const UObjectRequests* Serializable, FOptionalInt64& PlayerId, FOptionalArrayOfObjectRequestBody& Request)
+{
+	PlayerId = Serializable->PlayerId;
+	Request = Serializable->Request;
+		
+}
+

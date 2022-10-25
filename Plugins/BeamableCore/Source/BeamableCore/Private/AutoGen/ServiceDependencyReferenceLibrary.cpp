@@ -1,0 +1,40 @@
+
+#include "AutoGen/ServiceDependencyReferenceLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UServiceDependencyReferenceLibrary::ServiceDependencyReferenceToJsonString(const UServiceDependencyReference* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UServiceDependencyReference* UServiceDependencyReferenceLibrary::Make(FString Id, FString StorageType, UObject* Outer)
+{
+	auto Serializable = NewObject<UServiceDependencyReference>(Outer);
+	Serializable->Id = Id;
+	Serializable->StorageType = StorageType;
+	
+	return Serializable;
+}
+
+void UServiceDependencyReferenceLibrary::Break(const UServiceDependencyReference* Serializable, FString& Id, FString& StorageType)
+{
+	Id = Serializable->Id;
+	StorageType = Serializable->StorageType;
+		
+}
+

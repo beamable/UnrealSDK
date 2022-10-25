@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 #include "AutoGen/DeleteRoleRequestBody.h"
@@ -18,14 +21,14 @@ class BEAMABLECORE_API UDeleteAdminScopeRequest : public UObject, public IBeamBa
 public:
 
 	// Path Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
 	int64 ObjectId;
 	
 	// Query Params
 	
 
 	// Body Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
 	UDeleteRoleRequestBody* Body;
 
 	// Beam Base Request Declaration
@@ -35,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UDeleteAdminScopeRequest* MakeDeleteAdminScopeRequest(int64 _ObjectId, FString _Realm, FString _Role, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make DeleteAdminScope",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
+	static UDeleteAdminScopeRequest* Make(int64 _ObjectId, FString _Realm, FString _Role, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

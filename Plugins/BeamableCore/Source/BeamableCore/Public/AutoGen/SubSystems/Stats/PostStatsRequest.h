@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 #include "AutoGen/StatUpdateRequestBody.h"
@@ -18,14 +21,14 @@ class BEAMABLECORE_API UPostStatsRequest : public UObject, public IBeamBaseReque
 public:
 
 	// Path Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
 	FString ObjectId;
 	
 	// Query Params
 	
 
 	// Body Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
 	UStatUpdateRequestBody* Body;
 
 	// Beam Base Request Declaration
@@ -35,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="Body_ObjectId,_Set,_Add,_bEmitAnalytics,Outer"))
-	static UPostStatsRequest* MakePostStatsRequest(FString _ObjectId, FOptionalString Body_ObjectId, FOptionalMapOfString _Set, FOptionalMapOfString _Add, FOptionalBool _bEmitAnalytics, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", DisplayName="Beam - Make PostStats",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_bEmitAnalytics,Body_ObjectId,_Set,_Add,Outer"))
+	static UPostStatsRequest* Make(FString _ObjectId, FOptionalBool _bEmitAnalytics, FOptionalString Body_ObjectId, FOptionalMapOfString _Set, FOptionalMapOfString _Add, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

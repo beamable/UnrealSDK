@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/ManifestView.h"
 
 #include "GetCurrentManifestResponse.generated.h"
 
-UCLASS(BlueprintType)
-class UGetCurrentManifestResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UGetCurrentManifestResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Manifest")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Manifest", Category="Beam")
 	UManifestView* Manifest;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

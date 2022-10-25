@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 #include "AutoGen/Optionals/OptionalString.h"
@@ -22,13 +25,13 @@ public:
 	
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
 	int64 PlayerId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id", Category="Beam")
 	FOptionalString TournamentId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id", Category="Beam")
 	FOptionalString ContentId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Has Unclaimed Rewards")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Has Unclaimed Rewards", Category="Beam")
 	FOptionalBool bHasUnclaimedRewards;
 
 	// Body Params
@@ -41,8 +44,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_TournamentId,_ContentId,_bHasUnclaimedRewards,Outer"))
-	static UGetAdminPlayerRequest* MakeGetAdminPlayerRequest(int64 _PlayerId, FOptionalString _TournamentId, FOptionalString _ContentId, FOptionalBool _bHasUnclaimedRewards, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", DisplayName="Beam - Make GetAdminPlayer",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_TournamentId,_ContentId,_bHasUnclaimedRewards,Outer"))
+	static UGetAdminPlayerRequest* Make(int64 _PlayerId, FOptionalString _TournamentId, FOptionalString _ContentId, FOptionalBool _bHasUnclaimedRewards, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

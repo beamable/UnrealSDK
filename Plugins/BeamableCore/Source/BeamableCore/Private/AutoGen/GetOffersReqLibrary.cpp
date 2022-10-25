@@ -1,0 +1,42 @@
+
+#include "AutoGen/GetOffersReqLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UGetOffersReqLibrary::GetOffersReqToJsonString(const UGetOffersReq* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UGetOffersReq* UGetOffersReqLibrary::Make(FOptionalString Language, FOptionalString Time, FOptionalString Stores, UObject* Outer)
+{
+	auto Serializable = NewObject<UGetOffersReq>(Outer);
+	Serializable->Language = Language;
+	Serializable->Time = Time;
+	Serializable->Stores = Stores;
+	
+	return Serializable;
+}
+
+void UGetOffersReqLibrary::Break(const UGetOffersReq* Serializable, FOptionalString& Language, FOptionalString& Time, FOptionalString& Stores)
+{
+	Language = Serializable->Language;
+	Time = Serializable->Time;
+	Stores = Serializable->Stores;
+		
+}
+

@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "PullBeamoManifestRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UPullBeamoManifestRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UPullBeamoManifestRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Source Realm Pid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Source Realm Pid", Category="Beam")
 	FString SourceRealmPid;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

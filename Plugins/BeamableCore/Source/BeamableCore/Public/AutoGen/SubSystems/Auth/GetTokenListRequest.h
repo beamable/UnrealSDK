@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 #include "AutoGen/Optionals/OptionalInt64.h"
@@ -23,15 +26,15 @@ public:
 	
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Page Size")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Page Size", Category="Beam")
 	int32 PageSize;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Page")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Page", Category="Beam")
 	int32 Page;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid", Category="Beam")
 	FOptionalInt64 Cid;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pid", Category="Beam")
 	FOptionalString Pid;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag Or Account Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag Or Account Id", Category="Beam")
 	int64 GamerTagOrAccountId;
 
 	// Body Params
@@ -44,8 +47,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_Cid,_Pid,Outer"))
-	static UGetTokenListRequest* MakeGetTokenListRequest(int32 _PageSize, int32 _Page, FOptionalInt64 _Cid, FOptionalString _Pid, int64 _GamerTagOrAccountId, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", DisplayName="Beam - Make GetTokenList",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Cid,_Pid,Outer"))
+	static UGetTokenListRequest* Make(int32 _PageSize, int32 _Page, FOptionalInt64 _Cid, FOptionalString _Pid, int64 _GamerTagOrAccountId, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

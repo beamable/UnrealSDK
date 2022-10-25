@@ -2,20 +2,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "ItemDeleteRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UItemDeleteRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UItemDeleteRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id", Category="Beam")
 	FString ContentId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
 	int64 Id;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

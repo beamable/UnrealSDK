@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "PingRsp.generated.h"
 
-UCLASS(BlueprintType)
-class UPingRsp : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UPingRsp : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Keep Alive")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Keep Alive", Category="Beam")
 	bool bKeepAlive;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

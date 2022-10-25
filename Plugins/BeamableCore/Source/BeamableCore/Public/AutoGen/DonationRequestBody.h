@@ -2,28 +2,29 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/DonationEntry.h"
 #include "AutoGen/Currency.h"
 
 #include "DonationRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UDonationRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UDonationRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Time Requested")
-	int64 TimeRequested;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Progress")
-	TArray<UDonationEntry*> Progress;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Satisfied")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Satisfied", Category="Beam")
 	bool bSatisfied;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Time Requested", Category="Beam")
+	int64 TimeRequested;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
 	int64 PlayerId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currency")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currency", Category="Beam")
 	UCurrency* Currency;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Progress", Category="Beam")
+	TArray<UDonationEntry*> Progress;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

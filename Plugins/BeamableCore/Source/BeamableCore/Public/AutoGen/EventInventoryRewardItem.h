@@ -2,20 +2,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalMapOfString.h"
 
 #include "EventInventoryRewardItem.generated.h"
 
-UCLASS(BlueprintType)
-class UEventInventoryRewardItem : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UEventInventoryRewardItem : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
 	FString Id;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Properties")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Properties", Category="Beam")
 	FOptionalMapOfString Properties;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

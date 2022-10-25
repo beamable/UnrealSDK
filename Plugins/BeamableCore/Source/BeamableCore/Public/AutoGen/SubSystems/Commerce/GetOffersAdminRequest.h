@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 #include "AutoGen/Optionals/OptionalString.h"
@@ -18,15 +21,15 @@ class BEAMABLECORE_API UGetOffersAdminRequest : public UObject, public IBeamBase
 public:
 
 	// Path Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
 	int64 ObjectId;
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Language")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Language", Category="Beam")
 	FOptionalString Language;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Time")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Time", Category="Beam")
 	FOptionalString Time;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stores")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stores", Category="Beam")
 	FOptionalString Stores;
 
 	// Body Params
@@ -39,8 +42,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_Language,_Time,_Stores,Outer"))
-	static UGetOffersAdminRequest* MakeGetOffersAdminRequest(int64 _ObjectId, FOptionalString _Language, FOptionalString _Time, FOptionalString _Stores, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Commerce", DisplayName="Beam - Make GetOffersAdmin",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Language,_Time,_Stores,Outer"))
+	static UGetOffersAdminRequest* Make(int64 _ObjectId, FOptionalString _Language, FOptionalString _Time, FOptionalString _Stores, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

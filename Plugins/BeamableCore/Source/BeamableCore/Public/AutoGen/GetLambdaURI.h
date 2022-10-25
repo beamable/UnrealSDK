@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "GetLambdaURI.generated.h"
 
-UCLASS(BlueprintType)
-class UGetLambdaURI : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UGetLambdaURI : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Uri")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Uri", Category="Beam")
 	FString Uri;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

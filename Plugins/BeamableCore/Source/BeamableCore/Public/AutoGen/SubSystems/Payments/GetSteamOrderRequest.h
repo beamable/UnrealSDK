@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 #include "AutoGen/SteamOrderInfoResponse.h"
@@ -20,7 +23,7 @@ public:
 	
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Order Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Order Id", Category="Beam")
 	FString OrderId;
 
 	// Body Params
@@ -33,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UGetSteamOrderRequest* MakeGetSteamOrderRequest(FString _OrderId, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Payments", DisplayName="Beam - Make GetSteamOrder",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
+	static UGetSteamOrderRequest* Make(FString _OrderId, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

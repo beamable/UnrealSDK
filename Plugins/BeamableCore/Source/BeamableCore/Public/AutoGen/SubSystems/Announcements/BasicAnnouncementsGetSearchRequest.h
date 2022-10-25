@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 #include "AutoGen/Optionals/OptionalString.h"
 #include "AutoGen/AnnouncementContentResponse.h"
@@ -20,7 +23,7 @@ public:
 	
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Date")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Date", Category="Beam")
 	FOptionalString Date;
 
 	// Body Params
@@ -33,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_Date,Outer"))
-	static UBasicAnnouncementsGetSearchRequest* MakeBasicAnnouncementsGetSearchRequest(FOptionalString _Date, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Announcements", DisplayName="Beam - Make BasicAnnouncementsGetSearch",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Date,Outer"))
+	static UBasicAnnouncementsGetSearchRequest* Make(FOptionalString _Date, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

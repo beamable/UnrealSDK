@@ -2,23 +2,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/RouteParameter.h"
 #include "AutoGen/Optionals/OptionalString.h"
 
 #include "RouteParameters.generated.h"
 
-UCLASS(BlueprintType)
-class URouteParameters : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API URouteParameters : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Parameters")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Parameters", Category="Beam")
 	TArray<URouteParameter*> Parameters;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Payload")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Payload", Category="Beam")
 	FOptionalString Payload;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
 	FOptionalString ObjectId;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

@@ -9,8 +9,8 @@
 
 // Has Native Make/Break require static blueprint pure functions to present as nodes that
 // don't require an execution pin connection. This is super relevant for Blueprint UX. 
-USTRUCT(BlueprintType, meta=(HasNativeMake="BeamableCore.OptionalArrayOfItemCreateRequestBodyLibrary.MakeOptionalArrayOfItemCreateRequestBody"))
-struct FOptionalArrayOfItemCreateRequestBody : public FBeamOptional
+USTRUCT(BlueprintType, meta=(HasNativeMake="BeamableCore.OptionalArrayOfItemCreateRequestBodyLibrary.MakeOptional"))
+struct BEAMABLECORE_API FOptionalArrayOfItemCreateRequestBody : public FBeamOptional
 {
 	GENERATED_BODY()
 

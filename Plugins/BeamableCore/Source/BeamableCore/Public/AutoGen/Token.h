@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalBool.h"
 #include "AutoGen/Optionals/OptionalInt64.h"
@@ -10,36 +11,36 @@
 
 #include "Token.generated.h"
 
-UCLASS(BlueprintType)
-class UToken : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UToken : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Revoked")
-	FOptionalBool bRevoked;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag")
-	FOptionalInt64 GamerTag;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scopes")
-	FOptionalArrayOfString Scopes;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Account Id")
-	FOptionalInt64 AccountId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid", Category="Beam")
 	int64 Cid;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pid")
-	FOptionalString Pid;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Expires Ms")
-	FOptionalInt64 ExpiresMs;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Token")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Token", Category="Beam")
 	FString Token;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
 	FString Type;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Platform")
-	FOptionalString Platform;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Device")
-	FOptionalString Device;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
 	int64 Created;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag", Category="Beam")
+	FOptionalInt64 GamerTag;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Account Id", Category="Beam")
+	FOptionalInt64 AccountId;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pid", Category="Beam")
+	FOptionalString Pid;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Expires Ms", Category="Beam")
+	FOptionalInt64 ExpiresMs;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Platform", Category="Beam")
+	FOptionalString Platform;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Device", Category="Beam")
+	FOptionalString Device;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Revoked", Category="Beam")
+	FOptionalBool bRevoked;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scopes", Category="Beam")
+	FOptionalArrayOfString Scopes;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

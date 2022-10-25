@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 #include "AutoGen/Optionals/OptionalBool.h"
 #include "AutoGen/GetCurrentManifestResponse.h"
@@ -20,7 +23,7 @@ public:
 	
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Archived")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Archived", Category="Beam")
 	FOptionalBool bArchived;
 
 	// Body Params
@@ -33,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_bArchived,Outer"))
-	static UGetManifestCurrentRequest* MakeGetManifestCurrentRequest(FOptionalBool _bArchived, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make GetManifestCurrent",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_bArchived,Outer"))
+	static UGetManifestCurrentRequest* Make(FOptionalBool _bArchived, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

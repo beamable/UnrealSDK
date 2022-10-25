@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/CurrencyChange.h"
 #include "AutoGen/ItemCreateRequestBody.h"
@@ -9,17 +10,17 @@
 
 #include "MailRewards.generated.h"
 
-UCLASS(BlueprintType)
-class UMailRewards : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UMailRewards : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currencies")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currencies", Category="Beam")
 	TArray<UCurrencyChange*> Currencies;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Items")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Items", Category="Beam")
 	TArray<UItemCreateRequestBody*> Items;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Apply Vip Bonus")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Apply Vip Bonus", Category="Beam")
 	FOptionalBool bApplyVipBonus;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

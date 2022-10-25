@@ -1,5 +1,8 @@
 ﻿#pragma once
-#include "BeamCoreTypes.h"
+
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
 
 #include "BeamRequestWaitHandle.generated.h"
 
@@ -11,7 +14,7 @@ enum EWaitHandleMode { All, };
 
 UDELEGATE()
 DECLARE_DYNAMIC_DELEGATE_FourParams(FOnWaitComplete, const TArray<FBeamRequestContext>&, Contexts, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, Requests,
-	const TArray<UObject*>&, Responses, const TArray<FBeamErrorResponse>&, Errors);
+                                    const TArray<UObject*>&, Responses, const TArray<FBeamErrorResponse>&, Errors);
 
 
 USTRUCT(BlueprintType)
@@ -23,8 +26,8 @@ struct FBeamRequestWaitHandle
 	int64 WaitHandleId;
 
 	UPROPERTY()
-	UBeamBackend* BeamBackend;
-	
+	UBeamBackend* BeamBackend = nullptr;
+
 	EWaitHandleMode Mode;
 	EBeamRequestStatus Status;
 

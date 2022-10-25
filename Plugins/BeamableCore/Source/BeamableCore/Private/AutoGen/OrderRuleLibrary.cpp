@@ -1,0 +1,40 @@
+
+#include "AutoGen/OrderRuleLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UOrderRuleLibrary::OrderRuleToJsonString(const UOrderRule* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UOrderRule* UOrderRuleLibrary::Make(FString V, int32 O, UObject* Outer)
+{
+	auto Serializable = NewObject<UOrderRule>(Outer);
+	Serializable->V = V;
+	Serializable->O = O;
+	
+	return Serializable;
+}
+
+void UOrderRuleLibrary::Break(const UOrderRule* Serializable, FString& V, int32& O)
+{
+	V = Serializable->V;
+	O = Serializable->O;
+		
+}
+

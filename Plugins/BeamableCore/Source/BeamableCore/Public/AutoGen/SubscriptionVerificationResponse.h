@@ -2,20 +2,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "SubscriptionVerificationResponse.generated.h"
 
-UCLASS(BlueprintType)
-class USubscriptionVerificationResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API USubscriptionVerificationResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Hub Challenge")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Hub Challenge", Category="Beam")
 	FString HubChallenge;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Type")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Type", Category="Beam")
 	FString ContentType;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

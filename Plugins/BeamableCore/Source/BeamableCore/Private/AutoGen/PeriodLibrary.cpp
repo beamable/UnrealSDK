@@ -1,0 +1,40 @@
+
+#include "AutoGen/PeriodLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UPeriodLibrary::PeriodToJsonString(const UPeriod* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UPeriod* UPeriodLibrary::Make(FString Start, FOptionalString End, UObject* Outer)
+{
+	auto Serializable = NewObject<UPeriod>(Outer);
+	Serializable->Start = Start;
+	Serializable->End = End;
+	
+	return Serializable;
+}
+
+void UPeriodLibrary::Break(const UPeriod* Serializable, FString& Start, FOptionalString& End)
+{
+	Start = Serializable->Start;
+	End = Serializable->End;
+		
+}
+

@@ -2,22 +2,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/PlayerStatusUpdate.h"
 
 #include "UpdatePlayerStatusRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UUpdatePlayerStatusRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UUpdatePlayerStatusRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
 	int64 PlayerId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id", Category="Beam")
 	FString TournamentId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Update")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Update", Category="Beam")
 	UPlayerStatusUpdate* Update;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

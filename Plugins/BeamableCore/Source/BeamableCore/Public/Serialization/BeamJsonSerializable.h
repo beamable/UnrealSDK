@@ -28,7 +28,7 @@ struct FBeamJsonSerializable
 	 * In the unlikely case we bump into performance problems in certain deserialization cases, we can opt-out of generating that type's CPP file and manually write an optimized version.
 	 */
 	UPROPERTY()
-	UObject* OuterOwner;
+	UObject* OuterOwner = nullptr;
 	
 	virtual ~FBeamJsonSerializable();
 

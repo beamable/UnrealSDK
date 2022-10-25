@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
 #include "AutoGen/Optionals/OptionalArrayOfString.h"
@@ -10,28 +11,28 @@
 
 #include "ProjectView.generated.h"
 
-UCLASS(BlueprintType)
-class UProjectView : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UProjectView : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Secret")
-	FOptionalString Secret;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Parent")
-	FOptionalString Parent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Children")
-	FOptionalArrayOfString Children;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Project Name")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Project Name", Category="Beam")
 	FString ProjectName;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Archived")
-	FOptionalBool bArchived;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid")
-	FOptionalInt64 Cid;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pid", Category="Beam")
 	FString Pid;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sharded")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Archived", Category="Beam")
+	FOptionalBool bArchived;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sharded", Category="Beam")
 	FOptionalBool bSharded;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Secret", Category="Beam")
+	FOptionalString Secret;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Parent", Category="Beam")
+	FOptionalString Parent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid", Category="Beam")
+	FOptionalInt64 Cid;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Children", Category="Beam")
+	FOptionalArrayOfString Children;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

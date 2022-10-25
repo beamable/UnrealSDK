@@ -1,0 +1,42 @@
+
+#include "AutoGen/CurrencyChangeLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UCurrencyChangeLibrary::CurrencyChangeToJsonString(const UCurrencyChange* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UCurrencyChange* UCurrencyChangeLibrary::Make(FString Symbol, int64 Amount, FOptionalInt64 OriginalAmount, UObject* Outer)
+{
+	auto Serializable = NewObject<UCurrencyChange>(Outer);
+	Serializable->Symbol = Symbol;
+	Serializable->Amount = Amount;
+	Serializable->OriginalAmount = OriginalAmount;
+	
+	return Serializable;
+}
+
+void UCurrencyChangeLibrary::Break(const UCurrencyChange* Serializable, FString& Symbol, int64& Amount, FOptionalInt64& OriginalAmount)
+{
+	Symbol = Serializable->Symbol;
+	Amount = Serializable->Amount;
+	OriginalAmount = Serializable->OriginalAmount;
+		
+}
+

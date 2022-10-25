@@ -2,26 +2,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalArrayOfServiceDependencyReference.h"
 
 #include "ServiceStatus.generated.h"
 
-UCLASS(BlueprintType)
-class UServiceStatus : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UServiceStatus : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Current")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Current", Category="Beam")
 	bool bIsCurrent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Running")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Running", Category="Beam")
 	bool bRunning;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Service Name")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Service Name", Category="Beam")
 	FString ServiceName;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Image Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Image Id", Category="Beam")
 	FString ImageId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Service Dependency References")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Service Dependency References", Category="Beam")
 	FOptionalArrayOfServiceDependencyReference ServiceDependencyReferences;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

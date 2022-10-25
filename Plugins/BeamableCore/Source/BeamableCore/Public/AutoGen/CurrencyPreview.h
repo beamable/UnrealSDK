@@ -2,22 +2,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "CurrencyPreview.generated.h"
 
-UCLASS(BlueprintType)
-class UCurrencyPreview : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UCurrencyPreview : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
 	FString Id;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Amount")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Amount", Category="Beam")
 	int64 Amount;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Original Amount")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Original Amount", Category="Beam")
 	int64 OriginalAmount;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

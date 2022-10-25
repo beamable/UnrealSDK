@@ -1,0 +1,38 @@
+
+#include "AutoGen/BulkSendMailRequestBodyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UBulkSendMailRequestBodyLibrary::BulkSendMailRequestBodyToJsonString(const UBulkSendMailRequestBody* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UBulkSendMailRequestBody* UBulkSendMailRequestBodyLibrary::Make(TArray<USendMailRequestBody*> SendMailRequests, UObject* Outer)
+{
+	auto Serializable = NewObject<UBulkSendMailRequestBody>(Outer);
+	Serializable->SendMailRequests = SendMailRequests;
+	
+	return Serializable;
+}
+
+void UBulkSendMailRequestBodyLibrary::Break(const UBulkSendMailRequestBody* Serializable, TArray<USendMailRequestBody*>& SendMailRequests)
+{
+	SendMailRequests = Serializable->SendMailRequests;
+		
+}
+

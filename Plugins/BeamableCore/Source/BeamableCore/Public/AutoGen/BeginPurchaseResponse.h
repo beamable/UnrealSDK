@@ -2,20 +2,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
 
 #include "BeginPurchaseResponse.generated.h"
 
-UCLASS(BlueprintType)
-class UBeginPurchaseResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UBeginPurchaseResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Txid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Txid", Category="Beam")
 	int64 Txid;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Access Token")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Access Token", Category="Beam")
 	FOptionalString AccessToken;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

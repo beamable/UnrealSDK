@@ -1,0 +1,38 @@
+
+#include "AutoGen/MailSearchResponseLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UMailSearchResponseLibrary::MailSearchResponseToJsonString(const UMailSearchResponse* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UMailSearchResponse* UMailSearchResponseLibrary::Make(TArray<UMailSearchResponseClause*> Results, UObject* Outer)
+{
+	auto Serializable = NewObject<UMailSearchResponse>(Outer);
+	Serializable->Results = Results;
+	
+	return Serializable;
+}
+
+void UMailSearchResponseLibrary::Break(const UMailSearchResponse* Serializable, TArray<UMailSearchResponseClause*>& Results)
+{
+	Results = Serializable->Results;
+		
+}
+

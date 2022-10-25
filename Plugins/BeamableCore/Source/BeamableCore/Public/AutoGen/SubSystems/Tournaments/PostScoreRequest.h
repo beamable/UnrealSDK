@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 #include "AutoGen/ScoreRequestBody.h"
 #include "AutoGen/EmptyResponse.h"
@@ -23,7 +26,7 @@ public:
 	
 
 	// Body Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
 	UScoreRequestBody* Body;
 
 	// Beam Base Request Declaration
@@ -33,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_Stats,_bIncrement,Outer"))
-	static UPostScoreRequest* MakePostScoreRequest(FString _TournamentId, FOptionalMapOfString _Stats, double _Score, int64 _PlayerId, FOptionalBool _bIncrement, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", DisplayName="Beam - Make PostScore",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_bIncrement,_Stats,Outer"))
+	static UPostScoreRequest* Make(FString _TournamentId, double _Score, int64 _PlayerId, FOptionalBool _bIncrement, FOptionalMapOfString _Stats, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -2,18 +2,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ProjectView.h"
+#include "AutoGen/ProjectView.h"
 
 #include "ProjectViewLibrary.generated.h"
 
 
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, Category="Beam")
 class BEAMABLECORE_API UProjectViewLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Serialize ProjectView To JSON String")
-	static FString ProjectViewToJsonString(const UProjectView* Serializable, const bool Pretty);		
+	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - ProjectView To JSON String")
+	static FString ProjectViewToJsonString(const UProjectView* Serializable, const bool Pretty);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ProjectView", meta=(DefaultToSelf="Outer", AdvancedDisplay="bArchived, bSharded, Secret, Parent, Cid, Children, Outer", NativeMakeFunc))
+	static UProjectView* Make(FString ProjectName, FString Pid, FOptionalBool bArchived, FOptionalBool bSharded, FOptionalString Secret, FOptionalString Parent, FOptionalInt64 Cid, FOptionalArrayOfString Children, UObject* Outer);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break ProjectView", meta=(NativeBreakFunc))
+	static void Break(const UProjectView* Serializable, FString& ProjectName, FString& Pid, FOptionalBool& bArchived, FOptionalBool& bSharded, FOptionalString& Secret, FOptionalString& Parent, FOptionalInt64& Cid, FOptionalArrayOfString& Children);
 };

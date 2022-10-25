@@ -2,22 +2,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "LeaderboardGetMatchRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class ULeaderboardGetMatchRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API ULeaderboardGetMatchRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pool Size")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pool Size", Category="Beam")
 	int32 PoolSize;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Windows")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Windows", Category="Beam")
 	int32 Windows;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Window Size")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Window Size", Category="Beam")
 	int32 WindowSize;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

@@ -2,20 +2,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "ObjectMetadataResponse.generated.h"
 
-UCLASS(BlueprintType)
-class UObjectMetadataResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UObjectMetadataResponse : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Key")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Key", Category="Beam")
 	FString ObjectKey;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Metadata")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Metadata", Category="Beam")
 	TMap<FString, FString> Metadata;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

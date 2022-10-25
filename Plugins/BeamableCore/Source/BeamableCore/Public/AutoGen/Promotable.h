@@ -2,20 +2,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "Promotable.generated.h"
 
-UCLASS(BlueprintType)
-class UPromotable : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UPromotable : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Checksum")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Checksum", Category="Beam")
 	FString Checksum;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created At")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created At", Category="Beam")
 	int64 CreatedAt;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

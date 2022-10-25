@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 #include "AutoGen/Optionals/OptionalString.h"
@@ -18,11 +21,11 @@ class BEAMABLECORE_API UGetClientRequest : public UObject, public IBeamBaseReque
 public:
 
 	// Path Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
 	FString ObjectId;
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stats")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stats", Category="Beam")
 	FOptionalString Stats;
 
 	// Body Params
@@ -35,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_Stats,Outer"))
-	static UGetClientRequest* MakeGetClientRequest(FString _ObjectId, FOptionalString _Stats, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", DisplayName="Beam - Make GetClient",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Stats,Outer"))
+	static UGetClientRequest* Make(FString _ObjectId, FOptionalString _Stats, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

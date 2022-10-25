@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalArrayOfString.h"
 #include "AutoGen/Optionals/OptionalBool.h"
@@ -9,27 +10,27 @@
 
 #include "DataDomain.generated.h"
 
-UCLASS(BlueprintType)
-class UDataDomain : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UDataDomain : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Message Bus Analytics")
-	FOptionalArrayOfString MessageBusAnalytics;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Memcached Hosts")
-	TArray<FString> MemcachedHosts;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Mongo Sharded")
-	bool bMongoSharded;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Mongo SSL")
-	FOptionalBool bMongoSSL;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Mongo Hosts")
-	TArray<FString> MongoHosts;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Mongo SSL Enabled")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Mongo SSL Enabled", Category="Beam")
 	bool bMongoSSLEnabled;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Message Bus Common")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Mongo Sharded", Category="Beam")
+	bool bMongoSharded;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Memcached Hosts", Category="Beam")
+	TArray<FString> MemcachedHosts;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Mongo Hosts", Category="Beam")
+	TArray<FString> MongoHosts;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Mongo SSL", Category="Beam")
+	FOptionalBool bMongoSSL;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Message Bus Analytics", Category="Beam")
+	FOptionalArrayOfString MessageBusAnalytics;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Message Bus Common", Category="Beam")
 	FOptionalArrayOfString MessageBusCommon;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Redis Shards")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Redis Shards", Category="Beam")
 	FOptionalArrayOfRedisShard RedisShards;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

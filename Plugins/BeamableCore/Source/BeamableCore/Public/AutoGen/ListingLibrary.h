@@ -2,18 +2,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Listing.h"
+#include "AutoGen/Listing.h"
 
 #include "ListingLibrary.generated.h"
 
 
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, Category="Beam")
 class BEAMABLECORE_API UListingLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Serialize Listing To JSON String")
-	static FString ListingToJsonString(const UListing* Serializable, const bool Pretty);		
+	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - Listing To JSON String")
+	static FString ListingToJsonString(const UListing* Serializable, const bool Pretty);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make Listing", meta=(DefaultToSelf="Outer", AdvancedDisplay="PurchaseLimit, ScheduleInstancePurchaseLimit, Schedule, ActiveDurationCoolDownSeconds, ActiveDurationSeconds, ActiveDurationPurchaseLimit, ActivePeriod, ButtonText, Outer", NativeMakeFunc))
+	static UListing* Make(FString OfferSymbol, UPrice* Price, FString Symbol, TArray<UCohortRequirement*> CohortRequirements, TArray<UPlayerStatRequirement*> PlayerStatRequirements, TArray<UEntitlementRequirement*> EntitlementRequirements, TArray<UOfferRequirement*> OfferRequirements, TMap<FString, FString> ClientData, FOptionalInt32 PurchaseLimit, FOptionalInt32 ScheduleInstancePurchaseLimit, FOptionalSchedule Schedule, FOptionalInt32 ActiveDurationCoolDownSeconds, FOptionalInt32 ActiveDurationSeconds, FOptionalInt32 ActiveDurationPurchaseLimit, FOptionalPeriod ActivePeriod, FOptionalMapOfString ButtonText, UObject* Outer);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break Listing", meta=(NativeBreakFunc))
+	static void Break(const UListing* Serializable, FString& OfferSymbol, UPrice*& Price, FString& Symbol, TArray<UCohortRequirement*>& CohortRequirements, TArray<UPlayerStatRequirement*>& PlayerStatRequirements, TArray<UEntitlementRequirement*>& EntitlementRequirements, TArray<UOfferRequirement*>& OfferRequirements, TMap<FString, FString>& ClientData, FOptionalInt32& PurchaseLimit, FOptionalInt32& ScheduleInstancePurchaseLimit, FOptionalSchedule& Schedule, FOptionalInt32& ActiveDurationCoolDownSeconds, FOptionalInt32& ActiveDurationSeconds, FOptionalInt32& ActiveDurationPurchaseLimit, FOptionalPeriod& ActivePeriod, FOptionalMapOfString& ButtonText);
 };

@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/MailSearchResponseClause.h"
 
 #include "MailSearchResponse.generated.h"
 
-UCLASS(BlueprintType)
-class UMailSearchResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UMailSearchResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Results")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Results", Category="Beam")
 	TArray<UMailSearchResponseClause*> Results;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

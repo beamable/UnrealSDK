@@ -2,20 +2,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "RenameProjectRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class URenameProjectRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API URenameProjectRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Project Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Project Id", Category="Beam")
 	FString ProjectId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="New Name")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="New Name", Category="Beam")
 	FString NewName;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

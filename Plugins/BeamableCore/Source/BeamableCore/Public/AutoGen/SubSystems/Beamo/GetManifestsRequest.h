@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 #include "AutoGen/Optionals/OptionalInt32.h"
 #include "AutoGen/Optionals/OptionalBool.h"
@@ -21,11 +24,11 @@ public:
 	
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Offset")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Offset", Category="Beam")
 	FOptionalInt32 Offset;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit", Category="Beam")
 	FOptionalInt32 Limit;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Archived")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Archived", Category="Beam")
 	FOptionalBool bArchived;
 
 	// Body Params
@@ -38,8 +41,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_Offset,_Limit,_bArchived,Outer"))
-	static UGetManifestsRequest* MakeGetManifestsRequest(FOptionalInt32 _Offset, FOptionalInt32 _Limit, FOptionalBool _bArchived, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make GetManifests",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Offset,_Limit,_bArchived,Outer"))
+	static UGetManifestsRequest* Make(FOptionalInt32 _Offset, FOptionalInt32 _Limit, FOptionalBool _bArchived, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

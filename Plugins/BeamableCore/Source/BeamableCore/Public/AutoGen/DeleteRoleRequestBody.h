@@ -2,20 +2,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "DeleteRoleRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UDeleteRoleRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UDeleteRoleRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Realm")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Realm", Category="Beam")
 	FString Realm;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Role")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Role", Category="Beam")
 	FString Role;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

@@ -2,22 +2,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "VipBonus.generated.h"
 
-UCLASS(BlueprintType)
-class UVipBonus : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UVipBonus : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currency")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currency", Category="Beam")
 	FString Currency;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Multiplier")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Multiplier", Category="Beam")
 	double Multiplier;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Round To Nearest")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Round To Nearest", Category="Beam")
 	int32 RoundToNearest;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

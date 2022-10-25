@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "LeaderboardGetRanksRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class ULeaderboardGetRanksRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API ULeaderboardGetRanksRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Ids")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Ids", Category="Beam")
 	FString Ids;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/PlayerListingView.h"
 #include "AutoGen/Optionals/OptionalInt64.h"
@@ -9,21 +10,21 @@
 
 #include "PlayerStoreView.generated.h"
 
-UCLASS(BlueprintType)
-class UPlayerStoreView : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UPlayerStoreView : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Listings")
-	TArray<UPlayerListingView*> Listings;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
 	FString Symbol;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Next Delta Seconds")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Listings", Category="Beam")
+	TArray<UPlayerListingView*> Listings;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Next Delta Seconds", Category="Beam")
 	FOptionalInt64 NextDeltaSeconds;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Title")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Title", Category="Beam")
 	FOptionalString Title;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Seconds Remain")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Seconds Remain", Category="Beam")
 	FOptionalInt64 SecondsRemain;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

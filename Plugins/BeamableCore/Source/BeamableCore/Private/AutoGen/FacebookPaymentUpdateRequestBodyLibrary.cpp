@@ -1,0 +1,40 @@
+
+#include "AutoGen/FacebookPaymentUpdateRequestBodyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UFacebookPaymentUpdateRequestBodyLibrary::FacebookPaymentUpdateRequestBodyToJsonString(const UFacebookPaymentUpdateRequestBody* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UFacebookPaymentUpdateRequestBody* UFacebookPaymentUpdateRequestBodyLibrary::Make(FString Object, TArray<UFacebookUpdatedEntry*> Entry, UObject* Outer)
+{
+	auto Serializable = NewObject<UFacebookPaymentUpdateRequestBody>(Outer);
+	Serializable->Object = Object;
+	Serializable->Entry = Entry;
+	
+	return Serializable;
+}
+
+void UFacebookPaymentUpdateRequestBodyLibrary::Break(const UFacebookPaymentUpdateRequestBody* Serializable, FString& Object, TArray<UFacebookUpdatedEntry*>& Entry)
+{
+	Object = Serializable->Object;
+	Entry = Serializable->Entry;
+		
+}
+

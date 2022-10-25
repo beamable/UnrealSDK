@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "LeaderboardRemoveCacheEntryRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class ULeaderboardRemoveCacheEntryRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API ULeaderboardRemoveCacheEntryRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
 	int64 PlayerId;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

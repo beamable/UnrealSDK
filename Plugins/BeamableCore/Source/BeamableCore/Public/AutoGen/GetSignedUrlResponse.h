@@ -2,25 +2,26 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/GetLogsUrlHeader.h"
 
 #include "GetSignedUrlResponse.generated.h"
 
-UCLASS(BlueprintType)
-class UGetSignedUrlResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UGetSignedUrlResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Headers")
-	TArray<UGetLogsUrlHeader*> Headers;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Url")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Url", Category="Beam")
 	FString Url;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Body")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Body", Category="Beam")
 	FString Body;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Method")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Method", Category="Beam")
 	FString Method;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Headers", Category="Beam")
+	TArray<UGetLogsUrlHeader*> Headers;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

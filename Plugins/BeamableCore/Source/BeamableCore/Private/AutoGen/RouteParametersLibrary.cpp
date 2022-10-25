@@ -1,0 +1,42 @@
+
+#include "AutoGen/RouteParametersLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString URouteParametersLibrary::RouteParametersToJsonString(const URouteParameters* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+URouteParameters* URouteParametersLibrary::Make(TArray<URouteParameter*> Parameters, FOptionalString Payload, FOptionalString ObjectId, UObject* Outer)
+{
+	auto Serializable = NewObject<URouteParameters>(Outer);
+	Serializable->Parameters = Parameters;
+	Serializable->Payload = Payload;
+	Serializable->ObjectId = ObjectId;
+	
+	return Serializable;
+}
+
+void URouteParametersLibrary::Break(const URouteParameters* Serializable, TArray<URouteParameter*>& Parameters, FOptionalString& Payload, FOptionalString& ObjectId)
+{
+	Parameters = Serializable->Parameters;
+	Payload = Serializable->Payload;
+	ObjectId = Serializable->ObjectId;
+		
+}
+

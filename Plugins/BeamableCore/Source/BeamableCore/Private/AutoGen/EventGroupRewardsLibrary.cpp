@@ -1,0 +1,38 @@
+
+#include "AutoGen/EventGroupRewardsLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UEventGroupRewardsLibrary::EventGroupRewardsToJsonString(const UEventGroupRewards* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UEventGroupRewards* UEventGroupRewardsLibrary::Make(FOptionalArrayOfEventRewardContent ScoreRewards, UObject* Outer)
+{
+	auto Serializable = NewObject<UEventGroupRewards>(Outer);
+	Serializable->ScoreRewards = ScoreRewards;
+	
+	return Serializable;
+}
+
+void UEventGroupRewardsLibrary::Break(const UEventGroupRewards* Serializable, FOptionalArrayOfEventRewardContent& ScoreRewards)
+{
+	ScoreRewards = Serializable->ScoreRewards;
+		
+}
+

@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/OrderRule.h"
 
 #include "OrderRules.generated.h"
 
-UCLASS(BlueprintType)
-class UOrderRules : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UOrderRules : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Orules")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Orules", Category="Beam")
 	TArray<UOrderRule*> Orules;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

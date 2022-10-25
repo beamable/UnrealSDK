@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/CurrencyPreview.h"
 
 #include "PreviewVipBonusResponse.generated.h"
 
-UCLASS(BlueprintType)
-class UPreviewVipBonusResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UPreviewVipBonusResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currencies")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currencies", Category="Beam")
 	TArray<UCurrencyPreview*> Currencies;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

@@ -2,18 +2,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Store.h"
+#include "AutoGen/Store.h"
 
 #include "StoreLibrary.generated.h"
 
 
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, Category="Beam")
 class BEAMABLECORE_API UStoreLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Serialize Store To JSON String")
-	static FString StoreToJsonString(const UStore* Serializable, const bool Pretty);		
+	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - Store To JSON String")
+	static FString StoreToJsonString(const UStore* Serializable, const bool Pretty);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make Store", meta=(DefaultToSelf="Outer", AdvancedDisplay="bShowInactiveListings, ActiveListingLimit, Choose, RefreshTime, Title, Outer", NativeMakeFunc))
+	static UStore* Make(FString Symbol, TArray<UListing*> Listings, FOptionalBool bShowInactiveListings, FOptionalInt32 ActiveListingLimit, FOptionalInt32 Choose, FOptionalInt32 RefreshTime, FOptionalString Title, UObject* Outer);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break Store", meta=(NativeBreakFunc))
+	static void Break(const UStore* Serializable, FString& Symbol, TArray<UListing*>& Listings, FOptionalBool& bShowInactiveListings, FOptionalInt32& ActiveListingLimit, FOptionalInt32& Choose, FOptionalInt32& RefreshTime, FOptionalString& Title);
 };

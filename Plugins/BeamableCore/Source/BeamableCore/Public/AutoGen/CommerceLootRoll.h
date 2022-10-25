@@ -2,20 +2,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalArrayOfString.h"
 
 #include "CommerceLootRoll.generated.h"
 
-UCLASS(BlueprintType)
-class UCommerceLootRoll : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UCommerceLootRoll : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Preroll")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Preroll", Category="Beam")
 	bool bPreroll;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="External Tables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="External Tables", Category="Beam")
 	FOptionalArrayOfString ExternalTables;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalInt32.h"
 #include "AutoGen/Listing.h"
@@ -10,25 +11,25 @@
 
 #include "Store.generated.h"
 
-UCLASS(BlueprintType)
-class UStore : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UStore : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Active Listing Limit")
-	FOptionalInt32 ActiveListingLimit;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Choose")
-	FOptionalInt32 Choose;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Listings")
-	TArray<UListing*> Listings;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Show Inactive Listings")
-	FOptionalBool bShowInactiveListings;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
 	FString Symbol;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Refresh Time")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Listings", Category="Beam")
+	TArray<UListing*> Listings;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Show Inactive Listings", Category="Beam")
+	FOptionalBool bShowInactiveListings;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Active Listing Limit", Category="Beam")
+	FOptionalInt32 ActiveListingLimit;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Choose", Category="Beam")
+	FOptionalInt32 Choose;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Refresh Time", Category="Beam")
 	FOptionalInt32 RefreshTime;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Title")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Title", Category="Beam")
 	FOptionalString Title;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

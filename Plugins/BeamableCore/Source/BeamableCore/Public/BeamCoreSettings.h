@@ -3,8 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+
 #include "BeamEnvironment.h"
+#include "BeamBackend/BeamRetryConfig.h"
 #include "BeamCoreSettings.generated.h"
 
 /**

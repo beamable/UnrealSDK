@@ -1,0 +1,42 @@
+
+#include "AutoGen/MakeDonationRequestBodyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UMakeDonationRequestBodyLibrary::MakeDonationRequestBodyToJsonString(const UMakeDonationRequestBody* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UMakeDonationRequestBody* UMakeDonationRequestBodyLibrary::Make(int64 RecipientId, int64 Amount, FOptionalBool bAutoClaim, UObject* Outer)
+{
+	auto Serializable = NewObject<UMakeDonationRequestBody>(Outer);
+	Serializable->RecipientId = RecipientId;
+	Serializable->Amount = Amount;
+	Serializable->bAutoClaim = bAutoClaim;
+	
+	return Serializable;
+}
+
+void UMakeDonationRequestBodyLibrary::Break(const UMakeDonationRequestBody* Serializable, int64& RecipientId, int64& Amount, FOptionalBool& bAutoClaim)
+{
+	RecipientId = Serializable->RecipientId;
+	Amount = Serializable->Amount;
+	bAutoClaim = Serializable->bAutoClaim;
+		
+}
+

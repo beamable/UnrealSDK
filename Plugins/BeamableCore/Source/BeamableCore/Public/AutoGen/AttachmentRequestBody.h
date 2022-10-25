@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalInt32.h"
 #include "AutoGen/Optionals/OptionalString.h"
@@ -9,22 +10,22 @@
 
 #include "AttachmentRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UAttachmentRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UAttachmentRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Quantity")
-	FOptionalInt32 Quantity;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
 	FString Symbol;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Specialization")
-	FOptionalString Specialization;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Target")
-	FOptionalInt64 Target;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Action")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Action", Category="Beam")
 	FString Action;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Quantity", Category="Beam")
+	FOptionalInt32 Quantity;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Specialization", Category="Beam")
+	FOptionalString Specialization;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Target", Category="Beam")
+	FOptionalInt64 Target;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

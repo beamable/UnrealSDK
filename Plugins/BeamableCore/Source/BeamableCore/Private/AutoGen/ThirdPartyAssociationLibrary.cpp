@@ -1,0 +1,48 @@
+
+#include "AutoGen/ThirdPartyAssociationLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UThirdPartyAssociationLibrary::ThirdPartyAssociationToJsonString(const UThirdPartyAssociation* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UThirdPartyAssociation* UThirdPartyAssociationLibrary::Make(FString Name, FString UserAppId, FString AppId, TMap<FString, FString> Meta, FOptionalString Email, FOptionalString UserBusinessId, UObject* Outer)
+{
+	auto Serializable = NewObject<UThirdPartyAssociation>(Outer);
+	Serializable->Name = Name;
+	Serializable->UserAppId = UserAppId;
+	Serializable->AppId = AppId;
+	Serializable->Meta = Meta;
+	Serializable->Email = Email;
+	Serializable->UserBusinessId = UserBusinessId;
+	
+	return Serializable;
+}
+
+void UThirdPartyAssociationLibrary::Break(const UThirdPartyAssociation* Serializable, FString& Name, FString& UserAppId, FString& AppId, TMap<FString, FString>& Meta, FOptionalString& Email, FOptionalString& UserBusinessId)
+{
+	Name = Serializable->Name;
+	UserAppId = Serializable->UserAppId;
+	AppId = Serializable->AppId;
+	Meta = Serializable->Meta;
+	Email = Serializable->Email;
+	UserBusinessId = Serializable->UserBusinessId;
+		
+}
+

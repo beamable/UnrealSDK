@@ -2,18 +2,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "LeaderboardApiViewRequestBody.h"
+#include "AutoGen/LeaderboardApiViewRequestBody.h"
 
 #include "LeaderboardApiViewRequestBodyLibrary.generated.h"
 
 
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, Category="Beam")
 class BEAMABLECORE_API ULeaderboardApiViewRequestBodyLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Serialize LeaderboardApiViewRequestBody To JSON String")
-	static FString LeaderboardApiViewRequestBodyToJsonString(const ULeaderboardApiViewRequestBody* Serializable, const bool Pretty);		
+	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - LeaderboardApiViewRequestBody To JSON String")
+	static FString LeaderboardApiViewRequestBodyToJsonString(const ULeaderboardApiViewRequestBody* Serializable, const bool Pretty);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make LeaderboardApiViewRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bFriends, bGuild, Max, Focus, From, Outlier, Outer", NativeMakeFunc))
+	static ULeaderboardApiViewRequestBody* Make(FOptionalBool bFriends, FOptionalBool bGuild, FOptionalInt32 Max, FOptionalInt64 Focus, FOptionalInt32 From, FOptionalInt64 Outlier, UObject* Outer);
+
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break LeaderboardApiViewRequestBody", meta=(NativeBreakFunc))
+	static void Break(const ULeaderboardApiViewRequestBody* Serializable, FOptionalBool& bFriends, FOptionalBool& bGuild, FOptionalInt32& Max, FOptionalInt64& Focus, FOptionalInt32& From, FOptionalInt64& Outlier);
 };

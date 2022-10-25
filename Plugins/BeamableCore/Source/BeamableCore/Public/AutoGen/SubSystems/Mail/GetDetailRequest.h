@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 #include "AutoGen/MailResponse.h"
@@ -17,11 +20,11 @@ class BEAMABLECORE_API UGetDetailRequest : public UObject, public IBeamBaseReque
 public:
 
 	// Path Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
 	int64 ObjectId;
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Mid")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Mid", Category="Beam")
 	int64 Mid;
 
 	// Body Params
@@ -34,8 +37,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UGetDetailRequest* MakeGetDetailRequest(int64 _ObjectId, int64 _Mid, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Mail", DisplayName="Beam - Make GetDetail",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
+	static UGetDetailRequest* Make(int64 _ObjectId, int64 _Mid, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

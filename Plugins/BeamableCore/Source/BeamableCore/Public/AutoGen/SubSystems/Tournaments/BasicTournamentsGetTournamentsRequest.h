@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 #include "AutoGen/Optionals/OptionalBool.h"
 #include "AutoGen/Optionals/OptionalString.h"
@@ -22,11 +25,11 @@ public:
 	
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Running")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Running", Category="Beam")
 	FOptionalBool bIsRunning;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id", Category="Beam")
 	FOptionalString ContentId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cycle")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cycle", Category="Beam")
 	FOptionalInt32 Cycle;
 
 	// Body Params
@@ -39,8 +42,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_bIsRunning,_ContentId,_Cycle,Outer"))
-	static UBasicTournamentsGetTournamentsRequest* MakeBasicTournamentsGetTournamentsRequest(FOptionalBool _bIsRunning, FOptionalString _ContentId, FOptionalInt32 _Cycle, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", DisplayName="Beam - Make BasicTournamentsGetTournaments",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_bIsRunning,_ContentId,_Cycle,Outer"))
+	static UBasicTournamentsGetTournamentsRequest* Make(FOptionalBool _bIsRunning, FOptionalString _ContentId, FOptionalInt32 _Cycle, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

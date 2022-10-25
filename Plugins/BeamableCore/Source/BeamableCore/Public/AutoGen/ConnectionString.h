@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "ConnectionString.generated.h"
 
-UCLASS(BlueprintType)
-class UConnectionString : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UConnectionString : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Connection String")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Connection String", Category="Beam")
 	FString ConnectionString;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

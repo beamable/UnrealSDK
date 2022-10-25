@@ -2,22 +2,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/ItemProperty.h"
 
 #include "ItemUpdateRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UItemUpdateRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UItemUpdateRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id", Category="Beam")
 	FString ContentId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
 	int64 Id;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Properties")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Properties", Category="Beam")
 	TArray<UItemProperty*> Properties;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

@@ -1,0 +1,38 @@
+
+#include "AutoGen/InventoryQueryRequestBodyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UInventoryQueryRequestBodyLibrary::InventoryQueryRequestBodyToJsonString(const UInventoryQueryRequestBody* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UInventoryQueryRequestBody* UInventoryQueryRequestBodyLibrary::Make(FOptionalArrayOfString Scopes, UObject* Outer)
+{
+	auto Serializable = NewObject<UInventoryQueryRequestBody>(Outer);
+	Serializable->Scopes = Scopes;
+	
+	return Serializable;
+}
+
+void UInventoryQueryRequestBodyLibrary::Break(const UInventoryQueryRequestBody* Serializable, FOptionalArrayOfString& Scopes)
+{
+	Scopes = Serializable->Scopes;
+		
+}
+

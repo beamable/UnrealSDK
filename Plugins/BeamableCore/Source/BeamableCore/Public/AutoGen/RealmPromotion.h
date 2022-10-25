@@ -2,22 +2,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Promotable.h"
 
 #include "RealmPromotion.generated.h"
 
-UCLASS(BlueprintType)
-class URealmPromotion : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API URealmPromotion : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
 	FString Name;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Source")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Source", Category="Beam")
 	UPromotable* Source;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Destination")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Destination", Category="Beam")
 	UPromotable* Destination;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

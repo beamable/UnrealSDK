@@ -1,0 +1,42 @@
+
+#include "AutoGen/PromoteRealmRequestBodyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UPromoteRealmRequestBodyLibrary::PromoteRealmRequestBodyToJsonString(const UPromoteRealmRequestBody* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UPromoteRealmRequestBody* UPromoteRealmRequestBodyLibrary::Make(FString SourcePid, FOptionalArrayOfString Promotions, FOptionalArrayOfString ContentManifestIds, UObject* Outer)
+{
+	auto Serializable = NewObject<UPromoteRealmRequestBody>(Outer);
+	Serializable->SourcePid = SourcePid;
+	Serializable->Promotions = Promotions;
+	Serializable->ContentManifestIds = ContentManifestIds;
+	
+	return Serializable;
+}
+
+void UPromoteRealmRequestBodyLibrary::Break(const UPromoteRealmRequestBody* Serializable, FString& SourcePid, FOptionalArrayOfString& Promotions, FOptionalArrayOfString& ContentManifestIds)
+{
+	SourcePid = Serializable->SourcePid;
+	Promotions = Serializable->Promotions;
+	ContentManifestIds = Serializable->ContentManifestIds;
+		
+}
+

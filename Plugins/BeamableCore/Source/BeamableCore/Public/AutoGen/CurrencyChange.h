@@ -2,22 +2,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalInt64.h"
 
 #include "CurrencyChange.generated.h"
 
-UCLASS(BlueprintType)
-class UCurrencyChange : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UCurrencyChange : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
 	FString Symbol;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Amount")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Amount", Category="Beam")
 	int64 Amount;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Original Amount")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Original Amount", Category="Beam")
 	FOptionalInt64 OriginalAmount;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

@@ -1,0 +1,38 @@
+
+#include "AutoGen/FindAccountRequestBodyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UFindAccountRequestBodyLibrary::FindAccountRequestBodyToJsonString(const UFindAccountRequestBody* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UFindAccountRequestBody* UFindAccountRequestBodyLibrary::Make(FString Query, UObject* Outer)
+{
+	auto Serializable = NewObject<UFindAccountRequestBody>(Outer);
+	Serializable->Query = Query;
+	
+	return Serializable;
+}
+
+void UFindAccountRequestBodyLibrary::Break(const UFindAccountRequestBody* Serializable, FString& Query)
+{
+	Query = Serializable->Query;
+		
+}
+

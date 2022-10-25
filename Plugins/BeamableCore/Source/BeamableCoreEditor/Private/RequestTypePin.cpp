@@ -1,6 +1,8 @@
 ﻿#include "RequestTypePin.h"
 
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/RequestType.h"
+
 #include "EdGraph/EdGraphPin.h"
 #include "EdGraph/EdGraphSchema.h"
 #include "SNameComboBox.h"
@@ -136,13 +138,13 @@ void SRequestTypePin::GetNames(TArray<TSharedPtr<FName>>& ShareableNames) const
 {
 	TArray<UClass*> RequestClasses;
 	for (TObjectIterator<UClass> It; It; ++It)
-	{		
-		if(It->ImplementsInterface(UBeamBaseRequestInterface::StaticClass()))
-			RequestClasses.Add(*It);	
+	{
+		if (It->ImplementsInterface(UBeamBaseRequestInterface::StaticClass()))
+			RequestClasses.Add(*It);
 	}
 
 	for (const auto& RequestClass : RequestClasses)
 	{
 		ShareableNames.Add(MakeShareable(new FName(RequestClass->GetName())));
-	}	
+	}
 }

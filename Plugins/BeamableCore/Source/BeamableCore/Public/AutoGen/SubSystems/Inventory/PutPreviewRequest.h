@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 #include "AutoGen/InventoryUpdateRequestBody.h"
@@ -18,14 +21,14 @@ class BEAMABLECORE_API UPutPreviewRequest : public UObject, public IBeamBaseRequ
 public:
 
 	// Path Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
 	int64 ObjectId;
 	
 	// Query Params
 	
 
 	// Body Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
 	UInventoryUpdateRequestBody* Body;
 
 	// Beam Base Request Declaration
@@ -35,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_Currencies,_CurrencyProperties,_bApplyVipBonus,_UpdateItems,_NewItems,_Transaction,_DeleteItems,Outer"))
-	static UPutPreviewRequest* MakePutPreviewRequest(int64 _ObjectId, FOptionalMapOfInt64 _Currencies, bool _bEmpty, FOptionalMapOfArrayOfCurrencyProperty _CurrencyProperties, TArray<FString> _CurrencyContentIds, FOptionalBool _bApplyVipBonus, TArray<FString> _ItemContentIds, FOptionalArrayOfItemUpdateRequestBody _UpdateItems, FOptionalArrayOfItemCreateRequestBody _NewItems, FOptionalString _Transaction, FOptionalArrayOfItemDeleteRequestBody _DeleteItems, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Inventory", DisplayName="Beam - Make PutPreview",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_bApplyVipBonus,_Transaction,_UpdateItems,_NewItems,_DeleteItems,_Currencies,_CurrencyProperties,Outer"))
+	static UPutPreviewRequest* Make(int64 _ObjectId, bool _bEmpty, TArray<FString> _CurrencyContentIds, TArray<FString> _ItemContentIds, FOptionalBool _bApplyVipBonus, FOptionalString _Transaction, FOptionalArrayOfItemUpdateRequestBody _UpdateItems, FOptionalArrayOfItemCreateRequestBody _NewItems, FOptionalArrayOfItemDeleteRequestBody _DeleteItems, FOptionalMapOfInt64 _Currencies, FOptionalMapOfArrayOfCurrencyProperty _CurrencyProperties, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

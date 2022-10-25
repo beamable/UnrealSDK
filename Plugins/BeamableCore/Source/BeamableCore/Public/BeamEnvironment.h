@@ -6,7 +6,6 @@
 
 
 #include "Editor.h"
-#include "Engine/AssetManager.h"
 #include "Engine/DataAsset.h"
 #include "Json/Public/Serialization/JsonSerializerMacros.h"
 #include "Subsystems/EngineSubsystem.h"
@@ -25,19 +24,19 @@ struct FBeamPackageVersion
 	const static char VERSION_SEPARATOR;
 	const static char PREVIEW_SEPARATOR;
 
-	
+
 	UPROPERTY(EditAnywhere)
-	int Major = UNASSIGNED_VALUE;	
+	int Major = UNASSIGNED_VALUE;
 	UPROPERTY(EditAnywhere)
-	int Minor = UNASSIGNED_VALUE;	
+	int Minor = UNASSIGNED_VALUE;
 	UPROPERTY(EditAnywhere)
-	int Patch = UNASSIGNED_VALUE;	
+	int Patch = UNASSIGNED_VALUE;
 	UPROPERTY(EditAnywhere)
 	int RC = UNASSIGNED_VALUE;
 
 	UPROPERTY(EditAnywhere)
 	int64 NightlyTime = UNASSIGNED_VALUE;
-	
+
 	UPROPERTY(EditAnywhere)
 	bool bIsPreview = false;
 
@@ -92,7 +91,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	FBeamPackageVersion Version;
 
-	virtual void Serialize(FJsonSerializerBase& Serializer, bool bFlatObject) override;	
+	virtual void Serialize(FJsonSerializerBase& Serializer, bool bFlatObject) override;
 };
 
 
@@ -105,15 +104,12 @@ class BEAMABLECORE_API UBeamEnvironment : public UEngineSubsystem
 	GENERATED_BODY()
 
 public:
-
 	/** Load the serialized  */
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 	/** Implement this for deinitialization of instances of the system */
 	virtual void Deinitialize() override;
 
-	
+
 	UBeamEnvironmentData* Data;
 };
-
-

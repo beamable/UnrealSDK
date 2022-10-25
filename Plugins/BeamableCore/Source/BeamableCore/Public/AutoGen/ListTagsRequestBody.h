@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
 
 #include "ListTagsRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UListTagsRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UListTagsRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tag Name Filter")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tag Name Filter", Category="Beam")
 	FOptionalString TagNameFilter;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

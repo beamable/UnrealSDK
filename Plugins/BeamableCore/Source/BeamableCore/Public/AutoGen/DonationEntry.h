@@ -2,24 +2,25 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalBool.h"
 
 #include "DonationEntry.generated.h"
 
-UCLASS(BlueprintType)
-class UDonationEntry : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UDonationEntry : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
 	int64 PlayerId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Amount")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Amount", Category="Beam")
 	int64 Amount;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Time")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Time", Category="Beam")
 	int64 Time;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Claimed")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Claimed", Category="Beam")
 	FOptionalBool bClaimed;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

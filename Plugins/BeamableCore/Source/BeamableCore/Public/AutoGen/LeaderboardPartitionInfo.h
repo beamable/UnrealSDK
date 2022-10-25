@@ -2,24 +2,25 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalInt32.h"
 
 #include "LeaderboardPartitionInfo.generated.h"
 
-UCLASS(BlueprintType)
-class ULeaderboardPartitionInfo : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API ULeaderboardPartitionInfo : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id")
-	int64 PlayerId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Leaderboard Id")
-	FString LeaderboardId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Empty")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Empty", Category="Beam")
 	bool bIsEmpty;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Partition")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
+	int64 PlayerId;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Leaderboard Id", Category="Beam")
+	FString LeaderboardId;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Partition", Category="Beam")
 	FOptionalInt32 Partition;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

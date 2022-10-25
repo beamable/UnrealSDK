@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/ManifestChecksum.h"
 
 #include "ManifestChecksums.generated.h"
 
-UCLASS(BlueprintType)
-class UManifestChecksums : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UManifestChecksums : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Manifests")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Manifests", Category="Beam")
 	TArray<UManifestChecksum*> Manifests;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

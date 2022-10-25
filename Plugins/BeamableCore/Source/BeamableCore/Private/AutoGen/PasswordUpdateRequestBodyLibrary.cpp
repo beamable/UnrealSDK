@@ -1,0 +1,40 @@
+
+#include "AutoGen/PasswordUpdateRequestBodyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UPasswordUpdateRequestBodyLibrary::PasswordUpdateRequestBodyToJsonString(const UPasswordUpdateRequestBody* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UPasswordUpdateRequestBody* UPasswordUpdateRequestBodyLibrary::Make(FString Email, FOptionalString CodeType, UObject* Outer)
+{
+	auto Serializable = NewObject<UPasswordUpdateRequestBody>(Outer);
+	Serializable->Email = Email;
+	Serializable->CodeType = CodeType;
+	
+	return Serializable;
+}
+
+void UPasswordUpdateRequestBodyLibrary::Break(const UPasswordUpdateRequestBody* Serializable, FString& Email, FOptionalString& CodeType)
+{
+	Email = Serializable->Email;
+	CodeType = Serializable->CodeType;
+		
+}
+

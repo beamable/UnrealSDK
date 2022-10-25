@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "EventClaimRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UEventClaimRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UEventClaimRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Event Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Event Id", Category="Beam")
 	FString EventId;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

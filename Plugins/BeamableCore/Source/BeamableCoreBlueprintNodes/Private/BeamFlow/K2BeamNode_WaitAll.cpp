@@ -5,7 +5,7 @@
 
 
 #include "BeamK2.h"
-#include "BeamFlow/ExecuteRequest/K2BeamNode_ApiRequest.h"
+#include "BeamFlow/ApiRequest/K2BeamNode_ApiRequest.h"
 
 #include "BlueprintNodeSpawner.h"
 #include "BlueprintActionDatabaseRegistrar.h"

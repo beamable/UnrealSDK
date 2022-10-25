@@ -2,20 +2,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "ReplaceObjectsRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UReplaceObjectsRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UReplaceObjectsRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Source Player Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Source Player Id", Category="Beam")
 	int64 SourcePlayerId;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Target Player Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Target Player Id", Category="Beam")
 	int64 TargetPlayerId;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

@@ -2,18 +2,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/PlayerStoreView.h"
 
 #include "GetActiveOffersResponse.generated.h"
 
-UCLASS(BlueprintType)
-class UGetActiveOffersResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UGetActiveOffersResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stores")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stores", Category="Beam")
 	TArray<UPlayerStoreView*> Stores;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

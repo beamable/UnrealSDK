@@ -1,0 +1,42 @@
+
+#include "AutoGen/MailRewardsLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UMailRewardsLibrary::MailRewardsToJsonString(const UMailRewards* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UMailRewards* UMailRewardsLibrary::Make(TArray<UCurrencyChange*> Currencies, TArray<UItemCreateRequestBody*> Items, FOptionalBool bApplyVipBonus, UObject* Outer)
+{
+	auto Serializable = NewObject<UMailRewards>(Outer);
+	Serializable->Currencies = Currencies;
+	Serializable->Items = Items;
+	Serializable->bApplyVipBonus = bApplyVipBonus;
+	
+	return Serializable;
+}
+
+void UMailRewardsLibrary::Break(const UMailRewards* Serializable, TArray<UCurrencyChange*>& Currencies, TArray<UItemCreateRequestBody*>& Items, FOptionalBool& bApplyVipBonus)
+{
+	Currencies = Serializable->Currencies;
+	Items = Serializable->Items;
+	bApplyVipBonus = Serializable->bApplyVipBonus;
+		
+}
+

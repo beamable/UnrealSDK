@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalArrayOfEventInventoryRewardCurrency.h"
 #include "AutoGen/Optionals/OptionalArrayOfEventInventoryRewardItem.h"
@@ -10,21 +11,21 @@
 
 #include "EventRewardContent.generated.h"
 
-UCLASS(BlueprintType)
-class UEventRewardContent : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UEventRewardContent : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currencies")
-	FOptionalArrayOfEventInventoryRewardCurrency Currencies;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Items")
-	FOptionalArrayOfEventInventoryRewardItem Items;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Min")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Min", Category="Beam")
 	double Min;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max", Category="Beam")
 	FOptionalDouble Max;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currencies", Category="Beam")
+	FOptionalArrayOfEventInventoryRewardCurrency Currencies;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Items", Category="Beam")
+	FOptionalArrayOfEventInventoryRewardItem Items;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain", Category="Beam")
 	FOptionalArrayOfEventRewardObtain Obtain;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

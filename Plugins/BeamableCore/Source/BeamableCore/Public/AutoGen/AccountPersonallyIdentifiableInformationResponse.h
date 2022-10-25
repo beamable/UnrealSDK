@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/AccountsBasicAccount.h"
 #include "AutoGen/StatsResponse.h"
@@ -9,18 +10,18 @@
 
 #include "AccountPersonallyIdentifiableInformationResponse.generated.h"
 
-UCLASS(BlueprintType)
-class UAccountPersonallyIdentifiableInformationResponse : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UAccountPersonallyIdentifiableInformationResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Account")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Account", Category="Beam")
 	UAccountsBasicAccount* Account;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stats")
-	TArray<UStatsResponse*> Stats;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Payment Audits")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Payment Audits", Category="Beam")
 	UListAuditResponse* PaymentAudits;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stats", Category="Beam")
+	TArray<UStatsResponse*> Stats;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

@@ -2,11 +2,13 @@
 
 #include "Engine/Engine.h"
 #include "Misc/AutomationTest.h"
+#include "HttpModule.h"
+#include "JsonObjectConverter.h"
 
+#include "BeamBackend/BeamCustomRequests.h"
 #include "BeamBackend/BeamBackend.h"
 #include "BeamBackendTestCallbacks.h"
-#include "JsonObjectConverter.h"
-#include "RawAPIs/BeamSharedTypes.h"
+
 
 void FBeamBackendSpec::Define()
 {

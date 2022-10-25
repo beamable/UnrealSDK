@@ -1,0 +1,42 @@
+
+#include "AutoGen/UpdateRoleLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UUpdateRoleLibrary::UpdateRoleToJsonString(const UUpdateRole* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UUpdateRole* UUpdateRoleLibrary::Make(FOptionalString Cid, FOptionalString Realm, FOptionalString Role, UObject* Outer)
+{
+	auto Serializable = NewObject<UUpdateRole>(Outer);
+	Serializable->Cid = Cid;
+	Serializable->Realm = Realm;
+	Serializable->Role = Role;
+	
+	return Serializable;
+}
+
+void UUpdateRoleLibrary::Break(const UUpdateRole* Serializable, FOptionalString& Cid, FOptionalString& Realm, FOptionalString& Role)
+{
+	Cid = Serializable->Cid;
+	Realm = Serializable->Realm;
+	Role = Serializable->Role;
+		
+}
+

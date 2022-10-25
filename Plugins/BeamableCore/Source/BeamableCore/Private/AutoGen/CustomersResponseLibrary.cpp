@@ -1,0 +1,38 @@
+
+#include "AutoGen/CustomersResponseLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UCustomersResponseLibrary::CustomersResponseToJsonString(const UCustomersResponse* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UCustomersResponse* UCustomersResponseLibrary::Make(TArray<UCustomer*> Result, UObject* Outer)
+{
+	auto Serializable = NewObject<UCustomersResponse>(Outer);
+	Serializable->Result = Result;
+	
+	return Serializable;
+}
+
+void UCustomersResponseLibrary::Break(const UCustomersResponse* Serializable, TArray<UCustomer*>& Result)
+{
+	Result = Serializable->Result;
+		
+}
+

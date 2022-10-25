@@ -1,0 +1,38 @@
+
+#include "AutoGen/ContentLimitsLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UContentLimitsLibrary::ContentLimitsToJsonString(const UContentLimits* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UContentLimits* UContentLimitsLibrary::Make(FOptionalInt32 MaxDistinctContentIds, UObject* Outer)
+{
+	auto Serializable = NewObject<UContentLimits>(Outer);
+	Serializable->MaxDistinctContentIds = MaxDistinctContentIds;
+	
+	return Serializable;
+}
+
+void UContentLimitsLibrary::Break(const UContentLimits* Serializable, FOptionalInt32& MaxDistinctContentIds)
+{
+	MaxDistinctContentIds = Serializable->MaxDistinctContentIds;
+		
+}
+

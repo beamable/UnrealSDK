@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalArrayOfItemCreateRequestBody.h"
 #include "AutoGen/Optionals/OptionalCommerceLootRoll.h"
@@ -10,30 +11,30 @@
 
 #include "OfferDefinition.generated.h"
 
-UCLASS(BlueprintType)
-class UOfferDefinition : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UOfferDefinition : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Titles")
-	TArray<FString> Titles;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
 	FString Symbol;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain Items")
-	FOptionalArrayOfItemCreateRequestBody ObtainItems;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Loot Roll")
-	FOptionalCommerceLootRoll LootRoll;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain Currency")
-	FOptionalArrayOfCurrencyChange ObtainCurrency;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Metadata")
-	FOptionalString Metadata;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Images")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Titles", Category="Beam")
+	TArray<FString> Titles;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Images", Category="Beam")
 	TArray<FString> Images;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Descriptions")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Descriptions", Category="Beam")
 	TArray<FString> Descriptions;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain", Category="Beam")
 	TArray<FString> Obtain;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Loot Roll", Category="Beam")
+	FOptionalCommerceLootRoll LootRoll;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Metadata", Category="Beam")
+	FOptionalString Metadata;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain Items", Category="Beam")
+	FOptionalArrayOfItemCreateRequestBody ObtainItems;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain Currency", Category="Beam")
+	FOptionalArrayOfCurrencyChange ObtainCurrency;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

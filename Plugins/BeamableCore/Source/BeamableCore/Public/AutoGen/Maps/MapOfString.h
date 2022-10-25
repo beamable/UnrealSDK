@@ -7,12 +7,12 @@
 
 #include "MapOfString.generated.h"
 
-USTRUCT(BlueprintType)
+USTRUCT(BlueprintType, Category="Beam|Wrappers|Maps")
 struct FMapOfString : public FBeamMap
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	TMap<FString, FString> Values;
 
 	FMapOfString();

@@ -2,7 +2,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 #include "AutoGen/LeaderboardSwapRequestBody.h"
@@ -18,14 +21,14 @@ class BEAMABLECORE_API UPutSwapRequest : public UObject, public IBeamBaseRequest
 public:
 
 	// Path Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
 	FString ObjectId;
 	
 	// Query Params
 	
 
 	// Body Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
 	ULeaderboardSwapRequestBody* Body;
 
 	// Beam Base Request Declaration
@@ -35,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_WinnerId,_LoserId,Outer"))
-	static UPutSwapRequest* MakePutSwapRequest(FString _ObjectId, FOptionalInt64 _WinnerId, FOptionalInt64 _LoserId, int64 _SwapBase, int64 _Delta, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make PutSwap",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_WinnerId,_LoserId,Outer"))
+	static UPutSwapRequest* Make(FString _ObjectId, int64 _SwapBase, int64 _Delta, FOptionalInt64 _WinnerId, FOptionalInt64 _LoserId, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

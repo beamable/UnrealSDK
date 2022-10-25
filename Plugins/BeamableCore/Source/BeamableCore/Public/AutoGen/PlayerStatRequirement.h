@@ -2,26 +2,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
 
 #include "PlayerStatRequirement.generated.h"
 
-UCLASS(BlueprintType)
-class UPlayerStatRequirement : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UPlayerStatRequirement : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Domain")
-	FOptionalString Domain;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stat")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stat", Category="Beam")
 	FString Stat;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Constraint")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Constraint", Category="Beam")
 	FString Constraint;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Value")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Value", Category="Beam")
 	FString Value;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Access")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Domain", Category="Beam")
+	FOptionalString Domain;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Access", Category="Beam")
 	FOptionalString Access;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

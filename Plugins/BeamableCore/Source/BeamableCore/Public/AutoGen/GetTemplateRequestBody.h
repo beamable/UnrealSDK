@@ -2,20 +2,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 
 
 #include "GetTemplateRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UGetTemplateRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UGetTemplateRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Template Name")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Template Name", Category="Beam")
 	FString TemplateName;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag", Category="Beam")
 	int64 GamerTag;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

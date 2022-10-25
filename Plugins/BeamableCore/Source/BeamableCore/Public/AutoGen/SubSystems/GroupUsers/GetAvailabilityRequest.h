@@ -2,11 +2,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamCoreTypes.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
 
 
 #include "AutoGen/Optionals/OptionalString.h"
-
+#include "AutoGen/Enums/GroupType.h"
 #include "AutoGen/Optionals/OptionalBool.h"
 #include "AutoGen/AvailabilityResponse.h"
 
@@ -20,17 +23,17 @@ class BEAMABLECORE_API UGetAvailabilityRequest : public UObject, public IBeamBas
 public:
 
 	// Path Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
 	int64 ObjectId;
 	
 	// Query Params
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
 	FOptionalString Name;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tag")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tag", Category="Beam")
 	FOptionalString Tag;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type")
-	TMap<FString, FString> Type;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sub Group")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
+	EGroupType Type;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sub Group", Category="Beam")
 	FOptionalBool bSubGroup;
 
 	// Body Params
@@ -43,8 +46,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, meta=(DefaultToSelf="Outer", AdvancedDisplay="_Name,_Tag,_bSubGroup,Outer"))
-	static UGetAvailabilityRequest* MakeGetAvailabilityRequest(int64 _ObjectId, FOptionalString _Name, FOptionalString _Tag, TMap<FString, FString> _Type, FOptionalBool _bSubGroup, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", DisplayName="Beam - Make GetAvailability",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Name,_Tag,_bSubGroup,Outer"))
+	static UGetAvailabilityRequest* Make(int64 _ObjectId, FOptionalString _Name, FOptionalString _Tag, EGroupType _Type, FOptionalBool _bSubGroup, UObject* Outer);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

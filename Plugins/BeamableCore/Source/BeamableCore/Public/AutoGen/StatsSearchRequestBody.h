@@ -2,24 +2,25 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/StatsSearchCriteria.h"
 
 #include "StatsSearchRequestBody.generated.h"
 
-UCLASS(BlueprintType)
-class UStatsSearchRequestBody : public UObject, public FBeamJsonSerializable
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API UStatsSearchRequestBody : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Domain")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Domain", Category="Beam")
 	FString Domain;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Access")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Access", Category="Beam")
 	FString Access;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Type")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Type", Category="Beam")
 	FString ObjectType;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Criteria")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Criteria", Category="Beam")
 	TArray<UStatsSearchCriteria*> Criteria;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
