@@ -27,9 +27,9 @@ void UPostMailRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostMailRequest* UPostMailRequest::Make(int64 _ObjectId, int64 _SenderGamerTag, FString _Category, FOptionalString _Body, FOptionalString _Expires, FOptionalPlayerReward _PlayerRewards, FOptionalString _Subject, FOptionalMailRewards _Rewards, FOptionalInt64 _Id, FOptionalInt64 _BodyRef, FOptionalArrayOfAttachmentRequestBody _Attachments, UObject* Outer)
+UPostMailRequest* UPostMailRequest::Make(int64 _ObjectId, int64 _SenderGamerTag, FString _Category, FOptionalString _Body, FOptionalString _Expires, FOptionalPlayerReward _PlayerRewards, FOptionalString _Subject, FOptionalMailRewards _Rewards, FOptionalInt64 _Id, FOptionalInt64 _BodyRef, FOptionalArrayOfAttachmentRequestBody _Attachments, UObject* RequestOwner)
 {
-	UPostMailRequest* Req = NewObject<UPostMailRequest>(Outer);
+	UPostMailRequest* Req = NewObject<UPostMailRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

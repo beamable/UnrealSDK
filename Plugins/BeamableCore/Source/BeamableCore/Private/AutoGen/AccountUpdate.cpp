@@ -3,6 +3,8 @@
 #include "Serialization/BeamJsonUtils.h"
 
 
+
+
 void UAccountUpdate ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("hasThirdPartyToken"), bHasThirdPartyToken);
@@ -13,6 +15,7 @@ void UAccountUpdate ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer)
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("token"), &Token, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("deviceId"), &DeviceId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("userName"), &UserName, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<UExternalIdentity*>, UExternalIdentity*>(TEXT("external"), &External, Serializer);
 }
 
 void UAccountUpdate::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
@@ -24,7 +27,8 @@ void UAccountUpdate::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 	UBeamJsonUtils::SerializeOptional<UGamerTagAssociation*>(TEXT("gamerTagAssoc"), &GamerTagAssoc, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("token"), &Token, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("deviceId"), &DeviceId, Serializer);
-	UBeamJsonUtils::SerializeOptional<FString>(TEXT("userName"), &UserName, Serializer);		
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("userName"), &UserName, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<UExternalIdentity*>, UExternalIdentity*>(TEXT("external"), &External, Serializer);		
 }
 
 void UAccountUpdate ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
@@ -37,4 +41,5 @@ void UAccountUpdate ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& B
 	UBeamJsonUtils::DeserializeOptional<FString>("token", Bag, Token, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("deviceId", Bag, DeviceId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("userName", Bag, UserName, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TArray<UExternalIdentity*>, UExternalIdentity*>("external", Bag, External, OuterOwner);
 }

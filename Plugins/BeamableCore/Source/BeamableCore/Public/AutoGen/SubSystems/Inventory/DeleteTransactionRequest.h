@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Inventory", DisplayName="Beam - Make DeleteTransaction",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UDeleteTransactionRequest* Make(int64 _ObjectId, FString _Transaction, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Inventory", DisplayName="Beam - Make DeleteTransaction",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UDeleteTransactionRequest* Make(int64 _ObjectId, FString _Transaction, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

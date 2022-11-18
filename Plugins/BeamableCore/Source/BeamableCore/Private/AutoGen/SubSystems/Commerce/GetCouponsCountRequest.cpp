@@ -23,9 +23,9 @@ void UGetCouponsCountRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetCouponsCountRequest* UGetCouponsCountRequest::Make(int64 _ObjectId, UObject* Outer)
+UGetCouponsCountRequest* UGetCouponsCountRequest::Make(int64 _ObjectId, UObject* RequestOwner)
 {
-	UGetCouponsCountRequest* Req = NewObject<UGetCouponsCountRequest>(Outer);
+	UGetCouponsCountRequest* Req = NewObject<UGetCouponsCountRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

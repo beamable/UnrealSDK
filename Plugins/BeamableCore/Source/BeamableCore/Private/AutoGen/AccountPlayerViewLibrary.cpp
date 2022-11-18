@@ -22,7 +22,7 @@ FString UAccountPlayerViewLibrary::AccountPlayerViewToJsonString(const UAccountP
 	return Result;
 }	
 
-UAccountPlayerView* UAccountPlayerViewLibrary::Make(int64 Id, TArray<FString> DeviceIds, TArray<FString> Scopes, TArray<FString> ThirdPartyAppAssociations, FOptionalString Email, FOptionalString Language, UObject* Outer)
+UAccountPlayerView* UAccountPlayerViewLibrary::Make(int64 Id, TArray<FString> DeviceIds, TArray<FString> Scopes, TArray<FString> ThirdPartyAppAssociations, FOptionalString Email, FOptionalString Language, FOptionalArrayOfExternalIdentity External, UObject* Outer)
 {
 	auto Serializable = NewObject<UAccountPlayerView>(Outer);
 	Serializable->Id = Id;
@@ -31,11 +31,12 @@ UAccountPlayerView* UAccountPlayerViewLibrary::Make(int64 Id, TArray<FString> De
 	Serializable->ThirdPartyAppAssociations = ThirdPartyAppAssociations;
 	Serializable->Email = Email;
 	Serializable->Language = Language;
+	Serializable->External = External;
 	
 	return Serializable;
 }
 
-void UAccountPlayerViewLibrary::Break(const UAccountPlayerView* Serializable, int64& Id, TArray<FString>& DeviceIds, TArray<FString>& Scopes, TArray<FString>& ThirdPartyAppAssociations, FOptionalString& Email, FOptionalString& Language)
+void UAccountPlayerViewLibrary::Break(const UAccountPlayerView* Serializable, int64& Id, TArray<FString>& DeviceIds, TArray<FString>& Scopes, TArray<FString>& ThirdPartyAppAssociations, FOptionalString& Email, FOptionalString& Language, FOptionalArrayOfExternalIdentity& External)
 {
 	Id = Serializable->Id;
 	DeviceIds = Serializable->DeviceIds;
@@ -43,6 +44,7 @@ void UAccountPlayerViewLibrary::Break(const UAccountPlayerView* Serializable, in
 	ThirdPartyAppAssociations = Serializable->ThirdPartyAppAssociations;
 	Email = Serializable->Email;
 	Language = Serializable->Language;
+	External = Serializable->External;
 		
 }
 

@@ -16,7 +16,7 @@ void UGetInventoryRequest::BuildRoute(FString& RouteString) const
 	bool bIsFirstQueryParam = true;
 	if(Scope.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("scope"), *Scope.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("scope"), *Scope.Val);
 		bIsFirstQueryParam = false;
 	}
 
@@ -28,9 +28,9 @@ void UGetInventoryRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetInventoryRequest* UGetInventoryRequest::Make(int64 _ObjectId, FOptionalString _Scope, UObject* Outer)
+UGetInventoryRequest* UGetInventoryRequest::Make(int64 _ObjectId, FOptionalString _Scope, UObject* RequestOwner)
 {
-	UGetInventoryRequest* Req = NewObject<UGetInventoryRequest>(Outer);
+	UGetInventoryRequest* Req = NewObject<UGetInventoryRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

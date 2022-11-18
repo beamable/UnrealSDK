@@ -27,9 +27,9 @@ void UPostCouponPurchaseFailRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostCouponPurchaseFailRequest* UPostCouponPurchaseFailRequest::Make(int64 _Txid, FString _Reason, UObject* Outer)
+UPostCouponPurchaseFailRequest* UPostCouponPurchaseFailRequest::Make(int64 _Txid, FString _Reason, UObject* RequestOwner)
 {
-	UPostCouponPurchaseFailRequest* Req = NewObject<UPostCouponPurchaseFailRequest>(Outer);
+	UPostCouponPurchaseFailRequest* Req = NewObject<UPostCouponPurchaseFailRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

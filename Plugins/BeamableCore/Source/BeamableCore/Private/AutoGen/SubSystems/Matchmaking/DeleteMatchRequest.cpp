@@ -23,9 +23,9 @@ void UDeleteMatchRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UDeleteMatchRequest* UDeleteMatchRequest::Make(int64 _ObjectId, UObject* Outer)
+UDeleteMatchRequest* UDeleteMatchRequest::Make(int64 _ObjectId, UObject* RequestOwner)
 {
-	UDeleteMatchRequest* Req = NewObject<UDeleteMatchRequest>(Outer);
+	UDeleteMatchRequest* Req = NewObject<UDeleteMatchRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

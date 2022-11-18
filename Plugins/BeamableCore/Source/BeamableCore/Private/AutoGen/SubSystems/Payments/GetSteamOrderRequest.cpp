@@ -15,7 +15,7 @@ void UGetSteamOrderRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("orderId"), *OrderId);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("orderId"), *OrderId);
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -26,9 +26,9 @@ void UGetSteamOrderRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetSteamOrderRequest* UGetSteamOrderRequest::Make(FString _OrderId, UObject* Outer)
+UGetSteamOrderRequest* UGetSteamOrderRequest::Make(FString _OrderId, UObject* RequestOwner)
 {
-	UGetSteamOrderRequest* Req = NewObject<UGetSteamOrderRequest>(Outer);
+	UGetSteamOrderRequest* Req = NewObject<UGetSteamOrderRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->OrderId = _OrderId;

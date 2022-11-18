@@ -3,6 +3,8 @@
 
 
 
+
+
 void URenameProjectRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("projectId"), ProjectId);

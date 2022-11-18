@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", DisplayName="Beam - Make PostSearchGroups",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UPostSearchGroupsRequest* Make(FString _ContentId, TArray<int64> _GroupIds, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", DisplayName="Beam - Make PostSearchGroups",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UPostSearchGroupsRequest* Make(FString _ContentId, TArray<int64> _GroupIds, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

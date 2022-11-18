@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Announcements", DisplayName="Beam - Make BasicAnnouncementsGetSearch",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Date,Outer"))
-	static UBasicAnnouncementsGetSearchRequest* Make(FOptionalString _Date, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Announcements", DisplayName="Beam - Make BasicAnnouncementsGetSearch",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Date,RequestOwner"))
+	static UBasicAnnouncementsGetSearchRequest* Make(FOptionalString _Date, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

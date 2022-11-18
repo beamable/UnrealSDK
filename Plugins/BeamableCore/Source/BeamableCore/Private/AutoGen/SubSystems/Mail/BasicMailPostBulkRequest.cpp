@@ -27,9 +27,9 @@ void UBasicMailPostBulkRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UBasicMailPostBulkRequest* UBasicMailPostBulkRequest::Make(TArray<USendMailRequestBody*> _SendMailRequests, UObject* Outer)
+UBasicMailPostBulkRequest* UBasicMailPostBulkRequest::Make(TArray<USendMailRequestBody*> _SendMailRequests, UObject* RequestOwner)
 {
-	UBasicMailPostBulkRequest* Req = NewObject<UBasicMailPostBulkRequest>(Outer);
+	UBasicMailPostBulkRequest* Req = NewObject<UBasicMailPostBulkRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

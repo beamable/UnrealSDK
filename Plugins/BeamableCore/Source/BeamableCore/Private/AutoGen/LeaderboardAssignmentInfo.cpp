@@ -3,6 +3,13 @@
 
 #include "Misc/DefaultValueHelper.h"
 
+
+void ULeaderboardAssignmentInfo::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
+{
+	OuterOwner = RequestData;
+	BeamDeserialize(ResponseContent);	
+}
+
 void ULeaderboardAssignmentInfo ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("playerId"), PlayerId);

@@ -23,9 +23,9 @@ void UGetStatusRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetStatusRequest* UGetStatusRequest::Make(UObject* Outer)
+UGetStatusRequest* UGetStatusRequest::Make(UObject* RequestOwner)
 {
-	UGetStatusRequest* Req = NewObject<UGetStatusRequest>(Outer);
+	UGetStatusRequest* Req = NewObject<UGetStatusRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

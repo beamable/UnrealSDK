@@ -1,5 +1,9 @@
 ﻿#pragma once
+#include "K2Node_BreakStruct.h"
+#include "K2Node_EnumEquality.h"
 #include "K2Node_Event.h"
+#include "K2Node_IfThenElse.h"
+#include "K2Node_SwitchEnum.h"
 #include "KismetCompiler.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 
@@ -10,6 +14,13 @@ class UK2Node_MakeArray;
 
 namespace BeamK2
 {
+	static const FName MD_BeamFlowNode = FName(TEXT("BeamFlowNode"));
+	static const FName MD_BeamFlowFunction = FName(TEXT("BeamFlowFunction"));
+	static const FName MD_BeamOptionalType = FName(TEXT("BeamOptionalType"));
+	static const FName MD_BeamOperation_MultiUser = FName(TEXT("BeamOperationMultiUser"));
+	
+	
+	
 	/**
 	 * @brief For each of the custom node start pins, find all the execution flow nodes from the custom node's starting pin forward.
 	 * Also, builds a list if there are events connected to any function node (or specific ones if RelevantEventSpawningFunctionNames.Num() > 0)
@@ -22,8 +33,8 @@ namespace BeamK2
 	 *     - While doing this, also check these execution flow nodes for relevant function names and whether or not they have delegates on them.
 	 *     - If they do, enqueue them in the ParsingEvent Queue.
 	 *   - Then, while there are unexpanded nodes in the Expand Queue:
-	 *     - Grab all their input pins and follow them backward until you hit node with meta=BeamFlowStart.
-	 *     - Add all not-yet-seen nodes to the PerPinForwardFlow except ones having the meta flag: BeamFlowStart.
+	 *     - Grab all their input pins and follow them backward until you hit node with meta=BeamFlowFunction.
+	 *     - Add all not-yet-seen nodes to the PerPinForwardFlow except ones having the meta flag: BeamFlowFunction.
 	 *   - Do the same as above for the Expand Events Queue except all the nodes spawning off of events are placed in PerPinConnectedEventFlows. 
 	 *
 	 * The entire point of this is to allow us to batch replace connections on all nodes in a "flow" with ReplaceConnectionsOnGraphFlow.
@@ -44,6 +55,29 @@ namespace BeamK2
 	static UK2Node_MakeArray* CreateMakeArrayNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, int PinCount);
 
 	/**
+	 * @brief Utility that creates a correctly configured BreakStruct not for a given UStruct.
+	 */
+	static UK2Node_BreakStruct* CreateBreakStructNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
+	                                                  UScriptStruct* const StructToBreak, UEdGraphPin* StructInputPin);
+
+	/**
+	 * @brief Utility that creates a correctly configured SwitchEnum node following the given "ExecFlowPin" and switching on the given "SwitchOnValuePin".
+	 */
+	static UK2Node_SwitchEnum* CreateSwitchEnumNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema, UEnum* const Enum,
+	                                                UEdGraphPin* ExecFlowPin, UEdGraphPin* SwitchOnValuePin);
+
+	/**
+	 * @brief Utility that creates and configures an EnumEquality node of the given "EnumToCompareType" to compare "EnumToCompareAgainst" against "CompareAgainstPin".
+	 */
+	static UK2Node_EnumEquality* CreateEnumEqualityAgainstDefault(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
+	                                                              const UEnum* EnumToCompareType, const int64 EnumToCompareAgainst, UEdGraphPin* const CompareAgainstPin);
+
+	/**
+	 * @brief Utility that creates and configures an IfThenElse node to run with the given condition.
+	 */
+	static UK2Node_IfThenElse* CreateIfThenElseNodeAgainstCondition(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
+	                                                                UEdGraphPin* const ExecPin, UEdGraphPin* ConditionPin);
+	/**
 	 * @brief Utility that creates a correctly configured event node for the given delegate name.
 	 */
 	static UK2Node_Event* CreateEventNodeForDelegate(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const FString& DelegateName);
@@ -52,6 +86,11 @@ namespace BeamK2
 	 * @brief Utility that moves a pin with PinName from the CustomNode to a pin with that same name in TargetNode. 
 	 */
 	static void MoveWrappedPin(const UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, const UEdGraphNode* TargetNode, const FName& PinName);
+
+	/**
+	 * @brief Utility that connects and checks both of the True and False pins to the respective output pins of the given IfThenElse Node.
+	 */
+	static void ConnectIfThenElseNodeOutputs(FKismetCompilerContext& CompilerContext, UEdGraphPin* const TruePin, UEdGraphPin* const FalsePin, const UK2Node_IfThenElse* IfThenElseNode);
 
 	/**
 	 * @brief Utility that creates a call function node targeting a specific UClass's UFunction. 	 
@@ -74,6 +113,7 @@ namespace BeamK2
 	 * @brief Typedef for the Predicate used by ParseFunctionForNodeInputPins
 	 */
 	typedef bool (*CheckParamIsValidForNodePredicate)(const UEdGraphNode*, const FProperty*);
+	typedef TFunctionRef<bool (const UEdGraphNode*, const UEdGraphPin*)> PinPredicate;
 	/**
 	 * @brief Given a custom node and a UFUNCTION goes through the list of parameters of that function and, if that param passes the Predicate,
 	 * creates a pin for it and adds the pin name to the WrappedPinNames array.
@@ -102,5 +142,28 @@ namespace BeamK2
 	 * @brief Removes all pins (breaking their links). 
 	 */
 	static void RemoveAllPins(UEdGraphNode* CustomNode, const TArray<FName> PinsToRemove);
+
+	/**
+	 * @brief Enforces that a pin exists. If it is already there, recreates it (recreates the connections it had).
+	  
+	 */
+	static UEdGraphPin* EnforcePinExistence(UEdGraphNode* CustomNode, EEdGraphPinDirection Direction, FName Category, FName Name, FString Tooltip,
+	                                        UEdGraphNode::FCreatePinParams Params = {}, UObject* CatSubObject = nullptr);
+
+	/**
+	 * @brief Gets an array pin with the given name. If "!bIsArray", then create nodes to index into the array and return the element at "DefaultElementIdx".
+	 */
+	static UEdGraphPin* ExpandIntoArrayOrRegularIntermediatePin(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UK2Node_Event* IntermediateEventNode,
+	                                                     const FName PinName, bool bIsArray, int DefaultElementIdx = 0);
+
+	static void RemoveAllPinsExcept(UEdGraphNode* CustomNode, PinPredicate ExceptPins);
+	static void RemoveAllPinsExcept(UEdGraphNode* CustomNode, PinPredicate ExceptPins, TArray<TArray<UEdGraphPin*>>& Connections);
+
+	static void RemoveAllPins(UEdGraphNode* CustomNode, const TArray<FName> PinsToRemove, TArray<TArray<UEdGraphPin*>>& Connections);
+
+	/**
+	 * @brief Connects a subsystem's GetSelf call to a CallFunction node that is pointing to a function of that Subsystem.	  
+	 */
+	static void SetUpPinsFunctionToOwnerSubsystem(const UK2Node_CallFunction* CallGetSubsystem, const UK2Node_CallFunction* CallRequestFunction);
 }
 #undef LOCTEXT_NAMESPACE

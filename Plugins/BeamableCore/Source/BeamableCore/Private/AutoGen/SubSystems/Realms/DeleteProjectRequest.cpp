@@ -27,9 +27,9 @@ void UDeleteProjectRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteProjectRequest* UDeleteProjectRequest::Make(FString _Pid, UObject* Outer)
+UDeleteProjectRequest* UDeleteProjectRequest::Make(FString _Pid, UObject* RequestOwner)
 {
-	UDeleteProjectRequest* Req = NewObject<UDeleteProjectRequest>(Outer);
+	UDeleteProjectRequest* Req = NewObject<UDeleteProjectRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

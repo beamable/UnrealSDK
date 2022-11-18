@@ -27,9 +27,9 @@ void UPostPlayerRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostPlayerRequest* UPostPlayerRequest::Make(UNotificationRequestData* _Payload, FOptionalBool _bUseSignalWhenPossible, FOptionalString _CustomChannelSuffix, FOptionalInt64 _Dbid, FOptionalArrayOfInt64 _Dbids, UObject* Outer)
+UPostPlayerRequest* UPostPlayerRequest::Make(UNotificationRequestData* _Payload, FOptionalBool _bUseSignalWhenPossible, FOptionalString _CustomChannelSuffix, FOptionalInt64 _Dbid, FOptionalArrayOfInt64 _Dbids, UObject* RequestOwner)
 {
-	UPostPlayerRequest* Req = NewObject<UPostPlayerRequest>(Outer);
+	UPostPlayerRequest* Req = NewObject<UPostPlayerRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -23,9 +23,9 @@ void UObjectTournamentsGetTournamentsRequest::BuildBody(FString& BodyString) con
 	
 }
 
-UObjectTournamentsGetTournamentsRequest* UObjectTournamentsGetTournamentsRequest::Make(int64 _ObjectId, UObject* Outer)
+UObjectTournamentsGetTournamentsRequest* UObjectTournamentsGetTournamentsRequest::Make(int64 _ObjectId, UObject* RequestOwner)
 {
-	UObjectTournamentsGetTournamentsRequest* Req = NewObject<UObjectTournamentsGetTournamentsRequest>(Outer);
+	UObjectTournamentsGetTournamentsRequest* Req = NewObject<UObjectTournamentsGetTournamentsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

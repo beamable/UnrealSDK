@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", DisplayName="Beam - Make PostBatch",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UPostBatchRequest* Make(TArray<UStatUpdateRequestBody*> _Updates, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", DisplayName="Beam - Make PostBatch",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UPostBatchRequest* Make(TArray<UStatUpdateRequestBody*> _Updates, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

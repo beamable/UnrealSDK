@@ -10,6 +10,20 @@
 
 #define LOCTEXT_NAMESPACE "BeamK2_BeamFlow"
 
+void UK2BeamNode_BeamFlow::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	const auto FlowPropName = GET_MEMBER_NAME_CHECKED(UK2BeamNode_BeamFlow, bIsInBeamFlowMode);
+	if (PropertyChangedEvent.Property && PropertyChangedEvent.Property->GetNameCPP().Equals(FlowPropName.ToString()))
+	{
+		if (bIsInBeamFlowMode)
+			EnterBeamFlowMode();
+		else
+			ExitBeamFlowMode();
+	}
+}
+
 bool UK2BeamNode_BeamFlow::IsNodeSafeToIgnore() const
 {
 	return true;
@@ -88,9 +102,9 @@ void UK2BeamNode_BeamFlow::ExitBeamFlowMode()
 	FScopedTransaction Transaction(LOCTEXT("ExitBeamFlowModeTx", "ExitBeamFlowMode"));
 	Modify();
 
+	bIsInBeamFlowMode = false;
 	ExitBeamFlowModeImpl();
 
-	bIsInBeamFlowMode = false;
 	FBlueprintEditorUtils::MarkBlueprintAsStructurallyModified(GetBlueprint());
 }
 
@@ -99,9 +113,9 @@ void UK2BeamNode_BeamFlow::EnterBeamFlowMode()
 	FScopedTransaction Transaction(LOCTEXT("EnterBeamFlowModeTx", "EnterBeamFlowMode"));
 	Modify();
 
+	bIsInBeamFlowMode = true;
 	EnterBeamFlowModeImpl();
 
-	bIsInBeamFlowMode = true;
 	FBlueprintEditorUtils::MarkBlueprintAsStructurallyModified(GetBlueprint());
 }
 

@@ -15,15 +15,15 @@ void UGetFacebookUpdateRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("hubMode"), *HubMode);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("hubMode"), *HubMode);
 	bIsFirstQueryParam = false;
 	
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("hubChallenge"), *HubChallenge);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("hubChallenge"), *HubChallenge);
 	bIsFirstQueryParam = false;
 	
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("hubVerifyToken"), *HubVerifyToken);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("hubVerifyToken"), *HubVerifyToken);
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -34,9 +34,9 @@ void UGetFacebookUpdateRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetFacebookUpdateRequest* UGetFacebookUpdateRequest::Make(FString _HubMode, FString _HubChallenge, FString _HubVerifyToken, UObject* Outer)
+UGetFacebookUpdateRequest* UGetFacebookUpdateRequest::Make(FString _HubMode, FString _HubChallenge, FString _HubVerifyToken, UObject* RequestOwner)
 {
-	UGetFacebookUpdateRequest* Req = NewObject<UGetFacebookUpdateRequest>(Outer);
+	UGetFacebookUpdateRequest* Req = NewObject<UGetFacebookUpdateRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->HubMode = _HubMode;

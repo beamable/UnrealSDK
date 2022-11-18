@@ -15,18 +15,18 @@ void UGetListingsRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("listing"), *Listing);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("listing"), *Listing);
 	bIsFirstQueryParam = false;
 	
 	if(Store.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("store"), *Store.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("store"), *Store.Val);
 		bIsFirstQueryParam = false;
 	}
 
 	if(Time.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("time"), *Time.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("time"), *Time.Val);
 		bIsFirstQueryParam = false;
 	}
 
@@ -38,9 +38,9 @@ void UGetListingsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetListingsRequest* UGetListingsRequest::Make(int64 _ObjectId, FString _Listing, FOptionalString _Store, FOptionalString _Time, UObject* Outer)
+UGetListingsRequest* UGetListingsRequest::Make(int64 _ObjectId, FString _Listing, FOptionalString _Store, FOptionalString _Time, UObject* RequestOwner)
 {
-	UGetListingsRequest* Req = NewObject<UGetListingsRequest>(Outer);
+	UGetListingsRequest* Req = NewObject<UGetListingsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

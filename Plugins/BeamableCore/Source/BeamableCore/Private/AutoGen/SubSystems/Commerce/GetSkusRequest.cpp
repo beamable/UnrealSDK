@@ -16,7 +16,7 @@ void UGetSkusRequest::BuildRoute(FString& RouteString) const
 	bool bIsFirstQueryParam = true;
 	if(Version.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("version"), *FString::FromInt(Version.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("version"), *FString::FromInt(Version.Val));
 		bIsFirstQueryParam = false;
 	}
 
@@ -28,9 +28,9 @@ void UGetSkusRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetSkusRequest* UGetSkusRequest::Make(FOptionalInt64 _Version, UObject* Outer)
+UGetSkusRequest* UGetSkusRequest::Make(FOptionalInt64 _Version, UObject* RequestOwner)
 {
-	UGetSkusRequest* Req = NewObject<UGetSkusRequest>(Outer);
+	UGetSkusRequest* Req = NewObject<UGetSkusRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Version = _Version;

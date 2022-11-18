@@ -15,7 +15,7 @@ void UGetGoogleplayProductRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("sku"), *Sku);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("sku"), *Sku);
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -26,9 +26,9 @@ void UGetGoogleplayProductRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetGoogleplayProductRequest* UGetGoogleplayProductRequest::Make(FString _Sku, UObject* Outer)
+UGetGoogleplayProductRequest* UGetGoogleplayProductRequest::Make(FString _Sku, UObject* RequestOwner)
 {
-	UGetGoogleplayProductRequest* Req = NewObject<UGetGoogleplayProductRequest>(Outer);
+	UGetGoogleplayProductRequest* Req = NewObject<UGetGoogleplayProductRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Sku = _Sku;

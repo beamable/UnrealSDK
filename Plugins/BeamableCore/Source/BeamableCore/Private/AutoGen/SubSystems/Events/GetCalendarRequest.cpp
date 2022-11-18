@@ -16,25 +16,25 @@ void UGetCalendarRequest::BuildRoute(FString& RouteString) const
 	bool bIsFirstQueryParam = true;
 	if(From.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("from"), *From.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("from"), *From.Val);
 		bIsFirstQueryParam = false;
 	}
 
 	if(To.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("to"), *To.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("to"), *To.Val);
 		bIsFirstQueryParam = false;
 	}
 
 	if(Query.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("query"), *Query.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("query"), *Query.Val);
 		bIsFirstQueryParam = false;
 	}
 
 	if(Limit.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("limit"), *FString::FromInt(Limit.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("limit"), *FString::FromInt(Limit.Val));
 		bIsFirstQueryParam = false;
 	}
 
@@ -46,9 +46,9 @@ void UGetCalendarRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetCalendarRequest* UGetCalendarRequest::Make(FOptionalString _From, FOptionalString _To, FOptionalString _Query, FOptionalInt32 _Limit, UObject* Outer)
+UGetCalendarRequest* UGetCalendarRequest::Make(FOptionalString _From, FOptionalString _To, FOptionalString _Query, FOptionalInt32 _Limit, UObject* RequestOwner)
 {
-	UGetCalendarRequest* Req = NewObject<UGetCalendarRequest>(Outer);
+	UGetCalendarRequest* Req = NewObject<UGetCalendarRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->From = _From;

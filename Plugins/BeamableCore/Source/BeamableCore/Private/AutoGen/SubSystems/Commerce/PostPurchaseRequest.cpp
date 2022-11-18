@@ -27,9 +27,9 @@ void UPostPurchaseRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostPurchaseRequest* UPostPurchaseRequest::Make(int64 _ObjectId, FString _PurchaseId, UObject* Outer)
+UPostPurchaseRequest* UPostPurchaseRequest::Make(int64 _ObjectId, FString _PurchaseId, UObject* RequestOwner)
 {
-	UPostPurchaseRequest* Req = NewObject<UPostPurchaseRequest>(Outer);
+	UPostPurchaseRequest* Req = NewObject<UPostPurchaseRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

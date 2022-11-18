@@ -2,7 +2,7 @@
 
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamRequestContext.h"
-#include "BeamBackend/BeamBackend.h"
+#include "RequestTracker/BeamRequestTracker.h"
 
 
 using namespace BeamK2;
@@ -175,7 +175,7 @@ void UK2BeamNode_ApiRequest::ExpandNode(FKismetCompilerContext& CompilerContext,
 	if (bIsInBeamFlowMode)
 	{
 		const TArray<UEdGraphPin*> StartingGraphs{SuccessFlowPin, ErrorFlowPin, CompleteFlowPin, ThenPin,};
-		const TArray<FName> RelevantFunctionNames{GET_FUNCTION_NAME_CHECKED(UBeamBackend, WaitAll)};
+		const TArray<FName> RelevantFunctionNames{GET_FUNCTION_NAME_CHECKED(UBeamRequestTracker, WaitAll)};
 		TArray<TArray<UEdGraphNode*>> OutPerFlowNodes;
 		TArray<TArray<UEdGraphNode*>> OutPerFlowEventNodes;
 		GetPerBeamFlowNodes(CompilerContext, this, StartingGraphs, RelevantFunctionNames, OutPerFlowNodes, OutPerFlowEventNodes);
@@ -199,7 +199,7 @@ void UK2BeamNode_ApiRequest::ExpandNode(FKismetCompilerContext& CompilerContext,
 		                       OutPerFlowNodes[3]);
 
 		// Connects the result of the "static BeamApi::GetSelf" call to the "non-static BeamApi::Verb____" Call Function node.
-		SetUpPinsForGetBeamApiSubsystemNode(CallGetSubsystem, CallRequestFunction);
+		SetUpPinsFunctionToOwnerSubsystem(CallGetSubsystem, CallRequestFunction);
 
 		// Set up Input pins for both expanded nodes: "Make" and "CallRequest"
 		SetUpInputPinsForMakeAndRequestNodes(CompilerContext, CallRequestFunction, CallMakeFunction, ExecutionPin);
@@ -229,7 +229,7 @@ void UK2BeamNode_ApiRequest::ExpandNode(FKismetCompilerContext& CompilerContext,
 		GetPerBeamFlowNodes(CompilerContext, this, StartingGraphs, {}, OutPerFlowNodes, OutPerEventFlowNodes);
 
 		// Connects the result of the "static BeamApi::GetSelf" call to the "non-static BeamApi::Verb____" Call Function node.
-		SetUpPinsForGetBeamApiSubsystemNode(CallGetSubsystem, CallRequestFunction);
+		SetUpPinsFunctionToOwnerSubsystem(CallGetSubsystem, CallRequestFunction);
 
 		// Set up Input pins for both expanded nodes: "Make" and "CallRequest"
 		SetUpInputPinsForMakeAndRequestNodes(CompilerContext, CallRequestFunction, CallMakeFunction, ExecutionPin);
@@ -248,17 +248,6 @@ void UK2BeamNode_ApiRequest::ExpandNode(FKismetCompilerContext& CompilerContext,
 	// This needs to exist so that the custom node is no longer in the graph and gets killed off when we cook the Blueprint.
 	// This works because we fully replace and guarantee the execution flow is correctly set up.
 	BreakAllNodeLinks();
-}
-
-
-void UK2BeamNode_ApiRequest::SetUpPinsForGetBeamApiSubsystemNode(const UK2Node_CallFunction* CallGetSubsystem, const UK2Node_CallFunction* CallRequestFunction) const
-{
-	const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
-
-	const auto SubsystemReturnPin = CallGetSubsystem->GetReturnValuePin();
-	const auto RequestFunctionSelfPin = K2Schema->FindSelfPin(*CallRequestFunction, EGPD_Input);
-	const auto bConnectedSubsystemToFunctionCall = K2Schema->TryCreateConnection(SubsystemReturnPin, RequestFunctionSelfPin);
-	check(bConnectedSubsystemToFunctionCall)
 }
 
 void UK2BeamNode_ApiRequest::SetUpInputPinsForMakeAndRequestNodes(FKismetCompilerContext& CompilerContext, const UK2Node_CallFunction* CallRequestFunction,
@@ -280,7 +269,7 @@ void UK2BeamNode_ApiRequest::SetUpInputPinsForMakeAndRequestNodes(FKismetCompile
 		if (const auto FunctionPin = CallMakeFunction->FindPin(WrappedFunctionPin))
 		{
 			const auto Pin = this->FindPin(WrappedFunctionPin);
-			UE_LOG(LogTemp, Display, TEXT("Looking at Make Function Pin %s, %d"), *FunctionPin->PinName.ToString(), WrappedMakeFunctionPinNames.Num())
+			UE_LOG(LogTemp, Verbose, TEXT("Looking at Make Function Pin %s, %d"), *FunctionPin->PinName.ToString(), WrappedMakeFunctionPinNames.Num())
 
 			// We should not be doing this more than once for each input pin --- if we do that's a critical BUG: and we need to sort out why and fix it.
 			// The BUG is that the latter connection would override the first one. 
@@ -301,7 +290,7 @@ void UK2BeamNode_ApiRequest::SetUpInputPinsForMakeAndRequestNodes(FKismetCompile
 		if (const auto FunctionPin = CallRequestFunction->FindPin(WrappedFunctionPin))
 		{
 			const auto Pin = this->FindPin(WrappedFunctionPin);
-			UE_LOG(LogTemp, Display, TEXT("Looking at Request Function Pin %s, %d"), *FunctionPin->PinName.ToString(), WrappedMakeFunctionPinNames.Num())
+			UE_LOG(LogTemp, Verbose, TEXT("Looking at Request Function Pin %s, %d"), *FunctionPin->PinName.ToString(), WrappedMakeFunctionPinNames.Num())
 
 			// We should not be doing this more than once for each input pin --- if we do that's a critical BUG: and we need to sort out why and fix it.
 			// The BUG is that the latter connection would override the first one. 

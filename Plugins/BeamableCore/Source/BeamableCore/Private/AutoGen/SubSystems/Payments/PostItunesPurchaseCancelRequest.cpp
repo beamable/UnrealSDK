@@ -27,9 +27,9 @@ void UPostItunesPurchaseCancelRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostItunesPurchaseCancelRequest* UPostItunesPurchaseCancelRequest::Make(int64 _Txid, UObject* Outer)
+UPostItunesPurchaseCancelRequest* UPostItunesPurchaseCancelRequest::Make(int64 _Txid, UObject* RequestOwner)
 {
-	UPostItunesPurchaseCancelRequest* Req = NewObject<UPostItunesPurchaseCancelRequest>(Outer);
+	UPostItunesPurchaseCancelRequest* Req = NewObject<UPostItunesPurchaseCancelRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -15,7 +15,7 @@ void UGetFindRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("query"), *Query);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("query"), *Query);
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -26,9 +26,9 @@ void UGetFindRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetFindRequest* UGetFindRequest::Make(FString _Query, UObject* Outer)
+UGetFindRequest* UGetFindRequest::Make(FString _Query, UObject* RequestOwner)
 {
-	UGetFindRequest* Req = NewObject<UGetFindRequest>(Outer);
+	UGetFindRequest* Req = NewObject<UGetFindRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Query = _Query;

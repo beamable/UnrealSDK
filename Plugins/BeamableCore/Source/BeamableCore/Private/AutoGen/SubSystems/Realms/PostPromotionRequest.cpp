@@ -27,9 +27,9 @@ void UPostPromotionRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostPromotionRequest* UPostPromotionRequest::Make(FString _SourcePid, FOptionalArrayOfString _Promotions, FOptionalArrayOfString _ContentManifestIds, UObject* Outer)
+UPostPromotionRequest* UPostPromotionRequest::Make(FString _SourcePid, FOptionalArrayOfString _Promotions, FOptionalArrayOfString _ContentManifestIds, UObject* RequestOwner)
 {
-	UPostPromotionRequest* Req = NewObject<UPostPromotionRequest>(Outer);
+	UPostPromotionRequest* Req = NewObject<UPostPromotionRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

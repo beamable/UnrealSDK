@@ -27,9 +27,9 @@ void UDeleteGroupsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteGroupsRequest* UDeleteGroupsRequest::Make(int64 _ObjectId, FOptionalInt64 _SubGroup, UObject* Outer)
+UDeleteGroupsRequest* UDeleteGroupsRequest::Make(int64 _ObjectId, FOptionalInt64 _SubGroup, UObject* RequestOwner)
 {
-	UDeleteGroupsRequest* Req = NewObject<UDeleteGroupsRequest>(Outer);
+	UDeleteGroupsRequest* Req = NewObject<UDeleteGroupsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

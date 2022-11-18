@@ -27,9 +27,9 @@ void UPostSkusRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostSkusRequest* UPostSkusRequest::Make(TArray<USKU*> _Definitions, UObject* Outer)
+UPostSkusRequest* UPostSkusRequest::Make(TArray<USKU*> _Definitions, UObject* RequestOwner)
 {
-	UPostSkusRequest* Req = NewObject<UPostSkusRequest>(Outer);
+	UPostSkusRequest* Req = NewObject<UPostSkusRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -1,7 +1,10 @@
 ﻿#include "BeamK2.h"
 
 #include "BlueprintEditor.h"
+#include "K2Node_BreakStruct.h"
 #include "K2Node_CallFunction.h"
+#include "K2Node_EnumEquality.h"
+#include "K2Node_GetArrayItem.h"
 #include "K2Node_MakeArray.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 
@@ -14,7 +17,6 @@ void BeamK2::GetPerBeamFlowNodes(const FKismetCompilerContext& CompilerContext, 
                                  const TArray<UEdGraphPin*>& CustomNodeStartPins, const TArray<FName> RelevantEventSpawningFunctionNames,
                                  TArray<TArray<UEdGraphNode*>>& PerPinForwardFlow, TArray<TArray<UEdGraphNode*>>& PerPinConnectedEventFlows)
 {
-	// TODO: Then, go to GetPerFlowNodes and remove all the notes, swap queues for TArrays so that we can print their contents at key points and leave those as notes instead.
 	const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
 	check(CustomNode != nullptr)
 	check(CustomNodeStartPins.Num() > 0)
@@ -81,17 +83,22 @@ void BeamK2::GetPerBeamFlowNodes(const FKismetCompilerContext& CompilerContext, 
 			// If we are parsing a node that has an input event that it will call...
 			for (const auto DelegatePin : Parsing->Pins.FilterByPredicate([&RelevantEventSpawningFunctionNames](const UEdGraphPin* P)
 			{
-				const auto AsCallFunctionNode = Cast<UK2Node_CallFunction>(P->GetOwningNode());
+				if (P)
+				{
+					const auto AsCallFunctionNode = Cast<UK2Node_CallFunction>(P->GetOwningNode());
 
-				const auto bIsRelevantInputPin = P->Direction == EGPD_Input &&
-					P->PinType.PinCategory == UEdGraphSchema_K2::PC_Delegate || P->PinType.PinCategory == UEdGraphSchema_K2::PC_MCDelegate;
+					const auto bIsRelevantInputPin = P->Direction == EGPD_Input &&
+						P->PinType.PinCategory == UEdGraphSchema_K2::PC_Delegate || P->PinType.PinCategory == UEdGraphSchema_K2::PC_MCDelegate;
 
-				if (!AsCallFunctionNode)
-					return false;
+					if (!AsCallFunctionNode || !AsCallFunctionNode->GetTargetFunction())
+						return false;
 
-				const auto bIsRelevantFunction = RelevantEventSpawningFunctionNames.Num() == 0 || RelevantEventSpawningFunctionNames.Contains(AsCallFunctionNode->GetFunctionName());
-				const auto bIsAFlowFunction = AsCallFunctionNode->GetTargetFunction()->HasMetaData("BeamFlowStart");
-				return bIsRelevantInputPin && (bIsRelevantFunction || bIsAFlowFunction);
+					const auto bIsRelevantFunction = RelevantEventSpawningFunctionNames.Num() == 0 || RelevantEventSpawningFunctionNames.Contains(AsCallFunctionNode->GetFunctionName());
+					const auto bIsAFlowFunction = AsCallFunctionNode->GetTargetFunction()->HasMetaData(MD_BeamFlowFunction);
+					return bIsRelevantInputPin && (bIsRelevantFunction || bIsAFlowFunction);
+				}
+
+				return false;
 			}))
 			{
 				for (const auto EventNodePin : DelegatePin->LinkedTo)
@@ -164,7 +171,7 @@ void BeamK2::GetPerBeamFlowNodes(const FKismetCompilerContext& CompilerContext, 
 
 
 				const auto bIsRelevantFunction = RelevantEventSpawningFunctionNames.Num() == 0 || RelevantEventSpawningFunctionNames.Contains(AsCallFunctionNode->GetFunctionName());
-				const auto bIsAFlowFunction = AsCallFunctionNode->GetTargetFunction()->HasMetaData("BeamFlowStart");
+				const auto bIsAFlowFunction = AsCallFunctionNode->GetTargetFunction()->HasMetaData(MD_BeamFlowFunction);
 				return bIsRelevantInputPin && (bIsRelevantFunction || bIsAFlowFunction);
 			}))
 			{
@@ -314,6 +321,21 @@ void BeamK2::ReplaceConnectionsOnBeamFlow(const TArray<UEdGraphNode*>& NodesToCo
 			for (int32 i = 0; i < From.Num(); i++)
 			{
 				const auto RelevantPin = From[i];
+
+				if (!GraphPin)
+				{
+					UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("Graph Pin was null, skipping it during %s. You should never see this!"),
+						   *GraphNode->GetDescriptiveCompiledName())
+					continue;
+				}
+				if (!RelevantPin)
+				{
+					UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("Relevant Pin Was null, skipping it during %s->%s node. You should never see this!"),
+					       *GraphNode->GetDescriptiveCompiledName(), *GraphPin->PinName.ToString())
+					continue;
+				}
+
+
 				UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("Comparing Node's %s Pin %s connected to relevant pin %s = %s"),
 				       *GraphNode->GetDescriptiveCompiledName(), *GraphPin->PinName.ToString(), *RelevantPin->PinName.ToString(),
 				       GraphPin->LinkedTo.Contains(RelevantPin) ? TEXT("true") : TEXT("false"))
@@ -323,7 +345,7 @@ void BeamK2::ReplaceConnectionsOnBeamFlow(const TArray<UEdGraphNode*>& NodesToCo
 					       *GraphNode->GetDescriptiveCompiledName(), *GraphPin->PinName.ToString(), *RelevantPin->PinName.ToString())
 					GraphPin->BreakLinkTo(RelevantPin);
 					const auto bConnectedEventPins = K2Schema->TryCreateConnection(GraphPin, To[i]);
-					checkf(bConnectedEventPins, TEXT("Pin Name %s"), *To[i]->GetName());
+					checkf(bConnectedEventPins, TEXT("FROM_PIN_NAME=%s, TO_PIN_NAME= %s"), *GraphPin->GetName(), *To[i]->GetName());
 				}
 			}
 		}
@@ -336,6 +358,95 @@ UK2Node_MakeArray* BeamK2::CreateMakeArrayNode(UEdGraphNode* CustomNode, FKismet
 	ArrayNode->NumInputs = PinCount;
 	ArrayNode->AllocateDefaultPins();
 	return ArrayNode;
+}
+
+UK2Node_BreakStruct* BeamK2::CreateBreakStructNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
+                                                   UScriptStruct* const StructToBreak, UEdGraphPin* StructInputPin)
+{
+	UK2Node_BreakStruct* BreakStructNode = CompilerContext.SpawnIntermediateNode<UK2Node_BreakStruct>(CustomNode, SourceGraph);
+	BreakStructNode->StructType = StructToBreak;
+	BreakStructNode->bMadeAfterOverridePinRemoval = true;
+	BreakStructNode->AllocateDefaultPins();
+
+	// Connect the Result pin to the break pin	
+	const auto bConnectedBreakPins = K2Schema->TryCreateConnection(StructInputPin, BreakStructNode->FindPin(StructToBreak->GetFName()));
+	check(bConnectedBreakPins)
+
+	return BreakStructNode;
+}
+
+
+UK2Node_SwitchEnum* BeamK2::CreateSwitchEnumNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema, UEnum* const Enum,
+                                                 UEdGraphPin* ExecFlowPin, UEdGraphPin* SwitchOnValuePin)
+{
+	UK2Node_SwitchEnum* SwitchEnum = CompilerContext.SpawnIntermediateNode<UK2Node_SwitchEnum>(CustomNode, SourceGraph);
+
+	// This is the equivalent of the SetEnum call --- we can't use it since it's not exposed for other modules. It seems unclear as to why that wouldn't be accessible... 
+	{
+		SwitchEnum->Enum = Enum;
+
+		// regenerate enum name list
+		SwitchEnum->EnumEntries.Empty();
+		SwitchEnum->EnumFriendlyNames.Empty();
+
+		if (Enum)
+		{
+			if ((Enum != NULL) && Enum->HasAnyFlags(RF_NeedLoad))
+			{
+				Enum->GetLinker()->Preload(Enum);
+			}
+			Enum->ConditionalPostLoad();
+
+			for (int32 EnumIndex = 0; EnumIndex < Enum->NumEnums() - 1; ++EnumIndex)
+			{
+				bool const bShouldBeHidden = Enum->HasMetaData(TEXT("Hidden"), EnumIndex) || Enum->HasMetaData(TEXT("Spacer"), EnumIndex);
+				if (!bShouldBeHidden)
+				{
+					FString const EnumValueName = Enum->GetNameStringByIndex(EnumIndex);
+					SwitchEnum->EnumEntries.Add(FName(*EnumValueName));
+
+					FText EnumFriendlyName = Enum->GetDisplayNameTextByIndex(EnumIndex);
+					SwitchEnum->EnumFriendlyNames.Add(EnumFriendlyName);
+				}
+			}
+		}
+	}
+	SwitchEnum->bHasDefaultPin = false;
+	SwitchEnum->AllocateDefaultPins();
+	K2Schema->TryCreateConnection(SwitchEnum->GetSelectionPin(), SwitchOnValuePin);
+	K2Schema->TryCreateConnection(ExecFlowPin, SwitchEnum->GetExecPin());
+	return SwitchEnum;
+}
+
+UK2Node_EnumEquality* BeamK2::CreateEnumEqualityAgainstDefault(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
+                                                               const UEnum* EnumToCompareType, const int64 EnumToCompareAgainst, UEdGraphPin* const CompareAgainstPin)
+{
+	UK2Node_EnumEquality* EnumEquality = CompilerContext.SpawnIntermediateNode<UK2Node_EnumEquality>(CustomNode, SourceGraph);
+	EnumEquality->AllocateDefaultPins();
+	// Connect the Result pin to the break pin
+	const auto bConnected = K2Schema->TryCreateConnection(CompareAgainstPin, EnumEquality->FindPin(TEXT("A")));
+	check(bConnected)
+
+	// Set the default value of this one to success
+	EnumEquality->FindPin(TEXT("B"))->DefaultValue = EnumToCompareType->GetNameStringByValue(EnumToCompareAgainst);
+
+	return EnumEquality;
+}
+
+UK2Node_IfThenElse* BeamK2::CreateIfThenElseNodeAgainstCondition(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
+                                                                 UEdGraphPin* const ExecPin, UEdGraphPin* ConditionPin)
+{
+	UK2Node_IfThenElse* IfThenElseNode = CompilerContext.SpawnIntermediateNode<UK2Node_IfThenElse>(CustomNode, SourceGraph);
+	IfThenElseNode->AllocateDefaultPins();
+	{
+		const auto bConnectedEnumEqualityToCondition = K2Schema->TryCreateConnection(ConditionPin, IfThenElseNode->GetConditionPin());
+		check(bConnectedEnumEqualityToCondition)
+
+		const auto bConnectedEvent = K2Schema->TryCreateConnection(ExecPin, IfThenElseNode->GetExecPin());
+		check(bConnectedEvent)
+	}
+
+	return IfThenElseNode;
 }
 
 
@@ -370,14 +481,25 @@ void BeamK2::MoveWrappedPin(const UEdGraphNode* CustomNode, FKismetCompilerConte
 	check(!Moved.IsFatal());
 }
 
+void BeamK2::ConnectIfThenElseNodeOutputs(FKismetCompilerContext& CompilerContext, UEdGraphPin* const TruePin, UEdGraphPin* const FalsePin, const UK2Node_IfThenElse* IfThenElseNode)
+{
+	const auto IntermediateSuccessPin = IfThenElseNode->GetThenPin();
+	const auto SuccessFlowMoved = CompilerContext.MovePinLinksToIntermediate(*TruePin, *IntermediateSuccessPin);
+	check(!SuccessFlowMoved.IsFatal());
+
+	const auto IntermediateOthersPin = IfThenElseNode->GetElsePin();
+	const auto NonSuccessFlowMoved = CompilerContext.MovePinLinksToIntermediate(*FalsePin, *IntermediateOthersPin);
+	check(!NonSuccessFlowMoved.IsFatal());
+}
+
 
 UK2Node_CallFunction* BeamK2::CreateCallFunctionNode(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph,
                                                      FName FunctionName, UClass* UClass)
 {
-	UK2Node_CallFunction* GetSubsystem = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(Node, SourceGraph);
-	GetSubsystem->FunctionReference.SetExternalMember(FunctionName, UClass);
-	GetSubsystem->AllocateDefaultPins();
-	return GetSubsystem;
+	UK2Node_CallFunction* CallFunctionNode = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(Node, SourceGraph);
+	CallFunctionNode->FunctionReference.SetExternalMember(FunctionName, UClass);
+	CallFunctionNode->AllocateDefaultPins();
+	return CallFunctionNode;
 }
 
 void BeamK2::ValidateOutputPinUsage(const FKismetCompilerContext& CompilerContext, const TArray<UEdGraphPin*>& InvalidPins, const TArray<FString>& InvalidPinErrorMessages,
@@ -425,12 +547,128 @@ bool BeamK2::IsMacroOrEventGraph(const UEdGraph* Graph)
 
 void BeamK2::RemoveAllPins(UEdGraphNode* CustomNode, const TArray<FName> PinsToRemove)
 {
+	TArray<TArray<UEdGraphPin*>> Connections;
+	RemoveAllPins(CustomNode, PinsToRemove, Connections);
+}
+
+UEdGraphPin* BeamK2::EnforcePinExistence(UEdGraphNode* CustomNode, EEdGraphPinDirection Direction, FName Category, FName Name, FString Tooltip, UEdGraphNode::FCreatePinParams Params,
+                                         UObject* CatSubObject)
+{
+	TArray<UEdGraphPin*> LinkedToPins;
+	if (const auto ExistingPin = CustomNode->FindPin(Name))
+	{
+		if (ExistingPin->LinkedTo.Num() > 0)
+		{
+			LinkedToPins.Append(ExistingPin->LinkedTo);
+		}
+
+		ExistingPin->BreakAllPinLinks();
+		CustomNode->RemovePin(ExistingPin);
+	}
+
+	UEdGraphPin* CreatedPin;
+	if (CatSubObject)
+	{
+		CreatedPin = CustomNode->CreatePin(Direction, Category, CatSubObject, Name, Params);
+		CreatedPin->PinToolTip = Tooltip;
+	}
+	else
+	{
+		CreatedPin = CustomNode->CreatePin(Direction, Category, Name, Params);
+		CreatedPin->PinToolTip = Tooltip;
+	}
+
+	// Reconnect if they were broken
+	for (const auto LinkedToPin : LinkedToPins)
+	{
+		if (LinkedToPin)
+			GetDefault<UEdGraphSchema_K2>()->TryCreateConnection(CreatedPin, LinkedToPin);
+	}
+
+
+	return CreatedPin;
+}
+
+UEdGraphPin* BeamK2::ExpandIntoArrayOrRegularIntermediatePin(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UK2Node_Event* IntermediateEventNode,
+                                                             const FName PinName, bool bIsArray, int DefaultElementIdx)
+{
+	const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
+	auto IntermediateUserSlotPin = IntermediateEventNode->FindPinChecked(PinName);
+	if (!bIsArray)
+	{
+		UK2Node_GetArrayItem* GetArrayItemNode = CompilerContext.SpawnIntermediateNode<UK2Node_GetArrayItem>(CustomNode, SourceGraph);
+		GetArrayItemNode->AllocateDefaultPins();
+
+		UEdGraphPin* ArrayPin = GetArrayItemNode->GetTargetArrayPin();
+		UEdGraphPin* ArrayGetResultPin = GetArrayItemNode->GetResultPin();
+		UEdGraphPin* IndexPin = GetArrayItemNode->GetIndexPin();
+		check(ArrayPin && ArrayGetResultPin && IndexPin);
+
+		// Fill in the array index pin default value
+		IndexPin->DefaultValue = FString::FromInt(DefaultElementIdx);
+
+		// Connect up the array variable output (CurrentPin) to the array pin					
+		if (const bool bSucceeded = K2Schema->TryCreateConnection(IntermediateUserSlotPin, ArrayPin); !bSucceeded)
+		{
+			CompilerContext.MessageLog.Error(*LOCTEXT("ArrayConnectionFailed", "@@ could not connect array when expanding node!").ToString(), CustomNode);
+		}
+
+		// Array element is now the user slot pin
+		IntermediateUserSlotPin = ArrayGetResultPin;
+	}
+	return IntermediateUserSlotPin;
+}
+
+void BeamK2::RemoveAllPinsExcept(UEdGraphNode* CustomNode, PinPredicate ExceptPins)
+{
+	TArray<TArray<UEdGraphPin*>> Connections;
+	RemoveAllPinsExcept(CustomNode, ExceptPins, Connections);
+}
+
+void BeamK2::RemoveAllPinsExcept(UEdGraphNode* CustomNode, PinPredicate ExceptPins, TArray<TArray<UEdGraphPin*>>& Connections)
+{
+	for (int i = CustomNode->Pins.Num() - 1; i >= 0; --i)
+	{
+		const auto Pin = CustomNode->Pins[i];
+		if (Pin && !ExceptPins(CustomNode, Pin))
+		{
+			// Grab all the pins they were linked to.
+			UE_LOG(LogTemp, Display, TEXT("Comparing Node's %s Pin %s connected to pins %d"), *CustomNode->GetName(), *Pin->GetName(), Pin->LinkedTo.Num());
+			Connections.Add(Pin->LinkedTo);
+
+			// Then break all of them
+			Pin->BreakAllPinLinks();
+			CustomNode->RemovePin(Pin);
+		}
+	}
+	//CustomNode->GetGraph()->NotifyGraphChanged();
+}
+
+void BeamK2::RemoveAllPins(UEdGraphNode* CustomNode, const TArray<FName> PinsToRemove, TArray<TArray<UEdGraphPin*>>& Connections)
+{
 	for (const auto ToRemove : PinsToRemove)
 	{
-		const auto Pin = CustomNode->FindPin(ToRemove);
-		Pin->BreakAllPinLinks();
-		CustomNode->RemovePin(Pin);
+		if (const auto Pin = CustomNode->FindPin(ToRemove))
+		{
+			// Grab all the pins they were linked to.
+			UE_LOG(LogTemp, Display, TEXT("Comparing Node's %s Pin %s connected to pins %d"), *CustomNode->GetName(), *Pin->GetName(), Pin->LinkedTo.Num());
+			Connections.Add(Pin->LinkedTo);
+
+			// Then break all of them
+			Pin->BreakAllPinLinks();
+			CustomNode->RemovePin(Pin);
+		}
 	}
+}
+
+void BeamK2::SetUpPinsFunctionToOwnerSubsystem(const UK2Node_CallFunction* CallGetSubsystem, const UK2Node_CallFunction* CallRequestFunction)
+{
+	const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
+
+	const auto SubsystemReturnPin = CallGetSubsystem->GetReturnValuePin();
+	const auto RequestFunctionSelfPin = K2Schema->FindSelfPin(*CallRequestFunction, EGPD_Input);
+	const auto bConnectedSubsystemToFunctionCall = K2Schema->TryCreateConnection(SubsystemReturnPin, RequestFunctionSelfPin);
+	check(bConnectedSubsystemToFunctionCall)
 }
 
 

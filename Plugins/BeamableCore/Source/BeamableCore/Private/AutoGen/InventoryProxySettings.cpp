@@ -3,6 +3,8 @@
 
 
 
+
+
 void UInventoryProxySettings ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("service"), Service);

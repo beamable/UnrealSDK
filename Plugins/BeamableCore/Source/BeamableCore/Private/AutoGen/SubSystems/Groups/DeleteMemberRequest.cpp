@@ -27,9 +27,9 @@ void UDeleteMemberRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteMemberRequest* UDeleteMemberRequest::Make(int64 _ObjectId, int64 _GamerTag, FOptionalInt64 _SubGroup, UObject* Outer)
+UDeleteMemberRequest* UDeleteMemberRequest::Make(int64 _ObjectId, int64 _GamerTag, FOptionalInt64 _SubGroup, UObject* RequestOwner)
 {
-	UDeleteMemberRequest* Req = NewObject<UDeleteMemberRequest>(Outer);
+	UDeleteMemberRequest* Req = NewObject<UDeleteMemberRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

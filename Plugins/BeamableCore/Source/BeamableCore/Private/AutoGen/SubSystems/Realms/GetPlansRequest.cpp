@@ -23,9 +23,9 @@ void UGetPlansRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetPlansRequest* UGetPlansRequest::Make(UObject* Outer)
+UGetPlansRequest* UGetPlansRequest::Make(UObject* RequestOwner)
 {
-	UGetPlansRequest* Req = NewObject<UGetPlansRequest>(Outer);
+	UGetPlansRequest* Req = NewObject<UGetPlansRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

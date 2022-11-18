@@ -43,8 +43,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Commerce", DisplayName="Beam - Make GetListings",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Store,_Time,Outer"))
-	static UGetListingsRequest* Make(int64 _ObjectId, FString _Listing, FOptionalString _Store, FOptionalString _Time, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Commerce", DisplayName="Beam - Make GetListings",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Store,_Time,RequestOwner"))
+	static UGetListingsRequest* Make(int64 _ObjectId, FString _Listing, FOptionalString _Store, FOptionalString _Time, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

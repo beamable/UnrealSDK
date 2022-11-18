@@ -23,9 +23,9 @@ void UGetEventPlayersRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetEventPlayersRequest* UGetEventPlayersRequest::Make(int64 _ObjectId, UObject* Outer)
+UGetEventPlayersRequest* UGetEventPlayersRequest::Make(int64 _ObjectId, UObject* RequestOwner)
 {
-	UGetEventPlayersRequest* Req = NewObject<UGetEventPlayersRequest>(Outer);
+	UGetEventPlayersRequest* Req = NewObject<UGetEventPlayersRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

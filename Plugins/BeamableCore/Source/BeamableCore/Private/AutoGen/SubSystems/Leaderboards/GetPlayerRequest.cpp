@@ -15,7 +15,7 @@ void UGetPlayerRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("dbid"), *FString::FromInt(Dbid));
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("dbid"), *FString::FromInt(Dbid));
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -26,9 +26,9 @@ void UGetPlayerRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetPlayerRequest* UGetPlayerRequest::Make(int64 _Dbid, UObject* Outer)
+UGetPlayerRequest* UGetPlayerRequest::Make(int64 _Dbid, UObject* RequestOwner)
 {
-	UGetPlayerRequest* Req = NewObject<UGetPlayerRequest>(Outer);
+	UGetPlayerRequest* Req = NewObject<UGetPlayerRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Dbid = _Dbid;

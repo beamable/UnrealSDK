@@ -27,9 +27,9 @@ void UPostSteamPurchaseCompleteRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostSteamPurchaseCompleteRequest* UPostSteamPurchaseCompleteRequest::Make(int64 _Txid, FString _Receipt, FString _PriceInLocalCurrency, FString _IsoCurrencySymbol, UObject* Outer)
+UPostSteamPurchaseCompleteRequest* UPostSteamPurchaseCompleteRequest::Make(int64 _Txid, FString _Receipt, FString _PriceInLocalCurrency, FString _IsoCurrencySymbol, UObject* RequestOwner)
 {
-	UPostSteamPurchaseCompleteRequest* Req = NewObject<UPostSteamPurchaseCompleteRequest>(Outer);
+	UPostSteamPurchaseCompleteRequest* Req = NewObject<UPostSteamPurchaseCompleteRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

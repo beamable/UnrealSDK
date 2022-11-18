@@ -3,6 +3,8 @@
 
 
 
+
+
 void UPlayerId ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("playerId"), PlayerId);

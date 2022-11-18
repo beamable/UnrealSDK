@@ -3,6 +3,8 @@
 
 
 
+
+
 void UInvite ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("playerId"), PlayerId);

@@ -23,9 +23,9 @@ void UGetAdminAdminUsersRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAdminAdminUsersRequest* UGetAdminAdminUsersRequest::Make(UObject* Outer)
+UGetAdminAdminUsersRequest* UGetAdminAdminUsersRequest::Make(UObject* RequestOwner)
 {
-	UGetAdminAdminUsersRequest* Req = NewObject<UGetAdminAdminUsersRequest>(Outer);
+	UGetAdminAdminUsersRequest* Req = NewObject<UGetAdminAdminUsersRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -23,9 +23,9 @@ void UGetFriendsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetFriendsRequest* UGetFriendsRequest::Make(FString _ObjectId, UObject* Outer)
+UGetFriendsRequest* UGetFriendsRequest::Make(FString _ObjectId, UObject* RequestOwner)
 {
-	UGetFriendsRequest* Req = NewObject<UGetFriendsRequest>(Outer);
+	UGetFriendsRequest* Req = NewObject<UGetFriendsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

@@ -27,9 +27,9 @@ void UBasicAccountsPostRegisterRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UBasicAccountsPostRegisterRequest* UBasicAccountsPostRegisterRequest::Make(FString _Email, FString _Password, UObject* Outer)
+UBasicAccountsPostRegisterRequest* UBasicAccountsPostRegisterRequest::Make(FString _Email, FString _Password, UObject* RequestOwner)
 {
-	UBasicAccountsPostRegisterRequest* Req = NewObject<UBasicAccountsPostRegisterRequest>(Outer);
+	UBasicAccountsPostRegisterRequest* Req = NewObject<UBasicAccountsPostRegisterRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

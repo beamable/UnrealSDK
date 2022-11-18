@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Groups", DisplayName="Beam - Make PostInvite",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_SubGroup,_bUseNewRewardsSystem,Outer"))
-	static UPostInviteRequest* Make(int64 _ObjectId, int64 _GamerTag, FOptionalInt64 _SubGroup, FOptionalBool _bUseNewRewardsSystem, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Groups", DisplayName="Beam - Make PostInvite",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_SubGroup,_bUseNewRewardsSystem,RequestOwner"))
+	static UPostInviteRequest* Make(int64 _ObjectId, int64 _GamerTag, FOptionalInt64 _SubGroup, FOptionalBool _bUseNewRewardsSystem, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

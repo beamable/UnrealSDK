@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", DisplayName="Beam - Make PutAdminPlayer",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UPutAdminPlayerRequest* Make(int64 _PlayerId, FString _TournamentId, UPlayerStatusUpdate* _Update, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", DisplayName="Beam - Make PutAdminPlayer",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UPutAdminPlayerRequest* Make(int64 _PlayerId, FString _TournamentId, UPlayerStatusUpdate* _Update, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

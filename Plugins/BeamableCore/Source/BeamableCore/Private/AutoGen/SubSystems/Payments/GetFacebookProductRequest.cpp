@@ -15,7 +15,7 @@ void UGetFacebookProductRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("sku"), *Sku);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("sku"), *Sku);
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -26,9 +26,9 @@ void UGetFacebookProductRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetFacebookProductRequest* UGetFacebookProductRequest::Make(FString _Sku, UObject* Outer)
+UGetFacebookProductRequest* UGetFacebookProductRequest::Make(FString _Sku, UObject* RequestOwner)
 {
-	UGetFacebookProductRequest* Req = NewObject<UGetFacebookProductRequest>(Outer);
+	UGetFacebookProductRequest* Req = NewObject<UGetFacebookProductRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Sku = _Sku;

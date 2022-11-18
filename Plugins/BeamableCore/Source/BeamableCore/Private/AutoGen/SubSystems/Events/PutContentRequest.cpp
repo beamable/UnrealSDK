@@ -9,7 +9,7 @@ void UPutContentRequest::BuildVerb(FString& VerbString) const
 void UPutContentRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/events/{objectId}/content");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *ObjectId);
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -27,9 +27,9 @@ void UPutContentRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutContentRequest* UPutContentRequest::Make(int64 _ObjectId, UEvent* _Event, FString _Origin, FOptionalString _RootEventId, FOptionalString _OriginType, UObject* Outer)
+UPutContentRequest* UPutContentRequest::Make(FString _ObjectId, UEvent* _Event, FString _Origin, FOptionalString _RootEventId, FOptionalString _OriginType, UObject* RequestOwner)
 {
-	UPutContentRequest* Req = NewObject<UPutContentRequest>(Outer);
+	UPutContentRequest* Req = NewObject<UPutContentRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

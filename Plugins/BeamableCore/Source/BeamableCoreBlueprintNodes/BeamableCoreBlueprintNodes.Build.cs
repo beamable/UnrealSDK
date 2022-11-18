@@ -13,6 +13,7 @@ public class BeamableCoreBlueprintNodes : ModuleRules
 				"Engine",
 				"CoreUObject",
 				"BeamableCore",
+				"BeamableCoreRuntime",
 				"UnrealEd",
 				"BlueprintGraph",
 				"GraphEditor",
@@ -24,7 +25,7 @@ public class BeamableCoreBlueprintNodes : ModuleRules
 				"KismetCompiler",
 				"Projects", // Required to use IPluginManager in order to configure new Slate styles
 				"ToolMenus",
-				"ToolMenusEditor"
+				"ToolMenusEditor", 
 			}
 		);
 

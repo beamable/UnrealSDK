@@ -27,9 +27,9 @@ void UPostManifestPullRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostManifestPullRequest* UPostManifestPullRequest::Make(FString _SourceRealmPid, UObject* Outer)
+UPostManifestPullRequest* UPostManifestPullRequest::Make(FString _SourceRealmPid, UObject* RequestOwner)
 {
-	UPostManifestPullRequest* Req = NewObject<UPostManifestPullRequest>(Outer);
+	UPostManifestPullRequest* Req = NewObject<UPostManifestPullRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

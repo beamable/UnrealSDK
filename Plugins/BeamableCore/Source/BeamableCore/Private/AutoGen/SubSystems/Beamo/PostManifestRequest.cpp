@@ -27,9 +27,9 @@ void UPostManifestRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostManifestRequest* UPostManifestRequest::Make(TArray<UServiceReference*> _Manifest, FOptionalBool _bAutoDeploy, FOptionalString _Comments, FOptionalArrayOfServiceStorageReference _StorageReferences, UObject* Outer)
+UPostManifestRequest* UPostManifestRequest::Make(TArray<UServiceReference*> _Manifest, FOptionalBool _bAutoDeploy, FOptionalString _Comments, FOptionalArrayOfServiceStorageReference _StorageReferences, UObject* RequestOwner)
 {
-	UPostManifestRequest* Req = NewObject<UPostManifestRequest>(Outer);
+	UPostManifestRequest* Req = NewObject<UPostManifestRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

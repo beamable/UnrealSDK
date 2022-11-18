@@ -23,9 +23,9 @@ void UDeleteEntriesRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UDeleteEntriesRequest* UDeleteEntriesRequest::Make(FString _ObjectId, UObject* Outer)
+UDeleteEntriesRequest* UDeleteEntriesRequest::Make(FString _ObjectId, UObject* RequestOwner)
 {
-	UDeleteEntriesRequest* Req = NewObject<UDeleteEntriesRequest>(Outer);
+	UDeleteEntriesRequest* Req = NewObject<UDeleteEntriesRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

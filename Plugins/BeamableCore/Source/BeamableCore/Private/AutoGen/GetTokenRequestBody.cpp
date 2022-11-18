@@ -3,6 +3,8 @@
 
 
 
+
+
 void UGetTokenRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("token"), Token);

@@ -3,6 +3,13 @@
 
 #include "Misc/DefaultValueHelper.h"
 
+
+void UMailQueryResponse::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
+{
+	OuterOwner = RequestData;
+	BeamDeserialize(ResponseContent);	
+}
+
 void UMailQueryResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("unreadCount"), UnreadCount);

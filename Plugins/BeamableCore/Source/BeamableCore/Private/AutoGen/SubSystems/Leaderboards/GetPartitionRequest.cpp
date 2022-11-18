@@ -15,7 +15,7 @@ void UGetPartitionRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("playerId"), *FString::FromInt(PlayerId));
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("playerId"), *FString::FromInt(PlayerId));
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -26,9 +26,9 @@ void UGetPartitionRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetPartitionRequest* UGetPartitionRequest::Make(FString _ObjectId, int64 _PlayerId, UObject* Outer)
+UGetPartitionRequest* UGetPartitionRequest::Make(FString _ObjectId, int64 _PlayerId, UObject* RequestOwner)
 {
-	UGetPartitionRequest* Req = NewObject<UGetPartitionRequest>(Outer);
+	UGetPartitionRequest* Req = NewObject<UGetPartitionRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

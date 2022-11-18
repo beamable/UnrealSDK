@@ -93,6 +93,8 @@
 #include "AutoGen/SubSystems/Accounts/GetAdminMeRequest.h"
 #include "AutoGen/SubSystems/Accounts/GetAdminAdminUsersRequest.h"
 #include "AutoGen/SubSystems/Accounts/GetFindRequest.h"
+#include "AutoGen/SubSystems/Accounts/PostExternal_identityRequest.h"
+#include "AutoGen/SubSystems/Accounts/DeleteExternal_identityRequest.h"
 #include "AutoGen/SubSystems/Accounts/PutAdminEmailRequest.h"
 #include "AutoGen/SubSystems/Accounts/GetRoleReportRequest.h"
 #include "AutoGen/SubSystems/Accounts/ObjectAccountsPutRoleRequest.h"
@@ -1706,6 +1708,36 @@ template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestPr
 template FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64&, UGetFindRequest*, TBeamFullResponseHandler<UGetFindRequest*, UAccountsBasicAccount*>);
 template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UGetFindRequest*,
                                                                                    TBeamFullResponseHandler<UGetFindRequest*, UAccountsBasicAccount*>);
+
+
+
+template TUnrealRequestPtr UBeamBackend::CreateRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const UPostExternal_identityRequest*);
+template TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const FBeamAuthToken&, const UPostExternal_identityRequest*);
+
+template FBeamRequestProcessor UBeamBackend::MakeBlueprintRequestProcessor<UPostExternal_identityRequest, UAttachExternalIdentityApiResponse>(
+	const int64&, UPostExternal_identityRequest*, FOnPostExternal_identitySuccess, FOnPostExternal_identityError, FOnPostExternal_identityComplete);
+
+template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestProcessor<UPostExternal_identityRequest, UAttachExternalIdentityApiResponse>(
+	const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UPostExternal_identityRequest*, FOnPostExternal_identitySuccess, FOnPostExternal_identityError, FOnPostExternal_identityComplete);
+
+template FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64&, UPostExternal_identityRequest*, TBeamFullResponseHandler<UPostExternal_identityRequest*, UAttachExternalIdentityApiResponse*>);
+template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UPostExternal_identityRequest*,
+                                                                                   TBeamFullResponseHandler<UPostExternal_identityRequest*, UAttachExternalIdentityApiResponse*>);
+
+
+
+template TUnrealRequestPtr UBeamBackend::CreateRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const UDeleteExternal_identityRequest*);
+template TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const FBeamAuthToken&, const UDeleteExternal_identityRequest*);
+
+template FBeamRequestProcessor UBeamBackend::MakeBlueprintRequestProcessor<UDeleteExternal_identityRequest, UCommonResponse>(
+	const int64&, UDeleteExternal_identityRequest*, FOnDeleteExternal_identitySuccess, FOnDeleteExternal_identityError, FOnDeleteExternal_identityComplete);
+
+template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestProcessor<UDeleteExternal_identityRequest, UCommonResponse>(
+	const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UDeleteExternal_identityRequest*, FOnDeleteExternal_identitySuccess, FOnDeleteExternal_identityError, FOnDeleteExternal_identityComplete);
+
+template FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64&, UDeleteExternal_identityRequest*, TBeamFullResponseHandler<UDeleteExternal_identityRequest*, UCommonResponse*>);
+template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UDeleteExternal_identityRequest*,
+                                                                                   TBeamFullResponseHandler<UDeleteExternal_identityRequest*, UCommonResponse*>);
 
 
 

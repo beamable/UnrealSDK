@@ -27,9 +27,9 @@ void UPostSearchGroupsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostSearchGroupsRequest* UPostSearchGroupsRequest::Make(FString _ContentId, TArray<int64> _GroupIds, UObject* Outer)
+UPostSearchGroupsRequest* UPostSearchGroupsRequest::Make(FString _ContentId, TArray<int64> _GroupIds, UObject* RequestOwner)
 {
-	UPostSearchGroupsRequest* Req = NewObject<UPostSearchGroupsRequest>(Outer);
+	UPostSearchGroupsRequest* Req = NewObject<UPostSearchGroupsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

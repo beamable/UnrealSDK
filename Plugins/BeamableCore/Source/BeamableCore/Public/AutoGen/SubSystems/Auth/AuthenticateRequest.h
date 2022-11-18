@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", DisplayName="Beam - Make Authenticate",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_bCustomerScoped,_DeviceId,_Username,_RefreshToken,_Context,_ThirdParty,_RedirectUri,_ClientId,_Code,_Token,_Password,_Scope,Outer"))
-	static UAuthenticateRequest* Make(FString _GrantType, FOptionalBool _bCustomerScoped, FOptionalString _DeviceId, FOptionalString _Username, FOptionalString _RefreshToken, FOptionalContextInfo _Context, FOptionalString _ThirdParty, FOptionalString _RedirectUri, FOptionalString _ClientId, FOptionalString _Code, FOptionalString _Token, FOptionalString _Password, FOptionalArrayOfString _Scope, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", DisplayName="Beam - Make Authenticate",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bCustomerScoped,_DeviceId,_Username,_RefreshToken,_Context,_ThirdParty,_RedirectUri,_ClientId,_ChallengeSolution,_ExternalToken,_Code,_ProviderAddress,_Token,_Password,_Scope,RequestOwner"))
+	static UAuthenticateRequest* Make(FString _GrantType, FOptionalBool _bCustomerScoped, FOptionalString _DeviceId, FOptionalString _Username, FOptionalString _RefreshToken, FOptionalContextInfo _Context, FOptionalString _ThirdParty, FOptionalString _RedirectUri, FOptionalString _ClientId, FOptionalChallengeSolution _ChallengeSolution, FOptionalString _ExternalToken, FOptionalString _Code, FOptionalString _ProviderAddress, FOptionalString _Token, FOptionalString _Password, FOptionalArrayOfString _Scope, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

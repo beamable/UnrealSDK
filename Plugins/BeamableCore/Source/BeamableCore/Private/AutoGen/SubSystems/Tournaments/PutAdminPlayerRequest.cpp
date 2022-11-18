@@ -27,9 +27,9 @@ void UPutAdminPlayerRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutAdminPlayerRequest* UPutAdminPlayerRequest::Make(int64 _PlayerId, FString _TournamentId, UPlayerStatusUpdate* _Update, UObject* Outer)
+UPutAdminPlayerRequest* UPutAdminPlayerRequest::Make(int64 _PlayerId, FString _TournamentId, UPlayerStatusUpdate* _Update, UObject* RequestOwner)
 {
-	UPutAdminPlayerRequest* Req = NewObject<UPutAdminPlayerRequest>(Outer);
+	UPutAdminPlayerRequest* Req = NewObject<UPutAdminPlayerRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

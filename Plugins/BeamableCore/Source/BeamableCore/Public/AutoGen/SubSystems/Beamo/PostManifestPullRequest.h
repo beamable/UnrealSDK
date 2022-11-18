@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make PostManifestPull",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UPostManifestPullRequest* Make(FString _SourceRealmPid, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make PostManifestPull",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UPostManifestPullRequest* Make(FString _SourceRealmPid, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

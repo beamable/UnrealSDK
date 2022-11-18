@@ -41,8 +41,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make BasicAccountsGetSearch",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UBasicAccountsGetSearchRequest* Make(FString _Query, int32 _Page, int32 _Pagesize, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make BasicAccountsGetSearch",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UBasicAccountsGetSearchRequest* Make(FString _Query, int32 _Page, int32 _Pagesize, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

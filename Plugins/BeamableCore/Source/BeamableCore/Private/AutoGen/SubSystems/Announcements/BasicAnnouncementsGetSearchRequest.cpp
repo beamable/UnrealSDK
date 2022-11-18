@@ -16,7 +16,7 @@ void UBasicAnnouncementsGetSearchRequest::BuildRoute(FString& RouteString) const
 	bool bIsFirstQueryParam = true;
 	if(Date.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("date"), *Date.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("date"), *Date.Val);
 		bIsFirstQueryParam = false;
 	}
 
@@ -28,9 +28,9 @@ void UBasicAnnouncementsGetSearchRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UBasicAnnouncementsGetSearchRequest* UBasicAnnouncementsGetSearchRequest::Make(FOptionalString _Date, UObject* Outer)
+UBasicAnnouncementsGetSearchRequest* UBasicAnnouncementsGetSearchRequest::Make(FOptionalString _Date, UObject* RequestOwner)
 {
-	UBasicAnnouncementsGetSearchRequest* Req = NewObject<UBasicAnnouncementsGetSearchRequest>(Outer);
+	UBasicAnnouncementsGetSearchRequest* Req = NewObject<UBasicAnnouncementsGetSearchRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Date = _Date;

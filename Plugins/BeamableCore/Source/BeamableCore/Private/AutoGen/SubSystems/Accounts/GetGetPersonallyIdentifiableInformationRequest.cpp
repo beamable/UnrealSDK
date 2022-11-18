@@ -15,7 +15,7 @@ void UGetGetPersonallyIdentifiableInformationRequest::BuildRoute(FString& RouteS
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("query"), *Query);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("query"), *Query);
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -26,9 +26,9 @@ void UGetGetPersonallyIdentifiableInformationRequest::BuildBody(FString& BodyStr
 	
 }
 
-UGetGetPersonallyIdentifiableInformationRequest* UGetGetPersonallyIdentifiableInformationRequest::Make(FString _Query, UObject* Outer)
+UGetGetPersonallyIdentifiableInformationRequest* UGetGetPersonallyIdentifiableInformationRequest::Make(FString _Query, UObject* RequestOwner)
 {
-	UGetGetPersonallyIdentifiableInformationRequest* Req = NewObject<UGetGetPersonallyIdentifiableInformationRequest>(Outer);
+	UGetGetPersonallyIdentifiableInformationRequest* Req = NewObject<UGetGetPersonallyIdentifiableInformationRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Query = _Query;

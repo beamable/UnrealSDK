@@ -15,27 +15,27 @@ void UGetTokenListRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("pageSize"), *FString::FromInt(PageSize));
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("pageSize"), *FString::FromInt(PageSize));
 	bIsFirstQueryParam = false;
 	
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("page"), *FString::FromInt(Page));
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("page"), *FString::FromInt(Page));
 	bIsFirstQueryParam = false;
 	
 	if(Cid.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("cid"), *FString::FromInt(Cid.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("cid"), *FString::FromInt(Cid.Val));
 		bIsFirstQueryParam = false;
 	}
 
 	if(Pid.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("pid"), *Pid.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("pid"), *Pid.Val);
 		bIsFirstQueryParam = false;
 	}
 
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("gamerTagOrAccountId"), *FString::FromInt(GamerTagOrAccountId));
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("gamerTagOrAccountId"), *FString::FromInt(GamerTagOrAccountId));
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -46,9 +46,9 @@ void UGetTokenListRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetTokenListRequest* UGetTokenListRequest::Make(int32 _PageSize, int32 _Page, FOptionalInt64 _Cid, FOptionalString _Pid, int64 _GamerTagOrAccountId, UObject* Outer)
+UGetTokenListRequest* UGetTokenListRequest::Make(int32 _PageSize, int32 _Page, FOptionalInt64 _Cid, FOptionalString _Pid, int64 _GamerTagOrAccountId, UObject* RequestOwner)
 {
-	UGetTokenListRequest* Req = NewObject<UGetTokenListRequest>(Outer);
+	UGetTokenListRequest* Req = NewObject<UGetTokenListRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->PageSize = _PageSize;

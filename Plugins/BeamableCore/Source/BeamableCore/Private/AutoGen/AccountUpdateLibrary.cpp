@@ -22,7 +22,7 @@ FString UAccountUpdateLibrary::AccountUpdateToJsonString(const UAccountUpdate* S
 	return Result;
 }	
 
-UAccountUpdate* UAccountUpdateLibrary::Make(bool bHasThirdPartyToken, FOptionalString ThirdParty, FOptionalString Country, FOptionalString Language, FOptionalGamerTagAssociation GamerTagAssoc, FOptionalString Token, FOptionalString DeviceId, FOptionalString UserName, UObject* Outer)
+UAccountUpdate* UAccountUpdateLibrary::Make(bool bHasThirdPartyToken, FOptionalString ThirdParty, FOptionalString Country, FOptionalString Language, FOptionalGamerTagAssociation GamerTagAssoc, FOptionalString Token, FOptionalString DeviceId, FOptionalString UserName, FOptionalArrayOfExternalIdentity External, UObject* Outer)
 {
 	auto Serializable = NewObject<UAccountUpdate>(Outer);
 	Serializable->bHasThirdPartyToken = bHasThirdPartyToken;
@@ -33,11 +33,12 @@ UAccountUpdate* UAccountUpdateLibrary::Make(bool bHasThirdPartyToken, FOptionalS
 	Serializable->Token = Token;
 	Serializable->DeviceId = DeviceId;
 	Serializable->UserName = UserName;
+	Serializable->External = External;
 	
 	return Serializable;
 }
 
-void UAccountUpdateLibrary::Break(const UAccountUpdate* Serializable, bool& bHasThirdPartyToken, FOptionalString& ThirdParty, FOptionalString& Country, FOptionalString& Language, FOptionalGamerTagAssociation& GamerTagAssoc, FOptionalString& Token, FOptionalString& DeviceId, FOptionalString& UserName)
+void UAccountUpdateLibrary::Break(const UAccountUpdate* Serializable, bool& bHasThirdPartyToken, FOptionalString& ThirdParty, FOptionalString& Country, FOptionalString& Language, FOptionalGamerTagAssociation& GamerTagAssoc, FOptionalString& Token, FOptionalString& DeviceId, FOptionalString& UserName, FOptionalArrayOfExternalIdentity& External)
 {
 	bHasThirdPartyToken = Serializable->bHasThirdPartyToken;
 	ThirdParty = Serializable->ThirdParty;
@@ -47,6 +48,7 @@ void UAccountUpdateLibrary::Break(const UAccountUpdate* Serializable, bool& bHas
 	Token = Serializable->Token;
 	DeviceId = Serializable->DeviceId;
 	UserName = Serializable->UserName;
+	External = Serializable->External;
 		
 }
 

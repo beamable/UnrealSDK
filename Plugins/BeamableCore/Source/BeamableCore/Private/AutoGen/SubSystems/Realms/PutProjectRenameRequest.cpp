@@ -27,9 +27,9 @@ void UPutProjectRenameRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutProjectRenameRequest* UPutProjectRenameRequest::Make(FString _ProjectId, FString _NewName, UObject* Outer)
+UPutProjectRenameRequest* UPutProjectRenameRequest::Make(FString _ProjectId, FString _NewName, UObject* RequestOwner)
 {
-	UPutProjectRenameRequest* Req = NewObject<UPutProjectRenameRequest>(Outer);
+	UPutProjectRenameRequest* Req = NewObject<UPutProjectRenameRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Commerce", DisplayName="Beam - Make PostCatalogLegacy",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UPostCatalogLegacyRequest* Make(TArray<UStore*> _Stores, TArray<UOfferDefinition*> _OfferDefinitions, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Commerce", DisplayName="Beam - Make PostCatalogLegacy",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UPostCatalogLegacyRequest* Make(TArray<UStore*> _Stores, TArray<UOfferDefinition*> _OfferDefinitions, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

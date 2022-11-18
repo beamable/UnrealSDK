@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|ChatV2", DisplayName="Beam - Make DeleteRooms",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UDeleteRoomsRequest* Make(int64 _ObjectId, FString _RoomId, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|ChatV2", DisplayName="Beam - Make DeleteRooms",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UDeleteRoomsRequest* Make(int64 _ObjectId, FString _RoomId, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

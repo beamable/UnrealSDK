@@ -45,8 +45,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make GetStoragePerformance",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_EndDate,_StartDate,_Period,Outer"))
-	static UGetStoragePerformanceRequest* Make(FOptionalString _EndDate, FString _StorageObjectName, FString _Granularity, FOptionalString _StartDate, FOptionalString _Period, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make GetStoragePerformance",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_EndDate,_StartDate,_Period,RequestOwner"))
+	static UGetStoragePerformanceRequest* Make(FOptionalString _EndDate, FString _StorageObjectName, FString _Granularity, FOptionalString _StartDate, FOptionalString _Period, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

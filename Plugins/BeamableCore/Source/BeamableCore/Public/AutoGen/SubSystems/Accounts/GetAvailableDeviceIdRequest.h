@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make GetAvailableDeviceId",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UGetAvailableDeviceIdRequest* Make(FString _DeviceId, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make GetAvailableDeviceId",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UGetAvailableDeviceIdRequest* Make(FString _DeviceId, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

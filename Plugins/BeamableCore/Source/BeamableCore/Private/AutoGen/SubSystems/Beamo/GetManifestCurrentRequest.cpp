@@ -16,7 +16,7 @@ void UGetManifestCurrentRequest::BuildRoute(FString& RouteString) const
 	bool bIsFirstQueryParam = true;
 	if(bArchived.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("archived"), bArchived.Val ? *TEXT("true") : *TEXT("false"));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("archived"), bArchived.Val ? TEXT("true") : TEXT("false"));
 		bIsFirstQueryParam = false;
 	}
 
@@ -28,9 +28,9 @@ void UGetManifestCurrentRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetManifestCurrentRequest* UGetManifestCurrentRequest::Make(FOptionalBool _bArchived, UObject* Outer)
+UGetManifestCurrentRequest* UGetManifestCurrentRequest::Make(FOptionalBool _bArchived, UObject* RequestOwner)
 {
-	UGetManifestCurrentRequest* Req = NewObject<UGetManifestCurrentRequest>(Outer);
+	UGetManifestCurrentRequest* Req = NewObject<UGetManifestCurrentRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->bArchived = _bArchived;

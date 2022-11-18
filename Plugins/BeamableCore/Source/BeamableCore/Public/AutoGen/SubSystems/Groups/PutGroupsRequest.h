@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Groups", DisplayName="Beam - Make PutGroups",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Name,_EnrollmentType,_Tag,_Slogan,_Requirement,_Motd,_ClientData,_SubGroup,Outer"))
-	static UPutGroupsRequest* Make(int64 _ObjectId, FOptionalString _Name, FOptionalString _EnrollmentType, FOptionalString _Tag, FOptionalString _Slogan, FOptionalInt64 _Requirement, FOptionalString _Motd, FOptionalString _ClientData, FOptionalInt64 _SubGroup, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Groups", DisplayName="Beam - Make PutGroups",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Name,_EnrollmentType,_Tag,_Slogan,_Requirement,_Motd,_ClientData,_SubGroup,RequestOwner"))
+	static UPutGroupsRequest* Make(int64 _ObjectId, FOptionalString _Name, FOptionalString _EnrollmentType, FOptionalString _Tag, FOptionalString _Slogan, FOptionalInt64 _Requirement, FOptionalString _Motd, FOptionalString _ClientData, FOptionalInt64 _SubGroup, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

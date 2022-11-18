@@ -3,6 +3,8 @@
 
 
 
+
+
 void UStatStringListEntry ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("k"), K);

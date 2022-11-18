@@ -11,8 +11,8 @@ FUserSlot::FUserSlot(const FString& x)
 	// We allow setting a user slot as empty or as any Test slot. Other than those, it must be registered in the core settings. 
 	if (!x.IsEmpty() && !x.Contains("Test"))
 	{
-		ensureAlwaysMsgf(GetDefault<UBeamCoreSettings>()->EditorUserSlots.Contains(x) || GetDefault<UBeamCoreSettings>()->RuntimeUserSlots.Contains(x),
-		                 TEXT("Creating a non configured UserSlot is not allowed. Please register them appropriately at Project Settings > Beam Core > User Slots. USER_SLOT=%s"), *x);
+		ensureAlwaysMsgf(GetDefault<UBeamCoreSettings>()->RuntimeUserSlots.Contains(x) || GetDefault<UBeamCoreSettings>()->DeveloperUserSlots.Contains(x),
+						 TEXT("Creating a non configured UserSlot is not allowed. Please register them appropriately at Project Settings > Beam Core > User Slots. USER_SLOT=%s"), *x);
 	}
 
 	Name = x;
@@ -23,8 +23,8 @@ FUserSlot& FUserSlot::operator=(const FString& x)
 	// We allow setting a user slot as empty or as any Test slot. Other than those, it must be registered in the core settings.
 	if (!x.IsEmpty() && !x.Contains("Test"))
 	{
-		ensureAlwaysMsgf(GetDefault<UBeamCoreSettings>()->EditorUserSlots.Contains(x) || GetDefault<UBeamCoreSettings>()->RuntimeUserSlots.Contains(x),
-		                 TEXT("Creating a non configured UserSlot is not allowed. Please register them appropriately at Project Settings > Beam Core > User Slots. USER_SLOT=%s"), *x);
+		ensureAlwaysMsgf(GetDefault<UBeamCoreSettings>()->RuntimeUserSlots.Contains(x) || GetDefault<UBeamCoreSettings>()->DeveloperUserSlots.Contains(x),
+		                 TEXT("Creating a non configured UserSlot is not allowed. Please register them appropriately at Project Settings > Beam Core > User Slots. USER_SLOT=%s"), *x);		
 	}
 
 	this->Name = x;

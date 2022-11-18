@@ -27,9 +27,9 @@ void UPutAccountsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutAccountsRequest* UPutAccountsRequest::Make(int64 _ObjectId, bool _bHasThirdPartyToken, FOptionalString _ThirdParty, FOptionalString _Country, FOptionalString _Language, FOptionalGamerTagAssociation _GamerTagAssoc, FOptionalString _Token, FOptionalString _DeviceId, FOptionalString _UserName, UObject* Outer)
+UPutAccountsRequest* UPutAccountsRequest::Make(int64 _ObjectId, bool _bHasThirdPartyToken, FOptionalString _ThirdParty, FOptionalString _Country, FOptionalString _Language, FOptionalGamerTagAssociation _GamerTagAssoc, FOptionalString _Token, FOptionalString _DeviceId, FOptionalString _UserName, FOptionalArrayOfExternalIdentity _External, UObject* RequestOwner)
 {
-	UPutAccountsRequest* Req = NewObject<UPutAccountsRequest>(Outer);
+	UPutAccountsRequest* Req = NewObject<UPutAccountsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;
@@ -45,6 +45,7 @@ UPutAccountsRequest* UPutAccountsRequest::Make(int64 _ObjectId, bool _bHasThirdP
 	Req->Body->Token = _Token;
 	Req->Body->DeviceId = _DeviceId;
 	Req->Body->UserName = _UserName;
+	Req->Body->External = _External;
 	
 
 	return Req;

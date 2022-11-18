@@ -23,9 +23,9 @@ void UGetStorageConnectionRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetStorageConnectionRequest* UGetStorageConnectionRequest::Make(UObject* Outer)
+UGetStorageConnectionRequest* UGetStorageConnectionRequest::Make(UObject* RequestOwner)
 {
-	UGetStorageConnectionRequest* Req = NewObject<UGetStorageConnectionRequest>(Outer);
+	UGetStorageConnectionRequest* Req = NewObject<UGetStorageConnectionRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

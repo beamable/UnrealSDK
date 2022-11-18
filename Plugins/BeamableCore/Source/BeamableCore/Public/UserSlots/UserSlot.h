@@ -12,7 +12,7 @@
  * This struct exist so that we can make the BP environment better. 
  */
 USTRUCT(BlueprintType)
-struct FUserSlot
+struct BEAMABLECORE_API FUserSlot
 {
 	GENERATED_BODY()
 
@@ -25,6 +25,11 @@ struct FUserSlot
 
 	FUserSlot& operator=(const FString& x);
 
+	/**
+	 * @brief If you want multiple, slotUse this instead of FUserSlot.Equals/== if you wish to have multiple PIE support.
+	 *
+	 * @see GetNamespacedSlotId 	 
+	 */
 	bool operator==(const FUserSlot& Other) const;
 
 	bool Equals(const FUserSlot& Other) const;
@@ -34,13 +39,35 @@ struct FUserSlot
 
 FORCEINLINE uint32 GetTypeHash(const FUserSlot& UserSlot) { return GetTypeHash(UserSlot.Name); }
 
+/**
+ * @brief Data structure representing a single signed-in user to a specific realm.
+ */
 USTRUCT(BlueprintType, Category="Beam")
 struct FBeamRealmUser
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite, Category="Beam")
+	/**
+	 * @brief The user's GamerTag. Used by a number of APIs to uniquely identify the user. 
+	 */
+	UPROPERTY(BlueprintReadOnly, Category="Beam")
+	int64 GamerTag;
+
+	/**
+	 * @brief The user's email, if any. Mostly used in editor code.
+	 */
+	UPROPERTY(BlueprintReadOnly, Category="Beam")
+	FString Email;
+
+	/**
+	 * @brief The realm this user is currently authenticated into.
+	 */
+	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	FBeamRealmHandle RealmHandle;
-	UPROPERTY(BlueprintReadWrite, Category="Beam")
+
+	/**
+	 * @brief The authentication token for this user.
+	 */
+	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	FBeamAuthToken AuthToken;
 };

@@ -16,7 +16,7 @@ void UGetStatsRequest::BuildRoute(FString& RouteString) const
 	bool bIsFirstQueryParam = true;
 	if(Stats.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("stats"), *Stats.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("stats"), *Stats.Val);
 		bIsFirstQueryParam = false;
 	}
 
@@ -28,9 +28,9 @@ void UGetStatsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetStatsRequest* UGetStatsRequest::Make(FString _ObjectId, FOptionalString _Stats, UObject* Outer)
+UGetStatsRequest* UGetStatsRequest::Make(FString _ObjectId, FOptionalString _Stats, UObject* RequestOwner)
 {
-	UGetStatsRequest* Req = NewObject<UGetStatsRequest>(Outer);
+	UGetStatsRequest* Req = NewObject<UGetStatsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

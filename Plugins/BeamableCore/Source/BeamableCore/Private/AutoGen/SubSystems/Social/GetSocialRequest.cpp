@@ -25,9 +25,9 @@ void UGetSocialRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetSocialRequest* UGetSocialRequest::Make(TArray<FString> _PlayerIds, UObject* Outer)
+UGetSocialRequest* UGetSocialRequest::Make(TArray<FString> _PlayerIds, UObject* RequestOwner)
 {
-	UGetSocialRequest* Req = NewObject<UGetSocialRequest>(Outer);
+	UGetSocialRequest* Req = NewObject<UGetSocialRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->PlayerIds = _PlayerIds;

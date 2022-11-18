@@ -23,9 +23,9 @@ void UGetRegistryRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetRegistryRequest* UGetRegistryRequest::Make(UObject* Outer)
+UGetRegistryRequest* UGetRegistryRequest::Make(UObject* RequestOwner)
 {
-	UGetRegistryRequest* Req = NewObject<UGetRegistryRequest>(Outer);
+	UGetRegistryRequest* Req = NewObject<UGetRegistryRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

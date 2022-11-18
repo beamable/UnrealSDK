@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBackend.h"
 #include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonUtils.h"
 
 #include "BeamBackendTestCallbacks.generated.h"
@@ -62,7 +63,7 @@ public:
 };
 
 UCLASS()
-class UBeamMockGetRequestResponse : public UObject, public FBeamJsonSerializable
+class UBeamMockGetRequestResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
@@ -78,6 +79,12 @@ public:
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
 		FakeInt = Bag->GetIntegerField("fake_int");
+	}
+
+	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override
+	{
+		OuterOwner = RequestData;
+		BeamDeserialize(ResponseContent);
 	}
 };
 
@@ -117,6 +124,10 @@ public:
 	// Done callback so that we can run latent tests correctly
 	FDoneDelegate DoneDelegateForLatentTests;
 
+	// Used by generate external request id
+	TArray<int64> ExternalRequestIds;
+	
+
 	UFUNCTION()
 	void MockSuccessCallback_Expected(FBeamRequestContext Context, UBeamMockGetRequest* Request, UBeamMockGetRequestResponse* Response) const;
 	UFUNCTION()
@@ -132,4 +143,7 @@ public:
 
 	UFUNCTION()
 	void MockCompleteCallbackCancelled_Expected(FBeamRequestContext Context, UBeamMockGetRequest* Request) const;
+
+	UFUNCTION()
+	void GenerateExternalRequestIds(TArray<int64>& OutUsingRequestIds) const;
 };

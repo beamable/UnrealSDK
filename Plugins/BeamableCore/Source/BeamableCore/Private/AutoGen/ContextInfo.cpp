@@ -3,6 +3,8 @@
 
 
 
+
+
 void UContextInfo ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("platform"), Platform);

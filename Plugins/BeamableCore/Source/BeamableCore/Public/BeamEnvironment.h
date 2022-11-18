@@ -4,8 +4,6 @@
 
 #include "CoreMinimal.h"
 
-
-#include "Editor.h"
 #include "Engine/DataAsset.h"
 #include "Json/Public/Serialization/JsonSerializerMacros.h"
 #include "Subsystems/EngineSubsystem.h"
@@ -112,4 +110,7 @@ public:
 
 
 	UBeamEnvironmentData* Data;
+
+	UFUNCTION()
+	FString GetAPIUrl();
 };

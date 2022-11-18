@@ -3,6 +3,8 @@
 
 
 
+
+
 void UDeviceIdAvailableRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("deviceId"), DeviceId);

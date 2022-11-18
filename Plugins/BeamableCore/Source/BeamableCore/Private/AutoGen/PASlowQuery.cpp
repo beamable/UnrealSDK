@@ -3,6 +3,8 @@
 
 
 
+
+
 void UPASlowQuery ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("line"), Line);

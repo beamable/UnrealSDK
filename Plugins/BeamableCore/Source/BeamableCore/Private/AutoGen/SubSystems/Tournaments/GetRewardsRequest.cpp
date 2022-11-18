@@ -16,13 +16,13 @@ void UGetRewardsRequest::BuildRoute(FString& RouteString) const
 	bool bIsFirstQueryParam = true;
 	if(TournamentId.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("tournamentId"), *TournamentId.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("tournamentId"), *TournamentId.Val);
 		bIsFirstQueryParam = false;
 	}
 
 	if(ContentId.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("contentId"), *ContentId.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("contentId"), *ContentId.Val);
 		bIsFirstQueryParam = false;
 	}
 
@@ -34,9 +34,9 @@ void UGetRewardsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetRewardsRequest* UGetRewardsRequest::Make(FOptionalString _TournamentId, FOptionalString _ContentId, UObject* Outer)
+UGetRewardsRequest* UGetRewardsRequest::Make(FOptionalString _TournamentId, FOptionalString _ContentId, UObject* RequestOwner)
 {
-	UGetRewardsRequest* Req = NewObject<UGetRewardsRequest>(Outer);
+	UGetRewardsRequest* Req = NewObject<UGetRewardsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->TournamentId = _TournamentId;

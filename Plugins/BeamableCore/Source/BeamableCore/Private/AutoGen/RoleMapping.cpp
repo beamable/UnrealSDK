@@ -3,6 +3,8 @@
 
 
 
+
+
 void URoleMapping ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("projectId"), ProjectId);

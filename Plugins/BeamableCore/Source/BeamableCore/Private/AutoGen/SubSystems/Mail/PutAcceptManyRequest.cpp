@@ -27,9 +27,9 @@ void UPutAcceptManyRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutAcceptManyRequest* UPutAcceptManyRequest::Make(int64 _ObjectId, TArray<int64> _MailIds, UObject* Outer)
+UPutAcceptManyRequest* UPutAcceptManyRequest::Make(int64 _ObjectId, TArray<int64> _MailIds, UObject* RequestOwner)
 {
-	UPutAcceptManyRequest* Req = NewObject<UPutAcceptManyRequest>(Outer);
+	UPutAcceptManyRequest* Req = NewObject<UPutAcceptManyRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

@@ -16,19 +16,19 @@ void UGetOffersRequest::BuildRoute(FString& RouteString) const
 	bool bIsFirstQueryParam = true;
 	if(Language.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("language"), *Language.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("language"), *Language.Val);
 		bIsFirstQueryParam = false;
 	}
 
 	if(Time.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("time"), *Time.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("time"), *Time.Val);
 		bIsFirstQueryParam = false;
 	}
 
 	if(Stores.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("stores"), *Stores.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("stores"), *Stores.Val);
 		bIsFirstQueryParam = false;
 	}
 
@@ -40,9 +40,9 @@ void UGetOffersRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetOffersRequest* UGetOffersRequest::Make(int64 _ObjectId, FOptionalString _Language, FOptionalString _Time, FOptionalString _Stores, UObject* Outer)
+UGetOffersRequest* UGetOffersRequest::Make(int64 _ObjectId, FOptionalString _Language, FOptionalString _Time, FOptionalString _Stores, UObject* RequestOwner)
 {
-	UGetOffersRequest* Req = NewObject<UGetOffersRequest>(Outer);
+	UGetOffersRequest* Req = NewObject<UGetOffersRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

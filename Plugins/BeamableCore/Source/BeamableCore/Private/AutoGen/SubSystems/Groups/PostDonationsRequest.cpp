@@ -27,9 +27,9 @@ void UPostDonationsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostDonationsRequest* UPostDonationsRequest::Make(int64 _ObjectId, FString _CurrencyId, int64 _Amount, FOptionalString _Config, UObject* Outer)
+UPostDonationsRequest* UPostDonationsRequest::Make(int64 _ObjectId, FString _CurrencyId, int64 _Amount, FOptionalString _Config, UObject* RequestOwner)
 {
-	UPostDonationsRequest* Req = NewObject<UPostDonationsRequest>(Outer);
+	UPostDonationsRequest* Req = NewObject<UPostDonationsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

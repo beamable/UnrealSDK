@@ -27,9 +27,9 @@ void UPostCouponsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostCouponsRequest* UPostCouponsRequest::Make(int64 _ObjectId, FString _Listing, UObject* Outer)
+UPostCouponsRequest* UPostCouponsRequest::Make(int64 _ObjectId, FString _Listing, UObject* RequestOwner)
 {
-	UPostCouponsRequest* Req = NewObject<UPostCouponsRequest>(Outer);
+	UPostCouponsRequest* Req = NewObject<UPostCouponsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

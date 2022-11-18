@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Groups", DisplayName="Beam - Make PostPetition",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_SubGroup,Outer"))
-	static UPostPetitionRequest* Make(int64 _ObjectId, FOptionalInt64 _SubGroup, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Groups", DisplayName="Beam - Make PostPetition",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_SubGroup,RequestOwner"))
+	static UPostPetitionRequest* Make(int64 _ObjectId, FOptionalInt64 _SubGroup, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

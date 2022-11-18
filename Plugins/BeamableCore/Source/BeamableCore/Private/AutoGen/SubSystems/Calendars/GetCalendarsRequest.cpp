@@ -23,9 +23,9 @@ void UGetCalendarsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetCalendarsRequest* UGetCalendarsRequest::Make(int64 _ObjectId, UObject* Outer)
+UGetCalendarsRequest* UGetCalendarsRequest::Make(int64 _ObjectId, UObject* RequestOwner)
 {
-	UGetCalendarsRequest* Req = NewObject<UGetCalendarsRequest>(Outer);
+	UGetCalendarsRequest* Req = NewObject<UGetCalendarsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

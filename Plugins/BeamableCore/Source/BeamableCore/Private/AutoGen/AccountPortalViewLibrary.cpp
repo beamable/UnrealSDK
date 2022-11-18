@@ -22,7 +22,7 @@ FString UAccountPortalViewLibrary::AccountPortalViewToJsonString(const UAccountP
 	return Result;
 }	
 
-UAccountPortalView* UAccountPortalViewLibrary::Make(int64 Id, TArray<FString> Scopes, TArray<FString> ThirdPartyAppAssociations, FOptionalString Email, FOptionalString RoleString, FOptionalString Language, FOptionalArrayOfRoleMapping Roles, UObject* Outer)
+UAccountPortalView* UAccountPortalViewLibrary::Make(int64 Id, TArray<FString> Scopes, TArray<FString> ThirdPartyAppAssociations, FOptionalString Email, FOptionalString RoleString, FOptionalString Language, FOptionalArrayOfExternalIdentity External, FOptionalArrayOfRoleMapping Roles, UObject* Outer)
 {
 	auto Serializable = NewObject<UAccountPortalView>(Outer);
 	Serializable->Id = Id;
@@ -31,12 +31,13 @@ UAccountPortalView* UAccountPortalViewLibrary::Make(int64 Id, TArray<FString> Sc
 	Serializable->Email = Email;
 	Serializable->RoleString = RoleString;
 	Serializable->Language = Language;
+	Serializable->External = External;
 	Serializable->Roles = Roles;
 	
 	return Serializable;
 }
 
-void UAccountPortalViewLibrary::Break(const UAccountPortalView* Serializable, int64& Id, TArray<FString>& Scopes, TArray<FString>& ThirdPartyAppAssociations, FOptionalString& Email, FOptionalString& RoleString, FOptionalString& Language, FOptionalArrayOfRoleMapping& Roles)
+void UAccountPortalViewLibrary::Break(const UAccountPortalView* Serializable, int64& Id, TArray<FString>& Scopes, TArray<FString>& ThirdPartyAppAssociations, FOptionalString& Email, FOptionalString& RoleString, FOptionalString& Language, FOptionalArrayOfExternalIdentity& External, FOptionalArrayOfRoleMapping& Roles)
 {
 	Id = Serializable->Id;
 	Scopes = Serializable->Scopes;
@@ -44,6 +45,7 @@ void UAccountPortalViewLibrary::Break(const UAccountPortalView* Serializable, in
 	Email = Serializable->Email;
 	RoleString = Serializable->RoleString;
 	Language = Serializable->Language;
+	External = Serializable->External;
 	Roles = Serializable->Roles;
 		
 }

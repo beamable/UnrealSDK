@@ -8,8 +8,8 @@
 UENUM(BlueprintType, Category="Beam|Enums")
 enum class EWebhookInvocationType : uint8
 {
-	NonBlocking UMETA(DisplayName="Non Blocking", SerializationName="NonBlocking"),
-	Blocking UMETA(DisplayName="Blocking", SerializationName="Blocking")		
+	NonBlocking UMETA(DisplayName="Non Blocking"),
+	Blocking UMETA(DisplayName="Blocking")		
 };
 
 UCLASS(BlueprintType, Category="Beam|Enums")
@@ -23,7 +23,7 @@ public:
 	{
 		const UEnum* Enum = StaticEnum<EWebhookInvocationType>();
 		const int32 NameIndex = Enum->GetIndexByValue(static_cast<int64>(Value));
-		const FString SerializationName = Enum->GetMetaData(TEXT("SerializationName"), NameIndex);		
+		const FString SerializationName = Enum->GetNameStringByValue(NameIndex);		
 		return SerializationName;
 		
 	}
@@ -34,7 +34,7 @@ public:
 		const UEnum* Enum = StaticEnum<EWebhookInvocationType>();
 		for (int32 NameIndex = 0; NameIndex < Enum->NumEnums() - 1; ++NameIndex)
 		{
-			const FString& SerializationName = Enum->GetMetaData(TEXT("SerializationName"), NameIndex);
+			const FString& SerializationName = Enum->GetNameStringByValue(NameIndex);
 			if(Value == SerializationName)
 				return static_cast<EWebhookInvocationType>(Enum->GetValueByIndex(NameIndex));
 		}

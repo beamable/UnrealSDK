@@ -22,7 +22,7 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	int64 ObjectId;
+	FString ObjectId;
 	
 	// Query Params
 	
@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Events", DisplayName="Beam - Make PutContent",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_RootEventId,_OriginType,Outer"))
-	static UPutContentRequest* Make(int64 _ObjectId, UEvent* _Event, FString _Origin, FOptionalString _RootEventId, FOptionalString _OriginType, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Events", DisplayName="Beam - Make PutContent",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_RootEventId,_OriginType,RequestOwner"))
+	static UPutContentRequest* Make(FString _ObjectId, UEvent* _Event, FString _Origin, FOptionalString _RootEventId, FOptionalString _OriginType, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

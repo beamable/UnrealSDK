@@ -39,8 +39,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Cloudsaving", DisplayName="Beam - Make GetDataMetadata",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Request,_PlayerId,Outer"))
-	static UGetDataMetadataRequest* Make(FOptionalArrayOfObjectRequestBody _Request, FOptionalInt64 _PlayerId, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Cloudsaving", DisplayName="Beam - Make GetDataMetadata",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Request,_PlayerId,RequestOwner"))
+	static UGetDataMetadataRequest* Make(FOptionalArrayOfObjectRequestBody _Request, FOptionalInt64 _PlayerId, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

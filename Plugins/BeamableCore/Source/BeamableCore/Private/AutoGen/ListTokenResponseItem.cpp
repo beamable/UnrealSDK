@@ -3,6 +3,8 @@
 
 
 
+
+
 void UListTokenResponseItem ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("token"), Token);

@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Commerce", DisplayName="Beam - Make PostSkus",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UPostSkusRequest* Make(TArray<USKU*> _Definitions, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Commerce", DisplayName="Beam - Make PostSkus",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UPostSkusRequest* Make(TArray<USKU*> _Definitions, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

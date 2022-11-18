@@ -27,9 +27,9 @@ void UPutTokenRevokeRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutTokenRevokeRequest* UPutTokenRevokeRequest::Make(FString _Token, UObject* Outer)
+UPutTokenRevokeRequest* UPutTokenRevokeRequest::Make(FString _Token, UObject* RequestOwner)
 {
-	UPutTokenRevokeRequest* Req = NewObject<UPutTokenRevokeRequest>(Outer);
+	UPutTokenRevokeRequest* Req = NewObject<UPutTokenRevokeRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

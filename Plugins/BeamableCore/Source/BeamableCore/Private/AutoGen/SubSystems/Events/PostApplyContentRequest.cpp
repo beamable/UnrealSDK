@@ -27,9 +27,9 @@ void UPostApplyContentRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostApplyContentRequest* UPostApplyContentRequest::Make(UEvent* _Content, UObject* Outer)
+UPostApplyContentRequest* UPostApplyContentRequest::Make(UEvent* _Content, UObject* RequestOwner)
 {
-	UPostApplyContentRequest* Req = NewObject<UPostApplyContentRequest>(Outer);
+	UPostApplyContentRequest* Req = NewObject<UPostApplyContentRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

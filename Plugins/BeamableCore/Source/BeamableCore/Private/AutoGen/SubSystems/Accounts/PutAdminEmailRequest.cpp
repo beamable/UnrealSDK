@@ -27,9 +27,9 @@ void UPutAdminEmailRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutAdminEmailRequest* UPutAdminEmailRequest::Make(int64 _ObjectId, FString _NewEmail, FOptionalString _CodeType, UObject* Outer)
+UPutAdminEmailRequest* UPutAdminEmailRequest::Make(int64 _ObjectId, FString _NewEmail, FOptionalString _CodeType, UObject* RequestOwner)
 {
-	UPutAdminEmailRequest* Req = NewObject<UPutAdminEmailRequest>(Outer);
+	UPutAdminEmailRequest* Req = NewObject<UPutAdminEmailRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

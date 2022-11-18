@@ -27,9 +27,9 @@ void UPutDataMoveFromPortalRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutDataMoveFromPortalRequest* UPutDataMoveFromPortalRequest::Make(FOptionalInt64 _PlayerId, UObject* Outer)
+UPutDataMoveFromPortalRequest* UPutDataMoveFromPortalRequest::Make(FOptionalInt64 _PlayerId, UObject* RequestOwner)
 {
-	UPutDataMoveFromPortalRequest* Req = NewObject<UPutDataMoveFromPortalRequest>(Outer);
+	UPutDataMoveFromPortalRequest* Req = NewObject<UPutDataMoveFromPortalRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

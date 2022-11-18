@@ -11,7 +11,7 @@
 /**
  * 
  */
-UCLASS(meta=(BeamFlow))
+UCLASS(meta=(BeamFlowNode))
 class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_ApiRequest : public UK2BeamNode_BeamFlow
 {
 	GENERATED_BODY()
@@ -99,8 +99,7 @@ public:
 	void CreateBeamFlowModePins(UClass* ResponseTypeClass);
 
 	virtual void ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
-
-	void SetUpPinsForGetBeamApiSubsystemNode(const UK2Node_CallFunction* CallGetSubsystem, const UK2Node_CallFunction* CallRequestFunction) const;
+	
 	void SetUpInputPinsForMakeAndRequestNodes(FKismetCompilerContext& CompilerContext, const UK2Node_CallFunction* CallRequestFunction,
 	                                          const UK2Node_CallFunction* CallMakeFunction, UEdGraphPin* ExecutionPin);
 

@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", DisplayName="Beam - Make GetClient",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Stats,Outer"))
-	static UGetClientRequest* Make(FString _ObjectId, FOptionalString _Stats, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", DisplayName="Beam - Make GetClient",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Stats,RequestOwner"))
+	static UGetClientRequest* Make(FString _ObjectId, FOptionalString _Stats, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

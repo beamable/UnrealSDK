@@ -21,7 +21,7 @@ void UGetDataMetadataRequest::BuildRoute(FString& RouteString) const
 
 	if(PlayerId.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("playerId"), *FString::FromInt(PlayerId.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("playerId"), *FString::FromInt(PlayerId.Val));
 		bIsFirstQueryParam = false;
 	}
 
@@ -33,9 +33,9 @@ void UGetDataMetadataRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetDataMetadataRequest* UGetDataMetadataRequest::Make(FOptionalArrayOfObjectRequestBody _Request, FOptionalInt64 _PlayerId, UObject* Outer)
+UGetDataMetadataRequest* UGetDataMetadataRequest::Make(FOptionalArrayOfObjectRequestBody _Request, FOptionalInt64 _PlayerId, UObject* RequestOwner)
 {
-	UGetDataMetadataRequest* Req = NewObject<UGetDataMetadataRequest>(Outer);
+	UGetDataMetadataRequest* Req = NewObject<UGetDataMetadataRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Request = _Request;

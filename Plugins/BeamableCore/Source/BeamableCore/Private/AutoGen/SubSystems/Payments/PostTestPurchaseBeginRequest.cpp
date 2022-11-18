@@ -27,9 +27,9 @@ void UPostTestPurchaseBeginRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostTestPurchaseBeginRequest* UPostTestPurchaseBeginRequest::Make(FString _PurchaseId, FOptionalString _Language, FOptionalString _Time, UObject* Outer)
+UPostTestPurchaseBeginRequest* UPostTestPurchaseBeginRequest::Make(FString _PurchaseId, FOptionalString _Language, FOptionalString _Time, UObject* RequestOwner)
 {
-	UPostTestPurchaseBeginRequest* Req = NewObject<UPostTestPurchaseBeginRequest>(Outer);
+	UPostTestPurchaseBeginRequest* Req = NewObject<UPostTestPurchaseBeginRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

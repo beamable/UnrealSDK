@@ -27,9 +27,9 @@ void UPostCatalogLegacyRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostCatalogLegacyRequest* UPostCatalogLegacyRequest::Make(TArray<UStore*> _Stores, TArray<UOfferDefinition*> _OfferDefinitions, UObject* Outer)
+UPostCatalogLegacyRequest* UPostCatalogLegacyRequest::Make(TArray<UStore*> _Stores, TArray<UOfferDefinition*> _OfferDefinitions, UObject* RequestOwner)
 {
-	UPostCatalogLegacyRequest* Req = NewObject<UPostCatalogLegacyRequest>(Outer);
+	UPostCatalogLegacyRequest* Req = NewObject<UPostCatalogLegacyRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

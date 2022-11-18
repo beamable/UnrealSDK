@@ -27,9 +27,9 @@ void UPutSubscribeRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutSubscribeRequest* UPutSubscribeRequest::Make(FString _Service, TArray<FString> _Subscriptions, UObject* Outer)
+UPutSubscribeRequest* UPutSubscribeRequest::Make(FString _Service, TArray<FString> _Subscriptions, UObject* RequestOwner)
 {
-	UPutSubscribeRequest* Req = NewObject<UPutSubscribeRequest>(Outer);
+	UPutSubscribeRequest* Req = NewObject<UPutSubscribeRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

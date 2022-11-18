@@ -16,23 +16,23 @@ void UGetAvailabilityRequest::BuildRoute(FString& RouteString) const
 	bool bIsFirstQueryParam = true;
 	if(Name.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("name"), *Name.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("name"), *Name.Val);
 		bIsFirstQueryParam = false;
 	}
 
 	if(Tag.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("tag"), *Tag.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("tag"), *Tag.Val);
 		bIsFirstQueryParam = false;
 	}
 
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("type"), *UGroupTypeLibrary::GroupTypeToSerializationName(Type));
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("type"), *UGroupTypeLibrary::GroupTypeToSerializationName(Type));
 	bIsFirstQueryParam = false;
 	
 	if(bSubGroup.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("subGroup"), bSubGroup.Val ? *TEXT("true") : *TEXT("false"));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("subGroup"), bSubGroup.Val ? TEXT("true") : TEXT("false"));
 		bIsFirstQueryParam = false;
 	}
 
@@ -44,9 +44,9 @@ void UGetAvailabilityRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAvailabilityRequest* UGetAvailabilityRequest::Make(int64 _ObjectId, FOptionalString _Name, FOptionalString _Tag, EGroupType _Type, FOptionalBool _bSubGroup, UObject* Outer)
+UGetAvailabilityRequest* UGetAvailabilityRequest::Make(int64 _ObjectId, FOptionalString _Name, FOptionalString _Tag, EGroupType _Type, FOptionalBool _bSubGroup, UObject* RequestOwner)
 {
-	UGetAvailabilityRequest* Req = NewObject<UGetAvailabilityRequest>(Outer);
+	UGetAvailabilityRequest* Req = NewObject<UGetAvailabilityRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

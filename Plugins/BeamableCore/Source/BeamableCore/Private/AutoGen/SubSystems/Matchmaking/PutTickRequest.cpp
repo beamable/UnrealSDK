@@ -23,9 +23,9 @@ void UPutTickRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UPutTickRequest* UPutTickRequest::Make(int64 _ObjectId, UObject* Outer)
+UPutTickRequest* UPutTickRequest::Make(int64 _ObjectId, UObject* RequestOwner)
 {
-	UPutTickRequest* Req = NewObject<UPutTickRequest>(Outer);
+	UPutTickRequest* Req = NewObject<UPutTickRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

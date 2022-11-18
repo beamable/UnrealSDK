@@ -27,9 +27,9 @@ void UPostDataUploadURLRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostDataUploadURLRequest* UPostDataUploadURLRequest::Make(TArray<UUploadRequestBody*> _Request, FOptionalInt64 _PlayerId, UObject* Outer)
+UPostDataUploadURLRequest* UPostDataUploadURLRequest::Make(TArray<UUploadRequestBody*> _Request, FOptionalInt64 _PlayerId, UObject* RequestOwner)
 {
-	UPostDataUploadURLRequest* Req = NewObject<UPostDataUploadURLRequest>(Outer);
+	UPostDataUploadURLRequest* Req = NewObject<UPostDataUploadURLRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

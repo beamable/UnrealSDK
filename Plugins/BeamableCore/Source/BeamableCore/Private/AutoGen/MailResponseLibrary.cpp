@@ -22,7 +22,7 @@ FString UMailResponseLibrary::MailResponseToJsonString(const UMailResponse* Seri
 	return Result;
 }	
 
-UMailResponse* UMailResponseLibrary::Make(FOptionalMailObjectMessage Result, UObject* Outer)
+UMailResponse* UMailResponseLibrary::Make(FOptionalMailBasicMessage Result, UObject* Outer)
 {
 	auto Serializable = NewObject<UMailResponse>(Outer);
 	Serializable->Result = Result;
@@ -30,7 +30,7 @@ UMailResponse* UMailResponseLibrary::Make(FOptionalMailObjectMessage Result, UOb
 	return Serializable;
 }
 
-void UMailResponseLibrary::Break(const UMailResponse* Serializable, FOptionalMailObjectMessage& Result)
+void UMailResponseLibrary::Break(const UMailResponse* Serializable, FOptionalMailBasicMessage& Result)
 {
 	Result = Serializable->Result;
 		

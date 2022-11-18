@@ -27,9 +27,9 @@ void UPostFacebookPurchaseCompleteRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostFacebookPurchaseCompleteRequest* UPostFacebookPurchaseCompleteRequest::Make(int64 _Txid, FString _Receipt, FString _PriceInLocalCurrency, FString _IsoCurrencySymbol, UObject* Outer)
+UPostFacebookPurchaseCompleteRequest* UPostFacebookPurchaseCompleteRequest::Make(int64 _Txid, FString _Receipt, FString _PriceInLocalCurrency, FString _IsoCurrencySymbol, UObject* RequestOwner)
 {
-	UPostFacebookPurchaseCompleteRequest* Req = NewObject<UPostFacebookPurchaseCompleteRequest>(Outer);
+	UPostFacebookPurchaseCompleteRequest* Req = NewObject<UPostFacebookPurchaseCompleteRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

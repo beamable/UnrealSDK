@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make PostAdminAdminUser",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Role,Outer"))
-	static UPostAdminAdminUserRequest* Make(FString _Email, FOptionalString _Role, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make PostAdminAdminUser",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Role,RequestOwner"))
+	static UPostAdminAdminUserRequest* Make(FString _Email, FOptionalString _Role, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

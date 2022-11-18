@@ -16,43 +16,43 @@ void UGetAuditsRequest::BuildRoute(FString& RouteString) const
 	bool bIsFirstQueryParam = true;
 	if(Providerid.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("providerid"), *Providerid.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("providerid"), *Providerid.Val);
 		bIsFirstQueryParam = false;
 	}
 
 	if(Provider.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("provider"), *Provider.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("provider"), *Provider.Val);
 		bIsFirstQueryParam = false;
 	}
 
 	if(State.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("state"), *State.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("state"), *State.Val);
 		bIsFirstQueryParam = false;
 	}
 
 	if(Txid.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("txid"), *FString::FromInt(Txid.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("txid"), *FString::FromInt(Txid.Val));
 		bIsFirstQueryParam = false;
 	}
 
 	if(Player.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("player"), *FString::FromInt(Player.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("player"), *FString::FromInt(Player.Val));
 		bIsFirstQueryParam = false;
 	}
 
 	if(Start.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("start"), *FString::FromInt(Start.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("start"), *FString::FromInt(Start.Val));
 		bIsFirstQueryParam = false;
 	}
 
 	if(Limit.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("limit"), *FString::FromInt(Limit.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("limit"), *FString::FromInt(Limit.Val));
 		bIsFirstQueryParam = false;
 	}
 
@@ -64,9 +64,9 @@ void UGetAuditsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAuditsRequest* UGetAuditsRequest::Make(FOptionalString _Providerid, FOptionalString _Provider, FOptionalString _State, FOptionalInt64 _Txid, FOptionalInt64 _Player, FOptionalInt32 _Start, FOptionalInt32 _Limit, UObject* Outer)
+UGetAuditsRequest* UGetAuditsRequest::Make(FOptionalString _Providerid, FOptionalString _Provider, FOptionalString _State, FOptionalInt64 _Txid, FOptionalInt64 _Player, FOptionalInt32 _Start, FOptionalInt32 _Limit, UObject* RequestOwner)
 {
-	UGetAuditsRequest* Req = NewObject<UGetAuditsRequest>(Outer);
+	UGetAuditsRequest* Req = NewObject<UGetAuditsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Providerid = _Providerid;

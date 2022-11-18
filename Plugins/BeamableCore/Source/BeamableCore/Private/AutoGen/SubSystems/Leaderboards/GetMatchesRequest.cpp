@@ -15,15 +15,15 @@ void UGetMatchesRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("poolSize"), *FString::FromInt(PoolSize));
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("poolSize"), *FString::FromInt(PoolSize));
 	bIsFirstQueryParam = false;
 	
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("windows"), *FString::FromInt(Windows));
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("windows"), *FString::FromInt(Windows));
 	bIsFirstQueryParam = false;
 	
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("windowSize"), *FString::FromInt(WindowSize));
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("windowSize"), *FString::FromInt(WindowSize));
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -34,9 +34,9 @@ void UGetMatchesRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetMatchesRequest* UGetMatchesRequest::Make(FString _ObjectId, int32 _PoolSize, int32 _Windows, int32 _WindowSize, UObject* Outer)
+UGetMatchesRequest* UGetMatchesRequest::Make(FString _ObjectId, int32 _PoolSize, int32 _Windows, int32 _WindowSize, UObject* RequestOwner)
 {
-	UGetMatchesRequest* Req = NewObject<UGetMatchesRequest>(Outer);
+	UGetMatchesRequest* Req = NewObject<UGetMatchesRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

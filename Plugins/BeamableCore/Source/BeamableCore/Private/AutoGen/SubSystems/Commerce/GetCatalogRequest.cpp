@@ -16,7 +16,7 @@ void UGetCatalogRequest::BuildRoute(FString& RouteString) const
 	bool bIsFirstQueryParam = true;
 	if(Version.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("version"), *FString::FromInt(Version.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("version"), *FString::FromInt(Version.Val));
 		bIsFirstQueryParam = false;
 	}
 
@@ -28,9 +28,9 @@ void UGetCatalogRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetCatalogRequest* UGetCatalogRequest::Make(FOptionalInt64 _Version, UObject* Outer)
+UGetCatalogRequest* UGetCatalogRequest::Make(FOptionalInt64 _Version, UObject* RequestOwner)
 {
-	UGetCatalogRequest* Req = NewObject<UGetCatalogRequest>(Outer);
+	UGetCatalogRequest* Req = NewObject<UGetCatalogRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Version = _Version;

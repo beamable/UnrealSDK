@@ -42,8 +42,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make GetMatches",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UGetMatchesRequest* Make(FString _ObjectId, int32 _PoolSize, int32 _Windows, int32 _WindowSize, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make GetMatches",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UGetMatchesRequest* Make(FString _ObjectId, int32 _PoolSize, int32 _Windows, int32 _WindowSize, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

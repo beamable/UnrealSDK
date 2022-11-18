@@ -27,9 +27,9 @@ void UPostSendRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostSendRequest* UPostSendRequest::Make(TArray<USendMsg*> _Msgs, UObject* Outer)
+UPostSendRequest* UPostSendRequest::Make(TArray<USendMsg*> _Msgs, UObject* RequestOwner)
 {
-	UPostSendRequest* Req = NewObject<UPostSendRequest>(Outer);
+	UPostSendRequest* Req = NewObject<UPostSendRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

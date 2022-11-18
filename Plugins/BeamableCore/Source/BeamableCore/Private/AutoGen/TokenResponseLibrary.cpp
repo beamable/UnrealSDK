@@ -22,24 +22,26 @@ FString UTokenResponseLibrary::TokenResponseToJsonString(const UTokenResponse* S
 	return Result;
 }	
 
-UTokenResponse* UTokenResponseLibrary::Make(FString AccessToken, int64 ExpiresIn, FString RefreshToken, FString TokenType, FOptionalArrayOfString Scopes, UObject* Outer)
+UTokenResponse* UTokenResponseLibrary::Make(int64 ExpiresIn, FString TokenType, FOptionalString AccessToken, FOptionalString RefreshToken, FOptionalString ChallengeToken, FOptionalArrayOfString Scopes, UObject* Outer)
 {
 	auto Serializable = NewObject<UTokenResponse>(Outer);
-	Serializable->AccessToken = AccessToken;
 	Serializable->ExpiresIn = ExpiresIn;
-	Serializable->RefreshToken = RefreshToken;
 	Serializable->TokenType = TokenType;
+	Serializable->AccessToken = AccessToken;
+	Serializable->RefreshToken = RefreshToken;
+	Serializable->ChallengeToken = ChallengeToken;
 	Serializable->Scopes = Scopes;
 	
 	return Serializable;
 }
 
-void UTokenResponseLibrary::Break(const UTokenResponse* Serializable, FString& AccessToken, int64& ExpiresIn, FString& RefreshToken, FString& TokenType, FOptionalArrayOfString& Scopes)
+void UTokenResponseLibrary::Break(const UTokenResponse* Serializable, int64& ExpiresIn, FString& TokenType, FOptionalString& AccessToken, FOptionalString& RefreshToken, FOptionalString& ChallengeToken, FOptionalArrayOfString& Scopes)
 {
-	AccessToken = Serializable->AccessToken;
 	ExpiresIn = Serializable->ExpiresIn;
-	RefreshToken = Serializable->RefreshToken;
 	TokenType = Serializable->TokenType;
+	AccessToken = Serializable->AccessToken;
+	RefreshToken = Serializable->RefreshToken;
+	ChallengeToken = Serializable->ChallengeToken;
 	Scopes = Serializable->Scopes;
 		
 }

@@ -1,0 +1,40 @@
+
+#include "AutoGen/ChallengeSolutionLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UChallengeSolutionLibrary::ChallengeSolutionToJsonString(const UChallengeSolution* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UChallengeSolution* UChallengeSolutionLibrary::Make(FString ChallengeToken, FString Solution, UObject* Outer)
+{
+	auto Serializable = NewObject<UChallengeSolution>(Outer);
+	Serializable->ChallengeToken = ChallengeToken;
+	Serializable->Solution = Solution;
+	
+	return Serializable;
+}
+
+void UChallengeSolutionLibrary::Break(const UChallengeSolution* Serializable, FString& ChallengeToken, FString& Solution)
+{
+	ChallengeToken = Serializable->ChallengeToken;
+	Solution = Serializable->Solution;
+		
+}
+

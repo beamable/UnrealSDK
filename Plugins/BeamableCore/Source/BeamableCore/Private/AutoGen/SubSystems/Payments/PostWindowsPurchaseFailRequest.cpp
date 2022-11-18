@@ -27,9 +27,9 @@ void UPostWindowsPurchaseFailRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostWindowsPurchaseFailRequest* UPostWindowsPurchaseFailRequest::Make(int64 _Txid, FString _Reason, UObject* Outer)
+UPostWindowsPurchaseFailRequest* UPostWindowsPurchaseFailRequest::Make(int64 _Txid, FString _Reason, UObject* RequestOwner)
 {
-	UPostWindowsPurchaseFailRequest* Req = NewObject<UPostWindowsPurchaseFailRequest>(Outer);
+	UPostWindowsPurchaseFailRequest* Req = NewObject<UPostWindowsPurchaseFailRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

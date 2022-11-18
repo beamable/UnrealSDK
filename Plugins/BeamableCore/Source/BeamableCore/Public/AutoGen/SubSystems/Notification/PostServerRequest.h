@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Notification", DisplayName="Beam - Make PostServer",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Payload,Outer"))
-	static UPostServerRequest* Make(FString _Event, bool _bToAll, FOptionalString _Payload, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Notification", DisplayName="Beam - Make PostServer",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Payload,RequestOwner"))
+	static UPostServerRequest* Make(FString _Event, bool _bToAll, FOptionalString _Payload, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

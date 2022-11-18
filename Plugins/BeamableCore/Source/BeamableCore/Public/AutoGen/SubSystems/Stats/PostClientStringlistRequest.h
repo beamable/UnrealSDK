@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", DisplayName="Beam - Make PostClientStringlist",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Set,Outer"))
-	static UPostClientStringlistRequest* Make(FString _ObjectId, FOptionalArrayOfStatStringListEntry _Set, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", DisplayName="Beam - Make PostClientStringlist",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Set,RequestOwner"))
+	static UPostClientStringlistRequest* Make(FString _ObjectId, FOptionalArrayOfStatStringListEntry _Set, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

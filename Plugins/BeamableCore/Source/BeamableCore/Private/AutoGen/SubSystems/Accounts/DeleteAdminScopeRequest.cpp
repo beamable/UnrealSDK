@@ -27,9 +27,9 @@ void UDeleteAdminScopeRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteAdminScopeRequest* UDeleteAdminScopeRequest::Make(int64 _ObjectId, FString _Realm, FString _Role, UObject* Outer)
+UDeleteAdminScopeRequest* UDeleteAdminScopeRequest::Make(int64 _ObjectId, FString _Realm, FString _Role, UObject* RequestOwner)
 {
-	UDeleteAdminScopeRequest* Req = NewObject<UDeleteAdminScopeRequest>(Outer);
+	UDeleteAdminScopeRequest* Req = NewObject<UDeleteAdminScopeRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

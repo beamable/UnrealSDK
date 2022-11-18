@@ -3,6 +3,8 @@
 
 
 
+
+
 void UCohortRequirement ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("trial"), Trial);

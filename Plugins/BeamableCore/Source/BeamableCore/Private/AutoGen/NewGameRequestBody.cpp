@@ -3,6 +3,8 @@
 
 
 
+
+
 void UNewGameRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("gameName"), GameName);

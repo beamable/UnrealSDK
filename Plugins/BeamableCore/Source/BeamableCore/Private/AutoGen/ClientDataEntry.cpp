@@ -3,6 +3,8 @@
 
 
 
+
+
 void UClientDataEntry ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("name"), Name);

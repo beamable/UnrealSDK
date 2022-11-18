@@ -3,6 +3,8 @@
 #include "Serialization/BeamJsonUtils.h"
 
 
+
+
 void UTokenRequestWrapper ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("grant_type"), GrantType);
@@ -14,7 +16,10 @@ void UTokenRequestWrapper ::BeamSerializeProperties(TUnrealJsonSerializer& Seria
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("third_party"), &ThirdParty, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("redirect_uri"), &RedirectUri, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("client_id"), &ClientId, Serializer);
+	UBeamJsonUtils::SerializeOptional<UChallengeSolution*>(TEXT("challenge_solution"), &ChallengeSolution, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("external_token"), &ExternalToken, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("code"), &Code, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("provider_address"), &ProviderAddress, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("token"), &Token, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("password"), &Password, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("scope"), &Scope, Serializer);
@@ -31,7 +36,10 @@ void UTokenRequestWrapper::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("third_party"), &ThirdParty, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("redirect_uri"), &RedirectUri, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("client_id"), &ClientId, Serializer);
+	UBeamJsonUtils::SerializeOptional<UChallengeSolution*>(TEXT("challenge_solution"), &ChallengeSolution, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("external_token"), &ExternalToken, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("code"), &Code, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("provider_address"), &ProviderAddress, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("token"), &Token, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("password"), &Password, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("scope"), &Scope, Serializer);		
@@ -48,7 +56,10 @@ void UTokenRequestWrapper ::BeamDeserializeProperties(const TSharedPtr<FJsonObje
 	UBeamJsonUtils::DeserializeOptional<FString>("third_party", Bag, ThirdParty, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("redirect_uri", Bag, RedirectUri, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("client_id", Bag, ClientId, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<UChallengeSolution*>("challenge_solution", Bag, ChallengeSolution, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FString>("external_token", Bag, ExternalToken, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("code", Bag, Code, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FString>("provider_address", Bag, ProviderAddress, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("token", Bag, Token, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("password", Bag, Password, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("scope", Bag, Scope, OuterOwner);

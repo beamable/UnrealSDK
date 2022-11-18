@@ -3,6 +3,8 @@
 
 
 
+
+
 void UEmailUpdateConfirmation ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("code"), Code);

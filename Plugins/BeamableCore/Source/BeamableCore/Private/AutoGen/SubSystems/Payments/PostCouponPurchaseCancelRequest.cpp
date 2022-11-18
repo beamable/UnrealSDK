@@ -27,9 +27,9 @@ void UPostCouponPurchaseCancelRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostCouponPurchaseCancelRequest* UPostCouponPurchaseCancelRequest::Make(int64 _Txid, UObject* Outer)
+UPostCouponPurchaseCancelRequest* UPostCouponPurchaseCancelRequest::Make(int64 _Txid, UObject* RequestOwner)
 {
-	UPostCouponPurchaseCancelRequest* Req = NewObject<UPostCouponPurchaseCancelRequest>(Outer);
+	UPostCouponPurchaseCancelRequest* Req = NewObject<UPostCouponPurchaseCancelRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

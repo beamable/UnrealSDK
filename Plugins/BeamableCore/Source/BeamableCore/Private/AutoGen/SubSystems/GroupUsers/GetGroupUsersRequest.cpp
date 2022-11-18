@@ -23,9 +23,9 @@ void UGetGroupUsersRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetGroupUsersRequest* UGetGroupUsersRequest::Make(int64 _ObjectId, UObject* Outer)
+UGetGroupUsersRequest* UGetGroupUsersRequest::Make(int64 _ObjectId, UObject* RequestOwner)
 {
-	UGetGroupUsersRequest* Req = NewObject<UGetGroupUsersRequest>(Outer);
+	UGetGroupUsersRequest* Req = NewObject<UGetGroupUsersRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

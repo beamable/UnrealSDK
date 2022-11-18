@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Announcements", DisplayName="Beam - Make GetAnnouncements",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_bIncludeDeleted,Outer"))
-	static UGetAnnouncementsRequest* Make(int64 _ObjectId, FOptionalBool _bIncludeDeleted, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Announcements", DisplayName="Beam - Make GetAnnouncements",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bIncludeDeleted,RequestOwner"))
+	static UGetAnnouncementsRequest* Make(int64 _ObjectId, FOptionalBool _bIncludeDeleted, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

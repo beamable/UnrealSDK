@@ -27,9 +27,9 @@ void UPostTestPurchaseVerifyRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostTestPurchaseVerifyRequest* UPostTestPurchaseVerifyRequest::Make(FString _Receipt, UObject* Outer)
+UPostTestPurchaseVerifyRequest* UPostTestPurchaseVerifyRequest::Make(FString _Receipt, UObject* RequestOwner)
 {
-	UPostTestPurchaseVerifyRequest* Req = NewObject<UPostTestPurchaseVerifyRequest>(Outer);
+	UPostTestPurchaseVerifyRequest* Req = NewObject<UPostTestPurchaseVerifyRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -16,7 +16,7 @@ void UGetMeGroupRequest::BuildRoute(FString& RouteString) const
 	bool bIsFirstQueryParam = true;
 	if(ContentId.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("contentId"), *ContentId.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("contentId"), *ContentId.Val);
 		bIsFirstQueryParam = false;
 	}
 
@@ -28,9 +28,9 @@ void UGetMeGroupRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetMeGroupRequest* UGetMeGroupRequest::Make(FOptionalString _ContentId, UObject* Outer)
+UGetMeGroupRequest* UGetMeGroupRequest::Make(FOptionalString _ContentId, UObject* RequestOwner)
 {
-	UGetMeGroupRequest* Req = NewObject<UGetMeGroupRequest>(Outer);
+	UGetMeGroupRequest* Req = NewObject<UGetMeGroupRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ContentId = _ContentId;

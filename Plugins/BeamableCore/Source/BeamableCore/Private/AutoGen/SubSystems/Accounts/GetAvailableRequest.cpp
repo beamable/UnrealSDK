@@ -15,7 +15,7 @@ void UGetAvailableRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("email"), *Email);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("email"), *Email);
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -26,9 +26,9 @@ void UGetAvailableRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAvailableRequest* UGetAvailableRequest::Make(FString _Email, UObject* Outer)
+UGetAvailableRequest* UGetAvailableRequest::Make(FString _Email, UObject* RequestOwner)
 {
-	UGetAvailableRequest* Req = NewObject<UGetAvailableRequest>(Outer);
+	UGetAvailableRequest* Req = NewObject<UGetAvailableRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Email = _Email;

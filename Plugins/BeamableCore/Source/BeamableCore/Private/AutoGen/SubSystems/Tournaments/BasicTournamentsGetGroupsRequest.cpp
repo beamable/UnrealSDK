@@ -15,30 +15,30 @@ void UBasicTournamentsGetGroupsRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("tournamentId"), *TournamentId);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("tournamentId"), *TournamentId);
 	bIsFirstQueryParam = false;
 	
 	if(Max.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("max"), *FString::FromInt(Max.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("max"), *FString::FromInt(Max.Val));
 		bIsFirstQueryParam = false;
 	}
 
 	if(Focus.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("focus"), *FString::FromInt(Focus.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("focus"), *FString::FromInt(Focus.Val));
 		bIsFirstQueryParam = false;
 	}
 
 	if(Cycle.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("cycle"), *FString::FromInt(Cycle.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("cycle"), *FString::FromInt(Cycle.Val));
 		bIsFirstQueryParam = false;
 	}
 
 	if(From.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("from"), *FString::FromInt(From.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("from"), *FString::FromInt(From.Val));
 		bIsFirstQueryParam = false;
 	}
 
@@ -50,9 +50,9 @@ void UBasicTournamentsGetGroupsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UBasicTournamentsGetGroupsRequest* UBasicTournamentsGetGroupsRequest::Make(FString _TournamentId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalInt32 _Cycle, FOptionalInt32 _From, UObject* Outer)
+UBasicTournamentsGetGroupsRequest* UBasicTournamentsGetGroupsRequest::Make(FString _TournamentId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalInt32 _Cycle, FOptionalInt32 _From, UObject* RequestOwner)
 {
-	UBasicTournamentsGetGroupsRequest* Req = NewObject<UBasicTournamentsGetGroupsRequest>(Outer);
+	UBasicTournamentsGetGroupsRequest* Req = NewObject<UBasicTournamentsGetGroupsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->TournamentId = _TournamentId;

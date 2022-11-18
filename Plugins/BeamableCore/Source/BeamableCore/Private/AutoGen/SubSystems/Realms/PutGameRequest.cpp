@@ -27,9 +27,9 @@ void UPutGameRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutGameRequest* UPutGameRequest::Make(FString _RootPID, TArray<UProjectView*> _Projects, UObject* Outer)
+UPutGameRequest* UPutGameRequest::Make(FString _RootPID, TArray<UProjectView*> _Projects, UObject* RequestOwner)
 {
-	UPutGameRequest* Req = NewObject<UPutGameRequest>(Outer);
+	UPutGameRequest* Req = NewObject<UPutGameRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

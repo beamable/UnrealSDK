@@ -14,9 +14,6 @@ public class BeamableCoreEditor : ModuleRules
 				"CoreUObject",
 				"BeamableCore",
 				"UnrealEd",
-				"BlueprintGraph",
-				"GraphEditor",
-				"PropertyEditor",
 				"SlateCore",
 				"Slate",
 				"EditorStyle",
@@ -25,7 +22,11 @@ public class BeamableCoreEditor : ModuleRules
 				"BeamableCoreBlueprintNodes",
 				"Projects", // Required to use IPluginManager in order to configure new Slate styles
 				"ToolMenus",
-				"ToolMenusEditor"
+				"ToolMenusEditor", 
+				"UMGEditor",
+				"DeveloperSettings",
+				"EditorSubsystem",
+	
 			}
 		);
 
@@ -35,7 +36,13 @@ public class BeamableCoreEditor : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore"
+				"SlateCore",
+				"BlueprintGraph",
+				"GraphEditor",
+				"LevelEditor",
+				"PropertyEditor",
+				"UMGEditor", 
+				"Blutility",
 			}
 		);
 	}

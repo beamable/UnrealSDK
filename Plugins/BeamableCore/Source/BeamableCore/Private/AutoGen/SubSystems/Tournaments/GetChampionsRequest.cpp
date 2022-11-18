@@ -15,11 +15,11 @@ void UGetChampionsRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("tournamentId"), *TournamentId);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("tournamentId"), *TournamentId);
 	bIsFirstQueryParam = false;
 	
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("cycles"), *FString::FromInt(Cycles));
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("cycles"), *FString::FromInt(Cycles));
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -30,9 +30,9 @@ void UGetChampionsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetChampionsRequest* UGetChampionsRequest::Make(FString _TournamentId, int32 _Cycles, UObject* Outer)
+UGetChampionsRequest* UGetChampionsRequest::Make(FString _TournamentId, int32 _Cycles, UObject* RequestOwner)
 {
-	UGetChampionsRequest* Req = NewObject<UGetChampionsRequest>(Outer);
+	UGetChampionsRequest* Req = NewObject<UGetChampionsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->TournamentId = _TournamentId;

@@ -15,24 +15,24 @@ void UGetAdminPlayerRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("playerId"), *FString::FromInt(PlayerId));
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("playerId"), *FString::FromInt(PlayerId));
 	bIsFirstQueryParam = false;
 	
 	if(TournamentId.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("tournamentId"), *TournamentId.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("tournamentId"), *TournamentId.Val);
 		bIsFirstQueryParam = false;
 	}
 
 	if(ContentId.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("contentId"), *ContentId.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("contentId"), *ContentId.Val);
 		bIsFirstQueryParam = false;
 	}
 
 	if(bHasUnclaimedRewards.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("hasUnclaimedRewards"), bHasUnclaimedRewards.Val ? *TEXT("true") : *TEXT("false"));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("hasUnclaimedRewards"), bHasUnclaimedRewards.Val ? TEXT("true") : TEXT("false"));
 		bIsFirstQueryParam = false;
 	}
 
@@ -44,9 +44,9 @@ void UGetAdminPlayerRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAdminPlayerRequest* UGetAdminPlayerRequest::Make(int64 _PlayerId, FOptionalString _TournamentId, FOptionalString _ContentId, FOptionalBool _bHasUnclaimedRewards, UObject* Outer)
+UGetAdminPlayerRequest* UGetAdminPlayerRequest::Make(int64 _PlayerId, FOptionalString _TournamentId, FOptionalString _ContentId, FOptionalBool _bHasUnclaimedRewards, UObject* RequestOwner)
 {
-	UGetAdminPlayerRequest* Req = NewObject<UGetAdminPlayerRequest>(Outer);
+	UGetAdminPlayerRequest* Req = NewObject<UGetAdminPlayerRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->PlayerId = _PlayerId;

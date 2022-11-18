@@ -27,9 +27,9 @@ void UPostClientStringlistRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostClientStringlistRequest* UPostClientStringlistRequest::Make(FString _ObjectId, FOptionalArrayOfStatStringListEntry _Set, UObject* Outer)
+UPostClientStringlistRequest* UPostClientStringlistRequest::Make(FString _ObjectId, FOptionalArrayOfStatStringListEntry _Set, UObject* RequestOwner)
 {
-	UPostClientStringlistRequest* Req = NewObject<UPostClientStringlistRequest>(Outer);
+	UPostClientStringlistRequest* Req = NewObject<UPostClientStringlistRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

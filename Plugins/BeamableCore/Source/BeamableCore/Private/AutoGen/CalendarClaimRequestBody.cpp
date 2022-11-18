@@ -3,6 +3,8 @@
 
 
 
+
+
 void UCalendarClaimRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("id"), Id);

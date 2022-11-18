@@ -27,9 +27,9 @@ void UPostGoogleplayPurchaseCancelRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostGoogleplayPurchaseCancelRequest* UPostGoogleplayPurchaseCancelRequest::Make(int64 _Txid, UObject* Outer)
+UPostGoogleplayPurchaseCancelRequest* UPostGoogleplayPurchaseCancelRequest::Make(int64 _Txid, UObject* RequestOwner)
 {
-	UPostGoogleplayPurchaseCancelRequest* Req = NewObject<UPostGoogleplayPurchaseCancelRequest>(Outer);
+	UPostGoogleplayPurchaseCancelRequest* Req = NewObject<UPostGoogleplayPurchaseCancelRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

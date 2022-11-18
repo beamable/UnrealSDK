@@ -27,9 +27,9 @@ void UDeleteEntryRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteEntryRequest* UDeleteEntryRequest::Make(FString _ObjectId, int64 _Id, UObject* Outer)
+UDeleteEntryRequest* UDeleteEntryRequest::Make(FString _ObjectId, int64 _Id, UObject* RequestOwner)
 {
-	UDeleteEntryRequest* Req = NewObject<UDeleteEntryRequest>(Outer);
+	UDeleteEntryRequest* Req = NewObject<UDeleteEntryRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

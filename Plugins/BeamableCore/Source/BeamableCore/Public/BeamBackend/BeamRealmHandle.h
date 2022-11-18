@@ -12,10 +12,16 @@ struct FBeamRealmHandle
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly)
+	/**
+	 * @brief The CustomerId that owns the given realm.
+	 */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Beam")
 	FString Cid;
 
-	UPROPERTY(BlueprintReadOnly)
+	/**
+	 * @brief The RealmId, AKA Project Id, that identifies this realm.
+	 */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Beam")
 	FString Pid;
 
 	friend bool operator==(const FBeamRealmHandle& Lhs, const FBeamRealmHandle& RHS)

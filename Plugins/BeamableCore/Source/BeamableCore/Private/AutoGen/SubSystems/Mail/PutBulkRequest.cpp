@@ -27,9 +27,9 @@ void UPutBulkRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutBulkRequest* UPutBulkRequest::Make(int64 _ObjectId, TArray<UMyMailUpdate*> _UpdateMailRequests, UObject* Outer)
+UPutBulkRequest* UPutBulkRequest::Make(int64 _ObjectId, TArray<UMyMailUpdate*> _UpdateMailRequests, UObject* RequestOwner)
 {
-	UPutBulkRequest* Req = NewObject<UPutBulkRequest>(Outer);
+	UPutBulkRequest* Req = NewObject<UPutBulkRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

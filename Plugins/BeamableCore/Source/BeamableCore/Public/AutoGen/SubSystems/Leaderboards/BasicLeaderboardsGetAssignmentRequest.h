@@ -39,8 +39,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make BasicLeaderboardsGetAssignment",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_bJoinBoard,Outer"))
-	static UBasicLeaderboardsGetAssignmentRequest* Make(FString _BoardId, FOptionalBool _bJoinBoard, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make BasicLeaderboardsGetAssignment",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bJoinBoard,RequestOwner"))
+	static UBasicLeaderboardsGetAssignmentRequest* Make(FString _BoardId, FOptionalBool _bJoinBoard, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

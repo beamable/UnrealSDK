@@ -27,9 +27,9 @@ void UDeleteJoinRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteJoinRequest* UDeleteJoinRequest::Make(int64 _ObjectId, EGroupType _Type, int64 _Group, FOptionalInt64 _Successor, FOptionalInt64 _Score, FOptionalInt64 _SubGroup, UObject* Outer)
+UDeleteJoinRequest* UDeleteJoinRequest::Make(int64 _ObjectId, EGroupType _Type, int64 _Group, FOptionalInt64 _Successor, FOptionalInt64 _Score, FOptionalInt64 _SubGroup, UObject* RequestOwner)
 {
-	UDeleteJoinRequest* Req = NewObject<UDeleteJoinRequest>(Outer);
+	UDeleteJoinRequest* Req = NewObject<UDeleteJoinRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

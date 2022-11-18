@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Payments", DisplayName="Beam - Make PostTestPurchaseCancel",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UPostTestPurchaseCancelRequest* Make(int64 _Txid, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Payments", DisplayName="Beam - Make PostTestPurchaseCancel",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UPostTestPurchaseCancelRequest* Make(int64 _Txid, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -3,6 +3,8 @@
 
 
 
+
+
 void USteamAuthRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("ticket"), Ticket);

@@ -15,7 +15,7 @@ void UGetCustomerAliasAvailableRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("alias"), *Alias);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("alias"), *Alias);
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -26,9 +26,9 @@ void UGetCustomerAliasAvailableRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetCustomerAliasAvailableRequest* UGetCustomerAliasAvailableRequest::Make(FString _Alias, UObject* Outer)
+UGetCustomerAliasAvailableRequest* UGetCustomerAliasAvailableRequest::Make(FString _Alias, UObject* RequestOwner)
 {
-	UGetCustomerAliasAvailableRequest* Req = NewObject<UGetCustomerAliasAvailableRequest>(Outer);
+	UGetCustomerAliasAvailableRequest* Req = NewObject<UGetCustomerAliasAvailableRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Alias = _Alias;

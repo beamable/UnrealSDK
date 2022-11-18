@@ -3,6 +3,13 @@
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 
+
+void UAccountPlayerView::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
+{
+	OuterOwner = RequestData;
+	BeamDeserialize(ResponseContent);	
+}
+
 void UAccountPlayerView ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("id"), Id);
@@ -11,6 +18,7 @@ void UAccountPlayerView ::BeamSerializeProperties(TUnrealJsonSerializer& Seriali
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("thirdPartyAppAssociations"), ThirdPartyAppAssociations, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("email"), &Email, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("language"), &Language, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<UExternalIdentity*>, UExternalIdentity*>(TEXT("external"), &External, Serializer);
 }
 
 void UAccountPlayerView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
@@ -20,7 +28,8 @@ void UAccountPlayerView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("scopes"), Scopes, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("thirdPartyAppAssociations"), ThirdPartyAppAssociations, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("email"), &Email, Serializer);
-	UBeamJsonUtils::SerializeOptional<FString>(TEXT("language"), &Language, Serializer);		
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("language"), &Language, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<UExternalIdentity*>, UExternalIdentity*>(TEXT("external"), &External, Serializer);		
 }
 
 void UAccountPlayerView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
@@ -31,4 +40,5 @@ void UAccountPlayerView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("thirdPartyAppAssociations")), ThirdPartyAppAssociations, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("email", Bag, Email, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("language", Bag, Language, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TArray<UExternalIdentity*>, UExternalIdentity*>("external", Bag, External, OuterOwner);
 }

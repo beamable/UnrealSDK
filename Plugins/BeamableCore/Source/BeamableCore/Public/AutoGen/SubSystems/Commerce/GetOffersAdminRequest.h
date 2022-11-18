@@ -42,8 +42,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Commerce", DisplayName="Beam - Make GetOffersAdmin",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Language,_Time,_Stores,Outer"))
-	static UGetOffersAdminRequest* Make(int64 _ObjectId, FOptionalString _Language, FOptionalString _Time, FOptionalString _Stores, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Commerce", DisplayName="Beam - Make GetOffersAdmin",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Language,_Time,_Stores,RequestOwner"))
+	static UGetOffersAdminRequest* Make(int64 _ObjectId, FOptionalString _Language, FOptionalString _Time, FOptionalString _Stores, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

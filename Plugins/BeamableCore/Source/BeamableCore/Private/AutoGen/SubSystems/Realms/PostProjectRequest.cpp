@@ -27,9 +27,9 @@ void UPostProjectRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostProjectRequest* UPostProjectRequest::Make(FString _Name, FOptionalBool _bSharded, FOptionalString _Plan, FOptionalString _Parent, UObject* Outer)
+UPostProjectRequest* UPostProjectRequest::Make(FString _Name, FOptionalBool _bSharded, FOptionalString _Plan, FOptionalString _Parent, UObject* RequestOwner)
 {
-	UPostProjectRequest* Req = NewObject<UPostProjectRequest>(Outer);
+	UPostProjectRequest* Req = NewObject<UPostProjectRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

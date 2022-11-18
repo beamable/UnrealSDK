@@ -27,9 +27,9 @@ void UDeleteDataRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteDataRequest* UDeleteDataRequest::Make(FOptionalInt64 _PlayerId, FOptionalArrayOfObjectRequestBody _Request, UObject* Outer)
+UDeleteDataRequest* UDeleteDataRequest::Make(FOptionalInt64 _PlayerId, FOptionalArrayOfObjectRequestBody _Request, UObject* RequestOwner)
 {
-	UDeleteDataRequest* Req = NewObject<UDeleteDataRequest>(Outer);
+	UDeleteDataRequest* Req = NewObject<UDeleteDataRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

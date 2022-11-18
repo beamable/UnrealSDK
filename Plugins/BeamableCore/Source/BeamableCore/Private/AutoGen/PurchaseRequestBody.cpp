@@ -3,6 +3,8 @@
 
 
 
+
+
 void UPurchaseRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("purchaseId"), PurchaseId);

@@ -3,6 +3,8 @@
 
 
 
+
+
 void UAnnouncementState ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("isClaimed"), bIsClaimed);

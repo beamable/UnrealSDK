@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", DisplayName="Beam - Make DeleteLaunchMessage",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UDeleteLaunchMessageRequest* Make(FString _File, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", DisplayName="Beam - Make DeleteLaunchMessage",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UDeleteLaunchMessageRequest* Make(FString _File, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

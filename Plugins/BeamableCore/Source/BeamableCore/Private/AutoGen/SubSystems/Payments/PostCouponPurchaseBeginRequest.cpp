@@ -27,9 +27,9 @@ void UPostCouponPurchaseBeginRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostCouponPurchaseBeginRequest* UPostCouponPurchaseBeginRequest::Make(FString _PurchaseId, FOptionalString _Language, FOptionalString _Time, UObject* Outer)
+UPostCouponPurchaseBeginRequest* UPostCouponPurchaseBeginRequest::Make(FString _PurchaseId, FOptionalString _Language, FOptionalString _Time, UObject* RequestOwner)
 {
-	UPostCouponPurchaseBeginRequest* Req = NewObject<UPostCouponPurchaseBeginRequest>(Outer);
+	UPostCouponPurchaseBeginRequest* Req = NewObject<UPostCouponPurchaseBeginRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

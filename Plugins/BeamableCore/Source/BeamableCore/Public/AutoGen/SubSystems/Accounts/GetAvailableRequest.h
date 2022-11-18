@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make GetAvailable",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UGetAvailableRequest* Make(FString _Email, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make GetAvailable",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UGetAvailableRequest* Make(FString _Email, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

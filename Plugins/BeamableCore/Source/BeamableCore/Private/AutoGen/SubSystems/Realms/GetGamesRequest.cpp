@@ -23,9 +23,9 @@ void UGetGamesRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetGamesRequest* UGetGamesRequest::Make(UObject* Outer)
+UGetGamesRequest* UGetGamesRequest::Make(UObject* RequestOwner)
 {
-	UGetGamesRequest* Req = NewObject<UGetGamesRequest>(Outer);
+	UGetGamesRequest* Req = NewObject<UGetGamesRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

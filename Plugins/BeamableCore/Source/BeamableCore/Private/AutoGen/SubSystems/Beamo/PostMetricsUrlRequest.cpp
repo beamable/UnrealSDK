@@ -27,9 +27,9 @@ void UPostMetricsUrlRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostMetricsUrlRequest* UPostMetricsUrlRequest::Make(FString _ServiceName, FString _MetricName, FOptionalInt64 _StartTime, FOptionalInt64 _EndTime, FOptionalInt32 _Period, UObject* Outer)
+UPostMetricsUrlRequest* UPostMetricsUrlRequest::Make(FString _ServiceName, FString _MetricName, FOptionalInt64 _StartTime, FOptionalInt64 _EndTime, FOptionalInt32 _Period, UObject* RequestOwner)
 {
-	UPostMetricsUrlRequest* Req = NewObject<UPostMetricsUrlRequest>(Outer);
+	UPostMetricsUrlRequest* Req = NewObject<UPostMetricsUrlRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

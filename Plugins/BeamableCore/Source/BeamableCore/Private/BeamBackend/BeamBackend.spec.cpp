@@ -15,8 +15,9 @@ void FBeamBackendSpec::Define()
 	Describe("Request/Response", [this]()
 	{
 		const FBeamRealmHandle FakeRealmHandle{"TEST_CID", "TEST_PID"};
-		const FBeamRetryConfig FakeNoRetryConfig{10, TArray<float>{0.5, 1}, 0};
-		const FBeamRetryConfig FakeSimpleRetryConfig{10, TArray<float>{0.5, 1}, 1};
+		const FBeamRetryConfig FakeNoRetryConfig{{}, {}, 10, TArray<float>{0.5, 1}, 0};
+		const FBeamRetryConfig FakeResponseCodeRetryConfig{{503}, {}, 10, TArray<float>{0.5, 1}, 1};
+		const FBeamRetryConfig FakeErrorCodeRetryConfig{{}, {"ErrorCode"}, 10, TArray<float>{0.5, 1}, 1};
 		const FBeamAuthToken FakeAuthToken{"AUTH_TOKEN", "REFRESH_TOKEN"};
 
 		BeforeEach([this]()
@@ -438,169 +439,225 @@ void FBeamBackendSpec::Define()
 			if (BeamBackendSystem->AlwaysLogErrorResponses)
 				AddExpectedError(TEXT("Beamable Request Failed"), EAutomationExpectedErrorFlags::Contains, 0);
 
-			for (const auto& RetryableErrorCode : BeamBackendSystem->NON_AUTH_REQUESTS_RETRY_ALLOWED_ERRORS)
+			const auto ReceivedResponseCode = Error.status;
+			// Un-Authenticated BP Handler
 			{
-				// Un-Authenticated BP Handler
-				{
-					int64 ReqId;
-					const auto Request = BeamBackendSystem->CreateRequest(ReqId, FakeRealmHandle, FakeSimpleRetryConfig, FakeRequest);
+				int64 ReqId;
+				const auto Request = BeamBackendSystem->CreateRequest(ReqId, FakeRealmHandle, FakeResponseCodeRetryConfig, FakeRequest);
 
-					Callbacks->ExpectedReqId = ReqId;
-					Callbacks->ExpectedErrorFailureCount = 1;
-					Callbacks->ExpectedErrorResponseStatus = Error.status;
-					Callbacks->ExpectedErrorResponseError = Error.error;
-					Callbacks->ExpectedErrorResponseService = Error.service;
-					Callbacks->ExpectedErrorResponseMessage = Error.message;
+				Callbacks->ExpectedReqId = ReqId;
+				Callbacks->ExpectedErrorFailureCount = 1;
+				Callbacks->ExpectedErrorResponseStatus = Error.status;
+				Callbacks->ExpectedErrorResponseError = Error.error;
+				Callbacks->ExpectedErrorResponseService = Error.service;
+				Callbacks->ExpectedErrorResponseMessage = Error.message;
 
-					FOnMockSuccess ResponseHandler;
-					ResponseHandler.BindUFunction(Callbacks, FName(TEXT("MockSuccessCallback_Fail")));
+				FOnMockSuccess ResponseHandler;
+				ResponseHandler.BindUFunction(Callbacks, FName(TEXT("MockSuccessCallback_Fail")));
 
-					FOnMockError ResponseHandlerError;
-					ResponseHandlerError.BindUFunction(Callbacks, FName(TEXT("MockErrorCallback_Expected")));
+				FOnMockError ResponseHandlerError;
+				ResponseHandlerError.BindUFunction(Callbacks, FName(TEXT("MockErrorCallback_Expected")));
 
-					FOnMockComplete ResponseHandlerComplete;
-					ResponseHandlerComplete.BindUFunction(Callbacks, FName(TEXT("MockCompleteCallback_Expected")));
+				FOnMockComplete ResponseHandlerComplete;
+				ResponseHandlerComplete.BindUFunction(Callbacks, FName(TEXT("MockCompleteCallback_Expected")));
 
 
-					// This should clean up the created request's data
-					BeamBackendSystem->ProcessBlueprintRequest<UBeamMockGetRequest, UBeamMockGetRequestResponse>
-						(RetryableErrorCode, ResponseBody, TUnrealRequestStatus::Failed, ReqId, FakeRequest, ResponseHandler, ResponseHandlerError, ResponseHandlerComplete);
+				// This should clean up the created request's data
+				BeamBackendSystem->ProcessBlueprintRequest<UBeamMockGetRequest, UBeamMockGetRequestResponse>
+					(ReceivedResponseCode, ResponseBody, TUnrealRequestStatus::Failed, ReqId, FakeRequest, ResponseHandler, ResponseHandlerError, ResponseHandlerComplete);
 
-					// Assert that the request was correctly enqueued for work
-					FRequestToRetry RetryReq;
-					TestTrue("Test that the Retry was enqueued", BeamBackendSystem->EnqueuedRetries.Dequeue(RetryReq));
-					TestTrue("Enqueued Retry's Request Id is equal", RetryReq.RequestId == ReqId);
-					TestTrue("Enqueued Retry's IsBlueprint is on", RetryReq.IsBlueprintCompatible == 1);
-				}
-
-
-				// Un-Authenticated Code Handler 
-				{
-					int64 ReqId;
-					const auto Request = BeamBackendSystem->CreateRequest(ReqId, FakeRealmHandle, FakeSimpleRetryConfig, FakeRequest);
-
-					Callbacks->ExpectedReqId = ReqId;
-					Callbacks->ExpectedErrorFailureCount = 1;
-					Callbacks->ExpectedErrorResponseStatus = Error.status;
-					Callbacks->ExpectedErrorResponseError = Error.error;
-					Callbacks->ExpectedErrorResponseService = Error.service;
-					Callbacks->ExpectedErrorResponseMessage = Error.message;
-
-					FOnMockFullResponse ResponseHandler;
-					ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
-					{
-						TestTrue("State was Retrying", BeamFullResponse.State == EBeamFullResponseState::Retrying);
-						Callbacks->MockErrorCallback_Expected(BeamFullResponse.Context, BeamFullResponse.RequestData, BeamFullResponse.ErrorData);
-					});
-
-					// This should clean up the created request's data
-					BeamBackendSystem->ProcessCodeRequest(RetryableErrorCode, ResponseBody, TUnrealRequestStatus::Failed, ReqId, FakeRequest, ResponseHandler);
-
-					// Assert that the request was correctly enqueued for work
-					FRequestToRetry RetryReq;
-					TestTrue("Test that the Retry was enqueued", BeamBackendSystem->EnqueuedRetries.Dequeue(RetryReq));
-					TestTrue("Enqueued Retry's Request Id is equal", RetryReq.RequestId == ReqId);
-					TestTrue("Enqueued Retry's IsBlueprint is off", RetryReq.IsBlueprintCompatible == 0);
-				}
+				// Assert that the request was correctly enqueued for work
+				FRequestToRetry RetryReq;
+				TestTrue("Test that the Retry was enqueued", BeamBackendSystem->EnqueuedRetries.Dequeue(RetryReq));
+				TestTrue("Enqueued Retry's Request Id is equal", RetryReq.RequestId == ReqId);
+				TestTrue("Enqueued Retry's IsBlueprint is on", RetryReq.IsBlueprintCompatible == 1);
 			}
 
 
-			for (const auto& RetryableErrorCode : BeamBackendSystem->AUTH_REQUESTS_RETRY_ALLOWED_ERRORS)
+			// Un-Authenticated Code Handler 
 			{
-				const auto bIsAutomaticReAuth = RetryableErrorCode == 401;
+				int64 ReqId;
+				const auto Request = BeamBackendSystem->CreateRequest(ReqId, FakeRealmHandle, FakeResponseCodeRetryConfig, FakeRequest);
 
-				// Authenticated BP Handler
+				Callbacks->ExpectedReqId = ReqId;
+				Callbacks->ExpectedErrorFailureCount = 1;
+				Callbacks->ExpectedErrorResponseStatus = Error.status;
+				Callbacks->ExpectedErrorResponseError = Error.error;
+				Callbacks->ExpectedErrorResponseService = Error.service;
+				Callbacks->ExpectedErrorResponseMessage = Error.message;
+
+				FOnMockFullResponse ResponseHandler;
+				ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
 				{
-					int64 ReqId;
-					const auto Request = BeamBackendSystem->CreateAuthenticatedRequest(ReqId, FakeRealmHandle, FakeSimpleRetryConfig, FakeAuthToken, FakeRequest);
+					TestTrue("State was Retrying", BeamFullResponse.State == EBeamFullResponseState::Retrying);
+					Callbacks->MockErrorCallback_Expected(BeamFullResponse.Context, BeamFullResponse.RequestData, BeamFullResponse.ErrorData);
+				});
 
-					Callbacks->ExpectedReqId = ReqId;
-					// We expect to fail transparently for the automatic re-auth case.
-					Callbacks->ExpectedErrorFailureCount = bIsAutomaticReAuth ? 0 : 1;
-					Callbacks->ExpectedErrorResponseStatus = Error.status;
-					Callbacks->ExpectedErrorResponseError = Error.error;
-					Callbacks->ExpectedErrorResponseService = Error.service;
-					Callbacks->ExpectedErrorResponseMessage = Error.message;
+				// This should clean up the created request's data
+				BeamBackendSystem->ProcessCodeRequest(ReceivedResponseCode, ResponseBody, TUnrealRequestStatus::Failed, ReqId, FakeRequest, ResponseHandler);
 
-					FOnMockSuccess ResponseHandler;
-					ResponseHandler.BindUFunction(Callbacks, FName(TEXT("MockSuccessCallback_Fail")));
-
-					FOnMockError ResponseHandlerError;
-					if (bIsAutomaticReAuth)
-						ResponseHandlerError.BindUFunction(Callbacks, FName(TEXT("MockErrorCallback_Fail")));
-					else
-						ResponseHandlerError.BindUFunction(Callbacks, FName(TEXT("MockErrorCallback_Expected")));
-
-					FOnMockComplete ResponseHandlerComplete;
-					ResponseHandlerComplete.BindUFunction(Callbacks, FName(TEXT("MockCompleteCallback_Expected")));
-
-					// This should clean up the created request's data
-					BeamBackendSystem->ProcessAuthenticatedBlueprintRequest<UBeamMockGetRequest, UBeamMockGetRequestResponse>
-					(RetryableErrorCode, ResponseBody, TUnrealRequestStatus::Failed, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequest, ResponseHandler, ResponseHandlerError,
-					 ResponseHandlerComplete);
-
-					// Assert that the request was correctly enqueued for work
-					FRequestToRetry RetryReq;
-					TestTrue("Test that the Retry was enqueued", BeamBackendSystem->EnqueuedRetries.Dequeue(RetryReq));
-					TestTrue("Enqueued Retry's Request Id is equal", RetryReq.RequestId == ReqId);
-					TestTrue("Enqueued Retry's Realm Handle is the same", RetryReq.RealmHandle == FakeRealmHandle);
-					TestTrue("Enqueued Retry's AuthToken is the same", RetryReq.AuthToken == FakeAuthToken);
-					TestTrue("Enqueued Retry's IsBlueprint is on", RetryReq.IsBlueprintCompatible == 1);
-					if (bIsAutomaticReAuth)
-					{
-						TestTrue("Test that the Retry was enqueued but with no failure count",
-						         BeamBackendSystem->InFlightFailureCount[ReqId] == Callbacks->ExpectedErrorFailureCount);
-					}
-				}
-
-				// Authenticated Code Handler 
-				{
-					int64 ReqId;
-					const auto Request = BeamBackendSystem->CreateAuthenticatedRequest(ReqId, FakeRealmHandle, FakeSimpleRetryConfig, FakeAuthToken, FakeRequest);
-
-					Callbacks->ExpectedReqId = ReqId;
-					// We expect to fail transparently for the automatic re-auth case.
-					Callbacks->ExpectedErrorFailureCount = bIsAutomaticReAuth ? 0 : 1;
-					Callbacks->ExpectedErrorResponseStatus = Error.status;
-					Callbacks->ExpectedErrorResponseError = Error.error;
-					Callbacks->ExpectedErrorResponseService = Error.service;
-					Callbacks->ExpectedErrorResponseMessage = Error.message;
-
-					FOnMockFullResponse ResponseHandler;
-					ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
-					{
-						if (bIsAutomaticReAuth)
-						{
-							TestTrue("Callback was not called", false);
-						}
-						else
-						{
-							TestTrue("State was Retrying", BeamFullResponse.State == EBeamFullResponseState::Retrying);
-							Callbacks->MockErrorCallback_Expected(BeamFullResponse.Context, BeamFullResponse.RequestData, BeamFullResponse.ErrorData);
-						}
-					});
-
-					// This should clean up the created request's data
-					BeamBackendSystem->ProcessAuthenticatedCodeRequest(RetryableErrorCode, ResponseBody, TUnrealRequestStatus::Failed, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequest,
-					                                                   ResponseHandler);
-
-					// Assert that the request was correctly enqueued for work
-					FRequestToRetry RetryReq;
-					TestTrue("Test that the Retry was enqueued", BeamBackendSystem->EnqueuedRetries.Dequeue(RetryReq));
-					TestTrue("Enqueued Retry's Request Id is equal", RetryReq.RequestId == ReqId);
-					TestTrue("Enqueued Retry's Realm Handle is the same", RetryReq.RealmHandle == FakeRealmHandle);
-					TestTrue("Enqueued Retry's AuthToken is the same", RetryReq.AuthToken == FakeAuthToken);
-					TestTrue("Enqueued Retry's IsBlueprint is off", RetryReq.IsBlueprintCompatible == 0);
-					if (bIsAutomaticReAuth)
-					{
-						TestTrue("Test that the Retry was enqueued but with no failure count",
-						         BeamBackendSystem->InFlightFailureCount[ReqId] == Callbacks->ExpectedErrorFailureCount);
-					}
-				}
-
-				// Clean up fake request
-				FakeRequest->MarkAsGarbage();
+				// Assert that the request was correctly enqueued for work
+				FRequestToRetry RetryReq;
+				TestTrue("Test that the Retry was enqueued", BeamBackendSystem->EnqueuedRetries.Dequeue(RetryReq));
+				TestTrue("Enqueued Retry's Request Id is equal", RetryReq.RequestId == ReqId);
+				TestTrue("Enqueued Retry's IsBlueprint is off", RetryReq.IsBlueprintCompatible == 0);
 			}
+
+
+			// Authenticated BP Handler
+			{
+				int64 ReqId;
+				const auto Request = BeamBackendSystem->CreateAuthenticatedRequest(ReqId, FakeRealmHandle, FakeResponseCodeRetryConfig, FakeAuthToken, FakeRequest);
+
+				Callbacks->ExpectedReqId = ReqId;
+				// We expect to fail transparently for the automatic re-auth case.
+				Callbacks->ExpectedErrorFailureCount = 1;
+				Callbacks->ExpectedErrorResponseStatus = Error.status;
+				Callbacks->ExpectedErrorResponseError = Error.error;
+				Callbacks->ExpectedErrorResponseService = Error.service;
+				Callbacks->ExpectedErrorResponseMessage = Error.message;
+
+				FOnMockSuccess ResponseHandler;
+				ResponseHandler.BindUFunction(Callbacks, FName(TEXT("MockSuccessCallback_Fail")));
+
+				FOnMockError ResponseHandlerError;
+				ResponseHandlerError.BindUFunction(Callbacks, FName(TEXT("MockErrorCallback_Expected")));
+
+				FOnMockComplete ResponseHandlerComplete;
+				ResponseHandlerComplete.BindUFunction(Callbacks, FName(TEXT("MockCompleteCallback_Expected")));
+
+				// This should clean up the created request's data
+				BeamBackendSystem->ProcessAuthenticatedBlueprintRequest<UBeamMockGetRequest, UBeamMockGetRequestResponse>
+				(ReceivedResponseCode, ResponseBody, TUnrealRequestStatus::Failed, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequest, ResponseHandler, ResponseHandlerError,
+				 ResponseHandlerComplete);
+
+				// Assert that the request was correctly enqueued for work
+				FRequestToRetry RetryReq;
+				TestTrue("Test that the Retry was enqueued", BeamBackendSystem->EnqueuedRetries.Dequeue(RetryReq));
+				TestTrue("Enqueued Retry's Request Id is equal", RetryReq.RequestId == ReqId);
+				TestTrue("Enqueued Retry's Realm Handle is the same", RetryReq.RealmHandle == FakeRealmHandle);
+				TestTrue("Enqueued Retry's AuthToken is the same", RetryReq.AuthToken == FakeAuthToken);
+				TestTrue("Enqueued Retry's IsBlueprint is on", RetryReq.IsBlueprintCompatible == 1);
+			}
+
+			// Authenticated Code Handler 
+			{
+				int64 ReqId;
+				const auto Request = BeamBackendSystem->CreateAuthenticatedRequest(ReqId, FakeRealmHandle, FakeResponseCodeRetryConfig, FakeAuthToken, FakeRequest);
+
+				Callbacks->ExpectedReqId = ReqId;
+				// We expect to fail transparently for the automatic re-auth case.
+				Callbacks->ExpectedErrorFailureCount = 1;
+				Callbacks->ExpectedErrorResponseStatus = Error.status;
+				Callbacks->ExpectedErrorResponseError = Error.error;
+				Callbacks->ExpectedErrorResponseService = Error.service;
+				Callbacks->ExpectedErrorResponseMessage = Error.message;
+
+				FOnMockFullResponse ResponseHandler;
+				ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
+				{
+					TestTrue("State was Retrying", BeamFullResponse.State == EBeamFullResponseState::Retrying);
+					Callbacks->MockErrorCallback_Expected(BeamFullResponse.Context, BeamFullResponse.RequestData, BeamFullResponse.ErrorData);
+				});
+
+				// This should clean up the created request's data
+				BeamBackendSystem->ProcessAuthenticatedCodeRequest(ReceivedResponseCode, ResponseBody, TUnrealRequestStatus::Failed, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequest,
+				                                                   ResponseHandler);
+
+				// Assert that the request was correctly enqueued for work
+				FRequestToRetry RetryReq;
+				TestTrue("Test that the Retry was enqueued", BeamBackendSystem->EnqueuedRetries.Dequeue(RetryReq));
+				TestTrue("Enqueued Retry's Request Id is equal", RetryReq.RequestId == ReqId);
+				TestTrue("Enqueued Retry's Realm Handle is the same", RetryReq.RealmHandle == FakeRealmHandle);
+				TestTrue("Enqueued Retry's AuthToken is the same", RetryReq.AuthToken == FakeAuthToken);
+				TestTrue("Enqueued Retry's IsBlueprint is off", RetryReq.IsBlueprintCompatible == 0);
+			}
+
+			// Clean up fake request
+			FakeRequest->MarkAsGarbage();
+		});
+
+		It("should invoke the Error Handlers with the correct data when received an error response code AND Enqueue Request for Re-Auth based retry", [=, this]()
+		{
+			UBeamMockGetRequest* FakeRequest = NewObject<UBeamMockGetRequest>();
+			const FBeamErrorResponse Error = FBeamErrorResponse{401, UBeamBackend::AUTH_ERROR_CODE_RETRY_ALLOWED[0], TEXT("fake basic"), TEXT("Fake Error Message")};
+			FString ResponseBody;
+			FJsonObjectConverter::UStructToJsonObjectString(FBeamErrorResponse::StaticStruct(), &Error, ResponseBody);
+
+			const auto ReceivedResponseCode = Error.status;
+
+			// Authenticated BP Handler
+			{
+				int64 ReqId;
+				const auto Request = BeamBackendSystem->CreateAuthenticatedRequest(ReqId, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken, FakeRequest);
+
+				Callbacks->ExpectedReqId = ReqId;
+				// We expect to fail transparently for the automatic re-auth case.
+				Callbacks->ExpectedErrorFailureCount = 0;
+				Callbacks->ExpectedErrorResponseStatus = Error.status;
+				Callbacks->ExpectedErrorResponseError = Error.error;
+				Callbacks->ExpectedErrorResponseService = Error.service;
+				Callbacks->ExpectedErrorResponseMessage = Error.message;
+
+				FOnMockSuccess ResponseHandler;
+				ResponseHandler.BindUFunction(Callbacks, FName(TEXT("MockSuccessCallback_Fail")));
+
+				FOnMockError ResponseHandlerError;
+				ResponseHandlerError.BindUFunction(Callbacks, FName(TEXT("MockErrorCallback_Fail")));
+
+				FOnMockComplete ResponseHandlerComplete;
+				ResponseHandlerComplete.BindUFunction(Callbacks, FName(TEXT("MockCompleteCallback_Expected")));
+
+				// This should clean up the created request's data
+				BeamBackendSystem->ProcessAuthenticatedBlueprintRequest<UBeamMockGetRequest, UBeamMockGetRequestResponse>
+				(ReceivedResponseCode, ResponseBody, TUnrealRequestStatus::Failed, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequest, ResponseHandler, ResponseHandlerError,
+				 ResponseHandlerComplete);
+
+				// Assert that the request was correctly enqueued for work
+				FRequestToRetry RetryReq;
+				TestTrue("Test that the Retry was enqueued", BeamBackendSystem->EnqueuedRetries.Dequeue(RetryReq));
+				TestEqual("Enqueued Retry's Request Id is equal", RetryReq.RequestId, ReqId);
+				TestEqual("Enqueued Retry's Realm Handle is the same", RetryReq.RealmHandle, FakeRealmHandle);
+				TestEqual("Enqueued Retry's AuthToken is the same", RetryReq.AuthToken, FakeAuthToken);
+				TestEqual("Enqueued Retry's IsBlueprint is on", RetryReq.IsBlueprintCompatible, 1);
+				TestEqual("Test that the Retry was enqueued but with no failure count", BeamBackendSystem->InFlightFailureCount[ReqId], Callbacks->ExpectedErrorFailureCount);
+			}
+
+			// Authenticated Code Handler 
+			{
+				int64 ReqId;
+				const auto Request = BeamBackendSystem->CreateAuthenticatedRequest(ReqId, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken, FakeRequest);
+
+				Callbacks->ExpectedReqId = ReqId;
+				// We expect to fail transparently for the automatic re-auth case.
+				Callbacks->ExpectedErrorFailureCount = 0;
+				Callbacks->ExpectedErrorResponseStatus = Error.status;
+				Callbacks->ExpectedErrorResponseError = Error.error;
+				Callbacks->ExpectedErrorResponseService = Error.service;
+				Callbacks->ExpectedErrorResponseMessage = Error.message;
+
+				FOnMockFullResponse ResponseHandler;
+				ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
+				{
+					TestTrue("Callback was not called", false);
+				});
+
+				// This should clean up the created request's data
+				BeamBackendSystem->ProcessAuthenticatedCodeRequest(ReceivedResponseCode, ResponseBody, TUnrealRequestStatus::Failed, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequest,
+				                                                   ResponseHandler);
+
+				// Assert that the request was correctly enqueued for work
+				FRequestToRetry RetryReq;
+				TestTrue("Test that the Retry was enqueued", BeamBackendSystem->EnqueuedRetries.Dequeue(RetryReq));
+				TestEqual("Enqueued Retry's Request Id is equal", RetryReq.RequestId, ReqId);
+				TestEqual("Enqueued Retry's Realm Handle is the same", RetryReq.RealmHandle, FakeRealmHandle);
+				TestEqual("Enqueued Retry's AuthToken is the same", RetryReq.AuthToken, FakeAuthToken);
+				TestEqual("Enqueued Retry's IsBlueprint is off", RetryReq.IsBlueprintCompatible, 0);
+				TestEqual("Test that the Retry was enqueued but with no failure count", BeamBackendSystem->InFlightFailureCount[ReqId], Callbacks->ExpectedErrorFailureCount);
+			}
+
+			// Clean up fake request
+			FakeRequest->MarkAsGarbage();
 		});
 
 		It("should update the connectivity status if we fail with TUnrealRequestStatus::Failed_ConnectionError", [=, this]()
@@ -870,22 +927,45 @@ void FBeamBackendSpec::Define()
 			UBeamMockGetRequest* FakeRequest = NewObject<UBeamMockGetRequest>();
 
 			// Authenticated Code Handler 
-			int64 ReqId;
-			const auto Request = BeamBackendSystem->CreateAuthenticatedRequest(ReqId, FakeRealmHandle, FakeSimpleRetryConfig, FakeAuthToken, FakeRequest);
+			int64 ReqId, ReqId2;
+			const auto Request = BeamBackendSystem->CreateAuthenticatedRequest(ReqId, FakeRealmHandle, FakeResponseCodeRetryConfig, FakeAuthToken, FakeRequest);
+			const auto Request2 = BeamBackendSystem->CreateAuthenticatedRequest(ReqId2, FakeRealmHandle, FakeResponseCodeRetryConfig, FakeAuthToken, FakeRequest);
 
 			// Pretend that the failure count was increased
 			BeamBackendSystem->InFlightFailureCount[ReqId] = 1;
 
+			// We get the first request and fake it's completion.
 			const auto BeamRequestContext = BeamBackendSystem->InFlightRequestContexts.Find(ReqId);
 			BeamRequestContext->BeamStatus = Completed;
-			BeamBackendSystem->TickCleanUp(0);
 
-			TestFalse("In Flight Request was cleaned up", BeamBackendSystem->InFlightRequests.Contains(ReqId));
-			TestFalse("In Flight Request Context was cleaned up", BeamBackendSystem->InFlightRequestContexts.Contains(ReqId));
-			TestFalse("In Flight Failure Count Data was cleaned up", BeamBackendSystem->InFlightFailureCount.Contains(ReqId));
-			TestFalse("In Flight Req Id was removed from Cancelled List", BeamBackendSystem->InFlightRequestsCancelled.Contains(ReqId));
-			TestFalse("In Flight Request Data was cleaned up", BeamBackendSystem->InFlightRequestData.Contains(*BeamRequestContext));
-			TestFalse("In Flight Response Data was cleaned up", BeamBackendSystem->InFlightResponseBodyData.Contains(*BeamRequestContext));
+			// We get the second request context and fake it's completion
+			const auto BeamRequestContext2 = BeamBackendSystem->InFlightRequestContexts.Find(ReqId2);
+			BeamRequestContext2->BeamStatus = Completed;
+
+			// We set up the handler to pretend that request 2 is being depended by some external system.
+			Callbacks->ExternalRequestIds.Add(ReqId2);
+			FTickOnBackendCleanUp CleanUpHandler;
+			CleanUpHandler.BindUFunction(Callbacks, GET_FUNCTION_NAME_CHECKED(UBeamBackendTestCallbacks, GenerateExternalRequestIds));
+			BeamBackendSystem->TickOnBackendCleanUpDelegates.Add(CleanUpHandler);
+			BeamBackendSystem->TickCleanUp(0);
+			BeamBackendSystem->TickOnBackendCleanUpDelegates.Remove(CleanUpHandler);
+
+			// Because it's NOT an external dependency and it's completed, we can clean it up.
+			TestFalse("First Request  was cleaned up", BeamBackendSystem->InFlightRequests.Contains(ReqId));
+			TestFalse("First Request Context was cleaned up", BeamBackendSystem->InFlightRequestContexts.Contains(ReqId));
+			TestFalse("First Failure Count Data was cleaned up", BeamBackendSystem->InFlightFailureCount.Contains(ReqId));
+			TestFalse("First Req Id was removed from Cancelled List", BeamBackendSystem->InFlightRequestsCancelled.Contains(ReqId));
+			TestFalse("First Request Data was cleaned up", BeamBackendSystem->InFlightRequestData.Contains(*BeamRequestContext));
+			TestFalse("First Response Data was cleaned up", BeamBackendSystem->InFlightResponseBodyData.Contains(*BeamRequestContext));
+			TestFalse("First Error Data was cleaned up", BeamBackendSystem->InFlightResponseErrorData.Contains(*BeamRequestContext));
+
+			// Because it's an external dependency, we should keep it in memory
+			TestTrue("Second Request was not cleaned up", BeamBackendSystem->InFlightRequests.Contains(ReqId2));
+			TestTrue("Second Request Context was not cleaned up", BeamBackendSystem->InFlightRequestContexts.Contains(ReqId2));
+			TestTrue("Second Failure Count Data was not cleaned up", BeamBackendSystem->InFlightFailureCount.Contains(ReqId2));			
+			TestTrue("Second Request Data was not cleaned up", BeamBackendSystem->InFlightRequestData.Contains(*BeamRequestContext2));
+			TestTrue("Second Response Data was not cleaned up", BeamBackendSystem->InFlightResponseBodyData.Contains(*BeamRequestContext2));
+			TestTrue("Second Error Data was not cleaned up", BeamBackendSystem->InFlightResponseErrorData.Contains(*BeamRequestContext2));
 
 			FakeRequest->MarkAsGarbage();
 		});
@@ -973,7 +1053,8 @@ void FBeamBackendSpec::Define()
 	Describe("Retry Logic", [this]()
 	{
 		const FBeamRealmHandle FakeRealmHandle{"TEST_CID", "TEST_PID"};
-		const FBeamRetryConfig FakeSimpleRetryConfig{10, TArray<float>{0.5, 1}, 1};
+		const FBeamRetryConfig FakeResponseCodeRetryConfig{{503}, {}, 10, TArray<float>{0.5, 1}, 1};
+		const FBeamRetryConfig FakeErrorCodeRetryConfig{{}, {TEXT("ErrorCode")}, 10, TArray<float>{0.5, 1}, 1};
 		const FBeamAuthToken FakeAuthToken{"AUTH_TOKEN", "REFRESH_TOKEN"};
 
 		BeforeEach([this]()
@@ -1010,107 +1091,137 @@ void FBeamBackendSpec::Define()
 			UBeamMockGetRequest* FakeRequest = NewObject<UBeamMockGetRequest>();
 
 			// Authenticated Code Handler 
-			int64 ReqId;
-			const auto Request = BeamBackendSystem->CreateAuthenticatedRequest(ReqId, FakeRealmHandle, FakeSimpleRetryConfig, FakeAuthToken, FakeRequest);
+			int64 ResponseCodeReqId, ErrorCodeReqId;
+			const auto ResponseCodeRequest = BeamBackendSystem->CreateAuthenticatedRequest(ResponseCodeReqId, FakeRealmHandle, FakeResponseCodeRetryConfig, FakeAuthToken, FakeRequest);
+			const auto ErrorCodeRequest = BeamBackendSystem->CreateAuthenticatedRequest(ErrorCodeReqId, FakeRealmHandle, FakeErrorCodeRetryConfig, FakeAuthToken, FakeRequest);
 
 			// Pretend that the failure count was increased
-			BeamBackendSystem->InFlightFailureCount[ReqId] = 1;
+			BeamBackendSystem->InFlightFailureCount[ResponseCodeReqId] = 1;
+			BeamBackendSystem->InFlightFailureCount[ErrorCodeReqId] = 1;
 
 
 			// Enqueues the request to retry.
-			const auto ExpectedRetry = FRequestToRetry{
-				ReqId, 0, 503, FakeRealmHandle, FakeAuthToken,
+			const auto ExpectedResponseCodeRetry = FRequestToRetry{
+				ResponseCodeReqId, 0, 503, FakeRealmHandle,
 			};
-			BeamBackendSystem->EnqueuedRetries.Enqueue(ExpectedRetry);
+			const auto ExpectedErrorCodeRetry = FRequestToRetry{
+				ErrorCodeReqId, 0, 504, FakeRealmHandle, TEXT("ErrorCode")
+			};
+			BeamBackendSystem->EnqueuedRetries.Enqueue(ExpectedResponseCodeRetry);
+			BeamBackendSystem->EnqueuedRetries.Enqueue(ExpectedErrorCodeRetry);
 
 			constexpr auto ExpectedAccumulatedTime = 0.25f;
 			BeamBackendSystem->TickRetryQueue(ExpectedAccumulatedTime);
 
-			const auto ProcessingRequest = BeamBackendSystem->InFlightProcessingRequests[0];
+			const auto ProcessingResponseCodeRequest = BeamBackendSystem->InFlightProcessingRequests[ResponseCodeReqId];
+			const auto ProcessingErrorCodeRequest = BeamBackendSystem->InFlightProcessingRequests[ErrorCodeReqId];
 
-			TestTrue("Retry Data is as expected", ProcessingRequest.RequestToRetry == ExpectedRetry);
-			TestTrue("wait time correctly set", ProcessingRequest.TimeToWait == FakeSimpleRetryConfig.RetryFalloffValues[0]);
-			TestTrue("accumulated time was correctly set", ProcessingRequest.AccumulatedTime == ExpectedAccumulatedTime);
-			TestTrue("accumulated time was correctly set", ProcessingRequest.AccumulatedTime == ExpectedAccumulatedTime);
+			TestTrue("Retry Data is as expected", ProcessingResponseCodeRequest.RequestToRetry == ExpectedResponseCodeRetry);
+			TestTrue("Retry Data is as expected", ProcessingErrorCodeRequest.RequestToRetry == ExpectedErrorCodeRetry);
+
+			TestTrue("wait time correctly set", ProcessingResponseCodeRequest.TimeToWait == FakeResponseCodeRetryConfig.RetryFalloffValues[0]);
+			TestTrue("wait time correctly set", ProcessingErrorCodeRequest.TimeToWait == FakeErrorCodeRetryConfig.RetryFalloffValues[0]);
+
+			TestTrue("accumulated time was correctly set", ProcessingResponseCodeRequest.AccumulatedTime == ExpectedAccumulatedTime);
+			TestTrue("accumulated time was correctly set", ProcessingErrorCodeRequest.AccumulatedTime == ExpectedAccumulatedTime);
 
 			FakeRequest->MarkAsGarbage();
 		});
 
-
-		TArray NonAuthRetryErrorCodes = UBeamBackend::NON_AUTH_REQUESTS_RETRY_ALLOWED_ERRORS;
-		TArray AuthRetryErrorCodes = UBeamBackend::AUTH_REQUESTS_RETRY_ALLOWED_ERRORS;
-
-		for (const auto& RetryErrorCode : NonAuthRetryErrorCodes)
+		LatentIt("should call the process request when failing a non-authenticated request", [=, this](FDoneDelegate Done)
 		{
-			LatentIt(FString::Format(TEXT("should call the process request when failing a non-authenticated request with {0}"), {RetryErrorCode}), [=, this](FDoneDelegate Done)
-			{
-				// We actually need the request to go out
-				FHttpModule::Get().ToggleNullHttp(false);
+			// We actually need the request to go out
+			FHttpModule::Get().ToggleNullHttp(false);
 
-				UBeamMockGetRequest* FakeRequest = NewObject<UBeamMockGetRequest>();
+			UBeamMockGetRequest* FakeRequest = NewObject<UBeamMockGetRequest>();
 
-				int64 ReqId;
-				const auto Request = BeamBackendSystem->CreateRequest(ReqId, FakeRealmHandle, FakeSimpleRetryConfig, FakeRequest);
+			int64 ResponseCodeReqId, ErrorCodeReqId;
+			const auto ResponseCodeRequest = BeamBackendSystem->CreateRequest(ResponseCodeReqId, FakeRealmHandle, FakeResponseCodeRetryConfig, FakeRequest);
+			const auto ErrorCodeRequest = BeamBackendSystem->CreateRequest(ErrorCodeReqId, FakeRealmHandle, FakeErrorCodeRetryConfig, FakeRequest);
 
-				// Pretend that the failure count was increased
-				BeamBackendSystem->InFlightFailureCount[ReqId] = 1;
+			// Pretend that the failure count was increased
+			BeamBackendSystem->InFlightFailureCount[ResponseCodeReqId] = 1;
+			BeamBackendSystem->InFlightFailureCount[ErrorCodeReqId] = 1;
 
-				// Bind a fake lambda just so we know that the request had process request called on it.				
-				Request->OnProcessRequestComplete()
-				       .BindLambda([this, Done](TSharedPtr<IHttpRequest, ESPMode::ThreadSafe>, TSharedPtr<IHttpResponse, ESPMode::ThreadSafe> HttpResponse, bool sent)
-				       {
-					       UE_LOG(LogTemp, Display, TEXT("Process Request was called in the failed request!!!"));
-					       TestTrue("Callback was called", true);
-					       Done.Execute();
-				       });
+			// Bind a fake lambda just so we know that the request had process request called on it.				
+			ResponseCodeRequest->OnProcessRequestComplete()
+			                   .BindLambda([this, Done](TSharedPtr<IHttpRequest, ESPMode::ThreadSafe>, TSharedPtr<IHttpResponse, ESPMode::ThreadSafe> HttpResponse, bool sent)
+			                   {
+				                   UE_LOG(LogTemp, Display, TEXT("Process Request was called in the failed request!!!"));
+				                   TestTrue("Callback was called", true);
+				                   Done.Execute();
+			                   });
 
-				// Enqueues the request to retry.
-				const auto ExpectedRetry = FRequestToRetry{
-					ReqId, 0, RetryErrorCode, FakeRealmHandle,
-				};
-				BeamBackendSystem->EnqueuedRetries.Enqueue(ExpectedRetry);
+			ErrorCodeRequest->OnProcessRequestComplete()
+			                .BindLambda([this, Done](TSharedPtr<IHttpRequest, ESPMode::ThreadSafe>, TSharedPtr<IHttpResponse, ESPMode::ThreadSafe> HttpResponse, bool sent)
+			                {
+				                UE_LOG(LogTemp, Display, TEXT("Process Request was called in the failed request!!!"));
+				                TestTrue("Callback was called", true);
+				                Done.Execute();
+			                });
 
-				// Set the delta time to be enough time to trigger the retry of the fake request
-				constexpr auto ExpectedAccumulatedTime = 0.75f;
-				BeamBackendSystem->TickRetryQueue(ExpectedAccumulatedTime);
-			});
-		}
+			// Enqueues the request to retry.
+			const auto ExpectedResponseCodeRetry = FRequestToRetry{
+				ResponseCodeReqId, 0, 503, FakeRealmHandle, {},
+			};
+			const auto ExpectedErrorCodeRetry = FRequestToRetry{
+				ErrorCodeReqId, 0, 504, FakeRealmHandle, {}, TEXT("ErrorCode")
+			};
+			BeamBackendSystem->EnqueuedRetries.Enqueue(ExpectedResponseCodeRetry);
+			BeamBackendSystem->EnqueuedRetries.Enqueue(ExpectedErrorCodeRetry);
 
-		for (const auto& RetryErrorCode : AuthRetryErrorCodes)
+			// Set the delta time to be enough time to trigger the retry of the fake request
+			constexpr auto ExpectedAccumulatedTime = 0.75f;
+			BeamBackendSystem->TickRetryQueue(ExpectedAccumulatedTime);
+		});
+
+
+		LatentIt("should call the process request when failing an authenticated request", [=, this](FDoneDelegate Done)
 		{
-			LatentIt(FString::Format(TEXT("should call the process request when failing an authenticated request with {0}"), {RetryErrorCode}), [=, this](FDoneDelegate Done)
-			{
-				// We actually need the request to go out
-				FHttpModule::Get().ToggleNullHttp(false);
+			// We actually need the request to go out
+			FHttpModule::Get().ToggleNullHttp(false);
 
-				UBeamMockGetRequest* FakeRequest = NewObject<UBeamMockGetRequest>();
+			UBeamMockGetRequest* FakeRequest = NewObject<UBeamMockGetRequest>();
 
-				int64 ReqId;
-				const auto Request = BeamBackendSystem->CreateAuthenticatedRequest(ReqId, FakeRealmHandle, FakeSimpleRetryConfig, FakeAuthToken, FakeRequest);
+			int64 ResponseCodeReqId, ErrorCodeReqId;
+			const auto ResponseCodeRequest = BeamBackendSystem->CreateAuthenticatedRequest(ResponseCodeReqId, FakeRealmHandle, FakeResponseCodeRetryConfig, FakeAuthToken, FakeRequest);
+			const auto ErrorCodeRequest = BeamBackendSystem->CreateAuthenticatedRequest(ErrorCodeReqId, FakeRealmHandle, FakeErrorCodeRetryConfig, FakeAuthToken, FakeRequest);
 
-				// Pretend that the failure count was increased
-				BeamBackendSystem->InFlightFailureCount[ReqId] = 1;
+			// Pretend that the failure count was increased
+			BeamBackendSystem->InFlightFailureCount[ResponseCodeReqId] = 1;
+			BeamBackendSystem->InFlightFailureCount[ErrorCodeReqId] = 1;
 
-				// Bind a fake lambda just so we know that the request had process request called on it.				
-				Request->OnProcessRequestComplete()
-				       .BindLambda([this, Done](TSharedPtr<IHttpRequest, ESPMode::ThreadSafe>, TSharedPtr<IHttpResponse, ESPMode::ThreadSafe> HttpResponse, bool sent)
-				       {
-					       UE_LOG(LogTemp, Display, TEXT("Process Request was called in the failed request!!!"));
-					       TestTrue("Callback was called", true);
-					       Done.Execute();
-				       });
+			// Bind a fake lambda just so we know that the request had process request called on it.				
+			ResponseCodeRequest->OnProcessRequestComplete()
+			                   .BindLambda([this, Done](TSharedPtr<IHttpRequest, ESPMode::ThreadSafe>, TSharedPtr<IHttpResponse, ESPMode::ThreadSafe> HttpResponse, bool sent)
+			                   {
+				                   UE_LOG(LogTemp, Display, TEXT("Process Request was called in the failed request!!!"));
+				                   TestTrue("Callback was called", true);
+				                   Done.Execute();
+			                   });
 
-				// Enqueues the request to retry.
-				const auto ExpectedRetry = FRequestToRetry{
-					ReqId, 0, RetryErrorCode, FakeRealmHandle, FakeAuthToken,
-				};
-				BeamBackendSystem->EnqueuedRetries.Enqueue(ExpectedRetry);
+			ErrorCodeRequest->OnProcessRequestComplete()
+			                .BindLambda([this, Done](TSharedPtr<IHttpRequest, ESPMode::ThreadSafe>, TSharedPtr<IHttpResponse, ESPMode::ThreadSafe> HttpResponse, bool sent)
+			                {
+				                UE_LOG(LogTemp, Display, TEXT("Process Request was called in the failed request!!!"));
+				                TestTrue("Callback was called", true);
+				                Done.Execute();
+			                });
 
-				// Set the delta time to be enough time to trigger the retry of the fake request
-				constexpr auto ExpectedAccumulatedTime = 0.75f;
-				BeamBackendSystem->TickRetryQueue(ExpectedAccumulatedTime);
-			});
-		}
+			// Enqueues the request to retry.
+			const auto ExpectedResponseCodeRetry = FRequestToRetry{
+				ResponseCodeReqId, 0, 503, FakeRealmHandle, FakeAuthToken,
+			};
+			const auto ExpectedErrorCodeRetry = FRequestToRetry{
+				ErrorCodeReqId, 0, 504, FakeRealmHandle, FakeAuthToken, TEXT("ErrorCode")
+			};
+			BeamBackendSystem->EnqueuedRetries.Enqueue(ExpectedResponseCodeRetry);
+			BeamBackendSystem->EnqueuedRetries.Enqueue(ExpectedErrorCodeRetry);
+
+			// Set the delta time to be enough time to trigger the retry of the fake request
+			constexpr auto ExpectedAccumulatedTime = 0.75f;
+			BeamBackendSystem->TickRetryQueue(ExpectedAccumulatedTime);
+		});
 	});
 
 	Describe("Connectivity", [this]()
@@ -1194,6 +1305,9 @@ void FBeamBackendSpec::Define()
 		{
 			constexpr int64 ExpectedRequestId = 10;
 			const FString ExpectedRequestType = UBeamMockGetRequest::StaticClass()->GetName();
+
+			// Force turn the connection on so we can test that we are not calling the handler if we keep being successful (or failed for non-connection reasons) with requests.
+			BeamBackendSystem->UpdateConnectivity(FBeamRequestContext{ExpectedRequestId}, EHttpRequestStatus::Succeeded, FRequestType{ExpectedRequestType});
 
 			// Set callback to assert that it gets turned back on
 			const auto Handler = BeamBackendSystem->GlobalConnectivityChangedCodeHandler.AddLambda(

@@ -27,9 +27,9 @@ void UBasicPushPostRegisterRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UBasicPushPostRegisterRequest* UBasicPushPostRegisterRequest::Make(FString _Provider, FString _Token, UObject* Outer)
+UBasicPushPostRegisterRequest* UBasicPushPostRegisterRequest::Make(FString _Provider, FString _Token, UObject* RequestOwner)
 {
-	UBasicPushPostRegisterRequest* Req = NewObject<UBasicPushPostRegisterRequest>(Outer);
+	UBasicPushPostRegisterRequest* Req = NewObject<UBasicPushPostRegisterRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	
