@@ -28,6 +28,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Alias", Category="Beam")
 	FOptionalString Alias;
 
+	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
+
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override;

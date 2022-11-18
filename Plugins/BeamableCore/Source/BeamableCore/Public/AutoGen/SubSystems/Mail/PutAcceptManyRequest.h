@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Mail", DisplayName="Beam - Make PutAcceptMany",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UPutAcceptManyRequest* Make(int64 _ObjectId, TArray<int64> _MailIds, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Mail", DisplayName="Beam - Make PutAcceptMany",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UPutAcceptManyRequest* Make(int64 _ObjectId, TArray<int64> _MailIds, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

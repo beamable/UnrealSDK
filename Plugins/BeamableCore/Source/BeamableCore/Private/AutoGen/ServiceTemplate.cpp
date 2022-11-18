@@ -3,6 +3,8 @@
 
 
 
+
+
 void UServiceTemplate ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("id"), Id);

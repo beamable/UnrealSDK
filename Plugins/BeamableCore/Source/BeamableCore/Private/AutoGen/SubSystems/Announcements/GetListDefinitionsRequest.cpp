@@ -23,9 +23,9 @@ void UGetListDefinitionsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetListDefinitionsRequest* UGetListDefinitionsRequest::Make(UObject* Outer)
+UGetListDefinitionsRequest* UGetListDefinitionsRequest::Make(UObject* RequestOwner)
 {
-	UGetListDefinitionsRequest* Req = NewObject<UGetListDefinitionsRequest>(Outer);
+	UGetListDefinitionsRequest* Req = NewObject<UGetListDefinitionsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

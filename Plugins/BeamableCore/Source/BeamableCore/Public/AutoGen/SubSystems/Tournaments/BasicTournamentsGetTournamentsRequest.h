@@ -42,8 +42,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", DisplayName="Beam - Make BasicTournamentsGetTournaments",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_bIsRunning,_ContentId,_Cycle,Outer"))
-	static UBasicTournamentsGetTournamentsRequest* Make(FOptionalBool _bIsRunning, FOptionalString _ContentId, FOptionalInt32 _Cycle, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", DisplayName="Beam - Make BasicTournamentsGetTournaments",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bIsRunning,_ContentId,_Cycle,RequestOwner"))
+	static UBasicTournamentsGetTournamentsRequest* Make(FOptionalBool _bIsRunning, FOptionalString _ContentId, FOptionalInt32 _Cycle, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

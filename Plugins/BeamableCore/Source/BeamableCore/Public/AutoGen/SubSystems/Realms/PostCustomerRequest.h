@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", DisplayName="Beam - Make PostCustomer",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_bHierarchy,_CustomerName,_Alias,Outer"))
-	static UPostCustomerRequest* Make(FString _ProjectName, FString _Email, FString _Password, FOptionalBool _bHierarchy, FOptionalString _CustomerName, FOptionalString _Alias, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", DisplayName="Beam - Make PostCustomer",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bHierarchy,_CustomerName,_Alias,RequestOwner"))
+	static UPostCustomerRequest* Make(FString _ProjectName, FString _Email, FString _Password, FOptionalBool _bHierarchy, FOptionalString _CustomerName, FOptionalString _Alias, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -15,7 +15,7 @@ void UGetTokenRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("token"), *Token);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("token"), *Token);
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -26,9 +26,9 @@ void UGetTokenRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetTokenRequest* UGetTokenRequest::Make(FString _Token, UObject* Outer)
+UGetTokenRequest* UGetTokenRequest::Make(FString _Token, UObject* RequestOwner)
 {
-	UGetTokenRequest* Req = NewObject<UGetTokenRequest>(Outer);
+	UGetTokenRequest* Req = NewObject<UGetTokenRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Token = _Token;

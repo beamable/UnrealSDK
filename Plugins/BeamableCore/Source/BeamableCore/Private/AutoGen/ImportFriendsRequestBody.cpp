@@ -3,6 +3,8 @@
 
 
 
+
+
 void UImportFriendsRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("source"), Source);

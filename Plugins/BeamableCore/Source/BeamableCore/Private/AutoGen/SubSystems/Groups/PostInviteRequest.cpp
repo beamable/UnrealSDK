@@ -27,9 +27,9 @@ void UPostInviteRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostInviteRequest* UPostInviteRequest::Make(int64 _ObjectId, int64 _GamerTag, FOptionalInt64 _SubGroup, FOptionalBool _bUseNewRewardsSystem, UObject* Outer)
+UPostInviteRequest* UPostInviteRequest::Make(int64 _ObjectId, int64 _GamerTag, FOptionalInt64 _SubGroup, FOptionalBool _bUseNewRewardsSystem, UObject* RequestOwner)
 {
-	UPostInviteRequest* Req = NewObject<UPostInviteRequest>(Outer);
+	UPostInviteRequest* Req = NewObject<UPostInviteRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

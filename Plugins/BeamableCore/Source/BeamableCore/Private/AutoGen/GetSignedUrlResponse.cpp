@@ -3,6 +3,13 @@
 #include "Serialization/BeamJsonUtils.h"
 
 
+
+void UGetSignedUrlResponse::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
+{
+	OuterOwner = RequestData;
+	BeamDeserialize(ResponseContent);	
+}
+
 void UGetSignedUrlResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("url"), Url);

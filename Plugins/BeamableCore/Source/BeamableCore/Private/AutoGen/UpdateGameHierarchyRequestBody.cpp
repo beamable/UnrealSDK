@@ -3,6 +3,8 @@
 #include "Serialization/BeamJsonUtils.h"
 
 
+
+
 void UUpdateGameHierarchyRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("rootPID"), RootPID);

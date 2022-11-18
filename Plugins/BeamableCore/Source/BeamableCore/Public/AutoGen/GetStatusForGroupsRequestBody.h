@@ -19,6 +19,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Group Ids", Category="Beam")
 	TArray<int64> GroupIds;
 
+	
+
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override;

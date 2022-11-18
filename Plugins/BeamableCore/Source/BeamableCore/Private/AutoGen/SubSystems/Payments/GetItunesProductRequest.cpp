@@ -15,7 +15,7 @@ void UGetItunesProductRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("sku"), *Sku);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("sku"), *Sku);
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -26,9 +26,9 @@ void UGetItunesProductRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetItunesProductRequest* UGetItunesProductRequest::Make(FString _Sku, UObject* Outer)
+UGetItunesProductRequest* UGetItunesProductRequest::Make(FString _Sku, UObject* RequestOwner)
 {
-	UGetItunesProductRequest* Req = NewObject<UGetItunesProductRequest>(Outer);
+	UGetItunesProductRequest* Req = NewObject<UGetItunesProductRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Sku = _Sku;

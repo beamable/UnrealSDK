@@ -3,6 +3,8 @@
 #include "Serialization/BeamJsonUtils.h"
 
 
+
+
 void UDataDomain ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("mongoSSLEnabled"), bMongoSSLEnabled);

@@ -27,9 +27,9 @@ void UPostGoogleplayPurchaseFailRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostGoogleplayPurchaseFailRequest* UPostGoogleplayPurchaseFailRequest::Make(int64 _Txid, FString _Reason, UObject* Outer)
+UPostGoogleplayPurchaseFailRequest* UPostGoogleplayPurchaseFailRequest::Make(int64 _Txid, FString _Reason, UObject* RequestOwner)
 {
-	UPostGoogleplayPurchaseFailRequest* Req = NewObject<UPostGoogleplayPurchaseFailRequest>(Outer);
+	UPostGoogleplayPurchaseFailRequest* Req = NewObject<UPostGoogleplayPurchaseFailRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

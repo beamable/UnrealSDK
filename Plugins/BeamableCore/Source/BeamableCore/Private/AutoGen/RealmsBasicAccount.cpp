@@ -3,6 +3,8 @@
 #include "Serialization/BeamJsonUtils.h"
 
 
+
+
 void URealmsBasicAccount ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("user"), User);

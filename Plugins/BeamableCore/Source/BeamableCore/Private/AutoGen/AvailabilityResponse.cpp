@@ -3,6 +3,13 @@
 
 
 
+
+void UAvailabilityResponse::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
+{
+	OuterOwner = RequestData;
+	BeamDeserialize(ResponseContent);	
+}
+
 void UAvailabilityResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("name"), bName);

@@ -27,9 +27,9 @@ void UBasicStatsPostSearchRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UBasicStatsPostSearchRequest* UBasicStatsPostSearchRequest::Make(FString _Domain, FString _Access, FString _ObjectType, TArray<UStatsSearchCriteria*> _Criteria, UObject* Outer)
+UBasicStatsPostSearchRequest* UBasicStatsPostSearchRequest::Make(FString _Domain, FString _Access, FString _ObjectType, TArray<UStatsSearchCriteria*> _Criteria, UObject* RequestOwner)
 {
-	UBasicStatsPostSearchRequest* Req = NewObject<UBasicStatsPostSearchRequest>(Outer);
+	UBasicStatsPostSearchRequest* Req = NewObject<UBasicStatsPostSearchRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

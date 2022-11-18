@@ -27,9 +27,9 @@ void UPostFriendsMakeRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostFriendsMakeRequest* UPostFriendsMakeRequest::Make(int64 _GamerTag, UObject* Outer)
+UPostFriendsMakeRequest* UPostFriendsMakeRequest::Make(int64 _GamerTag, UObject* RequestOwner)
 {
-	UPostFriendsMakeRequest* Req = NewObject<UPostFriendsMakeRequest>(Outer);
+	UPostFriendsMakeRequest* Req = NewObject<UPostFriendsMakeRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

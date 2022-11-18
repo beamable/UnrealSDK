@@ -16,6 +16,8 @@ class BEAMABLECORE_API UNetworkSerializable : public UObject, public FBeamJsonSe
 public:
 	
 
+	
+
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override;

@@ -3,6 +3,8 @@
 
 
 
+
+
 void UMetadataPair ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("key"), Key);

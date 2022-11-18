@@ -25,6 +25,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Itemstatus", Category="Beam")
 	FString Itemstatus;
 
+	
+
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override;

@@ -27,9 +27,9 @@ void UPostBlockedRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostBlockedRequest* UPostBlockedRequest::Make(FString _PlayerId, UObject* Outer)
+UPostBlockedRequest* UPostBlockedRequest::Make(FString _PlayerId, UObject* RequestOwner)
 {
-	UPostBlockedRequest* Req = NewObject<UPostBlockedRequest>(Outer);
+	UPostBlockedRequest* Req = NewObject<UPostBlockedRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

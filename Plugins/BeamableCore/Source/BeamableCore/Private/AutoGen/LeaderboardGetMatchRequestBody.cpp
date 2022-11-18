@@ -3,6 +3,8 @@
 
 #include "Misc/DefaultValueHelper.h"
 
+
+
 void ULeaderboardGetMatchRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("poolSize"), PoolSize);

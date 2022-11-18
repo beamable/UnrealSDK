@@ -27,9 +27,9 @@ void UPostItunesPurchaseCompleteRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostItunesPurchaseCompleteRequest* UPostItunesPurchaseCompleteRequest::Make(int64 _Txid, FString _Receipt, FString _PriceInLocalCurrency, FString _IsoCurrencySymbol, UObject* Outer)
+UPostItunesPurchaseCompleteRequest* UPostItunesPurchaseCompleteRequest::Make(int64 _Txid, FString _Receipt, FString _PriceInLocalCurrency, FString _IsoCurrencySymbol, UObject* RequestOwner)
 {
-	UPostItunesPurchaseCompleteRequest* Req = NewObject<UPostItunesPurchaseCompleteRequest>(Outer);
+	UPostItunesPurchaseCompleteRequest* Req = NewObject<UPostItunesPurchaseCompleteRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

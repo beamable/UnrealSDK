@@ -3,6 +3,8 @@
 #include "Serialization/BeamJsonUtils.h"
 
 
+
+
 void UInventoryUpdateRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("empty"), bEmpty);

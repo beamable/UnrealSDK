@@ -3,6 +3,13 @@
 #include "Serialization/BeamJsonUtils.h"
 
 
+
+void UEventObjectData::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
+{
+	OuterOwner = RequestData;
+	BeamDeserialize(ResponseContent);	
+}
+
 void UEventObjectData ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("done"), bDone);

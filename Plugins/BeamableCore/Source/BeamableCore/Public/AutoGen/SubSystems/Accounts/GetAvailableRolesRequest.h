@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make GetAvailableRoles",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UGetAvailableRolesRequest* Make(int64 _ObjectId, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make GetAvailableRoles",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UGetAvailableRolesRequest* Make(int64 _ObjectId, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

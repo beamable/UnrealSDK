@@ -37,8 +37,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Mail", DisplayName="Beam - Make GetDetail",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UGetDetailRequest* Make(int64 _ObjectId, int64 _Mid, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Mail", DisplayName="Beam - Make GetDetail",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UGetDetailRequest* Make(int64 _ObjectId, int64 _Mid, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -3,6 +3,8 @@
 
 
 
+
+
 void ULeaveRoomRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("roomId"), RoomId);

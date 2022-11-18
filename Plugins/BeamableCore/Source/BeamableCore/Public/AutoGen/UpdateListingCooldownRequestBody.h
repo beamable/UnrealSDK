@@ -19,6 +19,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cooldown Reduction", Category="Beam")
 	int32 CooldownReduction;
 
+	
+
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override;

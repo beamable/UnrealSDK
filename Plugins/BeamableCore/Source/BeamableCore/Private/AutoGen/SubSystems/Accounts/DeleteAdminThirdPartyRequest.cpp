@@ -27,9 +27,9 @@ void UDeleteAdminThirdPartyRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteAdminThirdPartyRequest* UDeleteAdminThirdPartyRequest::Make(int64 _ObjectId, FString _ThirdParty, FString _UserAppId, UObject* Outer)
+UDeleteAdminThirdPartyRequest* UDeleteAdminThirdPartyRequest::Make(int64 _ObjectId, FString _ThirdParty, FString _UserAppId, UObject* RequestOwner)
 {
-	UDeleteAdminThirdPartyRequest* Req = NewObject<UDeleteAdminThirdPartyRequest>(Outer);
+	UDeleteAdminThirdPartyRequest* Req = NewObject<UDeleteAdminThirdPartyRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

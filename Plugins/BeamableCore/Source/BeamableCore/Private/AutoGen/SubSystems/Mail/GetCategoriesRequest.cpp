@@ -23,9 +23,9 @@ void UGetCategoriesRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetCategoriesRequest* UGetCategoriesRequest::Make(int64 _ObjectId, UObject* Outer)
+UGetCategoriesRequest* UGetCategoriesRequest::Make(int64 _ObjectId, UObject* RequestOwner)
 {
-	UGetCategoriesRequest* Req = NewObject<UGetCategoriesRequest>(Outer);
+	UGetCategoriesRequest* Req = NewObject<UGetCategoriesRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

@@ -23,9 +23,9 @@ void UGetTemplatesRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetTemplatesRequest* UGetTemplatesRequest::Make(UObject* Outer)
+UGetTemplatesRequest* UGetTemplatesRequest::Make(UObject* RequestOwner)
 {
-	UGetTemplatesRequest* Req = NewObject<UGetTemplatesRequest>(Outer);
+	UGetTemplatesRequest* Req = NewObject<UGetTemplatesRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

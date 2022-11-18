@@ -3,6 +3,13 @@
 #include "Serialization/BeamJsonUtils.h"
 
 
+
+void UEventClaimResponse::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
+{
+	OuterOwner = RequestData;
+	BeamDeserialize(ResponseContent);	
+}
+
 void UEventClaimResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeUObject<UEventPlayerStateView*>("view", View, Serializer);

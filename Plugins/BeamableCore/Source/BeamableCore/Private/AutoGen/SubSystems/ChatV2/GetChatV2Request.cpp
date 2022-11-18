@@ -16,7 +16,7 @@ void UGetChatV2Request::BuildRoute(FString& RouteString) const
 	bool bIsFirstQueryParam = true;
 	if(Scope.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("scope"), *Scope.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("scope"), *Scope.Val);
 		bIsFirstQueryParam = false;
 	}
 
@@ -28,9 +28,9 @@ void UGetChatV2Request::BuildBody(FString& BodyString) const
 	
 }
 
-UGetChatV2Request* UGetChatV2Request::Make(int64 _ObjectId, FOptionalString _Scope, UObject* Outer)
+UGetChatV2Request* UGetChatV2Request::Make(int64 _ObjectId, FOptionalString _Scope, UObject* RequestOwner)
 {
-	UGetChatV2Request* Req = NewObject<UGetChatV2Request>(Outer);
+	UGetChatV2Request* Req = NewObject<UGetChatV2Request>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

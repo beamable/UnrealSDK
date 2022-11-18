@@ -3,6 +3,8 @@
 #include "Serialization/BeamJsonUtils.h"
 
 
+
+
 void UPaymentHistoryEntryViewModel ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("change"), Change);

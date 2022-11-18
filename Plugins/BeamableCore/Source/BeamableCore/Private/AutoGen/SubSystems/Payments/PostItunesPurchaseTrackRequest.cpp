@@ -27,9 +27,9 @@ void UPostItunesPurchaseTrackRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostItunesPurchaseTrackRequest* UPostItunesPurchaseTrackRequest::Make(double _PriceInLocalCurrency, FString _SkuName, FString _SkuProductId, FString _Store, FString _PurchaseId, FString _IsoCurrencySymbol, TArray<UItemCreateRequestBody*> _ObtainItems, TArray<UCurrencyChange*> _ObtainCurrency, UObject* Outer)
+UPostItunesPurchaseTrackRequest* UPostItunesPurchaseTrackRequest::Make(double _PriceInLocalCurrency, FString _SkuName, FString _SkuProductId, FString _Store, FString _PurchaseId, FString _IsoCurrencySymbol, TArray<UItemCreateRequestBody*> _ObtainItems, TArray<UCurrencyChange*> _ObtainCurrency, UObject* RequestOwner)
 {
-	UPostItunesPurchaseTrackRequest* Req = NewObject<UPostItunesPurchaseTrackRequest>(Outer);
+	UPostItunesPurchaseTrackRequest* Req = NewObject<UPostItunesPurchaseTrackRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -3,6 +3,8 @@
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 
+
+
 void UAdminGetPlayerStatusRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("playerId"), PlayerId);

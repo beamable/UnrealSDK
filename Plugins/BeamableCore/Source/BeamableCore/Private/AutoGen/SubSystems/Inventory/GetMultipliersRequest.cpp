@@ -23,9 +23,9 @@ void UGetMultipliersRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetMultipliersRequest* UGetMultipliersRequest::Make(int64 _ObjectId, UObject* Outer)
+UGetMultipliersRequest* UGetMultipliersRequest::Make(int64 _ObjectId, UObject* RequestOwner)
 {
-	UGetMultipliersRequest* Req = NewObject<UGetMultipliersRequest>(Outer);
+	UGetMultipliersRequest* Req = NewObject<UGetMultipliersRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

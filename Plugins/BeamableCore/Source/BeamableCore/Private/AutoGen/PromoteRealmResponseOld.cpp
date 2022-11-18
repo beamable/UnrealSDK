@@ -3,6 +3,13 @@
 #include "Serialization/BeamJsonUtils.h"
 
 
+
+void UPromoteRealmResponseOld::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
+{
+	OuterOwner = RequestData;
+	BeamDeserialize(ResponseContent);	
+}
+
 void UPromoteRealmResponseOld ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("sourcePid"), SourcePid);

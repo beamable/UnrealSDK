@@ -16,7 +16,7 @@ void UGetListTagsRequest::BuildRoute(FString& RouteString) const
 	bool bIsFirstQueryParam = true;
 	if(TagNameFilter.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("tagNameFilter"), *TagNameFilter.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("tagNameFilter"), *TagNameFilter.Val);
 		bIsFirstQueryParam = false;
 	}
 
@@ -28,9 +28,9 @@ void UGetListTagsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetListTagsRequest* UGetListTagsRequest::Make(FOptionalString _TagNameFilter, UObject* Outer)
+UGetListTagsRequest* UGetListTagsRequest::Make(FOptionalString _TagNameFilter, UObject* RequestOwner)
 {
-	UGetListTagsRequest* Req = NewObject<UGetListTagsRequest>(Outer);
+	UGetListTagsRequest* Req = NewObject<UGetListTagsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->TagNameFilter = _TagNameFilter;

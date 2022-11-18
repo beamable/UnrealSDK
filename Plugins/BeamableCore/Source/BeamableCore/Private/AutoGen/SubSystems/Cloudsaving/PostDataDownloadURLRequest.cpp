@@ -27,9 +27,9 @@ void UPostDataDownloadURLRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostDataDownloadURLRequest* UPostDataDownloadURLRequest::Make(FOptionalInt64 _PlayerId, FOptionalArrayOfObjectRequestBody _Request, UObject* Outer)
+UPostDataDownloadURLRequest* UPostDataDownloadURLRequest::Make(FOptionalInt64 _PlayerId, FOptionalArrayOfObjectRequestBody _Request, UObject* RequestOwner)
 {
-	UPostDataDownloadURLRequest* Req = NewObject<UPostDataDownloadURLRequest>(Outer);
+	UPostDataDownloadURLRequest* Req = NewObject<UPostDataDownloadURLRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

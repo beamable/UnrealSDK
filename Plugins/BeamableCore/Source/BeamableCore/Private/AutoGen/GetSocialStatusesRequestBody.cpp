@@ -3,6 +3,8 @@
 #include "Serialization/BeamJsonUtils.h"
 
 
+
+
 void UGetSocialStatusesRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("playerIds"), PlayerIds, Serializer);

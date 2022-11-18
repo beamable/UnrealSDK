@@ -34,8 +34,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Notification", DisplayName="Beam - Make GetNotification",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UGetNotificationRequest* Make(UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Notification", DisplayName="Beam - Make GetNotification",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UGetNotificationRequest* Make(UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

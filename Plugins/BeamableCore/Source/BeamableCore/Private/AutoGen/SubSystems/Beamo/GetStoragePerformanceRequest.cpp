@@ -16,27 +16,27 @@ void UGetStoragePerformanceRequest::BuildRoute(FString& RouteString) const
 	bool bIsFirstQueryParam = true;
 	if(EndDate.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("endDate"), *EndDate.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("endDate"), *EndDate.Val);
 		bIsFirstQueryParam = false;
 	}
 
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("storageObjectName"), *StorageObjectName);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("storageObjectName"), *StorageObjectName);
 	bIsFirstQueryParam = false;
 	
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("granularity"), *Granularity);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("granularity"), *Granularity);
 	bIsFirstQueryParam = false;
 	
 	if(StartDate.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("startDate"), *StartDate.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("startDate"), *StartDate.Val);
 		bIsFirstQueryParam = false;
 	}
 
 	if(Period.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("period"), *Period.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("period"), *Period.Val);
 		bIsFirstQueryParam = false;
 	}
 
@@ -48,9 +48,9 @@ void UGetStoragePerformanceRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetStoragePerformanceRequest* UGetStoragePerformanceRequest::Make(FOptionalString _EndDate, FString _StorageObjectName, FString _Granularity, FOptionalString _StartDate, FOptionalString _Period, UObject* Outer)
+UGetStoragePerformanceRequest* UGetStoragePerformanceRequest::Make(FOptionalString _EndDate, FString _StorageObjectName, FString _Granularity, FOptionalString _StartDate, FOptionalString _Period, UObject* RequestOwner)
 {
-	UGetStoragePerformanceRequest* Req = NewObject<UGetStoragePerformanceRequest>(Outer);
+	UGetStoragePerformanceRequest* Req = NewObject<UGetStoragePerformanceRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->EndDate = _EndDate;

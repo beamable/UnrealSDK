@@ -27,9 +27,9 @@ void UPostPetitionRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostPetitionRequest* UPostPetitionRequest::Make(int64 _ObjectId, FOptionalInt64 _SubGroup, UObject* Outer)
+UPostPetitionRequest* UPostPetitionRequest::Make(int64 _ObjectId, FOptionalInt64 _SubGroup, UObject* RequestOwner)
 {
-	UPostPetitionRequest* Req = NewObject<UPostPetitionRequest>(Outer);
+	UPostPetitionRequest* Req = NewObject<UPostPetitionRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

@@ -3,6 +3,13 @@
 #include "Serialization/BeamJsonUtils.h"
 
 
+
+void URewardsResponse::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
+{
+	OuterOwner = RequestData;
+	BeamDeserialize(ResponseContent);	
+}
+
 void URewardsResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UTournamentCurrencyReward*>(TEXT("rewardCurrencies"), RewardCurrencies, Serializer);

@@ -3,6 +3,8 @@
 
 
 
+
+
 void UURLResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("url"), Url);

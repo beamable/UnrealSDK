@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make GetFind",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UGetFindRequest* Make(FString _Query, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make GetFind",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UGetFindRequest* Make(FString _Query, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

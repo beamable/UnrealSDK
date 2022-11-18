@@ -3,6 +3,8 @@
 
 
 
+
+
 void ULeaderboardGetRanksRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("ids"), Ids);

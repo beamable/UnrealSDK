@@ -15,7 +15,7 @@ void UGetAvailableDeviceIdRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("deviceId"), *DeviceId);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("deviceId"), *DeviceId);
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -26,9 +26,9 @@ void UGetAvailableDeviceIdRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAvailableDeviceIdRequest* UGetAvailableDeviceIdRequest::Make(FString _DeviceId, UObject* Outer)
+UGetAvailableDeviceIdRequest* UGetAvailableDeviceIdRequest::Make(FString _DeviceId, UObject* RequestOwner)
 {
-	UGetAvailableDeviceIdRequest* Req = NewObject<UGetAvailableDeviceIdRequest>(Outer);
+	UGetAvailableDeviceIdRequest* Req = NewObject<UGetAvailableDeviceIdRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->DeviceId = _DeviceId;

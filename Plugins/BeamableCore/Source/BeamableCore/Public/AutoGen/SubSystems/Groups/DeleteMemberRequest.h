@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Groups", DisplayName="Beam - Make DeleteMember",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_SubGroup,Outer"))
-	static UDeleteMemberRequest* Make(int64 _ObjectId, int64 _GamerTag, FOptionalInt64 _SubGroup, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Groups", DisplayName="Beam - Make DeleteMember",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_SubGroup,RequestOwner"))
+	static UDeleteMemberRequest* Make(int64 _ObjectId, int64 _GamerTag, FOptionalInt64 _SubGroup, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

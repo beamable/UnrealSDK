@@ -27,9 +27,9 @@ void UPostSearchExtendedRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostSearchExtendedRequest* UPostSearchExtendedRequest::Make(FString _Domain, FString _ObjectType, FString _Access, TArray<UStatsSearchCriteria*> _Criteria, TArray<FString> _StatKeys, UObject* Outer)
+UPostSearchExtendedRequest* UPostSearchExtendedRequest::Make(FString _Domain, FString _ObjectType, FString _Access, TArray<UStatsSearchCriteria*> _Criteria, TArray<FString> _StatKeys, UObject* RequestOwner)
 {
-	UPostSearchExtendedRequest* Req = NewObject<UPostSearchExtendedRequest>(Outer);
+	UPostSearchExtendedRequest* Req = NewObject<UPostSearchExtendedRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -23,9 +23,9 @@ void UGetRoomsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetRoomsRequest* UGetRoomsRequest::Make(int64 _ObjectId, UObject* Outer)
+UGetRoomsRequest* UGetRoomsRequest::Make(int64 _ObjectId, UObject* RequestOwner)
 {
-	UGetRoomsRequest* Req = NewObject<UGetRoomsRequest>(Outer);
+	UGetRoomsRequest* Req = NewObject<UGetRoomsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

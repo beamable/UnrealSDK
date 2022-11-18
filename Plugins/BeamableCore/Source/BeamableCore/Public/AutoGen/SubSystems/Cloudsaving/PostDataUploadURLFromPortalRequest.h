@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Cloudsaving", DisplayName="Beam - Make PostDataUploadURLFromPortal",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_PlayerId,Outer"))
-	static UPostDataUploadURLFromPortalRequest* Make(TArray<UUploadRequestFromPortal*> _Request, FOptionalInt64 _PlayerId, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Cloudsaving", DisplayName="Beam - Make PostDataUploadURLFromPortal",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_PlayerId,RequestOwner"))
+	static UPostDataUploadURLFromPortalRequest* Make(TArray<UUploadRequestFromPortal*> _Request, FOptionalInt64 _PlayerId, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

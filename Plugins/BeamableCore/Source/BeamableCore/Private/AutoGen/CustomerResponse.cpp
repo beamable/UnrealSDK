@@ -3,6 +3,13 @@
 #include "Serialization/BeamJsonUtils.h"
 
 
+
+void UCustomerResponse::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
+{
+	OuterOwner = RequestData;
+	BeamDeserialize(ResponseContent);	
+}
+
 void UCustomerResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeUObject<UCustomer*>("customer", Customer, Serializer);

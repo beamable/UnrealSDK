@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Payments", DisplayName="Beam - Make GetTestProduct",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UGetTestProductRequest* Make(FString _Sku, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Payments", DisplayName="Beam - Make GetTestProduct",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UGetTestProductRequest* Make(FString _Sku, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

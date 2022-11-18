@@ -23,9 +23,9 @@ void UPutFreezeRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UPutFreezeRequest* UPutFreezeRequest::Make(FString _ObjectId, UObject* Outer)
+UPutFreezeRequest* UPutFreezeRequest::Make(FString _ObjectId, UObject* RequestOwner)
 {
-	UPutFreezeRequest* Req = NewObject<UPutFreezeRequest>(Outer);
+	UPutFreezeRequest* Req = NewObject<UPutFreezeRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

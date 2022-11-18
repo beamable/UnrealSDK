@@ -27,9 +27,9 @@ void UPutMeRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutMeRequest* UPutMeRequest::Make(bool _bHasThirdPartyToken, FOptionalString _ThirdParty, FOptionalString _Country, FOptionalString _Language, FOptionalGamerTagAssociation _GamerTagAssoc, FOptionalString _Token, FOptionalString _DeviceId, FOptionalString _UserName, UObject* Outer)
+UPutMeRequest* UPutMeRequest::Make(bool _bHasThirdPartyToken, FOptionalString _ThirdParty, FOptionalString _Country, FOptionalString _Language, FOptionalGamerTagAssociation _GamerTagAssoc, FOptionalString _Token, FOptionalString _DeviceId, FOptionalString _UserName, FOptionalArrayOfExternalIdentity _External, UObject* RequestOwner)
 {
-	UPutMeRequest* Req = NewObject<UPutMeRequest>(Outer);
+	UPutMeRequest* Req = NewObject<UPutMeRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	
@@ -44,6 +44,7 @@ UPutMeRequest* UPutMeRequest::Make(bool _bHasThirdPartyToken, FOptionalString _T
 	Req->Body->Token = _Token;
 	Req->Body->DeviceId = _DeviceId;
 	Req->Body->UserName = _UserName;
+	Req->Body->External = _External;
 	
 
 	return Req;

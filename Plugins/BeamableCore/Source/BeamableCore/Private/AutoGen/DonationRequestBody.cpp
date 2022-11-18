@@ -3,6 +3,8 @@
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 
+
+
 void UDonationRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("satisfied"), bSatisfied);

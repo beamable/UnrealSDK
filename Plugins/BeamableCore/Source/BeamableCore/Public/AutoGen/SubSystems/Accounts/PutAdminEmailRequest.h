@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make PutAdminEmail",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_CodeType,Outer"))
-	static UPutAdminEmailRequest* Make(int64 _ObjectId, FString _NewEmail, FOptionalString _CodeType, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make PutAdminEmail",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_CodeType,RequestOwner"))
+	static UPutAdminEmailRequest* Make(int64 _ObjectId, FString _NewEmail, FOptionalString _CodeType, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

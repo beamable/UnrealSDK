@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|ChatV2", DisplayName="Beam - Make GetChatV2",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Scope,Outer"))
-	static UGetChatV2Request* Make(int64 _ObjectId, FOptionalString _Scope, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|ChatV2", DisplayName="Beam - Make GetChatV2",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Scope,RequestOwner"))
+	static UGetChatV2Request* Make(int64 _ObjectId, FOptionalString _Scope, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

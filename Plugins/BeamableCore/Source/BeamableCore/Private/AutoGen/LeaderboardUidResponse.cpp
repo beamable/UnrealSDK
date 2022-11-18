@@ -3,6 +3,13 @@
 
 #include "Misc/DefaultValueHelper.h"
 
+
+void ULeaderboardUidResponse::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
+{
+	OuterOwner = RequestData;
+	BeamDeserialize(ResponseContent);	
+}
+
 void ULeaderboardUidResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("id"), Id);

@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", DisplayName="Beam - Make GetMeGroup",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_ContentId,Outer"))
-	static UGetMeGroupRequest* Make(FOptionalString _ContentId, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", DisplayName="Beam - Make GetMeGroup",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_ContentId,RequestOwner"))
+	static UGetMeGroupRequest* Make(FOptionalString _ContentId, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

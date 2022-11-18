@@ -1,10 +1,13 @@
 
 #include "AutoGen/SubSystems/BeamSocialApi.h"
+#include "BeamCoreSettings.h"
+
 
 void UBeamSocialApi::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 	Backend = Cast<UBeamBackend>(Collection.InitializeDependency(UBeamBackend::StaticClass()));
+	RequestTracker = Cast<UBeamRequestTracker>(Collection.InitializeDependency(UBeamRequestTracker::StaticClass()));
 }
 
 void UBeamSocialApi::Deinitialize()
@@ -16,7 +19,8 @@ void UBeamSocialApi::Deinitialize()
 
 
 void UBeamSocialApi::BP_GetMyImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UGetMyRequest* RequestData, const FOnGetMySuccess& OnSuccess, const FOnGetMyError& OnError, const FOnGetMyComplete& OnComplete, int64& OutRequestId) const
+                                UGetMyRequest* RequestData, const FOnGetMySuccess& OnSuccess, const FOnGetMyError& OnError, const FOnGetMyComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -28,13 +32,16 @@ void UBeamSocialApi::BP_GetMyImpl(const FBeamRealmHandle& TargetRealm, const FBe
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 void UBeamSocialApi::CPP_GetMyImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UGetMyRequest* RequestData, const FOnGetMyFullResponse& Handler) const
+                              UGetMyRequest* RequestData, const FOnGetMyFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...
-	int64 OutRequestId;
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
 
 	// Binds the handler to the static response handler (pre-generated)	
@@ -43,11 +50,16 @@ void UBeamSocialApi::CPP_GetMyImpl(const FBeamRealmHandle& TargetRealm, const FB
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 		
 void UBeamSocialApi::BP_PostFriendsInviteImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UPostFriendsInviteRequest* RequestData, const FOnPostFriendsInviteSuccess& OnSuccess, const FOnPostFriendsInviteError& OnError, const FOnPostFriendsInviteComplete& OnComplete, int64& OutRequestId) const
+                                UPostFriendsInviteRequest* RequestData, const FOnPostFriendsInviteSuccess& OnSuccess, const FOnPostFriendsInviteError& OnError, const FOnPostFriendsInviteComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -59,13 +71,16 @@ void UBeamSocialApi::BP_PostFriendsInviteImpl(const FBeamRealmHandle& TargetReal
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 void UBeamSocialApi::CPP_PostFriendsInviteImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UPostFriendsInviteRequest* RequestData, const FOnPostFriendsInviteFullResponse& Handler) const
+                              UPostFriendsInviteRequest* RequestData, const FOnPostFriendsInviteFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...
-	int64 OutRequestId;
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
 
 	// Binds the handler to the static response handler (pre-generated)	
@@ -74,11 +89,16 @@ void UBeamSocialApi::CPP_PostFriendsInviteImpl(const FBeamRealmHandle& TargetRea
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 		
 void UBeamSocialApi::BP_DeleteFriendsInviteImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UDeleteFriendsInviteRequest* RequestData, const FOnDeleteFriendsInviteSuccess& OnSuccess, const FOnDeleteFriendsInviteError& OnError, const FOnDeleteFriendsInviteComplete& OnComplete, int64& OutRequestId) const
+                                UDeleteFriendsInviteRequest* RequestData, const FOnDeleteFriendsInviteSuccess& OnSuccess, const FOnDeleteFriendsInviteError& OnError, const FOnDeleteFriendsInviteComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -90,13 +110,16 @@ void UBeamSocialApi::BP_DeleteFriendsInviteImpl(const FBeamRealmHandle& TargetRe
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 void UBeamSocialApi::CPP_DeleteFriendsInviteImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UDeleteFriendsInviteRequest* RequestData, const FOnDeleteFriendsInviteFullResponse& Handler) const
+                              UDeleteFriendsInviteRequest* RequestData, const FOnDeleteFriendsInviteFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...
-	int64 OutRequestId;
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
 
 	// Binds the handler to the static response handler (pre-generated)	
@@ -105,11 +128,16 @@ void UBeamSocialApi::CPP_DeleteFriendsInviteImpl(const FBeamRealmHandle& TargetR
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 		
 void UBeamSocialApi::BP_DeleteFriendsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UDeleteFriendsRequest* RequestData, const FOnDeleteFriendsSuccess& OnSuccess, const FOnDeleteFriendsError& OnError, const FOnDeleteFriendsComplete& OnComplete, int64& OutRequestId) const
+                                UDeleteFriendsRequest* RequestData, const FOnDeleteFriendsSuccess& OnSuccess, const FOnDeleteFriendsError& OnError, const FOnDeleteFriendsComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -121,13 +149,16 @@ void UBeamSocialApi::BP_DeleteFriendsImpl(const FBeamRealmHandle& TargetRealm, c
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 void UBeamSocialApi::CPP_DeleteFriendsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UDeleteFriendsRequest* RequestData, const FOnDeleteFriendsFullResponse& Handler) const
+                              UDeleteFriendsRequest* RequestData, const FOnDeleteFriendsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...
-	int64 OutRequestId;
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
 
 	// Binds the handler to the static response handler (pre-generated)	
@@ -136,11 +167,16 @@ void UBeamSocialApi::CPP_DeleteFriendsImpl(const FBeamRealmHandle& TargetRealm, 
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 		
 void UBeamSocialApi::BP_PostFriendsImportImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UPostFriendsImportRequest* RequestData, const FOnPostFriendsImportSuccess& OnSuccess, const FOnPostFriendsImportError& OnError, const FOnPostFriendsImportComplete& OnComplete, int64& OutRequestId) const
+                                UPostFriendsImportRequest* RequestData, const FOnPostFriendsImportSuccess& OnSuccess, const FOnPostFriendsImportError& OnError, const FOnPostFriendsImportComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -152,13 +188,16 @@ void UBeamSocialApi::BP_PostFriendsImportImpl(const FBeamRealmHandle& TargetReal
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 void UBeamSocialApi::CPP_PostFriendsImportImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UPostFriendsImportRequest* RequestData, const FOnPostFriendsImportFullResponse& Handler) const
+                              UPostFriendsImportRequest* RequestData, const FOnPostFriendsImportFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...
-	int64 OutRequestId;
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
 
 	// Binds the handler to the static response handler (pre-generated)	
@@ -167,11 +206,16 @@ void UBeamSocialApi::CPP_PostFriendsImportImpl(const FBeamRealmHandle& TargetRea
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 		
 void UBeamSocialApi::BP_PostFriendsMakeImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UPostFriendsMakeRequest* RequestData, const FOnPostFriendsMakeSuccess& OnSuccess, const FOnPostFriendsMakeError& OnError, const FOnPostFriendsMakeComplete& OnComplete, int64& OutRequestId) const
+                                UPostFriendsMakeRequest* RequestData, const FOnPostFriendsMakeSuccess& OnSuccess, const FOnPostFriendsMakeError& OnError, const FOnPostFriendsMakeComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -183,13 +227,16 @@ void UBeamSocialApi::BP_PostFriendsMakeImpl(const FBeamRealmHandle& TargetRealm,
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 void UBeamSocialApi::CPP_PostFriendsMakeImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UPostFriendsMakeRequest* RequestData, const FOnPostFriendsMakeFullResponse& Handler) const
+                              UPostFriendsMakeRequest* RequestData, const FOnPostFriendsMakeFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...
-	int64 OutRequestId;
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
 
 	// Binds the handler to the static response handler (pre-generated)	
@@ -198,11 +245,16 @@ void UBeamSocialApi::CPP_PostFriendsMakeImpl(const FBeamRealmHandle& TargetRealm
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 		
 void UBeamSocialApi::BP_GetSocialImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UGetSocialRequest* RequestData, const FOnGetSocialSuccess& OnSuccess, const FOnGetSocialError& OnError, const FOnGetSocialComplete& OnComplete, int64& OutRequestId) const
+                                UGetSocialRequest* RequestData, const FOnGetSocialSuccess& OnSuccess, const FOnGetSocialError& OnError, const FOnGetSocialComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -214,13 +266,16 @@ void UBeamSocialApi::BP_GetSocialImpl(const FBeamRealmHandle& TargetRealm, const
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 void UBeamSocialApi::CPP_GetSocialImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UGetSocialRequest* RequestData, const FOnGetSocialFullResponse& Handler) const
+                              UGetSocialRequest* RequestData, const FOnGetSocialFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...
-	int64 OutRequestId;
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
 
 	// Binds the handler to the static response handler (pre-generated)	
@@ -229,11 +284,16 @@ void UBeamSocialApi::CPP_GetSocialImpl(const FBeamRealmHandle& TargetRealm, cons
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 		
 void UBeamSocialApi::BP_PostBlockedImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UPostBlockedRequest* RequestData, const FOnPostBlockedSuccess& OnSuccess, const FOnPostBlockedError& OnError, const FOnPostBlockedComplete& OnComplete, int64& OutRequestId) const
+                                UPostBlockedRequest* RequestData, const FOnPostBlockedSuccess& OnSuccess, const FOnPostBlockedError& OnError, const FOnPostBlockedComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -245,13 +305,16 @@ void UBeamSocialApi::BP_PostBlockedImpl(const FBeamRealmHandle& TargetRealm, con
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 void UBeamSocialApi::CPP_PostBlockedImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UPostBlockedRequest* RequestData, const FOnPostBlockedFullResponse& Handler) const
+                              UPostBlockedRequest* RequestData, const FOnPostBlockedFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...
-	int64 OutRequestId;
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
 
 	// Binds the handler to the static response handler (pre-generated)	
@@ -260,11 +323,16 @@ void UBeamSocialApi::CPP_PostBlockedImpl(const FBeamRealmHandle& TargetRealm, co
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 		
 void UBeamSocialApi::BP_DeleteBlockedImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UDeleteBlockedRequest* RequestData, const FOnDeleteBlockedSuccess& OnSuccess, const FOnDeleteBlockedError& OnError, const FOnDeleteBlockedComplete& OnComplete, int64& OutRequestId) const
+                                UDeleteBlockedRequest* RequestData, const FOnDeleteBlockedSuccess& OnSuccess, const FOnDeleteBlockedError& OnError, const FOnDeleteBlockedComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -276,13 +344,16 @@ void UBeamSocialApi::BP_DeleteBlockedImpl(const FBeamRealmHandle& TargetRealm, c
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 void UBeamSocialApi::CPP_DeleteBlockedImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UDeleteBlockedRequest* RequestData, const FOnDeleteBlockedFullResponse& Handler) const
+                              UDeleteBlockedRequest* RequestData, const FOnDeleteBlockedFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...
-	int64 OutRequestId;
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
 
 	// Binds the handler to the static response handler (pre-generated)	
@@ -291,6 +362,10 @@ void UBeamSocialApi::CPP_DeleteBlockedImpl(const FBeamRealmHandle& TargetRealm, 
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 
@@ -298,120 +373,138 @@ void UBeamSocialApi::CPP_DeleteBlockedImpl(const FBeamRealmHandle& TargetRealm, 
 
 
 
-void UBeamSocialApi::CPP_GetMy(const FUserSlot& UserSlotId, UGetMyRequest* Request, const FOnGetMyFullResponse& Handler) const
+void UBeamSocialApi::CPP_GetMy(const FUserSlot& UserSlot, UGetMyRequest* Request, const FOnGetMyFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlotId, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UGetMyRequest::StaticClass()->GetName(), UserSlotId, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UGetMyRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
-	CPP_GetMyImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler);
+    int64 OutRequestId;
+	CPP_GetMyImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamSocialApi::CPP_PostFriendsInvite(const FUserSlot& UserSlotId, UPostFriendsInviteRequest* Request, const FOnPostFriendsInviteFullResponse& Handler) const
+void UBeamSocialApi::CPP_PostFriendsInvite(const FUserSlot& UserSlot, UPostFriendsInviteRequest* Request, const FOnPostFriendsInviteFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlotId, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UPostFriendsInviteRequest::StaticClass()->GetName(), UserSlotId, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UPostFriendsInviteRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
-	CPP_PostFriendsInviteImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler);
+    int64 OutRequestId;
+	CPP_PostFriendsInviteImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamSocialApi::CPP_DeleteFriendsInvite(const FUserSlot& UserSlotId, UDeleteFriendsInviteRequest* Request, const FOnDeleteFriendsInviteFullResponse& Handler) const
+void UBeamSocialApi::CPP_DeleteFriendsInvite(const FUserSlot& UserSlot, UDeleteFriendsInviteRequest* Request, const FOnDeleteFriendsInviteFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlotId, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UDeleteFriendsInviteRequest::StaticClass()->GetName(), UserSlotId, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UDeleteFriendsInviteRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
-	CPP_DeleteFriendsInviteImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler);
+    int64 OutRequestId;
+	CPP_DeleteFriendsInviteImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamSocialApi::CPP_DeleteFriends(const FUserSlot& UserSlotId, UDeleteFriendsRequest* Request, const FOnDeleteFriendsFullResponse& Handler) const
+void UBeamSocialApi::CPP_DeleteFriends(const FUserSlot& UserSlot, UDeleteFriendsRequest* Request, const FOnDeleteFriendsFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlotId, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UDeleteFriendsRequest::StaticClass()->GetName(), UserSlotId, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UDeleteFriendsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
-	CPP_DeleteFriendsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler);
+    int64 OutRequestId;
+	CPP_DeleteFriendsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamSocialApi::CPP_PostFriendsImport(const FUserSlot& UserSlotId, UPostFriendsImportRequest* Request, const FOnPostFriendsImportFullResponse& Handler) const
+void UBeamSocialApi::CPP_PostFriendsImport(const FUserSlot& UserSlot, UPostFriendsImportRequest* Request, const FOnPostFriendsImportFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlotId, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UPostFriendsImportRequest::StaticClass()->GetName(), UserSlotId, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UPostFriendsImportRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
-	CPP_PostFriendsImportImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler);
+    int64 OutRequestId;
+	CPP_PostFriendsImportImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamSocialApi::CPP_PostFriendsMake(const FUserSlot& UserSlotId, UPostFriendsMakeRequest* Request, const FOnPostFriendsMakeFullResponse& Handler) const
+void UBeamSocialApi::CPP_PostFriendsMake(const FUserSlot& UserSlot, UPostFriendsMakeRequest* Request, const FOnPostFriendsMakeFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlotId, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UPostFriendsMakeRequest::StaticClass()->GetName(), UserSlotId, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UPostFriendsMakeRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
-	CPP_PostFriendsMakeImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler);
+    int64 OutRequestId;
+	CPP_PostFriendsMakeImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamSocialApi::CPP_GetSocial(const FUserSlot& UserSlotId, UGetSocialRequest* Request, const FOnGetSocialFullResponse& Handler) const
+void UBeamSocialApi::CPP_GetSocial(const FUserSlot& UserSlot, UGetSocialRequest* Request, const FOnGetSocialFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlotId, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UGetSocialRequest::StaticClass()->GetName(), UserSlotId, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UGetSocialRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
-	CPP_GetSocialImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler);
+    int64 OutRequestId;
+	CPP_GetSocialImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamSocialApi::CPP_PostBlocked(const FUserSlot& UserSlotId, UPostBlockedRequest* Request, const FOnPostBlockedFullResponse& Handler) const
+void UBeamSocialApi::CPP_PostBlocked(const FUserSlot& UserSlot, UPostBlockedRequest* Request, const FOnPostBlockedFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlotId, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UPostBlockedRequest::StaticClass()->GetName(), UserSlotId, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UPostBlockedRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
-	CPP_PostBlockedImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler);
+    int64 OutRequestId;
+	CPP_PostBlockedImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamSocialApi::CPP_DeleteBlocked(const FUserSlot& UserSlotId, UDeleteBlockedRequest* Request, const FOnDeleteBlockedFullResponse& Handler) const
+void UBeamSocialApi::CPP_DeleteBlocked(const FUserSlot& UserSlot, UDeleteBlockedRequest* Request, const FOnDeleteBlockedFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlotId, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UDeleteBlockedRequest::StaticClass()->GetName(), UserSlotId, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UDeleteBlockedRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
-	CPP_DeleteBlockedImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler);
+    int64 OutRequestId;
+	CPP_DeleteBlockedImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 
@@ -419,137 +512,137 @@ void UBeamSocialApi::CPP_DeleteBlocked(const FUserSlot& UserSlotId, UDeleteBlock
 
 
 
-void UBeamSocialApi::GetMy(FUserSlot UserSlot, UGetMyRequest* Request, const FOnGetMySuccess& OnSuccess, const FOnGetMyError& OnError, const FOnGetMyComplete& OnComplete,  FBeamRequestContext& OutRequestContext)
+void UBeamSocialApi::GetMy(FUserSlot UserSlot, UGetMyRequest* Request, const FOnGetMySuccess& OnSuccess, const FOnGetMyError& OnError, const FOnGetMyComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
 	Backend->GetRetryConfigForUserSlotAndRequestType(UGetMyRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_GetMyImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
+	BP_GetMyImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamSocialApi::PostFriendsInvite(FUserSlot UserSlot, UPostFriendsInviteRequest* Request, const FOnPostFriendsInviteSuccess& OnSuccess, const FOnPostFriendsInviteError& OnError, const FOnPostFriendsInviteComplete& OnComplete,  FBeamRequestContext& OutRequestContext)
+void UBeamSocialApi::PostFriendsInvite(FUserSlot UserSlot, UPostFriendsInviteRequest* Request, const FOnPostFriendsInviteSuccess& OnSuccess, const FOnPostFriendsInviteError& OnError, const FOnPostFriendsInviteComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostFriendsInviteRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PostFriendsInviteImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
+	BP_PostFriendsInviteImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamSocialApi::DeleteFriendsInvite(FUserSlot UserSlot, UDeleteFriendsInviteRequest* Request, const FOnDeleteFriendsInviteSuccess& OnSuccess, const FOnDeleteFriendsInviteError& OnError, const FOnDeleteFriendsInviteComplete& OnComplete,  FBeamRequestContext& OutRequestContext)
+void UBeamSocialApi::DeleteFriendsInvite(FUserSlot UserSlot, UDeleteFriendsInviteRequest* Request, const FOnDeleteFriendsInviteSuccess& OnSuccess, const FOnDeleteFriendsInviteError& OnError, const FOnDeleteFriendsInviteComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
 	Backend->GetRetryConfigForUserSlotAndRequestType(UDeleteFriendsInviteRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_DeleteFriendsInviteImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
+	BP_DeleteFriendsInviteImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamSocialApi::DeleteFriends(FUserSlot UserSlot, UDeleteFriendsRequest* Request, const FOnDeleteFriendsSuccess& OnSuccess, const FOnDeleteFriendsError& OnError, const FOnDeleteFriendsComplete& OnComplete,  FBeamRequestContext& OutRequestContext)
+void UBeamSocialApi::DeleteFriends(FUserSlot UserSlot, UDeleteFriendsRequest* Request, const FOnDeleteFriendsSuccess& OnSuccess, const FOnDeleteFriendsError& OnError, const FOnDeleteFriendsComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
 	Backend->GetRetryConfigForUserSlotAndRequestType(UDeleteFriendsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_DeleteFriendsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
+	BP_DeleteFriendsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamSocialApi::PostFriendsImport(FUserSlot UserSlot, UPostFriendsImportRequest* Request, const FOnPostFriendsImportSuccess& OnSuccess, const FOnPostFriendsImportError& OnError, const FOnPostFriendsImportComplete& OnComplete,  FBeamRequestContext& OutRequestContext)
+void UBeamSocialApi::PostFriendsImport(FUserSlot UserSlot, UPostFriendsImportRequest* Request, const FOnPostFriendsImportSuccess& OnSuccess, const FOnPostFriendsImportError& OnError, const FOnPostFriendsImportComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostFriendsImportRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PostFriendsImportImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
+	BP_PostFriendsImportImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamSocialApi::PostFriendsMake(FUserSlot UserSlot, UPostFriendsMakeRequest* Request, const FOnPostFriendsMakeSuccess& OnSuccess, const FOnPostFriendsMakeError& OnError, const FOnPostFriendsMakeComplete& OnComplete,  FBeamRequestContext& OutRequestContext)
+void UBeamSocialApi::PostFriendsMake(FUserSlot UserSlot, UPostFriendsMakeRequest* Request, const FOnPostFriendsMakeSuccess& OnSuccess, const FOnPostFriendsMakeError& OnError, const FOnPostFriendsMakeComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostFriendsMakeRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PostFriendsMakeImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
+	BP_PostFriendsMakeImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamSocialApi::GetSocial(FUserSlot UserSlot, UGetSocialRequest* Request, const FOnGetSocialSuccess& OnSuccess, const FOnGetSocialError& OnError, const FOnGetSocialComplete& OnComplete,  FBeamRequestContext& OutRequestContext)
+void UBeamSocialApi::GetSocial(FUserSlot UserSlot, UGetSocialRequest* Request, const FOnGetSocialSuccess& OnSuccess, const FOnGetSocialError& OnError, const FOnGetSocialComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
 	Backend->GetRetryConfigForUserSlotAndRequestType(UGetSocialRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_GetSocialImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
+	BP_GetSocialImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamSocialApi::PostBlocked(FUserSlot UserSlot, UPostBlockedRequest* Request, const FOnPostBlockedSuccess& OnSuccess, const FOnPostBlockedError& OnError, const FOnPostBlockedComplete& OnComplete,  FBeamRequestContext& OutRequestContext)
+void UBeamSocialApi::PostBlocked(FUserSlot UserSlot, UPostBlockedRequest* Request, const FOnPostBlockedSuccess& OnSuccess, const FOnPostBlockedError& OnError, const FOnPostBlockedComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostBlockedRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PostBlockedImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
+	BP_PostBlockedImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamSocialApi::DeleteBlocked(FUserSlot UserSlot, UDeleteBlockedRequest* Request, const FOnDeleteBlockedSuccess& OnSuccess, const FOnDeleteBlockedError& OnError, const FOnDeleteBlockedComplete& OnComplete,  FBeamRequestContext& OutRequestContext)
+void UBeamSocialApi::DeleteBlocked(FUserSlot UserSlot, UDeleteBlockedRequest* Request, const FOnDeleteBlockedSuccess& OnSuccess, const FOnDeleteBlockedError& OnError, const FOnDeleteBlockedComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
 	Backend->GetRetryConfigForUserSlotAndRequestType(UDeleteBlockedRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_DeleteBlockedImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
+	BP_DeleteBlockedImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 	
@@ -557,11 +650,11 @@ void UBeamSocialApi::DeleteBlocked(FUserSlot UserSlot, UDeleteBlockedRequest* Re
 
 
 
-void UBeamSocialApi::GetMyWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UGetMyRequest* Request, const FOnGetMySuccess& OnSuccess, const FOnGetMyError& OnError, const FOnGetMyComplete& OnComplete, FBeamRequestContext& OutRequestContext)
+void UBeamSocialApi::GetMyWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UGetMyRequest* Request, const FOnGetMySuccess& OnSuccess, const FOnGetMyError& OnError, const FOnGetMyComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);	
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);	
 
 	int64 OutRequestId;
 	BP_GetMyImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
@@ -569,11 +662,11 @@ void UBeamSocialApi::GetMyWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& 
 }
 
 		
-void UBeamSocialApi::PostFriendsInviteWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostFriendsInviteRequest* Request, const FOnPostFriendsInviteSuccess& OnSuccess, const FOnPostFriendsInviteError& OnError, const FOnPostFriendsInviteComplete& OnComplete, FBeamRequestContext& OutRequestContext)
+void UBeamSocialApi::PostFriendsInviteWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostFriendsInviteRequest* Request, const FOnPostFriendsInviteSuccess& OnSuccess, const FOnPostFriendsInviteError& OnError, const FOnPostFriendsInviteComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);	
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);	
 
 	int64 OutRequestId;
 	BP_PostFriendsInviteImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
@@ -581,11 +674,11 @@ void UBeamSocialApi::PostFriendsInviteWithRetry(FUserSlot UserSlot, const FBeamR
 }
 
 		
-void UBeamSocialApi::DeleteFriendsInviteWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UDeleteFriendsInviteRequest* Request, const FOnDeleteFriendsInviteSuccess& OnSuccess, const FOnDeleteFriendsInviteError& OnError, const FOnDeleteFriendsInviteComplete& OnComplete, FBeamRequestContext& OutRequestContext)
+void UBeamSocialApi::DeleteFriendsInviteWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UDeleteFriendsInviteRequest* Request, const FOnDeleteFriendsInviteSuccess& OnSuccess, const FOnDeleteFriendsInviteError& OnError, const FOnDeleteFriendsInviteComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);	
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);	
 
 	int64 OutRequestId;
 	BP_DeleteFriendsInviteImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
@@ -593,11 +686,11 @@ void UBeamSocialApi::DeleteFriendsInviteWithRetry(FUserSlot UserSlot, const FBea
 }
 
 		
-void UBeamSocialApi::DeleteFriendsWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UDeleteFriendsRequest* Request, const FOnDeleteFriendsSuccess& OnSuccess, const FOnDeleteFriendsError& OnError, const FOnDeleteFriendsComplete& OnComplete, FBeamRequestContext& OutRequestContext)
+void UBeamSocialApi::DeleteFriendsWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UDeleteFriendsRequest* Request, const FOnDeleteFriendsSuccess& OnSuccess, const FOnDeleteFriendsError& OnError, const FOnDeleteFriendsComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);	
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);	
 
 	int64 OutRequestId;
 	BP_DeleteFriendsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
@@ -605,11 +698,11 @@ void UBeamSocialApi::DeleteFriendsWithRetry(FUserSlot UserSlot, const FBeamRetry
 }
 
 		
-void UBeamSocialApi::PostFriendsImportWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostFriendsImportRequest* Request, const FOnPostFriendsImportSuccess& OnSuccess, const FOnPostFriendsImportError& OnError, const FOnPostFriendsImportComplete& OnComplete, FBeamRequestContext& OutRequestContext)
+void UBeamSocialApi::PostFriendsImportWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostFriendsImportRequest* Request, const FOnPostFriendsImportSuccess& OnSuccess, const FOnPostFriendsImportError& OnError, const FOnPostFriendsImportComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);	
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);	
 
 	int64 OutRequestId;
 	BP_PostFriendsImportImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
@@ -617,11 +710,11 @@ void UBeamSocialApi::PostFriendsImportWithRetry(FUserSlot UserSlot, const FBeamR
 }
 
 		
-void UBeamSocialApi::PostFriendsMakeWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostFriendsMakeRequest* Request, const FOnPostFriendsMakeSuccess& OnSuccess, const FOnPostFriendsMakeError& OnError, const FOnPostFriendsMakeComplete& OnComplete, FBeamRequestContext& OutRequestContext)
+void UBeamSocialApi::PostFriendsMakeWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostFriendsMakeRequest* Request, const FOnPostFriendsMakeSuccess& OnSuccess, const FOnPostFriendsMakeError& OnError, const FOnPostFriendsMakeComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);	
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);	
 
 	int64 OutRequestId;
 	BP_PostFriendsMakeImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
@@ -629,11 +722,11 @@ void UBeamSocialApi::PostFriendsMakeWithRetry(FUserSlot UserSlot, const FBeamRet
 }
 
 		
-void UBeamSocialApi::GetSocialWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UGetSocialRequest* Request, const FOnGetSocialSuccess& OnSuccess, const FOnGetSocialError& OnError, const FOnGetSocialComplete& OnComplete, FBeamRequestContext& OutRequestContext)
+void UBeamSocialApi::GetSocialWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UGetSocialRequest* Request, const FOnGetSocialSuccess& OnSuccess, const FOnGetSocialError& OnError, const FOnGetSocialComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);	
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);	
 
 	int64 OutRequestId;
 	BP_GetSocialImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
@@ -641,11 +734,11 @@ void UBeamSocialApi::GetSocialWithRetry(FUserSlot UserSlot, const FBeamRetryConf
 }
 
 		
-void UBeamSocialApi::PostBlockedWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostBlockedRequest* Request, const FOnPostBlockedSuccess& OnSuccess, const FOnPostBlockedError& OnError, const FOnPostBlockedComplete& OnComplete, FBeamRequestContext& OutRequestContext)
+void UBeamSocialApi::PostBlockedWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostBlockedRequest* Request, const FOnPostBlockedSuccess& OnSuccess, const FOnPostBlockedError& OnError, const FOnPostBlockedComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);	
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);	
 
 	int64 OutRequestId;
 	BP_PostBlockedImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
@@ -653,11 +746,11 @@ void UBeamSocialApi::PostBlockedWithRetry(FUserSlot UserSlot, const FBeamRetryCo
 }
 
 		
-void UBeamSocialApi::DeleteBlockedWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UDeleteBlockedRequest* Request, const FOnDeleteBlockedSuccess& OnSuccess, const FOnDeleteBlockedError& OnError, const FOnDeleteBlockedComplete& OnComplete, FBeamRequestContext& OutRequestContext)
+void UBeamSocialApi::DeleteBlockedWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UDeleteBlockedRequest* Request, const FOnDeleteBlockedSuccess& OnSuccess, const FOnDeleteBlockedError& OnError, const FOnDeleteBlockedComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);	
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);	
 
 	int64 OutRequestId;
 	BP_DeleteBlockedImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	

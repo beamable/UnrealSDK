@@ -3,6 +3,13 @@
 #include "Serialization/BeamJsonUtils.h"
 
 
+
+void UAccountSearchResponse::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
+{
+	OuterOwner = RequestData;
+	BeamDeserialize(ResponseContent);	
+}
+
 void UAccountSearchResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UAccountsBasicAccount*>(TEXT("accounts"), Accounts, Serializer);

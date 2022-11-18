@@ -34,8 +34,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make GetTemplates",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UGetTemplatesRequest* Make(UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make GetTemplates",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UGetTemplatesRequest* Make(UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

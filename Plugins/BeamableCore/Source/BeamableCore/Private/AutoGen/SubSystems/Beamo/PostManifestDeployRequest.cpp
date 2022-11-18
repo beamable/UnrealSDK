@@ -23,9 +23,9 @@ void UPostManifestDeployRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UPostManifestDeployRequest* UPostManifestDeployRequest::Make(UObject* Outer)
+UPostManifestDeployRequest* UPostManifestDeployRequest::Make(UObject* RequestOwner)
 {
-	UPostManifestDeployRequest* Req = NewObject<UPostManifestDeployRequest>(Outer);
+	UPostManifestDeployRequest* Req = NewObject<UPostManifestDeployRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -41,8 +41,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make GetManifests",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Offset,_Limit,_bArchived,Outer"))
-	static UGetManifestsRequest* Make(FOptionalInt32 _Offset, FOptionalInt32 _Limit, FOptionalBool _bArchived, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make GetManifests",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Offset,_Limit,_bArchived,RequestOwner"))
+	static UGetManifestsRequest* Make(FOptionalInt32 _Offset, FOptionalInt32 _Limit, FOptionalBool _bArchived, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

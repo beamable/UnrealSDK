@@ -15,7 +15,7 @@ void UGetWindowsProductRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("sku"), *Sku);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("sku"), *Sku);
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -26,9 +26,9 @@ void UGetWindowsProductRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetWindowsProductRequest* UGetWindowsProductRequest::Make(FString _Sku, UObject* Outer)
+UGetWindowsProductRequest* UGetWindowsProductRequest::Make(FString _Sku, UObject* RequestOwner)
 {
-	UGetWindowsProductRequest* Req = NewObject<UGetWindowsProductRequest>(Outer);
+	UGetWindowsProductRequest* Req = NewObject<UGetWindowsProductRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Sku = _Sku;

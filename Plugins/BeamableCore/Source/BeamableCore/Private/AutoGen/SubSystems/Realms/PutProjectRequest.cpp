@@ -27,9 +27,9 @@ void UPutProjectRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutProjectRequest* UPutProjectRequest::Make(FString _ProjectId, UObject* Outer)
+UPutProjectRequest* UPutProjectRequest::Make(FString _ProjectId, UObject* RequestOwner)
 {
-	UPutProjectRequest* Req = NewObject<UPutProjectRequest>(Outer);
+	UPutProjectRequest* Req = NewObject<UPutProjectRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -27,9 +27,9 @@ void UObjectMailPostBulkRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UObjectMailPostBulkRequest* UObjectMailPostBulkRequest::Make(int64 _ObjectId, TArray<USendMailRequestBody*> _SendMailRequests, UObject* Outer)
+UObjectMailPostBulkRequest* UObjectMailPostBulkRequest::Make(int64 _ObjectId, TArray<USendMailRequestBody*> _SendMailRequests, UObject* RequestOwner)
 {
-	UObjectMailPostBulkRequest* Req = NewObject<UObjectMailPostBulkRequest>(Outer);
+	UObjectMailPostBulkRequest* Req = NewObject<UObjectMailPostBulkRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

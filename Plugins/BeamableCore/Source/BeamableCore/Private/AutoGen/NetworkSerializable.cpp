@@ -3,6 +3,8 @@
 
 
 
+
+
 void UNetworkSerializable ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	

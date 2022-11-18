@@ -9,7 +9,7 @@
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_WaitAll"
 
-UCLASS(meta=(BeamFlow))
+UCLASS(meta=(BeamFlowNode))
 class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_WaitAll : public UK2BeamNode_BeamFlow, public IK2Node_AddPinInterface
 {
 	GENERATED_BODY()
@@ -17,6 +17,9 @@ public:
 	static const FName SelfFunctionName;
 	static const FName WaitAllFunctionName;
 	static const FName P_CompleteCallback;
+	static const FName P_RequestContexts;
+	static const FName P_Operations;
+	static const FName P_Waits;
 	static const FName P_Contexts;
 	static const FName P_Requests;
 	static const FName P_Responses;
@@ -38,10 +41,14 @@ public:
 	virtual void AddInputPin() override;
 	virtual void RemoveInputPin(UEdGraphPin* Pin) override;
 	virtual bool CanRemovePin(const UEdGraphPin* Pin) const override;
+	virtual void NotifyPinConnectionListChanged(UEdGraphPin* Pin) override;
+	virtual void PostReconstructNode() override;
 
 	virtual void ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
 
 	virtual void GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const override;
+
+	void PropagatePinType(UEdGraphPin* const& Pin) const;
 
 	void CreateBeamFlowModePins();
 

@@ -3,6 +3,8 @@
 
 #include "Misc/DefaultValueHelper.h"
 
+
+
 void UEventInventoryRewardCurrency ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("id"), Id);

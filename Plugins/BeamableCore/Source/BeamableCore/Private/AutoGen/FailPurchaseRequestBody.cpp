@@ -3,6 +3,8 @@
 
 #include "Misc/DefaultValueHelper.h"
 
+
+
 void UFailPurchaseRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("txid"), Txid);

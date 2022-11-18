@@ -23,9 +23,9 @@ void UGetRoleReportRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetRoleReportRequest* UGetRoleReportRequest::Make(int64 _ObjectId, UObject* Outer)
+UGetRoleReportRequest* UGetRoleReportRequest::Make(int64 _ObjectId, UObject* RequestOwner)
 {
-	UGetRoleReportRequest* Req = NewObject<UGetRoleReportRequest>(Outer);
+	UGetRoleReportRequest* Req = NewObject<UGetRoleReportRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

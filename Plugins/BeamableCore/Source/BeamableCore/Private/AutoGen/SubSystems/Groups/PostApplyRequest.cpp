@@ -27,9 +27,9 @@ void UPostApplyRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostApplyRequest* UPostApplyRequest::Make(int64 _ObjectId, FOptionalInt64 _SubGroup, UObject* Outer)
+UPostApplyRequest* UPostApplyRequest::Make(int64 _ObjectId, FOptionalInt64 _SubGroup, UObject* RequestOwner)
 {
-	UPostApplyRequest* Req = NewObject<UPostApplyRequest>(Outer);
+	UPostApplyRequest* Req = NewObject<UPostApplyRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

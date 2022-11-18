@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make GetPlayer",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UGetPlayerRequest* Make(int64 _Dbid, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make GetPlayer",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UGetPlayerRequest* Make(int64 _Dbid, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

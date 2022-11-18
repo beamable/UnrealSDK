@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make GetGetPersonallyIdentifiableInformation",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UGetGetPersonallyIdentifiableInformationRequest* Make(FString _Query, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make GetGetPersonallyIdentifiableInformation",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UGetGetPersonallyIdentifiableInformationRequest* Make(FString _Query, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

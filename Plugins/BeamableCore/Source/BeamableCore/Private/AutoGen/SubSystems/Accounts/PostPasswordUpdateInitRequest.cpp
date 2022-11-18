@@ -27,9 +27,9 @@ void UPostPasswordUpdateInitRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostPasswordUpdateInitRequest* UPostPasswordUpdateInitRequest::Make(FString _Email, FOptionalString _CodeType, UObject* Outer)
+UPostPasswordUpdateInitRequest* UPostPasswordUpdateInitRequest::Make(FString _Email, FOptionalString _CodeType, UObject* RequestOwner)
 {
-	UPostPasswordUpdateInitRequest* Req = NewObject<UPostPasswordUpdateInitRequest>(Outer);
+	UPostPasswordUpdateInitRequest* Req = NewObject<UPostPasswordUpdateInitRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

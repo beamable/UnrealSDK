@@ -9,7 +9,7 @@ void UPutRefreshRequest::BuildVerb(FString& VerbString) const
 void UPutRefreshRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/events/{objectId}/refresh");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *ObjectId);
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -23,9 +23,9 @@ void UPutRefreshRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UPutRefreshRequest* UPutRefreshRequest::Make(int64 _ObjectId, UObject* Outer)
+UPutRefreshRequest* UPutRefreshRequest::Make(FString _ObjectId, UObject* RequestOwner)
 {
-	UPutRefreshRequest* Req = NewObject<UPutRefreshRequest>(Outer);
+	UPutRefreshRequest* Req = NewObject<UPutRefreshRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make DeleteAdminScope",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UDeleteAdminScopeRequest* Make(int64 _ObjectId, FString _Realm, FString _Role, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make DeleteAdminScope",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UDeleteAdminScopeRequest* Make(int64 _ObjectId, FString _Realm, FString _Role, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

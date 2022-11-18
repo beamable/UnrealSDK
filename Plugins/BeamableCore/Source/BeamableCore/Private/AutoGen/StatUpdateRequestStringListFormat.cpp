@@ -3,6 +3,8 @@
 #include "Serialization/BeamJsonUtils.h"
 
 
+
+
 void UStatUpdateRequestStringListFormat ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<TArray<UStatStringListEntry*>, UStatStringListEntry*>(TEXT("set"), &Set, Serializer);

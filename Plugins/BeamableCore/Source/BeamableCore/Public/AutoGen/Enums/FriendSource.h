@@ -8,8 +8,8 @@
 UENUM(BlueprintType, Category="Beam|Enums")
 enum class EFriendSource : uint8
 {
-	Native UMETA(DisplayName="Native", SerializationName="native"),
-	Facebook UMETA(DisplayName="Facebook", SerializationName="facebook")		
+	native UMETA(DisplayName="Native"),
+	facebook UMETA(DisplayName="Facebook")		
 };
 
 UCLASS(BlueprintType, Category="Beam|Enums")
@@ -23,7 +23,7 @@ public:
 	{
 		const UEnum* Enum = StaticEnum<EFriendSource>();
 		const int32 NameIndex = Enum->GetIndexByValue(static_cast<int64>(Value));
-		const FString SerializationName = Enum->GetMetaData(TEXT("SerializationName"), NameIndex);		
+		const FString SerializationName = Enum->GetNameStringByValue(NameIndex);		
 		return SerializationName;
 		
 	}
@@ -34,7 +34,7 @@ public:
 		const UEnum* Enum = StaticEnum<EFriendSource>();
 		for (int32 NameIndex = 0; NameIndex < Enum->NumEnums() - 1; ++NameIndex)
 		{
-			const FString& SerializationName = Enum->GetMetaData(TEXT("SerializationName"), NameIndex);
+			const FString& SerializationName = Enum->GetNameStringByValue(NameIndex);
 			if(Value == SerializationName)
 				return static_cast<EFriendSource>(Enum->GetValueByIndex(NameIndex));
 		}

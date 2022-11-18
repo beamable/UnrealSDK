@@ -23,9 +23,9 @@ void UGetRecommendedRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetRecommendedRequest* UGetRecommendedRequest::Make(int64 _ObjectId, UObject* Outer)
+UGetRecommendedRequest* UGetRecommendedRequest::Make(int64 _ObjectId, UObject* RequestOwner)
 {
-	UGetRecommendedRequest* Req = NewObject<UGetRecommendedRequest>(Outer);
+	UGetRecommendedRequest* Req = NewObject<UGetRecommendedRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

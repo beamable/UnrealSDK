@@ -23,9 +23,9 @@ void UGetCurrencyRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetCurrencyRequest* UGetCurrencyRequest::Make(UObject* Outer)
+UGetCurrencyRequest* UGetCurrencyRequest::Make(UObject* RequestOwner)
 {
-	UGetCurrencyRequest* Req = NewObject<UGetCurrencyRequest>(Outer);
+	UGetCurrencyRequest* Req = NewObject<UGetCurrencyRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

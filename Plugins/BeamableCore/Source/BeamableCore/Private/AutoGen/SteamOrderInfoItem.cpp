@@ -3,6 +3,8 @@
 
 #include "Misc/DefaultValueHelper.h"
 
+
+
 void USteamOrderInfoItem ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("vat"), Vat);

@@ -15,7 +15,7 @@ void UGetSteamPricesRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("steamId"), *FString::FromInt(SteamId));
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("steamId"), *FString::FromInt(SteamId));
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -26,9 +26,9 @@ void UGetSteamPricesRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetSteamPricesRequest* UGetSteamPricesRequest::Make(int64 _SteamId, UObject* Outer)
+UGetSteamPricesRequest* UGetSteamPricesRequest::Make(int64 _SteamId, UObject* RequestOwner)
 {
-	UGetSteamPricesRequest* Req = NewObject<UGetSteamPricesRequest>(Outer);
+	UGetSteamPricesRequest* Req = NewObject<UGetSteamPricesRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->SteamId = _SteamId;

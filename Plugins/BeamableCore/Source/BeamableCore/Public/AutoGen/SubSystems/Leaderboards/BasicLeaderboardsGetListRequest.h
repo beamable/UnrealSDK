@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make BasicLeaderboardsGetList",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Skip,_Limit,Outer"))
-	static UBasicLeaderboardsGetListRequest* Make(FOptionalInt32 _Skip, FOptionalInt32 _Limit, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make BasicLeaderboardsGetList",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Skip,_Limit,RequestOwner"))
+	static UBasicLeaderboardsGetListRequest* Make(FOptionalInt32 _Skip, FOptionalInt32 _Limit, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

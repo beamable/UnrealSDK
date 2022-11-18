@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Mail", DisplayName="Beam - Make BasicMailPostBulk",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UBasicMailPostBulkRequest* Make(TArray<USendMailRequestBody*> _SendMailRequests, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Mail", DisplayName="Beam - Make BasicMailPostBulk",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UBasicMailPostBulkRequest* Make(TArray<USendMailRequestBody*> _SendMailRequests, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

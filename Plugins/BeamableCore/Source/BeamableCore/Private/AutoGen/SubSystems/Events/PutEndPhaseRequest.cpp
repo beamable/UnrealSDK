@@ -9,7 +9,7 @@ void UPutEndPhaseRequest::BuildVerb(FString& VerbString) const
 void UPutEndPhaseRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/events/{objectId}/endPhase");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *ObjectId);
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -27,9 +27,9 @@ void UPutEndPhaseRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutEndPhaseRequest* UPutEndPhaseRequest::Make(int64 _ObjectId, FOptionalString _Time, UObject* Outer)
+UPutEndPhaseRequest* UPutEndPhaseRequest::Make(FString _ObjectId, FOptionalString _Time, UObject* RequestOwner)
 {
-	UPutEndPhaseRequest* Req = NewObject<UPutEndPhaseRequest>(Outer);
+	UPutEndPhaseRequest* Req = NewObject<UPutEndPhaseRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

@@ -23,9 +23,9 @@ void UObjectMailGetMailRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UObjectMailGetMailRequest* UObjectMailGetMailRequest::Make(int64 _ObjectId, UObject* Outer)
+UObjectMailGetMailRequest* UObjectMailGetMailRequest::Make(int64 _ObjectId, UObject* RequestOwner)
 {
-	UObjectMailGetMailRequest* Req = NewObject<UObjectMailGetMailRequest>(Outer);
+	UObjectMailGetMailRequest* Req = NewObject<UObjectMailGetMailRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

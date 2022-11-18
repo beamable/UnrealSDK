@@ -9,7 +9,7 @@ void UGetEventsRequest::BuildVerb(FString& VerbString) const
 void UGetEventsRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/events/{objectId}/");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *ObjectId);
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -23,9 +23,9 @@ void UGetEventsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetEventsRequest* UGetEventsRequest::Make(int64 _ObjectId, UObject* Outer)
+UGetEventsRequest* UGetEventsRequest::Make(FString _ObjectId, UObject* RequestOwner)
 {
-	UGetEventsRequest* Req = NewObject<UGetEventsRequest>(Outer);
+	UGetEventsRequest* Req = NewObject<UGetEventsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

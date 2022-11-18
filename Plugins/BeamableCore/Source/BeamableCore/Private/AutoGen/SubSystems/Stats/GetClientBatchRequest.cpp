@@ -15,18 +15,18 @@ void UGetClientBatchRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("objectIds"), *ObjectIds);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("objectIds"), *ObjectIds);
 	bIsFirstQueryParam = false;
 	
 	if(Stats.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("stats"), *Stats.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("stats"), *Stats.Val);
 		bIsFirstQueryParam = false;
 	}
 
 	if(Format.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("format"), *Format.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("format"), *Format.Val);
 		bIsFirstQueryParam = false;
 	}
 
@@ -38,9 +38,9 @@ void UGetClientBatchRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetClientBatchRequest* UGetClientBatchRequest::Make(FString _ObjectIds, FOptionalString _Stats, FOptionalString _Format, UObject* Outer)
+UGetClientBatchRequest* UGetClientBatchRequest::Make(FString _ObjectIds, FOptionalString _Stats, FOptionalString _Format, UObject* RequestOwner)
 {
-	UGetClientBatchRequest* Req = NewObject<UGetClientBatchRequest>(Outer);
+	UGetClientBatchRequest* Req = NewObject<UGetClientBatchRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectIds = _ObjectIds;

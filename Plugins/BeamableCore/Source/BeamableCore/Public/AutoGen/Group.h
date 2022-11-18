@@ -75,6 +75,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Maybe Donations", Category="Beam")
 	FOptionalMapOfDonationRequestBody MaybeDonations;
 
+	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
+
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override;

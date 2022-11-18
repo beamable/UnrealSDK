@@ -3,6 +3,8 @@
 
 #include "Misc/DefaultValueHelper.h"
 
+
+
 void UOfferConstraint ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("constraint"), Constraint);

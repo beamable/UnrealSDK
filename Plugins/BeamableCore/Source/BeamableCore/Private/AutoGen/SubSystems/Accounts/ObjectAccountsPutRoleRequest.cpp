@@ -27,9 +27,9 @@ void UObjectAccountsPutRoleRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UObjectAccountsPutRoleRequest* UObjectAccountsPutRoleRequest::Make(int64 _ObjectId, FOptionalString _Cid, FOptionalString _Realm, FOptionalString _Role, UObject* Outer)
+UObjectAccountsPutRoleRequest* UObjectAccountsPutRoleRequest::Make(int64 _ObjectId, FOptionalString _Cid, FOptionalString _Realm, FOptionalString _Role, UObject* RequestOwner)
 {
-	UObjectAccountsPutRoleRequest* Req = NewObject<UObjectAccountsPutRoleRequest>(Outer);
+	UObjectAccountsPutRoleRequest* Req = NewObject<UObjectAccountsPutRoleRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

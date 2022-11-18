@@ -27,9 +27,9 @@ void UPostServerRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostServerRequest* UPostServerRequest::Make(FString _Event, bool _bToAll, FOptionalString _Payload, UObject* Outer)
+UPostServerRequest* UPostServerRequest::Make(FString _Event, bool _bToAll, FOptionalString _Payload, UObject* RequestOwner)
 {
-	UPostServerRequest* Req = NewObject<UPostServerRequest>(Outer);
+	UPostServerRequest* Req = NewObject<UPostServerRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

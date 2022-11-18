@@ -23,9 +23,9 @@ void UGetLaunchMessageRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetLaunchMessageRequest* UGetLaunchMessageRequest::Make(UObject* Outer)
+UGetLaunchMessageRequest* UGetLaunchMessageRequest::Make(UObject* RequestOwner)
 {
-	UGetLaunchMessageRequest* Req = NewObject<UGetLaunchMessageRequest>(Outer);
+	UGetLaunchMessageRequest* Req = NewObject<UGetLaunchMessageRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

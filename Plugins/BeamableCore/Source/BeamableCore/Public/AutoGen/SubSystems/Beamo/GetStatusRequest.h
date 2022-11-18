@@ -34,8 +34,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make GetStatus",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UGetStatusRequest* Make(UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make GetStatus",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UGetStatusRequest* Make(UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

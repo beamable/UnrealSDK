@@ -34,8 +34,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make GetAdminMe",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UGetAdminMeRequest* Make(UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make GetAdminMe",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UGetAdminMeRequest* Make(UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -27,9 +27,9 @@ void UDeleteMeThirdPartyRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteMeThirdPartyRequest* UDeleteMeThirdPartyRequest::Make(FString _ThirdParty, FString _Token, UObject* Outer)
+UDeleteMeThirdPartyRequest* UDeleteMeThirdPartyRequest::Make(FString _ThirdParty, FString _Token, UObject* RequestOwner)
 {
-	UDeleteMeThirdPartyRequest* Req = NewObject<UDeleteMeThirdPartyRequest>(Outer);
+	UDeleteMeThirdPartyRequest* Req = NewObject<UDeleteMeThirdPartyRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

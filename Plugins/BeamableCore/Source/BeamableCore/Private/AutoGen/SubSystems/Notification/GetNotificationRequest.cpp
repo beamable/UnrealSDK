@@ -23,9 +23,9 @@ void UGetNotificationRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetNotificationRequest* UGetNotificationRequest::Make(UObject* Outer)
+UGetNotificationRequest* UGetNotificationRequest::Make(UObject* RequestOwner)
 {
-	UGetNotificationRequest* Req = NewObject<UGetNotificationRequest>(Outer);
+	UGetNotificationRequest* Req = NewObject<UGetNotificationRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

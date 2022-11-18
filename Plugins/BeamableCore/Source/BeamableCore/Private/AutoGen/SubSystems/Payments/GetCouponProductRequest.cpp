@@ -15,7 +15,7 @@ void UGetCouponProductRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("sku"), *Sku);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("sku"), *Sku);
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -26,9 +26,9 @@ void UGetCouponProductRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetCouponProductRequest* UGetCouponProductRequest::Make(FString _Sku, UObject* Outer)
+UGetCouponProductRequest* UGetCouponProductRequest::Make(FString _Sku, UObject* RequestOwner)
 {
-	UGetCouponProductRequest* Req = NewObject<UGetCouponProductRequest>(Outer);
+	UGetCouponProductRequest* Req = NewObject<UGetCouponProductRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Sku = _Sku;

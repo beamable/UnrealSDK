@@ -3,6 +3,13 @@
 
 #include "Misc/DefaultValueHelper.h"
 
+
+void UGetTotalCouponResponse::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
+{
+	OuterOwner = RequestData;
+	BeamDeserialize(ResponseContent);	
+}
+
 void UGetTotalCouponResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("count"), Count);

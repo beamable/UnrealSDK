@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Mail", DisplayName="Beam - Make ObjectMailPutMail",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_bAcceptAttachments,_Body,_Expires,_Subject,_State,_Category,Outer"))
-	static UObjectMailPutMailRequest* Make(int64 _ObjectId, int64 _MailId, FOptionalBool _bAcceptAttachments, FOptionalString _Body, FOptionalString _Expires, FOptionalString _Subject, FOptionalString _State, FOptionalString _Category, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Mail", DisplayName="Beam - Make ObjectMailPutMail",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bAcceptAttachments,_Body,_Expires,_Subject,_State,_Category,RequestOwner"))
+	static UObjectMailPutMailRequest* Make(int64 _ObjectId, int64 _MailId, FOptionalBool _bAcceptAttachments, FOptionalString _Body, FOptionalString _Expires, FOptionalString _Subject, FOptionalString _State, FOptionalString _Category, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -27,9 +27,9 @@ void UPutAdminScopeRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutAdminScopeRequest* UPutAdminScopeRequest::Make(int64 _ObjectId, FOptionalString _Cid, FOptionalString _Realm, FOptionalString _Role, UObject* Outer)
+UPutAdminScopeRequest* UPutAdminScopeRequest::Make(int64 _ObjectId, FOptionalString _Cid, FOptionalString _Realm, FOptionalString _Role, UObject* RequestOwner)
 {
-	UPutAdminScopeRequest* Req = NewObject<UPutAdminScopeRequest>(Outer);
+	UPutAdminScopeRequest* Req = NewObject<UPutAdminScopeRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

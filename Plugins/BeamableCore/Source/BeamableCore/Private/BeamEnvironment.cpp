@@ -20,15 +20,21 @@ void UBeamEnvironmentData::Serialize(FJsonSerializerBase& Serializer, bool bFlat
 void UBeamEnvironment::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-
-	const UBeamCoreSettings* beamCoreSettings = GetDefault<UBeamCoreSettings>();
-	Data = beamCoreSettings->RuntimeEnvironment.LoadSynchronous();
-	const auto asd = beamCoreSettings->RuntimeEnvironment.IsValid();
-	UE_LOG(LogTemp, Warning, TEXT("Loaded Beam Environment: Asset=%s"), asd ? TEXT("true") : TEXT("false"));
 }
 
 void UBeamEnvironment::Deinitialize()
 {
+}
+
+FString UBeamEnvironment::GetAPIUrl()
+{
+	if (!Data)
+	{
+		const UBeamCoreSettings* beamCoreSettings = GetDefault<UBeamCoreSettings>();
+		Data = beamCoreSettings->BeamableEnvironment.LoadSynchronous();
+	}
+
+	return Data->APIUrl;
 }
 
 

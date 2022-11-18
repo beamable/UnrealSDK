@@ -3,6 +3,8 @@
 
 
 
+
+
 void USubscriptionVerificationRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("hubMode"), HubMode);

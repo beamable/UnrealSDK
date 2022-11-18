@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Mail", DisplayName="Beam - Make ObjectMailPostSearch",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UObjectMailPostSearchRequest* Make(int64 _ObjectId, TArray<UMailSearchClause*> _Clauses, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Mail", DisplayName="Beam - Make ObjectMailPostSearch",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UObjectMailPostSearchRequest* Make(int64 _ObjectId, TArray<UMailSearchClause*> _Clauses, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

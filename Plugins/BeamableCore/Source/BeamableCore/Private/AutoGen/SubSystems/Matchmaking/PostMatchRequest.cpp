@@ -23,9 +23,9 @@ void UPostMatchRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UPostMatchRequest* UPostMatchRequest::Make(int64 _ObjectId, UObject* Outer)
+UPostMatchRequest* UPostMatchRequest::Make(int64 _ObjectId, UObject* RequestOwner)
 {
-	UPostMatchRequest* Req = NewObject<UPostMatchRequest>(Outer);
+	UPostMatchRequest* Req = NewObject<UPostMatchRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

@@ -23,9 +23,9 @@ void UBasicAnnouncementsGetContentRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UBasicAnnouncementsGetContentRequest* UBasicAnnouncementsGetContentRequest::Make(UObject* Outer)
+UBasicAnnouncementsGetContentRequest* UBasicAnnouncementsGetContentRequest::Make(UObject* RequestOwner)
 {
-	UBasicAnnouncementsGetContentRequest* Req = NewObject<UBasicAnnouncementsGetContentRequest>(Outer);
+	UBasicAnnouncementsGetContentRequest* Req = NewObject<UBasicAnnouncementsGetContentRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -47,8 +47,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", DisplayName="Beam - Make GetTokenList",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Cid,_Pid,Outer"))
-	static UGetTokenListRequest* Make(int32 _PageSize, int32 _Page, FOptionalInt64 _Cid, FOptionalString _Pid, int64 _GamerTagOrAccountId, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", DisplayName="Beam - Make GetTokenList",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Cid,_Pid,RequestOwner"))
+	static UGetTokenListRequest* Make(int32 _PageSize, int32 _Page, FOptionalInt64 _Cid, FOptionalString _Pid, int64 _GamerTagOrAccountId, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

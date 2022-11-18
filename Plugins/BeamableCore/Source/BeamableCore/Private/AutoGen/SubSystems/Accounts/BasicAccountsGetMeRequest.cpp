@@ -23,9 +23,9 @@ void UBasicAccountsGetMeRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UBasicAccountsGetMeRequest* UBasicAccountsGetMeRequest::Make(UObject* Outer)
+UBasicAccountsGetMeRequest* UBasicAccountsGetMeRequest::Make(UObject* RequestOwner)
 {
-	UBasicAccountsGetMeRequest* Req = NewObject<UBasicAccountsGetMeRequest>(Outer);
+	UBasicAccountsGetMeRequest* Req = NewObject<UBasicAccountsGetMeRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

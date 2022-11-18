@@ -27,9 +27,9 @@ void UObjectMailPutMailRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UObjectMailPutMailRequest* UObjectMailPutMailRequest::Make(int64 _ObjectId, int64 _MailId, FOptionalBool _bAcceptAttachments, FOptionalString _Body, FOptionalString _Expires, FOptionalString _Subject, FOptionalString _State, FOptionalString _Category, UObject* Outer)
+UObjectMailPutMailRequest* UObjectMailPutMailRequest::Make(int64 _ObjectId, int64 _MailId, FOptionalBool _bAcceptAttachments, FOptionalString _Body, FOptionalString _Expires, FOptionalString _Subject, FOptionalString _State, FOptionalString _Category, UObject* RequestOwner)
 {
-	UObjectMailPutMailRequest* Req = NewObject<UObjectMailPutMailRequest>(Outer);
+	UObjectMailPutMailRequest* Req = NewObject<UObjectMailPutMailRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

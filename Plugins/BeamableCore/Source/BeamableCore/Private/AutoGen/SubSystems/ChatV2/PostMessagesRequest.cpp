@@ -27,9 +27,9 @@ void UPostMessagesRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostMessagesRequest* UPostMessagesRequest::Make(int64 _ObjectId, FString _RoomId, FString _Content, UObject* Outer)
+UPostMessagesRequest* UPostMessagesRequest::Make(int64 _ObjectId, FString _RoomId, FString _Content, UObject* RequestOwner)
 {
-	UPostMessagesRequest* Req = NewObject<UPostMessagesRequest>(Outer);
+	UPostMessagesRequest* Req = NewObject<UPostMessagesRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

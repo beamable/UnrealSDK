@@ -27,9 +27,9 @@ void UPutDonationsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutDonationsRequest* UPutDonationsRequest::Make(int64 _ObjectId, int64 _RecipientId, int64 _Amount, FOptionalBool _bAutoClaim, UObject* Outer)
+UPutDonationsRequest* UPutDonationsRequest::Make(int64 _ObjectId, int64 _RecipientId, int64 _Amount, FOptionalBool _bAutoClaim, UObject* RequestOwner)
 {
-	UPutDonationsRequest* Req = NewObject<UPutDonationsRequest>(Outer);
+	UPutDonationsRequest* Req = NewObject<UPutDonationsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

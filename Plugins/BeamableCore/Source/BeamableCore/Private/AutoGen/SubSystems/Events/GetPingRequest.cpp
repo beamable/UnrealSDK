@@ -9,7 +9,7 @@ void UGetPingRequest::BuildVerb(FString& VerbString) const
 void UGetPingRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/events/{objectId}/ping");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *ObjectId);
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -23,9 +23,9 @@ void UGetPingRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetPingRequest* UGetPingRequest::Make(int64 _ObjectId, UObject* Outer)
+UGetPingRequest* UGetPingRequest::Make(FString _ObjectId, UObject* RequestOwner)
 {
-	UGetPingRequest* Req = NewObject<UGetPingRequest>(Outer);
+	UGetPingRequest* Req = NewObject<UGetPingRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

@@ -27,9 +27,9 @@ void UPostDataUploadURLFromPortalRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostDataUploadURLFromPortalRequest* UPostDataUploadURLFromPortalRequest::Make(TArray<UUploadRequestFromPortal*> _Request, FOptionalInt64 _PlayerId, UObject* Outer)
+UPostDataUploadURLFromPortalRequest* UPostDataUploadURLFromPortalRequest::Make(TArray<UUploadRequestFromPortal*> _Request, FOptionalInt64 _PlayerId, UObject* RequestOwner)
 {
-	UPostDataUploadURLFromPortalRequest* Req = NewObject<UPostDataUploadURLFromPortalRequest>(Outer);
+	UPostDataUploadURLFromPortalRequest* Req = NewObject<UPostDataUploadURLFromPortalRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

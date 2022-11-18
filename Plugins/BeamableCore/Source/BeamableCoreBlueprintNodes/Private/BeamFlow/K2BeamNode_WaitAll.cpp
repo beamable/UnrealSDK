@@ -12,20 +12,25 @@
 #include "K2Node_CreateDelegate.h"
 #include "K2Node_MakeArray.h"
 #include "ToolMenu.h"
-#include "BeamBackend/BeamRequestWaitHandle.h"
-#include "BeamBackend/BeamBackend.h"
+#include "Framework/Notifications/NotificationManager.h"
+#include "RequestTracker/BeamRequestTracker.h"
+#include "RequestTracker/BeamWaitHandle.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "Misc/DefaultValueHelper.h"
+#include "Widgets/Notifications/SNotificationList.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_WaitAll"
 
 
 using namespace BeamK2;
 
-const FName UK2BeamNode_WaitAll::SelfFunctionName = GET_FUNCTION_NAME_CHECKED(UBeamBackend, GetSelf);
-const FName UK2BeamNode_WaitAll::WaitAllFunctionName = GET_FUNCTION_NAME_CHECKED(UBeamBackend, WaitAll);
+const FName UK2BeamNode_WaitAll::SelfFunctionName = GET_FUNCTION_NAME_CHECKED(UBeamRequestTracker, GetSelf);
+const FName UK2BeamNode_WaitAll::WaitAllFunctionName = GET_FUNCTION_NAME_CHECKED(UBeamRequestTracker, WaitAll);
 
 const FName UK2BeamNode_WaitAll::P_CompleteCallback = FName("OnComplete");
+const FName UK2BeamNode_WaitAll::P_RequestContexts = FName("RequestContexts");
+const FName UK2BeamNode_WaitAll::P_Operations = FName("Operations");
+const FName UK2BeamNode_WaitAll::P_Waits = FName("Waits");
 const FName UK2BeamNode_WaitAll::P_Contexts = FName("Contexts");
 const FName UK2BeamNode_WaitAll::P_Requests = FName("Requests");
 const FName UK2BeamNode_WaitAll::P_Responses = FName("Responses");
@@ -52,7 +57,7 @@ void UK2BeamNode_WaitAll::AllocateDefaultPins()
 
 	// Create the output pins in an order that improves usability.
 	const auto SynchronousFlowPin = CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Then);
-	const auto WaitHandle = CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Struct, FBeamRequestWaitHandle::StaticStruct(), TEXT("WaitHandle"));
+	const auto WaitHandle = CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Struct, FBeamWaitHandle::StaticStruct(), TEXT("WaitHandle"));
 	SynchronousFlowPin->PinFriendlyName = LOCTEXT("BeamNode", "Synchronous Flow");
 	WaitHandle->PinToolTip = TEXT("");
 
@@ -62,13 +67,14 @@ void UK2BeamNode_WaitAll::AllocateDefaultPins()
 	if (bIsInBeamFlowMode)
 		CreateBeamFlowModePins();
 	else
-		ParseFunctionForNodeInputPins(this, FindFunctionByName<UBeamBackend>(WaitAllFunctionName), {P_CompleteCallback}, true);
+		ParseFunctionForNodeInputPins(this, FindFunctionByName<UBeamRequestTracker>(WaitAllFunctionName), {P_CompleteCallback}, true);
 }
 
 UEdGraphPin* UK2BeamNode_WaitAll::CreateContextInputPin(const int32 PinIdx)
 {
-	const auto PinName = FName(FString::Printf(TEXT("Context - %d"), PinIdx));
-	return CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Struct, FBeamRequestContext::StaticStruct(), PinName);
+	// To see a bit more about how Wildcard pins work, take a look at (Search the project for this type): UK2Node_GetArrayItem
+	const auto PinName = FName(FString::Printf(TEXT("Dependency - %d"), PinIdx));
+	return CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Wildcard, PinName);
 }
 
 void UK2BeamNode_WaitAll::AddInputPin()
@@ -114,7 +120,7 @@ void UK2BeamNode_WaitAll::RemoveInputPin(UEdGraphPin* Pin)
 				if (PinNameIdx > RemovedPinNameIdx)
 				{
 					LocalPin->Modify();
-					LocalPin->PinName = FName(FString::Printf(TEXT("Context - %d"), PinNameIdx - 1));
+					LocalPin->PinName = FName(FString::Printf(TEXT("Dependency - %d"), PinNameIdx - 1));
 				}
 			}
 		}
@@ -132,43 +138,95 @@ bool UK2BeamNode_WaitAll::CanRemovePin(const UEdGraphPin* Pin) const
 	);
 }
 
+void UK2BeamNode_WaitAll::NotifyPinConnectionListChanged(UEdGraphPin* Pin)
+{
+	Super::NotifyPinConnectionListChanged(Pin);
+
+	// If it's a wildcard pin that was changed.
+	if (Pin->PinName.ToString().StartsWith(TEXT("Dependency")))
+		PropagatePinType(Pin);
+}
+
+void UK2BeamNode_WaitAll::PostReconstructNode()
+{
+	Super::PostReconstructNode();
+
+	for (const auto& Pin : Pins)
+	{
+		if (!Pin->PinName.ToString().StartsWith(TEXT("Dependency"))) continue;
+		PropagatePinType(Pin);
+	}
+}
+
 void UK2BeamNode_WaitAll::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
 {
 	Super::ExpandNode(CompilerContext, SourceGraph);
 
+
 	const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
 
 	// Create nodes calling the GetSelf method of the UBeamBackend and the WaitAll function
-	const auto CallSelfNode = CreateCallFunctionNode(this, CompilerContext, SourceGraph, SelfFunctionName, UBeamBackend::StaticClass());
-	const auto CallWaitAllNode = CreateCallFunctionNode(this, CompilerContext, SourceGraph, WaitAllFunctionName, UBeamBackend::StaticClass());
+	const auto CallSelfNode = CreateCallFunctionNode(this, CompilerContext, SourceGraph, SelfFunctionName, UBeamRequestTracker::StaticClass());
+	const auto CallWaitAllNode = CreateCallFunctionNode(this, CompilerContext, SourceGraph, WaitAllFunctionName, UBeamRequestTracker::StaticClass());
 
 	// Link the CallSelf node to the CallWaitAll node
 	const auto bConnectedSubsystemToFunctionCall = K2Schema->TryCreateConnection(CallSelfNode->GetReturnValuePin(), K2Schema->FindSelfPin(*CallWaitAllNode, EGPD_Input));
 	check(bConnectedSubsystemToFunctionCall)
 
+
 	// Gets a list of all input pins that are structs in this wrapper node.
-	const auto AllInputPins = Pins.FilterByPredicate([](const UEdGraphPin* P)
+	TArray<UEdGraphPin*> RequestContextPins;
+	TArray<UEdGraphPin*> OperationHandlePins;
+	TArray<UEdGraphPin*> WaitHandlePins;
+	for (const auto& Pin : Pins)
 	{
-		return P->PinType.PinCategory == UEdGraphSchema_K2::PC_Struct && P->Direction == EGPD_Input;
-	});
+		if (!Pin->PinName.ToString().StartsWith(TEXT("Dependency"))) continue;
 
-	// Creates a make array node with the same amount of Struct pins as we have here.
-	const auto MakeArrayNode = CreateMakeArrayNode(this, CompilerContext, SourceGraph, AllInputPins.Num());
+		if (Pin->PinType.PinSubCategoryObject == FBeamRequestContext::StaticStruct())
+			RequestContextPins.Add(Pin);
 
-	// Connect the output pin of the make array node to the input Contexts the WaitAll node requires
-	const auto MakeArrayOutputPin = MakeArrayNode->GetOutputPin();
-	const auto CallWaitAllContextPin = CallWaitAllNode->FindPin(P_Contexts);
-	const auto bDidConnectMakeArrayResultPin = K2Schema->TryCreateConnection(MakeArrayOutputPin, CallWaitAllContextPin);
-	check(bDidConnectMakeArrayResultPin)
+		if (Pin->PinType.PinSubCategoryObject == FBeamOperationHandle::StaticStruct())
+			OperationHandlePins.Add(Pin);
 
-	// Move all pins connected to the Context input pins in the wrapper node to the MakeArray intermediate node
-	auto MakeArrayNodeInputPins = MakeArrayNode->Pins.FilterByPredicate([](const UEdGraphPin* P) { return P->Direction == EGPD_Input; });
-	check(MakeArrayNode->NumInputs == AllInputPins.Num())
-	for (int i = 0; i < MakeArrayNodeInputPins.Num(); ++i)
-	{
-		const auto bDidMoveInputPin = CompilerContext.MovePinLinksToIntermediate(*AllInputPins[i], *MakeArrayNodeInputPins[i]);
-		check(!bDidMoveInputPin.IsFatal())
+		if (Pin->PinType.PinSubCategoryObject == FBeamWaitHandle::StaticStruct())
+			WaitHandlePins.Add(Pin);
 	}
+
+	const auto ExpandMakeArrayNodes = [this](FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UK2Node_CallFunction* CallWaitAllNode, const FName WaitAllInputParam,
+	                                         TArray<UEdGraphPin*> ArrayContentPins) -> UEdGraphPin*
+	{
+		const UEdGraphSchema_K2* K2 = GetDefault<UEdGraphSchema_K2>();
+
+		// Creates a make array node with the same amount of Struct pins as we have here.
+		const auto MakeArrayNode = CreateMakeArrayNode(this, CompilerContext, SourceGraph, ArrayContentPins.Num());
+
+		// Connect the output pin of the make array node to the input Contexts the WaitAll node requires
+		const auto MakeArrayOutputPin = MakeArrayNode->GetOutputPin();
+		const auto CallWaitAllContextPin = CallWaitAllNode->FindPin(WaitAllInputParam);
+		const auto bDidConnectMakeArrayResultPin = K2->TryCreateConnection(MakeArrayOutputPin, CallWaitAllContextPin);
+		check(bDidConnectMakeArrayResultPin)
+
+		// Move all pins connected to the Context input pins in the wrapper node to the MakeArray intermediate node
+		auto MakeArrayNodeInputPins = MakeArrayNode->Pins.FilterByPredicate([](const UEdGraphPin* P) { return P->Direction == EGPD_Input; });
+		check(MakeArrayNode->NumInputs == ArrayContentPins.Num())
+		for (int i = 0; i < MakeArrayNodeInputPins.Num(); ++i)
+		{
+			const auto bDidMoveInputPin = CompilerContext.MovePinLinksToIntermediate(*ArrayContentPins[i], *MakeArrayNodeInputPins[i]);
+			check(!bDidMoveInputPin.IsFatal())
+		}
+
+		return MakeArrayOutputPin;
+	};
+
+	if (RequestContextPins.Num() > 0)
+		ExpandMakeArrayNodes(CompilerContext, SourceGraph, CallWaitAllNode, P_RequestContexts, RequestContextPins);
+
+	if (OperationHandlePins.Num() > 0)
+		ExpandMakeArrayNodes(CompilerContext, SourceGraph, CallWaitAllNode, P_Operations, OperationHandlePins);
+
+	if (WaitHandlePins.Num() > 0)
+		ExpandMakeArrayNodes(CompilerContext, SourceGraph, CallWaitAllNode, P_Waits, WaitHandlePins);
+
 
 	// Get the execution pin from the CallWaitAll node
 	const auto CallWaitAllExecPin = K2Schema->FindExecutionPin(*CallWaitAllNode, EGPD_Input);
@@ -188,7 +246,7 @@ void UK2BeamNode_WaitAll::ExpandNode(FKismetCompilerContext& CompilerContext, UE
 		const auto ErrorsPin = FindPinChecked(P_Errors);
 
 		const TArray<UEdGraphPin*> StartingGraphs{OnCompleteFlowPin,};
-		const TArray<FName> RelevantEventSpawningFunctionNames{GET_FUNCTION_NAME_CHECKED(UBeamBackend, WaitAll)};
+		const TArray<FName> RelevantEventSpawningFunctionNames{GET_FUNCTION_NAME_CHECKED(UBeamRequestTracker, WaitAll)};
 		TArray<TArray<UEdGraphNode*>> OutPerFlowNodes;
 		TArray<TArray<UEdGraphNode*>> OutPerEventFlowNodes;
 		GetPerBeamFlowNodes(CompilerContext, this, StartingGraphs, RelevantEventSpawningFunctionNames, OutPerFlowNodes, OutPerEventFlowNodes);
@@ -266,6 +324,57 @@ void UK2BeamNode_WaitAll::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeC
 					FExecuteAction::CreateUObject(const_cast<UK2BeamNode_WaitAll*>(this), &UK2BeamNode_WaitAll::AddInputPin)
 				)
 			);
+		}
+	}
+}
+
+void UK2BeamNode_WaitAll::PropagatePinType(UEdGraphPin* const& Pin) const
+{
+	// If it's a wildcard pin that was changed.
+	if (Pin && Pin->ParentPin == nullptr)
+	{
+		const auto bIsConnected = Pin->LinkedTo.Num() > 0;
+		if (bIsConnected)
+		{
+			const auto bIsWildcard = (Pin->PinType.PinCategory == UEdGraphSchema_K2::PC_Wildcard);
+			if (bIsWildcard)
+			{
+				const auto& NewType = Pin->LinkedTo[0]->PinType;
+				// If the connected pin is a FBeamWaitHandle, FBeamRequestContext or a FBeamOperationHandle struct, we propagate the type of that pin.
+				if (NewType.PinSubCategoryObject == FBeamWaitHandle::StaticStruct() ||
+					NewType.PinSubCategoryObject == FBeamOperationHandle::StaticStruct() ||
+					NewType.PinSubCategoryObject == FBeamRequestContext::StaticStruct())
+				{
+					Pin->PinType = NewType;
+					Pin->PinType.bIsReference = false;
+					GetGraph()->NotifyGraphChanged();
+				}
+				else
+				{
+					FNotificationInfo Notification(LOCTEXT("UnsupportedWaitHandleDependencyType_Error",
+					                                       "Unsupported WaitHandle Dependency type! Only supported types are: FBeamWaitHandle, FBeamRequestContext and FBeamOperationHandle."));
+					Notification.bUseSuccessFailIcons = true;
+					Notification.bFireAndForget = true;
+					Notification.ExpireDuration = 7;
+					Notification.bUseLargeFont = true;
+					Notification.FadeInDuration = 1.0f;
+					Notification.FadeOutDuration = 1.0f;
+					//How long our Notification widget is, I believe this is in pixels.
+					Notification.WidthOverride = 500.0f;
+					FSlateNotificationManager::Get().AddNotification(Notification);
+
+					Pin->BreakAllPinLinks();
+				}
+			}
+		}
+		else
+		{
+			if (Pin->LinkedTo.Num() == 0)
+			{
+				Pin->PinType.PinCategory = UEdGraphSchema_K2::PC_Wildcard;
+				Pin->PinType.PinSubCategory = NAME_None;
+				Pin->PinType.PinSubCategoryObject = nullptr;
+			}
 		}
 	}
 }

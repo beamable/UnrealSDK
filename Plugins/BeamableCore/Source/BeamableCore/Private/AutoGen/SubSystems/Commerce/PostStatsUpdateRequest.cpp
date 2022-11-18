@@ -27,9 +27,9 @@ void UPostStatsUpdateRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostStatsUpdateRequest* UPostStatsUpdateRequest::Make(int64 _ObjectId, TMap<FString, FString> _StatsBefore, TMap<FString, FString> _StatsAfter, UObject* Outer)
+UPostStatsUpdateRequest* UPostStatsUpdateRequest::Make(int64 _ObjectId, TMap<FString, FString> _StatsBefore, TMap<FString, FString> _StatsAfter, UObject* RequestOwner)
 {
-	UPostStatsUpdateRequest* Req = NewObject<UPostStatsUpdateRequest>(Outer);
+	UPostStatsUpdateRequest* Req = NewObject<UPostStatsUpdateRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

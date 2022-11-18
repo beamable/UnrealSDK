@@ -5,6 +5,7 @@
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
+#include "AutoGen/Optionals/OptionalArrayOfExternalIdentity.h"
 #include "AutoGen/Optionals/OptionalArrayOfRoleMapping.h"
 
 #include "AccountPortalView.generated.h"
@@ -27,8 +28,12 @@ public:
 	FOptionalString RoleString;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Language", Category="Beam")
 	FOptionalString Language;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="External", Category="Beam")
+	FOptionalArrayOfExternalIdentity External;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Roles", Category="Beam")
 	FOptionalArrayOfRoleMapping Roles;
+
+	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

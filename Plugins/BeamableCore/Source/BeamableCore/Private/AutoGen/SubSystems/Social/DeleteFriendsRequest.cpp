@@ -27,9 +27,9 @@ void UDeleteFriendsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteFriendsRequest* UDeleteFriendsRequest::Make(FString _PlayerId, UObject* Outer)
+UDeleteFriendsRequest* UDeleteFriendsRequest::Make(FString _PlayerId, UObject* RequestOwner)
 {
-	UDeleteFriendsRequest* Req = NewObject<UDeleteFriendsRequest>(Outer);
+	UDeleteFriendsRequest* Req = NewObject<UDeleteFriendsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

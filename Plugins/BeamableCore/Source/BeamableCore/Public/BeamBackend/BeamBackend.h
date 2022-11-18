@@ -8,7 +8,6 @@
 
 #include "BeamEnvironment.h"
 
-#include "BeamBackend/BeamRequestWaitHandle.h"
 #include "BeamBackend/RequestType.h"
 #include "BeamBackend/BeamFullResponse.h"
 
@@ -76,7 +75,7 @@ struct FRequestToRetry
 	/**
 	 * @brief The unique request id.
 	 */
-	FBeamRequestId RequestId = 0;
+	FBeamRequestId RequestId = 0;	
 
 	/**
 	 * @brief Whether or not the request was made with a blueprint compatible handler. 
@@ -96,7 +95,12 @@ struct FRequestToRetry
 	/**
 	 * @brief The authentication token used in the request, if any.
 	 */
-	FBeamAuthToken AuthToken;
+	FBeamAuthToken AuthToken;	
+
+	/**
+	 * @brief A custom error code independent of the HTTP status code.
+	 */
+	FString ErrorCode;
 
 	friend bool operator==(const FRequestToRetry& Lhs, const FRequestToRetry& RHS)
 	{
@@ -144,6 +148,17 @@ DECLARE_MULTICAST_DELEGATE_ThreeParams(FGlobalConnectivityChangedCodeHandler, co
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FGlobalConnectivityChangedHandler, const FBeamRequestContext&, RequestContext, const FRequestType&, FailedRequestType, const bool, bConnected);
 
 /**
+* @brief Subsystems that associate data with in-flight requests and require guarantees that those request objects stay alive need to tell the backend subsystem which
+* requests are still in use by them to guarantee the requests/response data associated with the request won't be cleaned up.
+*/
+DECLARE_DYNAMIC_DELEGATE_OneParam(FTickOnBackendCleanUp, TArray<int64>&, OutUsingRequestIds);
+
+/**
+* @brief Subsystems that associate data with in-flight requests and require and want to react to the fact that a request was completed can register themselves here.
+*/
+DECLARE_DYNAMIC_DELEGATE_OneParam(FTickOnRequestIdCompleted, int64, CompletedRequestId);
+
+/**
  * 
  */
 UCLASS(NotBlueprintable)
@@ -154,6 +169,8 @@ class BEAMABLECORE_API UBeamBackend : public UEngineSubsystem
 	// Forward declaration of the Automated Testing class so we can make it a friend and make it easier to test internal state.
 	// Also, mock request types declared for Automated Testing purposes.
 	friend class FBeamBackendSpec;
+	friend class UBeamRequestTracker;
+	friend class FBeamRequestTrackerSpec;
 
 private:
 	/**
@@ -162,19 +179,9 @@ private:
 	long volatile* InFlightRequestId;
 
 	/**
-	 * @brief  Just an Auto-Increment ID of each running request.
-	 */
-	long volatile* WaitHandleId;
-
-	/**
 	 * @brief Delegate handle to the tick function of the UBeamBackend sub-system used to update and handle retry requests.
 	 */
 	FTSTicker::FDelegateHandle RetryQueueTickHandle;
-
-	/**
-	 * @brief Delegate handle to the tick function of the UBeamBackend sub-system used to update and notify the wait handles. 
-	 */
-	FTSTicker::FDelegateHandle WaitHandleTickHandle;
 
 	/**
 	 * @brief Delegate handle to the tick function of the UBeamBackend sub-system used to clean up completed requests.
@@ -186,16 +193,29 @@ private:
 	 */
 	TQueue<FRequestToRetry> EnqueuedRetries;
 
+	/**
+	 * @brief Delegates that other subsystems register to tell UBeamBackend of RequestIds that they are using.
+	 * This is called to give subsystems an opportunity to clean up their internal state that relates to Requests.
+	 * The subsystems should fill out the given array with any RequestIds that they are still using and don't want to be cleaned up. 
+	 */
+	TArray<FTickOnBackendCleanUp> TickOnBackendCleanUpDelegates;
+
+	/**
+	 * @brief Delegates that other subsystems register to react whenever a request is completed.
+	 * The guarantees here is that OnComplete will have run in all cases for all types of request.
+	 */
+	TArray<FTickOnRequestIdCompleted> TickOnRequestIdCompletedDelegates;
+	
 
 	template <class TRequestData>
 	static void StaticCheckForRequestType();
 
 	template <class TResponseData>
 	static void StaticCheckForResponseType();
-
-	bool TickRetryQueue(float DeltaTime);
-
-	bool TickWaitHandles(float);
+	
+	void TryTriggerRequestCompleteDelegates(const int64& RequestId);
+	
+	bool TickRetryQueue(float DeltaTime);	
 
 	bool TickCleanUp(float deltaTime);
 
@@ -214,14 +234,11 @@ public:
 	static const FString HEADER_PROJECT_ID;
 
 	/**
-	 * @brief Since it only actually makes sense to retry errors in some cases for non-authenticated requests, we keep a list of the error codes that we do try again. 
+	 * @brief List of error codes that mean we should re-auth and automatically make the request again.
 	 */
-	const static TArray<int> NON_AUTH_REQUESTS_RETRY_ALLOWED_ERRORS;
+	const static TArray<FString> AUTH_ERROR_CODE_RETRY_ALLOWED;
 
-	/**
-	 * @brief Since it only actually makes sense to retry errors in some cases, we keep a list of the error codes that we do try again. 
-	 */
-	const static TArray<int> AUTH_REQUESTS_RETRY_ALLOWED_ERRORS;
+	
 
 	/**
 	 * @brief Pointer to the UBeamEnvironment Engine Subsystem. Gathers which platform we are running as well as the Beamable SDK version.
@@ -237,7 +254,7 @@ public:
 	UBeamUserSlots* BeamUserSlots;
 
 
-	/** @brief Initializes the auto-increment Id and binds the ExecuteRequestDelegate to DefaultExecuteRequestImpl  */
+	/** @brief Initializes the subsystem.  */
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 	/** Cleans up the system.  */
@@ -253,17 +270,6 @@ public:
 					| |                                             | |                         
 					|_|                                             |_|                         	                                                                               
 	*/
-
-	/**
-	* @brief A RealmHandle struct defining the CustomerID and RealmID that the request is targeting.
-	* Can be overriden at the request level and is only used for unauthenticated request.
-	* Authenticated Requests are expected to pass in the correct RealmHandle for which the Token was generated.
-	*
-	* To see how to send authenticated requests by hand, take a look at the BeamUserSlot SubSystem as well as any
-	* authenticated request from the AutoGen API. 
-	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
-	FBeamRealmHandle UnauthenticatedRequestsTargetRealm;
 
 
 	/**
@@ -504,7 +510,7 @@ public:
 	template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename TCompleteCallback>
 	void ProcessBlueprintRequest(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus,
 	                             const int64& RequestId, TRequestData* RequestData,
-	                             TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete);
+	                             TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete);	
 
 	/**
 	 * @brief The blueprint-only version of the Beamable Request Processor implementation for authenticated requests.	 * 
@@ -582,48 +588,6 @@ public:
 	void ProcessAuthenticatedCodeRequest(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus, const int64& RequestId,
 	                                     const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken, TRequestData* RequestData,
 	                                     const TBeamFullResponseHandler<TRequestData*, TResponseData*>& ResponseHandler);
-
-	/*
- 
- __          __   _ _     _____                            _   
- \ \        / /  (_) |   |  __ \                          | |  
-  \ \  /\  / /_ _ _| |_  | |__) |___  __ _ _   _  ___  ___| |_ 
-   \ \/  \/ / _` | | __| |  _  // _ \/ _` | | | |/ _ \/ __| __|
-	\  /\  / (_| | | |_  | | \ \  __/ (_| | |_| |  __/\__ \ |_ 
-	 \/  \/ \__,_|_|\__| |_|  \_\___|\__, |\__,_|\___||___/\__|
-										| |                    
-										|_|                    
-	*/
-
-	/**
-	 * @brief List of wait handles that are currently being waited on.
-	 */
-	TArray<FBeamRequestWaitHandle> ActiveWaitHandles;
-
-
-	/**
-	 * @brief Maps all Active WaitHandles to the RequestIds that are being waited on.
-	 */
-	TMultiMap<FBeamRequestWaitHandle, FBeamRequestId> ActiveDependenciesForWaitHandles;
-
-	/**
-	 * @brief Maps each InFlight Requests to all WaitHandles that are waiting on them.
-	 */
-	TMultiMap<FBeamRequestId, FBeamRequestWaitHandle> InFlightRequestsToDependedOnMap;
-
-	/**
-	 * @brief Maps each WaitHandle to their WaitComplete callback.
-	 */
-	TMap<FBeamRequestWaitHandle, FOnWaitComplete> ActiveWaitHandleCallbacks;
-
-	/**
-	 * @brief Given a set of contexts, waits until the frame they are all done and then calls OnComplete. 
-	 * @param Contexts The set of Request Contexts to wait for.
-	 * @param OnComplete What to do when all those requests are done.
-	 * @return A Wait Handle identifying this wait all command.
-	 */
-	UFUNCTION(BlueprintCallable, Category="Beam", meta=(BeamFlowStart))
-	FBeamRequestWaitHandle WaitAll(const TArray<FBeamRequestContext>& Contexts, FOnWaitComplete OnComplete);
 
 
 	/*

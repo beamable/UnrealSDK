@@ -27,9 +27,9 @@ void UPutReadRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutReadRequest* UPutReadRequest::Make(int64 _ObjectId, FOptionalString _Announcement, FOptionalArrayOfString _Announcements, UObject* Outer)
+UPutReadRequest* UPutReadRequest::Make(int64 _ObjectId, FOptionalString _Announcement, FOptionalArrayOfString _Announcements, UObject* RequestOwner)
 {
-	UPutReadRequest* Req = NewObject<UPutReadRequest>(Outer);
+	UPutReadRequest* Req = NewObject<UPutReadRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

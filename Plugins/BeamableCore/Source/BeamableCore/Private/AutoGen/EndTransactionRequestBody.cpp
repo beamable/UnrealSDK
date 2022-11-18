@@ -3,6 +3,8 @@
 
 
 
+
+
 void UEndTransactionRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("transaction"), Transaction);

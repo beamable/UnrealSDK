@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", DisplayName="Beam - Make PutConfig",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UPutConfigRequest* Make(TMap<FString, FString> _Config, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", DisplayName="Beam - Make PutConfig",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UPutConfigRequest* Make(TMap<FString, FString> _Config, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

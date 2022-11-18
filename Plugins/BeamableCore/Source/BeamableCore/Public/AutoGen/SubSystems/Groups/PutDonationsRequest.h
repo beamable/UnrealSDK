@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Groups", DisplayName="Beam - Make PutDonations",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_bAutoClaim,Outer"))
-	static UPutDonationsRequest* Make(int64 _ObjectId, int64 _RecipientId, int64 _Amount, FOptionalBool _bAutoClaim, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Groups", DisplayName="Beam - Make PutDonations",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bAutoClaim,RequestOwner"))
+	static UPutDonationsRequest* Make(int64 _ObjectId, int64 _RecipientId, int64 _Amount, FOptionalBool _bAutoClaim, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -21,14 +21,19 @@
       "LoadingPhase": "Default"
     },
     {
+      "Name": "BeamableCoreBlueprintNodes",
+      "Type": "UncookedOnly",
+      "LoadingPhase": "Default"
+    },
+    {
       "Name": "BeamableCoreEditor",
       "Type": "Editor",
       "LoadingPhase": "Default"
     },
     {
-      "Name": "BeamableCoreBlueprintNodes",
-      "Type": "UncookedOnly",
-      "LoadingPhase": "Default"
+      "Name": "BeamableCoreRuntime",
+      "Type": "Runtime",
+      "LoadingPhase": "PostDefault"
     }
   ]
 }

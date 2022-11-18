@@ -23,9 +23,9 @@ void UGetPaymentsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetPaymentsRequest* UGetPaymentsRequest::Make(int64 _ObjectId, UObject* Outer)
+UGetPaymentsRequest* UGetPaymentsRequest::Make(int64 _ObjectId, UObject* RequestOwner)
 {
-	UGetPaymentsRequest* Req = NewObject<UGetPaymentsRequest>(Outer);
+	UGetPaymentsRequest* Req = NewObject<UGetPaymentsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

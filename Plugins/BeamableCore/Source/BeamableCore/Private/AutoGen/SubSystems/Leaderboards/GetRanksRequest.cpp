@@ -15,7 +15,7 @@ void UGetRanksRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("ids"), *Ids);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("ids"), *Ids);
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -26,9 +26,9 @@ void UGetRanksRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetRanksRequest* UGetRanksRequest::Make(FString _ObjectId, FString _Ids, UObject* Outer)
+UGetRanksRequest* UGetRanksRequest::Make(FString _ObjectId, FString _Ids, UObject* RequestOwner)
 {
-	UGetRanksRequest* Req = NewObject<UGetRanksRequest>(Outer);
+	UGetRanksRequest* Req = NewObject<UGetRanksRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

@@ -3,6 +3,8 @@
 
 
 
+
+
 void ULink ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("href"), Href);

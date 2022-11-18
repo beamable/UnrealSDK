@@ -16,19 +16,19 @@ void UBasicTournamentsGetMeRequest::BuildRoute(FString& RouteString) const
 	bool bIsFirstQueryParam = true;
 	if(TournamentId.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("tournamentId"), *TournamentId.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("tournamentId"), *TournamentId.Val);
 		bIsFirstQueryParam = false;
 	}
 
 	if(ContentId.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("contentId"), *ContentId.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("contentId"), *ContentId.Val);
 		bIsFirstQueryParam = false;
 	}
 
 	if(bHasUnclaimedRewards.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("hasUnclaimedRewards"), bHasUnclaimedRewards.Val ? *TEXT("true") : *TEXT("false"));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("hasUnclaimedRewards"), bHasUnclaimedRewards.Val ? TEXT("true") : TEXT("false"));
 		bIsFirstQueryParam = false;
 	}
 
@@ -40,9 +40,9 @@ void UBasicTournamentsGetMeRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UBasicTournamentsGetMeRequest* UBasicTournamentsGetMeRequest::Make(FOptionalString _TournamentId, FOptionalString _ContentId, FOptionalBool _bHasUnclaimedRewards, UObject* Outer)
+UBasicTournamentsGetMeRequest* UBasicTournamentsGetMeRequest::Make(FOptionalString _TournamentId, FOptionalString _ContentId, FOptionalBool _bHasUnclaimedRewards, UObject* RequestOwner)
 {
-	UBasicTournamentsGetMeRequest* Req = NewObject<UBasicTournamentsGetMeRequest>(Outer);
+	UBasicTournamentsGetMeRequest* Req = NewObject<UBasicTournamentsGetMeRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->TournamentId = _TournamentId;

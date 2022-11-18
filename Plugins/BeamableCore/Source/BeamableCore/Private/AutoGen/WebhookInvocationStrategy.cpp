@@ -3,6 +3,8 @@
 
 
 
+
+
 void UWebhookInvocationStrategy ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("invocationType"), UWebhookInvocationTypeLibrary::WebhookInvocationTypeToSerializationName(InvocationType));

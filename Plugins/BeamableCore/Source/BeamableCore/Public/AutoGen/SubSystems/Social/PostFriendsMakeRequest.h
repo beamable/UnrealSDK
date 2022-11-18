@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Social", DisplayName="Beam - Make PostFriendsMake",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UPostFriendsMakeRequest* Make(int64 _GamerTag, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Social", DisplayName="Beam - Make PostFriendsMake",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UPostFriendsMakeRequest* Make(int64 _GamerTag, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

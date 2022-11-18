@@ -16,7 +16,7 @@ void UGetAnnouncementsRequest::BuildRoute(FString& RouteString) const
 	bool bIsFirstQueryParam = true;
 	if(bIncludeDeleted.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("include_deleted"), bIncludeDeleted.Val ? *TEXT("true") : *TEXT("false"));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("include_deleted"), bIncludeDeleted.Val ? TEXT("true") : TEXT("false"));
 		bIsFirstQueryParam = false;
 	}
 
@@ -28,9 +28,9 @@ void UGetAnnouncementsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAnnouncementsRequest* UGetAnnouncementsRequest::Make(int64 _ObjectId, FOptionalBool _bIncludeDeleted, UObject* Outer)
+UGetAnnouncementsRequest* UGetAnnouncementsRequest::Make(int64 _ObjectId, FOptionalBool _bIncludeDeleted, UObject* RequestOwner)
 {
-	UGetAnnouncementsRequest* Req = NewObject<UGetAnnouncementsRequest>(Outer);
+	UGetAnnouncementsRequest* Req = NewObject<UGetAnnouncementsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

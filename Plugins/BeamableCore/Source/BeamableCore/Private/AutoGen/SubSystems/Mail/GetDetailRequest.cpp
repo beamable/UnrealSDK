@@ -15,7 +15,7 @@ void UGetDetailRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("mid"), *FString::FromInt(Mid));
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("mid"), *FString::FromInt(Mid));
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -26,9 +26,9 @@ void UGetDetailRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetDetailRequest* UGetDetailRequest::Make(int64 _ObjectId, int64 _Mid, UObject* Outer)
+UGetDetailRequest* UGetDetailRequest::Make(int64 _ObjectId, int64 _Mid, UObject* RequestOwner)
 {
-	UGetDetailRequest* Req = NewObject<UGetDetailRequest>(Outer);
+	UGetDetailRequest* Req = NewObject<UGetDetailRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

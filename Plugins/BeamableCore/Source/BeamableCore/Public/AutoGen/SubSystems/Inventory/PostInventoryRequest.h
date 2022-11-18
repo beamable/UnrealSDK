@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Inventory", DisplayName="Beam - Make PostInventory",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Scopes,Outer"))
-	static UPostInventoryRequest* Make(int64 _ObjectId, FOptionalArrayOfString _Scopes, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Inventory", DisplayName="Beam - Make PostInventory",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Scopes,RequestOwner"))
+	static UPostInventoryRequest* Make(int64 _ObjectId, FOptionalArrayOfString _Scopes, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

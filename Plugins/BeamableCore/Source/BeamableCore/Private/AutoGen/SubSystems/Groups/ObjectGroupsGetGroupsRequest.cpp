@@ -23,9 +23,9 @@ void UObjectGroupsGetGroupsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UObjectGroupsGetGroupsRequest* UObjectGroupsGetGroupsRequest::Make(int64 _ObjectId, UObject* Outer)
+UObjectGroupsGetGroupsRequest* UObjectGroupsGetGroupsRequest::Make(int64 _ObjectId, UObject* RequestOwner)
 {
-	UObjectGroupsGetGroupsRequest* Req = NewObject<UObjectGroupsGetGroupsRequest>(Outer);
+	UObjectGroupsGetGroupsRequest* Req = NewObject<UObjectGroupsGetGroupsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

@@ -3,6 +3,13 @@
 
 
 
+
+void UEmptyRsp::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
+{
+	OuterOwner = RequestData;
+	BeamDeserialize(ResponseContent);	
+}
+
 void UEmptyRsp ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	

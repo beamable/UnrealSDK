@@ -27,9 +27,9 @@ void UPostGoogleplayPurchaseVerifyRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostGoogleplayPurchaseVerifyRequest* UPostGoogleplayPurchaseVerifyRequest::Make(FString _Receipt, UObject* Outer)
+UPostGoogleplayPurchaseVerifyRequest* UPostGoogleplayPurchaseVerifyRequest::Make(FString _Receipt, UObject* RequestOwner)
 {
-	UPostGoogleplayPurchaseVerifyRequest* Req = NewObject<UPostGoogleplayPurchaseVerifyRequest>(Outer);
+	UPostGoogleplayPurchaseVerifyRequest* Req = NewObject<UPostGoogleplayPurchaseVerifyRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

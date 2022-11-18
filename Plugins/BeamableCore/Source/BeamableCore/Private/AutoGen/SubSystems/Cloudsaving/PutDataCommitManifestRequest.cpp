@@ -27,9 +27,9 @@ void UPutDataCommitManifestRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutDataCommitManifestRequest* UPutDataCommitManifestRequest::Make(TArray<UUploadRequestBody*> _Request, FOptionalInt64 _PlayerId, UObject* Outer)
+UPutDataCommitManifestRequest* UPutDataCommitManifestRequest::Make(TArray<UUploadRequestBody*> _Request, FOptionalInt64 _PlayerId, UObject* RequestOwner)
 {
-	UPutDataCommitManifestRequest* Req = NewObject<UPutDataCommitManifestRequest>(Outer);
+	UPutDataCommitManifestRequest* Req = NewObject<UPutDataCommitManifestRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

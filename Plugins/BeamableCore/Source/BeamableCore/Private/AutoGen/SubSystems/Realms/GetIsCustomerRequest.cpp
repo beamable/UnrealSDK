@@ -23,9 +23,9 @@ void UGetIsCustomerRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetIsCustomerRequest* UGetIsCustomerRequest::Make(UObject* Outer)
+UGetIsCustomerRequest* UGetIsCustomerRequest::Make(UObject* RequestOwner)
 {
-	UGetIsCustomerRequest* Req = NewObject<UGetIsCustomerRequest>(Outer);
+	UGetIsCustomerRequest* Req = NewObject<UGetIsCustomerRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

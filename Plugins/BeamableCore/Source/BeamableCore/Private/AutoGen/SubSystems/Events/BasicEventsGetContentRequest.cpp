@@ -23,9 +23,9 @@ void UBasicEventsGetContentRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UBasicEventsGetContentRequest* UBasicEventsGetContentRequest::Make(UObject* Outer)
+UBasicEventsGetContentRequest* UBasicEventsGetContentRequest::Make(UObject* RequestOwner)
 {
-	UBasicEventsGetContentRequest* Req = NewObject<UBasicEventsGetContentRequest>(Outer);
+	UBasicEventsGetContentRequest* Req = NewObject<UBasicEventsGetContentRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

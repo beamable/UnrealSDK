@@ -16,7 +16,7 @@ void UGetCloudsavingRequest::BuildRoute(FString& RouteString) const
 	bool bIsFirstQueryParam = true;
 	if(PlayerId.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("playerId"), *FString::FromInt(PlayerId.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("playerId"), *FString::FromInt(PlayerId.Val));
 		bIsFirstQueryParam = false;
 	}
 
@@ -28,9 +28,9 @@ void UGetCloudsavingRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetCloudsavingRequest* UGetCloudsavingRequest::Make(FOptionalInt64 _PlayerId, UObject* Outer)
+UGetCloudsavingRequest* UGetCloudsavingRequest::Make(FOptionalInt64 _PlayerId, UObject* RequestOwner)
 {
-	UGetCloudsavingRequest* Req = NewObject<UGetCloudsavingRequest>(Outer);
+	UGetCloudsavingRequest* Req = NewObject<UGetCloudsavingRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->PlayerId = _PlayerId;

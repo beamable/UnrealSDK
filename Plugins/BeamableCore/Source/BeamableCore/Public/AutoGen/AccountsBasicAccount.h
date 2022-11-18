@@ -9,6 +9,7 @@
 #include "AutoGen/Optionals/OptionalArrayOfString.h"
 #include "AutoGen/Optionals/OptionalBool.h"
 #include "AutoGen/GamerTagAssociation.h"
+#include "AutoGen/ExternalIdentity.h"
 #include "AutoGen/Optionals/OptionalArrayOfRoleMapping.h"
 #include "AutoGen/ThirdPartyAssociation.h"
 #include "AutoGen/Optionals/OptionalInt64.h"
@@ -31,6 +32,8 @@ public:
 	int64 UpdatedTimeMillis;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Third Parties", Category="Beam")
 	TArray<UThirdPartyAssociation*> ThirdParties;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="External", Category="Beam")
+	TArray<UExternalIdentity*> External;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tags", Category="Beam")
 	TArray<UGamerTagAssociation*> GamerTags;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Was Migrated", Category="Beam")
@@ -59,6 +62,8 @@ public:
 	FOptionalArrayOfString DeviceIds;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="In Flight", Category="Beam")
 	FOptionalArrayOfInFlightMessage InFlight;
+
+	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

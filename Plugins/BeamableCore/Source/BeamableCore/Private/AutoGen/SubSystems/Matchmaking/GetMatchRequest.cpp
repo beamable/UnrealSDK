@@ -23,9 +23,9 @@ void UGetMatchRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetMatchRequest* UGetMatchRequest::Make(int64 _ObjectId, UObject* Outer)
+UGetMatchRequest* UGetMatchRequest::Make(int64 _ObjectId, UObject* RequestOwner)
 {
-	UGetMatchRequest* Req = NewObject<UGetMatchRequest>(Outer);
+	UGetMatchRequest* Req = NewObject<UGetMatchRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

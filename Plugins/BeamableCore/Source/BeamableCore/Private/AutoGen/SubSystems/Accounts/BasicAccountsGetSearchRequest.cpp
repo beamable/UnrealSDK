@@ -15,15 +15,15 @@ void UBasicAccountsGetSearchRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("query"), *Query);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("query"), *Query);
 	bIsFirstQueryParam = false;
 	
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("page"), *FString::FromInt(Page));
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("page"), *FString::FromInt(Page));
 	bIsFirstQueryParam = false;
 	
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("pagesize"), *FString::FromInt(Pagesize));
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("pagesize"), *FString::FromInt(Pagesize));
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -34,9 +34,9 @@ void UBasicAccountsGetSearchRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UBasicAccountsGetSearchRequest* UBasicAccountsGetSearchRequest::Make(FString _Query, int32 _Page, int32 _Pagesize, UObject* Outer)
+UBasicAccountsGetSearchRequest* UBasicAccountsGetSearchRequest::Make(FString _Query, int32 _Page, int32 _Pagesize, UObject* RequestOwner)
 {
-	UBasicAccountsGetSearchRequest* Req = NewObject<UBasicAccountsGetSearchRequest>(Outer);
+	UBasicAccountsGetSearchRequest* Req = NewObject<UBasicAccountsGetSearchRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Query = _Query;

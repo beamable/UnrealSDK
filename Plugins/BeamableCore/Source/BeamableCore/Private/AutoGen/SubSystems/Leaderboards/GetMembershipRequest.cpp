@@ -15,7 +15,7 @@ void UGetMembershipRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("playerId"), *FString::FromInt(PlayerId));
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("playerId"), *FString::FromInt(PlayerId));
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -26,9 +26,9 @@ void UGetMembershipRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetMembershipRequest* UGetMembershipRequest::Make(FString _ObjectId, int64 _PlayerId, UObject* Outer)
+UGetMembershipRequest* UGetMembershipRequest::Make(FString _ObjectId, int64 _PlayerId, UObject* RequestOwner)
 {
-	UGetMembershipRequest* Req = NewObject<UGetMembershipRequest>(Outer);
+	UGetMembershipRequest* Req = NewObject<UGetMembershipRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

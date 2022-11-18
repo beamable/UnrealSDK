@@ -3,6 +3,8 @@
 
 
 
+
+
 void UClientPermission ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("write_self"), bWriteSelf);

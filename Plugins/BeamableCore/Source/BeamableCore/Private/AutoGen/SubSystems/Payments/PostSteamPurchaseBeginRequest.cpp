@@ -27,9 +27,9 @@ void UPostSteamPurchaseBeginRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostSteamPurchaseBeginRequest* UPostSteamPurchaseBeginRequest::Make(FString _PurchaseId, FOptionalString _Language, FOptionalString _Time, UObject* Outer)
+UPostSteamPurchaseBeginRequest* UPostSteamPurchaseBeginRequest::Make(FString _PurchaseId, FOptionalString _Language, FOptionalString _Time, UObject* RequestOwner)
 {
-	UPostSteamPurchaseBeginRequest* Req = NewObject<UPostSteamPurchaseBeginRequest>(Outer);
+	UPostSteamPurchaseBeginRequest* Req = NewObject<UPostSteamPurchaseBeginRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Commerce", DisplayName="Beam - Make PutPurchase",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_bFree,Outer"))
-	static UPutPurchaseRequest* Make(int64 _ObjectId, FString _ListingId, FOptionalBool _bFree, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Commerce", DisplayName="Beam - Make PutPurchase",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bFree,RequestOwner"))
+	static UPutPurchaseRequest* Make(int64 _ObjectId, FString _ListingId, FOptionalBool _bFree, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

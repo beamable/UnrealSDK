@@ -27,9 +27,9 @@ void UPostGoogleplayPurchaseCompleteRequest::BuildBody(FString& BodyString) cons
 	JsonSerializer->Close();
 }
 
-UPostGoogleplayPurchaseCompleteRequest* UPostGoogleplayPurchaseCompleteRequest::Make(int64 _Txid, FString _Receipt, FString _PriceInLocalCurrency, FString _IsoCurrencySymbol, UObject* Outer)
+UPostGoogleplayPurchaseCompleteRequest* UPostGoogleplayPurchaseCompleteRequest::Make(int64 _Txid, FString _Receipt, FString _PriceInLocalCurrency, FString _IsoCurrencySymbol, UObject* RequestOwner)
 {
-	UPostGoogleplayPurchaseCompleteRequest* Req = NewObject<UPostGoogleplayPurchaseCompleteRequest>(Outer);
+	UPostGoogleplayPurchaseCompleteRequest* Req = NewObject<UPostGoogleplayPurchaseCompleteRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

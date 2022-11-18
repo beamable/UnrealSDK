@@ -27,9 +27,9 @@ void UPostWindowsPurchaseCompleteRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostWindowsPurchaseCompleteRequest* UPostWindowsPurchaseCompleteRequest::Make(int64 _Txid, FString _Receipt, FString _PriceInLocalCurrency, FString _IsoCurrencySymbol, UObject* Outer)
+UPostWindowsPurchaseCompleteRequest* UPostWindowsPurchaseCompleteRequest::Make(int64 _Txid, FString _Receipt, FString _PriceInLocalCurrency, FString _IsoCurrencySymbol, UObject* RequestOwner)
 {
-	UPostWindowsPurchaseCompleteRequest* Req = NewObject<UPostWindowsPurchaseCompleteRequest>(Outer);
+	UPostWindowsPurchaseCompleteRequest* Req = NewObject<UPostWindowsPurchaseCompleteRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

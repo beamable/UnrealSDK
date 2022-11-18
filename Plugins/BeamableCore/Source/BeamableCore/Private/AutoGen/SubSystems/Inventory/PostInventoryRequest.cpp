@@ -27,9 +27,9 @@ void UPostInventoryRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostInventoryRequest* UPostInventoryRequest::Make(int64 _ObjectId, FOptionalArrayOfString _Scopes, UObject* Outer)
+UPostInventoryRequest* UPostInventoryRequest::Make(int64 _ObjectId, FOptionalArrayOfString _Scopes, UObject* RequestOwner)
 {
-	UPostInventoryRequest* Req = NewObject<UPostInventoryRequest>(Outer);
+	UPostInventoryRequest* Req = NewObject<UPostInventoryRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

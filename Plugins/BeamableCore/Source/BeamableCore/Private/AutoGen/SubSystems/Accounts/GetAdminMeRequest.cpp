@@ -23,9 +23,9 @@ void UGetAdminMeRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAdminMeRequest* UGetAdminMeRequest::Make(UObject* Outer)
+UGetAdminMeRequest* UGetAdminMeRequest::Make(UObject* RequestOwner)
 {
-	UGetAdminMeRequest* Req = NewObject<UGetAdminMeRequest>(Outer);
+	UGetAdminMeRequest* Req = NewObject<UGetAdminMeRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

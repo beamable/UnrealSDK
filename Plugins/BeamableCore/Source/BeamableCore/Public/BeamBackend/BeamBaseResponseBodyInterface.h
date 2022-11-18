@@ -1,5 +1,6 @@
 #pragma once
-
+#include "BeamLogging.h"
+#include "Serialization/BeamJsonSerializable.h"
 #include "BeamBaseResponseBodyInterface.generated.h"
 
 /**
@@ -19,4 +20,22 @@ class UBeamBaseResponseBodyInterface : public UInterface
 class BEAMABLECORE_API IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
+
+public:
+	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent);
 };
+
+inline void IBeamBaseResponseBodyInterface::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
+{
+	unimplemented();
+
+	// if the implementing class is a FBeamJsonSerializable we should code gen this implementation.
+	// {
+	// 	OuterOwner = RequestData;
+	// 	BeamDeserialize(ResponseContent);		
+	// }
+	// else
+	// {
+	// 	UE_LOG(LogBeamBackend, Warning, TEXT("Unsupported response type."))
+	// }	
+}

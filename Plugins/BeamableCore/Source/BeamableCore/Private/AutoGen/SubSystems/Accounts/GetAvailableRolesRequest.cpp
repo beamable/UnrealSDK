@@ -23,9 +23,9 @@ void UGetAvailableRolesRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAvailableRolesRequest* UGetAvailableRolesRequest::Make(int64 _ObjectId, UObject* Outer)
+UGetAvailableRolesRequest* UGetAvailableRolesRequest::Make(int64 _ObjectId, UObject* RequestOwner)
 {
-	UGetAvailableRolesRequest* Req = NewObject<UGetAvailableRolesRequest>(Outer);
+	UGetAvailableRolesRequest* Req = NewObject<UGetAvailableRolesRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Payments", DisplayName="Beam - Make GetWindowsProduct",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UGetWindowsProductRequest* Make(FString _Sku, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Payments", DisplayName="Beam - Make GetWindowsProduct",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UGetWindowsProductRequest* Make(FString _Sku, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Mail", DisplayName="Beam - Make PostMail",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Body,_Expires,_PlayerRewards,_Subject,_Rewards,_Id,_BodyRef,_Attachments,Outer"))
-	static UPostMailRequest* Make(int64 _ObjectId, int64 _SenderGamerTag, FString _Category, FOptionalString _Body, FOptionalString _Expires, FOptionalPlayerReward _PlayerRewards, FOptionalString _Subject, FOptionalMailRewards _Rewards, FOptionalInt64 _Id, FOptionalInt64 _BodyRef, FOptionalArrayOfAttachmentRequestBody _Attachments, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Mail", DisplayName="Beam - Make PostMail",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Body,_Expires,_PlayerRewards,_Subject,_Rewards,_Id,_BodyRef,_Attachments,RequestOwner"))
+	static UPostMailRequest* Make(int64 _ObjectId, int64 _SenderGamerTag, FString _Category, FOptionalString _Body, FOptionalString _Expires, FOptionalPlayerReward _PlayerRewards, FOptionalString _Subject, FOptionalMailRewards _Rewards, FOptionalInt64 _Id, FOptionalInt64 _BodyRef, FOptionalArrayOfAttachmentRequestBody _Attachments, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

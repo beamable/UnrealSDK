@@ -27,9 +27,9 @@ void UPostAnnouncementsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostAnnouncementsRequest* UPostAnnouncementsRequest::Make(ULocalizationRef* _Body, FString _Channel, FString _Symbol, ULocalizationRef* _Title, ULocalizationRef* _Summary, FOptionalString _StartDate, FOptionalPlayerReward _Gift, FOptionalString _EndDate, FOptionalArrayOfString _Tags, FOptionalArrayOfPlayerStatRequirement _StatRequirements, FOptionalArrayOfAnnouncementAttachment _Attachments, FOptionalMapOfString _ClientData, UObject* Outer)
+UPostAnnouncementsRequest* UPostAnnouncementsRequest::Make(ULocalizationRef* _Body, FString _Channel, FString _Symbol, ULocalizationRef* _Title, ULocalizationRef* _Summary, FOptionalString _StartDate, FOptionalPlayerReward _Gift, FOptionalString _EndDate, FOptionalArrayOfString _Tags, FOptionalArrayOfPlayerStatRequirement _StatRequirements, FOptionalArrayOfAnnouncementAttachment _Attachments, FOptionalMapOfString _ClientData, UObject* RequestOwner)
 {
-	UPostAnnouncementsRequest* Req = NewObject<UPostAnnouncementsRequest>(Outer);
+	UPostAnnouncementsRequest* Req = NewObject<UPostAnnouncementsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

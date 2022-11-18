@@ -50,8 +50,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make GetView",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Max,_Focus,_bFriends,_From,_Outlier,_bGuild,Outer"))
-	static UGetViewRequest* Make(FString _ObjectId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalBool _bFriends, FOptionalInt32 _From, FOptionalInt64 _Outlier, FOptionalBool _bGuild, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make GetView",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Max,_Focus,_bFriends,_From,_Outlier,_bGuild,RequestOwner"))
+	static UGetViewRequest* Make(FString _ObjectId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalBool _bFriends, FOptionalInt32 _From, FOptionalInt64 _Outlier, FOptionalBool _bGuild, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

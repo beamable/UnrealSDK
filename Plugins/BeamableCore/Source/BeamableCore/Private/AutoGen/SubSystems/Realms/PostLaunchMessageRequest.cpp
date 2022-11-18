@@ -27,9 +27,9 @@ void UPostLaunchMessageRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostLaunchMessageRequest* UPostLaunchMessageRequest::Make(FString _Name, FString _Body, UObject* Outer)
+UPostLaunchMessageRequest* UPostLaunchMessageRequest::Make(FString _Name, FString _Body, UObject* RequestOwner)
 {
-	UPostLaunchMessageRequest* Req = NewObject<UPostLaunchMessageRequest>(Outer);
+	UPostLaunchMessageRequest* Req = NewObject<UPostLaunchMessageRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

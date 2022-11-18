@@ -1,10 +1,13 @@
 
 #include "AutoGen/SubSystems/BeamNotificationApi.h"
+#include "BeamCoreSettings.h"
+
 
 void UBeamNotificationApi::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 	Backend = Cast<UBeamBackend>(Collection.InitializeDependency(UBeamBackend::StaticClass()));
+	RequestTracker = Cast<UBeamRequestTracker>(Collection.InitializeDependency(UBeamRequestTracker::StaticClass()));
 }
 
 void UBeamNotificationApi::Deinitialize()
@@ -16,7 +19,8 @@ void UBeamNotificationApi::Deinitialize()
 
 
 void UBeamNotificationApi::BP_PostPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UPostPlayerRequest* RequestData, const FOnPostPlayerSuccess& OnSuccess, const FOnPostPlayerError& OnError, const FOnPostPlayerComplete& OnComplete, int64& OutRequestId) const
+                                UPostPlayerRequest* RequestData, const FOnPostPlayerSuccess& OnSuccess, const FOnPostPlayerError& OnError, const FOnPostPlayerComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -28,13 +32,16 @@ void UBeamNotificationApi::BP_PostPlayerImpl(const FBeamRealmHandle& TargetRealm
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 void UBeamNotificationApi::CPP_PostPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UPostPlayerRequest* RequestData, const FOnPostPlayerFullResponse& Handler) const
+                              UPostPlayerRequest* RequestData, const FOnPostPlayerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...
-	int64 OutRequestId;
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
 
 	// Binds the handler to the static response handler (pre-generated)	
@@ -43,11 +50,16 @@ void UBeamNotificationApi::CPP_PostPlayerImpl(const FBeamRealmHandle& TargetReal
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 		
 void UBeamNotificationApi::BP_PostCustomImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UPostCustomRequest* RequestData, const FOnPostCustomSuccess& OnSuccess, const FOnPostCustomError& OnError, const FOnPostCustomComplete& OnComplete, int64& OutRequestId) const
+                                UPostCustomRequest* RequestData, const FOnPostCustomSuccess& OnSuccess, const FOnPostCustomError& OnError, const FOnPostCustomComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -59,13 +71,16 @@ void UBeamNotificationApi::BP_PostCustomImpl(const FBeamRealmHandle& TargetRealm
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 void UBeamNotificationApi::CPP_PostCustomImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UPostCustomRequest* RequestData, const FOnPostCustomFullResponse& Handler) const
+                              UPostCustomRequest* RequestData, const FOnPostCustomFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...
-	int64 OutRequestId;
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
 
 	// Binds the handler to the static response handler (pre-generated)	
@@ -74,11 +89,16 @@ void UBeamNotificationApi::CPP_PostCustomImpl(const FBeamRealmHandle& TargetReal
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 		
 void UBeamNotificationApi::BP_PostServerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UPostServerRequest* RequestData, const FOnPostServerSuccess& OnSuccess, const FOnPostServerError& OnError, const FOnPostServerComplete& OnComplete, int64& OutRequestId) const
+                                UPostServerRequest* RequestData, const FOnPostServerSuccess& OnSuccess, const FOnPostServerError& OnError, const FOnPostServerComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -90,13 +110,16 @@ void UBeamNotificationApi::BP_PostServerImpl(const FBeamRealmHandle& TargetRealm
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 void UBeamNotificationApi::CPP_PostServerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UPostServerRequest* RequestData, const FOnPostServerFullResponse& Handler) const
+                              UPostServerRequest* RequestData, const FOnPostServerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...
-	int64 OutRequestId;
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
 
 	// Binds the handler to the static response handler (pre-generated)	
@@ -105,11 +128,16 @@ void UBeamNotificationApi::CPP_PostServerImpl(const FBeamRealmHandle& TargetReal
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 		
 void UBeamNotificationApi::BP_PostGenericImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UPostGenericRequest* RequestData, const FOnPostGenericSuccess& OnSuccess, const FOnPostGenericError& OnError, const FOnPostGenericComplete& OnComplete, int64& OutRequestId) const
+                                UPostGenericRequest* RequestData, const FOnPostGenericSuccess& OnSuccess, const FOnPostGenericError& OnError, const FOnPostGenericComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -121,13 +149,16 @@ void UBeamNotificationApi::BP_PostGenericImpl(const FBeamRealmHandle& TargetReal
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 void UBeamNotificationApi::CPP_PostGenericImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UPostGenericRequest* RequestData, const FOnPostGenericFullResponse& Handler) const
+                              UPostGenericRequest* RequestData, const FOnPostGenericFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...
-	int64 OutRequestId;
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
 
 	// Binds the handler to the static response handler (pre-generated)	
@@ -136,11 +167,16 @@ void UBeamNotificationApi::CPP_PostGenericImpl(const FBeamRealmHandle& TargetRea
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 		
 void UBeamNotificationApi::BP_GetNotificationImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UGetNotificationRequest* RequestData, const FOnGetNotificationSuccess& OnSuccess, const FOnGetNotificationError& OnError, const FOnGetNotificationComplete& OnComplete, int64& OutRequestId) const
+                                UGetNotificationRequest* RequestData, const FOnGetNotificationSuccess& OnSuccess, const FOnGetNotificationError& OnError, const FOnGetNotificationComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -152,13 +188,16 @@ void UBeamNotificationApi::BP_GetNotificationImpl(const FBeamRealmHandle& Target
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 void UBeamNotificationApi::CPP_GetNotificationImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UGetNotificationRequest* RequestData, const FOnGetNotificationFullResponse& Handler) const
+                              UGetNotificationRequest* RequestData, const FOnGetNotificationFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...
-	int64 OutRequestId;
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
 
 	// Binds the handler to the static response handler (pre-generated)	
@@ -167,11 +206,16 @@ void UBeamNotificationApi::CPP_GetNotificationImpl(const FBeamRealmHandle& Targe
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 		
 void UBeamNotificationApi::BP_PostGameImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UBasicNotificationPostGameRequest* RequestData, const FOnBasicNotificationPostGameSuccess& OnSuccess, const FOnBasicNotificationPostGameError& OnError, const FOnBasicNotificationPostGameComplete& OnComplete, int64& OutRequestId) const
+                                UBasicNotificationPostGameRequest* RequestData, const FOnBasicNotificationPostGameSuccess& OnSuccess, const FOnBasicNotificationPostGameError& OnError, const FOnBasicNotificationPostGameComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -183,13 +227,16 @@ void UBeamNotificationApi::BP_PostGameImpl(const FBeamRealmHandle& TargetRealm, 
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 void UBeamNotificationApi::CPP_PostGameImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UBasicNotificationPostGameRequest* RequestData, const FOnBasicNotificationPostGameFullResponse& Handler) const
+                              UBasicNotificationPostGameRequest* RequestData, const FOnBasicNotificationPostGameFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...
-	int64 OutRequestId;
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
 
 	// Binds the handler to the static response handler (pre-generated)	
@@ -198,6 +245,10 @@ void UBeamNotificationApi::CPP_PostGameImpl(const FBeamRealmHandle& TargetRealm,
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 
@@ -205,81 +256,93 @@ void UBeamNotificationApi::CPP_PostGameImpl(const FBeamRealmHandle& TargetRealm,
 
 
 
-void UBeamNotificationApi::CPP_PostPlayer(const FUserSlot& UserSlotId, UPostPlayerRequest* Request, const FOnPostPlayerFullResponse& Handler) const
+void UBeamNotificationApi::CPP_PostPlayer(const FUserSlot& UserSlot, UPostPlayerRequest* Request, const FOnPostPlayerFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlotId, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UPostPlayerRequest::StaticClass()->GetName(), UserSlotId, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UPostPlayerRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
-	CPP_PostPlayerImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler);
+    int64 OutRequestId;
+	CPP_PostPlayerImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamNotificationApi::CPP_PostCustom(const FUserSlot& UserSlotId, UPostCustomRequest* Request, const FOnPostCustomFullResponse& Handler) const
+void UBeamNotificationApi::CPP_PostCustom(const FUserSlot& UserSlot, UPostCustomRequest* Request, const FOnPostCustomFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlotId, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UPostCustomRequest::StaticClass()->GetName(), UserSlotId, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UPostCustomRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
-	CPP_PostCustomImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler);
+    int64 OutRequestId;
+	CPP_PostCustomImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamNotificationApi::CPP_PostServer(const FUserSlot& UserSlotId, UPostServerRequest* Request, const FOnPostServerFullResponse& Handler) const
+void UBeamNotificationApi::CPP_PostServer(const FUserSlot& UserSlot, UPostServerRequest* Request, const FOnPostServerFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlotId, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UPostServerRequest::StaticClass()->GetName(), UserSlotId, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UPostServerRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
-	CPP_PostServerImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler);
+    int64 OutRequestId;
+	CPP_PostServerImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamNotificationApi::CPP_PostGeneric(const FUserSlot& UserSlotId, UPostGenericRequest* Request, const FOnPostGenericFullResponse& Handler) const
+void UBeamNotificationApi::CPP_PostGeneric(const FUserSlot& UserSlot, UPostGenericRequest* Request, const FOnPostGenericFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlotId, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UPostGenericRequest::StaticClass()->GetName(), UserSlotId, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UPostGenericRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
-	CPP_PostGenericImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler);
+    int64 OutRequestId;
+	CPP_PostGenericImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamNotificationApi::CPP_GetNotification(const FUserSlot& UserSlotId, UGetNotificationRequest* Request, const FOnGetNotificationFullResponse& Handler) const
+void UBeamNotificationApi::CPP_GetNotification(const FUserSlot& UserSlot, UGetNotificationRequest* Request, const FOnGetNotificationFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlotId, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UGetNotificationRequest::StaticClass()->GetName(), UserSlotId, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UGetNotificationRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
-	CPP_GetNotificationImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler);
+    int64 OutRequestId;
+	CPP_GetNotificationImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamNotificationApi::CPP_PostGame(const FUserSlot& UserSlotId, UBasicNotificationPostGameRequest* Request, const FOnBasicNotificationPostGameFullResponse& Handler) const
+void UBeamNotificationApi::CPP_PostGame(const FUserSlot& UserSlot, UBasicNotificationPostGameRequest* Request, const FOnBasicNotificationPostGameFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlotId, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UBasicNotificationPostGameRequest::StaticClass()->GetName(), UserSlotId, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UBasicNotificationPostGameRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
-	CPP_PostGameImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler);
+    int64 OutRequestId;
+	CPP_PostGameImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 
@@ -287,92 +350,92 @@ void UBeamNotificationApi::CPP_PostGame(const FUserSlot& UserSlotId, UBasicNotif
 
 
 
-void UBeamNotificationApi::PostPlayer(FUserSlot UserSlot, UPostPlayerRequest* Request, const FOnPostPlayerSuccess& OnSuccess, const FOnPostPlayerError& OnError, const FOnPostPlayerComplete& OnComplete,  FBeamRequestContext& OutRequestContext)
+void UBeamNotificationApi::PostPlayer(FUserSlot UserSlot, UPostPlayerRequest* Request, const FOnPostPlayerSuccess& OnSuccess, const FOnPostPlayerError& OnError, const FOnPostPlayerComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostPlayerRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PostPlayerImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
+	BP_PostPlayerImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamNotificationApi::PostCustom(FUserSlot UserSlot, UPostCustomRequest* Request, const FOnPostCustomSuccess& OnSuccess, const FOnPostCustomError& OnError, const FOnPostCustomComplete& OnComplete,  FBeamRequestContext& OutRequestContext)
+void UBeamNotificationApi::PostCustom(FUserSlot UserSlot, UPostCustomRequest* Request, const FOnPostCustomSuccess& OnSuccess, const FOnPostCustomError& OnError, const FOnPostCustomComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostCustomRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PostCustomImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
+	BP_PostCustomImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamNotificationApi::PostServer(FUserSlot UserSlot, UPostServerRequest* Request, const FOnPostServerSuccess& OnSuccess, const FOnPostServerError& OnError, const FOnPostServerComplete& OnComplete,  FBeamRequestContext& OutRequestContext)
+void UBeamNotificationApi::PostServer(FUserSlot UserSlot, UPostServerRequest* Request, const FOnPostServerSuccess& OnSuccess, const FOnPostServerError& OnError, const FOnPostServerComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostServerRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PostServerImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
+	BP_PostServerImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamNotificationApi::PostGeneric(FUserSlot UserSlot, UPostGenericRequest* Request, const FOnPostGenericSuccess& OnSuccess, const FOnPostGenericError& OnError, const FOnPostGenericComplete& OnComplete,  FBeamRequestContext& OutRequestContext)
+void UBeamNotificationApi::PostGeneric(FUserSlot UserSlot, UPostGenericRequest* Request, const FOnPostGenericSuccess& OnSuccess, const FOnPostGenericError& OnError, const FOnPostGenericComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostGenericRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PostGenericImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
+	BP_PostGenericImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamNotificationApi::GetNotification(FUserSlot UserSlot, UGetNotificationRequest* Request, const FOnGetNotificationSuccess& OnSuccess, const FOnGetNotificationError& OnError, const FOnGetNotificationComplete& OnComplete,  FBeamRequestContext& OutRequestContext)
+void UBeamNotificationApi::GetNotification(FUserSlot UserSlot, UGetNotificationRequest* Request, const FOnGetNotificationSuccess& OnSuccess, const FOnGetNotificationError& OnError, const FOnGetNotificationComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
 	Backend->GetRetryConfigForUserSlotAndRequestType(UGetNotificationRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_GetNotificationImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
+	BP_GetNotificationImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamNotificationApi::PostGame(FUserSlot UserSlot, UBasicNotificationPostGameRequest* Request, const FOnBasicNotificationPostGameSuccess& OnSuccess, const FOnBasicNotificationPostGameError& OnError, const FOnBasicNotificationPostGameComplete& OnComplete,  FBeamRequestContext& OutRequestContext)
+void UBeamNotificationApi::PostGame(FUserSlot UserSlot, UBasicNotificationPostGameRequest* Request, const FOnBasicNotificationPostGameSuccess& OnSuccess, const FOnBasicNotificationPostGameError& OnError, const FOnBasicNotificationPostGameComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
 	Backend->GetRetryConfigForUserSlotAndRequestType(UBasicNotificationPostGameRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PostGameImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
+	BP_PostGameImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 	
@@ -380,11 +443,11 @@ void UBeamNotificationApi::PostGame(FUserSlot UserSlot, UBasicNotificationPostGa
 
 
 
-void UBeamNotificationApi::PostPlayerWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostPlayerRequest* Request, const FOnPostPlayerSuccess& OnSuccess, const FOnPostPlayerError& OnError, const FOnPostPlayerComplete& OnComplete, FBeamRequestContext& OutRequestContext)
+void UBeamNotificationApi::PostPlayerWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostPlayerRequest* Request, const FOnPostPlayerSuccess& OnSuccess, const FOnPostPlayerError& OnError, const FOnPostPlayerComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);	
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);	
 
 	int64 OutRequestId;
 	BP_PostPlayerImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
@@ -392,11 +455,11 @@ void UBeamNotificationApi::PostPlayerWithRetry(FUserSlot UserSlot, const FBeamRe
 }
 
 		
-void UBeamNotificationApi::PostCustomWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostCustomRequest* Request, const FOnPostCustomSuccess& OnSuccess, const FOnPostCustomError& OnError, const FOnPostCustomComplete& OnComplete, FBeamRequestContext& OutRequestContext)
+void UBeamNotificationApi::PostCustomWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostCustomRequest* Request, const FOnPostCustomSuccess& OnSuccess, const FOnPostCustomError& OnError, const FOnPostCustomComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);	
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);	
 
 	int64 OutRequestId;
 	BP_PostCustomImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
@@ -404,11 +467,11 @@ void UBeamNotificationApi::PostCustomWithRetry(FUserSlot UserSlot, const FBeamRe
 }
 
 		
-void UBeamNotificationApi::PostServerWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostServerRequest* Request, const FOnPostServerSuccess& OnSuccess, const FOnPostServerError& OnError, const FOnPostServerComplete& OnComplete, FBeamRequestContext& OutRequestContext)
+void UBeamNotificationApi::PostServerWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostServerRequest* Request, const FOnPostServerSuccess& OnSuccess, const FOnPostServerError& OnError, const FOnPostServerComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);	
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);	
 
 	int64 OutRequestId;
 	BP_PostServerImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
@@ -416,11 +479,11 @@ void UBeamNotificationApi::PostServerWithRetry(FUserSlot UserSlot, const FBeamRe
 }
 
 		
-void UBeamNotificationApi::PostGenericWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostGenericRequest* Request, const FOnPostGenericSuccess& OnSuccess, const FOnPostGenericError& OnError, const FOnPostGenericComplete& OnComplete, FBeamRequestContext& OutRequestContext)
+void UBeamNotificationApi::PostGenericWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostGenericRequest* Request, const FOnPostGenericSuccess& OnSuccess, const FOnPostGenericError& OnError, const FOnPostGenericComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);	
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);	
 
 	int64 OutRequestId;
 	BP_PostGenericImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
@@ -428,11 +491,11 @@ void UBeamNotificationApi::PostGenericWithRetry(FUserSlot UserSlot, const FBeamR
 }
 
 		
-void UBeamNotificationApi::GetNotificationWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UGetNotificationRequest* Request, const FOnGetNotificationSuccess& OnSuccess, const FOnGetNotificationError& OnError, const FOnGetNotificationComplete& OnComplete, FBeamRequestContext& OutRequestContext)
+void UBeamNotificationApi::GetNotificationWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UGetNotificationRequest* Request, const FOnGetNotificationSuccess& OnSuccess, const FOnGetNotificationError& OnError, const FOnGetNotificationComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);	
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);	
 
 	int64 OutRequestId;
 	BP_GetNotificationImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	
@@ -440,11 +503,11 @@ void UBeamNotificationApi::GetNotificationWithRetry(FUserSlot UserSlot, const FB
 }
 
 		
-void UBeamNotificationApi::PostGameWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UBasicNotificationPostGameRequest* Request, const FOnBasicNotificationPostGameSuccess& OnSuccess, const FOnBasicNotificationPostGameError& OnError, const FOnBasicNotificationPostGameComplete& OnComplete, FBeamRequestContext& OutRequestContext)
+void UBeamNotificationApi::PostGameWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UBasicNotificationPostGameRequest* Request, const FOnBasicNotificationPostGameSuccess& OnSuccess, const FOnBasicNotificationPostGameError& OnError, const FOnBasicNotificationPostGameComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser);	
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);	
 
 	int64 OutRequestId;
 	BP_PostGameImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);	

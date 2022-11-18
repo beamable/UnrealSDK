@@ -27,9 +27,9 @@ void UPutTransferRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutTransferRequest* UPutTransferRequest::Make(int64 _ObjectId, int64 _RecipientPlayer, FOptionalString _Transaction, FOptionalMapOfInt64 _Currencies, UObject* Outer)
+UPutTransferRequest* UPutTransferRequest::Make(int64 _ObjectId, int64 _RecipientPlayer, FOptionalString _Transaction, FOptionalMapOfInt64 _Currencies, UObject* RequestOwner)
 {
-	UPutTransferRequest* Req = NewObject<UPutTransferRequest>(Outer);
+	UPutTransferRequest* Req = NewObject<UPutTransferRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

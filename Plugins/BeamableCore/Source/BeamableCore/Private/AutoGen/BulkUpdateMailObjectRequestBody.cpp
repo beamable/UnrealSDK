@@ -3,6 +3,8 @@
 #include "Serialization/BeamJsonUtils.h"
 
 
+
+
 void UBulkUpdateMailObjectRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UMyMailUpdate*>(TEXT("updateMailRequests"), UpdateMailRequests, Serializer);

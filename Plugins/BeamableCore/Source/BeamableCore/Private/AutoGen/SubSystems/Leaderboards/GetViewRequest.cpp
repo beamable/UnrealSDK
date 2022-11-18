@@ -16,37 +16,37 @@ void UGetViewRequest::BuildRoute(FString& RouteString) const
 	bool bIsFirstQueryParam = true;
 	if(Max.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("max"), *FString::FromInt(Max.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("max"), *FString::FromInt(Max.Val));
 		bIsFirstQueryParam = false;
 	}
 
 	if(Focus.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("focus"), *FString::FromInt(Focus.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("focus"), *FString::FromInt(Focus.Val));
 		bIsFirstQueryParam = false;
 	}
 
 	if(bFriends.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("friends"), bFriends.Val ? *TEXT("true") : *TEXT("false"));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("friends"), bFriends.Val ? TEXT("true") : TEXT("false"));
 		bIsFirstQueryParam = false;
 	}
 
 	if(From.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("from"), *FString::FromInt(From.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("from"), *FString::FromInt(From.Val));
 		bIsFirstQueryParam = false;
 	}
 
 	if(Outlier.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("outlier"), *FString::FromInt(Outlier.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("outlier"), *FString::FromInt(Outlier.Val));
 		bIsFirstQueryParam = false;
 	}
 
 	if(bGuild.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("guild"), bGuild.Val ? *TEXT("true") : *TEXT("false"));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("guild"), bGuild.Val ? TEXT("true") : TEXT("false"));
 		bIsFirstQueryParam = false;
 	}
 
@@ -58,9 +58,9 @@ void UGetViewRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetViewRequest* UGetViewRequest::Make(FString _ObjectId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalBool _bFriends, FOptionalInt32 _From, FOptionalInt64 _Outlier, FOptionalBool _bGuild, UObject* Outer)
+UGetViewRequest* UGetViewRequest::Make(FString _ObjectId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalBool _bFriends, FOptionalInt32 _From, FOptionalInt64 _Outlier, FOptionalBool _bGuild, UObject* RequestOwner)
 {
-	UGetViewRequest* Req = NewObject<UGetViewRequest>(Outer);
+	UGetViewRequest* Req = NewObject<UGetViewRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

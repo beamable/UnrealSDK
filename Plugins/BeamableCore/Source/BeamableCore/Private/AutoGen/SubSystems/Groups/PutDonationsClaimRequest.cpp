@@ -23,9 +23,9 @@ void UPutDonationsClaimRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UPutDonationsClaimRequest* UPutDonationsClaimRequest::Make(int64 _ObjectId, UObject* Outer)
+UPutDonationsClaimRequest* UPutDonationsClaimRequest::Make(int64 _ObjectId, UObject* RequestOwner)
 {
-	UPutDonationsClaimRequest* Req = NewObject<UPutDonationsClaimRequest>(Outer);
+	UPutDonationsClaimRequest* Req = NewObject<UPutDonationsClaimRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

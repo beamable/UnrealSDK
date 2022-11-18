@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make PutAdminThirdParty",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UPutAdminThirdPartyRequest* Make(int64 _ObjectId, int64 _FromAccountId, UThirdPartyAssociation* _ThirdParty, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make PutAdminThirdParty",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UPutAdminThirdPartyRequest* Make(int64 _ObjectId, int64 _FromAccountId, UThirdPartyAssociation* _ThirdParty, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

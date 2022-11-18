@@ -37,8 +37,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make GetRanks",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UGetRanksRequest* Make(FString _ObjectId, FString _Ids, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make GetRanks",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UGetRanksRequest* Make(FString _ObjectId, FString _Ids, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

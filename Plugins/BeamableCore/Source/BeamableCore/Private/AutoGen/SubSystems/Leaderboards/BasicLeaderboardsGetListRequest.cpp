@@ -16,13 +16,13 @@ void UBasicLeaderboardsGetListRequest::BuildRoute(FString& RouteString) const
 	bool bIsFirstQueryParam = true;
 	if(Skip.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("skip"), *FString::FromInt(Skip.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("skip"), *FString::FromInt(Skip.Val));
 		bIsFirstQueryParam = false;
 	}
 
 	if(Limit.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("limit"), *FString::FromInt(Limit.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("limit"), *FString::FromInt(Limit.Val));
 		bIsFirstQueryParam = false;
 	}
 
@@ -34,9 +34,9 @@ void UBasicLeaderboardsGetListRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UBasicLeaderboardsGetListRequest* UBasicLeaderboardsGetListRequest::Make(FOptionalInt32 _Skip, FOptionalInt32 _Limit, UObject* Outer)
+UBasicLeaderboardsGetListRequest* UBasicLeaderboardsGetListRequest::Make(FOptionalInt32 _Skip, FOptionalInt32 _Limit, UObject* RequestOwner)
 {
-	UBasicLeaderboardsGetListRequest* Req = NewObject<UBasicLeaderboardsGetListRequest>(Outer);
+	UBasicLeaderboardsGetListRequest* Req = NewObject<UBasicLeaderboardsGetListRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Skip = _Skip;

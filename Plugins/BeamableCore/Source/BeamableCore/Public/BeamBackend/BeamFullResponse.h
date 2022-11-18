@@ -7,7 +7,7 @@
 
 #include "BeamFullResponse.generated.h"
 
-UENUM()
+UENUM(BlueprintType)
 enum EBeamFullResponseState
 {
 	Success,

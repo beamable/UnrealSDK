@@ -3,6 +3,13 @@
 
 
 
+
+void UFriendshipStatus::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
+{
+	OuterOwner = RequestData;
+	BeamDeserialize(ResponseContent);	
+}
+
 void UFriendshipStatus ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("isBlocked"), bIsBlocked);

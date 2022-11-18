@@ -3,6 +3,8 @@
 
 
 
+
+
 void UEventRule ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("rule"), Rule);

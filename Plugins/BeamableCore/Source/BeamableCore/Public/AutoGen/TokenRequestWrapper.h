@@ -7,6 +7,7 @@
 #include "AutoGen/Optionals/OptionalString.h"
 #include "AutoGen/Optionals/OptionalArrayOfString.h"
 #include "AutoGen/Optionals/OptionalContextInfo.h"
+#include "AutoGen/Optionals/OptionalChallengeSolution.h"
 #include "AutoGen/Optionals/OptionalBool.h"
 
 #include "TokenRequestWrapper.generated.h"
@@ -35,14 +36,22 @@ public:
 	FOptionalString RedirectUri;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Client Id", Category="Beam")
 	FOptionalString ClientId;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Challenge Solution", Category="Beam")
+	FOptionalChallengeSolution ChallengeSolution;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="External Token", Category="Beam")
+	FOptionalString ExternalToken;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Code", Category="Beam")
 	FOptionalString Code;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Provider Address", Category="Beam")
+	FOptionalString ProviderAddress;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Token", Category="Beam")
 	FOptionalString Token;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Password", Category="Beam")
 	FOptionalString Password;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scope", Category="Beam")
 	FOptionalArrayOfString Scope;
+
+	
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

@@ -27,9 +27,9 @@ void UPostRoomsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostRoomsRequest* UPostRoomsRequest::Make(int64 _ObjectId, bool _bKeepSubscribed, FString _RoomName, TArray<int64> _Players, UObject* Outer)
+UPostRoomsRequest* UPostRoomsRequest::Make(int64 _ObjectId, bool _bKeepSubscribed, FString _RoomName, TArray<int64> _Players, UObject* RequestOwner)
 {
-	UPostRoomsRequest* Req = NewObject<UPostRoomsRequest>(Outer);
+	UPostRoomsRequest* Req = NewObject<UPostRoomsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

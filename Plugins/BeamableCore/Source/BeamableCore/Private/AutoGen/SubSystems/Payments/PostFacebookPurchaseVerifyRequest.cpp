@@ -27,9 +27,9 @@ void UPostFacebookPurchaseVerifyRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostFacebookPurchaseVerifyRequest* UPostFacebookPurchaseVerifyRequest::Make(FString _Receipt, UObject* Outer)
+UPostFacebookPurchaseVerifyRequest* UPostFacebookPurchaseVerifyRequest::Make(FString _Receipt, UObject* RequestOwner)
 {
-	UPostFacebookPurchaseVerifyRequest* Req = NewObject<UPostFacebookPurchaseVerifyRequest>(Outer);
+	UPostFacebookPurchaseVerifyRequest* Req = NewObject<UPostFacebookPurchaseVerifyRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

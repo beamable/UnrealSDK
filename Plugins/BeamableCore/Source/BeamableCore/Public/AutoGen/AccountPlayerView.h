@@ -5,6 +5,7 @@
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
+#include "AutoGen/Optionals/OptionalArrayOfExternalIdentity.h"
 
 #include "AccountPlayerView.generated.h"
 
@@ -26,6 +27,10 @@ public:
 	FOptionalString Email;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Language", Category="Beam")
 	FOptionalString Language;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="External", Category="Beam")
+	FOptionalArrayOfExternalIdentity External;
+
+	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;

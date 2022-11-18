@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|ChatV2", DisplayName="Beam - Make PostRooms",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UPostRoomsRequest* Make(int64 _ObjectId, bool _bKeepSubscribed, FString _RoomName, TArray<int64> _Players, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|ChatV2", DisplayName="Beam - Make PostRooms",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UPostRoomsRequest* Make(int64 _ObjectId, bool _bKeepSubscribed, FString _RoomName, TArray<int64> _Players, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

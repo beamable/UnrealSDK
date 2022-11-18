@@ -27,9 +27,9 @@ void UPostDataReplaceRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostDataReplaceRequest* UPostDataReplaceRequest::Make(int64 _SourcePlayerId, int64 _TargetPlayerId, UObject* Outer)
+UPostDataReplaceRequest* UPostDataReplaceRequest::Make(int64 _SourcePlayerId, int64 _TargetPlayerId, UObject* RequestOwner)
 {
-	UPostDataReplaceRequest* Req = NewObject<UPostDataReplaceRequest>(Outer);
+	UPostDataReplaceRequest* Req = NewObject<UPostDataReplaceRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

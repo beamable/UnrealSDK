@@ -27,9 +27,9 @@ void UPostFriendsInviteRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostFriendsInviteRequest* UPostFriendsInviteRequest::Make(int64 _GamerTag, UObject* Outer)
+UPostFriendsInviteRequest* UPostFriendsInviteRequest::Make(int64 _GamerTag, UObject* RequestOwner)
 {
-	UPostFriendsInviteRequest* Req = NewObject<UPostFriendsInviteRequest>(Outer);
+	UPostFriendsInviteRequest* Req = NewObject<UPostFriendsInviteRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

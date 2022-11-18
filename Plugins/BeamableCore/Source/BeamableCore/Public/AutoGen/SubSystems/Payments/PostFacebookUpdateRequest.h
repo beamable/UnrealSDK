@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Payments", DisplayName="Beam - Make PostFacebookUpdate",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UPostFacebookUpdateRequest* Make(FString _Object, TArray<UFacebookUpdatedEntry*> _Entry, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Payments", DisplayName="Beam - Make PostFacebookUpdate",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UPostFacebookUpdateRequest* Make(FString _Object, TArray<UFacebookUpdatedEntry*> _Entry, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

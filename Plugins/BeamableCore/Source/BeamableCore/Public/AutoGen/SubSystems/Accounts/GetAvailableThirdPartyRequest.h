@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make GetAvailableThirdParty",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UGetAvailableThirdPartyRequest* Make(FString _ThirdParty, FString _Token, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make GetAvailableThirdParty",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UGetAvailableThirdPartyRequest* Make(FString _ThirdParty, FString _Token, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

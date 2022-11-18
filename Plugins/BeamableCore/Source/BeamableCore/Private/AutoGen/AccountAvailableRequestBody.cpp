@@ -3,6 +3,8 @@
 
 
 
+
+
 void UAccountAvailableRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("email"), Email);

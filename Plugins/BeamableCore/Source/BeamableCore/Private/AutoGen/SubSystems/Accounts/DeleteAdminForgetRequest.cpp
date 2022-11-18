@@ -23,9 +23,9 @@ void UDeleteAdminForgetRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UDeleteAdminForgetRequest* UDeleteAdminForgetRequest::Make(int64 _ObjectId, UObject* Outer)
+UDeleteAdminForgetRequest* UDeleteAdminForgetRequest::Make(int64 _ObjectId, UObject* RequestOwner)
 {
-	UDeleteAdminForgetRequest* Req = NewObject<UDeleteAdminForgetRequest>(Outer);
+	UDeleteAdminForgetRequest* Req = NewObject<UDeleteAdminForgetRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

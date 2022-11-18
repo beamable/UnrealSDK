@@ -3,6 +3,8 @@
 
 
 
+
+
 void UGiveCouponReq ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("listing"), Listing);

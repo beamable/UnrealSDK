@@ -27,9 +27,9 @@ void UPostCustomRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostCustomRequest* UPostCustomRequest::Make(UNotificationRequestData* _Payload, FOptionalBool _bUseSignalWhenPossible, FOptionalString _CustomChannelSuffix, FOptionalInt64 _Dbid, FOptionalArrayOfInt64 _Dbids, UObject* Outer)
+UPostCustomRequest* UPostCustomRequest::Make(UNotificationRequestData* _Payload, FOptionalBool _bUseSignalWhenPossible, FOptionalString _CustomChannelSuffix, FOptionalInt64 _Dbid, FOptionalArrayOfInt64 _Dbids, UObject* RequestOwner)
 {
-	UPostCustomRequest* Req = NewObject<UPostCustomRequest>(Outer);
+	UPostCustomRequest* Req = NewObject<UPostCustomRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

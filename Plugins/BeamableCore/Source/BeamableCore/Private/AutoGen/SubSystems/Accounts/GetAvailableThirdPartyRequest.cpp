@@ -15,11 +15,11 @@ void UGetAvailableThirdPartyRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("thirdParty"), *ThirdParty);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("thirdParty"), *ThirdParty);
 	bIsFirstQueryParam = false;
 	
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("token"), *Token);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("token"), *Token);
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -30,9 +30,9 @@ void UGetAvailableThirdPartyRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAvailableThirdPartyRequest* UGetAvailableThirdPartyRequest::Make(FString _ThirdParty, FString _Token, UObject* Outer)
+UGetAvailableThirdPartyRequest* UGetAvailableThirdPartyRequest::Make(FString _ThirdParty, FString _Token, UObject* RequestOwner)
 {
-	UGetAvailableThirdPartyRequest* Req = NewObject<UGetAvailableThirdPartyRequest>(Outer);
+	UGetAvailableThirdPartyRequest* Req = NewObject<UGetAvailableThirdPartyRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ThirdParty = _ThirdParty;

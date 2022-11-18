@@ -27,9 +27,9 @@ void UPostTournamentsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostTournamentsRequest* UPostTournamentsRequest::Make(FString _TournamentId, UObject* Outer)
+UPostTournamentsRequest* UPostTournamentsRequest::Make(FString _TournamentId, UObject* RequestOwner)
 {
-	UPostTournamentsRequest* Req = NewObject<UPostTournamentsRequest>(Outer);
+	UPostTournamentsRequest* Req = NewObject<UPostTournamentsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

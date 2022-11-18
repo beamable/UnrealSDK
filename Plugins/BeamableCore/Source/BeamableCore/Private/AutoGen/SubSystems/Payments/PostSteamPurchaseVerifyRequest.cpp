@@ -27,9 +27,9 @@ void UPostSteamPurchaseVerifyRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostSteamPurchaseVerifyRequest* UPostSteamPurchaseVerifyRequest::Make(FString _Receipt, UObject* Outer)
+UPostSteamPurchaseVerifyRequest* UPostSteamPurchaseVerifyRequest::Make(FString _Receipt, UObject* RequestOwner)
 {
-	UPostSteamPurchaseVerifyRequest* Req = NewObject<UPostSteamPurchaseVerifyRequest>(Outer);
+	UPostSteamPurchaseVerifyRequest* Req = NewObject<UPostSteamPurchaseVerifyRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

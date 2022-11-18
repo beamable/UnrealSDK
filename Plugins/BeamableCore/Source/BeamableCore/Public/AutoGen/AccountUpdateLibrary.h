@@ -17,9 +17,9 @@ public:
 	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - AccountUpdate To JSON String")
 	static FString AccountUpdateToJsonString(const UAccountUpdate* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make AccountUpdate", meta=(DefaultToSelf="Outer", AdvancedDisplay="ThirdParty, Country, Language, GamerTagAssoc, Token, DeviceId, UserName, Outer", NativeMakeFunc))
-	static UAccountUpdate* Make(bool bHasThirdPartyToken, FOptionalString ThirdParty, FOptionalString Country, FOptionalString Language, FOptionalGamerTagAssociation GamerTagAssoc, FOptionalString Token, FOptionalString DeviceId, FOptionalString UserName, UObject* Outer);
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make AccountUpdate", meta=(DefaultToSelf="Outer", AdvancedDisplay="ThirdParty, Country, Language, GamerTagAssoc, Token, DeviceId, UserName, External, Outer", NativeMakeFunc))
+	static UAccountUpdate* Make(bool bHasThirdPartyToken, FOptionalString ThirdParty, FOptionalString Country, FOptionalString Language, FOptionalGamerTagAssociation GamerTagAssoc, FOptionalString Token, FOptionalString DeviceId, FOptionalString UserName, FOptionalArrayOfExternalIdentity External, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break AccountUpdate", meta=(NativeBreakFunc))
-	static void Break(const UAccountUpdate* Serializable, bool& bHasThirdPartyToken, FOptionalString& ThirdParty, FOptionalString& Country, FOptionalString& Language, FOptionalGamerTagAssociation& GamerTagAssoc, FOptionalString& Token, FOptionalString& DeviceId, FOptionalString& UserName);
+	static void Break(const UAccountUpdate* Serializable, bool& bHasThirdPartyToken, FOptionalString& ThirdParty, FOptionalString& Country, FOptionalString& Language, FOptionalGamerTagAssociation& GamerTagAssoc, FOptionalString& Token, FOptionalString& DeviceId, FOptionalString& UserName, FOptionalArrayOfExternalIdentity& External);
 };

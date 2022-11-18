@@ -27,9 +27,9 @@ void UObjectCalendarsPostClaimRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UObjectCalendarsPostClaimRequest* UObjectCalendarsPostClaimRequest::Make(int64 _ObjectId, FString _Id, UObject* Outer)
+UObjectCalendarsPostClaimRequest* UObjectCalendarsPostClaimRequest::Make(int64 _ObjectId, FString _Id, UObject* RequestOwner)
 {
-	UObjectCalendarsPostClaimRequest* Req = NewObject<UObjectCalendarsPostClaimRequest>(Outer);
+	UObjectCalendarsPostClaimRequest* Req = NewObject<UObjectCalendarsPostClaimRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

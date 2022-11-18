@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make DeleteLeaderboards",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UDeleteLeaderboardsRequest* Make(FString _ObjectId, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make DeleteLeaderboards",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UDeleteLeaderboardsRequest* Make(FString _ObjectId, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

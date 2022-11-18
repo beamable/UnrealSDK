@@ -44,8 +44,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", DisplayName="Beam - Make GetAdminPlayer",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_TournamentId,_ContentId,_bHasUnclaimedRewards,Outer"))
-	static UGetAdminPlayerRequest* Make(int64 _PlayerId, FOptionalString _TournamentId, FOptionalString _ContentId, FOptionalBool _bHasUnclaimedRewards, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", DisplayName="Beam - Make GetAdminPlayer",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_TournamentId,_ContentId,_bHasUnclaimedRewards,RequestOwner"))
+	static UGetAdminPlayerRequest* Make(int64 _PlayerId, FOptionalString _TournamentId, FOptionalString _ContentId, FOptionalBool _bHasUnclaimedRewards, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

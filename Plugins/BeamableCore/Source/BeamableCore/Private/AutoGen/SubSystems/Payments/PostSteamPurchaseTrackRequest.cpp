@@ -27,9 +27,9 @@ void UPostSteamPurchaseTrackRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostSteamPurchaseTrackRequest* UPostSteamPurchaseTrackRequest::Make(double _PriceInLocalCurrency, FString _SkuName, FString _SkuProductId, FString _Store, FString _PurchaseId, FString _IsoCurrencySymbol, TArray<UItemCreateRequestBody*> _ObtainItems, TArray<UCurrencyChange*> _ObtainCurrency, UObject* Outer)
+UPostSteamPurchaseTrackRequest* UPostSteamPurchaseTrackRequest::Make(double _PriceInLocalCurrency, FString _SkuName, FString _SkuProductId, FString _Store, FString _PurchaseId, FString _IsoCurrencySymbol, TArray<UItemCreateRequestBody*> _ObtainItems, TArray<UCurrencyChange*> _ObtainCurrency, UObject* RequestOwner)
 {
-	UPostSteamPurchaseTrackRequest* Req = NewObject<UPostSteamPurchaseTrackRequest>(Outer);
+	UPostSteamPurchaseTrackRequest* Req = NewObject<UPostSteamPurchaseTrackRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

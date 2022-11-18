@@ -27,9 +27,9 @@ void UDeleteRoleRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteRoleRequest* UDeleteRoleRequest::Make(int64 _ObjectId, FString _Realm, FString _Role, UObject* Outer)
+UDeleteRoleRequest* UDeleteRoleRequest::Make(int64 _ObjectId, FString _Realm, FString _Role, UObject* RequestOwner)
 {
-	UDeleteRoleRequest* Req = NewObject<UDeleteRoleRequest>(Outer);
+	UDeleteRoleRequest* Req = NewObject<UDeleteRoleRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

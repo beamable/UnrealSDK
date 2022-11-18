@@ -27,9 +27,9 @@ void UPostPlansRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostPlansRequest* UPostPlansRequest::Make(bool _bMongoSSL, bool _bSharded, FString _Name, FString _MemcachedHosts, FString _PlatformJBDC, FString _MongoHosts, TArray<URedisShardRequestBody*> _RedisShards, FOptionalArrayOfString _MessageBusAnalytics, FOptionalArrayOfString _MessageBusCommon, UObject* Outer)
+UPostPlansRequest* UPostPlansRequest::Make(bool _bMongoSSL, bool _bSharded, FString _Name, FString _MemcachedHosts, FString _PlatformJBDC, FString _MongoHosts, TArray<URedisShardRequestBody*> _RedisShards, FOptionalArrayOfString _MessageBusAnalytics, FOptionalArrayOfString _MessageBusCommon, UObject* RequestOwner)
 {
-	UPostPlansRequest* Req = NewObject<UPostPlansRequest>(Outer);
+	UPostPlansRequest* Req = NewObject<UPostPlansRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

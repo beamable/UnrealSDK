@@ -15,12 +15,12 @@ void UBasicLeaderboardsGetAssignmentRequest::BuildRoute(FString& RouteString) co
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("boardId"), *BoardId);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("boardId"), *BoardId);
 	bIsFirstQueryParam = false;
 	
 	if(bJoinBoard.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("joinBoard"), bJoinBoard.Val ? *TEXT("true") : *TEXT("false"));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("joinBoard"), bJoinBoard.Val ? TEXT("true") : TEXT("false"));
 		bIsFirstQueryParam = false;
 	}
 
@@ -32,9 +32,9 @@ void UBasicLeaderboardsGetAssignmentRequest::BuildBody(FString& BodyString) cons
 	
 }
 
-UBasicLeaderboardsGetAssignmentRequest* UBasicLeaderboardsGetAssignmentRequest::Make(FString _BoardId, FOptionalBool _bJoinBoard, UObject* Outer)
+UBasicLeaderboardsGetAssignmentRequest* UBasicLeaderboardsGetAssignmentRequest::Make(FString _BoardId, FOptionalBool _bJoinBoard, UObject* RequestOwner)
 {
-	UBasicLeaderboardsGetAssignmentRequest* Req = NewObject<UBasicLeaderboardsGetAssignmentRequest>(Outer);
+	UBasicLeaderboardsGetAssignmentRequest* Req = NewObject<UBasicLeaderboardsGetAssignmentRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->BoardId = _BoardId;

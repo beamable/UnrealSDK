@@ -23,9 +23,9 @@ void UGetUploadAPIRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetUploadAPIRequest* UGetUploadAPIRequest::Make(UObject* Outer)
+UGetUploadAPIRequest* UGetUploadAPIRequest::Make(UObject* RequestOwner)
 {
-	UGetUploadAPIRequest* Req = NewObject<UGetUploadAPIRequest>(Outer);
+	UGetUploadAPIRequest* Req = NewObject<UGetUploadAPIRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -16,19 +16,19 @@ void UBasicTournamentsGetTournamentsRequest::BuildRoute(FString& RouteString) co
 	bool bIsFirstQueryParam = true;
 	if(bIsRunning.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("isRunning"), bIsRunning.Val ? *TEXT("true") : *TEXT("false"));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("isRunning"), bIsRunning.Val ? TEXT("true") : TEXT("false"));
 		bIsFirstQueryParam = false;
 	}
 
 	if(ContentId.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("contentId"), *ContentId.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("contentId"), *ContentId.Val);
 		bIsFirstQueryParam = false;
 	}
 
 	if(Cycle.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("cycle"), *FString::FromInt(Cycle.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("cycle"), *FString::FromInt(Cycle.Val));
 		bIsFirstQueryParam = false;
 	}
 
@@ -40,9 +40,9 @@ void UBasicTournamentsGetTournamentsRequest::BuildBody(FString& BodyString) cons
 	
 }
 
-UBasicTournamentsGetTournamentsRequest* UBasicTournamentsGetTournamentsRequest::Make(FOptionalBool _bIsRunning, FOptionalString _ContentId, FOptionalInt32 _Cycle, UObject* Outer)
+UBasicTournamentsGetTournamentsRequest* UBasicTournamentsGetTournamentsRequest::Make(FOptionalBool _bIsRunning, FOptionalString _ContentId, FOptionalInt32 _Cycle, UObject* RequestOwner)
 {
-	UBasicTournamentsGetTournamentsRequest* Req = NewObject<UBasicTournamentsGetTournamentsRequest>(Outer);
+	UBasicTournamentsGetTournamentsRequest* Req = NewObject<UBasicTournamentsGetTournamentsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->bIsRunning = _bIsRunning;

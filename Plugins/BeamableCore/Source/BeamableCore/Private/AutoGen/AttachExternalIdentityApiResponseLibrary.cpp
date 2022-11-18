@@ -1,0 +1,40 @@
+
+#include "AutoGen/AttachExternalIdentityApiResponseLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UAttachExternalIdentityApiResponseLibrary::AttachExternalIdentityApiResponseToJsonString(const UAttachExternalIdentityApiResponse* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UAttachExternalIdentityApiResponse* UAttachExternalIdentityApiResponseLibrary::Make(FString Result, FOptionalString ChallengeToken, UObject* Outer)
+{
+	auto Serializable = NewObject<UAttachExternalIdentityApiResponse>(Outer);
+	Serializable->Result = Result;
+	Serializable->ChallengeToken = ChallengeToken;
+	
+	return Serializable;
+}
+
+void UAttachExternalIdentityApiResponseLibrary::Break(const UAttachExternalIdentityApiResponse* Serializable, FString& Result, FOptionalString& ChallengeToken)
+{
+	Result = Serializable->Result;
+	ChallengeToken = Serializable->ChallengeToken;
+		
+}
+

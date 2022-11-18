@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Push", DisplayName="Beam - Make BasicPushPostRegister",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UBasicPushPostRegisterRequest* Make(FString _Provider, FString _Token, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Push", DisplayName="Beam - Make BasicPushPostRegister",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UBasicPushPostRegisterRequest* Make(FString _Provider, FString _Token, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

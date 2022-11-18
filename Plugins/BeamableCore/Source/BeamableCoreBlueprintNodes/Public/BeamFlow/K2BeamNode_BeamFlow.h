@@ -10,14 +10,17 @@
 /**
  * 
  */
-UCLASS(NotBlueprintType, NotBlueprintable, meta=(BeamFlow))
+UCLASS(NotBlueprintable, NotBlueprintType, Hidden, meta=(BeamFlowNode))
 class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_BeamFlow : public UK2Node
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Category="Beam Flow")
 	bool bIsInBeamFlowMode = true;
 
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+	virtual bool ShouldShowNodeProperties() const override { return true; }
+	
 	virtual bool IsNodeSafeToIgnore() const override;
 	virtual bool IsCompatibleWithGraph(UEdGraph const* Graph) const override;
 

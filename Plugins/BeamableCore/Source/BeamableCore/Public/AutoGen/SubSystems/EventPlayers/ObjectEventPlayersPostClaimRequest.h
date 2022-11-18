@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|EventPlayers", DisplayName="Beam - Make ObjectEventPlayersPostClaim",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UObjectEventPlayersPostClaimRequest* Make(int64 _ObjectId, FString _EventId, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|EventPlayers", DisplayName="Beam - Make ObjectEventPlayersPostClaim",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UObjectEventPlayersPostClaimRequest* Make(int64 _ObjectId, FString _EventId, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

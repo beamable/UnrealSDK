@@ -23,9 +23,9 @@ void UDeleteLeaderboardsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UDeleteLeaderboardsRequest* UDeleteLeaderboardsRequest::Make(FString _ObjectId, UObject* Outer)
+UDeleteLeaderboardsRequest* UDeleteLeaderboardsRequest::Make(FString _ObjectId, UObject* RequestOwner)
 {
-	UDeleteLeaderboardsRequest* Req = NewObject<UDeleteLeaderboardsRequest>(Outer);
+	UDeleteLeaderboardsRequest* Req = NewObject<UDeleteLeaderboardsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

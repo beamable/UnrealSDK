@@ -1,10 +1,13 @@
 
 #include "AutoGen/SubSystems/BeamEventPlayersApi.h"
+#include "BeamCoreSettings.h"
+
 
 void UBeamEventPlayersApi::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 	Backend = Cast<UBeamBackend>(Collection.InitializeDependency(UBeamBackend::StaticClass()));
+	RequestTracker = Cast<UBeamRequestTracker>(Collection.InitializeDependency(UBeamRequestTracker::StaticClass()));
 }
 
 void UBeamEventPlayersApi::Deinitialize()
@@ -15,7 +18,7 @@ void UBeamEventPlayersApi::Deinitialize()
 
 void UBeamEventPlayersApi::BP_GetEventPlayersImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetEventPlayersRequest* RequestData,
                                                   const FOnGetEventPlayersSuccess& OnSuccess, const FOnGetEventPlayersError& OnError, const FOnGetEventPlayersComplete& OnComplete,
-                                                  int64& OutRequestId) const
+                                                  int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
@@ -27,13 +30,16 @@ void UBeamEventPlayersApi::BP_GetEventPlayersImpl(const FBeamRealmHandle& Target
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+	
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 void UBeamEventPlayersApi::CPP_GetEventPlayersImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
-                                               UGetEventPlayersRequest* RequestData, const FOnGetEventPlayersFullResponse& Handler) const
+                                               UGetEventPlayersRequest* RequestData, const FOnGetEventPlayersFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
-	// AUTO-GENERATED...
-	int64 OutRequestId;
+	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
 
 	// Binds the handler to the static response handler (pre-generated)	
@@ -42,12 +48,16 @@ void UBeamEventPlayersApi::CPP_GetEventPlayersImpl(const FBeamRealmHandle& Targe
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 		
 void UBeamEventPlayersApi::BP_PostClaimImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UObjectEventPlayersPostClaimRequest* RequestData,
                                                   const FOnObjectEventPlayersPostClaimSuccess& OnSuccess, const FOnObjectEventPlayersPostClaimError& OnError, const FOnObjectEventPlayersPostClaimComplete& OnComplete,
-                                                  int64& OutRequestId) const
+                                                  int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
@@ -59,13 +69,16 @@ void UBeamEventPlayersApi::BP_PostClaimImpl(const FBeamRealmHandle& TargetRealm,
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+	
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 void UBeamEventPlayersApi::CPP_PostClaimImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
-                                               UObjectEventPlayersPostClaimRequest* RequestData, const FOnObjectEventPlayersPostClaimFullResponse& Handler) const
+                                               UObjectEventPlayersPostClaimRequest* RequestData, const FOnObjectEventPlayersPostClaimFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
-	// AUTO-GENERATED...
-	int64 OutRequestId;
+	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
 
 	// Binds the handler to the static response handler (pre-generated)	
@@ -74,12 +87,16 @@ void UBeamEventPlayersApi::CPP_PostClaimImpl(const FBeamRealmHandle& TargetRealm
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 		
 void UBeamEventPlayersApi::BP_PutScoreImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UPutScoreRequest* RequestData,
                                                   const FOnPutScoreSuccess& OnSuccess, const FOnPutScoreError& OnError, const FOnPutScoreComplete& OnComplete,
-                                                  int64& OutRequestId) const
+                                                  int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
 	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
@@ -91,13 +108,16 @@ void UBeamEventPlayersApi::BP_PutScoreImpl(const FBeamRealmHandle& TargetRealm, 
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+	
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 void UBeamEventPlayersApi::CPP_PutScoreImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
-                                               UPutScoreRequest* RequestData, const FOnPutScoreFullResponse& Handler) const
+                                               UPutScoreRequest* RequestData, const FOnPutScoreFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle) const
 {
-	// AUTO-GENERATED...
-	int64 OutRequestId;
+	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
 
 	// Binds the handler to the static response handler (pre-generated)	
@@ -106,6 +126,10 @@ void UBeamEventPlayersApi::CPP_PutScoreImpl(const FBeamRealmHandle& TargetRealm,
 
 	// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 	Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
 }
 
 
@@ -113,27 +137,36 @@ void UBeamEventPlayersApi::CPP_PutScoreImpl(const FBeamRealmHandle& TargetRealm,
 
 
 
-void UBeamEventPlayersApi::CPP_GetEventPlayers(UGetEventPlayersRequest* Request, const FOnGetEventPlayersFullResponse& Handler) const
+void UBeamEventPlayersApi::CPP_GetEventPlayers(UGetEventPlayersRequest* Request, const FOnGetEventPlayersFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle) const
 {
 	FBeamRetryConfig RetryConfig;
 	Backend->GetRetryConfigForRequestType(UGetEventPlayersRequest::StaticClass()->GetName(), RetryConfig);
-	CPP_GetEventPlayersImpl(Backend->UnauthenticatedRequestsTargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler);
+	
+    int64 OutRequestId;
+	CPP_GetEventPlayersImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
 }
 
 		
-void UBeamEventPlayersApi::CPP_PostClaim(UObjectEventPlayersPostClaimRequest* Request, const FOnObjectEventPlayersPostClaimFullResponse& Handler) const
+void UBeamEventPlayersApi::CPP_PostClaim(UObjectEventPlayersPostClaimRequest* Request, const FOnObjectEventPlayersPostClaimFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle) const
 {
 	FBeamRetryConfig RetryConfig;
 	Backend->GetRetryConfigForRequestType(UObjectEventPlayersPostClaimRequest::StaticClass()->GetName(), RetryConfig);
-	CPP_PostClaimImpl(Backend->UnauthenticatedRequestsTargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler);
+	
+    int64 OutRequestId;
+	CPP_PostClaimImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
 }
 
 		
-void UBeamEventPlayersApi::CPP_PutScore(UPutScoreRequest* Request, const FOnPutScoreFullResponse& Handler) const
+void UBeamEventPlayersApi::CPP_PutScore(UPutScoreRequest* Request, const FOnPutScoreFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle) const
 {
 	FBeamRetryConfig RetryConfig;
 	Backend->GetRetryConfigForRequestType(UPutScoreRequest::StaticClass()->GetName(), RetryConfig);
-	CPP_PutScoreImpl(Backend->UnauthenticatedRequestsTargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler);
+	
+    int64 OutRequestId;
+	CPP_PutScoreImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
 }
 
 
@@ -141,39 +174,39 @@ void UBeamEventPlayersApi::CPP_PutScore(UPutScoreRequest* Request, const FOnPutS
 
 
 
-void UBeamEventPlayersApi::GetEventPlayers(UGetEventPlayersRequest* Request, const FOnGetEventPlayersSuccess& OnSuccess, const FOnGetEventPlayersError& OnError, const FOnGetEventPlayersComplete& OnComplete, FBeamRequestContext& OutRequestContext)
+void UBeamEventPlayersApi::GetEventPlayers(UGetEventPlayersRequest* Request, const FOnGetEventPlayersSuccess& OnSuccess, const FOnGetEventPlayersError& OnError, const FOnGetEventPlayersComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle)
 {
 	// AUTO-GENERATED...	
 	FBeamRetryConfig RetryConfig;
 	Backend->GetRetryConfigForRequestType(UGetEventPlayersRequest::StaticClass()->GetName(), RetryConfig);	
 	
 	int64 OutRequestId = 0;
-	BP_GetEventPlayersImpl(Backend->UnauthenticatedRequestsTargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, Backend->UnauthenticatedRequestsTargetRealm, -1, FUserSlot(), None};
+	BP_GetEventPlayersImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
 }
 
 		
-void UBeamEventPlayersApi::PostClaim(UObjectEventPlayersPostClaimRequest* Request, const FOnObjectEventPlayersPostClaimSuccess& OnSuccess, const FOnObjectEventPlayersPostClaimError& OnError, const FOnObjectEventPlayersPostClaimComplete& OnComplete, FBeamRequestContext& OutRequestContext)
+void UBeamEventPlayersApi::PostClaim(UObjectEventPlayersPostClaimRequest* Request, const FOnObjectEventPlayersPostClaimSuccess& OnSuccess, const FOnObjectEventPlayersPostClaimError& OnError, const FOnObjectEventPlayersPostClaimComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle)
 {
 	// AUTO-GENERATED...	
 	FBeamRetryConfig RetryConfig;
 	Backend->GetRetryConfigForRequestType(UObjectEventPlayersPostClaimRequest::StaticClass()->GetName(), RetryConfig);	
 	
 	int64 OutRequestId = 0;
-	BP_PostClaimImpl(Backend->UnauthenticatedRequestsTargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, Backend->UnauthenticatedRequestsTargetRealm, -1, FUserSlot(), None};
+	BP_PostClaimImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
 }
 
 		
-void UBeamEventPlayersApi::PutScore(UPutScoreRequest* Request, const FOnPutScoreSuccess& OnSuccess, const FOnPutScoreError& OnError, const FOnPutScoreComplete& OnComplete, FBeamRequestContext& OutRequestContext)
+void UBeamEventPlayersApi::PutScore(UPutScoreRequest* Request, const FOnPutScoreSuccess& OnSuccess, const FOnPutScoreError& OnError, const FOnPutScoreComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle)
 {
 	// AUTO-GENERATED...	
 	FBeamRetryConfig RetryConfig;
 	Backend->GetRetryConfigForRequestType(UPutScoreRequest::StaticClass()->GetName(), RetryConfig);	
 	
 	int64 OutRequestId = 0;
-	BP_PutScoreImpl(Backend->UnauthenticatedRequestsTargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, Backend->UnauthenticatedRequestsTargetRealm, -1, FUserSlot(), None};
+	BP_PutScoreImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
 }
 
 
@@ -183,24 +216,24 @@ void UBeamEventPlayersApi::PutScore(UPutScoreRequest* Request, const FOnPutScore
 void UBeamEventPlayersApi::GetEventPlayersWithRetry(const FBeamRetryConfig& RetryConfig, UGetEventPlayersRequest* Request, const FOnGetEventPlayersSuccess& OnSuccess, const FOnGetEventPlayersError& OnError, const FOnGetEventPlayersComplete& OnComplete, FBeamRequestContext& OutRequestContext)
 {
 	int64 OutRequestId = 0;
-	BP_GetEventPlayersImpl(Backend->UnauthenticatedRequestsTargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, Backend->UnauthenticatedRequestsTargetRealm, -1, FUserSlot(), None}; 
+	BP_GetEventPlayersImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None}; 
 }
 
 		
 void UBeamEventPlayersApi::PostClaimWithRetry(const FBeamRetryConfig& RetryConfig, UObjectEventPlayersPostClaimRequest* Request, const FOnObjectEventPlayersPostClaimSuccess& OnSuccess, const FOnObjectEventPlayersPostClaimError& OnError, const FOnObjectEventPlayersPostClaimComplete& OnComplete, FBeamRequestContext& OutRequestContext)
 {
 	int64 OutRequestId = 0;
-	BP_PostClaimImpl(Backend->UnauthenticatedRequestsTargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, Backend->UnauthenticatedRequestsTargetRealm, -1, FUserSlot(), None}; 
+	BP_PostClaimImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None}; 
 }
 
 		
 void UBeamEventPlayersApi::PutScoreWithRetry(const FBeamRetryConfig& RetryConfig, UPutScoreRequest* Request, const FOnPutScoreSuccess& OnSuccess, const FOnPutScoreError& OnError, const FOnPutScoreComplete& OnComplete, FBeamRequestContext& OutRequestContext)
 {
 	int64 OutRequestId = 0;
-	BP_PutScoreImpl(Backend->UnauthenticatedRequestsTargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, Backend->UnauthenticatedRequestsTargetRealm, -1, FUserSlot(), None}; 
+	BP_PutScoreImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None}; 
 }
 
 

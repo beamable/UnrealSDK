@@ -49,3 +49,9 @@ void UBeamBackendTestCallbacks::MockCompleteCallbackCancelled_Expected(FBeamRequ
 	Spec->TestTrue("Beam back-end correctly stores the state as cancelled", BeamBackend->IsRequestCancelled(Context.RequestId));	
 	DoneDelegateForLatentTests.Execute();
 }
+
+void UBeamBackendTestCallbacks::GenerateExternalRequestIds(TArray<int64>& OutUsingRequestIds) const
+{
+	OutUsingRequestIds.Append(ExternalRequestIds);	
+}
+

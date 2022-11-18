@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Payments", DisplayName="Beam - Make PostSteamPurchaseVerify",  meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer"))
-	static UPostSteamPurchaseVerifyRequest* Make(FString _Receipt, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Payments", DisplayName="Beam - Make PostSteamPurchaseVerify",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
+	static UPostSteamPurchaseVerifyRequest* Make(FString _Receipt, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

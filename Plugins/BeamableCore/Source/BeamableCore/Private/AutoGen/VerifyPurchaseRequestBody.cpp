@@ -3,6 +3,8 @@
 
 
 
+
+
 void UVerifyPurchaseRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("receipt"), Receipt);

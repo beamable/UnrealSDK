@@ -23,9 +23,9 @@ void UGetConfigRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetConfigRequest* UGetConfigRequest::Make(UObject* Outer)
+UGetConfigRequest* UGetConfigRequest::Make(UObject* RequestOwner)
 {
-	UGetConfigRequest* Req = NewObject<UGetConfigRequest>(Outer);
+	UGetConfigRequest* Req = NewObject<UGetConfigRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

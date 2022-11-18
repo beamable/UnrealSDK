@@ -23,9 +23,9 @@ void UGetRunningRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetRunningRequest* UGetRunningRequest::Make(UObject* Outer)
+UGetRunningRequest* UGetRunningRequest::Make(UObject* RequestOwner)
 {
-	UGetRunningRequest* Req = NewObject<UGetRunningRequest>(Outer);
+	UGetRunningRequest* Req = NewObject<UGetRunningRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -15,11 +15,11 @@ void UGetTemplateRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("templateName"), *TemplateName);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("templateName"), *TemplateName);
 	bIsFirstQueryParam = false;
 	
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("gamerTag"), *FString::FromInt(GamerTag));
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("gamerTag"), *FString::FromInt(GamerTag));
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -30,9 +30,9 @@ void UGetTemplateRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetTemplateRequest* UGetTemplateRequest::Make(FString _TemplateName, int64 _GamerTag, UObject* Outer)
+UGetTemplateRequest* UGetTemplateRequest::Make(FString _TemplateName, int64 _GamerTag, UObject* RequestOwner)
 {
-	UGetTemplateRequest* Req = NewObject<UGetTemplateRequest>(Outer);
+	UGetTemplateRequest* Req = NewObject<UGetTemplateRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->TemplateName = _TemplateName;

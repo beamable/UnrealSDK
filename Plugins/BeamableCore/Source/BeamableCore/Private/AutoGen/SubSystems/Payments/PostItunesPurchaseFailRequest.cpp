@@ -27,9 +27,9 @@ void UPostItunesPurchaseFailRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostItunesPurchaseFailRequest* UPostItunesPurchaseFailRequest::Make(int64 _Txid, FString _Reason, UObject* Outer)
+UPostItunesPurchaseFailRequest* UPostItunesPurchaseFailRequest::Make(int64 _Txid, FString _Reason, UObject* RequestOwner)
 {
-	UPostItunesPurchaseFailRequest* Req = NewObject<UPostItunesPurchaseFailRequest>(Outer);
+	UPostItunesPurchaseFailRequest* Req = NewObject<UPostItunesPurchaseFailRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

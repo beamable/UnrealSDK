@@ -3,6 +3,8 @@
 
 
 
+
+
 void UDataPoint ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("timestamp"), Timestamp);

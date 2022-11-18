@@ -15,12 +15,12 @@ void UGetManifestRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), *TEXT("id"), *Id);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("id"), *Id);
 	bIsFirstQueryParam = false;
 	
 	if(bArchived.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("archived"), bArchived.Val ? *TEXT("true") : *TEXT("false"));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("archived"), bArchived.Val ? TEXT("true") : TEXT("false"));
 		bIsFirstQueryParam = false;
 	}
 
@@ -32,9 +32,9 @@ void UGetManifestRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetManifestRequest* UGetManifestRequest::Make(FString _Id, FOptionalBool _bArchived, UObject* Outer)
+UGetManifestRequest* UGetManifestRequest::Make(FString _Id, FOptionalBool _bArchived, UObject* RequestOwner)
 {
-	UGetManifestRequest* Req = NewObject<UGetManifestRequest>(Outer);
+	UGetManifestRequest* Req = NewObject<UGetManifestRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Id = _Id;

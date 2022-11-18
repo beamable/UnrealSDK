@@ -16,7 +16,7 @@ void UGetCommerceRequest::BuildRoute(FString& RouteString) const
 	bool bIsFirstQueryParam = true;
 	if(Scope.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("scope"), *Scope.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("scope"), *Scope.Val);
 		bIsFirstQueryParam = false;
 	}
 
@@ -28,9 +28,9 @@ void UGetCommerceRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetCommerceRequest* UGetCommerceRequest::Make(int64 _ObjectId, FOptionalString _Scope, UObject* Outer)
+UGetCommerceRequest* UGetCommerceRequest::Make(int64 _ObjectId, FOptionalString _Scope, UObject* RequestOwner)
 {
-	UGetCommerceRequest* Req = NewObject<UGetCommerceRequest>(Outer);
+	UGetCommerceRequest* Req = NewObject<UGetCommerceRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

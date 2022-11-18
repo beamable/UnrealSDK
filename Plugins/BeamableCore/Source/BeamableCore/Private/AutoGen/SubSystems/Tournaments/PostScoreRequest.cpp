@@ -27,9 +27,9 @@ void UPostScoreRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostScoreRequest* UPostScoreRequest::Make(FString _TournamentId, double _Score, int64 _PlayerId, FOptionalBool _bIncrement, FOptionalMapOfString _Stats, UObject* Outer)
+UPostScoreRequest* UPostScoreRequest::Make(FString _TournamentId, double _Score, int64 _PlayerId, FOptionalBool _bIncrement, FOptionalMapOfString _Stats, UObject* RequestOwner)
 {
-	UPostScoreRequest* Req = NewObject<UPostScoreRequest>(Outer);
+	UPostScoreRequest* Req = NewObject<UPostScoreRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

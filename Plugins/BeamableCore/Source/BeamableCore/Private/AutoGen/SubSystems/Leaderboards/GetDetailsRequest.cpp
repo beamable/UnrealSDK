@@ -16,13 +16,13 @@ void UGetDetailsRequest::BuildRoute(FString& RouteString) const
 	bool bIsFirstQueryParam = true;
 	if(From.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("from"), *FString::FromInt(From.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("from"), *FString::FromInt(From.Val));
 		bIsFirstQueryParam = false;
 	}
 
 	if(Max.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), *TEXT("max"), *FString::FromInt(Max.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("max"), *FString::FromInt(Max.Val));
 		bIsFirstQueryParam = false;
 	}
 
@@ -34,9 +34,9 @@ void UGetDetailsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetDetailsRequest* UGetDetailsRequest::Make(FString _ObjectId, FOptionalInt32 _From, FOptionalInt32 _Max, UObject* Outer)
+UGetDetailsRequest* UGetDetailsRequest::Make(FString _ObjectId, FOptionalInt32 _From, FOptionalInt32 _Max, UObject* RequestOwner)
 {
-	UGetDetailsRequest* Req = NewObject<UGetDetailsRequest>(Outer);
+	UGetDetailsRequest* Req = NewObject<UGetDetailsRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

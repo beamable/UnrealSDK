@@ -27,9 +27,9 @@ void UPutAdminThirdPartyRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutAdminThirdPartyRequest* UPutAdminThirdPartyRequest::Make(int64 _ObjectId, int64 _FromAccountId, UThirdPartyAssociation* _ThirdParty, UObject* Outer)
+UPutAdminThirdPartyRequest* UPutAdminThirdPartyRequest::Make(int64 _ObjectId, int64 _FromAccountId, UThirdPartyAssociation* _ThirdParty, UObject* RequestOwner)
 {
-	UPutAdminThirdPartyRequest* Req = NewObject<UPutAdminThirdPartyRequest>(Outer);
+	UPutAdminThirdPartyRequest* Req = NewObject<UPutAdminThirdPartyRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

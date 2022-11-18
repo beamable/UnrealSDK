@@ -22,7 +22,7 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	int64 ObjectId;
+	FString ObjectId;
 	
 	// Query Params
 	
@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Events", DisplayName="Beam - Make PutEndPhase",  meta=(DefaultToSelf="Outer", AdvancedDisplay="_Time,Outer"))
-	static UPutEndPhaseRequest* Make(int64 _ObjectId, FOptionalString _Time, UObject* Outer);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Events", DisplayName="Beam - Make PutEndPhase",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Time,RequestOwner"))
+	static UPutEndPhaseRequest* Make(FString _ObjectId, FOptionalString _Time, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

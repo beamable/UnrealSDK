@@ -3,6 +3,13 @@
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 
+
+void UAccountPortalView::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
+{
+	OuterOwner = RequestData;
+	BeamDeserialize(ResponseContent);	
+}
+
 void UAccountPortalView ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("id"), Id);
@@ -11,6 +18,7 @@ void UAccountPortalView ::BeamSerializeProperties(TUnrealJsonSerializer& Seriali
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("email"), &Email, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("roleString"), &RoleString, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("language"), &Language, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<UExternalIdentity*>, UExternalIdentity*>(TEXT("external"), &External, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<URoleMapping*>, URoleMapping*>(TEXT("roles"), &Roles, Serializer);
 }
 
@@ -22,6 +30,7 @@ void UAccountPortalView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("email"), &Email, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("roleString"), &RoleString, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("language"), &Language, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<UExternalIdentity*>, UExternalIdentity*>(TEXT("external"), &External, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<URoleMapping*>, URoleMapping*>(TEXT("roles"), &Roles, Serializer);		
 }
 
@@ -33,5 +42,6 @@ void UAccountPortalView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject
 	UBeamJsonUtils::DeserializeOptional<FString>("email", Bag, Email, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("roleString", Bag, RoleString, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("language", Bag, Language, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TArray<UExternalIdentity*>, UExternalIdentity*>("external", Bag, External, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<URoleMapping*>, URoleMapping*>("roles", Bag, Roles, OuterOwner);
 }

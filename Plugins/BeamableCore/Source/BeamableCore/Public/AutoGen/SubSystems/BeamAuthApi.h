@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBackend.h"
+#include "RequestTracker/BeamRequestTracker.h"
 
 #include "Auth/GetTokenRequest.h"
 #include "Auth/AuthenticateRequest.h"
@@ -30,18 +31,21 @@ private:
 	UPROPERTY()
 	UBeamBackend* Backend;
 
+	UPROPERTY()
+	UBeamRequestTracker* RequestTracker;
+
 	
 	/**
 	 * @brief Private implementation that all overloaded BP UFunctions call.	  
 	 */
 	void BP_GetTokenImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetTokenRequest* RequestData,
 	                                const FOnGetTokenSuccess& OnSuccess, const FOnGetTokenError& OnError, const FOnGetTokenComplete& OnComplete,
-	                                int64& OutRequestId) const;
+	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
 	void CPP_GetTokenImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetTokenRequest* RequestData,
-	                                 const FOnGetTokenFullResponse& Handler) const;
+	                                 const FOnGetTokenFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
 
 		
 	/**
@@ -49,12 +53,12 @@ private:
 	 */
 	void BP_AuthenticateImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UAuthenticateRequest* RequestData,
 	                                const FOnAuthenticateSuccess& OnSuccess, const FOnAuthenticateError& OnError, const FOnAuthenticateComplete& OnComplete,
-	                                int64& OutRequestId) const;
+	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
 	void CPP_AuthenticateImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UAuthenticateRequest* RequestData,
-	                                 const FOnAuthenticateFullResponse& Handler) const;
+	                                 const FOnAuthenticateFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
 
 
 	
@@ -62,23 +66,25 @@ private:
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
 	void BP_GetTokenListImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UGetTokenListRequest* RequestData,
-	                  const FOnGetTokenListSuccess& OnSuccess, const FOnGetTokenListError& OnError, const FOnGetTokenListComplete& OnComplete, int64& OutRequestId) const;
+	                  const FOnGetTokenListSuccess& OnSuccess, const FOnGetTokenListError& OnError, const FOnGetTokenListComplete& OnComplete, 
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
 	void CPP_GetTokenListImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UGetTokenListRequest* RequestData,
-	                   const FOnGetTokenListFullResponse& Handler) const;
+	                   const FOnGetTokenListFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
 		
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
 	void BP_PutTokenRevokeImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UPutTokenRevokeRequest* RequestData,
-	                  const FOnPutTokenRevokeSuccess& OnSuccess, const FOnPutTokenRevokeError& OnError, const FOnPutTokenRevokeComplete& OnComplete, int64& OutRequestId) const;
+	                  const FOnPutTokenRevokeSuccess& OnSuccess, const FOnPutTokenRevokeError& OnError, const FOnPutTokenRevokeComplete& OnComplete, 
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
 	void CPP_PutTokenRevokeImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UPutTokenRevokeRequest* RequestData,
-	                   const FOnPutTokenRevokeFullResponse& Handler) const;
+	                   const FOnPutTokenRevokeFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
 
 public:
 	
@@ -94,9 +100,11 @@ public:
 	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster and for whenever you need to capture variables).
 	 * 
 	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param Handler A callback that defines how to handle success, error and completion. 
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically. 
 	 */
-	void CPP_GetToken(UGetTokenRequest* Request, const FOnGetTokenFullResponse& Handler) const;
+	void CPP_GetToken(UGetTokenRequest* Request, const FOnGetTokenFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
 
 		
 	/**
@@ -106,9 +114,11 @@ public:
 	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster and for whenever you need to capture variables).
 	 * 
 	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param Handler A callback that defines how to handle success, error and completion. 
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically. 
 	 */
-	void CPP_Authenticate(UAuthenticateRequest* Request, const FOnAuthenticateFullResponse& Handler) const;
+	void CPP_Authenticate(UAuthenticateRequest* Request, const FOnAuthenticateFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
 
 
 	
@@ -120,9 +130,12 @@ public:
 	 * 
 	 * @param UserSlot The Authenticated User Slot that is making this request.
 	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param Handler A callback that defines how to handle success, error and completion. 
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+     * @param CallingContext A UObject managed by the world that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId). 
 	 */
-	void CPP_GetTokenList(const FUserSlot& UserSlot, UGetTokenListRequest* Request, const FOnGetTokenListFullResponse& Handler) const;
+	void CPP_GetTokenList(const FUserSlot& UserSlot, UGetTokenListRequest* Request, const FOnGetTokenListFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -133,9 +146,12 @@ public:
 	 * 
 	 * @param UserSlot The Authenticated User Slot that is making this request.
 	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param Handler A callback that defines how to handle success, error and completion. 
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+     * @param CallingContext A UObject managed by the world that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId). 
 	 */
-	void CPP_PutTokenRevoke(const FUserSlot& UserSlot, UPutTokenRevokeRequest* Request, const FOnPutTokenRevokeFullResponse& Handler) const;
+	void CPP_PutTokenRevoke(const FUserSlot& UserSlot, UPutTokenRevokeRequest* Request, const FOnPutTokenRevokeFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 
 	
@@ -148,8 +164,8 @@ public:
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
 	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowStart))
-	void GetToken(UGetTokenRequest* Request, const FOnGetTokenSuccess& OnSuccess, const FOnGetTokenError& OnError, const FOnGetTokenComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", meta=(AdvancedDisplay="OpHandle", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void GetToken(UGetTokenRequest* Request, const FOnGetTokenSuccess& OnSuccess, const FOnGetTokenError& OnError, const FOnGetTokenComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle());
 
 		
 	/**
@@ -161,8 +177,8 @@ public:
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
 	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowStart))
-	void Authenticate(UAuthenticateRequest* Request, const FOnAuthenticateSuccess& OnSuccess, const FOnAuthenticateError& OnError, const FOnAuthenticateComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", meta=(AdvancedDisplay="OpHandle", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void Authenticate(UAuthenticateRequest* Request, const FOnAuthenticateSuccess& OnSuccess, const FOnAuthenticateError& OnError, const FOnAuthenticateComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle());
 
 
 	
@@ -174,10 +190,11 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+     * @param CallingContext A UObject managed by the world that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId).
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
-	void GetTokenList(FUserSlot UserSlot, UGetTokenListRequest* Request, const FOnGetTokenListSuccess& OnSuccess, const FOnGetTokenListError& OnError, const FOnGetTokenListComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void GetTokenList(FUserSlot UserSlot, UGetTokenListRequest* Request, const FOnGetTokenListSuccess& OnSuccess, const FOnGetTokenListError& OnError, const FOnGetTokenListComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**
@@ -188,10 +205,11 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+     * @param CallingContext A UObject managed by the world that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId).
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
-	void PutTokenRevoke(FUserSlot UserSlot, UPutTokenRevokeRequest* Request, const FOnPutTokenRevokeSuccess& OnSuccess, const FOnPutTokenRevokeError& OnError, const FOnPutTokenRevokeComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void PutTokenRevoke(FUserSlot UserSlot, UPutTokenRevokeRequest* Request, const FOnPutTokenRevokeSuccess& OnSuccess, const FOnPutTokenRevokeError& OnError, const FOnPutTokenRevokeComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 	
 
 	
@@ -203,9 +221,9 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight.	  
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowStart))
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowFunction))
 	void GetTokenWithRetry(const FBeamRetryConfig& RetryConfig, UGetTokenRequest* Request, const FOnGetTokenSuccess& OnSuccess, const FOnGetTokenError& OnError, const FOnGetTokenComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 		
 	/**
@@ -216,9 +234,9 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight.	  
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowStart))
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowFunction))
 	void AuthenticateWithRetry(const FBeamRetryConfig& RetryConfig, UAuthenticateRequest* Request, const FOnAuthenticateSuccess& OnSuccess, const FOnAuthenticateError& OnError, const FOnAuthenticateComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 	
@@ -231,10 +249,11 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId). 
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
-	void GetTokenListWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UGetTokenListRequest* Request, const FOnGetTokenListSuccess& OnSuccess, const FOnGetTokenListError& OnError, const FOnGetTokenListComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowFunction))
+	void GetTokenListWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UGetTokenListRequest* Request, const FOnGetTokenListSuccess& OnSuccess, const FOnGetTokenListError& OnError, const FOnGetTokenListComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext = nullptr);
 		
 	/**
 	 * @brief Makes an authenticated request to the Put /basic/auth/token/revoke endpoint of the Auth Service.
@@ -245,8 +264,9 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId). 
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", meta=(AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowStart))
-	void PutTokenRevokeWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPutTokenRevokeRequest* Request, const FOnPutTokenRevokeSuccess& OnSuccess, const FOnPutTokenRevokeError& OnError, const FOnPutTokenRevokeComplete& OnComplete, FBeamRequestContext& OutRequestContext);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowFunction))
+	void PutTokenRevokeWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPutTokenRevokeRequest* Request, const FOnPutTokenRevokeSuccess& OnSuccess, const FOnPutTokenRevokeError& OnError, const FOnPutTokenRevokeComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext = nullptr);
 };

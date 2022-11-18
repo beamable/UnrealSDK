@@ -12,18 +12,41 @@ struct FBeamRetryConfig
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	/**
+	 * @brief The HttpCodes for which we should retry this request.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam|Retry Cases")
+	TArray<int64> HttpResponseCodes;
+
+	/**
+	 * @brief Custom beamable error codes (see FBeamErrorResponse::error) for which we should retry this request.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam|Retry Cases")
+	TArray<FString> CustomErrorCodes;
+
+	/**
+	 * @brief Timeout for the request.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam|Retry Rules")
 	int64 Timeout;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	/**
+	 * @brief How much time will we wait between each request.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam|Retry Rules")
 	TArray<float> RetryFalloffValues;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	/**
+	 * @brief How many times will we retry. -1 is "infinite" but... avoid doing this as it makes no sense design wise.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam|Retry Rules")
 	int RetryMaxAttempt = -1;
 
 	friend bool operator==(const FBeamRetryConfig& Lhs, const FBeamRetryConfig& RHS)
 	{
-		return Lhs.Timeout == RHS.Timeout
+		return Lhs.HttpResponseCodes == RHS.HttpResponseCodes
+			&& Lhs.CustomErrorCodes == RHS.CustomErrorCodes
+			&& Lhs.Timeout == RHS.Timeout
 			&& Lhs.RetryFalloffValues == RHS.RetryFalloffValues
 			&& Lhs.RetryMaxAttempt == RHS.RetryMaxAttempt;
 	}
@@ -33,4 +56,3 @@ struct FBeamRetryConfig
 		return !(Lhs == RHS);
 	}
 };
-

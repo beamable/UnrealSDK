@@ -3,6 +3,8 @@
 
 
 
+
+
 void UReference ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	
