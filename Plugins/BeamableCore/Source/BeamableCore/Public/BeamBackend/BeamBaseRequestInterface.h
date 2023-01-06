@@ -26,7 +26,7 @@ public:
 
 	virtual FRequestType GetRequestType() const
 	{
-		return FRequestType{this->_getUObject()->GetClass()->GetDisplayNameText().ToString()};
+		return FRequestType{this->_getUObject()->GetClass()->GetAuthoredName()};
 	}
 	
 	virtual void BuildVerb(FString& VerbString) const
