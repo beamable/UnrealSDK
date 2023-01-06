@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBackend.h"
+#include "BeamBackend/ResponseCache/BeamResponseCache.h"
 #include "RequestTracker/BeamRequestTracker.h"
 
 #include "EventPlayers/GetEventPlayersRequest.h"
@@ -33,18 +34,21 @@ private:
 	UPROPERTY()
 	UBeamRequestTracker* RequestTracker;
 
+	UPROPERTY()
+	UBeamResponseCache* ResponseCache;
+
 	
 	/**
 	 * @brief Private implementation that all overloaded BP UFunctions call.	  
 	 */
 	void BP_GetEventPlayersImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetEventPlayersRequest* RequestData,
 	                                const FOnGetEventPlayersSuccess& OnSuccess, const FOnGetEventPlayersError& OnError, const FOnGetEventPlayersComplete& OnComplete,
-	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
 	void CPP_GetEventPlayersImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetEventPlayersRequest* RequestData,
-	                                 const FOnGetEventPlayersFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                                 const FOnGetEventPlayersFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -52,12 +56,12 @@ private:
 	 */
 	void BP_PostClaimImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UObjectEventPlayersPostClaimRequest* RequestData,
 	                                const FOnObjectEventPlayersPostClaimSuccess& OnSuccess, const FOnObjectEventPlayersPostClaimError& OnError, const FOnObjectEventPlayersPostClaimComplete& OnComplete,
-	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
 	void CPP_PostClaimImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UObjectEventPlayersPostClaimRequest* RequestData,
-	                                 const FOnObjectEventPlayersPostClaimFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                                 const FOnObjectEventPlayersPostClaimFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -65,12 +69,12 @@ private:
 	 */
 	void BP_PutScoreImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UPutScoreRequest* RequestData,
 	                                const FOnPutScoreSuccess& OnSuccess, const FOnPutScoreError& OnError, const FOnPutScoreComplete& OnComplete,
-	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
 	void CPP_PutScoreImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UPutScoreRequest* RequestData,
-	                                 const FOnPutScoreFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                                 const FOnPutScoreFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 
 	
@@ -91,9 +95,10 @@ public:
 	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
 	 * @param Handler A callback that defines how to handle success, error and completion.
      * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
-	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically. 
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_GetEventPlayers(UGetEventPlayersRequest* Request, const FOnGetEventPlayersFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	void CPP_GetEventPlayers(UGetEventPlayersRequest* Request, const FOnGetEventPlayersFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -105,9 +110,10 @@ public:
 	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
 	 * @param Handler A callback that defines how to handle success, error and completion.
      * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
-	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically. 
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_PostClaim(UObjectEventPlayersPostClaimRequest* Request, const FOnObjectEventPlayersPostClaimFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	void CPP_PostClaim(UObjectEventPlayersPostClaimRequest* Request, const FOnObjectEventPlayersPostClaimFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -119,9 +125,10 @@ public:
 	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
 	 * @param Handler A callback that defines how to handle success, error and completion.
      * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
-	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically. 
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_PutScore(UPutScoreRequest* Request, const FOnPutScoreFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	void CPP_PutScore(UPutScoreRequest* Request, const FOnPutScoreFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 
 	
@@ -134,10 +141,11 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|EventPlayers", meta=(AdvancedDisplay="OpHandle", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void GetEventPlayers(UGetEventPlayersRequest* Request, const FOnGetEventPlayersSuccess& OnSuccess, const FOnGetEventPlayersError& OnError, const FOnGetEventPlayersComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle());
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|EventPlayers", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void GetEventPlayers(UGetEventPlayersRequest* Request, const FOnGetEventPlayersSuccess& OnSuccess, const FOnGetEventPlayersError& OnError, const FOnGetEventPlayersComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**
@@ -147,10 +155,11 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|EventPlayers", meta=(AdvancedDisplay="OpHandle", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void PostClaim(UObjectEventPlayersPostClaimRequest* Request, const FOnObjectEventPlayersPostClaimSuccess& OnSuccess, const FOnObjectEventPlayersPostClaimError& OnError, const FOnObjectEventPlayersPostClaimComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle());
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|EventPlayers", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void PostClaim(UObjectEventPlayersPostClaimRequest* Request, const FOnObjectEventPlayersPostClaimSuccess& OnSuccess, const FOnObjectEventPlayersPostClaimError& OnError, const FOnObjectEventPlayersPostClaimComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**
@@ -160,53 +169,12 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|EventPlayers", meta=(AdvancedDisplay="OpHandle", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void PutScore(UPutScoreRequest* Request, const FOnPutScoreSuccess& OnSuccess, const FOnPutScoreError& OnError, const FOnPutScoreComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle());
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|EventPlayers", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void PutScore(UPutScoreRequest* Request, const FOnPutScoreSuccess& OnSuccess, const FOnPutScoreError& OnError, const FOnPutScoreComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
-
-		
-
-	
-	/**
-	 * @brief Makes a request to the Get /object/event-players/{objectId}/ endpoint of the EventPlayers Service.
-	 *	 
-	 * @param RetryConfig The retry config for this specific request. 
-	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param OnSuccess What to do if the requests receives a successful response.
-	 * @param OnError What to do if the request receives an error response.
-	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight.	  
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|EventPlayers", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowFunction))
-	void GetEventPlayersWithRetry(const FBeamRetryConfig& RetryConfig, UGetEventPlayersRequest* Request, const FOnGetEventPlayersSuccess& OnSuccess, const FOnGetEventPlayersError& OnError, const FOnGetEventPlayersComplete& OnComplete, FBeamRequestContext& OutRequestContext);
-		
-	/**
-	 * @brief Makes a request to the Post /object/event-players/{objectId}/claim endpoint of the EventPlayers Service.
-	 *	 
-	 * @param RetryConfig The retry config for this specific request. 
-	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param OnSuccess What to do if the requests receives a successful response.
-	 * @param OnError What to do if the request receives an error response.
-	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight.	  
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|EventPlayers", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowFunction))
-	void PostClaimWithRetry(const FBeamRetryConfig& RetryConfig, UObjectEventPlayersPostClaimRequest* Request, const FOnObjectEventPlayersPostClaimSuccess& OnSuccess, const FOnObjectEventPlayersPostClaimError& OnError, const FOnObjectEventPlayersPostClaimComplete& OnComplete, FBeamRequestContext& OutRequestContext);
-		
-	/**
-	 * @brief Makes a request to the Put /object/event-players/{objectId}/score endpoint of the EventPlayers Service.
-	 *	 
-	 * @param RetryConfig The retry config for this specific request. 
-	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param OnSuccess What to do if the requests receives a successful response.
-	 * @param OnError What to do if the request receives an error response.
-	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight.	  
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|EventPlayers", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowFunction))
-	void PutScoreWithRetry(const FBeamRetryConfig& RetryConfig, UPutScoreRequest* Request, const FOnPutScoreSuccess& OnSuccess, const FOnPutScoreError& OnError, const FOnPutScoreComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 	
 };

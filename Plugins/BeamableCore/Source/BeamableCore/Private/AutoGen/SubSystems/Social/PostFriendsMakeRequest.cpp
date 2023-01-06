@@ -27,7 +27,7 @@ void UPostFriendsMakeRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostFriendsMakeRequest* UPostFriendsMakeRequest::Make(int64 _GamerTag, UObject* RequestOwner)
+UPostFriendsMakeRequest* UPostFriendsMakeRequest::Make(FBeamGamerTag _GamerTag, UObject* RequestOwner)
 {
 	UPostFriendsMakeRequest* Req = NewObject<UPostFriendsMakeRequest>(RequestOwner);
 

@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "BeamBackend/SemanticTypes/BeamAccountId.h"
 #include "AutoGen/UpdateRole.h"
 #include "AutoGen/EmptyResponse.h"
 
@@ -22,7 +22,7 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	int64 ObjectId;
+	FBeamAccountId ObjectId;
 	
 	// Query Params
 	
@@ -39,7 +39,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make PutAdminScope",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Cid,_Realm,_Role,RequestOwner"))
-	static UPutAdminScopeRequest* Make(int64 _ObjectId, FOptionalString _Cid, FOptionalString _Realm, FOptionalString _Role, UObject* RequestOwner);
+	static UPutAdminScopeRequest* Make(FBeamAccountId _ObjectId, FOptionalBeamCid _Cid, FOptionalBeamPid _Realm, FOptionalString _Role, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

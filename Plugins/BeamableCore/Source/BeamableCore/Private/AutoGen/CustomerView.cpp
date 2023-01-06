@@ -1,13 +1,13 @@
 
 #include "AutoGen/CustomerView.h"
 #include "Serialization/BeamJsonUtils.h"
-#include "Misc/DefaultValueHelper.h"
+
 
 
 
 void UCustomerView ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("cid"), Cid);
+	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);
 	Serializer->WriteValue(TEXT("name"), Name);
 	UBeamJsonUtils::SerializeArray<UProjectView*>(TEXT("projects"), Projects, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("alias"), &Alias, Serializer);
@@ -15,7 +15,7 @@ void UCustomerView ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) 
 
 void UCustomerView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("cid"), Cid);
+	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);
 	Serializer->WriteValue(TEXT("name"), Name);
 	UBeamJsonUtils::SerializeArray<UProjectView*>(TEXT("projects"), Projects, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("alias"), &Alias, Serializer);		
@@ -23,7 +23,7 @@ void UCustomerView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 
 void UCustomerView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("cid")), Cid);
+	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("cid")), Cid, OuterOwner);
 	Name = Bag->GetStringField(TEXT("name"));
 	UBeamJsonUtils::DeserializeArray<UProjectView*>(Bag->GetArrayField(TEXT("projects")), Projects, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("alias", Bag, Alias, OuterOwner);

@@ -18,8 +18,8 @@ public:
 	static FString FriendToJsonString(const UFriend* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make Friend", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UFriend* Make(FString PlayerId, EFriendSource Source, UObject* Outer);
+	static UFriend* Make(FBeamGamerTag PlayerId, EFriendSource Source, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break Friend", meta=(NativeBreakFunc))
-	static void Break(const UFriend* Serializable, FString& PlayerId, EFriendSource& Source);
+	static void Break(const UFriend* Serializable, FBeamGamerTag& PlayerId, EFriendSource& Source);
 };

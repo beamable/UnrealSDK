@@ -15,7 +15,7 @@ void UGetGameRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), TEXT("rootPID"), *RootPID);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("rootPID"), *static_cast<FString>(RootPID));
 	bIsFirstQueryParam = false;
 	
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
@@ -26,7 +26,7 @@ void UGetGameRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetGameRequest* UGetGameRequest::Make(FString _RootPID, UObject* RequestOwner)
+UGetGameRequest* UGetGameRequest::Make(FBeamPid _RootPID, UObject* RequestOwner)
 {
 	UGetGameRequest* Req = NewObject<UGetGameRequest>(RequestOwner);
 

@@ -7,21 +7,21 @@
 
 void UPromoteRealmRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("sourcePid"), SourcePid);
+	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("sourcePid"), &SourcePid, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("promotions"), &Promotions, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("contentManifestIds"), &ContentManifestIds, Serializer);
 }
 
 void UPromoteRealmRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("sourcePid"), SourcePid);
+	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("sourcePid"), &SourcePid, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("promotions"), &Promotions, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("contentManifestIds"), &ContentManifestIds, Serializer);		
 }
 
 void UPromoteRealmRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	SourcePid = Bag->GetStringField(TEXT("sourcePid"));
+	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("sourcePid")), SourcePid, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("promotions", Bag, Promotions, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("contentManifestIds", Bag, ContentManifestIds, OuterOwner);
 }

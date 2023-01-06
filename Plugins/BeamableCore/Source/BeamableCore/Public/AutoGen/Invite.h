@@ -4,6 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "BeamBackend/SemanticTypes/BeamGamerTag.h"
 #include "AutoGen/Enums/InvitationDirection.h"
 
 #include "Invite.generated.h"
@@ -15,7 +16,7 @@ class BEAMABLECORE_API UInvite : public UObject, public FBeamJsonSerializable
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
-	FString PlayerId;
+	FBeamGamerTag PlayerId;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Direction", Category="Beam")
 	EInvitationDirection Direction;
 

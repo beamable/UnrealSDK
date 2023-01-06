@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-
+#include "BeamBackend/SemanticTypes/BeamGamerTag.h"
 
 #include "SendFriendRequestBody.generated.h"
 
@@ -15,7 +15,7 @@ class BEAMABLECORE_API USendFriendRequestBody : public UObject, public FBeamJson
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag", Category="Beam")
-	int64 GamerTag;
+	FBeamGamerTag GamerTag;
 
 	
 

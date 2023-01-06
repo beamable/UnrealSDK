@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-
+#include "BeamBackend/SemanticTypes/BeamGamerTag.h"
 
 #include "StatsSearchResponse.generated.h"
 
@@ -15,7 +15,7 @@ class BEAMABLECORE_API UStatsSearchResponse : public UObject, public FBeamJsonSe
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Ids", Category="Beam")
-	TArray<int64> Ids;
+	TArray<FBeamGamerTag> Ids;
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

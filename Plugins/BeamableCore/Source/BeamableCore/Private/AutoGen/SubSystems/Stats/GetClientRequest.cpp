@@ -9,7 +9,7 @@ void UGetClientRequest::BuildVerb(FString& VerbString) const
 void UGetClientRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/stats/{objectId}/client");
-	Route = Route.Replace(TEXT("{objectId}"), *ObjectId);
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -28,7 +28,7 @@ void UGetClientRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetClientRequest* UGetClientRequest::Make(FString _ObjectId, FOptionalString _Stats, UObject* RequestOwner)
+UGetClientRequest* UGetClientRequest::Make(FBeamStatsType _ObjectId, FOptionalString _Stats, UObject* RequestOwner)
 {
 	UGetClientRequest* Req = NewObject<UGetClientRequest>(RequestOwner);
 

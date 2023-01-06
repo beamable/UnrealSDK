@@ -9,7 +9,7 @@ void UGetInventoryRequest::BuildVerb(FString& VerbString) const
 void UGetInventoryRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/inventory/{objectId}/");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -28,7 +28,7 @@ void UGetInventoryRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetInventoryRequest* UGetInventoryRequest::Make(int64 _ObjectId, FOptionalString _Scope, UObject* RequestOwner)
+UGetInventoryRequest* UGetInventoryRequest::Make(FBeamGamerTag _ObjectId, FOptionalString _Scope, UObject* RequestOwner)
 {
 	UGetInventoryRequest* Req = NewObject<UGetInventoryRequest>(RequestOwner);
 

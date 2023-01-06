@@ -9,7 +9,7 @@ void UPutInventoryRequest::BuildVerb(FString& VerbString) const
 void UPutInventoryRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/inventory/{objectId}/");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -27,7 +27,7 @@ void UPutInventoryRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutInventoryRequest* UPutInventoryRequest::Make(int64 _ObjectId, bool _bEmpty, TArray<FString> _CurrencyContentIds, TArray<FString> _ItemContentIds, FOptionalBool _bApplyVipBonus, FOptionalString _Transaction, FOptionalArrayOfItemUpdateRequestBody _UpdateItems, FOptionalArrayOfItemCreateRequestBody _NewItems, FOptionalArrayOfItemDeleteRequestBody _DeleteItems, FOptionalMapOfInt64 _Currencies, FOptionalMapOfArrayOfCurrencyProperty _CurrencyProperties, UObject* RequestOwner)
+UPutInventoryRequest* UPutInventoryRequest::Make(FBeamGamerTag _ObjectId, bool _bEmpty, TArray<FString> _CurrencyContentIds, TArray<FString> _ItemContentIds, FOptionalBool _bApplyVipBonus, FOptionalString _Transaction, FOptionalArrayOfItemUpdateRequestBody _UpdateItems, FOptionalArrayOfItemCreateRequestBody _NewItems, FOptionalArrayOfItemDeleteRequestBody _DeleteItems, FOptionalMapOfInt64 _Currencies, FOptionalMapOfArrayOfCurrencyProperty _CurrencyProperties, UObject* RequestOwner)
 {
 	UPutInventoryRequest* Req = NewObject<UPutInventoryRequest>(RequestOwner);
 

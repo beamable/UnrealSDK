@@ -144,7 +144,9 @@ void SRequestTypePin::GetNames(TArray<TSharedPtr<FName>>& ShareableNames) const
 	}
 
 	for (const auto& RequestClass : RequestClasses)
-	{
-		ShareableNames.Add(MakeShareable(new FName(RequestClass->GetName())));
+	{		
+		const auto Default = Cast<IBeamBaseRequestInterface>(RequestClass->GetDefaultObject());
+		const auto ReqType = Default->GetRequestType();
+		ShareableNames.Add(MakeShareable(new FName(ReqType.Name)));
 	}
 }

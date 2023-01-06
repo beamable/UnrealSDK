@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-
+#include "BeamBackend/SemanticTypes/BeamGamerTag.h"
 
 #include "FriendshipStatus.generated.h"
 
@@ -17,9 +17,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Blocked", Category="Beam")
 	bool bIsBlocked;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Friend Id", Category="Beam")
-	FString FriendId;
+	FBeamGamerTag FriendId;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
-	FString PlayerId;
+	FBeamGamerTag PlayerId;
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

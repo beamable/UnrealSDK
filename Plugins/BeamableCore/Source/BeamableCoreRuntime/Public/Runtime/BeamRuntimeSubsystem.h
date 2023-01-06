@@ -127,6 +127,8 @@ protected:
 
 /**
  * @brief Used to initialize all Blueprint-first subsystems that we make. See the link below for more info on why this is needed.
+ * TLDR: Blueprints that inherit from UGameInstanceSubsystems/UWorldSubsystem are not loaded unless they are opened in the editor.
+ * If you want a guarantee, you need to add them to a list and forcibly initialize that list.
  * 
  * https://forums.unrealengine.com/t/configuring-subsystems-via-editor/134784/20
  */

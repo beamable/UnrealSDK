@@ -22,19 +22,21 @@ FString UExternalIdentityLibrary::ExternalIdentityToJsonString(const UExternalId
 	return Result;
 }	
 
-UExternalIdentity* UExternalIdentityLibrary::Make(FString ProviderAddress, FString UserId, UObject* Outer)
+UExternalIdentity* UExternalIdentityLibrary::Make(FString ProviderService, FString UserId, FString ProviderNamespace, UObject* Outer)
 {
 	auto Serializable = NewObject<UExternalIdentity>(Outer);
-	Serializable->ProviderAddress = ProviderAddress;
+	Serializable->ProviderService = ProviderService;
 	Serializable->UserId = UserId;
+	Serializable->ProviderNamespace = ProviderNamespace;
 	
 	return Serializable;
 }
 
-void UExternalIdentityLibrary::Break(const UExternalIdentity* Serializable, FString& ProviderAddress, FString& UserId)
+void UExternalIdentityLibrary::Break(const UExternalIdentity* Serializable, FString& ProviderService, FString& UserId, FString& ProviderNamespace)
 {
-	ProviderAddress = Serializable->ProviderAddress;
+	ProviderService = Serializable->ProviderService;
 	UserId = Serializable->UserId;
+	ProviderNamespace = Serializable->ProviderNamespace;
 		
 }
 

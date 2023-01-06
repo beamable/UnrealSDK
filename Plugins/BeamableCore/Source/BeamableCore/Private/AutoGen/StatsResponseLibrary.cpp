@@ -22,7 +22,7 @@ FString UStatsResponseLibrary::StatsResponseToJsonString(const UStatsResponse* S
 	return Result;
 }	
 
-UStatsResponse* UStatsResponseLibrary::Make(int64 Id, TMap<FString, FString> Stats, UObject* Outer)
+UStatsResponse* UStatsResponseLibrary::Make(FBeamGamerTag Id, TMap<FString, FString> Stats, UObject* Outer)
 {
 	auto Serializable = NewObject<UStatsResponse>(Outer);
 	Serializable->Id = Id;
@@ -31,7 +31,7 @@ UStatsResponse* UStatsResponseLibrary::Make(int64 Id, TMap<FString, FString> Sta
 	return Serializable;
 }
 
-void UStatsResponseLibrary::Break(const UStatsResponse* Serializable, int64& Id, TMap<FString, FString>& Stats)
+void UStatsResponseLibrary::Break(const UStatsResponse* Serializable, FBeamGamerTag& Id, TMap<FString, FString>& Stats)
 {
 	Id = Serializable->Id;
 	Stats = Serializable->Stats;

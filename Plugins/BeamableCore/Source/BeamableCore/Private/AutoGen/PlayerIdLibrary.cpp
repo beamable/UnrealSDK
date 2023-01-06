@@ -22,7 +22,7 @@ FString UPlayerIdLibrary::PlayerIdToJsonString(const UPlayerId* Serializable, co
 	return Result;
 }	
 
-UPlayerId* UPlayerIdLibrary::Make(FString PlayerId, UObject* Outer)
+UPlayerId* UPlayerIdLibrary::Make(FBeamGamerTag PlayerId, UObject* Outer)
 {
 	auto Serializable = NewObject<UPlayerId>(Outer);
 	Serializable->PlayerId = PlayerId;
@@ -30,7 +30,7 @@ UPlayerId* UPlayerIdLibrary::Make(FString PlayerId, UObject* Outer)
 	return Serializable;
 }
 
-void UPlayerIdLibrary::Break(const UPlayerId* Serializable, FString& PlayerId)
+void UPlayerIdLibrary::Break(const UPlayerId* Serializable, FBeamGamerTag& PlayerId)
 {
 	PlayerId = Serializable->PlayerId;
 		

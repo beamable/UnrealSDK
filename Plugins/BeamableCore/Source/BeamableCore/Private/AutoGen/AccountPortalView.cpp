@@ -1,7 +1,7 @@
 
 #include "AutoGen/AccountPortalView.h"
 #include "Serialization/BeamJsonUtils.h"
-#include "Misc/DefaultValueHelper.h"
+
 
 
 void UAccountPortalView::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
@@ -12,7 +12,7 @@ void UAccountPortalView::DeserializeRequestResponse(UObject* RequestData, FStrin
 
 void UAccountPortalView ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("id"), &Id, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("scopes"), Scopes, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("thirdPartyAppAssociations"), ThirdPartyAppAssociations, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("email"), &Email, Serializer);
@@ -24,7 +24,7 @@ void UAccountPortalView ::BeamSerializeProperties(TUnrealJsonSerializer& Seriali
 
 void UAccountPortalView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("id"), &Id, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("scopes"), Scopes, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("thirdPartyAppAssociations"), ThirdPartyAppAssociations, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("email"), &Email, Serializer);
@@ -36,7 +36,7 @@ void UAccountPortalView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void UAccountPortalView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("id")), Id, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("scopes")), Scopes, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("thirdPartyAppAssociations")), ThirdPartyAppAssociations, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("email", Bag, Email, OuterOwner);

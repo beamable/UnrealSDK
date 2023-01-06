@@ -9,7 +9,7 @@ void UPutAdminEmailRequest::BuildVerb(FString& VerbString) const
 void UPutAdminEmailRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/accounts/{objectId}/admin/email");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -27,7 +27,7 @@ void UPutAdminEmailRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutAdminEmailRequest* UPutAdminEmailRequest::Make(int64 _ObjectId, FString _NewEmail, FOptionalString _CodeType, UObject* RequestOwner)
+UPutAdminEmailRequest* UPutAdminEmailRequest::Make(FBeamAccountId _ObjectId, FString _NewEmail, FOptionalString _CodeType, UObject* RequestOwner)
 {
 	UPutAdminEmailRequest* Req = NewObject<UPutAdminEmailRequest>(RequestOwner);
 

@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "BeamBackend/SemanticTypes/BeamPid.h"
 #include "AutoGen/Optionals/OptionalArrayOfString.h"
 #include "AutoGen/PromoteRealmResponse.h"
 
@@ -25,7 +25,7 @@ public:
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Source Pid", Category="Beam")
-	FString SourcePid;
+	FBeamPid SourcePid;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Promotions", Category="Beam")
 	FOptionalArrayOfString Promotions;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Manifest Ids", Category="Beam")
@@ -42,7 +42,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", DisplayName="Beam - Make GetPromotion",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Promotions,_ContentManifestIds,RequestOwner"))
-	static UGetPromotionRequest* Make(FString _SourcePid, FOptionalArrayOfString _Promotions, FOptionalArrayOfString _ContentManifestIds, UObject* RequestOwner);
+	static UGetPromotionRequest* Make(FBeamPid _SourcePid, FOptionalArrayOfString _Promotions, FOptionalArrayOfString _ContentManifestIds, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

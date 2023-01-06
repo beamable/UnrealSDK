@@ -5,6 +5,7 @@
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
+#include "BeamBackend/SemanticTypes/BeamGamerTag.h"
 #include "AutoGen/Optionals/OptionalArrayOfExternalIdentity.h"
 
 #include "AccountPlayerView.generated.h"
@@ -16,7 +17,7 @@ class BEAMABLECORE_API UAccountPlayerView : public UObject, public FBeamJsonSeri
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	int64 Id;
+	FBeamGamerTag Id;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Device Ids", Category="Beam")
 	TArray<FString> DeviceIds;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scopes", Category="Beam")

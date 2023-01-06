@@ -22,7 +22,7 @@ FString UPromoteRealmRequestBodyLibrary::PromoteRealmRequestBodyToJsonString(con
 	return Result;
 }	
 
-UPromoteRealmRequestBody* UPromoteRealmRequestBodyLibrary::Make(FString SourcePid, FOptionalArrayOfString Promotions, FOptionalArrayOfString ContentManifestIds, UObject* Outer)
+UPromoteRealmRequestBody* UPromoteRealmRequestBodyLibrary::Make(FBeamPid SourcePid, FOptionalArrayOfString Promotions, FOptionalArrayOfString ContentManifestIds, UObject* Outer)
 {
 	auto Serializable = NewObject<UPromoteRealmRequestBody>(Outer);
 	Serializable->SourcePid = SourcePid;
@@ -32,7 +32,7 @@ UPromoteRealmRequestBody* UPromoteRealmRequestBodyLibrary::Make(FString SourcePi
 	return Serializable;
 }
 
-void UPromoteRealmRequestBodyLibrary::Break(const UPromoteRealmRequestBody* Serializable, FString& SourcePid, FOptionalArrayOfString& Promotions, FOptionalArrayOfString& ContentManifestIds)
+void UPromoteRealmRequestBodyLibrary::Break(const UPromoteRealmRequestBody* Serializable, FBeamPid& SourcePid, FOptionalArrayOfString& Promotions, FOptionalArrayOfString& ContentManifestIds)
 {
 	SourcePid = Serializable->SourcePid;
 	Promotions = Serializable->Promotions;

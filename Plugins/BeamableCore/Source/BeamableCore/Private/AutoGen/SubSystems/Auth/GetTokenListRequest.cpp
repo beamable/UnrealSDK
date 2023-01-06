@@ -24,13 +24,13 @@ void UGetTokenListRequest::BuildRoute(FString& RouteString) const
 	
 	if(Cid.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), TEXT("cid"), *FString::FromInt(Cid.Val));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("cid"), *static_cast<FString>(Cid.Val));
 		bIsFirstQueryParam = false;
 	}
 
 	if(Pid.IsSet){
 		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-		QueryParams.Appendf(TEXT("%s=%s"), TEXT("pid"), *Pid.Val);
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("pid"), *static_cast<FString>(Pid.Val));
 		bIsFirstQueryParam = false;
 	}
 
@@ -46,7 +46,7 @@ void UGetTokenListRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetTokenListRequest* UGetTokenListRequest::Make(int32 _PageSize, int32 _Page, FOptionalInt64 _Cid, FOptionalString _Pid, int64 _GamerTagOrAccountId, UObject* RequestOwner)
+UGetTokenListRequest* UGetTokenListRequest::Make(int32 _PageSize, int32 _Page, FOptionalBeamCid _Cid, FOptionalBeamPid _Pid, int64 _GamerTagOrAccountId, UObject* RequestOwner)
 {
 	UGetTokenListRequest* Req = NewObject<UGetTokenListRequest>(RequestOwner);
 

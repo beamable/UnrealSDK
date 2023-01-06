@@ -22,7 +22,7 @@ FString UAliasAvailableResponseLibrary::AliasAvailableResponseToJsonString(const
 	return Result;
 }	
 
-UAliasAvailableResponse* UAliasAvailableResponseLibrary::Make(FString Alias, bool bAvailable, int64 Cid, UObject* Outer)
+UAliasAvailableResponse* UAliasAvailableResponseLibrary::Make(FString Alias, bool bAvailable, FBeamCid Cid, UObject* Outer)
 {
 	auto Serializable = NewObject<UAliasAvailableResponse>(Outer);
 	Serializable->Alias = Alias;
@@ -32,7 +32,7 @@ UAliasAvailableResponse* UAliasAvailableResponseLibrary::Make(FString Alias, boo
 	return Serializable;
 }
 
-void UAliasAvailableResponseLibrary::Break(const UAliasAvailableResponse* Serializable, FString& Alias, bool& bAvailable, int64& Cid)
+void UAliasAvailableResponseLibrary::Break(const UAliasAvailableResponse* Serializable, FString& Alias, bool& bAvailable, FBeamCid& Cid)
 {
 	Alias = Serializable->Alias;
 	bAvailable = Serializable->bAvailable;

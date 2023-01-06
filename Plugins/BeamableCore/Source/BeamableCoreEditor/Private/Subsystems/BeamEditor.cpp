@@ -123,7 +123,7 @@ void UBeamEditor::FetchProjectDataForSlot(FUserSlot SlotId, const FEditorStateCh
 				// Gets all project data for the requesting user slot.				
 				FBeamCustomerProjectData ProjectData;
 
-				const auto CID = FString::Printf(TEXT("%lld"), Response.SuccessData->Customer->Cid);
+				const auto CID = Response.SuccessData->Customer->Cid;
 				const auto CustomerName = ProjectData.CustomerName = Response.SuccessData->Customer->Name;
 
 				bool _;

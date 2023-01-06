@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/SubscriptionVerificationResponse.h"
+#include "Serialization/BeamPlainTextResponseBody.h"
 
 #include "GetFacebookUpdateRequest.generated.h"
 
@@ -45,7 +45,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetFacebookUpdateSuccess, FBeamRequestContext, Context, UGetFacebookUpdateRequest*, Request, USubscriptionVerificationResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetFacebookUpdateSuccess, FBeamRequestContext, Context, UGetFacebookUpdateRequest*, Request, UBeamPlainTextResponseBody*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetFacebookUpdateError, FBeamRequestContext, Context, UGetFacebookUpdateRequest*, Request, FBeamErrorResponse, Error);
@@ -53,5 +53,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetFacebookUpdateError, FBeamRequestCont
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnGetFacebookUpdateComplete, FBeamRequestContext, Context, UGetFacebookUpdateRequest*, Request);
 
-using FGetFacebookUpdateFullResponse = FBeamFullResponse<UGetFacebookUpdateRequest*, USubscriptionVerificationResponse*>;
+using FGetFacebookUpdateFullResponse = FBeamFullResponse<UGetFacebookUpdateRequest*, UBeamPlainTextResponseBody*>;
 DECLARE_DELEGATE_OneParam(FOnGetFacebookUpdateFullResponse, FGetFacebookUpdateFullResponse);

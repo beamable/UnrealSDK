@@ -27,7 +27,7 @@ void UDeleteBlockedRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteBlockedRequest* UDeleteBlockedRequest::Make(FString _PlayerId, UObject* RequestOwner)
+UDeleteBlockedRequest* UDeleteBlockedRequest::Make(FBeamGamerTag _PlayerId, UObject* RequestOwner)
 {
 	UDeleteBlockedRequest* Req = NewObject<UDeleteBlockedRequest>(RequestOwner);
 

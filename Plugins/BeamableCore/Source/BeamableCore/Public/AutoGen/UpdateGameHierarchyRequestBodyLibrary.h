@@ -18,8 +18,8 @@ public:
 	static FString UpdateGameHierarchyRequestBodyToJsonString(const UUpdateGameHierarchyRequestBody* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make UpdateGameHierarchyRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UUpdateGameHierarchyRequestBody* Make(FString RootPID, TArray<UProjectView*> Projects, UObject* Outer);
+	static UUpdateGameHierarchyRequestBody* Make(FBeamPid RootPID, TArray<UProjectView*> Projects, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break UpdateGameHierarchyRequestBody", meta=(NativeBreakFunc))
-	static void Break(const UUpdateGameHierarchyRequestBody* Serializable, FString& RootPID, TArray<UProjectView*>& Projects);
+	static void Break(const UUpdateGameHierarchyRequestBody* Serializable, FBeamPid& RootPID, TArray<UProjectView*>& Projects);
 };

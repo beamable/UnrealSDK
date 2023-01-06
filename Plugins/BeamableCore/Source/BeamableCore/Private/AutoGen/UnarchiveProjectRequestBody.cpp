@@ -1,21 +1,21 @@
 
 #include "AutoGen/UnarchiveProjectRequestBody.h"
-
+#include "Serialization/BeamJsonUtils.h"
 
 
 
 
 void UUnarchiveProjectRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("projectId"), ProjectId);
+	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("projectId"), &ProjectId, Serializer);
 }
 
 void UUnarchiveProjectRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("projectId"), ProjectId);		
+	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("projectId"), &ProjectId, Serializer);		
 }
 
 void UUnarchiveProjectRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	ProjectId = Bag->GetStringField(TEXT("projectId"));
+	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("projectId")), ProjectId, OuterOwner);
 }

@@ -5,6 +5,7 @@
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
+#include "BeamBackend/SemanticTypes/BeamAccountId.h"
 #include "AutoGen/Optionals/OptionalArrayOfExternalIdentity.h"
 #include "AutoGen/Optionals/OptionalArrayOfRoleMapping.h"
 
@@ -17,7 +18,7 @@ class BEAMABLECORE_API UAccountPortalView : public UObject, public FBeamJsonSeri
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	int64 Id;
+	FBeamAccountId Id;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scopes", Category="Beam")
 	TArray<FString> Scopes;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Third Party App Associations", Category="Beam")

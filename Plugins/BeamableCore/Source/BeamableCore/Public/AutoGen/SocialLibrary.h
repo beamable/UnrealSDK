@@ -18,8 +18,8 @@ public:
 	static FString SocialToJsonString(const USocial* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make Social", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static USocial* Make(FString PlayerId, TArray<UFriend*> Friends, TArray<UPlayerId*> Blocked, TArray<UInvite*> Invites, UObject* Outer);
+	static USocial* Make(FBeamGamerTag PlayerId, TArray<UFriend*> Friends, TArray<UPlayerId*> Blocked, TArray<UInvite*> Invites, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break Social", meta=(NativeBreakFunc))
-	static void Break(const USocial* Serializable, FString& PlayerId, TArray<UFriend*>& Friends, TArray<UPlayerId*>& Blocked, TArray<UInvite*>& Invites);
+	static void Break(const USocial* Serializable, FBeamGamerTag& PlayerId, TArray<UFriend*>& Friends, TArray<UPlayerId*>& Blocked, TArray<UInvite*>& Invites);
 };

@@ -27,7 +27,7 @@ void UPostPromotionRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostPromotionRequest* UPostPromotionRequest::Make(FString _SourcePid, FOptionalArrayOfString _Promotions, FOptionalArrayOfString _ContentManifestIds, UObject* RequestOwner)
+UPostPromotionRequest* UPostPromotionRequest::Make(FBeamPid _SourcePid, FOptionalArrayOfString _Promotions, FOptionalArrayOfString _ContentManifestIds, UObject* RequestOwner)
 {
 	UPostPromotionRequest* Req = NewObject<UPostPromotionRequest>(RequestOwner);
 

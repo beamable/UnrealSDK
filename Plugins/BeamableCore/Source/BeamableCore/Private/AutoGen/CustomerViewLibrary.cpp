@@ -22,7 +22,7 @@ FString UCustomerViewLibrary::CustomerViewToJsonString(const UCustomerView* Seri
 	return Result;
 }	
 
-UCustomerView* UCustomerViewLibrary::Make(int64 Cid, FString Name, TArray<UProjectView*> Projects, FOptionalString Alias, UObject* Outer)
+UCustomerView* UCustomerViewLibrary::Make(FBeamCid Cid, FString Name, TArray<UProjectView*> Projects, FOptionalString Alias, UObject* Outer)
 {
 	auto Serializable = NewObject<UCustomerView>(Outer);
 	Serializable->Cid = Cid;
@@ -33,7 +33,7 @@ UCustomerView* UCustomerViewLibrary::Make(int64 Cid, FString Name, TArray<UProje
 	return Serializable;
 }
 
-void UCustomerViewLibrary::Break(const UCustomerView* Serializable, int64& Cid, FString& Name, TArray<UProjectView*>& Projects, FOptionalString& Alias)
+void UCustomerViewLibrary::Break(const UCustomerView* Serializable, FBeamCid& Cid, FString& Name, TArray<UProjectView*>& Projects, FOptionalString& Alias)
 {
 	Cid = Serializable->Cid;
 	Name = Serializable->Name;

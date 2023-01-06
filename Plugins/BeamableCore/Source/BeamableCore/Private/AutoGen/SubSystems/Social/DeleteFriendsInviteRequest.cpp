@@ -27,7 +27,7 @@ void UDeleteFriendsInviteRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteFriendsInviteRequest* UDeleteFriendsInviteRequest::Make(int64 _GamerTag, UObject* RequestOwner)
+UDeleteFriendsInviteRequest* UDeleteFriendsInviteRequest::Make(FBeamGamerTag _GamerTag, UObject* RequestOwner)
 {
 	UDeleteFriendsInviteRequest* Req = NewObject<UDeleteFriendsInviteRequest>(RequestOwner);
 

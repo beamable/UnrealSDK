@@ -9,7 +9,7 @@ void UGetStatsRequest::BuildVerb(FString& VerbString) const
 void UGetStatsRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/stats/{objectId}/");
-	Route = Route.Replace(TEXT("{objectId}"), *ObjectId);
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -28,7 +28,7 @@ void UGetStatsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetStatsRequest* UGetStatsRequest::Make(FString _ObjectId, FOptionalString _Stats, UObject* RequestOwner)
+UGetStatsRequest* UGetStatsRequest::Make(FBeamStatsType _ObjectId, FOptionalString _Stats, UObject* RequestOwner)
 {
 	UGetStatsRequest* Req = NewObject<UGetStatsRequest>(RequestOwner);
 

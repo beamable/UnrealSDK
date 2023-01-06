@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "BeamBackend/SemanticTypes/BeamAccountId.h"
 #include "AutoGen/DeleteThirdPartyAssociation.h"
 #include "AutoGen/EmptyResponse.h"
 
@@ -22,7 +22,7 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	int64 ObjectId;
+	FBeamAccountId ObjectId;
 	
 	// Query Params
 	
@@ -39,7 +39,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make DeleteAdminThirdParty",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
-	static UDeleteAdminThirdPartyRequest* Make(int64 _ObjectId, FString _ThirdParty, FString _UserAppId, UObject* RequestOwner);
+	static UDeleteAdminThirdPartyRequest* Make(FBeamAccountId _ObjectId, FString _ThirdParty, FString _UserAppId, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "BeamBackend/SemanticTypes/BeamAccountId.h"
 #include "AutoGen/AccountsObjectAccount.h"
 
 #include "DeleteAdminForgetRequest.generated.h"
@@ -21,7 +21,7 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	int64 ObjectId;
+	FBeamAccountId ObjectId;
 	
 	// Query Params
 	
@@ -37,7 +37,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make DeleteAdminForget",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
-	static UDeleteAdminForgetRequest* Make(int64 _ObjectId, UObject* RequestOwner);
+	static UDeleteAdminForgetRequest* Make(FBeamAccountId _ObjectId, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

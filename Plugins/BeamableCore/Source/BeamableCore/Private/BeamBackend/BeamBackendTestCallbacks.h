@@ -4,6 +4,8 @@
 #include "BeamBackend/BeamBackend.h"
 #include "BeamBackend/BeamBaseRequestInterface.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
+#include "Engine/DataTable.h"
+#include "Serialization/BeamCsvUtils.h"
 #include "Serialization/BeamJsonUtils.h"
 
 #include "BeamBackendTestCallbacks.generated.h"
@@ -99,6 +101,60 @@ using FMockFullResponse = FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRe
 DECLARE_DELEGATE_OneParam(FOnMockFullResponse, FMockFullResponse);
 
 
+USTRUCT()
+struct FBeamMockGetRequestCSVResponseRow : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	inline const static FString KeyField = TEXT("KeyField");
+	inline const static TArray<FString> HeaderFields = {KeyField, TEXT("Field1"), TEXT("Field2"), TEXT("Field3")};
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	int32 Field1;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	FString Field2;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	int64 Field3;
+};
+
+UCLASS()
+class UBeamMockGetRequestCSVResponse : public UObject, public IBeamBaseResponseBodyInterface
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+	UDataTable* FakeTable;
+
+	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override
+	{
+		FakeTable = NewObject<UDataTable>(RequestData);
+
+		// Generate this only if the CSV has no unique value
+		UBeamCsvUtils::AddAutoGenKeyField(ResponseContent);
+		// Generate this only if the CSV will not contain the header row
+		UBeamCsvUtils::AddHeaderRow(ResponseContent, FBeamMockGetRequestCSVResponseRow::HeaderFields);
+		// Generate this always.
+		UBeamCsvUtils::ParseIntoDataTable(FakeTable,
+		                                  FBeamMockGetRequestCSVResponseRow::StaticStruct(),
+		                                  GET_MEMBER_NAME_CHECKED(FBeamMockGetRequestCSVResponseRow, KeyField).ToString(),
+		                                  ResponseContent);		
+	}
+};
+
+
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnMockCSVSuccess, FBeamRequestContext, RequestId, UBeamMockGetRequest*, Request, UBeamMockGetRequestCSVResponse*, Response);
+
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnMockCSVError, FBeamRequestContext, RequestId, UBeamMockGetRequest*, Request, FBeamErrorResponse, Error);
+
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnMockCSVComplete, FBeamRequestContext, RequestId, UBeamMockGetRequest*, Request);
+
+using FMockCSVFullResponse = FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestCSVResponse*>;
+DECLARE_DELEGATE_OneParam(FOnMockCSVFullResponse, FMockCSVFullResponse);
+
+
 UCLASS()
 class UBeamBackendTestCallbacks final : public UObject
 {
@@ -126,7 +182,7 @@ public:
 
 	// Used by generate external request id
 	TArray<int64> ExternalRequestIds;
-	
+
 
 	UFUNCTION()
 	void MockSuccessCallback_Expected(FBeamRequestContext Context, UBeamMockGetRequest* Request, UBeamMockGetRequestResponse* Response) const;

@@ -11,6 +11,7 @@
 #include "Interfaces/IHttpResponse.h"
 #include "Misc/DefaultValueHelper.h"
 #include "BeamBackend/BeamCustomRequests.h"
+#include "BeamBackend/ResponseCache/BeamResponseCache.h"
 
 DECLARE_STATS_GROUP(TEXT("BeamBackend"), STATGROUP_BeamBackend, STATCAT_Backend)
 
@@ -28,7 +29,7 @@ const FString UBeamBackend::HEADER_REQUEST_SCOPE = FString(TEXT("X-DE-SCOPE"));
 const FString UBeamBackend::HEADER_VALUE_AUTHORIZATION = FString(TEXT("Bearer {0}"));
 const FString UBeamBackend::HEADER_CLIENT_ID = FString(TEXT("X-KS-CLIENTID"));
 const FString UBeamBackend::HEADER_PROJECT_ID = FString(TEXT("X-KS-PROJECTID"));
-const TArray<FString> UBeamBackend::AUTH_ERROR_CODE_RETRY_ALLOWED = TArray<FString>{TEXT("InvalidTokenError"), TEXT("TokenValidationError") TEXT("ExpiredTokenError")};
+const TArray<FString> UBeamBackend::AUTH_ERROR_CODE_RETRY_ALLOWED = TArray<FString>{TEXT("InvalidTokenError"), TEXT("TokenValidationError"), TEXT("ExpiredTokenError")};
 
 void UBeamBackend::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -90,8 +91,7 @@ void UBeamBackend::StaticCheckForRequestType()
 template <typename TResponseData>
 void UBeamBackend::StaticCheckForResponseType()
 {
-	static_assert(TIsDerivedFrom<TResponseData, IBeamBaseResponseBodyInterface>::Value, "TResponseData must be a FBeamBaseResponse type.");
-	static_assert(TIsDerivedFrom<TResponseData, FBeamJsonSerializable>::Value, "TResponseData must be a FBeamBaseResponse type.");
+	static_assert(TIsDerivedFrom<TResponseData, IBeamBaseResponseBodyInterface>::Value, "TResponseData must be a IBeamBaseResponseBodyInterface type.");	
 	static_assert(TIsDerivedFrom<TResponseData, UObject>::Value, "TResponseData must be a UObject type.");
 }
 
@@ -260,13 +260,13 @@ void UBeamBackend::PrepareBeamableRequestToRealm(const TUnrealRequestPtr& Reques
 	const auto Cid = RealmHandle.Cid;
 	const auto Pid = RealmHandle.Pid;
 
-	if (!Cid.IsEmpty())
-		Request->SetHeader(HEADER_CLIENT_ID, Cid);
+	if (!Cid.AsString.IsEmpty())
+		Request->SetHeader(HEADER_CLIENT_ID, Cid.AsString);
 
-	if (!Pid.IsEmpty())
-		Request->SetHeader(HEADER_PROJECT_ID, Pid);
+	if (!Pid.AsString.IsEmpty())
+		Request->SetHeader(HEADER_PROJECT_ID, Pid.AsString);
 
-	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Headers: CID=%s PID=%s"), *Cid, *Pid);
+	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Headers: CID=%s PID=%s"), *Request->GetHeader(HEADER_CLIENT_ID), *Request->GetHeader(HEADER_PROJECT_ID));
 }
 
 void UBeamBackend::PrepareBeamableRequestToRealmWithAuthToken(const TUnrealRequestPtr& Request,
@@ -277,7 +277,7 @@ void UBeamBackend::PrepareBeamableRequestToRealmWithAuthToken(const TUnrealReque
 
 	const auto AuthTokenHeader = FString::Format(*HEADER_VALUE_AUTHORIZATION, {AuthToken.AccessToken});
 	Request->SetHeader(HEADER_AUTHORIZATION, AuthTokenHeader);
-	const auto ScopeHeader = RealmHandle.Pid.IsEmpty() ? RealmHandle.Cid : FString::Format(TEXT("{0}.{1}"), {RealmHandle.Cid, RealmHandle.Pid});
+	const auto ScopeHeader = RealmHandle.Pid.AsString.IsEmpty() ? RealmHandle.Cid.AsString : FString::Format(TEXT("{0}.{1}"), {RealmHandle.Cid.AsString, RealmHandle.Pid.AsString});
 	Request->SetHeader(HEADER_REQUEST_SCOPE, ScopeHeader);
 
 	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Auth: AUTH_HEADER=%s, SCOPE_HEADER=%s"), *AuthTokenHeader, *ScopeHeader);
@@ -308,7 +308,8 @@ void UBeamBackend::PrepareBeamableRequestVerbRouteBody(const TUnrealRequestPtr& 
 
 template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename TCompleteCallback>
 FBeamRequestProcessor UBeamBackend::MakeBlueprintRequestProcessor(const int64& RequestId, TRequestData* RequestData,
-                                                                  TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete)
+                                                                  TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete,
+                                                                  const UObject* CallingContext)
 {
 	StaticCheckForRequestType<TRequestData>();
 	StaticCheckForResponseType<TResponseData>();
@@ -317,31 +318,47 @@ FBeamRequestProcessor UBeamBackend::MakeBlueprintRequestProcessor(const int64& R
 
 	FBeamRequestProcessor BoundResponseHandler(
 		// Capture, by-value, the Backend system, request id for this request and request data --- these are plain structs with no allocations.
-		[this, RequestId, RequestData, OnSuccess, OnError, OnComplete]
+		[this, RequestId, RequestData, OnSuccess, OnError, OnComplete, CallingContext]
 
 		// This just passes the captured data along to the Process function (we do this so we can unit test the process function in isolation).
 	(const FHttpRequestPtr Request, const FHttpResponsePtr Response, const bool)
 		{
 			if (!Response.IsValid())
 			{
-				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%d"), RequestId);
+				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"), RequestId);
 				return;
 			}
-
+			UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld"), RequestId);
+			
 			// Get the response contents
 			const auto ResponseCode = Response->GetResponseCode();
 			const auto ContentAsString = Response->GetContentAsString();
 			const auto RequestStatus = Request->GetStatus();
-			ProcessBlueprintRequest<TRequestData, TResponseData, TSuccessCallback, TErrorCallback, TCompleteCallback>
-				(ResponseCode, ContentAsString, RequestStatus, RequestId, RequestData, OnSuccess, OnError, OnComplete);
 
-			// Run any registered callback for handling Request completion.
-			TryTriggerRequestCompleteDelegates(RequestId);
+			// If it was a success, we try to cache the response.
+			if (ResponseCode == 200)
+				GEngine->GetEngineSubsystem<UBeamResponseCache>()->UpdateResponseCache(RequestData->GetRequestType(), CallingContext, Request, ContentAsString);
+
+			RunBlueprintRequestProcessor<TRequestData, TResponseData, TSuccessCallback, TErrorCallback, TCompleteCallback>
+				(ResponseCode, ContentAsString, RequestStatus, RequestId, RequestData, OnSuccess, OnError, OnComplete);
 		});
 
 	// We return the build processor function so the API request function can bind it to UnrealHttpRequest's response handler delegate.
 	return BoundResponseHandler;
 }
+
+template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename TCompleteCallback>
+void UBeamBackend::RunBlueprintRequestProcessor(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus,
+                                                const int64& RequestId, TRequestData* RequestData,
+                                                TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete)
+{
+	ProcessBlueprintRequest<TRequestData, TResponseData, TSuccessCallback, TErrorCallback, TCompleteCallback>
+		(ResponseCode, ContentAsString, RequestStatus, RequestId, RequestData, OnSuccess, OnError, OnComplete);
+
+	// Run any registered callback for handling Request completion.
+	TryTriggerRequestCompleteDelegates(RequestId);
+}
+
 
 template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename TCompleteCallback>
 void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus,
@@ -390,7 +407,7 @@ void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FStr
 	{
 		// Parse the response body and store it in the full response data.
 		auto SuccessData = NewObject<TResponseData>(RequestData);
-		SuccessData->DeserializeRequestResponse(RequestData, ContentAsString);		
+		SuccessData->DeserializeRequestResponse(RequestData, ContentAsString);
 
 		// Store it so wait handles can grab at it later
 		InFlightResponseBodyData[*Context] = SuccessData;
@@ -476,7 +493,8 @@ void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FStr
 
 template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename TCompleteCallback>
 FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestProcessor(const int64& RequestId, const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken,
-                                                                               TRequestData* RequestData, TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete)
+                                                                               TRequestData* RequestData, TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete,
+                                                                               const UObject* CallingContext)
 {
 	StaticCheckForRequestType<TRequestData>();
 	StaticCheckForResponseType<TResponseData>();
@@ -485,30 +503,45 @@ FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestProcessor(c
 
 	FBeamRequestProcessor BoundResponseHandler(
 		// Capture, by-value, the Backend system, request id for this request and request data --- these are plain structs with no allocations.
-		[this, RequestId, AuthToken, RealmHandle, RequestData, OnSuccess, OnError, OnComplete]
+		[this, RequestId, AuthToken, RealmHandle, RequestData, OnSuccess, OnError, OnComplete, CallingContext]
 
 		// This just passes the captured data along to the Process function (we do this so we can unit test the process function in isolation).
 	(const FHttpRequestPtr Request, const FHttpResponsePtr Response, bool)
 		{
 			if (!Response.IsValid())
 			{
-				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%d"), RequestId);
+				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"), RequestId);
 				return;
 			}
+			UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld"), RequestId);
 
 			// Get the response contents
 			const auto ResponseCode = Response->GetResponseCode();
 			const auto ContentAsString = Response->GetContentAsString();
 			const auto RequestStatus = Request->GetStatus();
-			ProcessAuthenticatedBlueprintRequest<TRequestData, TResponseData, TSuccessCallback, TErrorCallback, TCompleteCallback>
-				(ResponseCode, ContentAsString, RequestStatus, RequestId, RealmHandle, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 
-			// Run any registered callback for handling Request completion.
-			TryTriggerRequestCompleteDelegates(RequestId);
+			// If it was a success, we try to cache the response.
+			if (ResponseCode == 200)
+				GEngine->GetEngineSubsystem<UBeamResponseCache>()->UpdateResponseCache(RequestData->GetRequestType(), CallingContext, Request, ContentAsString);
+
+			RunAuthenticatedBlueprintRequestProcessor<TRequestData, TResponseData, TSuccessCallback, TErrorCallback, TCompleteCallback>
+				(ResponseCode, ContentAsString, RequestStatus, RequestId, RealmHandle, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		});
 
 	// We return the build processor function so the API request function can bind it to UnrealHttpRequest's response handler delegate.
 	return BoundResponseHandler;
+}
+
+template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename TCompleteCallback>
+void UBeamBackend::RunAuthenticatedBlueprintRequestProcessor(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus,
+                                                             const int64& RequestId, const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken,
+                                                             TRequestData* RequestData, TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete)
+{
+	ProcessAuthenticatedBlueprintRequest<TRequestData, TResponseData, TSuccessCallback, TErrorCallback, TCompleteCallback>
+		(ResponseCode, ContentAsString, RequestStatus, RequestId, RealmHandle, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+
+	// Run any registered callback for handling Request completion.
+	TryTriggerRequestCompleteDelegates(RequestId);
 }
 
 template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename TCompleteCallback>
@@ -660,7 +693,7 @@ void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCod
 
 template <typename TRequestData, typename TResponseData>
 FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64& RequestId, TRequestData* RequestData,
-                                                             TBeamFullResponseHandler<TRequestData*, TResponseData*> ResponseHandler)
+                                                             TBeamFullResponseHandler<TRequestData*, TResponseData*> ResponseHandler, const UObject* CallingContext)
 {
 	StaticCheckForRequestType<TRequestData>();
 	StaticCheckForResponseType<TResponseData>();
@@ -670,27 +703,40 @@ FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64& Reques
 	// Get the handlers 
 	auto OutProcessor = FBeamRequestProcessor(
 		// Capture, by-value, the Backend system, request id for this request and request data --- these are plain structs with no allocations.
-		[this, RequestId, RequestData, ResponseHandler]
+		[this, RequestId, RequestData, ResponseHandler, CallingContext]
 		// This just passes the captured data along to the Process function (we do this so we can unit test the process function in isolation).
 	(const FHttpRequestPtr Request, const FHttpResponsePtr Response, bool)
 		{
 			if (!Response.IsValid())
 			{
-				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%d"), RequestId);
+				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"), RequestId);
 				return;
 			}
-
+			UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld"), RequestId);
+			
 			const auto ResponseCode = Response->GetResponseCode();
 			const auto ContentAsString = Response->GetContentAsString();
 			const auto RequestStatus = Request->GetStatus();
-			ProcessCodeRequest<TRequestData, TResponseData>(ResponseCode, ContentAsString, RequestStatus, RequestId, RequestData, ResponseHandler);
 
-			// Run any registered callback for handling Request completion.
-			TryTriggerRequestCompleteDelegates(RequestId);
+			// If it was a success, we try to cache the response.
+			if (ResponseCode == 200)
+				GEngine->GetEngineSubsystem<UBeamResponseCache>()->UpdateResponseCache(RequestData->GetRequestType(), CallingContext, Request, ContentAsString);
+
+			RunCodeRequestProcessor<TRequestData, TResponseData>(ResponseCode, ContentAsString, RequestStatus, RequestId, RequestData, ResponseHandler);
 		});
 
 	// We return the build processor function so the API request function can bind it to UnrealHttpRequest's response handler delegate.
 	return OutProcessor;
+}
+
+template <typename TRequestData, typename TResponseData>
+void UBeamBackend::RunCodeRequestProcessor(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus,
+                                           const int64& RequestId, TRequestData* RequestData, TBeamFullResponseHandler<TRequestData*, TResponseData*> ResponseHandler)
+{
+	ProcessCodeRequest<TRequestData, TResponseData>(ResponseCode, ContentAsString, RequestStatus, RequestId, RequestData, ResponseHandler);
+
+	// Run any registered callback for handling Request completion.
+	TryTriggerRequestCompleteDelegates(RequestId);
 }
 
 template <typename TRequestData, typename TResponseData>
@@ -732,15 +778,15 @@ void UBeamBackend::ProcessCodeRequest(const int32& ResponseCode, const FString& 
 
 	// Stores which attempt we are in
 	FullResponse.AttemptNumber = CurrFailedCount;
-
+		
 	// If it was an error, we'll compute this based on the error data.
-	bool bWillRetry = bShouldRetryIfFail;
+	bool bWillRetry = ResponseCode != 200 && bShouldRetryIfFail;
 	// Parse the appropriate response body...
 	if (FullResponse.State == Success)
 	{
 		// Parse the response body and store it in the full response data.				
 		FullResponse.SuccessData = NewObject<TResponseData>(RequestData);
-		FullResponse.SuccessData->DeserializeRequestResponse(RequestData, ContentAsString);		
+		FullResponse.SuccessData->DeserializeRequestResponse(RequestData, ContentAsString);
 
 		// Store it so wait handles can grab at it later
 		InFlightResponseBodyData[*Context] = FullResponse.SuccessData;
@@ -839,7 +885,8 @@ void UBeamBackend::ProcessCodeRequest(const int32& ResponseCode, const FString& 
 
 template <typename TRequestData, typename TResponseData>
 FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(const int64& RequestId, const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken,
-                                                                          TRequestData* RequestData, TBeamFullResponseHandler<TRequestData*, TResponseData*> ResponseHandler)
+                                                                          TRequestData* RequestData, TBeamFullResponseHandler<TRequestData*, TResponseData*> ResponseHandler,
+                                                                          const UObject* CallingContext)
 {
 	StaticCheckForRequestType<TRequestData>();
 	StaticCheckForResponseType<TResponseData>();
@@ -849,26 +896,41 @@ FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(const 
 	// Get the handlers 
 	auto OutProcessor = FBeamRequestProcessor(
 		// Capture, by-value, the Backend system, request id for this request and request data --- these are plain structs with no allocations.
-		[this, RequestId, RealmHandle, AuthToken, RequestData, ResponseHandler]
+		[this, RequestId, RealmHandle, AuthToken, RequestData, ResponseHandler, CallingContext]
 		// This just passes the captured data along to the Process function (we do this so we can unit test the process function in isolation).
 	(const FHttpRequestPtr Request, const FHttpResponsePtr Response, bool)
 		{
 			if (!Response.IsValid())
 			{
-				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%d"), RequestId);
+				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"), RequestId);
 				return;
 			}
+			UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld"), RequestId);
+			
 			const auto ResponseCode = Response->GetResponseCode();
 			const auto ContentAsString = Response->GetContentAsString();
 			const auto RequestStatus = Request->GetStatus();
-			ProcessAuthenticatedCodeRequest<TRequestData, TResponseData>(ResponseCode, ContentAsString, RequestStatus, RequestId, RealmHandle, AuthToken, RequestData, ResponseHandler);
 
-			// Run any registered callback for handling Request completion.
-			TryTriggerRequestCompleteDelegates(RequestId);
+			// If it was a success, we try to cache the response.
+			if (ResponseCode == 200)
+				GEngine->GetEngineSubsystem<UBeamResponseCache>()->UpdateResponseCache(RequestData->GetRequestType(), CallingContext, Request, ContentAsString);
+
+			RunAuthenticatedCodeRequestProcessor<TRequestData, TResponseData>(ResponseCode, ContentAsString, RequestStatus, RequestId, RealmHandle, AuthToken, RequestData, ResponseHandler);
 		});
 
 	// We return the build processor function so the API request function can bind it to UnrealHttpRequest's response handler delegate. 
 	return OutProcessor;
+}
+
+template <typename TRequestData, typename TResponseData>
+void UBeamBackend::RunAuthenticatedCodeRequestProcessor(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus,
+                                                        const int64& RequestId, const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken, TRequestData* RequestData,
+                                                        const TBeamFullResponseHandler<TRequestData*, TResponseData*>& ResponseHandler)
+{
+	ProcessAuthenticatedCodeRequest<TRequestData, TResponseData>(ResponseCode, ContentAsString, RequestStatus, RequestId, RealmHandle, AuthToken, RequestData, ResponseHandler);
+
+	// Run any registered callback for handling Request completion.
+	TryTriggerRequestCompleteDelegates(RequestId);
 }
 
 template <typename TRequestData, typename TResponseData>
@@ -923,7 +985,7 @@ void UBeamBackend::ProcessAuthenticatedCodeRequest(const int32& ResponseCode, co
 		FullResponse.SuccessData->DeserializeRequestResponse(RequestData, ContentAsString);
 
 		// Store it so wait handles can grab at it later
-		InFlightResponseBodyData[*Context] = FullResponse.SuccessData;
+		InFlightResponseBodyData[*Context] = FullResponse.SuccessData;		
 	}
 	else if (FullResponse.State == Error)
 	{
@@ -1207,7 +1269,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 			{
 				const auto Route = FailedReq->GetURL();
 				const auto Verb = FailedReq->GetVerb();
-				const auto Body = FString(UTF8_TO_TCHAR(FailedReq->GetContent().GetData()));				
+				const auto Body = FString(UTF8_TO_TCHAR(FailedReq->GetContent().GetData()));
 				ensureAlwaysMsgf(false, TEXT("This request should not have been enqueued for retry, but it was. REQUEST_ID=%d, VERB=%s, ROUTE=%s, BODY=%s, RETRY_RESP_CODES=%s, RETRY_ERR_CODES=%s"),
 				                 ProcessingReq.RequestToRetry.RequestId, *Route, *Verb, *Body,
 				                 *FString::JoinBy(RetryConfig.HttpResponseCodes, TEXT(","), [](int64 c) { return FString::FromInt(c); }),
@@ -1451,12 +1513,14 @@ template TUnrealRequestPtr UBeamBackend::CreateRequest(int64&, const FBeamRealmH
 template TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const FBeamAuthToken&, const UBeamMockPostRequest*);
 
 template FBeamRequestProcessor UBeamBackend::MakeBlueprintRequestProcessor<UBeamMockGetRequest, UBeamMockGetRequestResponse>(
-	const int64&, UBeamMockGetRequest*, FOnMockSuccess, FOnMockError, FOnMockComplete);
+	const int64&, UBeamMockGetRequest*, FOnMockSuccess, FOnMockError, FOnMockComplete, const UObject*);
 template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestProcessor<UBeamMockGetRequest, UBeamMockGetRequestResponse>(
-	const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UBeamMockGetRequest*, FOnMockSuccess, FOnMockError, FOnMockComplete);
-template FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64&, UBeamMockGetRequest*, TBeamFullResponseHandler<UBeamMockGetRequest*, UBeamMockGetRequestResponse*>);
+	const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UBeamMockGetRequest*, FOnMockSuccess, FOnMockError, FOnMockComplete, const UObject*);
+template FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64&, UBeamMockGetRequest*, TBeamFullResponseHandler<UBeamMockGetRequest*, UBeamMockGetRequestResponse*>, const UObject*);
 template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UBeamMockGetRequest*,
-                                                                                   TBeamFullResponseHandler<UBeamMockGetRequest*, UBeamMockGetRequestResponse*>);
+                                                                                   TBeamFullResponseHandler<UBeamMockGetRequest*, UBeamMockGetRequestResponse*>, const UObject*);
+
+
 
 /**
  * Here we'll include the RequestTemplates.gen.cpp file --- this file has all the declarations for the template functions...

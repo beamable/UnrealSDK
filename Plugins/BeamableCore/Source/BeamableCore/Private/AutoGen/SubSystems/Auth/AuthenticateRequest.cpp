@@ -27,7 +27,7 @@ void UAuthenticateRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UAuthenticateRequest* UAuthenticateRequest::Make(FString _GrantType, FOptionalBool _bCustomerScoped, FOptionalString _DeviceId, FOptionalString _Username, FOptionalString _RefreshToken, FOptionalContextInfo _Context, FOptionalString _ThirdParty, FOptionalString _RedirectUri, FOptionalString _ClientId, FOptionalChallengeSolution _ChallengeSolution, FOptionalString _ExternalToken, FOptionalString _Code, FOptionalString _ProviderAddress, FOptionalString _Token, FOptionalString _Password, FOptionalArrayOfString _Scope, UObject* RequestOwner)
+UAuthenticateRequest* UAuthenticateRequest::Make(FString _GrantType, FOptionalBool _bCustomerScoped, FOptionalString _DeviceId, FOptionalString _ProviderService, FOptionalString _Token, FOptionalString _Code, FOptionalString _ExternalToken, FOptionalChallengeSolution _ChallengeSolution, FOptionalString _ProviderNamespace, FOptionalString _RedirectUri, FOptionalString _ThirdParty, FOptionalContextInfo _Context, FOptionalString _RefreshToken, FOptionalString _Username, FOptionalString _ClientId, FOptionalString _Password, FOptionalArrayOfString _Scope, UObject* RequestOwner)
 {
 	UAuthenticateRequest* Req = NewObject<UAuthenticateRequest>(RequestOwner);
 
@@ -39,17 +39,18 @@ UAuthenticateRequest* UAuthenticateRequest::Make(FString _GrantType, FOptionalBo
 	Req->Body->GrantType = _GrantType;
 	Req->Body->bCustomerScoped = _bCustomerScoped;
 	Req->Body->DeviceId = _DeviceId;
-	Req->Body->Username = _Username;
-	Req->Body->RefreshToken = _RefreshToken;
-	Req->Body->Context = _Context;
-	Req->Body->ThirdParty = _ThirdParty;
-	Req->Body->RedirectUri = _RedirectUri;
-	Req->Body->ClientId = _ClientId;
-	Req->Body->ChallengeSolution = _ChallengeSolution;
-	Req->Body->ExternalToken = _ExternalToken;
-	Req->Body->Code = _Code;
-	Req->Body->ProviderAddress = _ProviderAddress;
+	Req->Body->ProviderService = _ProviderService;
 	Req->Body->Token = _Token;
+	Req->Body->Code = _Code;
+	Req->Body->ExternalToken = _ExternalToken;
+	Req->Body->ChallengeSolution = _ChallengeSolution;
+	Req->Body->ProviderNamespace = _ProviderNamespace;
+	Req->Body->RedirectUri = _RedirectUri;
+	Req->Body->ThirdParty = _ThirdParty;
+	Req->Body->Context = _Context;
+	Req->Body->RefreshToken = _RefreshToken;
+	Req->Body->Username = _Username;
+	Req->Body->ClientId = _ClientId;
 	Req->Body->Password = _Password;
 	Req->Body->Scope = _Scope;
 	

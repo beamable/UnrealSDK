@@ -37,7 +37,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Social", DisplayName="Beam - Make PostBlocked",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
-	static UPostBlockedRequest* Make(FString _PlayerId, UObject* RequestOwner);
+	static UPostBlockedRequest* Make(FBeamGamerTag _PlayerId, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -22,19 +22,17 @@ FString USubscriptionVerificationResponseLibrary::SubscriptionVerificationRespon
 	return Result;
 }	
 
-USubscriptionVerificationResponse* USubscriptionVerificationResponseLibrary::Make(FString HubChallenge, FString ContentType, UObject* Outer)
+USubscriptionVerificationResponse* USubscriptionVerificationResponseLibrary::Make(FString HubChallenge, UObject* Outer)
 {
 	auto Serializable = NewObject<USubscriptionVerificationResponse>(Outer);
 	Serializable->HubChallenge = HubChallenge;
-	Serializable->ContentType = ContentType;
 	
 	return Serializable;
 }
 
-void USubscriptionVerificationResponseLibrary::Break(const USubscriptionVerificationResponse* Serializable, FString& HubChallenge, FString& ContentType)
+void USubscriptionVerificationResponseLibrary::Break(const USubscriptionVerificationResponse* Serializable, FString& HubChallenge)
 {
 	HubChallenge = Serializable->HubChallenge;
-	ContentType = Serializable->ContentType;
 		
 }
 

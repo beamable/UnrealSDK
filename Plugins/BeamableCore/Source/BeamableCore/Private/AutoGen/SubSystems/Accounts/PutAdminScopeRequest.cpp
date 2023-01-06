@@ -9,7 +9,7 @@ void UPutAdminScopeRequest::BuildVerb(FString& VerbString) const
 void UPutAdminScopeRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/accounts/{objectId}/admin/scope");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -27,7 +27,7 @@ void UPutAdminScopeRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutAdminScopeRequest* UPutAdminScopeRequest::Make(int64 _ObjectId, FOptionalString _Cid, FOptionalString _Realm, FOptionalString _Role, UObject* RequestOwner)
+UPutAdminScopeRequest* UPutAdminScopeRequest::Make(FBeamAccountId _ObjectId, FOptionalBeamCid _Cid, FOptionalBeamPid _Realm, FOptionalString _Role, UObject* RequestOwner)
 {
 	UPutAdminScopeRequest* Req = NewObject<UPutAdminScopeRequest>(RequestOwner);
 

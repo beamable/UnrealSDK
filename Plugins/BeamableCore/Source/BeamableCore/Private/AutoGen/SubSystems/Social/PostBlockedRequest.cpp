@@ -27,7 +27,7 @@ void UPostBlockedRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostBlockedRequest* UPostBlockedRequest::Make(FString _PlayerId, UObject* RequestOwner)
+UPostBlockedRequest* UPostBlockedRequest::Make(FBeamGamerTag _PlayerId, UObject* RequestOwner)
 {
 	UPostBlockedRequest* Req = NewObject<UPostBlockedRequest>(RequestOwner);
 

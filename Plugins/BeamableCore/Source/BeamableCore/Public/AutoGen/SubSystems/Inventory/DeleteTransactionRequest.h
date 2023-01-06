@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "BeamBackend/SemanticTypes/BeamGamerTag.h"
 #include "AutoGen/EndTransactionRequestBody.h"
 #include "AutoGen/CommonResponse.h"
 
@@ -22,7 +22,7 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	int64 ObjectId;
+	FBeamGamerTag ObjectId;
 	
 	// Query Params
 	
@@ -39,7 +39,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Inventory", DisplayName="Beam - Make DeleteTransaction",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
-	static UDeleteTransactionRequest* Make(int64 _ObjectId, FString _Transaction, UObject* RequestOwner);
+	static UDeleteTransactionRequest* Make(FBeamGamerTag _ObjectId, FString _Transaction, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

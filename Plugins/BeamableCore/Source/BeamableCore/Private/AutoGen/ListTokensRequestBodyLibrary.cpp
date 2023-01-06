@@ -22,7 +22,7 @@ FString UListTokensRequestBodyLibrary::ListTokensRequestBodyToJsonString(const U
 	return Result;
 }	
 
-UListTokensRequestBody* UListTokensRequestBodyLibrary::Make(int32 PageSize, int32 Page, int64 GamerTagOrAccountId, FOptionalInt64 Cid, FOptionalString Pid, UObject* Outer)
+UListTokensRequestBody* UListTokensRequestBodyLibrary::Make(int32 PageSize, int32 Page, int64 GamerTagOrAccountId, FOptionalBeamCid Cid, FOptionalBeamPid Pid, UObject* Outer)
 {
 	auto Serializable = NewObject<UListTokensRequestBody>(Outer);
 	Serializable->PageSize = PageSize;
@@ -34,7 +34,7 @@ UListTokensRequestBody* UListTokensRequestBodyLibrary::Make(int32 PageSize, int3
 	return Serializable;
 }
 
-void UListTokensRequestBodyLibrary::Break(const UListTokensRequestBody* Serializable, int32& PageSize, int32& Page, int64& GamerTagOrAccountId, FOptionalInt64& Cid, FOptionalString& Pid)
+void UListTokensRequestBodyLibrary::Break(const UListTokensRequestBody* Serializable, int32& PageSize, int32& Page, int64& GamerTagOrAccountId, FOptionalBeamCid& Cid, FOptionalBeamPid& Pid)
 {
 	PageSize = Serializable->PageSize;
 	Page = Serializable->Page;

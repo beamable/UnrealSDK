@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "BeamBackend/SemanticTypes/BeamGamerTag.h"
 #include "AutoGen/InventoryUpdateRequestBody.h"
 #include "AutoGen/PreviewVipBonusResponse.h"
 
@@ -22,7 +22,7 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	int64 ObjectId;
+	FBeamGamerTag ObjectId;
 	
 	// Query Params
 	
@@ -39,7 +39,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Inventory", DisplayName="Beam - Make PutPreview",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bApplyVipBonus,_Transaction,_UpdateItems,_NewItems,_DeleteItems,_Currencies,_CurrencyProperties,RequestOwner"))
-	static UPutPreviewRequest* Make(int64 _ObjectId, bool _bEmpty, TArray<FString> _CurrencyContentIds, TArray<FString> _ItemContentIds, FOptionalBool _bApplyVipBonus, FOptionalString _Transaction, FOptionalArrayOfItemUpdateRequestBody _UpdateItems, FOptionalArrayOfItemCreateRequestBody _NewItems, FOptionalArrayOfItemDeleteRequestBody _DeleteItems, FOptionalMapOfInt64 _Currencies, FOptionalMapOfArrayOfCurrencyProperty _CurrencyProperties, UObject* RequestOwner);
+	static UPutPreviewRequest* Make(FBeamGamerTag _ObjectId, bool _bEmpty, TArray<FString> _CurrencyContentIds, TArray<FString> _ItemContentIds, FOptionalBool _bApplyVipBonus, FOptionalString _Transaction, FOptionalArrayOfItemUpdateRequestBody _UpdateItems, FOptionalArrayOfItemCreateRequestBody _NewItems, FOptionalArrayOfItemDeleteRequestBody _DeleteItems, FOptionalMapOfInt64 _Currencies, FOptionalMapOfArrayOfCurrencyProperty _CurrencyProperties, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

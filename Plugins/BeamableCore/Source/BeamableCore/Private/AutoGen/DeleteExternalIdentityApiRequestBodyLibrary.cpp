@@ -22,19 +22,21 @@ FString UDeleteExternalIdentityApiRequestBodyLibrary::DeleteExternalIdentityApiR
 	return Result;
 }	
 
-UDeleteExternalIdentityApiRequestBody* UDeleteExternalIdentityApiRequestBodyLibrary::Make(FString ProviderAddress, FString UserId, UObject* Outer)
+UDeleteExternalIdentityApiRequestBody* UDeleteExternalIdentityApiRequestBodyLibrary::Make(FString ProviderService, FString UserId, FOptionalString ProviderNamespace, UObject* Outer)
 {
 	auto Serializable = NewObject<UDeleteExternalIdentityApiRequestBody>(Outer);
-	Serializable->ProviderAddress = ProviderAddress;
+	Serializable->ProviderService = ProviderService;
 	Serializable->UserId = UserId;
+	Serializable->ProviderNamespace = ProviderNamespace;
 	
 	return Serializable;
 }
 
-void UDeleteExternalIdentityApiRequestBodyLibrary::Break(const UDeleteExternalIdentityApiRequestBody* Serializable, FString& ProviderAddress, FString& UserId)
+void UDeleteExternalIdentityApiRequestBodyLibrary::Break(const UDeleteExternalIdentityApiRequestBody* Serializable, FString& ProviderService, FString& UserId, FOptionalString& ProviderNamespace)
 {
-	ProviderAddress = Serializable->ProviderAddress;
+	ProviderService = Serializable->ProviderService;
 	UserId = Serializable->UserId;
+	ProviderNamespace = Serializable->ProviderNamespace;
 		
 }
 

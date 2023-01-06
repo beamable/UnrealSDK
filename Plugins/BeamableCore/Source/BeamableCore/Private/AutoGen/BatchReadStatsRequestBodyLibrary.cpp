@@ -22,7 +22,7 @@ FString UBatchReadStatsRequestBodyLibrary::BatchReadStatsRequestBodyToJsonString
 	return Result;
 }	
 
-UBatchReadStatsRequestBody* UBatchReadStatsRequestBodyLibrary::Make(FString ObjectIds, FOptionalString Stats, FOptionalString Format, UObject* Outer)
+UBatchReadStatsRequestBody* UBatchReadStatsRequestBodyLibrary::Make(FBeamStatsType ObjectIds, FOptionalString Stats, FOptionalString Format, UObject* Outer)
 {
 	auto Serializable = NewObject<UBatchReadStatsRequestBody>(Outer);
 	Serializable->ObjectIds = ObjectIds;
@@ -32,7 +32,7 @@ UBatchReadStatsRequestBody* UBatchReadStatsRequestBodyLibrary::Make(FString Obje
 	return Serializable;
 }
 
-void UBatchReadStatsRequestBodyLibrary::Break(const UBatchReadStatsRequestBody* Serializable, FString& ObjectIds, FOptionalString& Stats, FOptionalString& Format)
+void UBatchReadStatsRequestBodyLibrary::Break(const UBatchReadStatsRequestBody* Serializable, FBeamStatsType& ObjectIds, FOptionalString& Stats, FOptionalString& Format)
 {
 	ObjectIds = Serializable->ObjectIds;
 	Stats = Serializable->Stats;

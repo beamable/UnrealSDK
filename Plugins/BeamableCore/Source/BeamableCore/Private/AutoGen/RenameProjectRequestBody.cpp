@@ -1,24 +1,24 @@
 
 #include "AutoGen/RenameProjectRequestBody.h"
-
+#include "Serialization/BeamJsonUtils.h"
 
 
 
 
 void URenameProjectRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("projectId"), ProjectId);
+	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("projectId"), &ProjectId, Serializer);
 	Serializer->WriteValue(TEXT("newName"), NewName);
 }
 
 void URenameProjectRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("projectId"), ProjectId);
+	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("projectId"), &ProjectId, Serializer);
 	Serializer->WriteValue(TEXT("newName"), NewName);		
 }
 
 void URenameProjectRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	ProjectId = Bag->GetStringField(TEXT("projectId"));
+	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("projectId")), ProjectId, OuterOwner);
 	NewName = Bag->GetStringField(TEXT("newName"));
 }

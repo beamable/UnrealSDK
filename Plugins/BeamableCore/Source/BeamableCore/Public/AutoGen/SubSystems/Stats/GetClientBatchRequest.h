@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "BeamBackend/SemanticTypes/BeamStatsType.h"
 #include "AutoGen/Optionals/OptionalString.h"
 #include "AutoGen/BatchReadStatsResponse.h"
 
@@ -25,7 +25,7 @@ public:
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Ids", Category="Beam")
-	FString ObjectIds;
+	FBeamStatsType ObjectIds;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stats", Category="Beam")
 	FOptionalString Stats;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Format", Category="Beam")
@@ -42,7 +42,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", DisplayName="Beam - Make GetClientBatch",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Stats,_Format,RequestOwner"))
-	static UGetClientBatchRequest* Make(FString _ObjectIds, FOptionalString _Stats, FOptionalString _Format, UObject* RequestOwner);
+	static UGetClientBatchRequest* Make(FBeamStatsType _ObjectIds, FOptionalString _Stats, FOptionalString _Format, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

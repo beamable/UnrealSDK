@@ -9,7 +9,7 @@ void UGetMultipliersRequest::BuildVerb(FString& VerbString) const
 void UGetMultipliersRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/inventory/{objectId}/multipliers");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -23,7 +23,7 @@ void UGetMultipliersRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetMultipliersRequest* UGetMultipliersRequest::Make(int64 _ObjectId, UObject* RequestOwner)
+UGetMultipliersRequest* UGetMultipliersRequest::Make(FBeamGamerTag _ObjectId, UObject* RequestOwner)
 {
 	UGetMultipliersRequest* Req = NewObject<UGetMultipliersRequest>(RequestOwner);
 

@@ -22,7 +22,7 @@ FString UNewCustomerResponseLibrary::NewCustomerResponseToJsonString(const UNewC
 	return Result;
 }	
 
-UNewCustomerResponse* UNewCustomerResponseLibrary::Make(FString Name, FString ProjectName, int64 Cid, FString Pid, UTokenResponse* Token, FOptionalString Alias, UObject* Outer)
+UNewCustomerResponse* UNewCustomerResponseLibrary::Make(FString Name, FString ProjectName, FBeamCid Cid, FBeamPid Pid, UTokenResponse* Token, FOptionalString Alias, UObject* Outer)
 {
 	auto Serializable = NewObject<UNewCustomerResponse>(Outer);
 	Serializable->Name = Name;
@@ -35,7 +35,7 @@ UNewCustomerResponse* UNewCustomerResponseLibrary::Make(FString Name, FString Pr
 	return Serializable;
 }
 
-void UNewCustomerResponseLibrary::Break(const UNewCustomerResponse* Serializable, FString& Name, FString& ProjectName, int64& Cid, FString& Pid, UTokenResponse*& Token, FOptionalString& Alias)
+void UNewCustomerResponseLibrary::Break(const UNewCustomerResponse* Serializable, FString& Name, FString& ProjectName, FBeamCid& Cid, FBeamPid& Pid, UTokenResponse*& Token, FOptionalString& Alias)
 {
 	Name = Serializable->Name;
 	ProjectName = Serializable->ProjectName;

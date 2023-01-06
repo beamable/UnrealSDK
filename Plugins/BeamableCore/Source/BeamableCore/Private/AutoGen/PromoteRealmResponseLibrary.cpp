@@ -22,7 +22,7 @@ FString UPromoteRealmResponseLibrary::PromoteRealmResponseToJsonString(const UPr
 	return Result;
 }	
 
-UPromoteRealmResponse* UPromoteRealmResponseLibrary::Make(FString SourcePid, TArray<UPromotionScope*> Scopes, UObject* Outer)
+UPromoteRealmResponse* UPromoteRealmResponseLibrary::Make(FBeamPid SourcePid, TArray<UPromotionScope*> Scopes, UObject* Outer)
 {
 	auto Serializable = NewObject<UPromoteRealmResponse>(Outer);
 	Serializable->SourcePid = SourcePid;
@@ -31,7 +31,7 @@ UPromoteRealmResponse* UPromoteRealmResponseLibrary::Make(FString SourcePid, TAr
 	return Serializable;
 }
 
-void UPromoteRealmResponseLibrary::Break(const UPromoteRealmResponse* Serializable, FString& SourcePid, TArray<UPromotionScope*>& Scopes)
+void UPromoteRealmResponseLibrary::Break(const UPromoteRealmResponse* Serializable, FBeamPid& SourcePid, TArray<UPromotionScope*>& Scopes)
 {
 	SourcePid = Serializable->SourcePid;
 	Scopes = Serializable->Scopes;

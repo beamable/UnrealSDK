@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-
+#include "RequestType.h"
 #include "BeamBaseRequestInterface.generated.h"
 
 /**
@@ -23,6 +23,12 @@ class BEAMABLECORE_API IBeamBaseRequestInterface
 	GENERATED_BODY()
 
 public:
+
+	virtual FRequestType GetRequestType() const
+	{
+		return FRequestType{this->_getUObject()->GetClass()->GetDisplayNameText().ToString()};
+	}
+	
 	virtual void BuildVerb(FString& VerbString) const
 	{
 	}

@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-
+#include "BeamBackend/SemanticTypes/BeamGamerTag.h"
 
 #include "PlayerId.generated.h"
 
@@ -15,7 +15,7 @@ class BEAMABLECORE_API UPlayerId : public UObject, public FBeamJsonSerializable
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
-	FString PlayerId;
+	FBeamGamerTag PlayerId;
 
 	
 

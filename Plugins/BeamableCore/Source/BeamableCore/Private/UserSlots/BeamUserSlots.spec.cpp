@@ -13,9 +13,9 @@ void FBeamUserSlotsSpec::Define()
 	{
 		const FUserSlot TestSlot{"Automated_Test_Slot"};
 
-		const FString FakeAccessToken{"ACCESS_TOKEN"}, FakeRefreshToken{"REFRESH_TOKEN"},
-		              FakeCid{GetDefault<UBeamCoreSettings>()->TargetRealm.Cid},
-		              FakePid{GetDefault<UBeamCoreSettings>()->TargetRealm.Pid};
+		const FString FakeAccessToken{"ACCESS_TOKEN"}, FakeRefreshToken{"REFRESH_TOKEN"};
+		const FBeamCid FakeCid = GetDefault<UBeamCoreSettings>()->TargetRealm.Cid;
+		const FBeamPid FakePid = GetDefault<UBeamCoreSettings>()->TargetRealm.Pid;
 		
 		const int64 &FakeExpiresIn{1234}, FakeGamerTag{0000001};
 
@@ -123,7 +123,7 @@ void FBeamUserSlotsSpec::Define()
 			FileManager.FileExists(*BeamUserSlots->GetSavedSlotAuthFilePath(UBeamUserSlots::GetNamespacedSlotId(TestSlot)));
 
 			// Clear the slot so we can verify the loading function actually works
-			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, TEXT(""), TEXT(""), 0, TEXT(""),TEXT(""));
+			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, TEXT(""), TEXT(""), 0, FBeamCid(TEXT("")),FBeamPid(TEXT("")));
 			BeamUserSlots->SetGamerTagAtSlot(TestSlot, -1);
 
 			// Load the user from the serialized file and see if it was loaded correctly.

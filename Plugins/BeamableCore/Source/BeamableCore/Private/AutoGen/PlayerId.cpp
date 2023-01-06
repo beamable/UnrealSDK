@@ -1,21 +1,21 @@
 
 #include "AutoGen/PlayerId.h"
-
+#include "Serialization/BeamJsonUtils.h"
 
 
 
 
 void UPlayerId ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("playerId"), PlayerId);
+	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("playerId"), &PlayerId, Serializer);
 }
 
 void UPlayerId::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("playerId"), PlayerId);		
+	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("playerId"), &PlayerId, Serializer);		
 }
 
 void UPlayerId ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	PlayerId = Bag->GetStringField(TEXT("playerId"));
+	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("playerId")), PlayerId, OuterOwner);
 }

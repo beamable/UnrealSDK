@@ -22,7 +22,7 @@ FString UDeleteRoleRequestBodyLibrary::DeleteRoleRequestBodyToJsonString(const U
 	return Result;
 }	
 
-UDeleteRoleRequestBody* UDeleteRoleRequestBodyLibrary::Make(FString Realm, FString Role, UObject* Outer)
+UDeleteRoleRequestBody* UDeleteRoleRequestBodyLibrary::Make(FOptionalBeamPid Realm, FOptionalString Role, UObject* Outer)
 {
 	auto Serializable = NewObject<UDeleteRoleRequestBody>(Outer);
 	Serializable->Realm = Realm;
@@ -31,7 +31,7 @@ UDeleteRoleRequestBody* UDeleteRoleRequestBodyLibrary::Make(FString Realm, FStri
 	return Serializable;
 }
 
-void UDeleteRoleRequestBodyLibrary::Break(const UDeleteRoleRequestBody* Serializable, FString& Realm, FString& Role)
+void UDeleteRoleRequestBodyLibrary::Break(const UDeleteRoleRequestBody* Serializable, FOptionalBeamPid& Realm, FOptionalString& Role)
 {
 	Realm = Serializable->Realm;
 	Role = Serializable->Role;

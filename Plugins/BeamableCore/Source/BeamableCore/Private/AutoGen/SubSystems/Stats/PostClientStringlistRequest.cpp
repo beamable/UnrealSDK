@@ -9,7 +9,7 @@ void UPostClientStringlistRequest::BuildVerb(FString& VerbString) const
 void UPostClientStringlistRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/stats/{objectId}/client/stringlist");
-	Route = Route.Replace(TEXT("{objectId}"), *ObjectId);
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -27,7 +27,7 @@ void UPostClientStringlistRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostClientStringlistRequest* UPostClientStringlistRequest::Make(FString _ObjectId, FOptionalArrayOfStatStringListEntry _Set, UObject* RequestOwner)
+UPostClientStringlistRequest* UPostClientStringlistRequest::Make(FBeamStatsType _ObjectId, FOptionalArrayOfStatStringListEntry _Set, UObject* RequestOwner)
 {
 	UPostClientStringlistRequest* Req = NewObject<UPostClientStringlistRequest>(RequestOwner);
 

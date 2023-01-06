@@ -18,8 +18,8 @@ public:
 	static FString ListTokensRequestBodyToJsonString(const UListTokensRequestBody* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ListTokensRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Cid, Pid, Outer", NativeMakeFunc))
-	static UListTokensRequestBody* Make(int32 PageSize, int32 Page, int64 GamerTagOrAccountId, FOptionalInt64 Cid, FOptionalString Pid, UObject* Outer);
+	static UListTokensRequestBody* Make(int32 PageSize, int32 Page, int64 GamerTagOrAccountId, FOptionalBeamCid Cid, FOptionalBeamPid Pid, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break ListTokensRequestBody", meta=(NativeBreakFunc))
-	static void Break(const UListTokensRequestBody* Serializable, int32& PageSize, int32& Page, int64& GamerTagOrAccountId, FOptionalInt64& Cid, FOptionalString& Pid);
+	static void Break(const UListTokensRequestBody* Serializable, int32& PageSize, int32& Page, int64& GamerTagOrAccountId, FOptionalBeamCid& Cid, FOptionalBeamPid& Pid);
 };

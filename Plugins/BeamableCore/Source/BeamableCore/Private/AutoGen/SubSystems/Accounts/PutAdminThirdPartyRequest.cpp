@@ -9,7 +9,7 @@ void UPutAdminThirdPartyRequest::BuildVerb(FString& VerbString) const
 void UPutAdminThirdPartyRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/accounts/{objectId}/admin/third-party");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -27,7 +27,7 @@ void UPutAdminThirdPartyRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutAdminThirdPartyRequest* UPutAdminThirdPartyRequest::Make(int64 _ObjectId, int64 _FromAccountId, UThirdPartyAssociation* _ThirdParty, UObject* RequestOwner)
+UPutAdminThirdPartyRequest* UPutAdminThirdPartyRequest::Make(FBeamAccountId _ObjectId, int64 _FromAccountId, UThirdPartyAssociation* _ThirdParty, UObject* RequestOwner)
 {
 	UPutAdminThirdPartyRequest* Req = NewObject<UPutAdminThirdPartyRequest>(RequestOwner);
 

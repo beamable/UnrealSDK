@@ -9,7 +9,7 @@ void UPutPreviewRequest::BuildVerb(FString& VerbString) const
 void UPutPreviewRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/inventory/{objectId}/preview");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -27,7 +27,7 @@ void UPutPreviewRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutPreviewRequest* UPutPreviewRequest::Make(int64 _ObjectId, bool _bEmpty, TArray<FString> _CurrencyContentIds, TArray<FString> _ItemContentIds, FOptionalBool _bApplyVipBonus, FOptionalString _Transaction, FOptionalArrayOfItemUpdateRequestBody _UpdateItems, FOptionalArrayOfItemCreateRequestBody _NewItems, FOptionalArrayOfItemDeleteRequestBody _DeleteItems, FOptionalMapOfInt64 _Currencies, FOptionalMapOfArrayOfCurrencyProperty _CurrencyProperties, UObject* RequestOwner)
+UPutPreviewRequest* UPutPreviewRequest::Make(FBeamGamerTag _ObjectId, bool _bEmpty, TArray<FString> _CurrencyContentIds, TArray<FString> _ItemContentIds, FOptionalBool _bApplyVipBonus, FOptionalString _Transaction, FOptionalArrayOfItemUpdateRequestBody _UpdateItems, FOptionalArrayOfItemCreateRequestBody _NewItems, FOptionalArrayOfItemDeleteRequestBody _DeleteItems, FOptionalMapOfInt64 _Currencies, FOptionalMapOfArrayOfCurrencyProperty _CurrencyProperties, UObject* RequestOwner)
 {
 	UPutPreviewRequest* Req = NewObject<UPutPreviewRequest>(RequestOwner);
 

@@ -1,7 +1,7 @@
 
 #include "AutoGen/NewCustomerResponse.h"
 #include "Serialization/BeamJsonUtils.h"
-#include "Misc/DefaultValueHelper.h"
+
 
 
 void UNewCustomerResponse::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
@@ -14,8 +14,8 @@ void UNewCustomerResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Seria
 {
 	Serializer->WriteValue(TEXT("name"), Name);
 	Serializer->WriteValue(TEXT("projectName"), ProjectName);
-	Serializer->WriteValue(TEXT("cid"), Cid);
-	Serializer->WriteValue(TEXT("pid"), Pid);
+	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);
+	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("pid"), &Pid, Serializer);
 	UBeamJsonUtils::SerializeUObject<UTokenResponse*>("token", Token, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("alias"), &Alias, Serializer);
 }
@@ -24,8 +24,8 @@ void UNewCustomerResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 {
 	Serializer->WriteValue(TEXT("name"), Name);
 	Serializer->WriteValue(TEXT("projectName"), ProjectName);
-	Serializer->WriteValue(TEXT("cid"), Cid);
-	Serializer->WriteValue(TEXT("pid"), Pid);
+	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);
+	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("pid"), &Pid, Serializer);
 	UBeamJsonUtils::SerializeUObject<UTokenResponse*>("token", Token, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("alias"), &Alias, Serializer);		
 }
@@ -34,8 +34,8 @@ void UNewCustomerResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObje
 {
 	Name = Bag->GetStringField(TEXT("name"));
 	ProjectName = Bag->GetStringField(TEXT("projectName"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("cid")), Cid);
-	Pid = Bag->GetStringField(TEXT("pid"));
+	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("cid")), Cid, OuterOwner);
+	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("pid")), Pid, OuterOwner);
 	UBeamJsonUtils::DeserializeUObject<UTokenResponse*>("token", Bag, Token, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("alias", Bag, Alias, OuterOwner);
 }

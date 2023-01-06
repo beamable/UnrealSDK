@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "BeamBackend/SemanticTypes/BeamPid.h"
 #include "AutoGen/GetGameResponse.h"
 
 #include "GetGameRequest.generated.h"
@@ -24,7 +24,7 @@ public:
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Root PID", Category="Beam")
-	FString RootPID;
+	FBeamPid RootPID;
 
 	// Body Params
 	
@@ -37,7 +37,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", DisplayName="Beam - Make GetGame",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
-	static UGetGameRequest* Make(FString _RootPID, UObject* RequestOwner);
+	static UGetGameRequest* Make(FBeamPid _RootPID, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

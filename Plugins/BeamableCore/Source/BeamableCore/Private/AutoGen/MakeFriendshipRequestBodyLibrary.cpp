@@ -22,7 +22,7 @@ FString UMakeFriendshipRequestBodyLibrary::MakeFriendshipRequestBodyToJsonString
 	return Result;
 }	
 
-UMakeFriendshipRequestBody* UMakeFriendshipRequestBodyLibrary::Make(int64 GamerTag, UObject* Outer)
+UMakeFriendshipRequestBody* UMakeFriendshipRequestBodyLibrary::Make(FBeamGamerTag GamerTag, UObject* Outer)
 {
 	auto Serializable = NewObject<UMakeFriendshipRequestBody>(Outer);
 	Serializable->GamerTag = GamerTag;
@@ -30,7 +30,7 @@ UMakeFriendshipRequestBody* UMakeFriendshipRequestBodyLibrary::Make(int64 GamerT
 	return Serializable;
 }
 
-void UMakeFriendshipRequestBodyLibrary::Break(const UMakeFriendshipRequestBody* Serializable, int64& GamerTag)
+void UMakeFriendshipRequestBodyLibrary::Break(const UMakeFriendshipRequestBody* Serializable, FBeamGamerTag& GamerTag)
 {
 	GamerTag = Serializable->GamerTag;
 		

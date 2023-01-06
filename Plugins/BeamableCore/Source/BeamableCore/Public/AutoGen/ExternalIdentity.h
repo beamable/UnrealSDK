@@ -14,10 +14,12 @@ class BEAMABLECORE_API UExternalIdentity : public UObject, public FBeamJsonSeria
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Provider Address", Category="Beam")
-	FString ProviderAddress;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Provider Service", Category="Beam")
+	FString ProviderService;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="User Id", Category="Beam")
 	FString UserId;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Provider Namespace", Category="Beam")
+	FString ProviderNamespace;
 
 	
 

@@ -9,7 +9,7 @@ void UObjectAccountsPutRoleRequest::BuildVerb(FString& VerbString) const
 void UObjectAccountsPutRoleRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/accounts/{objectId}/role");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -27,7 +27,7 @@ void UObjectAccountsPutRoleRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UObjectAccountsPutRoleRequest* UObjectAccountsPutRoleRequest::Make(int64 _ObjectId, FOptionalString _Cid, FOptionalString _Realm, FOptionalString _Role, UObject* RequestOwner)
+UObjectAccountsPutRoleRequest* UObjectAccountsPutRoleRequest::Make(FBeamAccountId _ObjectId, FOptionalBeamCid _Cid, FOptionalBeamPid _Realm, FOptionalString _Role, UObject* RequestOwner)
 {
 	UObjectAccountsPutRoleRequest* Req = NewObject<UObjectAccountsPutRoleRequest>(RequestOwner);
 

@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "BeamBackend/SemanticTypes/BeamGamerTag.h"
 #include "AutoGen/Optionals/OptionalString.h"
 #include "AutoGen/InventoryView.h"
 
@@ -22,7 +22,7 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	int64 ObjectId;
+	FBeamGamerTag ObjectId;
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scope", Category="Beam")
@@ -39,7 +39,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Inventory", DisplayName="Beam - Make GetInventory",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Scope,RequestOwner"))
-	static UGetInventoryRequest* Make(int64 _ObjectId, FOptionalString _Scope, UObject* RequestOwner);
+	static UGetInventoryRequest* Make(FBeamGamerTag _ObjectId, FOptionalString _Scope, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "BeamBackend/SemanticTypes/BeamAccountId.h"
 #include "AutoGen/DeleteRoleRequestBody.h"
 #include "AutoGen/EmptyResponse.h"
 
@@ -22,7 +22,7 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	int64 ObjectId;
+	FBeamAccountId ObjectId;
 	
 	// Query Params
 	
@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make DeleteRole",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
-	static UDeleteRoleRequest* Make(int64 _ObjectId, FString _Realm, FString _Role, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make DeleteRole",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Realm,_Role,RequestOwner"))
+	static UDeleteRoleRequest* Make(FBeamAccountId _ObjectId, FOptionalBeamPid _Realm, FOptionalString _Role, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

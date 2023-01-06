@@ -27,7 +27,7 @@ void UPutProjectRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutProjectRequest* UPutProjectRequest::Make(FString _ProjectId, UObject* RequestOwner)
+UPutProjectRequest* UPutProjectRequest::Make(FBeamPid _ProjectId, UObject* RequestOwner)
 {
 	UPutProjectRequest* Req = NewObject<UPutProjectRequest>(RequestOwner);
 

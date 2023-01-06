@@ -22,7 +22,7 @@ FString UProjectLibrary::ProjectToJsonString(const UProject* Serializable, const
 	return Result;
 }	
 
-UProject* UProjectLibrary::Make(bool bArchived, bool bRoot, FString Secret, FString Name, FString Plan, TMap<FString, FString> CustomCharts, FOptionalBool bSharded, FOptionalBool bSigval, FOptionalString DisplayName, FOptionalString Parent, FOptionalString Status, FOptionalInt64 Created, FOptionalArrayOfString Children, FOptionalMapOfString Config, UObject* Outer)
+UProject* UProjectLibrary::Make(bool bArchived, bool bRoot, FString Secret, FBeamPid Name, FString Plan, TMap<FString, FString> CustomCharts, FOptionalBool bSharded, FOptionalBool bSigval, FOptionalString DisplayName, FOptionalString Parent, FOptionalString Status, FOptionalInt64 Created, FOptionalArrayOfString Children, FOptionalMapOfString Config, UObject* Outer)
 {
 	auto Serializable = NewObject<UProject>(Outer);
 	Serializable->bArchived = bArchived;
@@ -43,7 +43,7 @@ UProject* UProjectLibrary::Make(bool bArchived, bool bRoot, FString Secret, FStr
 	return Serializable;
 }
 
-void UProjectLibrary::Break(const UProject* Serializable, bool& bArchived, bool& bRoot, FString& Secret, FString& Name, FString& Plan, TMap<FString, FString>& CustomCharts, FOptionalBool& bSharded, FOptionalBool& bSigval, FOptionalString& DisplayName, FOptionalString& Parent, FOptionalString& Status, FOptionalInt64& Created, FOptionalArrayOfString& Children, FOptionalMapOfString& Config)
+void UProjectLibrary::Break(const UProject* Serializable, bool& bArchived, bool& bRoot, FString& Secret, FBeamPid& Name, FString& Plan, TMap<FString, FString>& CustomCharts, FOptionalBool& bSharded, FOptionalBool& bSigval, FOptionalString& DisplayName, FOptionalString& Parent, FOptionalString& Status, FOptionalInt64& Created, FOptionalArrayOfString& Children, FOptionalMapOfString& Config)
 {
 	bArchived = Serializable->bArchived;
 	bRoot = Serializable->bRoot;

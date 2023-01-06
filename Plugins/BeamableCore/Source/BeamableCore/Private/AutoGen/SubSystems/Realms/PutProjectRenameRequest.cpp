@@ -27,7 +27,7 @@ void UPutProjectRenameRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutProjectRenameRequest* UPutProjectRenameRequest::Make(FString _ProjectId, FString _NewName, UObject* RequestOwner)
+UPutProjectRenameRequest* UPutProjectRenameRequest::Make(FBeamPid _ProjectId, FString _NewName, UObject* RequestOwner)
 {
 	UPutProjectRenameRequest* Req = NewObject<UPutProjectRenameRequest>(RequestOwner);
 

@@ -22,7 +22,7 @@ FString UPlayerIdRequestBodyLibrary::PlayerIdRequestBodyToJsonString(const UPlay
 	return Result;
 }	
 
-UPlayerIdRequestBody* UPlayerIdRequestBodyLibrary::Make(FString PlayerId, UObject* Outer)
+UPlayerIdRequestBody* UPlayerIdRequestBodyLibrary::Make(FBeamGamerTag PlayerId, UObject* Outer)
 {
 	auto Serializable = NewObject<UPlayerIdRequestBody>(Outer);
 	Serializable->PlayerId = PlayerId;
@@ -30,7 +30,7 @@ UPlayerIdRequestBody* UPlayerIdRequestBodyLibrary::Make(FString PlayerId, UObjec
 	return Serializable;
 }
 
-void UPlayerIdRequestBodyLibrary::Break(const UPlayerIdRequestBody* Serializable, FString& PlayerId)
+void UPlayerIdRequestBodyLibrary::Break(const UPlayerIdRequestBody* Serializable, FBeamGamerTag& PlayerId)
 {
 	PlayerId = Serializable->PlayerId;
 		

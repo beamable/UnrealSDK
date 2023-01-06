@@ -10,7 +10,7 @@ void UProject ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 	Serializer->WriteValue(TEXT("archived"), bArchived);
 	Serializer->WriteValue(TEXT("root"), bRoot);
 	Serializer->WriteValue(TEXT("secret"), Secret);
-	Serializer->WriteValue(TEXT("name"), Name);
+	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("name"), &Name, Serializer);
 	Serializer->WriteValue(TEXT("plan"), Plan);
 	UBeamJsonUtils::SerializeMap<FString>(TEXT("customCharts"), CustomCharts, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("sharded"), &bSharded, Serializer);
@@ -28,7 +28,7 @@ void UProject::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) 
 	Serializer->WriteValue(TEXT("archived"), bArchived);
 	Serializer->WriteValue(TEXT("root"), bRoot);
 	Serializer->WriteValue(TEXT("secret"), Secret);
-	Serializer->WriteValue(TEXT("name"), Name);
+	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("name"), &Name, Serializer);
 	Serializer->WriteValue(TEXT("plan"), Plan);
 	UBeamJsonUtils::SerializeMap<FString>(TEXT("customCharts"), CustomCharts, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("sharded"), &bSharded, Serializer);
@@ -46,7 +46,7 @@ void UProject ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	bArchived = Bag->GetBoolField(TEXT("archived"));
 	bRoot = Bag->GetBoolField(TEXT("root"));
 	Secret = Bag->GetStringField(TEXT("secret"));
-	Name = Bag->GetStringField(TEXT("name"));
+	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("name")), Name, OuterOwner);
 	Plan = Bag->GetStringField(TEXT("plan"));
 	UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("customCharts")), CustomCharts, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("sharded", Bag, bSharded, OuterOwner);

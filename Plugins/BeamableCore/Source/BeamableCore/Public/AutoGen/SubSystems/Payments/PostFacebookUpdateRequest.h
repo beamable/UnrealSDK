@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "AutoGen/FacebookPaymentUpdateRequestBody.h"
-#include "AutoGen/FacebookPaymentUpdateResponse.h"
+#include "Serialization/BeamPlainTextResponseBody.h"
 
 #include "PostFacebookUpdateRequest.generated.h"
 
@@ -41,7 +41,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostFacebookUpdateSuccess, FBeamRequestContext, Context, UPostFacebookUpdateRequest*, Request, UFacebookPaymentUpdateResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostFacebookUpdateSuccess, FBeamRequestContext, Context, UPostFacebookUpdateRequest*, Request, UBeamPlainTextResponseBody*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostFacebookUpdateError, FBeamRequestContext, Context, UPostFacebookUpdateRequest*, Request, FBeamErrorResponse, Error);
@@ -49,5 +49,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostFacebookUpdateError, FBeamRequestCon
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnPostFacebookUpdateComplete, FBeamRequestContext, Context, UPostFacebookUpdateRequest*, Request);
 
-using FPostFacebookUpdateFullResponse = FBeamFullResponse<UPostFacebookUpdateRequest*, UFacebookPaymentUpdateResponse*>;
+using FPostFacebookUpdateFullResponse = FBeamFullResponse<UPostFacebookUpdateRequest*, UBeamPlainTextResponseBody*>;
 DECLARE_DELEGATE_OneParam(FOnPostFacebookUpdateFullResponse, FPostFacebookUpdateFullResponse);

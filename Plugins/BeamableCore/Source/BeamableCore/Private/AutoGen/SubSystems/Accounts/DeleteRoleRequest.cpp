@@ -9,7 +9,7 @@ void UDeleteRoleRequest::BuildVerb(FString& VerbString) const
 void UDeleteRoleRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/accounts/{objectId}/role");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -27,7 +27,7 @@ void UDeleteRoleRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteRoleRequest* UDeleteRoleRequest::Make(int64 _ObjectId, FString _Realm, FString _Role, UObject* RequestOwner)
+UDeleteRoleRequest* UDeleteRoleRequest::Make(FBeamAccountId _ObjectId, FOptionalBeamPid _Realm, FOptionalString _Role, UObject* RequestOwner)
 {
 	UDeleteRoleRequest* Req = NewObject<UDeleteRoleRequest>(RequestOwner);
 

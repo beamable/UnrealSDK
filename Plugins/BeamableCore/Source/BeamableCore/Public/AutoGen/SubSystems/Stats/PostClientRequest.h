@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "BeamBackend/SemanticTypes/BeamStatsType.h"
 #include "AutoGen/StatUpdateRequestBody.h"
 #include "AutoGen/EmptyResponse.h"
 
@@ -22,7 +22,7 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	FString ObjectId;
+	FBeamStatsType ObjectId;
 	
 	// Query Params
 	
@@ -39,7 +39,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", DisplayName="Beam - Make PostClient",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bEmitAnalytics,Body_ObjectId,_Set,_Add,RequestOwner"))
-	static UPostClientRequest* Make(FString _ObjectId, FOptionalBool _bEmitAnalytics, FOptionalString Body_ObjectId, FOptionalMapOfString _Set, FOptionalMapOfString _Add, UObject* RequestOwner);
+	static UPostClientRequest* Make(FBeamStatsType _ObjectId, FOptionalBool _bEmitAnalytics, FOptionalBeamStatsType Body_ObjectId, FOptionalMapOfString _Set, FOptionalMapOfString _Add, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

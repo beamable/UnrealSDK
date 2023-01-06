@@ -18,8 +18,8 @@ public:
 	static FString PromoteRealmRequestBodyToJsonString(const UPromoteRealmRequestBody* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make PromoteRealmRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Promotions, ContentManifestIds, Outer", NativeMakeFunc))
-	static UPromoteRealmRequestBody* Make(FString SourcePid, FOptionalArrayOfString Promotions, FOptionalArrayOfString ContentManifestIds, UObject* Outer);
+	static UPromoteRealmRequestBody* Make(FBeamPid SourcePid, FOptionalArrayOfString Promotions, FOptionalArrayOfString ContentManifestIds, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break PromoteRealmRequestBody", meta=(NativeBreakFunc))
-	static void Break(const UPromoteRealmRequestBody* Serializable, FString& SourcePid, FOptionalArrayOfString& Promotions, FOptionalArrayOfString& ContentManifestIds);
+	static void Break(const UPromoteRealmRequestBody* Serializable, FBeamPid& SourcePid, FOptionalArrayOfString& Promotions, FOptionalArrayOfString& ContentManifestIds);
 };

@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include "BeamBackend/BeamAuthToken.h"
 #include "BeamBackend/BeamRealmHandle.h"
+#include "BeamBackend/SemanticTypes/BeamAccountId.h"
+#include "BeamBackend/SemanticTypes/BeamGamerTag.h"
 
 
 #include "UserSlot.generated.h"
@@ -51,7 +53,13 @@ struct FBeamRealmUser
 	 * @brief The user's GamerTag. Used by a number of APIs to uniquely identify the user. 
 	 */
 	UPROPERTY(BlueprintReadOnly, Category="Beam")
-	int64 GamerTag;
+	FBeamAccountId AccountId;
+	
+	/**
+	 * @brief The user's GamerTag. Used by a number of APIs to uniquely identify the user. 
+	 */
+	UPROPERTY(BlueprintReadOnly, Category="Beam")
+	FBeamGamerTag GamerTag;
 
 	/**
 	 * @brief The user's email, if any. Mostly used in editor code.
@@ -70,4 +78,5 @@ struct FBeamRealmUser
 	 */
 	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	FBeamAuthToken AuthToken;
+	
 };

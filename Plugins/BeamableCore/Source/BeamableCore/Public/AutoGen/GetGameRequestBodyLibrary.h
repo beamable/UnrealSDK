@@ -18,8 +18,8 @@ public:
 	static FString GetGameRequestBodyToJsonString(const UGetGameRequestBody* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GetGameRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UGetGameRequestBody* Make(FString RootPID, UObject* Outer);
+	static UGetGameRequestBody* Make(FBeamPid RootPID, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GetGameRequestBody", meta=(NativeBreakFunc))
-	static void Break(const UGetGameRequestBody* Serializable, FString& RootPID);
+	static void Break(const UGetGameRequestBody* Serializable, FBeamPid& RootPID);
 };

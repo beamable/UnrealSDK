@@ -5,8 +5,12 @@
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalBool.h"
-#include "AutoGen/Optionals/OptionalInt64.h"
+#include "AutoGen/Optionals/OptionalBeamGamerTag.h"
 #include "AutoGen/Optionals/OptionalArrayOfString.h"
+#include "AutoGen/Optionals/OptionalBeamAccountId.h"
+#include "BeamBackend/SemanticTypes/BeamCid.h"
+#include "AutoGen/Optionals/OptionalBeamPid.h"
+#include "AutoGen/Optionals/OptionalInt64.h"
 #include "AutoGen/Optionals/OptionalString.h"
 
 #include "Token.generated.h"
@@ -18,7 +22,7 @@ class BEAMABLECORE_API UToken : public UObject, public FBeamJsonSerializable, pu
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid", Category="Beam")
-	int64 Cid;
+	FBeamCid Cid;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Token", Category="Beam")
 	FString Token;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
@@ -26,11 +30,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
 	int64 Created;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag", Category="Beam")
-	FOptionalInt64 GamerTag;
+	FOptionalBeamGamerTag GamerTag;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Account Id", Category="Beam")
-	FOptionalInt64 AccountId;
+	FOptionalBeamAccountId AccountId;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pid", Category="Beam")
-	FOptionalString Pid;
+	FOptionalBeamPid Pid;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Expires Ms", Category="Beam")
 	FOptionalInt64 ExpiresMs;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Platform", Category="Beam")

@@ -4,6 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "AutoGen/Optionals/OptionalInt64.h"
 #include "AutoGen/Optionals/OptionalArrayOfServiceStorageReference.h"
 #include "AutoGen/ServiceReference.h"
 #include "AutoGen/Optionals/OptionalString.h"
@@ -16,8 +17,6 @@ class BEAMABLECORE_API UManifestView : public UObject, public FBeamJsonSerializa
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created By Account Id", Category="Beam")
-	int64 CreatedByAccountId;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
 	FString Id;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Checksum", Category="Beam")
@@ -26,6 +25,8 @@ public:
 	int64 Created;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Manifest", Category="Beam")
 	TArray<UServiceReference*> Manifest;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created By Account Id", Category="Beam")
+	FOptionalInt64 CreatedByAccountId;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Comments", Category="Beam")
 	FOptionalString Comments;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Storage Reference", Category="Beam")

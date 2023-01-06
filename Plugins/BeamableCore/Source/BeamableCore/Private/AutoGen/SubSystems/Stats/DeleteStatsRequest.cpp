@@ -9,7 +9,7 @@ void UDeleteStatsRequest::BuildVerb(FString& VerbString) const
 void UDeleteStatsRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/stats/{objectId}/");
-	Route = Route.Replace(TEXT("{objectId}"), *ObjectId);
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -27,7 +27,7 @@ void UDeleteStatsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteStatsRequest* UDeleteStatsRequest::Make(FString _ObjectId, FOptionalString _Stats, UObject* RequestOwner)
+UDeleteStatsRequest* UDeleteStatsRequest::Make(FBeamStatsType _ObjectId, FOptionalString _Stats, UObject* RequestOwner)
 {
 	UDeleteStatsRequest* Req = NewObject<UDeleteStatsRequest>(RequestOwner);
 

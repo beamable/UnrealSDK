@@ -22,7 +22,7 @@ FString UTransferRequestBodyLibrary::TransferRequestBodyToJsonString(const UTran
 	return Result;
 }	
 
-UTransferRequestBody* UTransferRequestBodyLibrary::Make(int64 RecipientPlayer, FOptionalString Transaction, FOptionalMapOfInt64 Currencies, UObject* Outer)
+UTransferRequestBody* UTransferRequestBodyLibrary::Make(FBeamGamerTag RecipientPlayer, FOptionalString Transaction, FOptionalMapOfInt64 Currencies, UObject* Outer)
 {
 	auto Serializable = NewObject<UTransferRequestBody>(Outer);
 	Serializable->RecipientPlayer = RecipientPlayer;
@@ -32,7 +32,7 @@ UTransferRequestBody* UTransferRequestBodyLibrary::Make(int64 RecipientPlayer, F
 	return Serializable;
 }
 
-void UTransferRequestBodyLibrary::Break(const UTransferRequestBody* Serializable, int64& RecipientPlayer, FOptionalString& Transaction, FOptionalMapOfInt64& Currencies)
+void UTransferRequestBodyLibrary::Break(const UTransferRequestBody* Serializable, FBeamGamerTag& RecipientPlayer, FOptionalString& Transaction, FOptionalMapOfInt64& Currencies)
 {
 	RecipientPlayer = Serializable->RecipientPlayer;
 	Transaction = Serializable->Transaction;

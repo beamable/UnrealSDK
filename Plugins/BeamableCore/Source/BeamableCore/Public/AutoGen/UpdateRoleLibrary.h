@@ -18,8 +18,8 @@ public:
 	static FString UpdateRoleToJsonString(const UUpdateRole* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make UpdateRole", meta=(DefaultToSelf="Outer", AdvancedDisplay="Cid, Realm, Role, Outer", NativeMakeFunc))
-	static UUpdateRole* Make(FOptionalString Cid, FOptionalString Realm, FOptionalString Role, UObject* Outer);
+	static UUpdateRole* Make(FOptionalBeamCid Cid, FOptionalBeamPid Realm, FOptionalString Role, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break UpdateRole", meta=(NativeBreakFunc))
-	static void Break(const UUpdateRole* Serializable, FOptionalString& Cid, FOptionalString& Realm, FOptionalString& Role);
+	static void Break(const UUpdateRole* Serializable, FOptionalBeamCid& Cid, FOptionalBeamPid& Realm, FOptionalString& Role);
 };

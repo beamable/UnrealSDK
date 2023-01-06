@@ -37,7 +37,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", DisplayName="Beam - Make DeleteProject",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
-	static UDeleteProjectRequest* Make(FString _Pid, UObject* RequestOwner);
+	static UDeleteProjectRequest* Make(FBeamPid _Pid, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

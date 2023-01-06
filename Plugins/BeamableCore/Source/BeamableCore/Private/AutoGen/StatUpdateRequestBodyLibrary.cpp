@@ -22,7 +22,7 @@ FString UStatUpdateRequestBodyLibrary::StatUpdateRequestBodyToJsonString(const U
 	return Result;
 }	
 
-UStatUpdateRequestBody* UStatUpdateRequestBodyLibrary::Make(FOptionalBool bEmitAnalytics, FOptionalString ObjectId, FOptionalMapOfString Set, FOptionalMapOfString Add, UObject* Outer)
+UStatUpdateRequestBody* UStatUpdateRequestBodyLibrary::Make(FOptionalBool bEmitAnalytics, FOptionalBeamStatsType ObjectId, FOptionalMapOfString Set, FOptionalMapOfString Add, UObject* Outer)
 {
 	auto Serializable = NewObject<UStatUpdateRequestBody>(Outer);
 	Serializable->bEmitAnalytics = bEmitAnalytics;
@@ -33,7 +33,7 @@ UStatUpdateRequestBody* UStatUpdateRequestBodyLibrary::Make(FOptionalBool bEmitA
 	return Serializable;
 }
 
-void UStatUpdateRequestBodyLibrary::Break(const UStatUpdateRequestBody* Serializable, FOptionalBool& bEmitAnalytics, FOptionalString& ObjectId, FOptionalMapOfString& Set, FOptionalMapOfString& Add)
+void UStatUpdateRequestBodyLibrary::Break(const UStatUpdateRequestBody* Serializable, FOptionalBool& bEmitAnalytics, FOptionalBeamStatsType& ObjectId, FOptionalMapOfString& Set, FOptionalMapOfString& Add)
 {
 	bEmitAnalytics = Serializable->bEmitAnalytics;
 	ObjectId = Serializable->ObjectId;

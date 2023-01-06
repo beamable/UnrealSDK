@@ -9,7 +9,7 @@ void UPutTransferRequest::BuildVerb(FString& VerbString) const
 void UPutTransferRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/inventory/{objectId}/transfer");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -27,7 +27,7 @@ void UPutTransferRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutTransferRequest* UPutTransferRequest::Make(int64 _ObjectId, int64 _RecipientPlayer, FOptionalString _Transaction, FOptionalMapOfInt64 _Currencies, UObject* RequestOwner)
+UPutTransferRequest* UPutTransferRequest::Make(FBeamGamerTag _ObjectId, FBeamGamerTag _RecipientPlayer, FOptionalString _Transaction, FOptionalMapOfInt64 _Currencies, UObject* RequestOwner)
 {
 	UPutTransferRequest* Req = NewObject<UPutTransferRequest>(RequestOwner);
 

@@ -22,7 +22,7 @@ FString UTokenLibrary::TokenToJsonString(const UToken* Serializable, const bool 
 	return Result;
 }	
 
-UToken* UTokenLibrary::Make(int64 Cid, FString Token, FString Type, int64 Created, FOptionalInt64 GamerTag, FOptionalInt64 AccountId, FOptionalString Pid, FOptionalInt64 ExpiresMs, FOptionalString Platform, FOptionalString Device, FOptionalBool bRevoked, FOptionalArrayOfString Scopes, UObject* Outer)
+UToken* UTokenLibrary::Make(FBeamCid Cid, FString Token, FString Type, int64 Created, FOptionalBeamGamerTag GamerTag, FOptionalBeamAccountId AccountId, FOptionalBeamPid Pid, FOptionalInt64 ExpiresMs, FOptionalString Platform, FOptionalString Device, FOptionalBool bRevoked, FOptionalArrayOfString Scopes, UObject* Outer)
 {
 	auto Serializable = NewObject<UToken>(Outer);
 	Serializable->Cid = Cid;
@@ -41,7 +41,7 @@ UToken* UTokenLibrary::Make(int64 Cid, FString Token, FString Type, int64 Create
 	return Serializable;
 }
 
-void UTokenLibrary::Break(const UToken* Serializable, int64& Cid, FString& Token, FString& Type, int64& Created, FOptionalInt64& GamerTag, FOptionalInt64& AccountId, FOptionalString& Pid, FOptionalInt64& ExpiresMs, FOptionalString& Platform, FOptionalString& Device, FOptionalBool& bRevoked, FOptionalArrayOfString& Scopes)
+void UTokenLibrary::Break(const UToken* Serializable, FBeamCid& Cid, FString& Token, FString& Type, int64& Created, FOptionalBeamGamerTag& GamerTag, FOptionalBeamAccountId& AccountId, FOptionalBeamPid& Pid, FOptionalInt64& ExpiresMs, FOptionalString& Platform, FOptionalString& Device, FOptionalBool& bRevoked, FOptionalArrayOfString& Scopes)
 {
 	Cid = Serializable->Cid;
 	Token = Serializable->Token;

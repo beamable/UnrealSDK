@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBackend.h"
+#include "BeamBackend/ResponseCache/BeamResponseCache.h"
 #include "RequestTracker/BeamRequestTracker.h"
 
 #include "GroupUsers/GetAvailabilityRequest.h"
@@ -37,18 +38,21 @@ private:
 	UPROPERTY()
 	UBeamRequestTracker* RequestTracker;
 
+	UPROPERTY()
+	UBeamResponseCache* ResponseCache;
+
 	
 	/**
 	 * @brief Private implementation that all overloaded BP UFunctions call.	  
 	 */
 	void BP_GetAvailabilityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetAvailabilityRequest* RequestData,
 	                                const FOnGetAvailabilitySuccess& OnSuccess, const FOnGetAvailabilityError& OnError, const FOnGetAvailabilityComplete& OnComplete,
-	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
 	void CPP_GetAvailabilityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetAvailabilityRequest* RequestData,
-	                                 const FOnGetAvailabilityFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                                 const FOnGetAvailabilityFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -56,12 +60,12 @@ private:
 	 */
 	void BP_GetRecommendedImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetRecommendedRequest* RequestData,
 	                                const FOnGetRecommendedSuccess& OnSuccess, const FOnGetRecommendedError& OnError, const FOnGetRecommendedComplete& OnComplete,
-	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
 	void CPP_GetRecommendedImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetRecommendedRequest* RequestData,
-	                                 const FOnGetRecommendedFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                                 const FOnGetRecommendedFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -69,12 +73,12 @@ private:
 	 */
 	void BP_PostJoinImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UPostJoinRequest* RequestData,
 	                                const FOnPostJoinSuccess& OnSuccess, const FOnPostJoinError& OnError, const FOnPostJoinComplete& OnComplete,
-	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
 	void CPP_PostJoinImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UPostJoinRequest* RequestData,
-	                                 const FOnPostJoinFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                                 const FOnPostJoinFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -82,12 +86,12 @@ private:
 	 */
 	void BP_DeleteJoinImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UDeleteJoinRequest* RequestData,
 	                                const FOnDeleteJoinSuccess& OnSuccess, const FOnDeleteJoinError& OnError, const FOnDeleteJoinComplete& OnComplete,
-	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
 	void CPP_DeleteJoinImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UDeleteJoinRequest* RequestData,
-	                                 const FOnDeleteJoinFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                                 const FOnDeleteJoinFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -95,12 +99,12 @@ private:
 	 */
 	void BP_PostGroupImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UPostGroupRequest* RequestData,
 	                                const FOnPostGroupSuccess& OnSuccess, const FOnPostGroupError& OnError, const FOnPostGroupComplete& OnComplete,
-	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
 	void CPP_PostGroupImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UPostGroupRequest* RequestData,
-	                                 const FOnPostGroupFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                                 const FOnPostGroupFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -108,12 +112,12 @@ private:
 	 */
 	void BP_GetSearchImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UObjectGroupUsersGetSearchRequest* RequestData,
 	                                const FOnObjectGroupUsersGetSearchSuccess& OnSuccess, const FOnObjectGroupUsersGetSearchError& OnError, const FOnObjectGroupUsersGetSearchComplete& OnComplete,
-	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
 	void CPP_GetSearchImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UObjectGroupUsersGetSearchRequest* RequestData,
-	                                 const FOnObjectGroupUsersGetSearchFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                                 const FOnObjectGroupUsersGetSearchFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -121,12 +125,12 @@ private:
 	 */
 	void BP_GetGroupUsersImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetGroupUsersRequest* RequestData,
 	                                const FOnGetGroupUsersSuccess& OnSuccess, const FOnGetGroupUsersError& OnError, const FOnGetGroupUsersComplete& OnComplete,
-	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
 	void CPP_GetGroupUsersImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetGroupUsersRequest* RequestData,
-	                                 const FOnGetGroupUsersFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                                 const FOnGetGroupUsersFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 
 	
@@ -147,9 +151,10 @@ public:
 	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
 	 * @param Handler A callback that defines how to handle success, error and completion.
      * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
-	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically. 
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_GetAvailability(UGetAvailabilityRequest* Request, const FOnGetAvailabilityFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	void CPP_GetAvailability(UGetAvailabilityRequest* Request, const FOnGetAvailabilityFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -161,9 +166,10 @@ public:
 	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
 	 * @param Handler A callback that defines how to handle success, error and completion.
      * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
-	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically. 
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_GetRecommended(UGetRecommendedRequest* Request, const FOnGetRecommendedFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	void CPP_GetRecommended(UGetRecommendedRequest* Request, const FOnGetRecommendedFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -175,9 +181,10 @@ public:
 	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
 	 * @param Handler A callback that defines how to handle success, error and completion.
      * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
-	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically. 
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_PostJoin(UPostJoinRequest* Request, const FOnPostJoinFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	void CPP_PostJoin(UPostJoinRequest* Request, const FOnPostJoinFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -189,9 +196,10 @@ public:
 	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
 	 * @param Handler A callback that defines how to handle success, error and completion.
      * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
-	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically. 
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_DeleteJoin(UDeleteJoinRequest* Request, const FOnDeleteJoinFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	void CPP_DeleteJoin(UDeleteJoinRequest* Request, const FOnDeleteJoinFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -203,9 +211,10 @@ public:
 	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
 	 * @param Handler A callback that defines how to handle success, error and completion.
      * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
-	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically. 
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_PostGroup(UPostGroupRequest* Request, const FOnPostGroupFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	void CPP_PostGroup(UPostGroupRequest* Request, const FOnPostGroupFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -217,9 +226,10 @@ public:
 	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
 	 * @param Handler A callback that defines how to handle success, error and completion.
      * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
-	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically. 
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_GetSearch(UObjectGroupUsersGetSearchRequest* Request, const FOnObjectGroupUsersGetSearchFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	void CPP_GetSearch(UObjectGroupUsersGetSearchRequest* Request, const FOnObjectGroupUsersGetSearchFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -231,9 +241,10 @@ public:
 	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
 	 * @param Handler A callback that defines how to handle success, error and completion.
      * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
-	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically. 
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_GetGroupUsers(UGetGroupUsersRequest* Request, const FOnGetGroupUsersFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	void CPP_GetGroupUsers(UGetGroupUsersRequest* Request, const FOnGetGroupUsersFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 
 	
@@ -246,10 +257,11 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", meta=(AdvancedDisplay="OpHandle", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void GetAvailability(UGetAvailabilityRequest* Request, const FOnGetAvailabilitySuccess& OnSuccess, const FOnGetAvailabilityError& OnError, const FOnGetAvailabilityComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle());
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void GetAvailability(UGetAvailabilityRequest* Request, const FOnGetAvailabilitySuccess& OnSuccess, const FOnGetAvailabilityError& OnError, const FOnGetAvailabilityComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**
@@ -259,10 +271,11 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", meta=(AdvancedDisplay="OpHandle", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void GetRecommended(UGetRecommendedRequest* Request, const FOnGetRecommendedSuccess& OnSuccess, const FOnGetRecommendedError& OnError, const FOnGetRecommendedComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle());
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void GetRecommended(UGetRecommendedRequest* Request, const FOnGetRecommendedSuccess& OnSuccess, const FOnGetRecommendedError& OnError, const FOnGetRecommendedComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**
@@ -272,10 +285,11 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", meta=(AdvancedDisplay="OpHandle", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void PostJoin(UPostJoinRequest* Request, const FOnPostJoinSuccess& OnSuccess, const FOnPostJoinError& OnError, const FOnPostJoinComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle());
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void PostJoin(UPostJoinRequest* Request, const FOnPostJoinSuccess& OnSuccess, const FOnPostJoinError& OnError, const FOnPostJoinComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**
@@ -285,10 +299,11 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", meta=(AdvancedDisplay="OpHandle", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void DeleteJoin(UDeleteJoinRequest* Request, const FOnDeleteJoinSuccess& OnSuccess, const FOnDeleteJoinError& OnError, const FOnDeleteJoinComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle());
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void DeleteJoin(UDeleteJoinRequest* Request, const FOnDeleteJoinSuccess& OnSuccess, const FOnDeleteJoinError& OnError, const FOnDeleteJoinComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**
@@ -298,10 +313,11 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", meta=(AdvancedDisplay="OpHandle", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void PostGroup(UPostGroupRequest* Request, const FOnPostGroupSuccess& OnSuccess, const FOnPostGroupError& OnError, const FOnPostGroupComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle());
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void PostGroup(UPostGroupRequest* Request, const FOnPostGroupSuccess& OnSuccess, const FOnPostGroupError& OnError, const FOnPostGroupComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**
@@ -311,10 +327,11 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", meta=(AdvancedDisplay="OpHandle", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void GetSearch(UObjectGroupUsersGetSearchRequest* Request, const FOnObjectGroupUsersGetSearchSuccess& OnSuccess, const FOnObjectGroupUsersGetSearchError& OnError, const FOnObjectGroupUsersGetSearchComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle());
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void GetSearch(UObjectGroupUsersGetSearchRequest* Request, const FOnObjectGroupUsersGetSearchSuccess& OnSuccess, const FOnObjectGroupUsersGetSearchError& OnError, const FOnObjectGroupUsersGetSearchComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**
@@ -324,105 +341,12 @@ public:
 	 * @param OnSuccess What to do if the requests receives a successful response.
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight. 
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", meta=(AdvancedDisplay="OpHandle", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void GetGroupUsers(UGetGroupUsersRequest* Request, const FOnGetGroupUsersSuccess& OnSuccess, const FOnGetGroupUsersError& OnError, const FOnGetGroupUsersComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle());
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void GetGroupUsers(UGetGroupUsersRequest* Request, const FOnGetGroupUsersSuccess& OnSuccess, const FOnGetGroupUsersError& OnError, const FOnGetGroupUsersComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
-
-		
-
-	
-	/**
-	 * @brief Makes a request to the Get /object/group-users/{objectId}/availability endpoint of the GroupUsers Service.
-	 *	 
-	 * @param RetryConfig The retry config for this specific request. 
-	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param OnSuccess What to do if the requests receives a successful response.
-	 * @param OnError What to do if the request receives an error response.
-	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight.	  
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowFunction))
-	void GetAvailabilityWithRetry(const FBeamRetryConfig& RetryConfig, UGetAvailabilityRequest* Request, const FOnGetAvailabilitySuccess& OnSuccess, const FOnGetAvailabilityError& OnError, const FOnGetAvailabilityComplete& OnComplete, FBeamRequestContext& OutRequestContext);
-		
-	/**
-	 * @brief Makes a request to the Get /object/group-users/{objectId}/recommended endpoint of the GroupUsers Service.
-	 *	 
-	 * @param RetryConfig The retry config for this specific request. 
-	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param OnSuccess What to do if the requests receives a successful response.
-	 * @param OnError What to do if the request receives an error response.
-	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight.	  
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowFunction))
-	void GetRecommendedWithRetry(const FBeamRetryConfig& RetryConfig, UGetRecommendedRequest* Request, const FOnGetRecommendedSuccess& OnSuccess, const FOnGetRecommendedError& OnError, const FOnGetRecommendedComplete& OnComplete, FBeamRequestContext& OutRequestContext);
-		
-	/**
-	 * @brief Makes a request to the Post /object/group-users/{objectId}/join endpoint of the GroupUsers Service.
-	 *	 
-	 * @param RetryConfig The retry config for this specific request. 
-	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param OnSuccess What to do if the requests receives a successful response.
-	 * @param OnError What to do if the request receives an error response.
-	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight.	  
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowFunction))
-	void PostJoinWithRetry(const FBeamRetryConfig& RetryConfig, UPostJoinRequest* Request, const FOnPostJoinSuccess& OnSuccess, const FOnPostJoinError& OnError, const FOnPostJoinComplete& OnComplete, FBeamRequestContext& OutRequestContext);
-		
-	/**
-	 * @brief Makes a request to the Delete /object/group-users/{objectId}/join endpoint of the GroupUsers Service.
-	 *	 
-	 * @param RetryConfig The retry config for this specific request. 
-	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param OnSuccess What to do if the requests receives a successful response.
-	 * @param OnError What to do if the request receives an error response.
-	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight.	  
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowFunction))
-	void DeleteJoinWithRetry(const FBeamRetryConfig& RetryConfig, UDeleteJoinRequest* Request, const FOnDeleteJoinSuccess& OnSuccess, const FOnDeleteJoinError& OnError, const FOnDeleteJoinComplete& OnComplete, FBeamRequestContext& OutRequestContext);
-		
-	/**
-	 * @brief Makes a request to the Post /object/group-users/{objectId}/group endpoint of the GroupUsers Service.
-	 *	 
-	 * @param RetryConfig The retry config for this specific request. 
-	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param OnSuccess What to do if the requests receives a successful response.
-	 * @param OnError What to do if the request receives an error response.
-	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight.	  
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowFunction))
-	void PostGroupWithRetry(const FBeamRetryConfig& RetryConfig, UPostGroupRequest* Request, const FOnPostGroupSuccess& OnSuccess, const FOnPostGroupError& OnError, const FOnPostGroupComplete& OnComplete, FBeamRequestContext& OutRequestContext);
-		
-	/**
-	 * @brief Makes a request to the Get /object/group-users/{objectId}/search endpoint of the GroupUsers Service.
-	 *	 
-	 * @param RetryConfig The retry config for this specific request. 
-	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param OnSuccess What to do if the requests receives a successful response.
-	 * @param OnError What to do if the request receives an error response.
-	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight.	  
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowFunction))
-	void GetSearchWithRetry(const FBeamRetryConfig& RetryConfig, UObjectGroupUsersGetSearchRequest* Request, const FOnObjectGroupUsersGetSearchSuccess& OnSuccess, const FOnObjectGroupUsersGetSearchError& OnError, const FOnObjectGroupUsersGetSearchComplete& OnComplete, FBeamRequestContext& OutRequestContext);
-		
-	/**
-	 * @brief Makes a request to the Get /object/group-users/{objectId}/ endpoint of the GroupUsers Service.
-	 *	 
-	 * @param RetryConfig The retry config for this specific request. 
-	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param OnSuccess What to do if the requests receives a successful response.
-	 * @param OnError What to do if the request receives an error response.
-	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight.	  
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", meta=(AutoCreateRefTerm="OnSuccess,OnError,OnComplete", BeamFlowFunction))
-	void GetGroupUsersWithRetry(const FBeamRetryConfig& RetryConfig, UGetGroupUsersRequest* Request, const FOnGetGroupUsersSuccess& OnSuccess, const FOnGetGroupUsersError& OnError, const FOnGetGroupUsersComplete& OnComplete, FBeamRequestContext& OutRequestContext);
 
 	
 };
