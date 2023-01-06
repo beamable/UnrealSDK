@@ -243,7 +243,7 @@ bool UBeamUserSlots::SaveSlot(FUserSlot SlotId, const UObject* CallingContext)
 	const auto bWasAuthenticated = GetUserDataAtSlot(SlotId, User, CallingContext);
 	
 #if !WITH_EDITOR
-		ensureAlwaysMsgf(!User.RealmHandle.Pid.IsEmpty(), TEXT("Customer-Scoped Tokens are not allowed in builds! If should never be seeing this!"));
+		ensureAlwaysMsgf(!User.RealmHandle.Pid.AsString.IsEmpty(), TEXT("Customer-Scoped Tokens are not allowed in builds! If should never be seeing this!"));
 #endif
 
 	// Save the User's Auth data to the slot.
@@ -449,9 +449,9 @@ bool UBeamUserSlots::SaveSlotData(FString SlotDataTypeName, FUserSlot SlotId, T 
 
 	FBeamRealmUser User;
 	const auto bWasAuthenticated = GetUserDataAtSlot(SlotId, User, CallingContext);
-
+	
 #if !WITH_EDITOR
-		ensureAlwaysMsgf(!Pid.IsEmpty(), TEXT("Customer-Scoped Tokens are not allowed in builds! If should never be seeing this!"))
+		ensureAlwaysMsgf(!User.RealmHandle.Pid.AsString.IsEmpty(), TEXT("Customer-Scoped Tokens are not allowed in builds! If should never be seeing this!"))
 #endif
 
 	// Save the User's Auth data to the slot.
