@@ -8,6 +8,7 @@
 #include "AutoGen/Optionals/OptionalString.h"
 #include "AutoGen/Optionals/OptionalArrayOfString.h"
 #include "AutoGen/Optionals/OptionalBool.h"
+#include "BeamBackend/SemanticTypes/BeamAccountId.h"
 #include "AutoGen/GamerTagAssociation.h"
 #include "AutoGen/ExternalIdentity.h"
 #include "AutoGen/Optionals/OptionalArrayOfRoleMapping.h"
@@ -25,7 +26,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Privileged Account", Category="Beam")
 	bool bPrivilegedAccount;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	int64 Id;
+	FBeamAccountId Id;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created Time Millis", Category="Beam")
 	int64 CreatedTimeMillis;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Updated Time Millis", Category="Beam")

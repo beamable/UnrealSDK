@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "BeamBackend/SemanticTypes/BeamCid.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "Serialization/BeamJsonUtils.h"
 
@@ -78,6 +79,19 @@ struct FOptionalMockNestedJsonSerializable : FBeamOptional
 	virtual void Set(const void* Data) override
 	{
 		Val = *((UMockNestedJsonSerializable**)Data);
+		IsSet = true;
+	}
+};
+
+struct FOptionalMockNestedSemanticType : FBeamOptional
+{
+	FBeamCid Val;
+
+	virtual const void* GetAddr() const override { return &Val; }
+
+	virtual void Set(const void* Data) override
+	{
+		Val = *((FBeamCid*)Data);
 		IsSet = true;
 	}
 };

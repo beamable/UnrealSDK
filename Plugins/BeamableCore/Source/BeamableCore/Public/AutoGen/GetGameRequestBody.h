@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-
+#include "BeamBackend/SemanticTypes/BeamPid.h"
 
 #include "GetGameRequestBody.generated.h"
 
@@ -15,7 +15,7 @@ class BEAMABLECORE_API UGetGameRequestBody : public UObject, public FBeamJsonSer
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Root PID", Category="Beam")
-	FString RootPID;
+	FBeamPid RootPID;
 
 	
 

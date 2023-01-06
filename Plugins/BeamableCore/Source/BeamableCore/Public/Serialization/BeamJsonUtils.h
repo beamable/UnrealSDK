@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "BeamSemanticType.h"
 #include "BeamTypeTraits.h"
 #include "Misc/DefaultValueHelper.h"
 #include "Serialization/BeamArray.h"
@@ -8,6 +9,7 @@
 #include "Serialization/BeamOptional.h"
 
 #include "BeamJsonUtils.generated.h"
+
 
 UCLASS(BlueprintType)
 class UBeamJsonUtils final : public UBlueprintFunctionLibrary
@@ -20,11 +22,11 @@ class UBeamJsonUtils final : public UBlueprintFunctionLibrary
 		static_assert(TIsSame<TSerializer, TUnrealPrettyJsonSerializer>::Value || TIsSame<TSerializer, TUnrealJsonSerializer>::Value, "Serializer must be one of these!");
 
 		if constexpr (TIsPointer<TDataType>::Value)
-		{			
+		{
 			static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, FBeamJsonSerializable>::Value);
 			static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, UObject>::Value);
-			
-			ToSerialize->BeamSerializeProperties(Serializer);			
+
+			ToSerialize->BeamSerializeProperties(Serializer);
 		}
 		else
 		{
@@ -32,7 +34,7 @@ class UBeamJsonUtils final : public UBlueprintFunctionLibrary
 		}
 	}
 
-	template <typename TOptionalType, typename TDataType, typename TSerializer>
+	template <typename TOptionalType, typename TDataType, typename TSemanticTypeRepresentation, typename TSerializer>
 	static void _SerializeOptional(const FString& Identifier, const FBeamOptional* ToSerialize, TSerializer Serializer)
 	{
 		static_assert(TIsSame<TSerializer, TUnrealPrettyJsonSerializer>::Value || TIsSame<TSerializer, TUnrealJsonSerializer>::Value, "Serializer must be one of these!");
@@ -51,7 +53,7 @@ class UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				static_assert(TIsTemplateParam<TDataType, TOptionalType>::value, "When TOptionalType is an array, TDataType must be the type for that array.");
 
 				const auto Array = FBeamOptional::GetValue<TOptionalType>(ToSerialize);
-				UBeamJsonUtils::SerializeArray<TDataType>(Identifier, Array, Serializer);
+				UBeamJsonUtils::SerializeArray<TDataType, TSemanticTypeRepresentation>(Identifier, Array, Serializer);
 			}
 			else if constexpr (TIsTMap<TOptionalType>::Value)
 			{
@@ -59,7 +61,7 @@ class UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				static_assert(TIsSecondTemplateParam<TDataType, TOptionalType>::value, "When TOptionalType is a map, the second template argument must be TDataType.");
 
 				const auto Map = FBeamOptional::GetValue<TOptionalType>(ToSerialize);
-				UBeamJsonUtils::SerializeMap<TDataType>(Identifier, Map, Serializer);
+				UBeamJsonUtils::SerializeMap<TDataType, TSemanticTypeRepresentation>(Identifier, Map, Serializer);
 			}
 			else if constexpr (TIsDerivedFrom<TOptionalType, FBeamMap>::Value)
 			{
@@ -82,6 +84,11 @@ class UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				JsonSerializable->BeamSerializeProperties(Serializer);
 				Serializer->WriteObjectEnd();
 			}
+			else if constexpr (TIsDerivedFrom<TOptionalType, FBeamSemanticType>::Value)
+			{
+				const FBeamSemanticType* JsonSerializable = &FBeamOptional::GetValue<TOptionalType>(ToSerialize);
+				UBeamJsonUtils::_SerializeSemanticType<TSemanticTypeRepresentation, TSerializer>(Identifier, JsonSerializable, Serializer);
+			}
 			else
 			{
 				const TOptionalType* val = &FBeamOptional::GetValue<TOptionalType>(ToSerialize);
@@ -90,7 +97,7 @@ class UBeamJsonUtils final : public UBlueprintFunctionLibrary
 		}
 	}
 
-	template <typename TDataType, typename TSerializer>
+	template <typename TDataType, typename TSemanticTypeRepresentation, typename TSerializer>
 	static void _SerializeArrayElements(const TArray<TDataType>& Array, TSerializer& Serializer)
 	{
 		static_assert(TIsSame<TSerializer, TUnrealPrettyJsonSerializer>::Value || TIsSame<TSerializer, TUnrealJsonSerializer>::Value, "Serializer must be one of these!");
@@ -132,6 +139,13 @@ class UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				Serializer->WriteObjectEnd();
 			}
 		}
+		else if constexpr (TIsDerivedFrom<TDataType, FBeamSemanticType>::Value)
+		{
+			for (const auto& Value : Array)
+			{
+				UBeamJsonUtils::_SerializeSemanticType<TSemanticTypeRepresentation>(&Value, Serializer);
+			}
+		}
 		else if constexpr (TIsPointer<TDataType>::Value)
 		{
 			for (const auto& Value : Array)
@@ -150,7 +164,7 @@ class UBeamJsonUtils final : public UBlueprintFunctionLibrary
 		}
 	}
 
-	template <typename TMapType, typename TDataType, typename TSerializer>
+	template <typename TMapType, typename TDataType, typename TSemanticTypeRepresentation, typename TSerializer>
 	static void _SerializeMapElements(const TMap<FString, TMapType>& Map, TSerializer& Serializer)
 	{
 		static_assert(TIsSame<TSerializer, TUnrealPrettyJsonSerializer>::Value || TIsSame<TSerializer, TUnrealJsonSerializer>::Value, "Serializer must be one of these!");
@@ -161,7 +175,7 @@ class UBeamJsonUtils final : public UBlueprintFunctionLibrary
 			static_assert(!TIsTemplateParam<TDataType, TMapType>::value, "TMapType can NOT be an array! It must be wrapped in a FBeamArrayOf____ Type instead.");
 		}
 		// Compile-time branch for pointer case
-		else if constexpr (TIsPointer<TDataType>::Value)
+		else if constexpr (TIsPointer<TMapType>::Value)
 		{
 			static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, FBeamJsonSerializable>::Value);
 			for (const auto& Kvp : Map)
@@ -172,27 +186,25 @@ class UBeamJsonUtils final : public UBlueprintFunctionLibrary
 			}
 		}
 		// Compile-time branch for Map of Maps
-		else if constexpr (TIsDerivedFrom<TDataType, FBeamMap>::Value)
+		else if constexpr (TIsDerivedFrom<TMapType, FBeamMap>::Value)
 		{
 			for (const auto& Kvp : Map)
 			{
-				Serializer->WriteObjectStart(Kvp.Key);
-				Kvp.Value.BeamSerializeProperties(Serializer);
-				Serializer->WriteObjectEnd();
+				Serializer->WriteIdentifierPrefix(Kvp.Key);
+				Kvp.Value.BeamSerializeProperties(Serializer);				
 			}
 		}
 		// Compile-time branch for Map of Arrays
-		else if constexpr (TIsDerivedFrom<TDataType, FBeamArray>::Value)
+		else if constexpr (TIsDerivedFrom<TMapType, FBeamArray>::Value)
 		{
 			for (const auto& Kvp : Map)
 			{
-				Serializer->WriteArrayStart(Kvp.Key);
+				Serializer->WriteIdentifierPrefix(Kvp.Key);
 				Kvp.Value.BeamSerializeProperties(Serializer);
-				Serializer->WriteArrayEnd();
 			}
 		}
 		// Compile-time branch for Map of non-Primitives
-		else if constexpr (TIsDerivedFrom<TDataType, FBeamJsonSerializable>::Value)
+		else if constexpr (TIsDerivedFrom<TMapType, FBeamJsonSerializable>::Value)
 		{
 			for (const auto& Kvp : Map)
 			{
@@ -201,7 +213,14 @@ class UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				Serializer->WriteObjectEnd();
 			}
 		}
-		else if constexpr (TIsPointer<TDataType>::Value)
+		else if constexpr (TIsDerivedFrom<TMapType, FBeamSemanticType>::Value)
+		{
+			for (const auto& Kvp : Map)
+			{
+				UBeamJsonUtils::_SerializeSemanticType<TSemanticTypeRepresentation, TSerializer>(Kvp.Key, &Kvp.Value, Serializer);
+			}
+		}
+		else if constexpr (TIsPointer<TMapType>::Value)
 		{
 			for (const auto& Kvp : Map)
 			{
@@ -218,18 +237,48 @@ class UBeamJsonUtils final : public UBlueprintFunctionLibrary
 		}
 	}
 
-public
-:
-	template <typename TOptionalType, typename TDataType = TOptionalType>
-	static void SerializeOptional(const FString& Identifier, const FBeamOptional* ToSerialize, TUnrealJsonSerializer Serializer)
+	template <typename TSemanticTypeRepresentation, typename TSerializer>
+	static void _SerializeSemanticType(const FString& Identifier, const FBeamSemanticType* ToSerialize, TSerializer Serializer)
 	{
-		_SerializeOptional<TOptionalType, TDataType, TUnrealJsonSerializer>(Identifier, ToSerialize, Serializer);
+		static_assert(TIsSame<TSerializer, TUnrealPrettyJsonSerializer>::Value || TIsSame<TSerializer, TUnrealJsonSerializer>::Value, "Serializer must be one of these!");
+
+		const auto& Value = FBeamSemanticType::GetValue<TSemanticTypeRepresentation>(ToSerialize);
+		Serializer->WriteValue(Identifier, Value);
 	}
 
-	template <typename TOptionalType, typename TDataType = TOptionalType>
+	template <typename TSemanticTypeRepresentation, typename TSerializer>
+	static void _SerializeSemanticType(const FBeamSemanticType* ToSerialize, TSerializer Serializer)
+	{
+		static_assert(TIsSame<TSerializer, TUnrealPrettyJsonSerializer>::Value || TIsSame<TSerializer, TUnrealJsonSerializer>::Value, "Serializer must be one of these!");
+
+		const auto& Value = FBeamSemanticType::GetValue<TSemanticTypeRepresentation>(ToSerialize);
+		Serializer->WriteValue(Value);
+	}
+
+public:
+
+	template <typename TSemanticTypeRepresentation>
+	static void SerializeSemanticType(const FString& Identifier, const FBeamSemanticType* ToSerialize, TUnrealJsonSerializer& Serializer)
+	{
+		_SerializeSemanticType<TSemanticTypeRepresentation, TUnrealJsonSerializer>(Identifier, ToSerialize, Serializer);		
+	}
+
+	template <typename TSemanticTypeRepresentation>
+	static void SerializeSemanticType(const FString& Identifier, const FBeamSemanticType* ToSerialize, TUnrealPrettyJsonSerializer& Serializer)
+	{
+		_SerializeSemanticType<TSemanticTypeRepresentation, TUnrealPrettyJsonSerializer>(Identifier, ToSerialize, Serializer);		
+	}	
+	
+	template <typename TOptionalType, typename TDataType = TOptionalType, typename TSemanticTypeRepresentation = TDataType>
+	static void SerializeOptional(const FString& Identifier, const FBeamOptional* ToSerialize, TUnrealJsonSerializer Serializer)
+	{		
+		_SerializeOptional<TOptionalType, TDataType, TSemanticTypeRepresentation, TUnrealJsonSerializer>(Identifier, ToSerialize, Serializer);
+	}
+
+	template <typename TOptionalType, typename TDataType = TOptionalType, typename TSemanticTypeRepresentation = TDataType>
 	static void SerializeOptional(const FString& Identifier, const FBeamOptional* ToSerialize, TUnrealPrettyJsonSerializer Serializer)
 	{
-		_SerializeOptional<TOptionalType, TDataType, TUnrealPrettyJsonSerializer>(Identifier, ToSerialize, Serializer);
+		_SerializeOptional<TOptionalType, TDataType, TSemanticTypeRepresentation, TUnrealPrettyJsonSerializer>(Identifier, ToSerialize, Serializer);
 	}
 
 	template <typename TDataType>
@@ -238,7 +287,7 @@ public
 		static_assert(TIsPointer<TDataType>::Value);
 		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, FBeamJsonSerializable>::Value);
 		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, UObject>::Value);
-		
+
 		Serializer->WriteObjectStart();
 		_SerializeUObject<TDataType, TUnrealJsonSerializer>(ToSerialize, Serializer);
 		Serializer->WriteObjectEnd();
@@ -250,7 +299,7 @@ public
 		static_assert(TIsPointer<TDataType>::Value);
 		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, FBeamJsonSerializable>::Value);
 		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, UObject>::Value);
-		
+
 		Serializer->WriteObjectStart();
 		_SerializeUObject<TDataType, TUnrealPrettyJsonSerializer>(ToSerialize, Serializer);
 		Serializer->WriteObjectEnd();
@@ -263,7 +312,7 @@ public
 		static_assert(TIsPointer<TDataType>::Value);
 		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, FBeamJsonSerializable>::Value);
 		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, UObject>::Value);
-		
+
 		Serializer->WriteObjectStart(Identifier);
 		_SerializeUObject<TDataType, TUnrealJsonSerializer>(ToSerialize, Serializer);
 		Serializer->WriteObjectEnd();
@@ -275,79 +324,156 @@ public
 		static_assert(TIsPointer<TDataType>::Value);
 		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, FBeamJsonSerializable>::Value);
 		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, UObject>::Value);
-		
+
 		Serializer->WriteObjectStart(Identifier);
 		_SerializeUObject<TDataType, TUnrealPrettyJsonSerializer>(ToSerialize, Serializer);
 		Serializer->WriteObjectEnd();
 	}
-	
 
-	template <typename TDataType>
+
+	template <typename TDataType, typename TSemanticTypeRepresentation = TDataType>
 	static void SerializeArray(const TArray<TDataType>& Array, TUnrealJsonSerializer& Serializer)
 	{
 		Serializer->WriteArrayStart();
-		_SerializeArrayElements<TDataType, TUnrealJsonSerializer>(Array, Serializer);
+		_SerializeArrayElements<TDataType, TSemanticTypeRepresentation, TUnrealJsonSerializer>(Array, Serializer);
 		Serializer->WriteArrayEnd();
 	}
 
-	template <typename TDataType>
+	template <typename TDataType, typename TSemanticTypeRepresentation = TDataType>
 	static void SerializeArray(const TArray<TDataType>& Array, TUnrealPrettyJsonSerializer& Serializer)
 	{
 		Serializer->WriteArrayStart();
-		_SerializeArrayElements<TDataType, TUnrealPrettyJsonSerializer>(Array, Serializer);
+		_SerializeArrayElements<TDataType, TSemanticTypeRepresentation, TUnrealPrettyJsonSerializer>(Array, Serializer);
 		Serializer->WriteArrayEnd();
 	}
 
 
-	template <typename TDataType>
+	template <typename TDataType, typename TSemanticTypeRepresentation = TDataType>
 	static void SerializeArray(const FString& Identifier, const TArray<TDataType>& Array, TUnrealJsonSerializer& Serializer)
 	{
 		Serializer->WriteArrayStart(Identifier);
-		_SerializeArrayElements<TDataType, TUnrealJsonSerializer>(Array, Serializer);
+		_SerializeArrayElements<TDataType, TSemanticTypeRepresentation, TUnrealJsonSerializer>(Array, Serializer);
 		Serializer->WriteArrayEnd();
 	}
 
-	template <typename TDataType>
+	template <typename TDataType, typename TSemanticTypeRepresentation = TDataType>
 	static void SerializeArray(const FString& Identifier, const TArray<TDataType>& Array, TUnrealPrettyJsonSerializer& Serializer)
 	{
 		Serializer->WriteArrayStart(Identifier);
-		_SerializeArrayElements<TDataType, TUnrealPrettyJsonSerializer>(Array, Serializer);
+		_SerializeArrayElements<TDataType, TSemanticTypeRepresentation, TUnrealPrettyJsonSerializer>(Array, Serializer);
 		Serializer->WriteArrayEnd();
 	}
 
 
-	template <typename TMapType, typename TDataType = TMapType>
+	template <typename TMapType, typename TDataType = TMapType, typename TSemanticTypeRepresentation = TDataType>
 	static void SerializeMap(const TMap<FString, TMapType>& Map, TUnrealJsonSerializer& Serializer)
 	{
 		Serializer->WriteObjectStart();
-		_SerializeMapElements<TMapType, TDataType, TUnrealJsonSerializer>(Map, Serializer);
+		_SerializeMapElements<TMapType, TDataType, TSemanticTypeRepresentation, TUnrealJsonSerializer>(Map, Serializer);
 		Serializer->WriteObjectEnd();
 	}
 
-	template <typename TMapType, typename TDataType = TMapType>
+	template <typename TMapType, typename TDataType = TMapType, typename TSemanticTypeRepresentation = TDataType>
 	static void SerializeMap(const TMap<FString, TMapType>& Map, TUnrealPrettyJsonSerializer& Serializer)
 	{
 		Serializer->WriteObjectStart();
-		_SerializeMapElements<TMapType, TDataType, TUnrealPrettyJsonSerializer>(Map, Serializer);
+		_SerializeMapElements<TMapType, TDataType, TSemanticTypeRepresentation, TUnrealPrettyJsonSerializer>(Map, Serializer);
 		Serializer->WriteObjectEnd();
 	}
 
-	template <typename TMapType, typename TDataType = TMapType>
+	template <typename TMapType, typename TDataType = TMapType, typename TSemanticTypeRepresentation = TDataType>
 	static void SerializeMap(const FString& Identifier, const TMap<FString, TMapType>& Map, TUnrealJsonSerializer& Serializer)
 	{
 		Serializer->WriteObjectStart(Identifier);
-		_SerializeMapElements<TMapType, TDataType, TUnrealJsonSerializer>(Map, Serializer);
+		_SerializeMapElements<TMapType, TDataType, TSemanticTypeRepresentation, TUnrealJsonSerializer>(Map, Serializer);
 		Serializer->WriteObjectEnd();
 	}
 
-	template <typename TMapType, typename TDataType = TMapType>
+	template <typename TMapType, typename TDataType = TMapType, typename TSemanticTypeRepresentation = TDataType>
 	static void SerializeMap(const FString& Identifier, const TMap<FString, TMapType>& Map, TUnrealPrettyJsonSerializer& Serializer)
 	{
 		Serializer->WriteObjectStart(Identifier);
-		_SerializeMapElements<TMapType, TDataType, TUnrealPrettyJsonSerializer>(Map, Serializer);
+		_SerializeMapElements<TMapType, TDataType, TSemanticTypeRepresentation, TUnrealPrettyJsonSerializer>(Map, Serializer);
 		Serializer->WriteObjectEnd();
 	}
 
+
+	template <typename TSerializationType>
+	static void DeserializeSemanticType(const TSharedPtr<FJsonValue>& JsonField, FBeamSemanticType& ToDeserialize, UObject* OuterOwner = (UObject*)GetTransientPackage())
+	{
+		const auto SemanticTypeName = FString(TNameOf<TSerializationType>::GetName());
+		if constexpr (TIsPointer<TSerializationType>::Value)
+		{
+			checkf(false, TEXT("TSerializationType cannot be a UObject type. We don't support it for now."))
+		}
+		else if constexpr (TIsSame<TSerializationType, FString>::Value)
+		{
+			const FString Val = JsonField->AsString();
+			FBeamSemanticType::Set(&ToDeserialize, &Val, SemanticTypeName);
+		}
+		else if constexpr (TIsDerivedFrom<TSerializationType, FBeamMap>::Value)
+		{
+			checkf(false, TEXT("TSerializationType cannot be a FBeamMap. We don't support it for now."))
+		}
+		else if constexpr (TIsDerivedFrom<TSerializationType, FBeamArray>::Value)
+		{
+			checkf(false, TEXT("TSerializationType cannot be a FBeamArray. We don't support it for now."))
+		}
+		else if constexpr (TIsDerivedFrom<TSerializationType, FBeamJsonSerializable>::Value)
+		{
+			checkf(false, TEXT("TSerializationType cannot be a FBeamJsonSerializable. We don't support it for now."))
+		}
+		else if constexpr (TIsSame<TSerializationType, int8>::Value)
+		{
+			const FString Val = JsonField->AsString();
+			int32 Parsed;
+			FDefaultValueHelper::ParseInt(Val, Parsed);
+			const int8 Cast = static_cast<int8>(Parsed);
+			FBeamSemanticType::Set(&ToDeserialize, &Cast, SemanticTypeName);
+		}
+		else if constexpr (TIsSame<TSerializationType, int16>::Value)
+		{
+			const FString Val = JsonField->AsString();
+			int32 Parsed;
+			FDefaultValueHelper::ParseInt(Val, Parsed);
+			const int16 Cast = static_cast<int16>(Parsed);
+			FBeamSemanticType::Set(&ToDeserialize, &Cast, SemanticTypeName);
+		}
+		else if constexpr (TIsSame<TSerializationType, int32>::Value)
+		{
+			const FString Val = JsonField->AsString();
+			int32 Parsed;
+			FDefaultValueHelper::ParseInt(Val, Parsed);
+			FBeamSemanticType::Set(&ToDeserialize, &Parsed, SemanticTypeName);
+		}
+		else if constexpr (TIsSame<TSerializationType, int64>::Value)
+		{
+			const FString Val = JsonField->AsString();
+			int64 Parsed;
+			FDefaultValueHelper::ParseInt64(Val, Parsed);
+			FBeamSemanticType::Set(&ToDeserialize, &Parsed, SemanticTypeName);
+		}
+		else if constexpr (TIsSame<TSerializationType, float>::Value)
+		{
+			const FString Val = JsonField->AsString();
+			float Parsed;
+			FDefaultValueHelper::ParseFloat(Val, Parsed);
+			FBeamSemanticType::Set(&ToDeserialize, &Parsed, SemanticTypeName);
+		}
+		else if constexpr (TIsSame<TSerializationType, double>::Value)
+		{
+			const FString Val = JsonField->AsString();
+			double Parsed;
+			FDefaultValueHelper::ParseDouble(Val, Parsed);
+			FBeamSemanticType::Set(&ToDeserialize, &Parsed, SemanticTypeName);
+		}
+		else if constexpr (TIsSame<TSerializationType, bool>::Value)
+		{
+			const FString Val = JsonField->AsString();
+			const bool Parsed = Val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
+			FBeamSemanticType::Set(&ToDeserialize, &Parsed, SemanticTypeName);
+		}
+	}
 
 	template <typename TDataType>
 	static void DeserializeUObject(const FString& Identifier, const TSharedPtr<FJsonObject>& OwnerBag, TDataType& ToDeserialize, UObject* OuterOwner = (UObject*)GetTransientPackage())
@@ -367,7 +493,7 @@ public
 			ToDeserialize->BeamDeserializeProperties(OwnerBag->GetObjectField(Identifier));
 	}
 
-	template <typename TOptionalType, typename TDataType = TOptionalType>
+	template <typename TOptionalType, typename TDataType = TOptionalType, typename TSemanticTypeRepresentation = TDataType>
 	static void DeserializeOptional(const FString& Identifier, const TSharedPtr<FJsonObject>& OwnerBag, FBeamOptional& ToDeserialize, UObject* OwnerOuter = (UObject*)GetTransientPackage())
 	{
 		// If we didn't receive this field...
@@ -403,6 +529,12 @@ public
 					{
 						const FString Val = Item->AsString();
 						ParsedMap.Add(Key, Val);
+					}
+					else if constexpr (TIsDerivedFrom<TDataType, FBeamSemanticType>::Value)
+					{
+						TDataType Parsed;
+						DeserializeSemanticType<TSemanticTypeRepresentation>(Item, Parsed);
+						ParsedMap.Add(Key, Parsed);
 					}
 					else if constexpr (TIsDerivedFrom<TDataType, FBeamMap>::Value)
 					{
@@ -492,6 +624,12 @@ public
 						const FString Val = ArrayJsonItem->AsString();
 						ParsedArray.Add(Val);
 					}
+					else if constexpr (TIsDerivedFrom<TDataType, FBeamSemanticType>::Value)
+					{
+						TDataType Parsed;
+						DeserializeSemanticType<TSemanticTypeRepresentation>(ArrayJsonItem, Parsed);
+						ParsedArray.Add(Parsed);
+					}
 					else if constexpr (TIsDerivedFrom<TDataType, FBeamMap>::Value)
 					{
 						TDataType Parsed;
@@ -575,6 +713,12 @@ public
 					const FString val = JsonField->AsString();
 					FBeamOptional::Set(&ToDeserialize, &val);
 				}
+				else if constexpr (TIsDerivedFrom<TOptionalType, FBeamSemanticType>::Value)
+				{
+					TOptionalType val;
+					DeserializeSemanticType<TDataType>(JsonField, val);
+					FBeamOptional::Set(&ToDeserialize, &val);
+				}
 				else if constexpr (TIsDerivedFrom<TOptionalType, FBeamMap>::Value)
 				{
 					TOptionalType Parsed;
@@ -647,7 +791,7 @@ public
 		}
 	}
 
-	template <typename TDataType>
+	template <typename TDataType, typename TSemanticTypeRepresentation = TDataType>
 	static void DeserializeArray(const TArray<TSharedPtr<FJsonValue>>& JsonArray, TArray<TDataType>& Array, UObject* OwnerOuter = (UObject*)GetTransientPackage())
 	{
 		for (const TSharedPtr<FJsonValue>& JsonValue : JsonArray)
@@ -655,6 +799,12 @@ public
 			if constexpr (TIsSame<TDataType, FString>::Value)
 			{
 				const FString val = JsonValue->AsString();
+				Array.Add(val);
+			}
+			else if constexpr (TIsDerivedFrom<TDataType, FBeamSemanticType>::Value)
+			{
+				TDataType val;
+				DeserializeSemanticType<TSemanticTypeRepresentation>(JsonValue, val);
 				Array.Add(val);
 			}
 			else if constexpr (TIsDerivedFrom<TDataType, FBeamMap>::Value)
@@ -723,7 +873,7 @@ public
 		}
 	}
 
-	template <typename TMapType, typename TDataType = TMapType>
+	template <typename TMapType, typename TDataType = TMapType, typename TSemanticTypeRepresentation = TDataType>
 	static void DeserializeMap(const TSharedPtr<FJsonObject>& JsonMap, TMap<FString, TMapType>& Map, UObject* OwnerOuter = (UObject*)GetTransientPackage())
 	{
 		if constexpr (TIsTArray<TMapType>::Value)
@@ -745,21 +895,27 @@ public
 				const auto Val = Value.Value->AsString();
 				Map.Add(Key, Val);
 			}
+			else if constexpr (TIsDerivedFrom<TMapType, FBeamSemanticType>::Value)
+			{
+				TMapType Parsed;
+				DeserializeSemanticType<TSemanticTypeRepresentation>(JsonValue, Parsed);
+				Map.Add(Key, Parsed);
+			}
 			else if constexpr (TIsDerivedFrom<TMapType, FBeamMap>::Value)
 			{
-				TDataType Parsed;
+				TMapType Parsed;
 				Parsed.BeamDeserializeElements(JsonValue->AsObject());
 				Map.Add(Key, Parsed);
 			}
 			else if constexpr (TIsDerivedFrom<TMapType, FBeamArray>::Value)
 			{
-				TDataType Parsed;
+				TMapType Parsed;
 				Parsed.BeamDeserializeElements(JsonValue->AsArray());
 				Map.Add(Key, Parsed);
 			}
 			else if constexpr (TIsDerivedFrom<TMapType, FBeamJsonSerializable>::Value)
 			{
-				TDataType Parsed;
+				TMapType Parsed;
 				Parsed.BeamDeserializeProperties(JsonValue->AsObject());
 				Map.Add(Key, Parsed);
 			}

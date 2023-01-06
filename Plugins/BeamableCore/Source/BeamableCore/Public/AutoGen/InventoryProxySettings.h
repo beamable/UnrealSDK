@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-
+#include "AutoGen/Optionals/OptionalString.h"
 
 #include "InventoryProxySettings.generated.h"
 
@@ -16,6 +16,8 @@ class BEAMABLECORE_API UInventoryProxySettings : public UObject, public FBeamJso
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Service", Category="Beam")
 	FString Service;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Namespace", Category="Beam")
+	FOptionalString Namespace;
 
 	
 

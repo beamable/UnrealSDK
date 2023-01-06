@@ -12,15 +12,15 @@ void UStatsSearchResponse::DeserializeRequestResponse(UObject* RequestData, FStr
 
 void UStatsSearchResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeArray<int64>(TEXT("ids"), Ids, Serializer);
+	UBeamJsonUtils::SerializeArray<FBeamGamerTag, int64>(TEXT("ids"), Ids, Serializer);
 }
 
 void UStatsSearchResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeArray<int64>(TEXT("ids"), Ids, Serializer);		
+	UBeamJsonUtils::SerializeArray<FBeamGamerTag, int64>(TEXT("ids"), Ids, Serializer);		
 }
 
 void UStatsSearchResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeArray<int64>(Bag->GetArrayField(TEXT("ids")), Ids, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FBeamGamerTag, int64>(Bag->GetArrayField(TEXT("ids")), Ids, OuterOwner);
 }

@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-
+#include "BeamBackend/SemanticTypes/BeamGamerTag.h"
 
 #include "StatsResponse.generated.h"
 
@@ -15,7 +15,7 @@ class BEAMABLECORE_API UStatsResponse : public UObject, public FBeamJsonSerializ
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	int64 Id;
+	FBeamGamerTag Id;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stats", Category="Beam")
 	TMap<FString, FString> Stats;
 

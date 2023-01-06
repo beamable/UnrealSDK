@@ -27,7 +27,7 @@ void UDeleteExternal_identityRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteExternal_identityRequest* UDeleteExternal_identityRequest::Make(FString _ProviderAddress, FString _UserId, UObject* RequestOwner)
+UDeleteExternal_identityRequest* UDeleteExternal_identityRequest::Make(FString _ProviderService, FString _UserId, FOptionalString _ProviderNamespace, UObject* RequestOwner)
 {
 	UDeleteExternal_identityRequest* Req = NewObject<UDeleteExternal_identityRequest>(RequestOwner);
 
@@ -36,8 +36,9 @@ UDeleteExternal_identityRequest* UDeleteExternal_identityRequest::Make(FString _
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
 	Req->Body = NewObject<UDeleteExternalIdentityApiRequestBody>(Req);
-	Req->Body->ProviderAddress = _ProviderAddress;
+	Req->Body->ProviderService = _ProviderService;
 	Req->Body->UserId = _UserId;
+	Req->Body->ProviderNamespace = _ProviderNamespace;
 	
 
 	return Req;

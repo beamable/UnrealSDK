@@ -27,7 +27,7 @@ void UPostExternal_identityRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostExternal_identityRequest* UPostExternal_identityRequest::Make(FString _ProviderAddress, FString _ExternalToken, FOptionalChallengeSolution _ChallengeSolution, UObject* RequestOwner)
+UPostExternal_identityRequest* UPostExternal_identityRequest::Make(FString _ProviderService, FString _ExternalToken, FOptionalChallengeSolution _ChallengeSolution, FOptionalString _ProviderNamespace, UObject* RequestOwner)
 {
 	UPostExternal_identityRequest* Req = NewObject<UPostExternal_identityRequest>(RequestOwner);
 
@@ -35,10 +35,11 @@ UPostExternal_identityRequest* UPostExternal_identityRequest::Make(FString _Prov
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
-	Req->Body = NewObject<UExternalIdentityRequestBody>(Req);
-	Req->Body->ProviderAddress = _ProviderAddress;
+	Req->Body = NewObject<UAttachExternalIdentityApiRequestBody>(Req);
+	Req->Body->ProviderService = _ProviderService;
 	Req->Body->ExternalToken = _ExternalToken;
 	Req->Body->ChallengeSolution = _ChallengeSolution;
+	Req->Body->ProviderNamespace = _ProviderNamespace;
 	
 
 	return Req;

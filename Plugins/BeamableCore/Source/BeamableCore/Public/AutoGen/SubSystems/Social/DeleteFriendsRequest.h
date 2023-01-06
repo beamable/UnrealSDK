@@ -37,7 +37,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Social", DisplayName="Beam - Make DeleteFriends",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
-	static UDeleteFriendsRequest* Make(FString _PlayerId, UObject* RequestOwner);
+	static UDeleteFriendsRequest* Make(FBeamGamerTag _PlayerId, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

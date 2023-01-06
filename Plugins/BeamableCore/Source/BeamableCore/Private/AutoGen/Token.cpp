@@ -12,13 +12,13 @@ void UToken::DeserializeRequestResponse(UObject* RequestData, FString ResponseCo
 
 void UToken ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("cid"), Cid);
+	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);
 	Serializer->WriteValue(TEXT("token"), Token);
 	Serializer->WriteValue(TEXT("type"), Type);
 	Serializer->WriteValue(TEXT("created"), Created);
-	UBeamJsonUtils::SerializeOptional<int64>(TEXT("gamerTag"), &GamerTag, Serializer);
-	UBeamJsonUtils::SerializeOptional<int64>(TEXT("accountId"), &AccountId, Serializer);
-	UBeamJsonUtils::SerializeOptional<FString>(TEXT("pid"), &Pid, Serializer);
+	UBeamJsonUtils::SerializeOptional<FBeamGamerTag, int64>(TEXT("gamerTag"), &GamerTag, Serializer);
+	UBeamJsonUtils::SerializeOptional<FBeamAccountId, int64>(TEXT("accountId"), &AccountId, Serializer);
+	UBeamJsonUtils::SerializeOptional<FBeamPid, FString>(TEXT("pid"), &Pid, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("expiresMs"), &ExpiresMs, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("platform"), &Platform, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("device"), &Device, Serializer);
@@ -28,13 +28,13 @@ void UToken ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 
 void UToken::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("cid"), Cid);
+	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);
 	Serializer->WriteValue(TEXT("token"), Token);
 	Serializer->WriteValue(TEXT("type"), Type);
 	Serializer->WriteValue(TEXT("created"), Created);
-	UBeamJsonUtils::SerializeOptional<int64>(TEXT("gamerTag"), &GamerTag, Serializer);
-	UBeamJsonUtils::SerializeOptional<int64>(TEXT("accountId"), &AccountId, Serializer);
-	UBeamJsonUtils::SerializeOptional<FString>(TEXT("pid"), &Pid, Serializer);
+	UBeamJsonUtils::SerializeOptional<FBeamGamerTag, int64>(TEXT("gamerTag"), &GamerTag, Serializer);
+	UBeamJsonUtils::SerializeOptional<FBeamAccountId, int64>(TEXT("accountId"), &AccountId, Serializer);
+	UBeamJsonUtils::SerializeOptional<FBeamPid, FString>(TEXT("pid"), &Pid, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("expiresMs"), &ExpiresMs, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("platform"), &Platform, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("device"), &Device, Serializer);
@@ -44,13 +44,13 @@ void UToken::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) co
 
 void UToken ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("cid")), Cid);
+	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("cid")), Cid, OuterOwner);
 	Token = Bag->GetStringField(TEXT("token"));
 	Type = Bag->GetStringField(TEXT("type"));
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("created")), Created);
-	UBeamJsonUtils::DeserializeOptional<int64>("gamerTag", Bag, GamerTag, OuterOwner);
-	UBeamJsonUtils::DeserializeOptional<int64>("accountId", Bag, AccountId, OuterOwner);
-	UBeamJsonUtils::DeserializeOptional<FString>("pid", Bag, Pid, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FBeamGamerTag, int64>("gamerTag", Bag, GamerTag, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FBeamAccountId, int64>("accountId", Bag, AccountId, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FBeamPid, FString>("pid", Bag, Pid, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("expiresMs", Bag, ExpiresMs, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("platform", Bag, Platform, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("device", Bag, Device, OuterOwner);

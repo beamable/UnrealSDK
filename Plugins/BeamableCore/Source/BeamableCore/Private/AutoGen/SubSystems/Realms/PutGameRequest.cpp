@@ -27,7 +27,7 @@ void UPutGameRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutGameRequest* UPutGameRequest::Make(FString _RootPID, TArray<UProjectView*> _Projects, UObject* RequestOwner)
+UPutGameRequest* UPutGameRequest::Make(FBeamPid _RootPID, TArray<UProjectView*> _Projects, UObject* RequestOwner)
 {
 	UPutGameRequest* Req = NewObject<UPutGameRequest>(RequestOwner);
 

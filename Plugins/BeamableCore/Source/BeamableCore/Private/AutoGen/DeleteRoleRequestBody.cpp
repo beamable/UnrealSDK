@@ -1,24 +1,24 @@
 
 #include "AutoGen/DeleteRoleRequestBody.h"
-
+#include "Serialization/BeamJsonUtils.h"
 
 
 
 
 void UDeleteRoleRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("realm"), Realm);
-	Serializer->WriteValue(TEXT("role"), Role);
+	UBeamJsonUtils::SerializeOptional<FBeamPid, FString>(TEXT("realm"), &Realm, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("role"), &Role, Serializer);
 }
 
 void UDeleteRoleRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("realm"), Realm);
-	Serializer->WriteValue(TEXT("role"), Role);		
+	UBeamJsonUtils::SerializeOptional<FBeamPid, FString>(TEXT("realm"), &Realm, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("role"), &Role, Serializer);		
 }
 
 void UDeleteRoleRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Realm = Bag->GetStringField(TEXT("realm"));
-	Role = Bag->GetStringField(TEXT("role"));
+	UBeamJsonUtils::DeserializeOptional<FBeamPid, FString>("realm", Bag, Realm, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FString>("role", Bag, Role, OuterOwner);
 }

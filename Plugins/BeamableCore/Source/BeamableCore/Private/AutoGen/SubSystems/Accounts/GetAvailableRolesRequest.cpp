@@ -9,7 +9,7 @@ void UGetAvailableRolesRequest::BuildVerb(FString& VerbString) const
 void UGetAvailableRolesRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/accounts/{objectId}/available-roles");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -23,7 +23,7 @@ void UGetAvailableRolesRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAvailableRolesRequest* UGetAvailableRolesRequest::Make(int64 _ObjectId, UObject* RequestOwner)
+UGetAvailableRolesRequest* UGetAvailableRolesRequest::Make(FBeamAccountId _ObjectId, UObject* RequestOwner)
 {
 	UGetAvailableRolesRequest* Req = NewObject<UGetAvailableRolesRequest>(RequestOwner);
 

@@ -22,7 +22,7 @@ FString UArchiveProjectRequestBodyLibrary::ArchiveProjectRequestBodyToJsonString
 	return Result;
 }	
 
-UArchiveProjectRequestBody* UArchiveProjectRequestBodyLibrary::Make(FString Pid, UObject* Outer)
+UArchiveProjectRequestBody* UArchiveProjectRequestBodyLibrary::Make(FBeamPid Pid, UObject* Outer)
 {
 	auto Serializable = NewObject<UArchiveProjectRequestBody>(Outer);
 	Serializable->Pid = Pid;
@@ -30,7 +30,7 @@ UArchiveProjectRequestBody* UArchiveProjectRequestBodyLibrary::Make(FString Pid,
 	return Serializable;
 }
 
-void UArchiveProjectRequestBodyLibrary::Break(const UArchiveProjectRequestBody* Serializable, FString& Pid)
+void UArchiveProjectRequestBodyLibrary::Break(const UArchiveProjectRequestBody* Serializable, FBeamPid& Pid)
 {
 	Pid = Serializable->Pid;
 		

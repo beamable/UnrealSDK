@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "BeamCoreSettings.h"
 #include "UserSlot.h"
+#include "BeamBackend/SemanticTypes/BeamAccountId.h"
+#include "BeamBackend/SemanticTypes/BeamGamerTag.h"
 #include "BeamUserSlots.generated.h"
 
 /**
@@ -40,13 +42,13 @@ struct FUserSlotAuthData
 	 * @brief The CustomerId whose scope this user exists in.
 	 */
 	UPROPERTY(BlueprintReadWrite)
-	FString Cid;
+	FBeamCid Cid;
 
 	/**
 	 * @brief The ProductId (Realm) into which this user is signed into.
 	 */
 	UPROPERTY(BlueprintReadWrite)
-	FString Pid;
+	FBeamPid Pid;
 };
 
 USTRUCT(BlueprintType)
@@ -55,7 +57,10 @@ struct FUserSlotAccountData
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite)
-	int64 GamerTag;
+	FBeamAccountId AccountId;
+	
+	UPROPERTY(BlueprintReadWrite)
+	FBeamGamerTag GamerTag;
 
 	UPROPERTY(BlueprintReadWrite)
 	FString Email;
@@ -171,34 +176,42 @@ public:
 	 * @return True, if there is a user mapped. False, if no user mapped was found. 
 	 */
 	UFUNCTION(BlueprintPure, Category="Beam")
-	bool GetUserDataWithRefreshTokenAndPid(const FString& RefreshToken, const FString& Pid, FBeamRealmUser& OutUserData, FUserSlot& OutUserSlot) const;
+	bool GetUserDataWithRefreshTokenAndPid(const FString& RefreshToken, const FBeamPid& Pid, FBeamRealmUser& OutUserData, FUserSlot& OutUserSlot) const;
 
 	/**
 	 * @brief Sets, without saving, the given authentication token + realm data into the given user slot.
 	 * THIS DOES NOT SERIALIZE THE USER INTO THAT SLOT --- IT'LL BE VALID ONLY FOR THE CURRENT SESSION'S DURATION.
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	void SetAuthenticationDataAtSlot(FUserSlot SlotId, const FString& AccessToken, const FString& RefreshToken, const int64& ExpiresIn, const FString& Cid, const FString& Pid,
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AutoCreateRefTerm="Cid,Pid", AdvancedDisplay="CallingContext"))
+	void SetAuthenticationDataAtSlot(FUserSlot SlotId, const FString& AccessToken, const FString& RefreshToken, const int64& ExpiresIn, const FBeamCid& Cid, const FBeamPid& Pid,
 	                                 const UObject* CallingContext = nullptr);
 
 	/**
 	 * @brief Sets, without saving, the given GamerTag of the user into this slot. Must always be called on a user slot that has authentication data.
 	 * This is because you need to be authenticated in order to get the user's gamer tag.	  	 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	void SetGamerTagAtSlot(FUserSlot SlotId, const int64& GamerTag, const UObject* CallingContext = nullptr);
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="GamerTag", DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	void SetGamerTagAtSlot(FUserSlot SlotId, const FBeamGamerTag& GamerTag, const UObject* CallingContext = nullptr);
+
+
+	/**
+	 * @brief Sets, without saving, the given AccountId of the user into this slot. Must always be called on a user slot that has authentication data.
+	 * This is because you need to be authenticated in order to get the user's gamer tag.	  	 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="AccountId", DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	void SetAccountIdAtSlot(FUserSlot SlotId, const FBeamAccountId& AccountId, const UObject* CallingContext);
 
 	/**
 	 * @brief Sets the email to the account data of an authenticated user slot. If it's not authenticated, the email information isn't stored.	  
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="Email", DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	void SetEmailAtSlot(FUserSlot SlotId, const FString& Email, const UObject* CallingContext = nullptr);
 
 	/**
 	 * @brief Sets, without saving, the given PID into the auth data for this slot. If it's not authenticated, the PID is not set (use SetAuthenticationDataAtSlot instead).
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	void SetPIDAtSlot(FUserSlot SlotId, const FString& Pid, const UObject* CallingContext = nullptr);
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="Pid", DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	void SetPIDAtSlot(FUserSlot SlotId, const FBeamPid& Pid, const UObject* CallingContext = nullptr);
 
 	/**
 	 * @brief Invokes the global callback for when a user is authenticated. Used by BPs SignIn/Up/Out Flows in both editor and runtime.
@@ -222,7 +235,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	void ClearUserAtSlot(FUserSlot SlotId, const EUserSlotClearedReason& Reason = Manual, const bool& bShouldRemoveSavedData = false, const UObject* CallingContext = nullptr);
 
-
+	/**
+		 * @brief Attempts to quickly authenticate a user with locally stored, serialized data.	  
+		 * @return True, if there was a user authenticated at that slot. False, if no serialized user slot file was found or if the file does not contain a refresh token.  
+		 */
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool IsUserSlotAuthenticated(FUserSlot SlotId, const UObject* CallingContext = nullptr);
+	
 	/**
 	 * @brief Attempts to quickly authenticate a user with locally stored, serialized data.	  
 	 * @return True, if there was a user authenticated at that slot. False, if no serialized user slot file was found or if the file does not contain a refresh token.  

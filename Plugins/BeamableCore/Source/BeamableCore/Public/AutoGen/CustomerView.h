@@ -4,6 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "BeamBackend/SemanticTypes/BeamCid.h"
 #include "AutoGen/Optionals/OptionalString.h"
 #include "AutoGen/ProjectView.h"
 
@@ -16,7 +17,7 @@ class BEAMABLECORE_API UCustomerView : public UObject, public FBeamJsonSerializa
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid", Category="Beam")
-	int64 Cid;
+	FBeamCid Cid;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
 	FString Name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Projects", Category="Beam")

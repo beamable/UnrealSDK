@@ -22,7 +22,7 @@ FString UUpdateGameHierarchyRequestBodyLibrary::UpdateGameHierarchyRequestBodyTo
 	return Result;
 }	
 
-UUpdateGameHierarchyRequestBody* UUpdateGameHierarchyRequestBodyLibrary::Make(FString RootPID, TArray<UProjectView*> Projects, UObject* Outer)
+UUpdateGameHierarchyRequestBody* UUpdateGameHierarchyRequestBodyLibrary::Make(FBeamPid RootPID, TArray<UProjectView*> Projects, UObject* Outer)
 {
 	auto Serializable = NewObject<UUpdateGameHierarchyRequestBody>(Outer);
 	Serializable->RootPID = RootPID;
@@ -31,7 +31,7 @@ UUpdateGameHierarchyRequestBody* UUpdateGameHierarchyRequestBodyLibrary::Make(FS
 	return Serializable;
 }
 
-void UUpdateGameHierarchyRequestBodyLibrary::Break(const UUpdateGameHierarchyRequestBody* Serializable, FString& RootPID, TArray<UProjectView*>& Projects)
+void UUpdateGameHierarchyRequestBodyLibrary::Break(const UUpdateGameHierarchyRequestBody* Serializable, FBeamPid& RootPID, TArray<UProjectView*>& Projects)
 {
 	RootPID = Serializable->RootPID;
 	Projects = Serializable->Projects;

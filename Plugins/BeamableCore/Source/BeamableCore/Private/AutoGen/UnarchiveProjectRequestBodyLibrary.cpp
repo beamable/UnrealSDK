@@ -22,7 +22,7 @@ FString UUnarchiveProjectRequestBodyLibrary::UnarchiveProjectRequestBodyToJsonSt
 	return Result;
 }	
 
-UUnarchiveProjectRequestBody* UUnarchiveProjectRequestBodyLibrary::Make(FString ProjectId, UObject* Outer)
+UUnarchiveProjectRequestBody* UUnarchiveProjectRequestBodyLibrary::Make(FBeamPid ProjectId, UObject* Outer)
 {
 	auto Serializable = NewObject<UUnarchiveProjectRequestBody>(Outer);
 	Serializable->ProjectId = ProjectId;
@@ -30,7 +30,7 @@ UUnarchiveProjectRequestBody* UUnarchiveProjectRequestBodyLibrary::Make(FString 
 	return Serializable;
 }
 
-void UUnarchiveProjectRequestBodyLibrary::Break(const UUnarchiveProjectRequestBody* Serializable, FString& ProjectId)
+void UUnarchiveProjectRequestBodyLibrary::Break(const UUnarchiveProjectRequestBody* Serializable, FBeamPid& ProjectId)
 {
 	ProjectId = Serializable->ProjectId;
 		

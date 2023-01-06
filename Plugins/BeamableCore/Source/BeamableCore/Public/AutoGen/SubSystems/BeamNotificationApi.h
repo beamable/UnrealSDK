@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBackend.h"
+#include "BeamBackend/ResponseCache/BeamResponseCache.h"
 #include "RequestTracker/BeamRequestTracker.h"
 
 #include "Notification/PostPlayerRequest.h"
@@ -36,6 +37,9 @@ private:
 	UPROPERTY()
 	UBeamRequestTracker* RequestTracker;
 
+	UPROPERTY()
+	UBeamResponseCache* ResponseCache;
+
 	
 
 	
@@ -44,72 +48,72 @@ private:
 	 */
 	void BP_PostPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UPostPlayerRequest* RequestData,
 	                  const FOnPostPlayerSuccess& OnSuccess, const FOnPostPlayerError& OnError, const FOnPostPlayerComplete& OnComplete, 
-					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
 	void CPP_PostPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UPostPlayerRequest* RequestData,
-	                   const FOnPostPlayerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                   const FOnPostPlayerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 		
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
 	void BP_PostCustomImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UPostCustomRequest* RequestData,
 	                  const FOnPostCustomSuccess& OnSuccess, const FOnPostCustomError& OnError, const FOnPostCustomComplete& OnComplete, 
-					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
 	void CPP_PostCustomImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UPostCustomRequest* RequestData,
-	                   const FOnPostCustomFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                   const FOnPostCustomFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 		
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
 	void BP_PostServerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UPostServerRequest* RequestData,
 	                  const FOnPostServerSuccess& OnSuccess, const FOnPostServerError& OnError, const FOnPostServerComplete& OnComplete, 
-					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
 	void CPP_PostServerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UPostServerRequest* RequestData,
-	                   const FOnPostServerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                   const FOnPostServerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 		
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
 	void BP_PostGenericImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UPostGenericRequest* RequestData,
 	                  const FOnPostGenericSuccess& OnSuccess, const FOnPostGenericError& OnError, const FOnPostGenericComplete& OnComplete, 
-					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
 	void CPP_PostGenericImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UPostGenericRequest* RequestData,
-	                   const FOnPostGenericFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                   const FOnPostGenericFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 		
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
 	void BP_GetNotificationImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UGetNotificationRequest* RequestData,
 	                  const FOnGetNotificationSuccess& OnSuccess, const FOnGetNotificationError& OnError, const FOnGetNotificationComplete& OnComplete, 
-					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
 	void CPP_GetNotificationImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UGetNotificationRequest* RequestData,
-	                   const FOnGetNotificationFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                   const FOnGetNotificationFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 		
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
 	void BP_PostGameImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UBasicNotificationPostGameRequest* RequestData,
 	                  const FOnBasicNotificationPostGameSuccess& OnSuccess, const FOnBasicNotificationPostGameError& OnError, const FOnBasicNotificationPostGameComplete& OnComplete, 
-					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
 	void CPP_PostGameImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UBasicNotificationPostGameRequest* RequestData,
-	                   const FOnBasicNotificationPostGameFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle()) const;
+	                   const FOnBasicNotificationPostGameFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 public:
 	
@@ -131,7 +135,7 @@ public:
 	 * @param Handler A callback that defines how to handle success, error and completion.
      * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
-     * @param CallingContext A UObject managed by the world that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId). 
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
 	void CPP_PostPlayer(const FUserSlot& UserSlot, UPostPlayerRequest* Request, const FOnPostPlayerFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
@@ -147,7 +151,7 @@ public:
 	 * @param Handler A callback that defines how to handle success, error and completion.
      * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
-     * @param CallingContext A UObject managed by the world that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId). 
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
 	void CPP_PostCustom(const FUserSlot& UserSlot, UPostCustomRequest* Request, const FOnPostCustomFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
@@ -163,7 +167,7 @@ public:
 	 * @param Handler A callback that defines how to handle success, error and completion.
      * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
-     * @param CallingContext A UObject managed by the world that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId). 
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
 	void CPP_PostServer(const FUserSlot& UserSlot, UPostServerRequest* Request, const FOnPostServerFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
@@ -179,7 +183,7 @@ public:
 	 * @param Handler A callback that defines how to handle success, error and completion.
      * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
-     * @param CallingContext A UObject managed by the world that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId). 
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
 	void CPP_PostGeneric(const FUserSlot& UserSlot, UPostGenericRequest* Request, const FOnPostGenericFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
@@ -195,7 +199,7 @@ public:
 	 * @param Handler A callback that defines how to handle success, error and completion.
      * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
-     * @param CallingContext A UObject managed by the world that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId). 
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
 	void CPP_GetNotification(const FUserSlot& UserSlot, UGetNotificationRequest* Request, const FOnGetNotificationFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
@@ -211,7 +215,7 @@ public:
 	 * @param Handler A callback that defines how to handle success, error and completion.
      * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
-     * @param CallingContext A UObject managed by the world that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId). 
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
 	void CPP_PostGame(const FUserSlot& UserSlot, UBasicNotificationPostGameRequest* Request, const FOnBasicNotificationPostGameFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
@@ -228,7 +232,7 @@ public:
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
 	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
-     * @param CallingContext A UObject managed by the world that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId).
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Notification", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void PostPlayer(FUserSlot UserSlot, UPostPlayerRequest* Request, const FOnPostPlayerSuccess& OnSuccess, const FOnPostPlayerError& OnError, const FOnPostPlayerComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
@@ -243,7 +247,7 @@ public:
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
 	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
-     * @param CallingContext A UObject managed by the world that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId).
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Notification", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void PostCustom(FUserSlot UserSlot, UPostCustomRequest* Request, const FOnPostCustomSuccess& OnSuccess, const FOnPostCustomError& OnError, const FOnPostCustomComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
@@ -258,7 +262,7 @@ public:
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
 	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
-     * @param CallingContext A UObject managed by the world that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId).
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Notification", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void PostServer(FUserSlot UserSlot, UPostServerRequest* Request, const FOnPostServerSuccess& OnSuccess, const FOnPostServerError& OnError, const FOnPostServerComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
@@ -273,7 +277,7 @@ public:
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
 	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
-     * @param CallingContext A UObject managed by the world that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId).
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Notification", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void PostGeneric(FUserSlot UserSlot, UPostGenericRequest* Request, const FOnPostGenericSuccess& OnSuccess, const FOnPostGenericError& OnError, const FOnPostGenericComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
@@ -288,7 +292,7 @@ public:
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
 	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
-     * @param CallingContext A UObject managed by the world that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId).
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Notification", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void GetNotification(FUserSlot UserSlot, UGetNotificationRequest* Request, const FOnGetNotificationSuccess& OnSuccess, const FOnGetNotificationError& OnError, const FOnGetNotificationComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
@@ -303,102 +307,9 @@ public:
 	 * @param OnError What to do if the request receives an error response.
 	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
 	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
-     * @param CallingContext A UObject managed by the world that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId).
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Notification", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void PostGame(FUserSlot UserSlot, UBasicNotificationPostGameRequest* Request, const FOnBasicNotificationPostGameSuccess& OnSuccess, const FOnBasicNotificationPostGameError& OnError, const FOnBasicNotificationPostGameComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
-	
 
-	
-
-	
-	/**
-	 * @brief Makes an authenticated request to the Post /basic/notification/player endpoint of the Notification Service.
-	 *
-	 * @param UserSlot The authenticated UserSlot with the user making the request.
-	 * @param RetryConfig The retry config for this specific request. 
-	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param OnSuccess What to do if the requests receives a successful response.
-	 * @param OnError What to do if the request receives an error response.
-	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight.
-	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId). 
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Notification", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowFunction))
-	void PostPlayerWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostPlayerRequest* Request, const FOnPostPlayerSuccess& OnSuccess, const FOnPostPlayerError& OnError, const FOnPostPlayerComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext = nullptr);
-		
-	/**
-	 * @brief Makes an authenticated request to the Post /basic/notification/custom endpoint of the Notification Service.
-	 *
-	 * @param UserSlot The authenticated UserSlot with the user making the request.
-	 * @param RetryConfig The retry config for this specific request. 
-	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param OnSuccess What to do if the requests receives a successful response.
-	 * @param OnError What to do if the request receives an error response.
-	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight.
-	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId). 
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Notification", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowFunction))
-	void PostCustomWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostCustomRequest* Request, const FOnPostCustomSuccess& OnSuccess, const FOnPostCustomError& OnError, const FOnPostCustomComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext = nullptr);
-		
-	/**
-	 * @brief Makes an authenticated request to the Post /basic/notification/server endpoint of the Notification Service.
-	 *
-	 * @param UserSlot The authenticated UserSlot with the user making the request.
-	 * @param RetryConfig The retry config for this specific request. 
-	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param OnSuccess What to do if the requests receives a successful response.
-	 * @param OnError What to do if the request receives an error response.
-	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight.
-	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId). 
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Notification", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowFunction))
-	void PostServerWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostServerRequest* Request, const FOnPostServerSuccess& OnSuccess, const FOnPostServerError& OnError, const FOnPostServerComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext = nullptr);
-		
-	/**
-	 * @brief Makes an authenticated request to the Post /basic/notification/generic endpoint of the Notification Service.
-	 *
-	 * @param UserSlot The authenticated UserSlot with the user making the request.
-	 * @param RetryConfig The retry config for this specific request. 
-	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param OnSuccess What to do if the requests receives a successful response.
-	 * @param OnError What to do if the request receives an error response.
-	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight.
-	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId). 
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Notification", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowFunction))
-	void PostGenericWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UPostGenericRequest* Request, const FOnPostGenericSuccess& OnSuccess, const FOnPostGenericError& OnError, const FOnPostGenericComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext = nullptr);
-		
-	/**
-	 * @brief Makes an authenticated request to the Get /basic/notification/ endpoint of the Notification Service.
-	 *
-	 * @param UserSlot The authenticated UserSlot with the user making the request.
-	 * @param RetryConfig The retry config for this specific request. 
-	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param OnSuccess What to do if the requests receives a successful response.
-	 * @param OnError What to do if the request receives an error response.
-	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight.
-	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId). 
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Notification", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowFunction))
-	void GetNotificationWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UGetNotificationRequest* Request, const FOnGetNotificationSuccess& OnSuccess, const FOnGetNotificationError& OnError, const FOnGetNotificationComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext = nullptr);
-		
-	/**
-	 * @brief Makes an authenticated request to the Post /basic/notification/game endpoint of the Notification Service.
-	 *
-	 * @param UserSlot The authenticated UserSlot with the user making the request.
-	 * @param RetryConfig The retry config for this specific request. 
-	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param OnSuccess What to do if the requests receives a successful response.
-	 * @param OnError What to do if the request receives an error response.
-	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context -- used to query information about the request or to cancel it while it's in flight.
-	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId). 
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Notification", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete", BeamFlowFunction))
-	void PostGameWithRetry(FUserSlot UserSlot, const FBeamRetryConfig& RetryConfig, UBasicNotificationPostGameRequest* Request, const FOnBasicNotificationPostGameSuccess& OnSuccess, const FOnBasicNotificationPostGameError& OnError, const FOnBasicNotificationPostGameComplete& OnComplete, FBeamRequestContext& OutRequestContext, const UObject* CallingContext = nullptr);
 };

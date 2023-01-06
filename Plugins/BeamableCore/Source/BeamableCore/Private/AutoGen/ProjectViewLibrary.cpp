@@ -22,7 +22,7 @@ FString UProjectViewLibrary::ProjectViewToJsonString(const UProjectView* Seriali
 	return Result;
 }	
 
-UProjectView* UProjectViewLibrary::Make(FString ProjectName, FString Pid, FOptionalBool bArchived, FOptionalBool bSharded, FOptionalString Secret, FOptionalString Parent, FOptionalInt64 Cid, FOptionalArrayOfString Children, UObject* Outer)
+UProjectView* UProjectViewLibrary::Make(FString ProjectName, FBeamPid Pid, FOptionalBool bArchived, FOptionalBool bSharded, FOptionalString Secret, FOptionalBeamPid Parent, FOptionalBeamCid Cid, FOptionalArrayOfBeamPid Children, UObject* Outer)
 {
 	auto Serializable = NewObject<UProjectView>(Outer);
 	Serializable->ProjectName = ProjectName;
@@ -37,7 +37,7 @@ UProjectView* UProjectViewLibrary::Make(FString ProjectName, FString Pid, FOptio
 	return Serializable;
 }
 
-void UProjectViewLibrary::Break(const UProjectView* Serializable, FString& ProjectName, FString& Pid, FOptionalBool& bArchived, FOptionalBool& bSharded, FOptionalString& Secret, FOptionalString& Parent, FOptionalInt64& Cid, FOptionalArrayOfString& Children)
+void UProjectViewLibrary::Break(const UProjectView* Serializable, FString& ProjectName, FBeamPid& Pid, FOptionalBool& bArchived, FOptionalBool& bSharded, FOptionalString& Secret, FOptionalBeamPid& Parent, FOptionalBeamCid& Cid, FOptionalArrayOfBeamPid& Children)
 {
 	ProjectName = Serializable->ProjectName;
 	Pid = Serializable->Pid;

@@ -22,17 +22,19 @@ FString UInventoryProxySettingsLibrary::InventoryProxySettingsToJsonString(const
 	return Result;
 }	
 
-UInventoryProxySettings* UInventoryProxySettingsLibrary::Make(FString Service, UObject* Outer)
+UInventoryProxySettings* UInventoryProxySettingsLibrary::Make(FString Service, FOptionalString Namespace, UObject* Outer)
 {
 	auto Serializable = NewObject<UInventoryProxySettings>(Outer);
 	Serializable->Service = Service;
+	Serializable->Namespace = Namespace;
 	
 	return Serializable;
 }
 
-void UInventoryProxySettingsLibrary::Break(const UInventoryProxySettings* Serializable, FString& Service)
+void UInventoryProxySettingsLibrary::Break(const UInventoryProxySettings* Serializable, FString& Service, FOptionalString& Namespace)
 {
 	Service = Serializable->Service;
+	Namespace = Serializable->Namespace;
 		
 }
 

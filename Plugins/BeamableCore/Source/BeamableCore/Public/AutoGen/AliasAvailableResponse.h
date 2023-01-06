@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-
+#include "BeamBackend/SemanticTypes/BeamCid.h"
 
 #include "AliasAvailableResponse.generated.h"
 
@@ -19,7 +19,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Available", Category="Beam")
 	bool bAvailable;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid", Category="Beam")
-	int64 Cid;
+	FBeamCid Cid;
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

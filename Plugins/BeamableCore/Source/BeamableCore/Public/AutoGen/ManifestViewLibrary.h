@@ -17,9 +17,9 @@ public:
 	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - ManifestView To JSON String")
 	static FString ManifestViewToJsonString(const UManifestView* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ManifestView", meta=(DefaultToSelf="Outer", AdvancedDisplay="Comments, StorageReference, Outer", NativeMakeFunc))
-	static UManifestView* Make(int64 CreatedByAccountId, FString Id, FString Checksum, int64 Created, TArray<UServiceReference*> Manifest, FOptionalString Comments, FOptionalArrayOfServiceStorageReference StorageReference, UObject* Outer);
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ManifestView", meta=(DefaultToSelf="Outer", AdvancedDisplay="CreatedByAccountId, Comments, StorageReference, Outer", NativeMakeFunc))
+	static UManifestView* Make(FString Id, FString Checksum, int64 Created, TArray<UServiceReference*> Manifest, FOptionalInt64 CreatedByAccountId, FOptionalString Comments, FOptionalArrayOfServiceStorageReference StorageReference, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break ManifestView", meta=(NativeBreakFunc))
-	static void Break(const UManifestView* Serializable, int64& CreatedByAccountId, FString& Id, FString& Checksum, int64& Created, TArray<UServiceReference*>& Manifest, FOptionalString& Comments, FOptionalArrayOfServiceStorageReference& StorageReference);
+	static void Break(const UManifestView* Serializable, FString& Id, FString& Checksum, int64& Created, TArray<UServiceReference*>& Manifest, FOptionalInt64& CreatedByAccountId, FOptionalString& Comments, FOptionalArrayOfServiceStorageReference& StorageReference);
 };

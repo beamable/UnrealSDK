@@ -18,8 +18,8 @@ public:
 	static FString ArchiveProjectRequestBodyToJsonString(const UArchiveProjectRequestBody* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ArchiveProjectRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UArchiveProjectRequestBody* Make(FString Pid, UObject* Outer);
+	static UArchiveProjectRequestBody* Make(FBeamPid Pid, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break ArchiveProjectRequestBody", meta=(NativeBreakFunc))
-	static void Break(const UArchiveProjectRequestBody* Serializable, FString& Pid);
+	static void Break(const UArchiveProjectRequestBody* Serializable, FBeamPid& Pid);
 };

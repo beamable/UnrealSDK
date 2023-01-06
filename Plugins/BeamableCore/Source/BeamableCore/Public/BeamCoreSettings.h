@@ -7,6 +7,7 @@
 #include "BeamEnvironment.h"
 #include "BeamBackend/BeamRealmHandle.h"
 #include "BeamBackend/BeamRetryConfig.h"
+#include "BeamBackend/ResponseCache/BeamCacheConfig.h"
 #include "BeamCoreSettings.generated.h"
 
 /**
@@ -70,6 +71,19 @@ public:
 	FBeamRetryConfig FallbackRetryConfiguration{{}, {}, 10, {.5f, 1, 2, 4, 8}, 5};
 
 	/**
+	 * @brief The configuration for cache-ing all requests. Can be overriden via the API in @see UBeamResponseCache.
+	 *
+	 * By default, we don't cache any requests because request cache-ing is somewhat of a game-specific thing. You should never cache any requests that modify state
+	 * (for the most part, only cache GET requests and you'll be fine). Also, incorrectly cache-ing things can be a source of hard to find bugs. As such, we recommend you use
+	 * our metrics to identify which requests are being made the most in your regular play-sessions and start there.
+	 *
+	 * REMEMBER TO ONLY CACHE READ-ONLY REQUESTS!!!
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Request/Response")
+	FBeamCacheConfig GlobalCacheConfiguration{Disabled, 600,};
+	
+
+	/**
 	 * @brief These are the expected user slots for your game. TODO User slots not registered here will not be allowed to be authenticated into.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "User Slots")
@@ -82,7 +96,7 @@ public:
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="User Slots")
 	TArray<FString> DeveloperUserSlots{"MainEditorDeveloper"};
-	
+
 	/**
 	 * @brief Whether or not we should persist the Auth data for Runtime User Slots when we are in PIE.
 	 */

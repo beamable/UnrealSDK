@@ -18,8 +18,8 @@ public:
 	static FString AliasAvailableResponseToJsonString(const UAliasAvailableResponse* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make AliasAvailableResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UAliasAvailableResponse* Make(FString Alias, bool bAvailable, int64 Cid, UObject* Outer);
+	static UAliasAvailableResponse* Make(FString Alias, bool bAvailable, FBeamCid Cid, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break AliasAvailableResponse", meta=(NativeBreakFunc))
-	static void Break(const UAliasAvailableResponse* Serializable, FString& Alias, bool& bAvailable, int64& Cid);
+	static void Break(const UAliasAvailableResponse* Serializable, FString& Alias, bool& bAvailable, FBeamCid& Cid);
 };

@@ -100,6 +100,7 @@ bool UBeamUserSlots::GetUserDataAtSlot(FUserSlot SlotId, FBeamRealmUser& OutUser
 		return true;
 	}
 
+	OutUserData.AccountId = -1;
 	OutUserData.GamerTag = -1;
 	OutUserData.Email = TEXT("");
 	OutUserData.AuthToken = FBeamAuthToken{TEXT(""), TEXT(""), 0};
@@ -108,7 +109,7 @@ bool UBeamUserSlots::GetUserDataAtSlot(FUserSlot SlotId, FBeamRealmUser& OutUser
 	return false;
 }
 
-bool UBeamUserSlots::GetUserDataWithRefreshTokenAndPid(const FString& RefreshToken, const FString& Pid, FBeamRealmUser& OutUserData, FUserSlot& OutUserSlot) const
+bool UBeamUserSlots::GetUserDataWithRefreshTokenAndPid(const FString& RefreshToken, const FBeamPid& Pid, FBeamRealmUser& OutUserData, FUserSlot& OutUserSlot) const
 {
 	for (const auto& UserMapping : AuthenticatedUserMapping)
 	{
@@ -122,6 +123,7 @@ bool UBeamUserSlots::GetUserDataWithRefreshTokenAndPid(const FString& RefreshTok
 		}
 	}
 
+	OutUserData.AccountId = -1;
 	OutUserData.GamerTag = -1;
 	OutUserData.Email = TEXT("");
 	OutUserData.AuthToken = FBeamAuthToken{TEXT(""), TEXT(""), 0};
@@ -131,14 +133,14 @@ bool UBeamUserSlots::GetUserDataWithRefreshTokenAndPid(const FString& RefreshTok
 	return false;
 }
 
-void UBeamUserSlots::SetAuthenticationDataAtSlot(FUserSlot SlotId, const FString& AccessToken, const FString& RefreshToken, const int64& ExpiresIn, const FString& Cid, const FString& Pid,
+void UBeamUserSlots::SetAuthenticationDataAtSlot(FUserSlot SlotId, const FString& AccessToken, const FString& RefreshToken, const int64& ExpiresIn, const FBeamCid& Cid, const FBeamPid& Pid,
                                                  const UObject* CallingContext)
 {
 	const auto NamespacedSlotId = GetNamespacedSlotId(SlotId, CallingContext);
 
 	const auto AuthenticatedUser = FBeamAuthToken{AccessToken, RefreshToken, ExpiresIn};
 	const auto UserRealmData = FBeamRealmHandle{Cid, Pid};
-	const auto RealmUser = FBeamRealmUser{-1, TEXT(""), UserRealmData, AuthenticatedUser};
+	const auto RealmUser = FBeamRealmUser{-1, -1, TEXT(""), UserRealmData, AuthenticatedUser};
 
 	if (!AuthenticatedUserMapping.Contains(NamespacedSlotId))
 	{
@@ -158,7 +160,7 @@ void UBeamUserSlots::SetAuthenticationDataAtSlot(FUserSlot SlotId, const FString
 	}
 }
 
-void UBeamUserSlots::SetGamerTagAtSlot(FUserSlot SlotId, const int64& GamerTag, const UObject* CallingContext)
+void UBeamUserSlots::SetGamerTagAtSlot(FUserSlot SlotId, const FBeamGamerTag& GamerTag, const UObject* CallingContext)
 {
 	const auto NamespacedSlotId = GetNamespacedSlotId(SlotId, CallingContext);
 
@@ -169,7 +171,21 @@ void UBeamUserSlots::SetGamerTagAtSlot(FUserSlot SlotId, const int64& GamerTag, 
 	auto& ExistingRealmUser = AuthenticatedUsers[UserSlotIdx];
 	ExistingRealmUser.GamerTag = GamerTag;
 
-	UE_LOG(LogBeamUserSlots, Verbose, TEXT("Updated GamerTag at slot!\nUSER_SLOT=%s, GAMERTAG=%lld"), *NamespacedSlotId, GamerTag);
+	UE_LOG(LogBeamUserSlots, Verbose, TEXT("Updated GamerTag at slot!\nUSER_SLOT=%s, GAMERTAG=%lld"), *NamespacedSlotId, GamerTag.AsLong);
+}
+
+void UBeamUserSlots::SetAccountIdAtSlot(FUserSlot SlotId, const FBeamAccountId& AccountId, const UObject* CallingContext)
+{
+	const auto NamespacedSlotId = GetNamespacedSlotId(SlotId, CallingContext);
+
+	// This is here since you need to be authenticated to get the gamer tag anyways...
+	ensureAlwaysMsgf(AuthenticatedUserMapping.Contains(NamespacedSlotId), TEXT("This must always be called after SetAuthenticationDataAtSlot."));
+
+	const auto UserSlotIdx = AuthenticatedUserMapping.FindRef(NamespacedSlotId);
+	auto& ExistingRealmUser = AuthenticatedUsers[UserSlotIdx];
+	ExistingRealmUser.AccountId = AccountId;
+
+	UE_LOG(LogBeamUserSlots, Verbose, TEXT("Updated GamerTag at slot!\nUSER_SLOT=%s, GAMERTAG=%lld"), *NamespacedSlotId, AccountId.AsLong);
 }
 
 
@@ -187,7 +203,7 @@ void UBeamUserSlots::SetEmailAtSlot(FUserSlot SlotId, const FString& Email, cons
 	UE_LOG(LogBeamUserSlots, Verbose, TEXT("Updated Email at slot!\nUSER_SLOT=%s, EMAIL=%s"), *NamespacedSlotId, *Email);
 }
 
-void UBeamUserSlots::SetPIDAtSlot(FUserSlot SlotId, const FString& Pid, const UObject* CallingContext)
+void UBeamUserSlots::SetPIDAtSlot(FUserSlot SlotId, const FBeamPid& Pid, const UObject* CallingContext)
 {
 	const auto NamespacedSlotId = GetNamespacedSlotId(SlotId, CallingContext);
 
@@ -198,7 +214,7 @@ void UBeamUserSlots::SetPIDAtSlot(FUserSlot SlotId, const FString& Pid, const UO
 	auto& ExistingRealmUser = AuthenticatedUsers[UserSlotIdx];
 	ExistingRealmUser.RealmHandle.Pid = Pid;
 
-	UE_LOG(LogBeamUserSlots, Verbose, TEXT("Updated PID at slot!\nUSER_SLOT=%s, PID=%s"), *NamespacedSlotId, *Pid);
+	UE_LOG(LogBeamUserSlots, Verbose, TEXT("Updated PID at slot!\nUSER_SLOT=%s, PID=%s"), *NamespacedSlotId, *Pid.AsString);
 }
 
 void UBeamUserSlots::TriggerUserAuthenticatedIntoSlot(FUserSlot SlotId, const UObject* CallingContext)
@@ -255,6 +271,7 @@ bool UBeamUserSlots::SaveSlot(FUserSlot SlotId, const UObject* CallingContext)
 	// Save the User Account data to the slot.
 	const auto SavedUserAccountDataPath = GetSavedSlotAccountFilePath(NamespacedSlotId);
 	const auto AccountDataForSlot = FUserSlotAccountData{
+		User.AccountId,
 		User.GamerTag,
 		User.Email
 	};
@@ -304,7 +321,7 @@ void UBeamUserSlots::ClearUserAtSlot(FUserSlot SlotId, const EUserSlotClearedRea
 			// Save the User Account data to the slot.
 			const auto SavedUserAccountDataPath = GetSavedSlotAccountFilePath(NamespacedSlotId);
 
-			const auto AccountDataForSlot = FUserSlotAccountData{-1, TEXT("")};
+			const auto AccountDataForSlot = FUserSlotAccountData{-1, -1, TEXT("")};
 			FString JsonSerializedAccountData;
 			ensureAlways(FJsonObjectConverter::UStructToJsonObjectString(AccountDataForSlot, JsonSerializedAccountData));
 
@@ -337,6 +354,11 @@ void UBeamUserSlots::ClearUserAtSlot(FUserSlot SlotId, const EUserSlotClearedRea
 	{
 		UE_LOG(LogBeamUserSlots, Verbose, TEXT("No Authenticated User is loaded at Slot!\nUSER_SLOT=%s"), *NamespacedSlotId);
 	}
+}
+
+bool UBeamUserSlots::IsUserSlotAuthenticated(FUserSlot SlotId, const UObject* CallingContext)
+{
+	return AuthenticatedUserMapping.Contains(GetNamespacedSlotId(SlotId, CallingContext));
 }
 
 
@@ -374,7 +396,7 @@ bool UBeamUserSlots::TryLoadSavedUserAtSlot(FUserSlot SlotId, UObject* CallingCo
 			// TODO: we might want to consider saving the auth data as a JSON Array of FUserSlotAuthData per slot and keeping auth data for each CID/PID... for now,
 			// TODO: we'll just overwrite whenever a realm change happens.			
 			const auto TargetRealm = GetDefault<UBeamCoreSettings>()->TargetRealm;
-			if(SlotSerializedAuthData.Cid.Equals(TargetRealm.Cid) && SlotSerializedAuthData.Pid.Equals(TargetRealm.Pid))
+			if(SlotSerializedAuthData.Cid == TargetRealm.Cid && SlotSerializedAuthData.Pid == TargetRealm.Pid)
 			{
 				// We try to deserialize the user slot data
 				FUserSlotAccountData SlotSerializedAccountData;
@@ -382,16 +404,17 @@ bool UBeamUserSlots::TryLoadSavedUserAtSlot(FUserSlot SlotId, UObject* CallingCo
 				ensureAlwaysMsgf(DidDeserializeAccountData, TEXT("Failed deserialization of %s_Account.json file.\nPath=%s"), *NamespacedSlotId, *SavedAccountDataPath);
 
 				SetAuthenticationDataAtSlot(SlotId, AccessToken, RefreshToken, ExpiresIn, Cid, Pid, CallingContext);
+				SetAccountIdAtSlot(SlotId, SlotSerializedAccountData.AccountId, CallingContext);
 				SetGamerTagAtSlot(SlotId, SlotSerializedAccountData.GamerTag, CallingContext);
 				SetEmailAtSlot(SlotId, SlotSerializedAccountData.Email, CallingContext);
 				TriggerUserAuthenticatedIntoSlot(SlotId, CallingContext);
 
-				UE_LOG(LogBeamUserSlots, Verbose, TEXT("Loaded user saved at slot!\nUSER_SLOT=%s, CID=%s, PID=%s"), *NamespacedSlotId, *Cid, *Pid);
+				UE_LOG(LogBeamUserSlots, Verbose, TEXT("Loaded user saved at slot!\nUSER_SLOT=%s, CID=%s, PID=%s"), *NamespacedSlotId, *Cid.AsString, *Pid.AsString);
 				return true;
 			}
 
-			UE_LOG(LogBeamUserSlots, Warning, TEXT("Failed to load user saved at slot!\nUSER_SLOT=%s, CID=%s, PID=%s, TARGET_CID=%s, TARGET_PID=%s"), *NamespacedSlotId, *Cid, *Pid,
-				*TargetRealm.Cid, *TargetRealm.Pid);
+			UE_LOG(LogBeamUserSlots, Warning, TEXT("Failed to load user saved at slot!\nUSER_SLOT=%s, CID=%s, PID=%s, TARGET_CID=%s, TARGET_PID=%s"), *NamespacedSlotId, *Cid.AsString, *Pid.AsString,
+				*TargetRealm.Cid.AsString, *TargetRealm.Pid.AsString);
 		}
 
 

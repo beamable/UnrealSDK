@@ -13,7 +13,7 @@ void UAccountsBasicAccount::DeserializeRequestResponse(UObject* RequestData, FSt
 void UAccountsBasicAccount ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("privilegedAccount"), bPrivilegedAccount);
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("id"), &Id, Serializer);
 	Serializer->WriteValue(TEXT("createdTimeMillis"), CreatedTimeMillis);
 	Serializer->WriteValue(TEXT("updatedTimeMillis"), UpdatedTimeMillis);
 	UBeamJsonUtils::SerializeArray<UThirdPartyAssociation*>(TEXT("thirdParties"), ThirdParties, Serializer);
@@ -37,7 +37,7 @@ void UAccountsBasicAccount ::BeamSerializeProperties(TUnrealJsonSerializer& Seri
 void UAccountsBasicAccount::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("privilegedAccount"), bPrivilegedAccount);
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("id"), &Id, Serializer);
 	Serializer->WriteValue(TEXT("createdTimeMillis"), CreatedTimeMillis);
 	Serializer->WriteValue(TEXT("updatedTimeMillis"), UpdatedTimeMillis);
 	UBeamJsonUtils::SerializeArray<UThirdPartyAssociation*>(TEXT("thirdParties"), ThirdParties, Serializer);
@@ -61,7 +61,7 @@ void UAccountsBasicAccount::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 void UAccountsBasicAccount ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bPrivilegedAccount = Bag->GetBoolField(TEXT("privilegedAccount"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("id")), Id, OuterOwner);
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("createdTimeMillis")), CreatedTimeMillis);
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("updatedTimeMillis")), UpdatedTimeMillis);
 	UBeamJsonUtils::DeserializeArray<UThirdPartyAssociation*>(Bag->GetArrayField(TEXT("thirdParties")), ThirdParties, OuterOwner);

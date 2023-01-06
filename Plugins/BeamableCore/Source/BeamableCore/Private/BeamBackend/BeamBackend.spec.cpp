@@ -14,7 +14,7 @@ void FBeamBackendSpec::Define()
 {
 	Describe("Request/Response", [this]()
 	{
-		const FBeamRealmHandle FakeRealmHandle{"TEST_CID", "TEST_PID"};
+		const FBeamRealmHandle FakeRealmHandle{"000000000000", "DE_000000000000"};
 		const FBeamRetryConfig FakeNoRetryConfig{{}, {}, 10, TArray<float>{0.5, 1}, 0};
 		const FBeamRetryConfig FakeResponseCodeRetryConfig{{503}, {}, 10, TArray<float>{0.5, 1}, 1};
 		const FBeamRetryConfig FakeErrorCodeRetryConfig{{}, {"ErrorCode"}, 10, TArray<float>{0.5, 1}, 1};
@@ -142,7 +142,7 @@ void FBeamBackendSpec::Define()
 				TestTrue("Authorization Header is Set correctly",
 				         Request->GetHeader(UBeamBackend::HEADER_AUTHORIZATION) == FString::Format(*UBeamBackend::HEADER_VALUE_AUTHORIZATION, {FakeAuthToken.AccessToken}));
 				TestTrue("Request Scope Header is Set correctly",
-				         Request->GetHeader(UBeamBackend::HEADER_REQUEST_SCOPE) == FString::Format(TEXT("{0}.{1}"), {FakeRealmHandle.Cid, FakeRealmHandle.Pid}));
+				         Request->GetHeader(UBeamBackend::HEADER_REQUEST_SCOPE) == FString::Format(TEXT("{0}.{1}"), {FakeRealmHandle.Cid.AsString, FakeRealmHandle.Pid.AsString}));
 
 				TestTrue("Client ID Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_CLIENT_ID) == FakeRealmHandle.Cid);
 				TestTrue("Project ID Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_PROJECT_ID) == FakeRealmHandle.Pid);
@@ -180,7 +180,7 @@ void FBeamBackendSpec::Define()
 				TestTrue("Authorization Header is Set correctly",
 				         Request->GetHeader(UBeamBackend::HEADER_AUTHORIZATION) == FString::Format(*UBeamBackend::HEADER_VALUE_AUTHORIZATION, {FakeAuthToken.AccessToken}));
 				TestTrue("Request Scope Header is Set correctly",
-				         Request->GetHeader(UBeamBackend::HEADER_REQUEST_SCOPE) == FString::Format(TEXT("{0}.{1}"), {FakeRealmHandle.Cid, FakeRealmHandle.Pid}));
+				         Request->GetHeader(UBeamBackend::HEADER_REQUEST_SCOPE) == FString::Format(TEXT("{0}.{1}"), {FakeRealmHandle.Cid.AsString, FakeRealmHandle.Pid.AsString}));
 
 				TestTrue("Client ID Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_CLIENT_ID) == FakeRealmHandle.Cid);
 				TestTrue("Project ID Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_PROJECT_ID) == FakeRealmHandle.Pid);

@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalString.h"
+#include "AutoGen/Optionals/OptionalBeamStatsType.h"
 #include "AutoGen/Optionals/OptionalMapOfString.h"
 #include "AutoGen/Optionals/OptionalBool.h"
 
@@ -19,7 +19,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Emit Analytics", Category="Beam")
 	FOptionalBool bEmitAnalytics;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	FOptionalString ObjectId;
+	FOptionalBeamStatsType ObjectId;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Set", Category="Beam")
 	FOptionalMapOfString Set;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Add", Category="Beam")

@@ -9,7 +9,7 @@ void UPutAccountsRequest::BuildVerb(FString& VerbString) const
 void UPutAccountsRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/accounts/{objectId}/");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -27,7 +27,7 @@ void UPutAccountsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutAccountsRequest* UPutAccountsRequest::Make(int64 _ObjectId, bool _bHasThirdPartyToken, FOptionalString _ThirdParty, FOptionalString _Country, FOptionalString _Language, FOptionalGamerTagAssociation _GamerTagAssoc, FOptionalString _Token, FOptionalString _DeviceId, FOptionalString _UserName, FOptionalArrayOfExternalIdentity _External, UObject* RequestOwner)
+UPutAccountsRequest* UPutAccountsRequest::Make(FBeamAccountId _ObjectId, bool _bHasThirdPartyToken, FOptionalString _ThirdParty, FOptionalString _Country, FOptionalString _Language, FOptionalGamerTagAssociation _GamerTagAssoc, FOptionalString _Token, FOptionalString _DeviceId, FOptionalString _UserName, FOptionalArrayOfExternalIdentity _External, UObject* RequestOwner)
 {
 	UPutAccountsRequest* Req = NewObject<UPutAccountsRequest>(RequestOwner);
 

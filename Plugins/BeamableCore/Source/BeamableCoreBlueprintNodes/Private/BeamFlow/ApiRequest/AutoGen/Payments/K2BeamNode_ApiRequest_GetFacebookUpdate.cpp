@@ -6,7 +6,7 @@
 
 #include "AutoGen/SubSystems/BeamPaymentsApi.h"
 #include "AutoGen/SubSystems/Payments/GetFacebookUpdateRequest.h"
-#include "AutoGen/SubscriptionVerificationResponse.h"
+#include "Serialization/BeamPlainTextResponseBody.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetFacebookUpdate"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_GetFacebookUpdate::GetRequestClass() const
 
 UClass* UK2BeamNode_ApiRequest_GetFacebookUpdate::GetResponseClass() const
 {
-	return USubscriptionVerificationResponse::StaticClass();
+	return UBeamPlainTextResponseBody::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_GetFacebookUpdate::GetRequestSuccessDelegateName() const

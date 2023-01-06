@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "WidgetBlueprint.h"
-#include "AutoGen/Optionals/OptionalString.h"
+#include "AutoGen/Optionals/OptionalBeamPid.h"
+#include "BeamBackend/SemanticTypes/BeamCid.h"
+#include "BeamBackend/SemanticTypes/BeamPid.h"
 #include "BeamEditorSettings.generated.h"
 
 
@@ -12,15 +14,15 @@ USTRUCT(BlueprintType)
 struct FBeamProjectRealmData
 {
 	GENERATED_BODY()
+	
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	FBeamCid CID;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	FString CID;
+	FBeamPid PID;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	FString PID;
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	FOptionalString ParentPID;
+	FOptionalBeamPid ParentPID;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	FString ProjectName;

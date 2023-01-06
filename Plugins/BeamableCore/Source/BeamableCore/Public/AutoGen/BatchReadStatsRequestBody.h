@@ -4,6 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "BeamBackend/SemanticTypes/BeamStatsType.h"
 #include "AutoGen/Optionals/OptionalString.h"
 
 #include "BatchReadStatsRequestBody.generated.h"
@@ -15,7 +16,7 @@ class BEAMABLECORE_API UBatchReadStatsRequestBody : public UObject, public FBeam
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Ids", Category="Beam")
-	FString ObjectIds;
+	FBeamStatsType ObjectIds;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stats", Category="Beam")
 	FOptionalString Stats;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Format", Category="Beam")

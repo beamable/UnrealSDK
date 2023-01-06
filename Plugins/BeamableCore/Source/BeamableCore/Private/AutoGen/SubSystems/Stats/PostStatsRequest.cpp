@@ -9,7 +9,7 @@ void UPostStatsRequest::BuildVerb(FString& VerbString) const
 void UPostStatsRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/stats/{objectId}/");
-	Route = Route.Replace(TEXT("{objectId}"), *ObjectId);
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -27,7 +27,7 @@ void UPostStatsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostStatsRequest* UPostStatsRequest::Make(FString _ObjectId, FOptionalBool _bEmitAnalytics, FOptionalString Body_ObjectId, FOptionalMapOfString _Set, FOptionalMapOfString _Add, UObject* RequestOwner)
+UPostStatsRequest* UPostStatsRequest::Make(FBeamStatsType _ObjectId, FOptionalBool _bEmitAnalytics, FOptionalBeamStatsType Body_ObjectId, FOptionalMapOfString _Set, FOptionalMapOfString _Add, UObject* RequestOwner)
 {
 	UPostStatsRequest* Req = NewObject<UPostStatsRequest>(RequestOwner);
 

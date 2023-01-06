@@ -22,7 +22,7 @@ FString UFriendshipStatusLibrary::FriendshipStatusToJsonString(const UFriendship
 	return Result;
 }	
 
-UFriendshipStatus* UFriendshipStatusLibrary::Make(bool bIsBlocked, FString FriendId, FString PlayerId, UObject* Outer)
+UFriendshipStatus* UFriendshipStatusLibrary::Make(bool bIsBlocked, FBeamGamerTag FriendId, FBeamGamerTag PlayerId, UObject* Outer)
 {
 	auto Serializable = NewObject<UFriendshipStatus>(Outer);
 	Serializable->bIsBlocked = bIsBlocked;
@@ -32,7 +32,7 @@ UFriendshipStatus* UFriendshipStatusLibrary::Make(bool bIsBlocked, FString Frien
 	return Serializable;
 }
 
-void UFriendshipStatusLibrary::Break(const UFriendshipStatus* Serializable, bool& bIsBlocked, FString& FriendId, FString& PlayerId)
+void UFriendshipStatusLibrary::Break(const UFriendshipStatus* Serializable, bool& bIsBlocked, FBeamGamerTag& FriendId, FBeamGamerTag& PlayerId)
 {
 	bIsBlocked = Serializable->bIsBlocked;
 	FriendId = Serializable->FriendId;

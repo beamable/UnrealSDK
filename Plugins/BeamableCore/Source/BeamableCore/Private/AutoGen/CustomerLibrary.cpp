@@ -22,7 +22,7 @@ FString UCustomerLibrary::CustomerToJsonString(const UCustomer* Serializable, co
 	return Result;
 }	
 
-UCustomer* UCustomerLibrary::Make(FString Name, int64 Cid, TArray<UProject*> Projects, TArray<URealmsBasicAccount*> Accounts, FOptionalString PaymentStatus, FOptionalString Image, FOptionalString Contact, FOptionalString Alias, FOptionalInt64 Updated, FOptionalString CrmLink, FOptionalInt64 Created, UObject* Outer)
+UCustomer* UCustomerLibrary::Make(FString Name, FBeamCid Cid, TArray<UProject*> Projects, TArray<URealmsBasicAccount*> Accounts, FOptionalString PaymentStatus, FOptionalString Image, FOptionalString Contact, FOptionalString Alias, FOptionalInt64 Updated, FOptionalString CrmLink, FOptionalInt64 Created, UObject* Outer)
 {
 	auto Serializable = NewObject<UCustomer>(Outer);
 	Serializable->Name = Name;
@@ -40,7 +40,7 @@ UCustomer* UCustomerLibrary::Make(FString Name, int64 Cid, TArray<UProject*> Pro
 	return Serializable;
 }
 
-void UCustomerLibrary::Break(const UCustomer* Serializable, FString& Name, int64& Cid, TArray<UProject*>& Projects, TArray<URealmsBasicAccount*>& Accounts, FOptionalString& PaymentStatus, FOptionalString& Image, FOptionalString& Contact, FOptionalString& Alias, FOptionalInt64& Updated, FOptionalString& CrmLink, FOptionalInt64& Created)
+void UCustomerLibrary::Break(const UCustomer* Serializable, FString& Name, FBeamCid& Cid, TArray<UProject*>& Projects, TArray<URealmsBasicAccount*>& Accounts, FOptionalString& PaymentStatus, FOptionalString& Image, FOptionalString& Contact, FOptionalString& Alias, FOptionalInt64& Updated, FOptionalString& CrmLink, FOptionalInt64& Created)
 {
 	Name = Serializable->Name;
 	Cid = Serializable->Cid;

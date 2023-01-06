@@ -18,8 +18,8 @@ public:
 	static FString ProjectToJsonString(const UProject* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make Project", meta=(DefaultToSelf="Outer", AdvancedDisplay="bSharded, bSigval, DisplayName, Parent, Status, Created, Children, Config, Outer", NativeMakeFunc))
-	static UProject* Make(bool bArchived, bool bRoot, FString Secret, FString Name, FString Plan, TMap<FString, FString> CustomCharts, FOptionalBool bSharded, FOptionalBool bSigval, FOptionalString DisplayName, FOptionalString Parent, FOptionalString Status, FOptionalInt64 Created, FOptionalArrayOfString Children, FOptionalMapOfString Config, UObject* Outer);
+	static UProject* Make(bool bArchived, bool bRoot, FString Secret, FBeamPid Name, FString Plan, TMap<FString, FString> CustomCharts, FOptionalBool bSharded, FOptionalBool bSigval, FOptionalString DisplayName, FOptionalString Parent, FOptionalString Status, FOptionalInt64 Created, FOptionalArrayOfString Children, FOptionalMapOfString Config, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break Project", meta=(NativeBreakFunc))
-	static void Break(const UProject* Serializable, bool& bArchived, bool& bRoot, FString& Secret, FString& Name, FString& Plan, TMap<FString, FString>& CustomCharts, FOptionalBool& bSharded, FOptionalBool& bSigval, FOptionalString& DisplayName, FOptionalString& Parent, FOptionalString& Status, FOptionalInt64& Created, FOptionalArrayOfString& Children, FOptionalMapOfString& Config);
+	static void Break(const UProject* Serializable, bool& bArchived, bool& bRoot, FString& Secret, FBeamPid& Name, FString& Plan, TMap<FString, FString>& CustomCharts, FOptionalBool& bSharded, FOptionalBool& bSigval, FOptionalString& DisplayName, FOptionalString& Parent, FOptionalString& Status, FOptionalInt64& Created, FOptionalArrayOfString& Children, FOptionalMapOfString& Config);
 };

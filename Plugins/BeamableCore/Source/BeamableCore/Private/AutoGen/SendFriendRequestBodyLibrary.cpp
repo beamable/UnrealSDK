@@ -22,7 +22,7 @@ FString USendFriendRequestBodyLibrary::SendFriendRequestBodyToJsonString(const U
 	return Result;
 }	
 
-USendFriendRequestBody* USendFriendRequestBodyLibrary::Make(int64 GamerTag, UObject* Outer)
+USendFriendRequestBody* USendFriendRequestBodyLibrary::Make(FBeamGamerTag GamerTag, UObject* Outer)
 {
 	auto Serializable = NewObject<USendFriendRequestBody>(Outer);
 	Serializable->GamerTag = GamerTag;
@@ -30,7 +30,7 @@ USendFriendRequestBody* USendFriendRequestBodyLibrary::Make(int64 GamerTag, UObj
 	return Serializable;
 }
 
-void USendFriendRequestBodyLibrary::Break(const USendFriendRequestBody* Serializable, int64& GamerTag)
+void USendFriendRequestBodyLibrary::Break(const USendFriendRequestBody* Serializable, FBeamGamerTag& GamerTag)
 {
 	GamerTag = Serializable->GamerTag;
 		

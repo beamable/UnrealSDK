@@ -4,8 +4,8 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalInt64.h"
-#include "AutoGen/Optionals/OptionalString.h"
+#include "AutoGen/Optionals/OptionalBeamCid.h"
+#include "AutoGen/Optionals/OptionalBeamPid.h"
 
 #include "ListTokensRequestBody.generated.h"
 
@@ -22,9 +22,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag Or Account Id", Category="Beam")
 	int64 GamerTagOrAccountId;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid", Category="Beam")
-	FOptionalInt64 Cid;
+	FOptionalBeamCid Cid;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pid", Category="Beam")
-	FOptionalString Pid;
+	FOptionalBeamPid Pid;
 
 	
 

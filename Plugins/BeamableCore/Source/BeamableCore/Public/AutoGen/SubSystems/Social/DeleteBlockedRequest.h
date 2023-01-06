@@ -37,7 +37,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Social", DisplayName="Beam - Make DeleteBlocked",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
-	static UDeleteBlockedRequest* Make(FString _PlayerId, UObject* RequestOwner);
+	static UDeleteBlockedRequest* Make(FBeamGamerTag _PlayerId, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

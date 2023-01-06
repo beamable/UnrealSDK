@@ -5,6 +5,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
+#include "BeamBackend/SemanticTypes/BeamGamerTag.h"
 #include "AutoGen/Optionals/OptionalMapOfInt64.h"
 
 #include "TransferRequestBody.generated.h"
@@ -16,7 +17,7 @@ class BEAMABLECORE_API UTransferRequestBody : public UObject, public FBeamJsonSe
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Recipient Player", Category="Beam")
-	int64 RecipientPlayer;
+	FBeamGamerTag RecipientPlayer;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Transaction", Category="Beam")
 	FOptionalString Transaction;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currencies", Category="Beam")

@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-
+#include "BeamBackend/SemanticTypes/BeamPid.h"
 
 #include "UnarchiveProjectRequestBody.generated.h"
 
@@ -15,7 +15,7 @@ class BEAMABLECORE_API UUnarchiveProjectRequestBody : public UObject, public FBe
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Project Id", Category="Beam")
-	FString ProjectId;
+	FBeamPid ProjectId;
 
 	
 

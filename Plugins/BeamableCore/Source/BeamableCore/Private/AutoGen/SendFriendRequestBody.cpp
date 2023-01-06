@@ -1,21 +1,21 @@
 
 #include "AutoGen/SendFriendRequestBody.h"
+#include "Serialization/BeamJsonUtils.h"
 
-#include "Misc/DefaultValueHelper.h"
 
 
 
 void USendFriendRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("gamerTag"), GamerTag);
+	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("gamerTag"), &GamerTag, Serializer);
 }
 
 void USendFriendRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("gamerTag"), GamerTag);		
+	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("gamerTag"), &GamerTag, Serializer);		
 }
 
 void USendFriendRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("gamerTag")), GamerTag);
+	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("gamerTag")), GamerTag, OuterOwner);
 }

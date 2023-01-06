@@ -4,6 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
+#include "BeamBackend/SemanticTypes/BeamGamerTag.h"
 #include "AutoGen/Friend.h"
 #include "AutoGen/PlayerId.h"
 #include "AutoGen/Invite.h"
@@ -17,7 +18,7 @@ class BEAMABLECORE_API USocial : public UObject, public FBeamJsonSerializable, p
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
-	FString PlayerId;
+	FBeamGamerTag PlayerId;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Friends", Category="Beam")
 	TArray<UFriend*> Friends;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Blocked", Category="Beam")

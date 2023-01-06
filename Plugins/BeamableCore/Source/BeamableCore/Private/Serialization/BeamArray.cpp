@@ -1,10 +1,8 @@
 ﻿#include "Serialization/BeamArray.h"
 
 void FBeamArray::BeamSerialize(TUnrealJsonSerializer& Serializer) const
-{
-	Serializer->WriteArrayStart();
-	BeamSerializeProperties(Serializer);
-	Serializer->WriteArrayEnd();
+{	
+	BeamSerializeProperties(Serializer);	
 }
 
 void FBeamArray::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const

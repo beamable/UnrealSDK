@@ -7,18 +7,21 @@
 
 void UExternalIdentity ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("providerAddress"), ProviderAddress);
+	Serializer->WriteValue(TEXT("providerService"), ProviderService);
 	Serializer->WriteValue(TEXT("userId"), UserId);
+	Serializer->WriteValue(TEXT("providerNamespace"), ProviderNamespace);
 }
 
 void UExternalIdentity::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("providerAddress"), ProviderAddress);
-	Serializer->WriteValue(TEXT("userId"), UserId);		
+	Serializer->WriteValue(TEXT("providerService"), ProviderService);
+	Serializer->WriteValue(TEXT("userId"), UserId);
+	Serializer->WriteValue(TEXT("providerNamespace"), ProviderNamespace);		
 }
 
 void UExternalIdentity ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	ProviderAddress = Bag->GetStringField(TEXT("providerAddress"));
+	ProviderService = Bag->GetStringField(TEXT("providerService"));
 	UserId = Bag->GetStringField(TEXT("userId"));
+	ProviderNamespace = Bag->GetStringField(TEXT("providerNamespace"));
 }

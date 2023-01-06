@@ -22,7 +22,7 @@ FString UStatsSearchResponseLibrary::StatsSearchResponseToJsonString(const UStat
 	return Result;
 }	
 
-UStatsSearchResponse* UStatsSearchResponseLibrary::Make(TArray<int64> Ids, UObject* Outer)
+UStatsSearchResponse* UStatsSearchResponseLibrary::Make(TArray<FBeamGamerTag> Ids, UObject* Outer)
 {
 	auto Serializable = NewObject<UStatsSearchResponse>(Outer);
 	Serializable->Ids = Ids;
@@ -30,7 +30,7 @@ UStatsSearchResponse* UStatsSearchResponseLibrary::Make(TArray<int64> Ids, UObje
 	return Serializable;
 }
 
-void UStatsSearchResponseLibrary::Break(const UStatsSearchResponse* Serializable, TArray<int64>& Ids)
+void UStatsSearchResponseLibrary::Break(const UStatsSearchResponse* Serializable, TArray<FBeamGamerTag>& Ids)
 {
 	Ids = Serializable->Ids;
 		

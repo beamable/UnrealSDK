@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "BeamBackend/SemanticTypes/BeamGamerTag.h"
 #include "AutoGen/TransferRequestBody.h"
 #include "AutoGen/CommonResponse.h"
 
@@ -22,7 +22,7 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	int64 ObjectId;
+	FBeamGamerTag ObjectId;
 	
 	// Query Params
 	
@@ -39,7 +39,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Inventory", DisplayName="Beam - Make PutTransfer",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Transaction,_Currencies,RequestOwner"))
-	static UPutTransferRequest* Make(int64 _ObjectId, int64 _RecipientPlayer, FOptionalString _Transaction, FOptionalMapOfInt64 _Currencies, UObject* RequestOwner);
+	static UPutTransferRequest* Make(FBeamGamerTag _ObjectId, FBeamGamerTag _RecipientPlayer, FOptionalString _Transaction, FOptionalMapOfInt64 _Currencies, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

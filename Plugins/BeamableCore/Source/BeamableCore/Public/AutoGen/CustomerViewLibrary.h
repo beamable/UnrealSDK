@@ -18,8 +18,8 @@ public:
 	static FString CustomerViewToJsonString(const UCustomerView* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make CustomerView", meta=(DefaultToSelf="Outer", AdvancedDisplay="Alias, Outer", NativeMakeFunc))
-	static UCustomerView* Make(int64 Cid, FString Name, TArray<UProjectView*> Projects, FOptionalString Alias, UObject* Outer);
+	static UCustomerView* Make(FBeamCid Cid, FString Name, TArray<UProjectView*> Projects, FOptionalString Alias, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break CustomerView", meta=(NativeBreakFunc))
-	static void Break(const UCustomerView* Serializable, int64& Cid, FString& Name, TArray<UProjectView*>& Projects, FOptionalString& Alias);
+	static void Break(const UCustomerView* Serializable, FBeamCid& Cid, FString& Name, TArray<UProjectView*>& Projects, FOptionalString& Alias);
 };

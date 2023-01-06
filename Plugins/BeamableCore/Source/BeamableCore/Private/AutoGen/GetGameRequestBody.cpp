@@ -1,21 +1,21 @@
 
 #include "AutoGen/GetGameRequestBody.h"
-
+#include "Serialization/BeamJsonUtils.h"
 
 
 
 
 void UGetGameRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("rootPID"), RootPID);
+	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("rootPID"), &RootPID, Serializer);
 }
 
 void UGetGameRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("rootPID"), RootPID);		
+	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("rootPID"), &RootPID, Serializer);		
 }
 
 void UGetGameRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	RootPID = Bag->GetStringField(TEXT("rootPID"));
+	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("rootPID")), RootPID, OuterOwner);
 }

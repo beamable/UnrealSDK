@@ -22,7 +22,7 @@ FString USocialLibrary::SocialToJsonString(const USocial* Serializable, const bo
 	return Result;
 }	
 
-USocial* USocialLibrary::Make(FString PlayerId, TArray<UFriend*> Friends, TArray<UPlayerId*> Blocked, TArray<UInvite*> Invites, UObject* Outer)
+USocial* USocialLibrary::Make(FBeamGamerTag PlayerId, TArray<UFriend*> Friends, TArray<UPlayerId*> Blocked, TArray<UInvite*> Invites, UObject* Outer)
 {
 	auto Serializable = NewObject<USocial>(Outer);
 	Serializable->PlayerId = PlayerId;
@@ -33,7 +33,7 @@ USocial* USocialLibrary::Make(FString PlayerId, TArray<UFriend*> Friends, TArray
 	return Serializable;
 }
 
-void USocialLibrary::Break(const USocial* Serializable, FString& PlayerId, TArray<UFriend*>& Friends, TArray<UPlayerId*>& Blocked, TArray<UInvite*>& Invites)
+void USocialLibrary::Break(const USocial* Serializable, FBeamGamerTag& PlayerId, TArray<UFriend*>& Friends, TArray<UPlayerId*>& Blocked, TArray<UInvite*>& Invites)
 {
 	PlayerId = Serializable->PlayerId;
 	Friends = Serializable->Friends;

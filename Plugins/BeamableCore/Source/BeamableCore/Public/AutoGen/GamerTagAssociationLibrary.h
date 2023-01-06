@@ -18,8 +18,8 @@ public:
 	static FString GamerTagAssociationToJsonString(const UGamerTagAssociation* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GamerTagAssociation", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UGamerTagAssociation* Make(FString ProjectId, int64 GamerTag, UObject* Outer);
+	static UGamerTagAssociation* Make(FBeamPid ProjectId, FBeamGamerTag GamerTag, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GamerTagAssociation", meta=(NativeBreakFunc))
-	static void Break(const UGamerTagAssociation* Serializable, FString& ProjectId, int64& GamerTag);
+	static void Break(const UGamerTagAssociation* Serializable, FBeamPid& ProjectId, FBeamGamerTag& GamerTag);
 };

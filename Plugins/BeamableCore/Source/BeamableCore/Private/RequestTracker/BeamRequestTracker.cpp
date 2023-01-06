@@ -151,8 +151,8 @@ void UBeamRequestTracker::TickOnBackendCleanUp(TArray<int64>& OutUsingRequestIds
 		UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Beamable CleanUp | Cleaning Up Data associated with WaitHandle. WAIT_HANDLE_ID=%llu"), HandleToCleanUp.WaitHandleId);
 
 		// Clear the handle from active ones
-		ActiveWaitHandles.Remove(HandleToCleanUp);		
-		
+		ActiveWaitHandles.Remove(HandleToCleanUp);
+
 		// Clear the handle from the map of dependencies for them.
 		ActiveRequestsForWaitHandles.Remove(HandleToCleanUp);
 		ActiveOperationsForWaitHandles.Remove(HandleToCleanUp);
@@ -221,7 +221,7 @@ FBeamWaitHandle UBeamRequestTracker::WaitAll(const TArray<FBeamRequestContext>& 
 
 	for (const auto& Operation : Operations)
 	{
-		bDepExists &=ActiveOperations.Contains(Operation);
+		bDepExists &= ActiveOperations.Contains(Operation);
 		ensureAlwaysMsgf(bDepExists, TEXT("Added Operation Dependency to WaitHandle does not exist. OWNER_WAIT_HANDLE=%lld, OPERATION_ID=%lld"),
 		                 WaitHandle.WaitHandleId, Operation.OperationId);
 
@@ -238,14 +238,12 @@ FBeamWaitHandle UBeamRequestTracker::WaitAll(const TArray<FBeamRequestContext>& 
 		UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Adding WaitHandle Dependency to WaitHandle. OWNER_WAIT_HANDLE=%lld, WAIT_HANDLE_ID=%lld"), WaitHandle.WaitHandleId, WaitDep.WaitHandleId);
 		ActiveWaitHandlesForWaitHandles.AddUnique(WaitHandle, WaitDep.WaitHandleId);
 	}
-	// TODO: Handle case of DEPENDENCIES BEING COMPLETE WHEN WE CALL WAIT.
-
 	ActiveWaitHandleCallbacks.Add(WaitHandle, OnComplete);
 
 	// Handle extremely unlikely edge-case of all dependencies of a wait being completed by the time you call the wait.
 	// Just going through this case typically means you're making some dangerous architecture decisions and you should probably re-think them.
-	// We only run this section if all the dependencies exist. This should only fail during our Automated Tests. 
-	if(bDepExists)
+	// We only run this section if all the dependencies exist. 
+	if (bDepExists)
 	{
 		TArray<int64> DependedOnRequests;
 		GatherRequestIdsFromWaitHandle(WaitHandle, DependedOnRequests);
@@ -260,10 +258,11 @@ FBeamWaitHandle UBeamRequestTracker::WaitAll(const TArray<FBeamRequestContext>& 
 		//   - The ID here is irrelevant so we pass in -1. Its irrelevant because we always update all WaitHandles when we run this tick.
 		//   - This is OK to run as the request timeout is significantly smaller than the amount of time we wait between BeamBackend clean up ticks so we are guaranteed to still have the
 		//     data for Requests/Operations/Wait Handles every time this runs.
-		if(bAreAllComplete)
+		if (bAreAllComplete)
 		{
 			TickOnRequestIdCompleted(-1);
-			UE_LOG(LogBeamRequestTracker, Warning, TEXT("All Wait Dependencies were completed by the time you called this. Consider revisiting your code that caused this to happen. OWNER_WAIT_HANDLE=%lld"), WaitHandle.WaitHandleId);
+			UE_LOG(LogBeamRequestTracker, Warning,
+			       TEXT("All Wait Dependencies were completed by the time you called this. Consider revisiting your code that caused this to happen. OWNER_WAIT_HANDLE=%lld"), WaitHandle.WaitHandleId);
 		}
 	}
 

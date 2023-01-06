@@ -22,19 +22,17 @@ FString UFacebookPaymentUpdateResponseLibrary::FacebookPaymentUpdateResponseToJs
 	return Result;
 }	
 
-UFacebookPaymentUpdateResponse* UFacebookPaymentUpdateResponseLibrary::Make(FString Result, FString ContentType, UObject* Outer)
+UFacebookPaymentUpdateResponse* UFacebookPaymentUpdateResponseLibrary::Make(FString Result, UObject* Outer)
 {
 	auto Serializable = NewObject<UFacebookPaymentUpdateResponse>(Outer);
 	Serializable->Result = Result;
-	Serializable->ContentType = ContentType;
 	
 	return Serializable;
 }
 
-void UFacebookPaymentUpdateResponseLibrary::Break(const UFacebookPaymentUpdateResponse* Serializable, FString& Result, FString& ContentType)
+void UFacebookPaymentUpdateResponseLibrary::Break(const UFacebookPaymentUpdateResponse* Serializable, FString& Result)
 {
 	Result = Serializable->Result;
-	ContentType = Serializable->ContentType;
 		
 }
 

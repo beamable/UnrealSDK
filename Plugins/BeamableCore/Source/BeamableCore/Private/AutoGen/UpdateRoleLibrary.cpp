@@ -22,7 +22,7 @@ FString UUpdateRoleLibrary::UpdateRoleToJsonString(const UUpdateRole* Serializab
 	return Result;
 }	
 
-UUpdateRole* UUpdateRoleLibrary::Make(FOptionalString Cid, FOptionalString Realm, FOptionalString Role, UObject* Outer)
+UUpdateRole* UUpdateRoleLibrary::Make(FOptionalBeamCid Cid, FOptionalBeamPid Realm, FOptionalString Role, UObject* Outer)
 {
 	auto Serializable = NewObject<UUpdateRole>(Outer);
 	Serializable->Cid = Cid;
@@ -32,7 +32,7 @@ UUpdateRole* UUpdateRoleLibrary::Make(FOptionalString Cid, FOptionalString Realm
 	return Serializable;
 }
 
-void UUpdateRoleLibrary::Break(const UUpdateRole* Serializable, FOptionalString& Cid, FOptionalString& Realm, FOptionalString& Role)
+void UUpdateRoleLibrary::Break(const UUpdateRole* Serializable, FOptionalBeamCid& Cid, FOptionalBeamPid& Realm, FOptionalString& Role)
 {
 	Cid = Serializable->Cid;
 	Realm = Serializable->Realm;

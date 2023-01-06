@@ -22,7 +22,7 @@ FString URenameProjectRequestBodyLibrary::RenameProjectRequestBodyToJsonString(c
 	return Result;
 }	
 
-URenameProjectRequestBody* URenameProjectRequestBodyLibrary::Make(FString ProjectId, FString NewName, UObject* Outer)
+URenameProjectRequestBody* URenameProjectRequestBodyLibrary::Make(FBeamPid ProjectId, FString NewName, UObject* Outer)
 {
 	auto Serializable = NewObject<URenameProjectRequestBody>(Outer);
 	Serializable->ProjectId = ProjectId;
@@ -31,7 +31,7 @@ URenameProjectRequestBody* URenameProjectRequestBodyLibrary::Make(FString Projec
 	return Serializable;
 }
 
-void URenameProjectRequestBodyLibrary::Break(const URenameProjectRequestBody* Serializable, FString& ProjectId, FString& NewName)
+void URenameProjectRequestBodyLibrary::Break(const URenameProjectRequestBody* Serializable, FBeamPid& ProjectId, FString& NewName)
 {
 	ProjectId = Serializable->ProjectId;
 	NewName = Serializable->NewName;

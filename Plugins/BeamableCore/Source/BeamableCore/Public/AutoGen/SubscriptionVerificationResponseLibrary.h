@@ -18,8 +18,8 @@ public:
 	static FString SubscriptionVerificationResponseToJsonString(const USubscriptionVerificationResponse* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make SubscriptionVerificationResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static USubscriptionVerificationResponse* Make(FString HubChallenge, FString ContentType, UObject* Outer);
+	static USubscriptionVerificationResponse* Make(FString HubChallenge, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break SubscriptionVerificationResponse", meta=(NativeBreakFunc))
-	static void Break(const USubscriptionVerificationResponse* Serializable, FString& HubChallenge, FString& ContentType);
+	static void Break(const USubscriptionVerificationResponse* Serializable, FString& HubChallenge);
 };

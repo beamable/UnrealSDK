@@ -22,7 +22,7 @@ FString UGetGameRequestBodyLibrary::GetGameRequestBodyToJsonString(const UGetGam
 	return Result;
 }	
 
-UGetGameRequestBody* UGetGameRequestBodyLibrary::Make(FString RootPID, UObject* Outer)
+UGetGameRequestBody* UGetGameRequestBodyLibrary::Make(FBeamPid RootPID, UObject* Outer)
 {
 	auto Serializable = NewObject<UGetGameRequestBody>(Outer);
 	Serializable->RootPID = RootPID;
@@ -30,7 +30,7 @@ UGetGameRequestBody* UGetGameRequestBodyLibrary::Make(FString RootPID, UObject* 
 	return Serializable;
 }
 
-void UGetGameRequestBodyLibrary::Break(const UGetGameRequestBody* Serializable, FString& RootPID)
+void UGetGameRequestBodyLibrary::Break(const UGetGameRequestBody* Serializable, FBeamPid& RootPID)
 {
 	RootPID = Serializable->RootPID;
 		

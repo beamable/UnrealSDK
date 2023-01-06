@@ -1,14 +1,14 @@
 
 #include "AutoGen/Customer.h"
 #include "Serialization/BeamJsonUtils.h"
-#include "Misc/DefaultValueHelper.h"
+
 
 
 
 void UCustomer ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("cid"), Cid);
+	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);
 	UBeamJsonUtils::SerializeArray<UProject*>(TEXT("projects"), Projects, Serializer);
 	UBeamJsonUtils::SerializeArray<URealmsBasicAccount*>(TEXT("accounts"), Accounts, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("paymentStatus"), &PaymentStatus, Serializer);
@@ -23,7 +23,7 @@ void UCustomer ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) cons
 void UCustomer::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("cid"), Cid);
+	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);
 	UBeamJsonUtils::SerializeArray<UProject*>(TEXT("projects"), Projects, Serializer);
 	UBeamJsonUtils::SerializeArray<URealmsBasicAccount*>(TEXT("accounts"), Accounts, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("paymentStatus"), &PaymentStatus, Serializer);
@@ -38,7 +38,7 @@ void UCustomer::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer)
 void UCustomer ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Name = Bag->GetStringField(TEXT("name"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("cid")), Cid);
+	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("cid")), Cid, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UProject*>(Bag->GetArrayField(TEXT("projects")), Projects, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<URealmsBasicAccount*>(Bag->GetArrayField(TEXT("accounts")), Accounts, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("paymentStatus", Bag, PaymentStatus, OuterOwner);

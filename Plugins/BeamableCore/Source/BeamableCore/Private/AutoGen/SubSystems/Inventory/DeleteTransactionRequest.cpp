@@ -9,7 +9,7 @@ void UDeleteTransactionRequest::BuildVerb(FString& VerbString) const
 void UDeleteTransactionRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/inventory/{objectId}/transaction");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -27,7 +27,7 @@ void UDeleteTransactionRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteTransactionRequest* UDeleteTransactionRequest::Make(int64 _ObjectId, FString _Transaction, UObject* RequestOwner)
+UDeleteTransactionRequest* UDeleteTransactionRequest::Make(FBeamGamerTag _ObjectId, FString _Transaction, UObject* RequestOwner)
 {
 	UDeleteTransactionRequest* Req = NewObject<UDeleteTransactionRequest>(RequestOwner);
 

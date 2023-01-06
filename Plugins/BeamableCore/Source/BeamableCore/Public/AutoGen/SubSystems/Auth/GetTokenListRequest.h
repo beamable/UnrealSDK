@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/Optionals/OptionalInt64.h"
-#include "AutoGen/Optionals/OptionalString.h"
+#include "AutoGen/Optionals/OptionalBeamCid.h"
+#include "AutoGen/Optionals/OptionalBeamPid.h"
 
 #include "AutoGen/ListTokenResponse.h"
 
@@ -31,9 +31,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Page", Category="Beam")
 	int32 Page;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid", Category="Beam")
-	FOptionalInt64 Cid;
+	FOptionalBeamCid Cid;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pid", Category="Beam")
-	FOptionalString Pid;
+	FOptionalBeamPid Pid;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag Or Account Id", Category="Beam")
 	int64 GamerTagOrAccountId;
 
@@ -48,7 +48,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", DisplayName="Beam - Make GetTokenList",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Cid,_Pid,RequestOwner"))
-	static UGetTokenListRequest* Make(int32 _PageSize, int32 _Page, FOptionalInt64 _Cid, FOptionalString _Pid, int64 _GamerTagOrAccountId, UObject* RequestOwner);
+	static UGetTokenListRequest* Make(int32 _PageSize, int32 _Page, FOptionalBeamCid _Cid, FOptionalBeamPid _Pid, int64 _GamerTagOrAccountId, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

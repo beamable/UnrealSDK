@@ -44,7 +44,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 * @param OnComplete What we'll do once we fetch or fail.
 	 * @param CallingContext The calling Actor, World, Subsystem or Blueprint.
 	 */
-	void FetchAndUpdateAccountId(FUserSlot UserSlot, FBeamOperationHandle Handle, UObject* CallingContext);
+	void FetchAndUpdateGamerTag(FUserSlot UserSlot, FBeamOperationHandle Handle, UObject* CallingContext);
 
 	/**
 	 * @brief Stored lambda delegate handle for what this subsystem does when a user slot is authenticated.
@@ -112,4 +112,5 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle FrictionlessAuthentication(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext = nullptr);
+	void FetchAndUpdateAccountId(FUserSlot UserSlot, FBeamOperationHandle Handle, UObject* CallingContext);
 };

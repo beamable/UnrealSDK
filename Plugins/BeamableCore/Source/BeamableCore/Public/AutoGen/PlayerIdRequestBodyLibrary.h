@@ -18,8 +18,8 @@ public:
 	static FString PlayerIdRequestBodyToJsonString(const UPlayerIdRequestBody* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make PlayerIdRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UPlayerIdRequestBody* Make(FString PlayerId, UObject* Outer);
+	static UPlayerIdRequestBody* Make(FBeamGamerTag PlayerId, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break PlayerIdRequestBody", meta=(NativeBreakFunc))
-	static void Break(const UPlayerIdRequestBody* Serializable, FString& PlayerId);
+	static void Break(const UPlayerIdRequestBody* Serializable, FBeamGamerTag& PlayerId);
 };

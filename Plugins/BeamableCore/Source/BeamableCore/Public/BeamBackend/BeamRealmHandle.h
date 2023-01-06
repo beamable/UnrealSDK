@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SemanticTypes/BeamCid.h"
+#include "SemanticTypes/BeamPid.h"
 
 #include "BeamRealmHandle.generated.h"
 
@@ -16,13 +18,13 @@ struct FBeamRealmHandle
 	 * @brief The CustomerId that owns the given realm.
 	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Beam")
-	FString Cid;
+	FBeamCid Cid;
 
 	/**
 	 * @brief The RealmId, AKA Project Id, that identifies this realm.
 	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Beam")
-	FString Pid;
+	FBeamPid Pid;
 
 	friend bool operator==(const FBeamRealmHandle& Lhs, const FBeamRealmHandle& RHS)
 	{

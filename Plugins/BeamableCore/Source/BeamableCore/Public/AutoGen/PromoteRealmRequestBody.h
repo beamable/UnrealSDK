@@ -4,6 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "BeamBackend/SemanticTypes/BeamPid.h"
 #include "AutoGen/Optionals/OptionalArrayOfString.h"
 
 #include "PromoteRealmRequestBody.generated.h"
@@ -15,7 +16,7 @@ class BEAMABLECORE_API UPromoteRealmRequestBody : public UObject, public FBeamJs
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Source Pid", Category="Beam")
-	FString SourcePid;
+	FBeamPid SourcePid;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Promotions", Category="Beam")
 	FOptionalArrayOfString Promotions;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Manifest Ids", Category="Beam")

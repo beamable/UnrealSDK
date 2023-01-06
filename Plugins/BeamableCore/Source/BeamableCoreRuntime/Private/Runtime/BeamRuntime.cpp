@@ -61,7 +61,7 @@ void UBeamRuntime::DelayedInitialize()
 			UE_LOG(LogBeamRuntime, Verbose, TEXT("Authenticated User at Slot! SLOT=%s"), *UserSlot.Name);
 		}
 	}
-	OnInitialized.Broadcast();
+	OnInitialized.Broadcast();	
 }
 
 void UBeamRuntime::Deinitialize()
@@ -113,8 +113,8 @@ FBeamOperationHandle UBeamRuntime::FrictionlessAuthentication(FUserSlot UserSlot
 
 				UserSlotSystem->SetAuthenticationDataAtSlot(UserSlot, Token->AccessToken.Val, Token->RefreshToken.Val, Token->ExpiresIn, Cid, Pid, CallingContext);
 				UE_LOG(LogBeamRuntime, Verbose, TEXT("Auth - Authenticated... now grabbing account id! SLOT=%s"), *UserSlot.Name);
-
-				FetchAndUpdateAccountId(UserSlot, Handle, CallingContext);
+				
+				FetchAndUpdateGamerTag(UserSlot, Handle, CallingContext);
 			}
 			else
 			{
@@ -128,7 +128,7 @@ FBeamOperationHandle UBeamRuntime::FrictionlessAuthentication(FUserSlot UserSlot
 	return Handle;
 }
 
-void UBeamRuntime::FetchAndUpdateAccountId(FUserSlot UserSlot, FBeamOperationHandle Handle, UObject* CallingContext = nullptr)
+void UBeamRuntime::FetchAndUpdateGamerTag(FUserSlot UserSlot, FBeamOperationHandle Handle, UObject* CallingContext = nullptr)
 {
 	const auto AccountSubsystem = GEngine->GetEngineSubsystem<UBeamAccountsApi>();
 	const auto MeReq = NewObject<UBasicAccountsGetMeRequest>(CallingContext);

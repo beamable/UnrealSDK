@@ -9,7 +9,7 @@ void UDeleteAdminScopeRequest::BuildVerb(FString& VerbString) const
 void UDeleteAdminScopeRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/accounts/{objectId}/admin/scope");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -27,7 +27,7 @@ void UDeleteAdminScopeRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteAdminScopeRequest* UDeleteAdminScopeRequest::Make(int64 _ObjectId, FString _Realm, FString _Role, UObject* RequestOwner)
+UDeleteAdminScopeRequest* UDeleteAdminScopeRequest::Make(FBeamAccountId _ObjectId, FOptionalBeamPid _Realm, FOptionalString _Role, UObject* RequestOwner)
 {
 	UDeleteAdminScopeRequest* Req = NewObject<UDeleteAdminScopeRequest>(RequestOwner);
 

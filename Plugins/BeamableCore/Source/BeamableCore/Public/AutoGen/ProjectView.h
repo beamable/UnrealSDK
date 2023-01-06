@@ -5,9 +5,11 @@
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/Optionals/OptionalArrayOfString.h"
+#include "AutoGen/Optionals/OptionalBeamPid.h"
+#include "AutoGen/Optionals/OptionalArrayOfBeamPid.h"
 #include "AutoGen/Optionals/OptionalBool.h"
-#include "AutoGen/Optionals/OptionalInt64.h"
+#include "AutoGen/Optionals/OptionalBeamCid.h"
+#include "BeamBackend/SemanticTypes/BeamPid.h"
 
 #include "ProjectView.generated.h"
 
@@ -20,7 +22,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Project Name", Category="Beam")
 	FString ProjectName;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pid", Category="Beam")
-	FString Pid;
+	FBeamPid Pid;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Archived", Category="Beam")
 	FOptionalBool bArchived;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sharded", Category="Beam")
@@ -28,11 +30,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Secret", Category="Beam")
 	FOptionalString Secret;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Parent", Category="Beam")
-	FOptionalString Parent;
+	FOptionalBeamPid Parent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid", Category="Beam")
-	FOptionalInt64 Cid;
+	FOptionalBeamCid Cid;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Children", Category="Beam")
-	FOptionalArrayOfString Children;
+	FOptionalArrayOfBeamPid Children;
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

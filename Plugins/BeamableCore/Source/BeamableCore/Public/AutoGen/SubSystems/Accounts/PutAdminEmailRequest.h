@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "BeamBackend/SemanticTypes/BeamAccountId.h"
 #include "AutoGen/EmailUpdateRequestBody.h"
 #include "AutoGen/AccountsObjectAccount.h"
 
@@ -22,7 +22,7 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	int64 ObjectId;
+	FBeamAccountId ObjectId;
 	
 	// Query Params
 	
@@ -39,7 +39,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make PutAdminEmail",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_CodeType,RequestOwner"))
-	static UPutAdminEmailRequest* Make(int64 _ObjectId, FString _NewEmail, FOptionalString _CodeType, UObject* RequestOwner);
+	static UPutAdminEmailRequest* Make(FBeamAccountId _ObjectId, FString _NewEmail, FOptionalString _CodeType, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -1,7 +1,7 @@
 
 #include "AutoGen/AccountPlayerView.h"
 #include "Serialization/BeamJsonUtils.h"
-#include "Misc/DefaultValueHelper.h"
+
 
 
 void UAccountPlayerView::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
@@ -12,7 +12,7 @@ void UAccountPlayerView::DeserializeRequestResponse(UObject* RequestData, FStrin
 
 void UAccountPlayerView ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("id"), &Id, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("deviceIds"), DeviceIds, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("scopes"), Scopes, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("thirdPartyAppAssociations"), ThirdPartyAppAssociations, Serializer);
@@ -23,7 +23,7 @@ void UAccountPlayerView ::BeamSerializeProperties(TUnrealJsonSerializer& Seriali
 
 void UAccountPlayerView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("id"), &Id, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("deviceIds"), DeviceIds, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("scopes"), Scopes, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("thirdPartyAppAssociations"), ThirdPartyAppAssociations, Serializer);
@@ -34,7 +34,7 @@ void UAccountPlayerView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void UAccountPlayerView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("id")), Id, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("deviceIds")), DeviceIds, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("scopes")), Scopes, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("thirdPartyAppAssociations")), ThirdPartyAppAssociations, OuterOwner);

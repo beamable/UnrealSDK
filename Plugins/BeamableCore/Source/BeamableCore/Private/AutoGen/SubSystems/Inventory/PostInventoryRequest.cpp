@@ -9,7 +9,7 @@ void UPostInventoryRequest::BuildVerb(FString& VerbString) const
 void UPostInventoryRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/inventory/{objectId}/");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -27,7 +27,7 @@ void UPostInventoryRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostInventoryRequest* UPostInventoryRequest::Make(int64 _ObjectId, FOptionalArrayOfString _Scopes, UObject* RequestOwner)
+UPostInventoryRequest* UPostInventoryRequest::Make(FBeamGamerTag _ObjectId, FOptionalArrayOfString _Scopes, UObject* RequestOwner)
 {
 	UPostInventoryRequest* Req = NewObject<UPostInventoryRequest>(RequestOwner);
 

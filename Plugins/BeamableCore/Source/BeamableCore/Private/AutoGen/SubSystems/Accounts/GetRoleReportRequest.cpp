@@ -9,7 +9,7 @@ void UGetRoleReportRequest::BuildVerb(FString& VerbString) const
 void UGetRoleReportRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/accounts/{objectId}/role/report");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -23,7 +23,7 @@ void UGetRoleReportRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetRoleReportRequest* UGetRoleReportRequest::Make(int64 _ObjectId, UObject* RequestOwner)
+UGetRoleReportRequest* UGetRoleReportRequest::Make(FBeamAccountId _ObjectId, UObject* RequestOwner)
 {
 	UGetRoleReportRequest* Req = NewObject<UGetRoleReportRequest>(RequestOwner);
 

@@ -15,7 +15,7 @@ void UGetProjectPromoteRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Reserve(1024);
 	bool bIsFirstQueryParam = true;
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), TEXT("sourcePid"), *SourcePid);
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("sourcePid"), *static_cast<FString>(SourcePid));
 	bIsFirstQueryParam = false;
 	
 	if(Promotions.IsSet){
@@ -36,7 +36,7 @@ void UGetProjectPromoteRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetProjectPromoteRequest* UGetProjectPromoteRequest::Make(FString _SourcePid, FOptionalArrayOfString _Promotions, FOptionalArrayOfString _ContentManifestIds, UObject* RequestOwner)
+UGetProjectPromoteRequest* UGetProjectPromoteRequest::Make(FBeamPid _SourcePid, FOptionalArrayOfString _Promotions, FOptionalArrayOfString _ContentManifestIds, UObject* RequestOwner)
 {
 	UGetProjectPromoteRequest* Req = NewObject<UGetProjectPromoteRequest>(RequestOwner);
 

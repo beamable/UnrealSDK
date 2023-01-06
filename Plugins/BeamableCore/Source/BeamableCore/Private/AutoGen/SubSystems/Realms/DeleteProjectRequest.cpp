@@ -27,7 +27,7 @@ void UDeleteProjectRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteProjectRequest* UDeleteProjectRequest::Make(FString _Pid, UObject* RequestOwner)
+UDeleteProjectRequest* UDeleteProjectRequest::Make(FBeamPid _Pid, UObject* RequestOwner)
 {
 	UDeleteProjectRequest* Req = NewObject<UDeleteProjectRequest>(RequestOwner);
 

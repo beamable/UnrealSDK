@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-
+#include "BeamBackend/SemanticTypes/BeamPid.h"
 
 #include "RenameProjectRequestBody.generated.h"
 
@@ -15,7 +15,7 @@ class BEAMABLECORE_API URenameProjectRequestBody : public UObject, public FBeamJ
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Project Id", Category="Beam")
-	FString ProjectId;
+	FBeamPid ProjectId;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="New Name", Category="Beam")
 	FString NewName;
 

@@ -18,8 +18,8 @@ public:
 	static FString StatUpdateRequestBodyToJsonString(const UStatUpdateRequestBody* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make StatUpdateRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bEmitAnalytics, ObjectId, Set, Add, Outer", NativeMakeFunc))
-	static UStatUpdateRequestBody* Make(FOptionalBool bEmitAnalytics, FOptionalString ObjectId, FOptionalMapOfString Set, FOptionalMapOfString Add, UObject* Outer);
+	static UStatUpdateRequestBody* Make(FOptionalBool bEmitAnalytics, FOptionalBeamStatsType ObjectId, FOptionalMapOfString Set, FOptionalMapOfString Add, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break StatUpdateRequestBody", meta=(NativeBreakFunc))
-	static void Break(const UStatUpdateRequestBody* Serializable, FOptionalBool& bEmitAnalytics, FOptionalString& ObjectId, FOptionalMapOfString& Set, FOptionalMapOfString& Add);
+	static void Break(const UStatUpdateRequestBody* Serializable, FOptionalBool& bEmitAnalytics, FOptionalBeamStatsType& ObjectId, FOptionalMapOfString& Set, FOptionalMapOfString& Add);
 };

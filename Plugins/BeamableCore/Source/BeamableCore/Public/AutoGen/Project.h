@@ -6,6 +6,7 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
 #include "AutoGen/Optionals/OptionalArrayOfString.h"
+#include "BeamBackend/SemanticTypes/BeamPid.h"
 #include "AutoGen/Optionals/OptionalMapOfString.h"
 #include "AutoGen/Optionals/OptionalBool.h"
 #include "AutoGen/Optionals/OptionalInt64.h"
@@ -25,7 +26,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Secret", Category="Beam")
 	FString Secret;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FBeamPid Name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Plan", Category="Beam")
 	FString Plan;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Custom Charts", Category="Beam")

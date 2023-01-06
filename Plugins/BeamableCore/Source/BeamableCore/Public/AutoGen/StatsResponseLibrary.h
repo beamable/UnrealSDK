@@ -18,8 +18,8 @@ public:
 	static FString StatsResponseToJsonString(const UStatsResponse* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make StatsResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UStatsResponse* Make(int64 Id, TMap<FString, FString> Stats, UObject* Outer);
+	static UStatsResponse* Make(FBeamGamerTag Id, TMap<FString, FString> Stats, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break StatsResponse", meta=(NativeBreakFunc))
-	static void Break(const UStatsResponse* Serializable, int64& Id, TMap<FString, FString>& Stats);
+	static void Break(const UStatsResponse* Serializable, FBeamGamerTag& Id, TMap<FString, FString>& Stats);
 };

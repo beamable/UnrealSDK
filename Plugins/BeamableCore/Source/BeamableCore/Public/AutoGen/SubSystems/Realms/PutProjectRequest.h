@@ -37,7 +37,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", DisplayName="Beam - Make PutProject",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
-	static UPutProjectRequest* Make(FString _ProjectId, UObject* RequestOwner);
+	static UPutProjectRequest* Make(FBeamPid _ProjectId, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

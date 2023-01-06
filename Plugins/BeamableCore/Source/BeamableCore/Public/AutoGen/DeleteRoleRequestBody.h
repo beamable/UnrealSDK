@@ -4,7 +4,8 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-
+#include "AutoGen/Optionals/OptionalBeamPid.h"
+#include "AutoGen/Optionals/OptionalString.h"
 
 #include "DeleteRoleRequestBody.generated.h"
 
@@ -15,9 +16,9 @@ class BEAMABLECORE_API UDeleteRoleRequestBody : public UObject, public FBeamJson
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Realm", Category="Beam")
-	FString Realm;
+	FOptionalBeamPid Realm;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Role", Category="Beam")
-	FString Role;
+	FOptionalString Role;
 
 	
 

@@ -22,7 +22,7 @@ FString UAccountsObjectAccountLibrary::AccountsObjectAccountToJsonString(const U
 	return Result;
 }	
 
-UAccountsObjectAccount* UAccountsObjectAccountLibrary::Make(bool bPrivilegedAccount, int64 Id, int64 CreatedTimeMillis, int64 UpdatedTimeMillis, TArray<UThirdPartyAssociation*> ThirdParties, TArray<UExternalIdentity*> External, TArray<UGamerTagAssociation*> GamerTags, FOptionalBool bWasMigrated, FOptionalString UserName, FOptionalString DeviceId, FOptionalString Language, FOptionalString Password, FOptionalString Country, FOptionalString RoleString, FOptionalString Email, FOptionalString RealmId, FOptionalInt64 Heartbeat, FOptionalArrayOfRoleMapping Roles, FOptionalArrayOfString DeviceIds, FOptionalArrayOfInFlightMessage InFlight, UObject* Outer)
+UAccountsObjectAccount* UAccountsObjectAccountLibrary::Make(bool bPrivilegedAccount, FBeamAccountId Id, int64 CreatedTimeMillis, int64 UpdatedTimeMillis, TArray<UThirdPartyAssociation*> ThirdParties, TArray<UExternalIdentity*> External, TArray<UGamerTagAssociation*> GamerTags, FOptionalBool bWasMigrated, FOptionalString UserName, FOptionalString DeviceId, FOptionalString Language, FOptionalString Password, FOptionalString Country, FOptionalString RoleString, FOptionalString Email, FOptionalString RealmId, FOptionalInt64 Heartbeat, FOptionalArrayOfRoleMapping Roles, FOptionalArrayOfString DeviceIds, FOptionalArrayOfInFlightMessage InFlight, UObject* Outer)
 {
 	auto Serializable = NewObject<UAccountsObjectAccount>(Outer);
 	Serializable->bPrivilegedAccount = bPrivilegedAccount;
@@ -49,7 +49,7 @@ UAccountsObjectAccount* UAccountsObjectAccountLibrary::Make(bool bPrivilegedAcco
 	return Serializable;
 }
 
-void UAccountsObjectAccountLibrary::Break(const UAccountsObjectAccount* Serializable, bool& bPrivilegedAccount, int64& Id, int64& CreatedTimeMillis, int64& UpdatedTimeMillis, TArray<UThirdPartyAssociation*>& ThirdParties, TArray<UExternalIdentity*>& External, TArray<UGamerTagAssociation*>& GamerTags, FOptionalBool& bWasMigrated, FOptionalString& UserName, FOptionalString& DeviceId, FOptionalString& Language, FOptionalString& Password, FOptionalString& Country, FOptionalString& RoleString, FOptionalString& Email, FOptionalString& RealmId, FOptionalInt64& Heartbeat, FOptionalArrayOfRoleMapping& Roles, FOptionalArrayOfString& DeviceIds, FOptionalArrayOfInFlightMessage& InFlight)
+void UAccountsObjectAccountLibrary::Break(const UAccountsObjectAccount* Serializable, bool& bPrivilegedAccount, FBeamAccountId& Id, int64& CreatedTimeMillis, int64& UpdatedTimeMillis, TArray<UThirdPartyAssociation*>& ThirdParties, TArray<UExternalIdentity*>& External, TArray<UGamerTagAssociation*>& GamerTags, FOptionalBool& bWasMigrated, FOptionalString& UserName, FOptionalString& DeviceId, FOptionalString& Language, FOptionalString& Password, FOptionalString& Country, FOptionalString& RoleString, FOptionalString& Email, FOptionalString& RealmId, FOptionalInt64& Heartbeat, FOptionalArrayOfRoleMapping& Roles, FOptionalArrayOfString& DeviceIds, FOptionalArrayOfInFlightMessage& InFlight)
 {
 	bPrivilegedAccount = Serializable->bPrivilegedAccount;
 	Id = Serializable->Id;

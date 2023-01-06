@@ -22,7 +22,7 @@ FString UGamerTagAssociationLibrary::GamerTagAssociationToJsonString(const UGame
 	return Result;
 }	
 
-UGamerTagAssociation* UGamerTagAssociationLibrary::Make(FString ProjectId, int64 GamerTag, UObject* Outer)
+UGamerTagAssociation* UGamerTagAssociationLibrary::Make(FBeamPid ProjectId, FBeamGamerTag GamerTag, UObject* Outer)
 {
 	auto Serializable = NewObject<UGamerTagAssociation>(Outer);
 	Serializable->ProjectId = ProjectId;
@@ -31,7 +31,7 @@ UGamerTagAssociation* UGamerTagAssociationLibrary::Make(FString ProjectId, int64
 	return Serializable;
 }
 
-void UGamerTagAssociationLibrary::Break(const UGamerTagAssociation* Serializable, FString& ProjectId, int64& GamerTag)
+void UGamerTagAssociationLibrary::Break(const UGamerTagAssociation* Serializable, FBeamPid& ProjectId, FBeamGamerTag& GamerTag)
 {
 	ProjectId = Serializable->ProjectId;
 	GamerTag = Serializable->GamerTag;

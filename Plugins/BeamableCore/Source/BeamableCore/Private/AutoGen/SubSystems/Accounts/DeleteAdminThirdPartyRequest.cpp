@@ -9,7 +9,7 @@ void UDeleteAdminThirdPartyRequest::BuildVerb(FString& VerbString) const
 void UDeleteAdminThirdPartyRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/accounts/{objectId}/admin/third-party");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -27,7 +27,7 @@ void UDeleteAdminThirdPartyRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteAdminThirdPartyRequest* UDeleteAdminThirdPartyRequest::Make(int64 _ObjectId, FString _ThirdParty, FString _UserAppId, UObject* RequestOwner)
+UDeleteAdminThirdPartyRequest* UDeleteAdminThirdPartyRequest::Make(FBeamAccountId _ObjectId, FString _ThirdParty, FString _UserAppId, UObject* RequestOwner)
 {
 	UDeleteAdminThirdPartyRequest* Req = NewObject<UDeleteAdminThirdPartyRequest>(RequestOwner);
 

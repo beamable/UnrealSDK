@@ -9,7 +9,7 @@ void UDeleteAdminForgetRequest::BuildVerb(FString& VerbString) const
 void UDeleteAdminForgetRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/accounts/{objectId}/admin/forget");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *static_cast<FString>(ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -23,7 +23,7 @@ void UDeleteAdminForgetRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UDeleteAdminForgetRequest* UDeleteAdminForgetRequest::Make(int64 _ObjectId, UObject* RequestOwner)
+UDeleteAdminForgetRequest* UDeleteAdminForgetRequest::Make(FBeamAccountId _ObjectId, UObject* RequestOwner)
 {
 	UDeleteAdminForgetRequest* Req = NewObject<UDeleteAdminForgetRequest>(RequestOwner);
 

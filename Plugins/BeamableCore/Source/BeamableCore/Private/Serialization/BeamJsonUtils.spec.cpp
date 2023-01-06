@@ -3,6 +3,8 @@
 #include "Misc/AutomationTest.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "JsonObjectConverter.h"
+#include "AutoGen/Optionals/OptionalMapOfArrayOfCurrencyProperty.h"
+#include "BeamBackend/SemanticTypes/BeamCid.h"
 
 
 BEGIN_DEFINE_SPEC(FBeamJsonUtilsSpec, "BeamableUnreal.BeamJsonUtils", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
@@ -43,17 +45,44 @@ void FBeamJsonUtilsSpec::Define()
 
 		virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 		{
-			for (const auto& Value : Values) Serializer->WriteValue(Value);
+			UBeamJsonUtils::SerializeArray<int>(Values, Serializer);
 		}
 
 		virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 		{
-			for (const auto& Value : Values) Serializer->WriteValue(Value);
+			UBeamJsonUtils::SerializeArray<int>(Values, Serializer);
 		}
 
 		virtual void BeamDeserializeElements(const TArray<TSharedPtr<FJsonValue>>& Elements) override
 		{
 			UBeamJsonUtils::DeserializeArray<int>(Elements, Values);
+		}
+	};
+
+	struct FBeamArrayOfBeamCid : public FBeamArray
+	{
+		TArray<FBeamCid> Values;
+
+		FBeamArrayOfBeamCid() = default;
+
+		FBeamArrayOfBeamCid(const TArray<FBeamCid>& Values)
+			: Values(Values)
+		{
+		}
+
+		virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+		{
+			UBeamJsonUtils::SerializeArray<FBeamCid, int64>(Values, Serializer);
+		}
+
+		virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+		{
+			UBeamJsonUtils::SerializeArray<FBeamCid, int64>(Values, Serializer);
+		}
+
+		virtual void BeamDeserializeElements(const TArray<TSharedPtr<FJsonValue>>& Elements) override
+		{
+			UBeamJsonUtils::DeserializeArray<FBeamCid, int64>(Elements, Values);
 		}
 	};
 
@@ -82,6 +111,33 @@ void FBeamJsonUtilsSpec::Define()
 		virtual void BeamDeserializeElements(const TSharedPtr<FJsonObject>& Elements) override
 		{
 			UBeamJsonUtils::DeserializeMap<int>(Elements, Values);
+		}
+	};
+
+	struct FBeamMapOfBeamCid : public FBeamMap
+	{
+		TMap<FString, FBeamCid> Values;
+
+		FBeamMapOfBeamCid() = default;
+
+		FBeamMapOfBeamCid(const TMap<FString, FBeamCid>& Values)
+			: Values(Values)
+		{
+		}
+
+		virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+		{
+			UBeamJsonUtils::SerializeMap<FBeamCid, int64>(Values, Serializer);
+		}
+
+		virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+		{
+			UBeamJsonUtils::SerializeMap<FBeamCid, int64>(Values, Serializer);
+		}
+
+		virtual void BeamDeserializeElements(const TSharedPtr<FJsonObject>& Elements) override
+		{
+			UBeamJsonUtils::DeserializeMap<FBeamCid, int64>(Elements, Values);
 		}
 	};
 
@@ -129,7 +185,7 @@ void FBeamJsonUtilsSpec::Define()
 		{
 			UMockIntJsonSerializable* asd = NewObject<UMockIntJsonSerializable>();
 			asd->OuterOwner = GetTransientPackage();
-			asd->a = 5;			
+			asd->a = 5;
 
 			FString OutJson;
 			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
@@ -147,7 +203,7 @@ void FBeamJsonUtilsSpec::Define()
 
 			TestEqual("Primitive UObject serialized correctly", OutJson, Expected);
 		});
-		
+
 		It("should output a regular JSON Field (UObject with nested UObjects)", [this]()
 		{
 			UMockNestedJsonSerializable* asd = NewObject<UMockNestedJsonSerializable>();
@@ -198,7 +254,7 @@ void FBeamJsonUtilsSpec::Define()
 
 			TestEqual("Nested UObjects serialized correctly", OutJson, Expected);
 		});
-		
+
 		It("should output a regular JSON Field (Optional Primitive with Value)", [this]()
 		{
 			struct FTestOptionalInt : FBeamOptional
@@ -236,6 +292,55 @@ void FBeamJsonUtilsSpec::Define()
 			const FString Expected = ExpectedBag.ToJson(false);
 
 			TestEqual("Int Optional serialized correctly", OutJson, Expected);
+		});
+
+		It("should output a regular JSON Field (Optional SemanticType with Value)", [this]()
+		{
+			FBeamCid Val = FBeamCid{12341234};
+			FOptionalMockNestedSemanticType Optional{};
+			FBeamOptional::Set<FBeamCid>(&Optional, &Val);
+
+			{
+				FString OutJson;
+				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+				JsonSerializer->WriteObjectStart();
+				UBeamJsonUtils::SerializeOptional<FBeamCid, FString>(TEXT("cid"), &Optional, JsonSerializer);
+				JsonSerializer->WriteObjectEnd();
+				JsonSerializer->Close();
+
+
+				// Get a condensed string so we can easily compare with the condensed string we generate.
+				const FString ExpectedTemp =
+					TEXT(R"({
+					"cid": "12341234"
+				})");
+				FJsonDataBag ExpectedBag;
+				ExpectedBag.FromJson(ExpectedTemp);
+				const FString Expected = ExpectedBag.ToJson(false);
+
+				TestEqual("FBeamSemanticType Optional serialized correctly", OutJson, Expected);
+			}
+
+			{
+				FString OutJson;
+				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+				JsonSerializer->WriteObjectStart();
+				UBeamJsonUtils::SerializeOptional<FBeamCid, int64>(TEXT("cid"), &Optional, JsonSerializer);
+				JsonSerializer->WriteObjectEnd();
+				JsonSerializer->Close();
+
+
+				// Get a condensed string so we can easily compare with the condensed string we generate.
+				const FString ExpectedTemp =
+					TEXT(R"({
+					"cid": 12341234
+				})");
+				FJsonDataBag ExpectedBag;
+				ExpectedBag.FromJson(ExpectedTemp);
+				const FString Expected = ExpectedBag.ToJson(false);
+
+				TestEqual("FBeamSemanticType Optional serialized correctly", OutJson, Expected);
+			}
 		});
 
 		It("should output a regular JSON Field (Optional FBeamJsonSerializable with Value)", [this]()
@@ -407,6 +512,49 @@ void FBeamJsonUtilsSpec::Define()
 						"a": 2,
 						"b": "b2"
 					}]
+				})");
+				FJsonDataBag ExpectedBag;
+				ExpectedBag.FromJson(ExpectedTemp);
+				const FString Expected = ExpectedBag.ToJson(false);
+
+				TestEqual("Optional Array of FBeamSerializable serialized correctly", OutJson, Expected);
+			}
+
+			// Test array with BeamSemanticType
+			{
+				struct FTestArrayOptional : FBeamOptional
+				{
+					TArray<FBeamCid> Val;
+
+					FTestArrayOptional() { IsSet = false; }
+
+					virtual const void* GetAddr() const override { return &Val; }
+
+					virtual void Set(const void* Data) override
+					{
+						Val = *static_cast<const TArray<FBeamCid>*>(Data);
+						IsSet = true;
+					}
+				};
+
+				TArray<FBeamCid> Array;
+				Array.Add(FBeamCid{1});
+				Array.Add(FBeamCid{2});
+				FTestArrayOptional OptionalTest;
+				FBeamOptional::Set<TArray<FBeamCid>>(&OptionalTest, &Array);
+
+				FString OutJson;
+				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+				JsonSerializer->WriteObjectStart();
+				UBeamJsonUtils::SerializeOptional<TArray<FBeamCid>, FBeamCid, int64>(TEXT("cids"), &OptionalTest, JsonSerializer);
+				JsonSerializer->WriteObjectEnd();
+				JsonSerializer->Close();
+
+
+				// Get a condensed string so we can easily compare with the condensed string we generate.
+				const FString ExpectedTemp =
+					TEXT(R"({
+					"cids": [1, 2]
 				})");
 				FJsonDataBag ExpectedBag;
 				ExpectedBag.FromJson(ExpectedTemp);
@@ -602,6 +750,38 @@ void FBeamJsonUtilsSpec::Define()
 
 				TestEqual("TMap<FString, T>, where T = FString type, serialized correctly", OutJson, Expected);
 			}
+
+			// TMap<FString, FBeamCid>
+			{
+				FString OutJson;
+				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+
+				TMap<FString, FBeamCid> map;
+				map.Add("a1", 0);
+				map.Add("a2", -1);
+				map.Add("a3", 1);
+				JsonSerializer->WriteObjectStart();
+				UBeamJsonUtils::SerializeMap<FBeamCid, int64>(TEXT("map"), map, JsonSerializer);
+				JsonSerializer->WriteObjectEnd();
+				JsonSerializer->Close();
+
+
+				// Get a condensed string so we can easily compare with the condensed string we generate.
+				const FString ExpectedTemp =
+					TEXT(R"({
+					"map": 
+					{
+						"a1": 0,
+						"a2": -1,
+						"a3": 1
+					}
+				})");
+				FJsonDataBag ExpectedBag;
+				ExpectedBag.FromJson(ExpectedTemp);
+				const FString Expected = ExpectedBag.ToJson(false);
+
+				TestEqual("TMap<FString, T>, where T = BeamSemanticType, serialized correctly", OutJson, Expected);
+			}
 		});
 
 		It("should output a serialized JSON Map of FBeamJsonSerializable", [this]()
@@ -721,96 +901,130 @@ void FBeamJsonUtilsSpec::Define()
 			TestEqual("TMap<FString, FBeamJsonSerializable> with an internal TArray<int> Serialized Correctly", OutJson, Expected);
 		});
 
-		It("should output a serialized JSON Map of TArray<T>", [this]()
+		It("should output a serialized JSON Map of FBeamArrayOf___ (primitive & semantic type)", [this]()
 		{
-			// TODO: This must be replaced with a FBeamArray wrapper just like optionals --- UE Doesn't support nested container types in Blueprints
-			// TODO: So we wrap them. We should probably consider also making specialized BP nodes so people can iterate over them correctly too without
-			// TODO: having to go through a bunch of wrapper types. 
-			// {
-			// 	FString OutJson;
-			// 	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
-			//
-			// 	TMap<FString, TArray<int>> Map;
-			// 	Map.Add("a1", TArray<int>{0, 1});
-			// 	Map.Add("a2", TArray<int>{0, -1});
-			// 	JsonSerializer->WriteObjectStart();
-			// 	FBeamJsonUtils::SerializeMap<TArray<int>, int>(TEXT("map"), Map, JsonSerializer);
-			// 	JsonSerializer->WriteObjectEnd();
-			// 	JsonSerializer->Close();
-			//
-			//
-			// 	// Get a condensed string so we can easily compare with the condensed string we generate.
-			// 	const FString ExpectedTemp =
-			// 		TEXT(R"({
-			// 		"map": {
-			// 			"a1": [ 0, 1 ],
-			// 			"a2": [ 0, -1 ]
-			// 		}
-			// 	})");
-			// 	FJsonDataBag ExpectedBag;
-			// 	ExpectedBag.FromJson(ExpectedTemp);
-			// 	const FString Expected = ExpectedBag.ToJson(false);
-			//
-			// 	TestEqual("TMap<FString, TArray<T>>, where T = primitive, Serialized Correctly", OutJson, Expected);
-			// }
-			// {
-			// 	struct FTest : public FBeamJsonSerializable
-			// 	{
-			// 		int a;
-			// 		FString b;
-			//
-			// 		FTest(int A, const FString& B)
-			// 			: a(A),
-			// 			  b(B)
-			// 		{
-			// 		}
-			//
-			// 		virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
-			// 		{
-			// 			Serializer->WriteValue(TEXT("a"), a);
-			// 			Serializer->WriteValue(TEXT("b"), b);
-			// 		}
-			// 	};
-			//
-			// 	FString OutJson;
-			// 	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
-			//
-			// 	// TMap<FString, TArray<FTest>> Map;
-			// 	// Map.Add("a", TArray<FTest>{FTest{0, TEXT("a1")}, FTest{1, TEXT("a2")}});
-			// 	// Map.Add("b", TArray<FTest>{FTest{0, TEXT("b1")}, FTest{1, TEXT("b2")}});
-			// 	// JsonSerializer->WriteObjectStart();
-			// 	// FBeamJsonUtils::SerializeMap<TArray<FTest>, FTest>(TEXT("map"), Map, JsonSerializer);
-			// 	// JsonSerializer->WriteObjectEnd();
-			// 	// JsonSerializer->Close();
-			//
-			// 	// Get a condensed string so we can easily compare with the condensed string we generate.
-			// 	const FString ExpectedTemp =
-			// 		TEXT(R"({
-			// 		"map": {
-			// 			"a": [{
-			// 				"a" : 0,
-			// 				"b": "a1"
-			// 			},
-			// 			{
-			// 				"a" : 1,
-			// 				"b": "a2"
-			// 			}],
-			// 			"b":[{
-			// 				"a": 0,
-			// 				"b": "b1"
-			// 			},
-			// 			{
-			// 				"a": 1,
-			// 				"b": "b2"
-			// 			}]
-			// 		}
-			// 	})");
-			// 	FJsonDataBag ExpectedBag;
-			// 	ExpectedBag.FromJson(ExpectedTemp);
-			// 	const FString Expected = ExpectedBag.ToJson(false);
-			//
-			// 	TestEqual("TMap<FString, TArray<T>>, where T = FBeamJsonSerializable, Serialized Correctly", OutJson, Expected);
-			// }
+			{
+				FString OutJson;
+				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+
+				TMap<FString, FBeamArrayOfInt> Map;
+				Map.Add("a", FBeamArrayOfInt(TArray<int>{0, 10}));
+				Map.Add("b", FBeamArrayOfInt(TArray<int>{0, 20}));
+				JsonSerializer->WriteObjectStart();
+				UBeamJsonUtils::SerializeMap<FBeamArrayOfInt>(TEXT("map"), Map, JsonSerializer);
+				JsonSerializer->WriteObjectEnd();
+				JsonSerializer->Close();
+
+				// Get a condensed string so we can easily compare with the condensed string we generate.
+				const FString ExpectedTemp =
+					TEXT(R"({
+					"map": {
+						"a": [0, 10],
+						"b": [0, 20]
+					}
+				})");
+				FJsonDataBag ExpectedBag;
+				ExpectedBag.FromJson(ExpectedTemp);
+				const FString Expected = ExpectedBag.ToJson(false);
+
+				TestEqual("TMap<FString, FBeamArrayOfPrimitiveType> Serialized Correctly", OutJson, Expected);
+			}
+
+			{
+				FString OutJson;
+				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+
+				TMap<FString, FBeamArrayOfBeamCid> Map;
+				Map.Add("a", FBeamArrayOfBeamCid(TArray<FBeamCid>{0, 10}));
+				Map.Add("b", FBeamArrayOfBeamCid(TArray<FBeamCid>{0, 20}));
+				JsonSerializer->WriteObjectStart();
+				UBeamJsonUtils::SerializeMap<FBeamArrayOfBeamCid>(TEXT("map"), Map, JsonSerializer);
+				JsonSerializer->WriteObjectEnd();
+				JsonSerializer->Close();
+
+				// Get a condensed string so we can easily compare with the condensed string we generate.
+				const FString ExpectedTemp =
+					TEXT(R"({
+					"map": {
+						"a": [0, 10],
+						"b": [0, 20]
+					}
+				})");
+				FJsonDataBag ExpectedBag;
+				ExpectedBag.FromJson(ExpectedTemp);
+				const FString Expected = ExpectedBag.ToJson(false);
+
+				TestEqual("TMap<FString, FBeamArrayOfSemanticType> Serialized Correctly", OutJson, Expected);
+			}
+		});
+
+		It("should output a serialized JSON Map of FBeamMapOf___ (primitive & semantic type)", [this]()
+		{
+			{
+				FString OutJson;
+				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+
+				TMap<FString, FBeamMapOfInt> Map;
+				Map.Add("a", FBeamMapOfInt(TMap<FString, int>{{TEXT("a"), 0}, {TEXT("b"), 10}}));
+				Map.Add("b", FBeamMapOfInt(TMap<FString, int>{{TEXT("a"), 0}, {TEXT("b"), 20}}));
+				JsonSerializer->WriteObjectStart();
+				UBeamJsonUtils::SerializeMap<FBeamMapOfInt>(TEXT("map"), Map, JsonSerializer);
+				JsonSerializer->WriteObjectEnd();
+				JsonSerializer->Close();
+
+				// Get a condensed string so we can easily compare with the condensed string we generate.
+				const FString ExpectedTemp =
+					TEXT(R"({
+					"map": {
+						"a": {
+							"a": 0,
+							"b": 10
+						},
+						"b": {
+							"a": 0,
+							"b": 20
+						}
+					}
+				})");
+				FJsonDataBag ExpectedBag;
+				ExpectedBag.FromJson(ExpectedTemp);
+				const FString Expected = ExpectedBag.ToJson(false);
+
+				TestEqual("TMap<FString, FBeamMapOfPrimitiveType> Serialized Correctly", OutJson, Expected);
+			}
+
+			{
+				FString OutJson;
+				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+
+				TMap<FString, FBeamMapOfBeamCid> Map;
+				Map.Add("a", FBeamMapOfBeamCid(TMap<FString, FBeamCid>{{TEXT("a"), 0}, {TEXT("b"), 10}}));
+				Map.Add("b", FBeamMapOfBeamCid(TMap<FString, FBeamCid>{{TEXT("a"), 0}, {TEXT("b"), 20}}));
+				JsonSerializer->WriteObjectStart();
+				UBeamJsonUtils::SerializeMap<FBeamMapOfBeamCid>(TEXT("map"), Map, JsonSerializer);
+				JsonSerializer->WriteObjectEnd();
+				JsonSerializer->Close();
+
+				// Get a condensed string so we can easily compare with the condensed string we generate.
+				const FString ExpectedTemp =
+					TEXT(R"({
+					"map": {
+						"a": {
+							"a": 0,
+							"b": 10
+						},
+						"b": {
+							"a": 0,
+							"b": 20
+						}
+					}
+				})");
+				FJsonDataBag ExpectedBag;
+				ExpectedBag.FromJson(ExpectedTemp);
+				const FString Expected = ExpectedBag.ToJson(false);
+
+				TestEqual("TMap<FString, FBeamMapOfSemanticType> Serialized Correctly", OutJson, Expected);
+			}
 		});
 	});
 
@@ -891,7 +1105,7 @@ void FBeamJsonUtilsSpec::Define()
 			FTest Test;
 			Test.OuterOwner = GetTransientPackage();
 			Test.BeamDeserialize(JsonInput);
-			
+
 			TestTrue("UObject Properties were deserialized correctly", Test.opt.Val->a[0]->a == 1);
 			TestTrue("UObject Properties were deserialized correctly", Test.opt.Val->a[1]->a == 2);
 			TestTrue("UObject Properties were deserialized correctly", Test.opt.Val->b->a == 3);
@@ -924,6 +1138,29 @@ void FBeamJsonUtilsSpec::Define()
 				}
 			};
 
+			struct FTestOptionalBeamCid : FBeamOptional
+			{
+				FBeamCid Val = 0;
+
+				virtual const void* GetAddr() const override { return &Val; }
+
+				virtual void Set(const void* Data) override
+				{
+					Val = *((FBeamCid*)Data);
+					IsSet = true;
+				}
+			};
+
+			struct FTestBeamCid : FBeamJsonSerializable
+			{
+				FTestOptionalBeamCid a;
+
+				virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+				{
+					UBeamJsonUtils::DeserializeOptional<FBeamCid, int64>("a", Bag, a);
+				}
+			};
+
 			// Get a condensed string so we can easily compare with the condensed string we generate.
 			const FString JsonInput =
 				TEXT(R"({ })");
@@ -933,6 +1170,12 @@ void FBeamJsonUtilsSpec::Define()
 
 			TestTrue("Optional was deserialized as default value", Test.a.Val == 0);
 			TestFalse("Optional was deserialized with IsSet == false", Test.a.IsSet);
+
+			FTestBeamCid Test2;
+			Test2.BeamDeserialize(JsonInput);
+
+			TestTrue("Optional was deserialized as default value", Test2.a.Val.AsLong == 0);
+			TestFalse("Optional was deserialized with IsSet == false", Test2.a.IsSet);
 		});
 
 		It("should deserialize a JSON Object as an Optional Primitive with Set Value", [this]()
@@ -960,6 +1203,30 @@ void FBeamJsonUtilsSpec::Define()
 				}
 			};
 
+			struct FTestOptionalBeamCid : FBeamOptional
+			{
+				FBeamCid Val = 0;
+
+				virtual const void* GetAddr() const override { return &Val; }
+
+				virtual void Set(const void* Data) override
+				{
+					Val = *((FBeamCid*)Data);
+					IsSet = true;
+				}
+			};
+
+			struct FTestBeamCid : FBeamJsonSerializable
+			{
+				FTestOptionalBeamCid a;
+
+				virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+				{
+					UBeamJsonUtils::DeserializeOptional<FBeamCid, int64>("a", Bag, a);
+				}
+			};
+
+
 			// Get a condensed string so we can easily compare with the condensed string we generate.
 			const FString JsonInput =
 				TEXT(R"({
@@ -971,6 +1238,12 @@ void FBeamJsonUtilsSpec::Define()
 
 			TestTrue("Optional was deserialized with correct value", Test.a.Val == 2);
 			TestTrue("Optional was deserialized with IsSet == true", Test.a.IsSet);
+
+			FTestBeamCid Test2;
+			Test2.BeamDeserialize(JsonInput);
+
+			TestTrue("Optional was deserialized with correct value", Test2.a.Val.AsLong == 2);
+			TestTrue("Optional was deserialized with IsSet == true", Test2.a.IsSet);
 		});
 
 		It("should deserialize a JSON Object as an Optional FBeamJsonSerializable with Set Value", [this]()
@@ -1082,6 +1355,46 @@ void FBeamJsonUtilsSpec::Define()
 				TestTrue("Optional was deserialized with correct value at idx 1", Test.a.Val[1] == 1);
 				TestTrue("Optional was deserialized with correct value at idx 2", Test.a.Val[2] == -1);
 				TestTrue("Optional was deserialized with IsSet == true", Test.a.IsSet);
+			}
+
+			// Test deserialize optional TArray<FBeamSemanticType>
+			{
+				struct FOptionalArrayBeamCid : FBeamOptional
+				{
+					TArray<FBeamCid> Val;
+
+					virtual const void* GetAddr() const override { return &Val; }
+
+					virtual void Set(const void* Data) override
+					{
+						Val = *static_cast<const TArray<FBeamCid>*>(Data);
+						IsSet = true;
+					}
+				};
+
+				struct FTestBeamCid : FBeamJsonSerializable
+				{
+					FOptionalArrayBeamCid a;
+
+					virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+					{
+						UBeamJsonUtils::DeserializeOptional<TArray<FBeamCid>, FBeamCid, int64>("a", Bag, a);
+					}
+				};
+
+				// Get a condensed string so we can easily compare with the condensed string we generate.
+				const FString JsonInput =
+					TEXT(R"({
+					"a": [0, 1, -1]
+				})");
+
+				FTestBeamCid Test2;
+				Test2.BeamDeserialize(JsonInput);
+
+				TestTrue("Optional was deserialized with correct value at idx 0", Test2.a.Val[0].AsLong == 0);
+				TestTrue("Optional was deserialized with correct value at idx 1", Test2.a.Val[1].AsLong == 1);
+				TestTrue("Optional was deserialized with correct value at idx 2", Test2.a.Val[2].AsLong == -1);
+				TestTrue("Optional was deserialized with IsSet == true", Test2.a.IsSet);
 			}
 
 			// Test deserialize optional TArray<FBeamJsonSerializable>
@@ -1208,6 +1521,50 @@ void FBeamJsonUtilsSpec::Define()
 				TestTrue("Optional was deserialized with IsSet == true", Test.a.IsSet);
 			}
 
+			// Test deserialize optional TArray<FBeamSemanticType>
+			{
+				struct FOptionalMapOfBeamCid : FBeamOptional
+				{
+					TMap<FString, FBeamCid> Val;
+
+					virtual const void* GetAddr() const override { return &Val; }
+
+					virtual void Set(const void* Data) override
+					{
+						Val = *static_cast<const TMap<FString, FBeamCid>*>(Data);
+						IsSet = true;
+					}
+				};
+
+				struct FTest : FBeamJsonSerializable
+				{
+					FOptionalMapOfBeamCid a;
+
+					virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+					{
+						UBeamJsonUtils::DeserializeOptional<TMap<FString, FBeamCid>, FBeamCid, int64>("a", Bag, a);
+					}
+				};
+
+				// Get a condensed string so we can easily compare with the condensed string we generate.
+				const FString JsonInput =
+					TEXT(R"({
+					"a": {
+						"a1": 1,
+						"a2": 2,
+						"a3": 3
+					}
+				})");
+
+				FTest Test;
+				Test.BeamDeserialize(JsonInput);
+
+				TestTrue("Optional was deserialized with correct value at idx 0", Test.a.Val.FindChecked("a1").AsLong == 1);
+				TestTrue("Optional was deserialized with correct value at idx 1", Test.a.Val.FindChecked("a2").AsLong == 2);
+				TestTrue("Optional was deserialized with correct value at idx 2", Test.a.Val.FindChecked("a3").AsLong == 3);
+				TestTrue("Optional was deserialized with IsSet == true", Test.a.IsSet);
+			}
+
 			// Test deserialize optional TArray<FBeamJsonSerializable>
 			{
 				struct FTestData : FBeamJsonSerializable
@@ -1288,7 +1645,7 @@ void FBeamJsonUtilsSpec::Define()
 			}
 		});
 
-		It("should deserialize a JSON Array as an FBeamArrayOf____ (primitives)", [this]()
+		It("should deserialize a JSON Array as an FBeamArrayOf____ (primitives & semantic types)", [this]()
 		{
 			// Get a condensed string so we can easily compare with the condensed string we generate.
 			const FString JsonInput =
@@ -1300,63 +1657,95 @@ void FBeamJsonUtilsSpec::Define()
 			TestTrue("Optional was deserialized with correct value at idx 0", Test.Values[0] == 0);
 			TestTrue("Optional was deserialized with correct value at idx 1", Test.Values[1] == 1);
 			TestTrue("Optional was deserialized with correct value at idx 2", Test.Values[2] == -1);
+
+			FBeamArrayOfBeamCid Test2;
+			Test2.BeamDeserialize(JsonInput);
+
+			TestTrue("Optional was deserialized with correct value at idx 0", Test2.Values[0].AsLong == 0);
+			TestTrue("Optional was deserialized with correct value at idx 1", Test2.Values[1].AsLong == 1);
+			TestTrue("Optional was deserialized with correct value at idx 2", Test2.Values[2].AsLong == -1);
 		});
 
-		It("should deserialize a JSON Array as an FBeamArrayOf____ (nested primitives)", [this]()
+		It("should deserialize a JSON Array as an FBeamArrayOf____ (nested primitives & semantic types)", [this]()
 		{
-			struct FBeamArrayOfString : public FBeamArray
 			{
-				TArray<FString> Values;
-
-				virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+				struct FBeamArrayOfString : public FBeamArray
 				{
-					for (const auto& Value : Values) Serializer->WriteValue(Value);
-				}
+					TArray<FString> Values;
 
-				virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+					virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+					{
+						UBeamJsonUtils::SerializeArray<FString>(Values, Serializer);
+					}
+
+					virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+					{
+						UBeamJsonUtils::SerializeArray<FString>(Values, Serializer);
+					}
+
+					virtual void BeamDeserializeElements(const TArray<TSharedPtr<FJsonValue>>& Elements) override
+					{
+						UBeamJsonUtils::DeserializeArray<FString>(Elements, Values);
+					}
+				};
+
+				struct FBeamArrayOfArrayOfString : public FBeamArray
 				{
-					for (const auto& Value : Values) Serializer->WriteValue(Value);
-				}
+					TArray<FBeamArrayOfString> Values;
 
-				virtual void BeamDeserializeElements(const TArray<TSharedPtr<FJsonValue>>& Elements) override
-				{
-					UBeamJsonUtils::DeserializeArray<FString>(Elements, Values);
-				}
-			};
+					virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+					{
+						UBeamJsonUtils::SerializeArray<FBeamArrayOfString>(Values, Serializer);
+					}
 
-			struct FBeamArrayOfArrayOfString : public FBeamArray
+					virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+					{
+						UBeamJsonUtils::SerializeArray<FBeamArrayOfString>(Values, Serializer);
+					}
+
+					virtual void BeamDeserializeElements(const TArray<TSharedPtr<FJsonValue>>& Elements) override
+					{
+						UBeamJsonUtils::DeserializeArray<FBeamArrayOfString>(Elements, Values);
+					}
+				};
+
+				// Get a condensed string so we can easily compare with the condensed string we generate.
+				const FString JsonInput =
+					TEXT(R"([["1"], ["2", "2"], ["3", "3", "3"]])");
+
+				FBeamArrayOfArrayOfString Test;
+				Test.BeamDeserialize(JsonInput);
+
+				TestTrue("Optional was deserialized with correct value at idx 0", Test.Values[0].Values[0] == TEXT("1"));
+				TestTrue("Optional was deserialized with correct value at idx 1", Test.Values[1].Values[1] == TEXT("2"));
+				TestTrue("Optional was deserialized with correct value at idx 2", Test.Values[2].Values[2] == TEXT("3"));
+			}
+
 			{
-				TArray<FBeamArrayOfString> Values;
-
-				virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+				struct FBeamArrayOfArrayOfBeamCid : public FBeamArray
 				{
-					UBeamJsonUtils::SerializeArray<FBeamArrayOfString>(Values, Serializer);
-				}
+					TArray<FBeamArrayOfBeamCid> Values;
 
-				virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
-				{
-					UBeamJsonUtils::SerializeArray<FBeamArrayOfString>(Values, Serializer);
-				}
+					virtual void BeamDeserializeElements(const TArray<TSharedPtr<FJsonValue>>& Elements) override
+					{
+						UBeamJsonUtils::DeserializeArray<FBeamArrayOfBeamCid>(Elements, Values);
+					}
+				};
 
-				virtual void BeamDeserializeElements(const TArray<TSharedPtr<FJsonValue>>& Elements) override
-				{
-					UBeamJsonUtils::DeserializeArray<FBeamArrayOfString>(Elements, Values);
-				}
-			};
+				// Get a condensed string so we can easily compare with the condensed string we generate.
+				const FString JsonInput =
+					TEXT(R"([["1"], ["2", "2"], ["3", "3", "3"]])");
 
-			// Get a condensed string so we can easily compare with the condensed string we generate.
-			const FString JsonInput =
-				TEXT(R"([["1"], ["2", "2"], ["3", "3", "3"]])");
+				FBeamArrayOfArrayOfBeamCid Test;
+				Test.BeamDeserialize(JsonInput);
 
-			FBeamArrayOfArrayOfString Test;
-			Test.BeamDeserialize(JsonInput);
-
-			TestTrue("Optional was deserialized with correct value at idx 0", Test.Values[0].Values[0] == TEXT("1"));
-			TestTrue("Optional was deserialized with correct value at idx 1", Test.Values[1].Values[1] == TEXT("2"));
-			TestTrue("Optional was deserialized with correct value at idx 2", Test.Values[2].Values[2] == TEXT("3"));
+				TestTrue("Optional was deserialized with correct value at idx 0", Test.Values[0].Values[0].AsString.Equals(TEXT("1")));
+				TestTrue("Optional was deserialized with correct value at idx 1", Test.Values[1].Values[1].AsString.Equals(TEXT("2")));
+				TestTrue("Optional was deserialized with correct value at idx 2", Test.Values[2].Values[2].AsString.Equals(TEXT("3")));
+			}
 		});
 
-		It("should deserialize a JSON Object as an FBeamMapOf____ (primitives)", [this]()
+		It("should deserialize a JSON Object as an FBeamMapOf____ (primitives & semantic types)", [this]()
 		{
 			// Get a condensed string so we can easily compare with the condensed string we generate.
 			const FString JsonInput =
@@ -1368,68 +1757,116 @@ void FBeamJsonUtilsSpec::Define()
 			TestTrue("Optional was deserialized with correct value at idx 0", Test.Values.FindChecked("a1") == 0);
 			TestTrue("Optional was deserialized with correct value at idx 1", Test.Values.FindChecked("a2") == 1);
 			TestTrue("Optional was deserialized with correct value at idx 2", Test.Values.FindChecked("a3") == -1);
+
+			FBeamMapOfBeamCid Test2;
+			Test2.BeamDeserialize(JsonInput);
+
+			TestTrue("Optional was deserialized with correct value at idx 0", Test2.Values.FindChecked("a1").AsLong == 0);
+			TestTrue("Optional was deserialized with correct value at idx 1", Test2.Values.FindChecked("a2").AsLong == 1);
+			TestTrue("Optional was deserialized with correct value at idx 2", Test2.Values.FindChecked("a3").AsLong == -1);
 		});
 
-		It("should deserialize a JSON Object as an FBeamMapOf____ (nested primitives)", [this]()
+		It("should deserialize a JSON Object as an FBeamMapOf____ (nested primitives & semantic types)", [this]()
 		{
-			struct FBeamMapOfString : public FBeamMap
 			{
-				TMap<FString, FString> Values;
-
-				virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+				struct FBeamMapOfString : public FBeamMap
 				{
-					UBeamJsonUtils::SerializeMap<FString>(Values, Serializer);
-				}
+					TMap<FString, FString> Values;
 
-				virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+					virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+					{
+						UBeamJsonUtils::SerializeMap<FString>(Values, Serializer);
+					}
+
+					virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+					{
+						UBeamJsonUtils::SerializeMap<FString>(Values, Serializer);
+					}
+
+					virtual void BeamDeserializeElements(const TSharedPtr<FJsonObject>& Elements) override
+					{
+						UBeamJsonUtils::DeserializeMap<FString>(Elements, Values);
+					}
+				};
+
+				struct FBeamMapOfMapOfString : public FBeamMap
 				{
-					UBeamJsonUtils::SerializeMap<FString>(Values, Serializer);
-				}
+					TMap<FString, FBeamMapOfString> Values;
 
-				virtual void BeamDeserializeElements(const TSharedPtr<FJsonObject>& Elements) override
-				{
-					UBeamJsonUtils::DeserializeMap<FString>(Elements, Values);
-				}
-			};
+					virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+					{
+						UBeamJsonUtils::SerializeMap<FBeamMapOfString>(Values, Serializer);
+					}
 
-			struct FBeamMapOfMapOfString : public FBeamMap
-			{
-				TMap<FString, FBeamMapOfString> Values;
+					virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+					{
+						UBeamJsonUtils::SerializeMap<FBeamMapOfString>(Values, Serializer);
+					}
 
-				virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
-				{
-					UBeamJsonUtils::SerializeMap<FBeamMapOfString>(Values, Serializer);
-				}
-
-				virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
-				{
-					UBeamJsonUtils::SerializeMap<FBeamMapOfString>(Values, Serializer);
-				}
-
-				virtual void BeamDeserializeElements(const TSharedPtr<FJsonObject>& Elements) override
-				{
-					UBeamJsonUtils::DeserializeMap<FBeamMapOfString>(Elements, Values);
-				}
-			};
+					virtual void BeamDeserializeElements(const TSharedPtr<FJsonObject>& Elements) override
+					{
+						UBeamJsonUtils::DeserializeMap<FBeamMapOfString>(Elements, Values);
+					}
+				};
 
 
-			// Get a condensed string so we can easily compare with the condensed string we generate.
-			const FString JsonInput =
-				TEXT(R"({
+				// Get a condensed string so we can easily compare with the condensed string we generate.
+				const FString JsonInput =
+					TEXT(R"({
 						"a1" : { "a": "0" },
 						"a2": { "a": "1" },
 						"a3": { "a": "-1" }
 					})");
 
-			FBeamMapOfMapOfString Test;
-			Test.BeamDeserialize(JsonInput);
+				FBeamMapOfMapOfString Test;
+				Test.BeamDeserialize(JsonInput);
 
-			TestTrue("Optional was deserialized with correct value at idx 0", Test.Values.FindChecked("a1").Values.FindChecked("a") == TEXT("0"));
-			TestTrue("Optional was deserialized with correct value at idx 1", Test.Values.FindChecked("a2").Values.FindChecked("a") == TEXT("1"));
-			TestTrue("Optional was deserialized with correct value at idx 2", Test.Values.FindChecked("a3").Values.FindChecked("a") == TEXT("-1"));
+				TestTrue("Optional was deserialized with correct value at idx 0", Test.Values.FindChecked("a1").Values.FindChecked("a") == TEXT("0"));
+				TestTrue("Optional was deserialized with correct value at idx 1", Test.Values.FindChecked("a2").Values.FindChecked("a") == TEXT("1"));
+				TestTrue("Optional was deserialized with correct value at idx 2", Test.Values.FindChecked("a3").Values.FindChecked("a") == TEXT("-1"));
+			}
+
+			{			
+
+				struct FBeamMapOfMapOfBeamCid : public FBeamMap
+				{
+					TMap<FString, FBeamMapOfBeamCid> Values;
+
+					virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+					{
+						UBeamJsonUtils::SerializeMap<FBeamMapOfBeamCid>(Values, Serializer);
+					}
+
+					virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+					{
+						UBeamJsonUtils::SerializeMap<FBeamMapOfBeamCid>(Values, Serializer);
+					}
+
+					virtual void BeamDeserializeElements(const TSharedPtr<FJsonObject>& Elements) override
+					{
+						UBeamJsonUtils::DeserializeMap<FBeamMapOfBeamCid>(Elements, Values);
+					}
+				};
+
+
+				// Get a condensed string so we can easily compare with the condensed string we generate.
+				const FString JsonInput =
+					TEXT(R"({
+						"a1" : { "a": "0" },
+						"a2": { "a": "1" },
+						"a3": { "a": "-1" }
+					})");
+
+				FBeamMapOfMapOfBeamCid Test;
+				Test.BeamDeserialize(JsonInput);
+
+				TestTrue("Optional was deserialized with correct value at idx 0", Test.Values.FindChecked("a1").Values.FindChecked("a").AsString.Equals(TEXT("0")));
+				TestTrue("Optional was deserialized with correct value at idx 1", Test.Values.FindChecked("a2").Values.FindChecked("a").AsString.Equals(TEXT("1")));
+				TestTrue("Optional was deserialized with correct value at idx 2", Test.Values.FindChecked("a3").Values.FindChecked("a").AsString.Equals(TEXT("-1")));
+			}
 		});
 
-		It("should deserialize a JSON Array as an TArray<> of primitives", [this]()
+		It("should deserialize a JSON Array as an TArray<> of primitives or semantic types", [this]()
 		{
 			struct FTest : FBeamJsonSerializable
 			{
@@ -1452,6 +1889,23 @@ void FBeamJsonUtilsSpec::Define()
 			TestTrue("Deserialized idx 0 of Int-Array correctly", TestOut.a[0] == 1);
 			TestTrue("Deserialized idx 1 of Int-Array correctly", TestOut.a[1] == -1);
 			TestTrue("Deserialized idx 2 of Int-Array correctly", TestOut.a[2] == 0);
+
+			struct FTestBeamCid : FBeamJsonSerializable
+			{
+				TArray<FBeamCid> a;
+
+				virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+				{
+					UBeamJsonUtils::DeserializeArray<FBeamCid, int64>(Bag->GetArrayField(TEXT("a")), a);
+				}
+			};
+
+			FTestBeamCid TestOut2;
+			TestOut2.BeamDeserialize(JsonString);
+
+			TestTrue("Deserialized idx 0 of Int-Array correctly", TestOut2.a[0].AsLong == 1);
+			TestTrue("Deserialized idx 1 of Int-Array correctly", TestOut2.a[1].AsLong == -1);
+			TestTrue("Deserialized idx 2 of Int-Array correctly", TestOut2.a[2].AsLong == 0);
 		});
 
 		It("should deserialize a JSON Array as an TArray<> of FBeamJsonSerializable", [this]()
@@ -1514,16 +1968,6 @@ void FBeamJsonUtilsSpec::Define()
 				{
 					TArray<int> Values;
 
-					virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
-					{
-						UBeamJsonUtils::SerializeArray<int>(Values, Serializer);
-					}
-
-					virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
-					{
-						UBeamJsonUtils::SerializeArray<int>(Values, Serializer);
-					}
-
 					virtual void BeamDeserializeElements(const TArray<TSharedPtr<FJsonValue>>& Elements) override
 					{
 						UBeamJsonUtils::DeserializeArray<int>(Elements, Values);
@@ -1553,21 +1997,35 @@ void FBeamJsonUtilsSpec::Define()
 				TestTrue("Deserialized idx 1 of Array correctly", TestOut.a[1].Values[0] == 2);
 			}
 
+			// Test with wrapped array of semantic types
+			{
+				struct FTest : FBeamJsonSerializable
+				{
+					TArray<FBeamArrayOfBeamCid> a;
+
+					virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+					{
+						UBeamJsonUtils::DeserializeArray<FBeamArrayOfBeamCid>(Bag->GetArrayField(TEXT("a")), a);
+					}
+				};
+
+				// Get a condensed string so we can easily compare with the condensed string we generate.
+				const FString JsonString =
+					TEXT(R"({
+					"a": [[1], [2]]
+				})");
+				FTest TestOut;
+				TestOut.BeamDeserialize(JsonString);
+
+				TestTrue("Deserialized idx 0 of Array correctly", TestOut.a[0].Values[0].AsLong == 1);
+				TestTrue("Deserialized idx 1 of Array correctly", TestOut.a[1].Values[0].AsLong == 2);
+			}
+
 			// Test with wrapped array of non-primitives
 			{
 				struct FTestData : public FBeamJsonSerializable
 				{
 					int a;
-
-					virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
-					{
-						Serializer->WriteValue("a", a);
-					}
-
-					virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
-					{
-						Serializer->WriteValue("a", a);
-					}
 
 					virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 					{
@@ -1578,16 +2036,6 @@ void FBeamJsonUtilsSpec::Define()
 				struct FBeamArrayOfTestData : public FBeamArray
 				{
 					TArray<FTestData> Values;
-
-					virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
-					{
-						UBeamJsonUtils::SerializeArray<FTestData>(Values, Serializer);
-					}
-
-					virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
-					{
-						UBeamJsonUtils::SerializeArray<FTestData>(Values, Serializer);
-					}
 
 					virtual void BeamDeserializeElements(const TArray<TSharedPtr<FJsonValue>>& Elements) override
 					{
@@ -1630,26 +2078,6 @@ void FBeamJsonUtilsSpec::Define()
 		{
 			// Test with wrapped array of primitives
 			{
-				struct FBeamMapOfInt : public FBeamMap
-				{
-					TMap<FString, int> Values;
-
-					virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
-					{
-						UBeamJsonUtils::SerializeMap<int>(Values, Serializer);
-					}
-
-					virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
-					{
-						UBeamJsonUtils::SerializeMap<int>(Values, Serializer);
-					}
-
-					virtual void BeamDeserializeElements(const TSharedPtr<FJsonObject>& Elements) override
-					{
-						UBeamJsonUtils::DeserializeMap<int>(Elements, Values);
-					}
-				};
-
 				struct FTest : FBeamJsonSerializable
 				{
 					TArray<FBeamMapOfInt> a;
@@ -1670,6 +2098,30 @@ void FBeamJsonUtilsSpec::Define()
 
 				TestTrue("Deserialized idx 0 of Array correctly", TestOut.a[0].Values.FindChecked("a1") == 1);
 				TestTrue("Deserialized idx 1 of Array correctly", TestOut.a[1].Values.FindChecked("a2") == 2);
+			}
+
+			// Test with wrapped array of semantic types
+			{
+				struct FTest : FBeamJsonSerializable
+				{
+					TArray<FBeamMapOfBeamCid> a;
+
+					virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+					{
+						UBeamJsonUtils::DeserializeArray<FBeamMapOfBeamCid>(Bag->GetArrayField(TEXT("a")), a);
+					}
+				};
+
+				// Get a condensed string so we can easily compare with the condensed string we generate.
+				const FString JsonString =
+					TEXT(R"({
+					"a": [{"a1": 1}, {"a2": 2}]
+				})");
+				FTest TestOut;
+				TestOut.BeamDeserialize(JsonString);
+
+				TestTrue("Deserialized idx 0 of Array correctly", TestOut.a[0].Values.FindChecked("a1").AsLong == 1);
+				TestTrue("Deserialized idx 1 of Array correctly", TestOut.a[1].Values.FindChecked("a2").AsLong == 2);
 			}
 
 			// Test with wrapped array of non-primitives
@@ -1751,17 +2203,19 @@ void FBeamJsonUtilsSpec::Define()
 			}
 		});
 
-		It("should deserialize a JSON Array as an TMap<FString,> of primitives", [this]()
+		It("should deserialize a JSON Object as an TMap<FString,> of primitives or semantic types", [this]()
 		{
 			struct FTest : FBeamJsonSerializable
 			{
 				TMap<FString, int> a;
 				TMap<FString, FString> b;
+				TMap<FString, FBeamCid> c;
 
 				virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 				{
 					UBeamJsonUtils::DeserializeMap<int>(Bag->GetObjectField(TEXT("a")), a);
 					UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("b")), b);
+					UBeamJsonUtils::DeserializeMap<FBeamCid, int64>(Bag->GetObjectField(TEXT("c")), c);
 				}
 			};
 
@@ -1778,6 +2232,11 @@ void FBeamJsonUtilsSpec::Define()
 						"a1": "b1",
 						"a2": "b2",
 						"a3": "b3"
+					},
+					"c": {
+						"a1": 0,
+						"a2": -1,
+						"a3": 1
 					}
 				})");
 			FTest TestOut;
@@ -1789,32 +2248,15 @@ void FBeamJsonUtilsSpec::Define()
 			TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.b.FindRef("a1") == TEXT("b1"));
 			TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.b.FindRef("a2") == TEXT("b2"));
 			TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.b.FindRef("a3") == TEXT("b3"));
+			TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.c.FindRef("a1").AsLong == 0);
+			TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.c.FindRef("a2").AsLong == -1);
+			TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.c.FindRef("a3").AsLong == 1);
 		});
 
-		It("should deserialize a JSON Array as an TMap<FString,> of FBeamArrayOf____", [this]()
+		It("should deserialize a JSON Object as an TMap<FString,> of FBeamArrayOf____", [this]()
 		{
 			// Test primitives
 			{
-				struct FBeamArrayOfInt : public FBeamArray
-				{
-					TArray<int> Values;
-
-					virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
-					{
-						UBeamJsonUtils::SerializeArray<int>(Values, Serializer);
-					}
-
-					virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
-					{
-						UBeamJsonUtils::SerializeArray<int>(Values, Serializer);
-					}
-
-					virtual void BeamDeserializeElements(const TArray<TSharedPtr<FJsonValue>>& Elements) override
-					{
-						UBeamJsonUtils::DeserializeArray<int>(Elements, Values);
-					}
-				};
-
 				struct FTest : FBeamJsonSerializable
 				{
 					TMap<FString, FBeamArrayOfInt> a;
@@ -1843,21 +2285,41 @@ void FBeamJsonUtilsSpec::Define()
 				TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.a.FindRef("a3").Values[0] == 1);
 			}
 
+			// Test semantic types
+			{
+				struct FTest : FBeamJsonSerializable
+				{
+					TMap<FString, FBeamArrayOfBeamCid> a;
+
+					virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+					{
+						UBeamJsonUtils::DeserializeMap<FBeamArrayOfBeamCid>(Bag->GetObjectField(TEXT("a")), a);
+					}
+				};
+
+				// Get a condensed string so we can easily compare with the condensed string we generate.
+				const FString JsonString =
+					TEXT(R"({
+					"a": 
+					{
+						"a1": [0],
+						"a2": [-1],
+						"a3": [1]
+					}
+				})");
+				FTest TestOut;
+				TestOut.BeamDeserialize(JsonString);
+
+				TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.a.FindRef("a1").Values[0].AsLong == 0);
+				TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.a.FindRef("a2").Values[0].AsLong == -1);
+				TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.a.FindRef("a3").Values[0].AsLong == 1);
+			}
+			
 			// Test with non-primitives
 			{
 				struct FBeamArrayOfTestData : public FBeamArray
 				{
 					TArray<FTestInt> Values;
-
-					virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
-					{
-						UBeamJsonUtils::SerializeArray<FTestInt>(Values, Serializer);
-					}
-
-					virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
-					{
-						UBeamJsonUtils::SerializeArray<FTestInt>(Values, Serializer);
-					}
 
 					virtual void BeamDeserializeElements(const TArray<TSharedPtr<FJsonValue>>& Elements) override
 					{
@@ -1900,30 +2362,10 @@ void FBeamJsonUtilsSpec::Define()
 			}
 		});
 
-		It("should deserialize a JSON Array as an TMap<FString,> of FBeamMapOf____", [this]()
+		It("should deserialize a JSON Object as an TMap<FString,> of FBeamMapOf____", [this]()
 		{
 			// Test primitives
 			{
-				struct FBeamMapOfInt : public FBeamMap
-				{
-					TMap<FString, int> Values;
-
-					virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
-					{
-						UBeamJsonUtils::SerializeMap<int>(Values, Serializer);
-					}
-
-					virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
-					{
-						UBeamJsonUtils::SerializeMap<int>(Values, Serializer);
-					}
-
-					virtual void BeamDeserializeElements(const TSharedPtr<FJsonObject>& Elements) override
-					{
-						UBeamJsonUtils::DeserializeMap<int>(Elements, Values);
-					}
-				};
-
 				struct FTestMapOfInt : FBeamJsonSerializable
 				{
 					TMap<FString, FBeamMapOfInt> a;
@@ -1950,6 +2392,36 @@ void FBeamJsonUtilsSpec::Define()
 				TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.a.FindRef("a1").Values.FindChecked("a") == 0);
 				TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.a.FindRef("a2").Values.FindChecked("a") == -1);
 				TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.a.FindRef("a3").Values.FindChecked("a") == 1);
+			}
+
+			// Test semantic types
+			{
+				struct FTestMapOfInt : FBeamJsonSerializable
+				{
+					TMap<FString, FBeamMapOfBeamCid> a;
+
+					virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+					{
+						UBeamJsonUtils::DeserializeMap<FBeamMapOfBeamCid>(Bag->GetObjectField(TEXT("a")), a);
+					}
+				};
+
+				// Get a condensed string so we can easily compare with the condensed string we generate.
+				const FString JsonString =
+					TEXT(R"({
+					"a": 
+					{
+						"a1": { "a" : 0 },
+						"a2": { "a" : -1 },
+						"a3": { "a" : 1 }
+					}
+				})");
+				FTestMapOfInt TestOut;
+				TestOut.BeamDeserialize(JsonString);
+
+				TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.a.FindRef("a1").Values.FindChecked("a").AsLong == 0);
+				TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.a.FindRef("a2").Values.FindChecked("a").AsLong == -1);
+				TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.a.FindRef("a3").Values.FindChecked("a").AsLong == 1);
 			}
 
 			// Test with non-primitives
@@ -2018,7 +2490,7 @@ void FBeamJsonUtilsSpec::Define()
 			}
 		});
 
-		It("should deserialize a JSON Array as an TMap<FString,> of FBeamJsonSerializable", [this]()
+		It("should deserialize a JSON Object as an TMap<FString,> of FBeamJsonSerializable", [this]()
 		{
 			// Test with non-primitives
 			{
@@ -2049,6 +2521,7 @@ void FBeamJsonUtilsSpec::Define()
 					TMap<FString, int> a;
 					TMap<FString, FString> b;
 					TMap<FString, FTestData> c;
+					TMap<FString, FBeamCid> d;
 
 
 					virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
@@ -2056,6 +2529,7 @@ void FBeamJsonUtilsSpec::Define()
 						UBeamJsonUtils::DeserializeMap<int>(Bag->GetObjectField(TEXT("a")), a);
 						UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("b")), b);
 						UBeamJsonUtils::DeserializeMap<FTestData>(Bag->GetObjectField(TEXT("c")), c);
+						UBeamJsonUtils::DeserializeMap<FBeamCid, int64>(Bag->GetObjectField(TEXT("d")), d);
 					}
 				};
 
@@ -2079,6 +2553,12 @@ void FBeamJsonUtilsSpec::Define()
 							"b": "Test",
 							"c": [0, 1]
 						}
+					},
+					"d": 
+					{
+						"a1": 0,
+						"a2": -1,
+						"a3": 1
 					}	
 				})");
 				FTest TestOut;
@@ -2096,6 +2576,10 @@ void FBeamJsonUtilsSpec::Define()
 				TestTrue("Deserialized TMap<FString, FBeamJsonSerializable> map correctly", TestOut.c.FindRef("obj").b == TEXT("Test"));
 				TestTrue("Deserialized TMap<FString, FBeamJsonSerializable> map correctly", TestOut.c.FindRef("obj").c[0] == 0);
 				TestTrue("Deserialized TMap<FString, FBeamJsonSerializable> map correctly", TestOut.c.FindRef("obj").c[1] == 1);
+
+				TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.d.FindRef("a1").AsLong == 0);
+				TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.d.FindRef("a2").AsLong == -1);
+				TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.d.FindRef("a3").AsLong == 1);
 			}
 		});
 	});

@@ -18,8 +18,8 @@ public:
 	static FString TransferRequestBodyToJsonString(const UTransferRequestBody* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make TransferRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Transaction, Currencies, Outer", NativeMakeFunc))
-	static UTransferRequestBody* Make(int64 RecipientPlayer, FOptionalString Transaction, FOptionalMapOfInt64 Currencies, UObject* Outer);
+	static UTransferRequestBody* Make(FBeamGamerTag RecipientPlayer, FOptionalString Transaction, FOptionalMapOfInt64 Currencies, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break TransferRequestBody", meta=(NativeBreakFunc))
-	static void Break(const UTransferRequestBody* Serializable, int64& RecipientPlayer, FOptionalString& Transaction, FOptionalMapOfInt64& Currencies);
+	static void Break(const UTransferRequestBody* Serializable, FBeamGamerTag& RecipientPlayer, FOptionalString& Transaction, FOptionalMapOfInt64& Currencies);
 };

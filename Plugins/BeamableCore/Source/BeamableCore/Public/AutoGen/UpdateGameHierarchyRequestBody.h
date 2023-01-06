@@ -4,6 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "BeamBackend/SemanticTypes/BeamPid.h"
 #include "AutoGen/ProjectView.h"
 
 #include "UpdateGameHierarchyRequestBody.generated.h"
@@ -15,7 +16,7 @@ class BEAMABLECORE_API UUpdateGameHierarchyRequestBody : public UObject, public 
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Root PID", Category="Beam")
-	FString RootPID;
+	FBeamPid RootPID;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Projects", Category="Beam")
 	TArray<UProjectView*> Projects;
 

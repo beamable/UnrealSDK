@@ -18,8 +18,8 @@ public:
 	static FString FriendshipStatusToJsonString(const UFriendshipStatus* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make FriendshipStatus", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UFriendshipStatus* Make(bool bIsBlocked, FString FriendId, FString PlayerId, UObject* Outer);
+	static UFriendshipStatus* Make(bool bIsBlocked, FBeamGamerTag FriendId, FBeamGamerTag PlayerId, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break FriendshipStatus", meta=(NativeBreakFunc))
-	static void Break(const UFriendshipStatus* Serializable, bool& bIsBlocked, FString& FriendId, FString& PlayerId);
+	static void Break(const UFriendshipStatus* Serializable, bool& bIsBlocked, FBeamGamerTag& FriendId, FBeamGamerTag& PlayerId);
 };

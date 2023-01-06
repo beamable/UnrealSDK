@@ -5,6 +5,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalString.h"
+#include "BeamBackend/SemanticTypes/BeamCid.h"
 #include "AutoGen/Optionals/OptionalInt64.h"
 #include "AutoGen/Project.h"
 #include "AutoGen/RealmsBasicAccount.h"
@@ -20,7 +21,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
 	FString Name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid", Category="Beam")
-	int64 Cid;
+	FBeamCid Cid;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Projects", Category="Beam")
 	TArray<UProject*> Projects;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Accounts", Category="Beam")

@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/ExternalIdentityRequestBody.h"
+#include "AutoGen/AttachExternalIdentityApiRequestBody.h"
 #include "AutoGen/AttachExternalIdentityApiResponse.h"
 
 #include "PostExternal_identityRequest.generated.h"
@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UExternalIdentityRequestBody* Body;
+	UAttachExternalIdentityApiRequestBody* Body;
 
 	// Beam Base Request Declaration
 	UPostExternal_identityRequest() = default;
@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make PostExternal_identity",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_ChallengeSolution,RequestOwner"))
-	static UPostExternal_identityRequest* Make(FString _ProviderAddress, FString _ExternalToken, FOptionalChallengeSolution _ChallengeSolution, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make PostExternal_identity",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_ChallengeSolution,_ProviderNamespace,RequestOwner"))
+	static UPostExternal_identityRequest* Make(FString _ProviderService, FString _ExternalToken, FOptionalChallengeSolution _ChallengeSolution, FOptionalString _ProviderNamespace, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
