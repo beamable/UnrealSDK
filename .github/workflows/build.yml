@@ -6,11 +6,11 @@ jobs:
   build:
     runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v2
-      - name: Run UAT
+      - uses: actions/checkout@v3
         with: 
           lfs: true
-        working-directory: C:\actions-runner\_work\UnrealSDK\UnrealSDK\
+        
+      - name: Run UAT  
         run: C:\UE_5.1\Engine\Build\BatchFiles\RunUAT.bat BuildCookRun -project=C:\actions-runner\_work\UnrealSDK\UnrealSDK\BeamableUnreal.uproject -noP4 -clientconfig=Development -serverconfig=Development -nocompile -nocompileeditor -installed -unrealexe="C:\UE_5.1\Engine\Binaries\Win64\UnrealEditor-Cmd.exe" -utf8output -platform=Win64 -build -cook -map=DefaultMap+DefaultMap -CookCultures=en -unversionedcookedcontent -encryptinifiles -ddc=InstalledDerivedDataBackendGraph -pak -makebinaryconfig -manifests -compressed -stage -deploy -cmdline="DefaultMap -Messaging" -device=Windows@DESKTOP-54B40OJ -addcmdline="-SessionId=93429DA948590375D210BE95D3417B52 -SessionOwner='Pedro' -SessionName='Windows'  "
 
 
