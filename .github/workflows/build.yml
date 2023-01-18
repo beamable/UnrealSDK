@@ -2,8 +2,7 @@ name: Build Unreal Package
 
 on:
   schedule:
-  #run at 9pm UTC (4pm EST) monday through friday
-    -cron: '0 9 * * 1-5'
+    - cron: '0 9 * * 1-5'
 
 jobs:
   build:
