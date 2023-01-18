@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "AutoGen/Enums/GroupType.h"
 #include "BeamBackend/BeamBackend.h"
 #include "BeamBackend/BeamBaseRequestInterface.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
@@ -19,6 +20,7 @@ UCLASS()
 class UBeamMockBody final : public UObject, public FBeamJsonSerializable
 {
 	GENERATED_BODY()
+
 public:
 	int FakeInt;
 
@@ -37,6 +39,7 @@ UCLASS()
 class UBeamMockGetRequest : public UObject, public IBeamBaseRequestInterface
 {
 	GENERATED_BODY()
+
 public:
 	virtual void BuildVerb(FString& VerbString) const override { VerbString = TEXT("GET"); }
 	virtual void BuildBody(FString& BodyString) const override { BodyString = TEXT(""); }
@@ -101,13 +104,13 @@ using FMockFullResponse = FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRe
 DECLARE_DELEGATE_OneParam(FOnMockFullResponse, FMockFullResponse);
 
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FBeamMockGetRequestCSVResponseRow : public FTableRowBase
 {
 	GENERATED_BODY()
 
-	inline const static FString KeyField = TEXT("KeyField");
-	inline const static TArray<FString> HeaderFields = {KeyField, TEXT("Field1"), TEXT("Field2"), TEXT("Field3")};
+	const static FString KeyField;
+	const static TArray<FString> HeaderFields;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	int32 Field1;
@@ -117,15 +120,21 @@ struct FBeamMockGetRequestCSVResponseRow : public FTableRowBase
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	int64 Field3;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	FString Field4;
+	
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	EGroupType Field5;
 };
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamMockGetRequestCSVResponse : public UObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	UDataTable* FakeTable;
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override
@@ -139,8 +148,10 @@ public:
 		// Generate this always.
 		UBeamCsvUtils::ParseIntoDataTable(FakeTable,
 		                                  FBeamMockGetRequestCSVResponseRow::StaticStruct(),
-		                                  GET_MEMBER_NAME_CHECKED(FBeamMockGetRequestCSVResponseRow, KeyField).ToString(),
-		                                  ResponseContent);		
+		                                  FBeamMockGetRequestCSVResponseRow::KeyField,
+		                                  ResponseContent);
+		
+		UBeamCsvUtils::StoreNameAsColumn<FBeamMockGetRequestCSVResponseRow>(FakeTable, FBeamMockGetRequestCSVResponseRow::KeyField);
 	}
 };
 

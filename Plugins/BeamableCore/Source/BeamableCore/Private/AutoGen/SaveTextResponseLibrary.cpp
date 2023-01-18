@@ -1,0 +1,38 @@
+
+#include "AutoGen/SaveTextResponseLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString USaveTextResponseLibrary::SaveTextResponseToJsonString(const USaveTextResponse* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+USaveTextResponse* USaveTextResponseLibrary::Make(TArray<UTextReference*> Text, UObject* Outer)
+{
+	auto Serializable = NewObject<USaveTextResponse>(Outer);
+	Serializable->Text = Text;
+	
+	return Serializable;
+}
+
+void USaveTextResponseLibrary::Break(const USaveTextResponse* Serializable, TArray<UTextReference*>& Text)
+{
+	Text = Serializable->Text;
+		
+}
+

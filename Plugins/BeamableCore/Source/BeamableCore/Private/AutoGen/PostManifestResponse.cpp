@@ -12,15 +12,15 @@ void UPostManifestResponse::DeserializeRequestResponse(UObject* RequestData, FSt
 
 void UPostManifestResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeOptional<UManifestChecksum*>(TEXT("manifest"), &Manifest, Serializer);
+	UBeamJsonUtils::SerializeOptional<UBeamoBasicManifestChecksum*>(TEXT("manifest"), &Manifest, Serializer);
 }
 
 void UPostManifestResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeOptional<UManifestChecksum*>(TEXT("manifest"), &Manifest, Serializer);		
+	UBeamJsonUtils::SerializeOptional<UBeamoBasicManifestChecksum*>(TEXT("manifest"), &Manifest, Serializer);		
 }
 
 void UPostManifestResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeOptional<UManifestChecksum*>("manifest", Bag, Manifest, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<UBeamoBasicManifestChecksum*>("manifest", Bag, Manifest, OuterOwner);
 }

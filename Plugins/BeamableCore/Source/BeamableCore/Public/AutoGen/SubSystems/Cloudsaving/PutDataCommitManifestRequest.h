@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "AutoGen/UploadRequests.h"
-#include "AutoGen/Manifest.h"
+#include "AutoGen/CloudsavingBasicManifest.h"
 
 #include "PutDataCommitManifestRequest.generated.h"
 
@@ -41,7 +41,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPutDataCommitManifestSuccess, FBeamRequestContext, Context, UPutDataCommitManifestRequest*, Request, UManifest*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPutDataCommitManifestSuccess, FBeamRequestContext, Context, UPutDataCommitManifestRequest*, Request, UCloudsavingBasicManifest*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPutDataCommitManifestError, FBeamRequestContext, Context, UPutDataCommitManifestRequest*, Request, FBeamErrorResponse, Error);
@@ -49,5 +49,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPutDataCommitManifestError, FBeamRequest
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnPutDataCommitManifestComplete, FBeamRequestContext, Context, UPutDataCommitManifestRequest*, Request);
 
-using FPutDataCommitManifestFullResponse = FBeamFullResponse<UPutDataCommitManifestRequest*, UManifest*>;
+using FPutDataCommitManifestFullResponse = FBeamFullResponse<UPutDataCommitManifestRequest*, UCloudsavingBasicManifest*>;
 DECLARE_DELEGATE_OneParam(FOnPutDataCommitManifestFullResponse, FPutDataCommitManifestFullResponse);

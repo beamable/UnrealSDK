@@ -22,7 +22,7 @@ FString UPostManifestResponseLibrary::PostManifestResponseToJsonString(const UPo
 	return Result;
 }	
 
-UPostManifestResponse* UPostManifestResponseLibrary::Make(FOptionalManifestChecksum Manifest, UObject* Outer)
+UPostManifestResponse* UPostManifestResponseLibrary::Make(FOptionalBeamoBasicManifestChecksum Manifest, UObject* Outer)
 {
 	auto Serializable = NewObject<UPostManifestResponse>(Outer);
 	Serializable->Manifest = Manifest;
@@ -30,7 +30,7 @@ UPostManifestResponse* UPostManifestResponseLibrary::Make(FOptionalManifestCheck
 	return Serializable;
 }
 
-void UPostManifestResponseLibrary::Break(const UPostManifestResponse* Serializable, FOptionalManifestChecksum& Manifest)
+void UPostManifestResponseLibrary::Break(const UPostManifestResponse* Serializable, FOptionalBeamoBasicManifestChecksum& Manifest)
 {
 	Manifest = Serializable->Manifest;
 		

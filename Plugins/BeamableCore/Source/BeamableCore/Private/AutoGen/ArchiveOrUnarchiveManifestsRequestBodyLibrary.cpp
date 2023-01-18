@@ -1,0 +1,38 @@
+
+#include "AutoGen/ArchiveOrUnarchiveManifestsRequestBodyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UArchiveOrUnarchiveManifestsRequestBodyLibrary::ArchiveOrUnarchiveManifestsRequestBodyToJsonString(const UArchiveOrUnarchiveManifestsRequestBody* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UArchiveOrUnarchiveManifestsRequestBody* UArchiveOrUnarchiveManifestsRequestBodyLibrary::Make(TArray<FBeamContentManifestId> ManifestIds, UObject* Outer)
+{
+	auto Serializable = NewObject<UArchiveOrUnarchiveManifestsRequestBody>(Outer);
+	Serializable->ManifestIds = ManifestIds;
+	
+	return Serializable;
+}
+
+void UArchiveOrUnarchiveManifestsRequestBodyLibrary::Break(const UArchiveOrUnarchiveManifestsRequestBody* Serializable, TArray<FBeamContentManifestId>& ManifestIds)
+{
+	ManifestIds = Serializable->ManifestIds;
+		
+}
+

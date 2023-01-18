@@ -1,0 +1,38 @@
+
+#include "AutoGen/SaveBinaryRequestBodyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString USaveBinaryRequestBodyLibrary::SaveBinaryRequestBodyToJsonString(const USaveBinaryRequestBody* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+USaveBinaryRequestBody* USaveBinaryRequestBodyLibrary::Make(TArray<UBinaryDefinition*> Binary, UObject* Outer)
+{
+	auto Serializable = NewObject<USaveBinaryRequestBody>(Outer);
+	Serializable->Binary = Binary;
+	
+	return Serializable;
+}
+
+void USaveBinaryRequestBodyLibrary::Break(const USaveBinaryRequestBody* Serializable, TArray<UBinaryDefinition*>& Binary)
+{
+	Binary = Serializable->Binary;
+		
+}
+

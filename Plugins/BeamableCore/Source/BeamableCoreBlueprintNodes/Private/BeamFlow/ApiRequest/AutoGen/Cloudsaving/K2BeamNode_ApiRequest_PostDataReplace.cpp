@@ -6,7 +6,7 @@
 
 #include "AutoGen/SubSystems/BeamCloudsavingApi.h"
 #include "AutoGen/SubSystems/Cloudsaving/PostDataReplaceRequest.h"
-#include "AutoGen/Manifest.h"
+#include "AutoGen/CloudsavingBasicManifest.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PostDataReplace"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_PostDataReplace::GetRequestClass() const
 
 UClass* UK2BeamNode_ApiRequest_PostDataReplace::GetResponseClass() const
 {
-	return UManifest::StaticClass();
+	return UCloudsavingBasicManifest::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_PostDataReplace::GetRequestSuccessDelegateName() const

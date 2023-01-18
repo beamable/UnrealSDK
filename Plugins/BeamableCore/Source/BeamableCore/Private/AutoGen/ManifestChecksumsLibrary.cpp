@@ -22,7 +22,7 @@ FString UManifestChecksumsLibrary::ManifestChecksumsToJsonString(const UManifest
 	return Result;
 }	
 
-UManifestChecksums* UManifestChecksumsLibrary::Make(TArray<UManifestChecksum*> Manifests, UObject* Outer)
+UManifestChecksums* UManifestChecksumsLibrary::Make(TArray<UContentBasicManifestChecksum*> Manifests, UObject* Outer)
 {
 	auto Serializable = NewObject<UManifestChecksums>(Outer);
 	Serializable->Manifests = Manifests;
@@ -30,7 +30,7 @@ UManifestChecksums* UManifestChecksumsLibrary::Make(TArray<UManifestChecksum*> M
 	return Serializable;
 }
 
-void UManifestChecksumsLibrary::Break(const UManifestChecksums* Serializable, TArray<UManifestChecksum*>& Manifests)
+void UManifestChecksumsLibrary::Break(const UManifestChecksums* Serializable, TArray<UContentBasicManifestChecksum*>& Manifests)
 {
 	Manifests = Serializable->Manifests;
 		

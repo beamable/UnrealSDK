@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "AutoGen/Optionals/OptionalInt64.h"
-#include "AutoGen/Manifest.h"
+#include "AutoGen/CloudsavingBasicManifest.h"
 
 #include "GetCloudsavingRequest.generated.h"
 
@@ -41,7 +41,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetCloudsavingSuccess, FBeamRequestContext, Context, UGetCloudsavingRequest*, Request, UManifest*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetCloudsavingSuccess, FBeamRequestContext, Context, UGetCloudsavingRequest*, Request, UCloudsavingBasicManifest*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetCloudsavingError, FBeamRequestContext, Context, UGetCloudsavingRequest*, Request, FBeamErrorResponse, Error);
@@ -49,5 +49,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetCloudsavingError, FBeamRequestContext
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnGetCloudsavingComplete, FBeamRequestContext, Context, UGetCloudsavingRequest*, Request);
 
-using FGetCloudsavingFullResponse = FBeamFullResponse<UGetCloudsavingRequest*, UManifest*>;
+using FGetCloudsavingFullResponse = FBeamFullResponse<UGetCloudsavingRequest*, UCloudsavingBasicManifest*>;
 DECLARE_DELEGATE_OneParam(FOnGetCloudsavingFullResponse, FGetCloudsavingFullResponse);

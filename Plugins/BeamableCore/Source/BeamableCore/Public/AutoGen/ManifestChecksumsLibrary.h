@@ -18,8 +18,8 @@ public:
 	static FString ManifestChecksumsToJsonString(const UManifestChecksums* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ManifestChecksums", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UManifestChecksums* Make(TArray<UManifestChecksum*> Manifests, UObject* Outer);
+	static UManifestChecksums* Make(TArray<UContentBasicManifestChecksum*> Manifests, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break ManifestChecksums", meta=(NativeBreakFunc))
-	static void Break(const UManifestChecksums* Serializable, TArray<UManifestChecksum*>& Manifests);
+	static void Break(const UManifestChecksums* Serializable, TArray<UContentBasicManifestChecksum*>& Manifests);
 };

@@ -1,12 +1,12 @@
 ﻿#include "BeamK2.h"
 
-#include "BlueprintEditor.h"
+
 #include "K2Node_BreakStruct.h"
 #include "K2Node_CallFunction.h"
 #include "K2Node_EnumEquality.h"
 #include "K2Node_GetArrayItem.h"
 #include "K2Node_MakeArray.h"
-#include "Kismet2/BlueprintEditorUtils.h"
+#include "KismetCompiler.h"
 
 #define BEAM_K2_LOG_VERBOSITY Verbose
 //#define BEAM_K2_ADD_NOTES_TO_FLOW_NODES
@@ -16,8 +16,7 @@
 void BeamK2::GetPerBeamFlowNodes(const FKismetCompilerContext& CompilerContext, const UEdGraphNode* CustomNode,
                                  const TArray<UEdGraphPin*>& CustomNodeStartPins, const TArray<FName> RelevantEventSpawningFunctionNames,
                                  TArray<TArray<UEdGraphNode*>>& PerPinForwardFlow, TArray<TArray<UEdGraphNode*>>& PerPinConnectedEventFlows)
-{
-	const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
+{	
 	check(CustomNode != nullptr)
 	check(CustomNodeStartPins.Num() > 0)
 
@@ -325,7 +324,7 @@ void BeamK2::ReplaceConnectionsOnBeamFlow(const TArray<UEdGraphNode*>& NodesToCo
 				if (!GraphPin)
 				{
 					UE_LOG(LogTemp, BEAM_K2_LOG_VERBOSITY, TEXT("Graph Pin was null, skipping it during %s. You should never see this!"),
-						   *GraphNode->GetDescriptiveCompiledName())
+					       *GraphNode->GetDescriptiveCompiledName())
 					continue;
 				}
 				if (!RelevantPin)
@@ -352,14 +351,6 @@ void BeamK2::ReplaceConnectionsOnBeamFlow(const TArray<UEdGraphNode*>& NodesToCo
 	}
 }
 
-UK2Node_MakeArray* BeamK2::CreateMakeArrayNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, int PinCount)
-{
-	UK2Node_MakeArray* ArrayNode = CompilerContext.SpawnIntermediateNode<UK2Node_MakeArray>(CustomNode, SourceGraph);
-	ArrayNode->NumInputs = PinCount;
-	ArrayNode->AllocateDefaultPins();
-	return ArrayNode;
-}
-
 UK2Node_BreakStruct* BeamK2::CreateBreakStructNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
                                                    UScriptStruct* const StructToBreak, UEdGraphPin* StructInputPin)
 {
@@ -373,6 +364,14 @@ UK2Node_BreakStruct* BeamK2::CreateBreakStructNode(UEdGraphNode* CustomNode, FKi
 	check(bConnectedBreakPins)
 
 	return BreakStructNode;
+}
+
+UK2Node_MakeArray* BeamK2::CreateMakeArrayNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, int PinCount)
+{
+	UK2Node_MakeArray* ArrayNode = CompilerContext.SpawnIntermediateNode<UK2Node_MakeArray>(CustomNode, SourceGraph);
+	ArrayNode->NumInputs = PinCount;
+	ArrayNode->AllocateDefaultPins();
+	return ArrayNode;
 }
 
 

@@ -1,5 +1,6 @@
 ﻿#include "BeamFlow/ApiRequest/K2BeamNode_ApiRequest.h"
 
+#include "KismetCompiler.h"
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamRequestContext.h"
 #include "RequestTracker/BeamRequestTracker.h"

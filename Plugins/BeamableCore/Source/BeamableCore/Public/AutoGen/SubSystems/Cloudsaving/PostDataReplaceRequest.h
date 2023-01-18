@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "AutoGen/ReplaceObjectsRequestBody.h"
-#include "AutoGen/Manifest.h"
+#include "AutoGen/CloudsavingBasicManifest.h"
 
 #include "PostDataReplaceRequest.generated.h"
 
@@ -41,7 +41,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostDataReplaceSuccess, FBeamRequestContext, Context, UPostDataReplaceRequest*, Request, UManifest*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostDataReplaceSuccess, FBeamRequestContext, Context, UPostDataReplaceRequest*, Request, UCloudsavingBasicManifest*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostDataReplaceError, FBeamRequestContext, Context, UPostDataReplaceRequest*, Request, FBeamErrorResponse, Error);
@@ -49,5 +49,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostDataReplaceError, FBeamRequestContex
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnPostDataReplaceComplete, FBeamRequestContext, Context, UPostDataReplaceRequest*, Request);
 
-using FPostDataReplaceFullResponse = FBeamFullResponse<UPostDataReplaceRequest*, UManifest*>;
+using FPostDataReplaceFullResponse = FBeamFullResponse<UPostDataReplaceRequest*, UCloudsavingBasicManifest*>;
 DECLARE_DELEGATE_OneParam(FOnPostDataReplaceFullResponse, FPostDataReplaceFullResponse);
