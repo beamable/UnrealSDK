@@ -1,6 +1,9 @@
 name: Build Unreal Package
 
-on: [push]
+on:
+  schedule:
+  #run at 9pm UTC (4pm EST) monday through friday
+    -cron: '0 9 * * 1-5'
 
 jobs:
   build:
