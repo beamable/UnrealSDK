@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/ManifestView.h"
+#include "AutoGen/ContentBasicManifest.h"
 
 #include "GetManifestsResponse.generated.h"
 
@@ -15,7 +15,7 @@ class BEAMABLECORE_API UGetManifestsResponse : public UObject, public FBeamJsonS
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Manifests", Category="Beam")
-	TArray<UManifestView*> Manifests;
+	TArray<UContentBasicManifest*> Manifests;
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

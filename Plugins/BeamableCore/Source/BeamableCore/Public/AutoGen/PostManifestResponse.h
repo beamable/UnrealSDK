@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalManifestChecksum.h"
+#include "AutoGen/Optionals/OptionalBeamoBasicManifestChecksum.h"
 
 #include "PostManifestResponse.generated.h"
 
@@ -15,7 +15,7 @@ class BEAMABLECORE_API UPostManifestResponse : public UObject, public FBeamJsonS
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Manifest", Category="Beam")
-	FOptionalManifestChecksum Manifest;
+	FOptionalBeamoBasicManifestChecksum Manifest;
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

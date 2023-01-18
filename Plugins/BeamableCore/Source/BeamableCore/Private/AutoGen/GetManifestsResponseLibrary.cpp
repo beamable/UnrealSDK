@@ -22,7 +22,7 @@ FString UGetManifestsResponseLibrary::GetManifestsResponseToJsonString(const UGe
 	return Result;
 }	
 
-UGetManifestsResponse* UGetManifestsResponseLibrary::Make(TArray<UManifestView*> Manifests, UObject* Outer)
+UGetManifestsResponse* UGetManifestsResponseLibrary::Make(TArray<UContentBasicManifest*> Manifests, UObject* Outer)
 {
 	auto Serializable = NewObject<UGetManifestsResponse>(Outer);
 	Serializable->Manifests = Manifests;
@@ -30,7 +30,7 @@ UGetManifestsResponse* UGetManifestsResponseLibrary::Make(TArray<UManifestView*>
 	return Serializable;
 }
 
-void UGetManifestsResponseLibrary::Break(const UGetManifestsResponse* Serializable, TArray<UManifestView*>& Manifests)
+void UGetManifestsResponseLibrary::Break(const UGetManifestsResponse* Serializable, TArray<UContentBasicManifest*>& Manifests)
 {
 	Manifests = Serializable->Manifests;
 		

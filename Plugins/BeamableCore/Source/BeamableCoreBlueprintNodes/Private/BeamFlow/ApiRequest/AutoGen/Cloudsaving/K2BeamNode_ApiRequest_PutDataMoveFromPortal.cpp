@@ -6,7 +6,7 @@
 
 #include "AutoGen/SubSystems/BeamCloudsavingApi.h"
 #include "AutoGen/SubSystems/Cloudsaving/PutDataMoveFromPortalRequest.h"
-#include "AutoGen/Manifest.h"
+#include "AutoGen/CloudsavingBasicManifest.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PutDataMoveFromPortal"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_PutDataMoveFromPortal::GetRequestClass() const
 
 UClass* UK2BeamNode_ApiRequest_PutDataMoveFromPortal::GetResponseClass() const
 {
-	return UManifest::StaticClass();
+	return UCloudsavingBasicManifest::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_PutDataMoveFromPortal::GetRequestSuccessDelegateName() const

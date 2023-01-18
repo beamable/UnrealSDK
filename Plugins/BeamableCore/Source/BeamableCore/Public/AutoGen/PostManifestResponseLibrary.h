@@ -18,8 +18,8 @@ public:
 	static FString PostManifestResponseToJsonString(const UPostManifestResponse* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make PostManifestResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Manifest, Outer", NativeMakeFunc))
-	static UPostManifestResponse* Make(FOptionalManifestChecksum Manifest, UObject* Outer);
+	static UPostManifestResponse* Make(FOptionalBeamoBasicManifestChecksum Manifest, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break PostManifestResponse", meta=(NativeBreakFunc))
-	static void Break(const UPostManifestResponse* Serializable, FOptionalManifestChecksum& Manifest);
+	static void Break(const UPostManifestResponse* Serializable, FOptionalBeamoBasicManifestChecksum& Manifest);
 };

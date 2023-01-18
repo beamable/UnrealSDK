@@ -44,6 +44,8 @@ void UBeamCsvUtils::AddAutoGenKeyField(FString& Csv)
 
 void UBeamCsvUtils::ParseIntoDataTable(UDataTable*& Table, UScriptStruct* StaticStruct, const FString& KeyField, const FString& Csv)
 {
+	DECLARE_SCOPE_CYCLE_COUNTER(TEXT("UBeamCsvUtils.ParseIntoDataTable"), STATID_ParseIntoDataTable, STATGROUP_BeamUtils)
+	
 	Table->RowStruct = StaticStruct;
 	Table->ImportKeyField = KeyField;
 	Table->CreateTableFromCSVString(Csv);

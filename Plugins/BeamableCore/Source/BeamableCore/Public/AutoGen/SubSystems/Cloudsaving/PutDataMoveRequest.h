@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "AutoGen/PlayerBasicCloudDataRequestBody.h"
-#include "AutoGen/Manifest.h"
+#include "AutoGen/CloudsavingBasicManifest.h"
 
 #include "PutDataMoveRequest.generated.h"
 
@@ -41,7 +41,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPutDataMoveSuccess, FBeamRequestContext, Context, UPutDataMoveRequest*, Request, UManifest*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPutDataMoveSuccess, FBeamRequestContext, Context, UPutDataMoveRequest*, Request, UCloudsavingBasicManifest*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPutDataMoveError, FBeamRequestContext, Context, UPutDataMoveRequest*, Request, FBeamErrorResponse, Error);
@@ -49,5 +49,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPutDataMoveError, FBeamRequestContext, C
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnPutDataMoveComplete, FBeamRequestContext, Context, UPutDataMoveRequest*, Request);
 
-using FPutDataMoveFullResponse = FBeamFullResponse<UPutDataMoveRequest*, UManifest*>;
+using FPutDataMoveFullResponse = FBeamFullResponse<UPutDataMoveRequest*, UCloudsavingBasicManifest*>;
 DECLARE_DELEGATE_OneParam(FOnPutDataMoveFullResponse, FPutDataMoveFullResponse);

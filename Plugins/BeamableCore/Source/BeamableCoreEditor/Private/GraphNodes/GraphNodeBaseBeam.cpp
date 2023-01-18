@@ -2,6 +2,7 @@
 
 #include "BeamableCoreStyle.h"
 #include "BeamK2.h"
+#include "EditorStyleSet.h"
 #include "K2Node_AddPinInterface.h"
 #include "K2Node_Timeline.h"
 #include "BeamFlow/K2BeamNode_BeamFlow.h"
@@ -82,13 +83,13 @@ void SGraphNodeBaseBeam::GetOverlayBrushes(bool bSelected, const FVector2D Widge
 
 		if (Breakpoint->IsEnabledByUser())
 		{
-			BreakpointOverlayInfo.Brush = FEditorStyle::GetBrush(FKismetDebugUtilities::IsBreakpointValid(*Breakpoint)
+			BreakpointOverlayInfo.Brush = FAppStyle::GetBrush(FKismetDebugUtilities::IsBreakpointValid(*Breakpoint)
 				                                                     ? TEXT("Kismet.DebuggerOverlay.Breakpoint.EnabledAndValid")
 				                                                     : TEXT("Kismet.DebuggerOverlay.Breakpoint.EnabledAndInvalid"));
 		}
 		else
 		{
-			BreakpointOverlayInfo.Brush = FEditorStyle::GetBrush(TEXT("Kismet.DebuggerOverlay.Breakpoint.Disabled"));
+			BreakpointOverlayInfo.Brush = FAppStyle::GetBrush(TEXT("Kismet.DebuggerOverlay.Breakpoint.Disabled"));
 		}
 
 		if (BreakpointOverlayInfo.Brush != NULL)
@@ -107,7 +108,7 @@ void SGraphNodeBaseBeam::GetOverlayBrushes(bool bSelected, const FVector2D Widge
 		// Pick icon depending on whether we are on a hit breakpoint
 		const bool bIsOnHitBreakpoint = FKismetDebugUtilities::GetMostRecentBreakpointHit() == GraphNode;
 
-		IPOverlayInfo.Brush = FEditorStyle::GetBrush(bIsOnHitBreakpoint ? TEXT("Kismet.DebuggerOverlay.InstructionPointerBreakpoint") : TEXT("Kismet.DebuggerOverlay.InstructionPointer"));
+		IPOverlayInfo.Brush = FAppStyle::GetBrush(bIsOnHitBreakpoint ? TEXT("Kismet.DebuggerOverlay.InstructionPointerBreakpoint") : TEXT("Kismet.DebuggerOverlay.InstructionPointer"));
 
 		if (IPOverlayInfo.Brush != NULL)
 		{
@@ -128,7 +129,7 @@ void SGraphNodeBaseBeam::GetOverlayBrushes(bool bSelected, const FVector2D Widge
 		if (Timeline && Timeline->bAutoPlay)
 		{
 			FOverlayBrushInfo IPOverlayInfo;
-			IPOverlayInfo.Brush = FEditorStyle::GetBrush(TEXT("Graph.Node.Autoplay"));
+			IPOverlayInfo.Brush = FAppStyle::GetBrush(TEXT("Graph.Node.Autoplay"));
 
 			if (IPOverlayInfo.Brush != NULL)
 			{
@@ -142,7 +143,7 @@ void SGraphNodeBaseBeam::GetOverlayBrushes(bool bSelected, const FVector2D Widge
 		if (Timeline && Timeline->bLoop)
 		{
 			FOverlayBrushInfo IPOverlayInfo;
-			IPOverlayInfo.Brush = FEditorStyle::GetBrush(TEXT("Graph.Node.Loop"));
+			IPOverlayInfo.Brush = FAppStyle::GetBrush(TEXT("Graph.Node.Loop"));
 
 			if (IPOverlayInfo.Brush != NULL)
 			{
@@ -163,7 +164,7 @@ void SGraphNodeBaseBeam::GetOverlayBrushes(bool bSelected, const FVector2D Widge
 			auto Brush = FBeamableCoreStyle::Get().GetBrush(ClientIcon);
 			// If they gave us back a default brush "../../../Engine/Content/Slate/Checkerboard.png", go find it in our style
 			if (Brush->GetResourceName().ToString().Contains("../../../Engine/Content/Slate/Checkerboard.png"))
-				Brush = FEditorStyle::GetBrush(ClientIcon);
+				Brush = FAppStyle::GetBrush(ClientIcon);
 
 			// If we failed to fallback onto the editor ones, we'll simply not render any ico 
 			if (Brush->GetResourceName().ToString().Contains("../../../Engine/Content/Slate/Checkerboard.png"))

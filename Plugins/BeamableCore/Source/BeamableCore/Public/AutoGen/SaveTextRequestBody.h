@@ -1,0 +1,25 @@
+
+#pragma once
+
+#include "CoreMinimal.h"
+
+#include "Serialization/BeamJsonSerializable.h"
+#include "AutoGen/TextDefinition.h"
+
+#include "SaveTextRequestBody.generated.h"
+
+UCLASS(BlueprintType, Category="Beam")
+class BEAMABLECORE_API USaveTextRequestBody : public UObject, public FBeamJsonSerializable
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Text", Category="Beam")
+	TArray<UTextDefinition*> Text;
+
+	
+
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override;
+};

@@ -18,8 +18,8 @@ public:
 	static FString GetManifestsResponseToJsonString(const UGetManifestsResponse* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GetManifestsResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UGetManifestsResponse* Make(TArray<UManifestView*> Manifests, UObject* Outer);
+	static UGetManifestsResponse* Make(TArray<UContentBasicManifest*> Manifests, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GetManifestsResponse", meta=(NativeBreakFunc))
-	static void Break(const UGetManifestsResponse* Serializable, TArray<UManifestView*>& Manifests);
+	static void Break(const UGetManifestsResponse* Serializable, TArray<UContentBasicManifest*>& Manifests);
 };

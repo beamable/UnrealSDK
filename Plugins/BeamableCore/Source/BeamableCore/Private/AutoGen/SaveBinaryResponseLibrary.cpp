@@ -1,0 +1,38 @@
+
+#include "AutoGen/SaveBinaryResponseLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString USaveBinaryResponseLibrary::SaveBinaryResponseToJsonString(const USaveBinaryResponse* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+USaveBinaryResponse* USaveBinaryResponseLibrary::Make(TArray<UBinaryReference*> Binary, UObject* Outer)
+{
+	auto Serializable = NewObject<USaveBinaryResponse>(Outer);
+	Serializable->Binary = Binary;
+	
+	return Serializable;
+}
+
+void USaveBinaryResponseLibrary::Break(const USaveBinaryResponse* Serializable, TArray<UBinaryReference*>& Binary)
+{
+	Binary = Serializable->Binary;
+		
+}
+
