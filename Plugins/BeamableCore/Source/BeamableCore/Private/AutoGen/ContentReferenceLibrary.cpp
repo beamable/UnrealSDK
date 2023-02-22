@@ -22,10 +22,9 @@ FString UContentReferenceLibrary::ContentReferenceToJsonString(const UContentRef
 	return Result;
 }	
 
-UContentReference* UContentReferenceLibrary::Make(FString ContentPrefix, FString Tag, FString Uri, FString Version, FBeamContentId Id, FString Type, EContentVisibility Visibility, TArray<FString> Tags, FOptionalString Checksum, FOptionalInt64 LastChanged, FOptionalInt64 Created, UObject* Outer)
+UContentReference* UContentReferenceLibrary::Make(FString Tag, FString Uri, FString Version, FBeamContentId Id, FString Type, EContentVisibility Visibility, TArray<FString> Tags, FOptionalString Checksum, FOptionalInt64 LastChanged, FOptionalInt64 Created, UObject* Outer)
 {
 	auto Serializable = NewObject<UContentReference>(Outer);
-	Serializable->ContentPrefix = ContentPrefix;
 	Serializable->Tag = Tag;
 	Serializable->Uri = Uri;
 	Serializable->Version = Version;
@@ -40,9 +39,8 @@ UContentReference* UContentReferenceLibrary::Make(FString ContentPrefix, FString
 	return Serializable;
 }
 
-void UContentReferenceLibrary::Break(const UContentReference* Serializable, FString& ContentPrefix, FString& Tag, FString& Uri, FString& Version, FBeamContentId& Id, FString& Type, EContentVisibility& Visibility, TArray<FString>& Tags, FOptionalString& Checksum, FOptionalInt64& LastChanged, FOptionalInt64& Created)
+void UContentReferenceLibrary::Break(const UContentReference* Serializable, FString& Tag, FString& Uri, FString& Version, FBeamContentId& Id, FString& Type, EContentVisibility& Visibility, TArray<FString>& Tags, FOptionalString& Checksum, FOptionalInt64& LastChanged, FOptionalInt64& Created)
 {
-	ContentPrefix = Serializable->ContentPrefix;
 	Tag = Serializable->Tag;
 	Uri = Serializable->Uri;
 	Version = Serializable->Version;

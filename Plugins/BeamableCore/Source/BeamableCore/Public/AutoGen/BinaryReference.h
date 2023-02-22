@@ -6,8 +6,6 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
 #include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/Optionals/OptionalInt64.h"
-#include "AutoGen/Enums/ContentVisibility.h"
 
 #include "BinaryReference.generated.h"
 
@@ -19,8 +17,6 @@ class BEAMABLECORE_API UBinaryReference : public UObject, public FBeamJsonSerial
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Upload Method", Category="Beam")
 	FString UploadMethod;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Prefix", Category="Beam")
-	FString ContentPrefix;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Uri", Category="Beam")
 	FString Uri;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Version", Category="Beam")
@@ -32,19 +28,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
 	FString Type;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Visibility", Category="Beam")
-	EContentVisibility Visibility;
+	FString Visibility;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
 	TArray<FString> Tags;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Checksum", Category="Beam")
 	FOptionalString Checksum;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Last Changed", Category="Beam")
-	FOptionalInt64 LastChanged;
+	FOptionalString LastChanged;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
-	FOptionalInt64 Created;
+	FOptionalString Created;
 
 	
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override;
+	
 };

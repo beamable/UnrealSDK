@@ -5,7 +5,7 @@
 
 
 
-void UServiceDependencyReference ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UServiceDependencyReference::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("id"), Id);
 	Serializer->WriteValue(TEXT("storageType"), StorageType);
@@ -17,8 +17,11 @@ void UServiceDependencyReference::BeamSerializeProperties(TUnrealPrettyJsonSeria
 	Serializer->WriteValue(TEXT("storageType"), StorageType);		
 }
 
-void UServiceDependencyReference ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UServiceDependencyReference::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Id = Bag->GetStringField(TEXT("id"));
 	StorageType = Bag->GetStringField(TEXT("storageType"));
 }
+
+
+

@@ -5,7 +5,7 @@
 
 
 
-void UEventGroupRewards ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UEventGroupRewards::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<TArray<UEventRewardContent*>, UEventRewardContent*>(TEXT("scoreRewards"), &ScoreRewards, Serializer);
 }
@@ -15,7 +15,10 @@ void UEventGroupRewards::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 	UBeamJsonUtils::SerializeOptional<TArray<UEventRewardContent*>, UEventRewardContent*>(TEXT("scoreRewards"), &ScoreRewards, Serializer);		
 }
 
-void UEventGroupRewards ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UEventGroupRewards::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeOptional<TArray<UEventRewardContent*>, UEventRewardContent*>("scoreRewards", Bag, ScoreRewards, OuterOwner);
 }
+
+
+

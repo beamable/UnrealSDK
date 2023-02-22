@@ -5,7 +5,7 @@
 
 
 
-void UThirdPartyAvailableRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UThirdPartyAvailableRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("thirdParty"), ThirdParty);
 	Serializer->WriteValue(TEXT("token"), Token);
@@ -17,8 +17,11 @@ void UThirdPartyAvailableRequestBody::BeamSerializeProperties(TUnrealPrettyJsonS
 	Serializer->WriteValue(TEXT("token"), Token);		
 }
 
-void UThirdPartyAvailableRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UThirdPartyAvailableRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	ThirdParty = Bag->GetStringField(TEXT("thirdParty"));
 	Token = Bag->GetStringField(TEXT("token"));
 }
+
+
+

@@ -5,7 +5,7 @@
 
 
 
-void UEventRewardContent ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UEventRewardContent::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("min"), Min);
 	UBeamJsonUtils::SerializeOptional<double>(TEXT("max"), &Max, Serializer);
@@ -23,7 +23,7 @@ void UEventRewardContent::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 	UBeamJsonUtils::SerializeOptional<TArray<UEventRewardObtain*>, UEventRewardObtain*>(TEXT("obtain"), &Obtain, Serializer);		
 }
 
-void UEventRewardContent ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UEventRewardContent::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Min = Bag->GetNumberField(TEXT("min"));
 	UBeamJsonUtils::DeserializeOptional<double>("max", Bag, Max, OuterOwner);
@@ -31,3 +31,6 @@ void UEventRewardContent ::BeamDeserializeProperties(const TSharedPtr<FJsonObjec
 	UBeamJsonUtils::DeserializeOptional<TArray<UEventInventoryRewardItem*>, UEventInventoryRewardItem*>("items", Bag, Items, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UEventRewardObtain*>, UEventRewardObtain*>("obtain", Bag, Obtain, OuterOwner);
 }
+
+
+

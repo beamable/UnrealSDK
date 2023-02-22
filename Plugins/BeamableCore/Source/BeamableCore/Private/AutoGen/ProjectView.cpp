@@ -10,7 +10,7 @@ void UProjectView::DeserializeRequestResponse(UObject* RequestData, FString Resp
 	BeamDeserialize(ResponseContent);	
 }
 
-void UProjectView ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UProjectView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("projectName"), ProjectName);
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("pid"), &Pid, Serializer);
@@ -34,7 +34,7 @@ void UProjectView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 	UBeamJsonUtils::SerializeOptional<TArray<FBeamPid>, FBeamPid, FString>(TEXT("children"), &Children, Serializer);		
 }
 
-void UProjectView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UProjectView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	ProjectName = Bag->GetStringField(TEXT("projectName"));
 	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("pid")), Pid, OuterOwner);
@@ -45,3 +45,6 @@ void UProjectView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag
 	UBeamJsonUtils::DeserializeOptional<FBeamCid, int64>("cid", Bag, Cid, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FBeamPid>, FBeamPid, FString>("children", Bag, Children, OuterOwner);
 }
+
+
+

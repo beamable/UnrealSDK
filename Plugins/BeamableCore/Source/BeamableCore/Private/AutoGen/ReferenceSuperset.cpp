@@ -5,7 +5,7 @@
 
 
 
-void UReferenceSuperset ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UReferenceSuperset::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("uri"), Uri);
 	Serializer->WriteValue(TEXT("version"), Version);
@@ -27,7 +27,7 @@ void UReferenceSuperset::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("tags"), &Tags, Serializer);		
 }
 
-void UReferenceSuperset ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UReferenceSuperset::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Uri = Bag->GetStringField(TEXT("uri"));
 	Version = Bag->GetStringField(TEXT("version"));
@@ -37,3 +37,6 @@ void UReferenceSuperset ::BeamDeserializeProperties(const TSharedPtr<FJsonObject
 	UBeamJsonUtils::DeserializeOptional<FString>("visibility", Bag, Visibility, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("tags", Bag, Tags, OuterOwner);
 }
+
+
+

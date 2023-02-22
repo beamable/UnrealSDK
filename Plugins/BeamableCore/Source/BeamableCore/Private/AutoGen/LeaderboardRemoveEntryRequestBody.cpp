@@ -5,7 +5,7 @@
 
 
 
-void ULeaderboardRemoveEntryRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void ULeaderboardRemoveEntryRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("id"), Id);
 }
@@ -15,7 +15,10 @@ void ULeaderboardRemoveEntryRequestBody::BeamSerializeProperties(TUnrealPrettyJs
 	Serializer->WriteValue(TEXT("id"), Id);		
 }
 
-void ULeaderboardRemoveEntryRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void ULeaderboardRemoveEntryRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("id")), Id);
 }
+
+
+

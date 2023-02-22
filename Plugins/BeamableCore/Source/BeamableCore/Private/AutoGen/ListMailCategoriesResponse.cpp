@@ -10,7 +10,7 @@ void UListMailCategoriesResponse::DeserializeRequestResponse(UObject* RequestDat
 	BeamDeserialize(ResponseContent);	
 }
 
-void UListMailCategoriesResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UListMailCategoriesResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("result"), Result, Serializer);
 }
@@ -20,7 +20,10 @@ void UListMailCategoriesResponse::BeamSerializeProperties(TUnrealPrettyJsonSeria
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("result"), Result, Serializer);		
 }
 
-void UListMailCategoriesResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UListMailCategoriesResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("result")), Result, OuterOwner);
 }
+
+
+

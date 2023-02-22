@@ -5,7 +5,7 @@
 
 
 
-void UItem ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UItem::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("id"), Id);
 	UBeamJsonUtils::SerializeArray<UItemProperty*>(TEXT("properties"), Properties, Serializer);
@@ -23,7 +23,7 @@ void UItem::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) con
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("createdAt"), &CreatedAt, Serializer);		
 }
 
-void UItem ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UItem::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("id")), Id);
 	UBeamJsonUtils::DeserializeArray<UItemProperty*>(Bag->GetArrayField(TEXT("properties")), Properties, OuterOwner);
@@ -31,3 +31,6 @@ void UItem ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	UBeamJsonUtils::DeserializeOptional<FString>("proxyId", Bag, ProxyId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("createdAt", Bag, CreatedAt, OuterOwner);
 }
+
+
+

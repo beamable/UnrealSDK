@@ -10,7 +10,7 @@ void UTournamentClientView::DeserializeRequestResponse(UObject* RequestData, FSt
 	BeamDeserialize(ResponseContent);	
 }
 
-void UTournamentClientView ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UTournamentClientView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);
 	Serializer->WriteValue(TEXT("startTimeUtc"), StartTimeUtc);
@@ -30,7 +30,7 @@ void UTournamentClientView::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 	Serializer->WriteValue(TEXT("contentId"), ContentId);		
 }
 
-void UTournamentClientView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UTournamentClientView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	TournamentId = Bag->GetStringField(TEXT("tournamentId"));
 	StartTimeUtc = Bag->GetStringField(TEXT("startTimeUtc"));
@@ -39,3 +39,6 @@ void UTournamentClientView ::BeamDeserializeProperties(const TSharedPtr<FJsonObj
 	EndTimeUtc = Bag->GetStringField(TEXT("endTimeUtc"));
 	ContentId = Bag->GetStringField(TEXT("contentId"));
 }
+
+
+

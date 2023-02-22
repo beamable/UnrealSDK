@@ -5,7 +5,7 @@
 
 
 
-void UOrderRule ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UOrderRule::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("v"), V);
 	Serializer->WriteValue(TEXT("o"), O);
@@ -17,8 +17,11 @@ void UOrderRule::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer
 	Serializer->WriteValue(TEXT("o"), O);		
 }
 
-void UOrderRule ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UOrderRule::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	V = Bag->GetStringField(TEXT("v"));
 	O = Bag->GetIntegerField(TEXT("o"));
 }
+
+
+

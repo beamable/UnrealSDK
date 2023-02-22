@@ -5,7 +5,7 @@
 
 
 
-void UGetOffersReq ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetOffersReq::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("language"), &Language, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("time"), &Time, Serializer);
@@ -19,9 +19,12 @@ void UGetOffersReq::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("stores"), &Stores, Serializer);		
 }
 
-void UGetOffersReq ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetOffersReq::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeOptional<FString>("language", Bag, Language, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("time", Bag, Time, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("stores", Bag, Stores, OuterOwner);
 }
+
+
+

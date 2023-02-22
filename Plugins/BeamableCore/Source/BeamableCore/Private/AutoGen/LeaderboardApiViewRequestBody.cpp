@@ -5,7 +5,7 @@
 
 
 
-void ULeaderboardApiViewRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void ULeaderboardApiViewRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("friends"), &bFriends, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("guild"), &bGuild, Serializer);
@@ -25,7 +25,7 @@ void ULeaderboardApiViewRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSe
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("outlier"), &Outlier, Serializer);		
 }
 
-void ULeaderboardApiViewRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void ULeaderboardApiViewRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeOptional<bool>("friends", Bag, bFriends, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("guild", Bag, bGuild, OuterOwner);
@@ -34,3 +34,6 @@ void ULeaderboardApiViewRequestBody ::BeamDeserializeProperties(const TSharedPtr
 	UBeamJsonUtils::DeserializeOptional<int32>("from", Bag, From, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("outlier", Bag, Outlier, OuterOwner);
 }
+
+
+

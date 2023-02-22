@@ -10,7 +10,7 @@ void USearchExtendedResponse::DeserializeRequestResponse(UObject* RequestData, F
 	BeamDeserialize(ResponseContent);	
 }
 
-void USearchExtendedResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void USearchExtendedResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeMap<FMapOfString>(TEXT("gamerStats"), GamerStats, Serializer);
 }
@@ -20,7 +20,10 @@ void USearchExtendedResponse::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 	UBeamJsonUtils::SerializeMap<FMapOfString>(TEXT("gamerStats"), GamerStats, Serializer);		
 }
 
-void USearchExtendedResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void USearchExtendedResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeMap<FMapOfString>(Bag->GetObjectField(TEXT("gamerStats")), GamerStats, OuterOwner);
 }
+
+
+

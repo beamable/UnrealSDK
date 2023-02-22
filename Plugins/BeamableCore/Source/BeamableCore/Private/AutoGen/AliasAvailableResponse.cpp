@@ -10,7 +10,7 @@ void UAliasAvailableResponse::DeserializeRequestResponse(UObject* RequestData, F
 	BeamDeserialize(ResponseContent);	
 }
 
-void UAliasAvailableResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UAliasAvailableResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("alias"), Alias);
 	Serializer->WriteValue(TEXT("available"), bAvailable);
@@ -24,9 +24,12 @@ void UAliasAvailableResponse::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);		
 }
 
-void UAliasAvailableResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UAliasAvailableResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Alias = Bag->GetStringField(TEXT("alias"));
 	bAvailable = Bag->GetBoolField(TEXT("available"));
 	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("cid")), Cid, OuterOwner);
 }
+
+
+

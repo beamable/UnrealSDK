@@ -5,7 +5,7 @@
 
 
 
-void UNotificationRequestData ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UNotificationRequestData::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("channel"), &Channel, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("messageKey"), &MessageKey, Serializer);
@@ -27,7 +27,7 @@ void UNotificationRequestData::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("meta"), &Meta, Serializer);		
 }
 
-void UNotificationRequestData ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UNotificationRequestData::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeOptional<FString>("channel", Bag, Channel, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("messageKey", Bag, MessageKey, OuterOwner);
@@ -37,3 +37,6 @@ void UNotificationRequestData ::BeamDeserializeProperties(const TSharedPtr<FJson
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("messageParams", Bag, MessageParams, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TMap<FString, FString>, FString>("meta", Bag, Meta, OuterOwner);
 }
+
+
+

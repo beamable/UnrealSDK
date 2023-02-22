@@ -5,7 +5,7 @@
 
 
 
-void USendMailRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void USendMailRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("receiverGamerTag"), ReceiverGamerTag);
 	Serializer->WriteValue(TEXT("senderGamerTag"), SenderGamerTag);
@@ -35,7 +35,7 @@ void USendMailRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 	UBeamJsonUtils::SerializeOptional<TArray<UAttachmentRequestBody*>, UAttachmentRequestBody*>(TEXT("attachments"), &Attachments, Serializer);		
 }
 
-void USendMailRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void USendMailRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("receiverGamerTag")), ReceiverGamerTag);
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("senderGamerTag")), SenderGamerTag);
@@ -49,3 +49,6 @@ void USendMailRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObje
 	UBeamJsonUtils::DeserializeOptional<int64>("bodyRef", Bag, BodyRef, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UAttachmentRequestBody*>, UAttachmentRequestBody*>("attachments", Bag, Attachments, OuterOwner);
 }
+
+
+

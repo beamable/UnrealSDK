@@ -19,14 +19,17 @@ public class BeamableCoreEditor : ModuleRules
 				"EditorStyle",
 				"Kismet",
 				"KismetCompiler",
-				"BeamableCoreBlueprintNodes",
 				"Projects", // Required to use IPluginManager in order to configure new Slate styles
 				"ToolMenus",
 				"ToolMenusEditor", 
 				"UMGEditor",
 				"DeveloperSettings",
 				"EditorSubsystem",
-	
+				"Json", 
+				"JsonUtilities",
+				"DataTableEditor",
+				"DeveloperToolSettings",
+
 			}
 		);
 
@@ -43,6 +46,11 @@ public class BeamableCoreEditor : ModuleRules
 				"PropertyEditor",
 				"UMGEditor", 
 				"Blutility",
+				"BeamableCoreBlueprintNodes",
+				"DeveloperToolSettings",
+				"UnrealEd",
+				"ToolWidgets",
+				"EditorScriptingUtilities"
 			}
 		);
 	}

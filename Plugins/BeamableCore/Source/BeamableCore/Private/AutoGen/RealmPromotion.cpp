@@ -5,7 +5,7 @@
 
 
 
-void URealmPromotion ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void URealmPromotion::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("name"), Name);
 	UBeamJsonUtils::SerializeUObject<UPromotable*>("source", Source, Serializer);
@@ -19,9 +19,12 @@ void URealmPromotion::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seria
 	UBeamJsonUtils::SerializeUObject<UPromotable*>("destination", Destination, Serializer);		
 }
 
-void URealmPromotion ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void URealmPromotion::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Name = Bag->GetStringField(TEXT("name"));
 	UBeamJsonUtils::DeserializeUObject<UPromotable*>("source", Bag, Source, OuterOwner);
 	UBeamJsonUtils::DeserializeUObject<UPromotable*>("destination", Bag, Destination, OuterOwner);
 }
+
+
+

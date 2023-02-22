@@ -10,7 +10,7 @@ void UGetTotalCouponResponse::DeserializeRequestResponse(UObject* RequestData, F
 	BeamDeserialize(ResponseContent);	
 }
 
-void UGetTotalCouponResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetTotalCouponResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("count"), Count);
 }
@@ -20,7 +20,10 @@ void UGetTotalCouponResponse::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 	Serializer->WriteValue(TEXT("count"), Count);		
 }
 
-void UGetTotalCouponResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetTotalCouponResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("count")), Count);
 }
+
+
+

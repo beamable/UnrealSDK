@@ -10,12 +10,12 @@ void UContentBasicManifest::DeserializeRequestResponse(UObject* RequestData, FSt
 	BeamDeserialize(ResponseContent);	
 }
 
-void UContentBasicManifest ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UContentBasicManifest::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
 	Serializer->WriteValue(TEXT("checksum"), Checksum);
 	Serializer->WriteValue(TEXT("created"), Created);
-	UBeamJsonUtils::SerializeArray<UContentBasicReference*>(TEXT("references"), References, Serializer);
+	UBeamJsonUtils::SerializeArray<UBaseContentReference*>(TEXT("references"), References, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("archived"), &bArchived, Serializer);
 }
 
@@ -24,15 +24,18 @@ void UContentBasicManifest::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
 	Serializer->WriteValue(TEXT("checksum"), Checksum);
 	Serializer->WriteValue(TEXT("created"), Created);
-	UBeamJsonUtils::SerializeArray<UContentBasicReference*>(TEXT("references"), References, Serializer);
+	UBeamJsonUtils::SerializeArray<UBaseContentReference*>(TEXT("references"), References, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("archived"), &bArchived, Serializer);		
 }
 
-void UContentBasicManifest ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UContentBasicManifest::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("id")), Id, OuterOwner);
 	Checksum = Bag->GetStringField(TEXT("checksum"));
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("created")), Created);
-	UBeamJsonUtils::DeserializeArray<UContentBasicReference*>(Bag->GetArrayField(TEXT("references")), References, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UBaseContentReference*>(Bag->GetArrayField(TEXT("references")), References, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("archived", Bag, bArchived, OuterOwner);
 }
+
+
+

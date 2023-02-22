@@ -5,7 +5,7 @@
 
 
 
-void UEventRewardState ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UEventRewardState::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("claimed"), bClaimed);
 	Serializer->WriteValue(TEXT("earned"), bEarned);
@@ -35,7 +35,7 @@ void UEventRewardState::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("pendingEntitlementRewards"), &PendingEntitlementRewards, Serializer);		
 }
 
-void UEventRewardState ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UEventRewardState::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bClaimed = Bag->GetBoolField(TEXT("claimed"));
 	bEarned = Bag->GetBoolField(TEXT("earned"));
@@ -49,3 +49,6 @@ void UEventRewardState ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>
 	UBeamJsonUtils::DeserializeOptional<TMap<FString, FString>, FString>("pendingCurrencyRewards", Bag, PendingCurrencyRewards, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TMap<FString, FString>, FString>("pendingEntitlementRewards", Bag, PendingEntitlementRewards, OuterOwner);
 }
+
+
+

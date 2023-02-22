@@ -10,7 +10,7 @@ void UTournamentQueryResponse::DeserializeRequestResponse(UObject* RequestData, 
 	BeamDeserialize(ResponseContent);	
 }
 
-void UTournamentQueryResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UTournamentQueryResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UTournamentClientView*>(TEXT("tournaments"), Tournaments, Serializer);
 }
@@ -20,7 +20,10 @@ void UTournamentQueryResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 	UBeamJsonUtils::SerializeArray<UTournamentClientView*>(TEXT("tournaments"), Tournaments, Serializer);		
 }
 
-void UTournamentQueryResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UTournamentQueryResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UTournamentClientView*>(Bag->GetArrayField(TEXT("tournaments")), Tournaments, OuterOwner);
 }
+
+
+

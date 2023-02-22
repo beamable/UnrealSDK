@@ -5,7 +5,7 @@
 
 
 
-void USKU ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void USKU::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("name"), Name);
 	Serializer->WriteValue(TEXT("description"), Description);
@@ -21,10 +21,13 @@ void USKU::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) cons
 	UBeamJsonUtils::SerializeMap<FString>(TEXT("productIds"), ProductIds, Serializer);		
 }
 
-void USKU ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void USKU::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Name = Bag->GetStringField(TEXT("name"));
 	Description = Bag->GetStringField(TEXT("description"));
 	RealPrice = Bag->GetIntegerField(TEXT("realPrice"));
 	UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("productIds")), ProductIds, OuterOwner);
 }
+
+
+

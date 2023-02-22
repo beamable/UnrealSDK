@@ -5,7 +5,7 @@
 
 
 
-void ULeaderboardRemoveCacheEntryRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void ULeaderboardRemoveCacheEntryRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("playerId"), PlayerId);
 }
@@ -15,7 +15,10 @@ void ULeaderboardRemoveCacheEntryRequestBody::BeamSerializeProperties(TUnrealPre
 	Serializer->WriteValue(TEXT("playerId"), PlayerId);		
 }
 
-void ULeaderboardRemoveCacheEntryRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void ULeaderboardRemoveCacheEntryRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("playerId")), PlayerId);
 }
+
+
+

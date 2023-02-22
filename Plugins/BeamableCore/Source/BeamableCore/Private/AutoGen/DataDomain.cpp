@@ -5,7 +5,7 @@
 
 
 
-void UDataDomain ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UDataDomain::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("mongoSSLEnabled"), bMongoSSLEnabled);
 	Serializer->WriteValue(TEXT("mongoSharded"), bMongoSharded);
@@ -29,7 +29,7 @@ void UDataDomain::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serialize
 	UBeamJsonUtils::SerializeOptional<TArray<URedisShard*>, URedisShard*>(TEXT("redisShards"), &RedisShards, Serializer);		
 }
 
-void UDataDomain ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UDataDomain::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bMongoSSLEnabled = Bag->GetBoolField(TEXT("mongoSSLEnabled"));
 	bMongoSharded = Bag->GetBoolField(TEXT("mongoSharded"));
@@ -40,3 +40,6 @@ void UDataDomain ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("messageBusCommon", Bag, MessageBusCommon, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<URedisShard*>, URedisShard*>("redisShards", Bag, RedisShards, OuterOwner);
 }
+
+
+

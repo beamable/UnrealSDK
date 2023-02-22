@@ -5,7 +5,7 @@
 
 
 
-void USaveBinaryRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void USaveBinaryRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UBinaryDefinition*>(TEXT("binary"), Binary, Serializer);
 }
@@ -15,7 +15,10 @@ void USaveBinaryRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 	UBeamJsonUtils::SerializeArray<UBinaryDefinition*>(TEXT("binary"), Binary, Serializer);		
 }
 
-void USaveBinaryRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void USaveBinaryRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UBinaryDefinition*>(Bag->GetArrayField(TEXT("binary")), Binary, OuterOwner);
 }
+
+
+

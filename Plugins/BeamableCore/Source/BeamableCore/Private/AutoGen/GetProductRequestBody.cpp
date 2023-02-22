@@ -5,7 +5,7 @@
 
 
 
-void UGetProductRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetProductRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("sku"), Sku);
 }
@@ -15,7 +15,10 @@ void UGetProductRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 	Serializer->WriteValue(TEXT("sku"), Sku);		
 }
 
-void UGetProductRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetProductRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Sku = Bag->GetStringField(TEXT("sku"));
 }
+
+
+

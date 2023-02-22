@@ -5,7 +5,7 @@
 
 
 
-void ULocalizedValue ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void ULocalizedValue::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("language"), Language);
 	Serializer->WriteValue(TEXT("value"), Value);
@@ -17,8 +17,11 @@ void ULocalizedValue::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seria
 	Serializer->WriteValue(TEXT("value"), Value);		
 }
 
-void ULocalizedValue ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void ULocalizedValue::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Language = Bag->GetStringField(TEXT("language"));
 	Value = Bag->GetStringField(TEXT("value"));
 }
+
+
+

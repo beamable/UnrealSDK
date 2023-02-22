@@ -10,7 +10,7 @@ void UGetRoomsResponse::DeserializeRequestResponse(UObject* RequestData, FString
 	BeamDeserialize(ResponseContent);	
 }
 
-void UGetRoomsResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetRoomsResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<URoomInfo*>(TEXT("rooms"), Rooms, Serializer);
 }
@@ -20,7 +20,10 @@ void UGetRoomsResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 	UBeamJsonUtils::SerializeArray<URoomInfo*>(TEXT("rooms"), Rooms, Serializer);		
 }
 
-void UGetRoomsResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetRoomsResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<URoomInfo*>(Bag->GetArrayField(TEXT("rooms")), Rooms, OuterOwner);
 }
+
+
+

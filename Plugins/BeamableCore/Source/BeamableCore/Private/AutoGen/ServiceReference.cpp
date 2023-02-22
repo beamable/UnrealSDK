@@ -5,7 +5,7 @@
 
 
 
-void UServiceReference ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UServiceReference::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("archived"), bArchived);
 	Serializer->WriteValue(TEXT("arm"), bArm);
@@ -35,7 +35,7 @@ void UServiceReference::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 	UBeamJsonUtils::SerializeOptional<TArray<UServiceDependencyReference*>, UServiceDependencyReference*>(TEXT("dependencies"), &Dependencies, Serializer);		
 }
 
-void UServiceReference ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UServiceReference::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bArchived = Bag->GetBoolField(TEXT("archived"));
 	bArm = Bag->GetBoolField(TEXT("arm"));
@@ -49,3 +49,6 @@ void UServiceReference ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>
 	UBeamJsonUtils::DeserializeOptional<FString>("comments", Bag, Comments, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UServiceDependencyReference*>, UServiceDependencyReference*>("dependencies", Bag, Dependencies, OuterOwner);
 }
+
+
+

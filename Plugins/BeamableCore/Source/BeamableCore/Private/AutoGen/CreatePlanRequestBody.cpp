@@ -5,7 +5,7 @@
 
 
 
-void UCreatePlanRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UCreatePlanRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("mongoSSL"), bMongoSSL);
 	Serializer->WriteValue(TEXT("sharded"), bSharded);
@@ -31,7 +31,7 @@ void UCreatePlanRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("messageBusCommon"), &MessageBusCommon, Serializer);		
 }
 
-void UCreatePlanRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UCreatePlanRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bMongoSSL = Bag->GetBoolField(TEXT("mongoSSL"));
 	bSharded = Bag->GetBoolField(TEXT("sharded"));
@@ -43,3 +43,6 @@ void UCreatePlanRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonOb
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("messageBusAnalytics", Bag, MessageBusAnalytics, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("messageBusCommon", Bag, MessageBusCommon, OuterOwner);
 }
+
+
+

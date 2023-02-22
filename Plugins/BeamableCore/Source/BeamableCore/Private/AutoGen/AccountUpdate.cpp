@@ -5,7 +5,7 @@
 
 
 
-void UAccountUpdate ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UAccountUpdate::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("hasThirdPartyToken"), bHasThirdPartyToken);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("thirdParty"), &ThirdParty, Serializer);
@@ -31,7 +31,7 @@ void UAccountUpdate::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 	UBeamJsonUtils::SerializeOptional<TArray<UExternalIdentity*>, UExternalIdentity*>(TEXT("external"), &External, Serializer);		
 }
 
-void UAccountUpdate ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UAccountUpdate::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bHasThirdPartyToken = Bag->GetBoolField(TEXT("hasThirdPartyToken"));
 	UBeamJsonUtils::DeserializeOptional<FString>("thirdParty", Bag, ThirdParty, OuterOwner);
@@ -43,3 +43,6 @@ void UAccountUpdate ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& B
 	UBeamJsonUtils::DeserializeOptional<FString>("userName", Bag, UserName, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UExternalIdentity*>, UExternalIdentity*>("external", Bag, External, OuterOwner);
 }
+
+
+

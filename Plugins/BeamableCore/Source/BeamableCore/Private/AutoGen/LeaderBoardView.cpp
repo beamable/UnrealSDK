@@ -5,7 +5,7 @@
 
 
 
-void ULeaderBoardView ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void ULeaderBoardView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("lbId"), LbId);
 	Serializer->WriteValue(TEXT("boardSize"), BoardSize);
@@ -21,10 +21,13 @@ void ULeaderBoardView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 	UBeamJsonUtils::SerializeOptional<URankEntry*>(TEXT("rankgt"), &Rankgt, Serializer);		
 }
 
-void ULeaderBoardView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void ULeaderBoardView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	LbId = Bag->GetStringField(TEXT("lbId"));
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("boardSize")), BoardSize);
 	UBeamJsonUtils::DeserializeArray<URankEntry*>(Bag->GetArrayField(TEXT("rankings")), Rankings, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<URankEntry*>("rankgt", Bag, Rankgt, OuterOwner);
 }
+
+
+

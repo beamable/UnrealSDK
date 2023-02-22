@@ -42,15 +42,16 @@ void RdEditorModel::connect(rd::Lifetime lifetime, rd::IProtocol const * protoco
 // initializer
 void RdEditorModel::initialize()
 {
+    connectionInfo_.optimize_nested = true;
     isGameControlModuleInitialized_.optimize_nested = true;
     unrealLog_.async = true;
     onBlueprintAdded_.async = true;
-    serializationHash = -6555702035522626840L;
+    serializationHash = -55649919033701264L;
 }
 // primary ctor
-RdEditorModel::RdEditorModel(rd::RdSignal<UnrealLogEvent, rd::Polymorphic<UnrealLogEvent>> unrealLog_, rd::RdSignal<BlueprintReference, rd::Polymorphic<BlueprintReference>> openBlueprint_, rd::RdSignal<UClass, rd::Polymorphic<UClass>> onBlueprintAdded_, rd::RdEndpoint<FString, bool, rd::Polymorphic<FString>, rd::Polymorphic<bool>> isBlueprintPathName_, rd::RdEndpoint<FString, rd::optional<FString>, rd::Polymorphic<FString>, RdEditorModel::__FStringNullableSerializer> getPathNameByPath_, rd::RdCall<int32_t, bool, rd::Polymorphic<int32_t>, rd::Polymorphic<bool>> allowSetForegroundWindow_, rd::RdProperty<bool, rd::Polymorphic<bool>> isGameControlModuleInitialized_, rd::RdSignal<PlayState, rd::Polymorphic<PlayState>> playStateFromEditor_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> requestPlayFromRider_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> requestPauseFromRider_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> requestResumeFromRider_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> requestStopFromRider_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> requestFrameSkipFromRider_, rd::RdSignal<RequestResultBase, rd::AbstractPolymorphic<RequestResultBase>> notificationReplyFromEditor_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> playModeFromEditor_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> playModeFromRider_) :
+RdEditorModel::RdEditorModel(rd::RdProperty<ConnectionInfo, rd::Polymorphic<ConnectionInfo>> connectionInfo_, rd::RdSignal<UnrealLogEvent, rd::Polymorphic<UnrealLogEvent>> unrealLog_, rd::RdSignal<BlueprintReference, rd::Polymorphic<BlueprintReference>> openBlueprint_, rd::RdSignal<UClass, rd::Polymorphic<UClass>> onBlueprintAdded_, rd::RdEndpoint<FString, bool, rd::Polymorphic<FString>, rd::Polymorphic<bool>> isBlueprintPathName_, rd::RdEndpoint<FString, rd::optional<FString>, rd::Polymorphic<FString>, RdEditorModel::__FStringNullableSerializer> getPathNameByPath_, rd::RdCall<int32_t, bool, rd::Polymorphic<int32_t>, rd::Polymorphic<bool>> allowSetForegroundWindow_, rd::RdProperty<bool, rd::Polymorphic<bool>> isGameControlModuleInitialized_, rd::RdSignal<PlayState, rd::Polymorphic<PlayState>> playStateFromEditor_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> requestPlayFromRider_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> requestPauseFromRider_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> requestResumeFromRider_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> requestStopFromRider_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> requestFrameSkipFromRider_, rd::RdSignal<RequestResultBase, rd::AbstractPolymorphic<RequestResultBase>> notificationReplyFromEditor_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> playModeFromEditor_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> playModeFromRider_) :
 rd::RdExtBase()
-,unrealLog_(std::move(unrealLog_)), openBlueprint_(std::move(openBlueprint_)), onBlueprintAdded_(std::move(onBlueprintAdded_)), isBlueprintPathName_(std::move(isBlueprintPathName_)), getPathNameByPath_(std::move(getPathNameByPath_)), allowSetForegroundWindow_(std::move(allowSetForegroundWindow_)), isGameControlModuleInitialized_(std::move(isGameControlModuleInitialized_)), playStateFromEditor_(std::move(playStateFromEditor_)), requestPlayFromRider_(std::move(requestPlayFromRider_)), requestPauseFromRider_(std::move(requestPauseFromRider_)), requestResumeFromRider_(std::move(requestResumeFromRider_)), requestStopFromRider_(std::move(requestStopFromRider_)), requestFrameSkipFromRider_(std::move(requestFrameSkipFromRider_)), notificationReplyFromEditor_(std::move(notificationReplyFromEditor_)), playModeFromEditor_(std::move(playModeFromEditor_)), playModeFromRider_(std::move(playModeFromRider_))
+,connectionInfo_(std::move(connectionInfo_)), unrealLog_(std::move(unrealLog_)), openBlueprint_(std::move(openBlueprint_)), onBlueprintAdded_(std::move(onBlueprintAdded_)), isBlueprintPathName_(std::move(isBlueprintPathName_)), getPathNameByPath_(std::move(getPathNameByPath_)), allowSetForegroundWindow_(std::move(allowSetForegroundWindow_)), isGameControlModuleInitialized_(std::move(isGameControlModuleInitialized_)), playStateFromEditor_(std::move(playStateFromEditor_)), requestPlayFromRider_(std::move(requestPlayFromRider_)), requestPauseFromRider_(std::move(requestPauseFromRider_)), requestResumeFromRider_(std::move(requestResumeFromRider_)), requestStopFromRider_(std::move(requestStopFromRider_)), requestFrameSkipFromRider_(std::move(requestFrameSkipFromRider_)), notificationReplyFromEditor_(std::move(notificationReplyFromEditor_)), playModeFromEditor_(std::move(playModeFromEditor_)), playModeFromRider_(std::move(playModeFromRider_))
 {
     initialize();
 }
@@ -66,6 +67,7 @@ RdEditorModel::RdEditorModel()
 void RdEditorModel::init(rd::Lifetime lifetime) const
 {
     rd::RdExtBase::init(lifetime);
+    bindPolymorphic(connectionInfo_, lifetime, this, "connectionInfo");
     bindPolymorphic(unrealLog_, lifetime, this, "unrealLog");
     bindPolymorphic(openBlueprint_, lifetime, this, "openBlueprint");
     bindPolymorphic(onBlueprintAdded_, lifetime, this, "onBlueprintAdded");
@@ -87,6 +89,7 @@ void RdEditorModel::init(rd::Lifetime lifetime) const
 void RdEditorModel::identify(const rd::Identities &identities, rd::RdId const &id) const
 {
     rd::RdBindableBase::identify(identities, id);
+    identifyPolymorphic(connectionInfo_, identities, id.mix(".connectionInfo"));
     identifyPolymorphic(unrealLog_, identities, id.mix(".unrealLog"));
     identifyPolymorphic(openBlueprint_, identities, id.mix(".openBlueprint"));
     identifyPolymorphic(onBlueprintAdded_, identities, id.mix(".onBlueprintAdded"));
@@ -105,6 +108,10 @@ void RdEditorModel::identify(const rd::Identities &identities, rd::RdId const &i
     identifyPolymorphic(playModeFromRider_, identities, id.mix(".playModeFromRider"));
 }
 // getters
+rd::IProperty<ConnectionInfo> const & RdEditorModel::get_connectionInfo() const
+{
+    return connectionInfo_;
+}
 rd::ISignal<UnrealLogEvent> const & RdEditorModel::get_unrealLog() const
 {
     return unrealLog_;
@@ -185,6 +192,9 @@ bool operator!=(const RdEditorModel &lhs, const RdEditorModel &rhs){
 std::string RdEditorModel::toString() const
 {
     std::string res = "RdEditorModel\n";
+    res += "\tconnectionInfo = ";
+    res += rd::to_string(connectionInfo_);
+    res += '\n';
     res += "\tunrealLog = ";
     res += rd::to_string(unrealLog_);
     res += '\n';

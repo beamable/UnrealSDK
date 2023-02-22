@@ -10,7 +10,7 @@ void UCommonResponse::DeserializeRequestResponse(UObject* RequestData, FString R
 	BeamDeserialize(ResponseContent);	
 }
 
-void UCommonResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UCommonResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("result"), Result);
 	UBeamJsonUtils::SerializeMap<FString>(TEXT("data"), Data, Serializer);
@@ -22,8 +22,11 @@ void UCommonResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seria
 	UBeamJsonUtils::SerializeMap<FString>(TEXT("data"), Data, Serializer);		
 }
 
-void UCommonResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UCommonResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Result = Bag->GetStringField(TEXT("result"));
 	UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("data")), Data, OuterOwner);
 }
+
+
+

@@ -10,7 +10,7 @@ void UGetProductResponse::DeserializeRequestResponse(UObject* RequestData, FStri
 	BeamDeserialize(ResponseContent);	
 }
 
-void UGetProductResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetProductResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("id"), Id);
 	Serializer->WriteValue(TEXT("name"), Name);
@@ -26,10 +26,13 @@ void UGetProductResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 	Serializer->WriteValue(TEXT("price"), Price);		
 }
 
-void UGetProductResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetProductResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Id = Bag->GetStringField(TEXT("id"));
 	Name = Bag->GetStringField(TEXT("name"));
 	Description = Bag->GetStringField(TEXT("description"));
 	Price = Bag->GetIntegerField(TEXT("price"));
 }
+
+
+

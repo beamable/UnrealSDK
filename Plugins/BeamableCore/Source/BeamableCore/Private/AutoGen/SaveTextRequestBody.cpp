@@ -5,7 +5,7 @@
 
 
 
-void USaveTextRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void USaveTextRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UTextDefinition*>(TEXT("text"), Text, Serializer);
 }
@@ -15,7 +15,10 @@ void USaveTextRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 	UBeamJsonUtils::SerializeArray<UTextDefinition*>(TEXT("text"), Text, Serializer);		
 }
 
-void USaveTextRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void USaveTextRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UTextDefinition*>(Bag->GetArrayField(TEXT("text")), Text, OuterOwner);
 }
+
+
+

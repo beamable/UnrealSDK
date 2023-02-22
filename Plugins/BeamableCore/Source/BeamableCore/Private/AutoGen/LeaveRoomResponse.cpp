@@ -10,7 +10,7 @@ void ULeaveRoomResponse::DeserializeRequestResponse(UObject* RequestData, FStrin
 	BeamDeserialize(ResponseContent);	
 }
 
-void ULeaveRoomResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void ULeaveRoomResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("removed"), Removed);
 }
@@ -20,7 +20,10 @@ void ULeaveRoomResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 	Serializer->WriteValue(TEXT("removed"), Removed);		
 }
 
-void ULeaveRoomResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void ULeaveRoomResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Removed = Bag->GetStringField(TEXT("removed"));
 }
+
+
+

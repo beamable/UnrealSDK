@@ -5,7 +5,7 @@
 
 
 
-void UServicePlan ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UServicePlan::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("name"), Name);
 	UBeamJsonUtils::SerializeUObject<UDataDomain*>("dataDomain", DataDomain, Serializer);
@@ -23,7 +23,7 @@ void UServicePlan::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("created"), &Created, Serializer);		
 }
 
-void UServicePlan ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UServicePlan::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Name = Bag->GetStringField(TEXT("name"));
 	UBeamJsonUtils::DeserializeUObject<UDataDomain*>("dataDomain", Bag, DataDomain, OuterOwner);
@@ -31,3 +31,6 @@ void UServicePlan ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag
 	UBeamJsonUtils::DeserializeOptional<UServiceLimits*>("limits", Bag, Limits, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("created", Bag, Created, OuterOwner);
 }
+
+
+

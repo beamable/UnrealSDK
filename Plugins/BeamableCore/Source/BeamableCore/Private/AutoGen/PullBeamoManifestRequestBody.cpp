@@ -5,7 +5,7 @@
 
 
 
-void UPullBeamoManifestRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UPullBeamoManifestRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("sourceRealmPid"), SourceRealmPid);
 }
@@ -15,7 +15,10 @@ void UPullBeamoManifestRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSer
 	Serializer->WriteValue(TEXT("sourceRealmPid"), SourceRealmPid);		
 }
 
-void UPullBeamoManifestRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UPullBeamoManifestRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	SourceRealmPid = Bag->GetStringField(TEXT("sourceRealmPid"));
 }
+
+
+

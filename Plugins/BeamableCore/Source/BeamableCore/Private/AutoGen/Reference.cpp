@@ -5,7 +5,7 @@
 
 
 
-void UReference ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UReference::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	
 }
@@ -15,7 +15,10 @@ void UReference::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer
 			
 }
 
-void UReference ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UReference::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	
 }
+
+
+

@@ -5,7 +5,7 @@
 
 
 
-void UInventoryUpdateRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UInventoryUpdateRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("empty"), bEmpty);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("currencyContentIds"), CurrencyContentIds, Serializer);
@@ -33,7 +33,7 @@ void UInventoryUpdateRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeria
 	UBeamJsonUtils::SerializeOptional<TMap<FString, FArrayOfCurrencyProperty>, FArrayOfCurrencyProperty>(TEXT("currencyProperties"), &CurrencyProperties, Serializer);		
 }
 
-void UInventoryUpdateRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UInventoryUpdateRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bEmpty = Bag->GetBoolField(TEXT("empty"));
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("currencyContentIds")), CurrencyContentIds, OuterOwner);
@@ -46,3 +46,6 @@ void UInventoryUpdateRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJ
 	UBeamJsonUtils::DeserializeOptional<TMap<FString, int64>, int64>("currencies", Bag, Currencies, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TMap<FString, FArrayOfCurrencyProperty>, FArrayOfCurrencyProperty>("currencyProperties", Bag, CurrencyProperties, OuterOwner);
 }
+
+
+

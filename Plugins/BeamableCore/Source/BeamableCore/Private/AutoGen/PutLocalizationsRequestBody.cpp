@@ -5,7 +5,7 @@
 
 
 
-void UPutLocalizationsRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UPutLocalizationsRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeMap<FArrayOfLocalizedValue>(TEXT("localizations"), Localizations, Serializer);
 }
@@ -15,7 +15,10 @@ void UPutLocalizationsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeri
 	UBeamJsonUtils::SerializeMap<FArrayOfLocalizedValue>(TEXT("localizations"), Localizations, Serializer);		
 }
 
-void UPutLocalizationsRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UPutLocalizationsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeMap<FArrayOfLocalizedValue>(Bag->GetObjectField(TEXT("localizations")), Localizations, OuterOwner);
 }
+
+
+

@@ -10,7 +10,7 @@ void URewardsResponse::DeserializeRequestResponse(UObject* RequestData, FString 
 	BeamDeserialize(ResponseContent);	
 }
 
-void URewardsResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void URewardsResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UTournamentCurrencyReward*>(TEXT("rewardCurrencies"), RewardCurrencies, Serializer);
 }
@@ -20,7 +20,10 @@ void URewardsResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 	UBeamJsonUtils::SerializeArray<UTournamentCurrencyReward*>(TEXT("rewardCurrencies"), RewardCurrencies, Serializer);		
 }
 
-void URewardsResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void URewardsResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UTournamentCurrencyReward*>(Bag->GetArrayField(TEXT("rewardCurrencies")), RewardCurrencies, OuterOwner);
 }
+
+
+

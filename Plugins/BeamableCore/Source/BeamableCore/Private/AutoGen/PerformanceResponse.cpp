@@ -10,7 +10,7 @@ void UPerformanceResponse::DeserializeRequestResponse(UObject* RequestData, FStr
 	BeamDeserialize(ResponseContent);	
 }
 
-void UPerformanceResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UPerformanceResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeUObject<UDatabaseMeasurements*>("databaseMeasurements", DatabaseMeasurements, Serializer);
 	UBeamJsonUtils::SerializeArray<UPANamespace*>(TEXT("namespaces"), Namespaces, Serializer);
@@ -26,10 +26,13 @@ void UPerformanceResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 	UBeamJsonUtils::SerializeArray<UPASlowQuery*>(TEXT("queries"), Queries, Serializer);		
 }
 
-void UPerformanceResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UPerformanceResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeUObject<UDatabaseMeasurements*>("databaseMeasurements", Bag, DatabaseMeasurements, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UPANamespace*>(Bag->GetArrayField(TEXT("namespaces")), Namespaces, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UPASuggestedIndex*>(Bag->GetArrayField(TEXT("indexes")), Indexes, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UPASlowQuery*>(Bag->GetArrayField(TEXT("queries")), Queries, OuterOwner);
 }
+
+
+

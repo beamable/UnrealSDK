@@ -5,7 +5,7 @@
 
 
 
-void UGetLogsUrlHeader ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetLogsUrlHeader::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("key"), Key);
 	Serializer->WriteValue(TEXT("value"), Value);
@@ -17,8 +17,11 @@ void UGetLogsUrlHeader::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 	Serializer->WriteValue(TEXT("value"), Value);		
 }
 
-void UGetLogsUrlHeader ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetLogsUrlHeader::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Key = Bag->GetStringField(TEXT("key"));
 	Value = Bag->GetStringField(TEXT("value"));
 }
+
+
+

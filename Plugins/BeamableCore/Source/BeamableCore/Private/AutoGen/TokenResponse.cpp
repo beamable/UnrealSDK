@@ -10,7 +10,7 @@ void UTokenResponse::DeserializeRequestResponse(UObject* RequestData, FString Re
 	BeamDeserialize(ResponseContent);	
 }
 
-void UTokenResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UTokenResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("expires_in"), ExpiresIn);
 	Serializer->WriteValue(TEXT("token_type"), TokenType);
@@ -30,7 +30,7 @@ void UTokenResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("scopes"), &Scopes, Serializer);		
 }
 
-void UTokenResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UTokenResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("expires_in")), ExpiresIn);
 	TokenType = Bag->GetStringField(TEXT("token_type"));
@@ -39,3 +39,6 @@ void UTokenResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& B
 	UBeamJsonUtils::DeserializeOptional<FString>("challenge_token", Bag, ChallengeToken, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("scopes", Bag, Scopes, OuterOwner);
 }
+
+
+

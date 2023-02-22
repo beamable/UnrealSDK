@@ -5,7 +5,7 @@
 
 
 
-void UChampionScore ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UChampionScore::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("endTimeMs"), EndTimeMs);
 	Serializer->WriteValue(TEXT("startTimeMs"), StartTimeMs);
@@ -23,7 +23,7 @@ void UChampionScore::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 	Serializer->WriteValue(TEXT("playerId"), PlayerId);		
 }
 
-void UChampionScore ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UChampionScore::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("endTimeMs")), EndTimeMs);
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("startTimeMs")), StartTimeMs);
@@ -31,3 +31,6 @@ void UChampionScore ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& B
 	Cycle = Bag->GetIntegerField(TEXT("cycle"));
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("playerId")), PlayerId);
 }
+
+
+

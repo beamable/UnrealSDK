@@ -10,7 +10,7 @@ void UGroupSearchResponse::DeserializeRequestResponse(UObject* RequestData, FStr
 	BeamDeserialize(ResponseContent);	
 }
 
-void UGroupSearchResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGroupSearchResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UGroup*>(TEXT("groups"), Groups, Serializer);
 }
@@ -20,7 +20,10 @@ void UGroupSearchResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 	UBeamJsonUtils::SerializeArray<UGroup*>(TEXT("groups"), Groups, Serializer);		
 }
 
-void UGroupSearchResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGroupSearchResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UGroup*>(Bag->GetArrayField(TEXT("groups")), Groups, OuterOwner);
 }
+
+
+

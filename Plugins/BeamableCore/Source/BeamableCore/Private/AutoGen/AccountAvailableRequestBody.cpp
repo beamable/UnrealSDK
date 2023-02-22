@@ -5,7 +5,7 @@
 
 
 
-void UAccountAvailableRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UAccountAvailableRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("email"), Email);
 }
@@ -15,7 +15,10 @@ void UAccountAvailableRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeri
 	Serializer->WriteValue(TEXT("email"), Email);		
 }
 
-void UAccountAvailableRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UAccountAvailableRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Email = Bag->GetStringField(TEXT("email"));
 }
+
+
+

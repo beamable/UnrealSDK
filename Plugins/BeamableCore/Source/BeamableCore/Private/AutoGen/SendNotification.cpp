@@ -5,7 +5,7 @@
 
 
 
-void USendNotification ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void USendNotification::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("title"), &Title, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("body"), &Body, Serializer);
@@ -17,8 +17,11 @@ void USendNotification::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("body"), &Body, Serializer);		
 }
 
-void USendNotification ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void USendNotification::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeOptional<FString>("title", Bag, Title, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("body", Bag, Body, OuterOwner);
 }
+
+
+

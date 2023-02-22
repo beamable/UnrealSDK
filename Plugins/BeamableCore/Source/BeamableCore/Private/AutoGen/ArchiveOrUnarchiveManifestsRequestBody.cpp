@@ -5,7 +5,7 @@
 
 
 
-void UArchiveOrUnarchiveManifestsRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UArchiveOrUnarchiveManifestsRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<FBeamContentManifestId, FString>(TEXT("manifestIds"), ManifestIds, Serializer);
 }
@@ -15,7 +15,10 @@ void UArchiveOrUnarchiveManifestsRequestBody::BeamSerializeProperties(TUnrealPre
 	UBeamJsonUtils::SerializeArray<FBeamContentManifestId, FString>(TEXT("manifestIds"), ManifestIds, Serializer);		
 }
 
-void UArchiveOrUnarchiveManifestsRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UArchiveOrUnarchiveManifestsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<FBeamContentManifestId, FString>(Bag->GetArrayField(TEXT("manifestIds")), ManifestIds, OuterOwner);
 }
+
+
+

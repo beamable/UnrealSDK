@@ -16,6 +16,9 @@ UDELEGATE()
 DECLARE_DYNAMIC_DELEGATE_FourParams(FOnWaitComplete, const TArray<FBeamRequestContext>&, Contexts, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, Requests,
                                     const TArray<UObject*>&, Responses, const TArray<FBeamErrorResponse>&, Errors);
 
+DECLARE_DELEGATE_FourParams(FOnWaitCompleteCode, const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&,
+                            const TArray<FBeamErrorResponse>&);
+
 
 /**
  * @brief A wait-handle provided by the BeamRequestTracker system.
@@ -27,7 +30,7 @@ struct FBeamWaitHandle
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly)
-	int64 WaitHandleId;
+	int64 WaitHandleId = -1;
 
 	UPROPERTY()
 	UBeamBackend* BeamBackend = nullptr;

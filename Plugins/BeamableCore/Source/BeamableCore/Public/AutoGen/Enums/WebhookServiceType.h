@@ -8,9 +8,9 @@
 UENUM(BlueprintType, Category="Beam|Enums")
 enum class EWebhookServiceType : uint8
 {
-	UserMicroservice UMETA(DisplayName="User Microservice"),
-	ObjectService UMETA(DisplayName="Object Service"),
-	BasicService UMETA(DisplayName="Basic Service")		
+	BEAM_UserMicroservice UMETA(DisplayName="User Microservice"),
+	BEAM_ObjectService UMETA(DisplayName="Object Service"),
+	BEAM_BasicService UMETA(DisplayName="Basic Service")		
 };
 
 UCLASS(BlueprintType, Category="Beam|Enums")
@@ -24,8 +24,10 @@ public:
 	{
 		const UEnum* Enum = StaticEnum<EWebhookServiceType>();
 		const int32 NameIndex = Enum->GetIndexByValue(static_cast<int64>(Value));
-		const FString SerializationName = Enum->GetNameStringByValue(NameIndex);		
-		return SerializationName;
+		const FString SerializationName = Enum->GetNameStringByIndex(NameIndex);
+
+		// We chop off the first five "BEAM_" characters. 		
+		return SerializationName.RightChop(5);
 		
 	}
 
@@ -35,7 +37,8 @@ public:
 		const UEnum* Enum = StaticEnum<EWebhookServiceType>();
 		for (int32 NameIndex = 0; NameIndex < Enum->NumEnums() - 1; ++NameIndex)
 		{
-			const FString& SerializationName = Enum->GetNameStringByValue(NameIndex);
+			// We chop off the first five "BEAM_" characters.
+			const FString& SerializationName = Enum->GetNameStringByIndex(NameIndex).RightChop(5);
 			if(Value == SerializationName)
 				return static_cast<EWebhookServiceType>(Enum->GetValueByIndex(NameIndex));
 		}

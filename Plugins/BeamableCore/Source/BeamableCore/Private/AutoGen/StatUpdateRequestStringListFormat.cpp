@@ -5,7 +5,7 @@
 
 
 
-void UStatUpdateRequestStringListFormat ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UStatUpdateRequestStringListFormat::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<TArray<UStatStringListEntry*>, UStatStringListEntry*>(TEXT("set"), &Set, Serializer);
 }
@@ -15,7 +15,10 @@ void UStatUpdateRequestStringListFormat::BeamSerializeProperties(TUnrealPrettyJs
 	UBeamJsonUtils::SerializeOptional<TArray<UStatStringListEntry*>, UStatStringListEntry*>(TEXT("set"), &Set, Serializer);		
 }
 
-void UStatUpdateRequestStringListFormat ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UStatUpdateRequestStringListFormat::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeOptional<TArray<UStatStringListEntry*>, UStatStringListEntry*>("set", Bag, Set, OuterOwner);
 }
+
+
+

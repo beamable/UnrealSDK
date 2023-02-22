@@ -5,7 +5,7 @@
 
 
 
-void UTrackPurchaseRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UTrackPurchaseRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("priceInLocalCurrency"), PriceInLocalCurrency);
 	Serializer->WriteValue(TEXT("skuName"), SkuName);
@@ -29,7 +29,7 @@ void UTrackPurchaseRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 	UBeamJsonUtils::SerializeArray<UCurrencyChange*>(TEXT("obtainCurrency"), ObtainCurrency, Serializer);		
 }
 
-void UTrackPurchaseRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UTrackPurchaseRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	PriceInLocalCurrency = Bag->GetNumberField(TEXT("priceInLocalCurrency"));
 	SkuName = Bag->GetStringField(TEXT("skuName"));
@@ -40,3 +40,6 @@ void UTrackPurchaseRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJso
 	UBeamJsonUtils::DeserializeArray<UItemCreateRequestBody*>(Bag->GetArrayField(TEXT("obtainItems")), ObtainItems, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UCurrencyChange*>(Bag->GetArrayField(TEXT("obtainCurrency")), ObtainCurrency, OuterOwner);
 }
+
+
+

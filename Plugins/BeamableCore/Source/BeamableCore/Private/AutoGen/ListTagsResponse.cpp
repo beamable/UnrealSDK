@@ -10,7 +10,7 @@ void UListTagsResponse::DeserializeRequestResponse(UObject* RequestData, FString
 	BeamDeserialize(ResponseContent);	
 }
 
-void UListTagsResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UListTagsResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("tags"), Tags, Serializer);
 }
@@ -20,7 +20,10 @@ void UListTagsResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("tags"), Tags, Serializer);		
 }
 
-void UListTagsResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UListTagsResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("tags")), Tags, OuterOwner);
 }
+
+
+

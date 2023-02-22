@@ -10,7 +10,7 @@ void UAccountPlayerView::DeserializeRequestResponse(UObject* RequestData, FStrin
 	BeamDeserialize(ResponseContent);	
 }
 
-void UAccountPlayerView ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UAccountPlayerView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("id"), &Id, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("deviceIds"), DeviceIds, Serializer);
@@ -32,7 +32,7 @@ void UAccountPlayerView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 	UBeamJsonUtils::SerializeOptional<TArray<UExternalIdentity*>, UExternalIdentity*>(TEXT("external"), &External, Serializer);		
 }
 
-void UAccountPlayerView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UAccountPlayerView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("id")), Id, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("deviceIds")), DeviceIds, OuterOwner);
@@ -42,3 +42,6 @@ void UAccountPlayerView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject
 	UBeamJsonUtils::DeserializeOptional<FString>("language", Bag, Language, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UExternalIdentity*>, UExternalIdentity*>("external", Bag, External, OuterOwner);
 }
+
+
+

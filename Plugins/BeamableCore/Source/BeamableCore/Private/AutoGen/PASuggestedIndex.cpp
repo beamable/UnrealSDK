@@ -5,7 +5,7 @@
 
 
 
-void UPASuggestedIndex ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UPASuggestedIndex::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("weight"), Weight);
 	Serializer->WriteValue(TEXT("id"), Id);
@@ -23,7 +23,7 @@ void UPASuggestedIndex::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("index"), Index, Serializer);		
 }
 
-void UPASuggestedIndex ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UPASuggestedIndex::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Weight = Bag->GetStringField(TEXT("weight"));
 	Id = Bag->GetStringField(TEXT("id"));
@@ -31,3 +31,6 @@ void UPASuggestedIndex ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("impact")), Impact, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("index")), Index, OuterOwner);
 }
+
+
+

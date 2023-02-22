@@ -5,7 +5,7 @@
 
 
 
-void UFailPurchaseRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UFailPurchaseRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("txid"), Txid);
 	Serializer->WriteValue(TEXT("reason"), Reason);
@@ -17,8 +17,11 @@ void UFailPurchaseRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 	Serializer->WriteValue(TEXT("reason"), Reason);		
 }
 
-void UFailPurchaseRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UFailPurchaseRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("txid")), Txid);
 	Reason = Bag->GetStringField(TEXT("reason"));
 }
+
+
+

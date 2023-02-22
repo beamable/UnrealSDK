@@ -10,7 +10,7 @@ void UCreateRoomResponse::DeserializeRequestResponse(UObject* RequestData, FStri
 	BeamDeserialize(ResponseContent);	
 }
 
-void UCreateRoomResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UCreateRoomResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeUObject<URoomInfo*>("room", Room, Serializer);
 }
@@ -20,7 +20,10 @@ void UCreateRoomResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 	UBeamJsonUtils::SerializeUObject<URoomInfo*>("room", Room, Serializer);		
 }
 
-void UCreateRoomResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UCreateRoomResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeUObject<URoomInfo*>("room", Bag, Room, OuterOwner);
 }
+
+
+

@@ -24,7 +24,7 @@ struct FBeamRequestContext
 	 * @brief A per-session unique identifier (counts requests from 0 every session) for this request. Never persist this value.  
 	 */
 	UPROPERTY(BlueprintReadOnly)
-	int64 RequestId;
+	int64 RequestId = -1;
 
 	/**
 	 * @brief The retry configuration used for this request.
@@ -44,7 +44,7 @@ struct FBeamRequestContext
 	 * @brief The response code (only available in OnSuccess/OnError/OnComplete). In the synchronous flow, is always -1.
 	 */
 	UPROPERTY(BlueprintReadOnly)
-	int32 ResponseCode;
+	int32 ResponseCode = -1;
 
 	/**
 	 * @brief The this request was made with --- only exists for requests that are made with one.

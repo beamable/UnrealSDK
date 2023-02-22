@@ -5,7 +5,7 @@
 
 
 
-void UContentMeta ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UContentMeta::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("visibility"), UContentVisibilityLibrary::ContentVisibilityToSerializationName(Visibility));
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("text"), &Text, Serializer);
@@ -19,9 +19,12 @@ void UContentMeta::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("data"), &Data, Serializer);		
 }
 
-void UContentMeta ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UContentMeta::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Visibility = UContentVisibilityLibrary::SerializationNameToContentVisibility(Bag->GetStringField(TEXT("visibility")));
 	UBeamJsonUtils::DeserializeOptional<FString>("text", Bag, Text, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("data", Bag, Data, OuterOwner);
 }
+
+
+

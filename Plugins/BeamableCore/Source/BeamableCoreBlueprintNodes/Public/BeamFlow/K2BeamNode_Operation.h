@@ -122,7 +122,7 @@ protected:
 	 * @brief The subsystem's GetSelf function name that we can use to call a function on it.
 	 * See default implementation to override it correctly.  
 	 */
-	virtual FName GetRuntimeSubsystemSelfFunctionName() const;
+	virtual FName GetSubsystemSelfFunctionName() const;
 
 	/**
 	 * @brief The subsystem's Operation function. This is any function that returns a FBeamOperationHandle and has a 'FBeamOperationEventHandler OnOperationEvent' parameter.

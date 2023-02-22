@@ -10,7 +10,7 @@ void UMultipliersGetResponse::DeserializeRequestResponse(UObject* RequestData, F
 	BeamDeserialize(ResponseContent);	
 }
 
-void UMultipliersGetResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UMultipliersGetResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UVipBonus*>(TEXT("multipliers"), Multipliers, Serializer);
 }
@@ -20,7 +20,10 @@ void UMultipliersGetResponse::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 	UBeamJsonUtils::SerializeArray<UVipBonus*>(TEXT("multipliers"), Multipliers, Serializer);		
 }
 
-void UMultipliersGetResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UMultipliersGetResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UVipBonus*>(Bag->GetArrayField(TEXT("multipliers")), Multipliers, OuterOwner);
 }
+
+
+

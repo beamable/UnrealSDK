@@ -10,7 +10,7 @@ void UPromoteRealmResponseOld::DeserializeRequestResponse(UObject* RequestData, 
 	BeamDeserialize(ResponseContent);	
 }
 
-void UPromoteRealmResponseOld ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UPromoteRealmResponseOld::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("sourcePid"), SourcePid);
 	UBeamJsonUtils::SerializeArray<URealmPromotion*>(TEXT("promotions"), Promotions, Serializer);
@@ -22,8 +22,11 @@ void UPromoteRealmResponseOld::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 	UBeamJsonUtils::SerializeArray<URealmPromotion*>(TEXT("promotions"), Promotions, Serializer);		
 }
 
-void UPromoteRealmResponseOld ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UPromoteRealmResponseOld::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	SourcePid = Bag->GetStringField(TEXT("sourcePid"));
 	UBeamJsonUtils::DeserializeArray<URealmPromotion*>(Bag->GetArrayField(TEXT("promotions")), Promotions, OuterOwner);
 }
+
+
+

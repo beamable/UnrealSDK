@@ -5,7 +5,7 @@
 
 
 
-void UGroupApplication ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGroupApplication::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("subGroup"), &SubGroup, Serializer);
 }
@@ -15,7 +15,10 @@ void UGroupApplication::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("subGroup"), &SubGroup, Serializer);		
 }
 
-void UGroupApplication ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGroupApplication::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeOptional<int64>("subGroup", Bag, SubGroup, OuterOwner);
 }
+
+
+

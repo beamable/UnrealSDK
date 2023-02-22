@@ -5,7 +5,7 @@
 
 
 
-void UPaymentAuditEntryViewModel ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UPaymentAuditEntryViewModel::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("providerid"), Providerid);
 	Serializer->WriteValue(TEXT("txid"), Txid);
@@ -41,7 +41,7 @@ void UPaymentAuditEntryViewModel::BeamSerializeProperties(TUnrealPrettyJsonSeria
 	UBeamJsonUtils::SerializeOptional<TArray<UCurrencyChange*>, UCurrencyChange*>(TEXT("obtainCurrency"), &ObtainCurrency, Serializer);		
 }
 
-void UPaymentAuditEntryViewModel ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UPaymentAuditEntryViewModel::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Providerid = Bag->GetStringField(TEXT("providerid"));
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("txid")), Txid);
@@ -58,3 +58,6 @@ void UPaymentAuditEntryViewModel ::BeamDeserializeProperties(const TSharedPtr<FJ
 	UBeamJsonUtils::DeserializeOptional<TArray<UItemCreateRequestBody*>, UItemCreateRequestBody*>("obtainItems", Bag, ObtainItems, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UCurrencyChange*>, UCurrencyChange*>("obtainCurrency", Bag, ObtainCurrency, OuterOwner);
 }
+
+
+

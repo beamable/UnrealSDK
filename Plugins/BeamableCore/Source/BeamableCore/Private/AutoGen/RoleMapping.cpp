@@ -5,7 +5,7 @@
 
 
 
-void URoleMapping ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void URoleMapping::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("projectId"), ProjectId);
 	Serializer->WriteValue(TEXT("role"), Role);
@@ -17,8 +17,11 @@ void URoleMapping::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 	Serializer->WriteValue(TEXT("role"), Role);		
 }
 
-void URoleMapping ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void URoleMapping::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	ProjectId = Bag->GetStringField(TEXT("projectId"));
 	Role = Bag->GetStringField(TEXT("role"));
 }
+
+
+

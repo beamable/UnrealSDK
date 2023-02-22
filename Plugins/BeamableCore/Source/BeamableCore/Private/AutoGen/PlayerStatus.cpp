@@ -10,7 +10,7 @@ void UPlayerStatus::DeserializeRequestResponse(UObject* RequestData, FString Res
 	BeamDeserialize(ResponseContent);	
 }
 
-void UPlayerStatus ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UPlayerStatus::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("lastUpdateCycle"), LastUpdateCycle);
 	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);
@@ -34,7 +34,7 @@ void UPlayerStatus::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("groupId"), &GroupId, Serializer);		
 }
 
-void UPlayerStatus ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UPlayerStatus::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	LastUpdateCycle = Bag->GetIntegerField(TEXT("lastUpdateCycle"));
 	TournamentId = Bag->GetStringField(TEXT("tournamentId"));
@@ -45,3 +45,6 @@ void UPlayerStatus ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Ba
 	UBeamJsonUtils::DeserializeArray<UTournamentCurrencyReward*>(Bag->GetArrayField(TEXT("unclaimedRewards")), UnclaimedRewards, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("groupId", Bag, GroupId, OuterOwner);
 }
+
+
+

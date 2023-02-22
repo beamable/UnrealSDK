@@ -10,7 +10,7 @@ void UEmptyResponse::DeserializeRequestResponse(UObject* RequestData, FString Re
 	BeamDeserialize(ResponseContent);	
 }
 
-void UEmptyResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UEmptyResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("result"), Result);
 }
@@ -20,7 +20,10 @@ void UEmptyResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 	Serializer->WriteValue(TEXT("result"), Result);		
 }
 
-void UEmptyResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UEmptyResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Result = Bag->GetStringField(TEXT("result"));
 }
+
+
+

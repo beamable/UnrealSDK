@@ -5,7 +5,7 @@
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "AutoGen/Optionals/OptionalBool.h"
-#include "AutoGen/ContentBasicReference.h"
+#include "AutoGen/BaseContentReference.h"
 #include "BeamBackend/SemanticTypes/BeamContentManifestId.h"
 
 #include "ContentBasicManifest.generated.h"
@@ -23,7 +23,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
 	int64 Created;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="References", Category="Beam")
-	TArray<UContentBasicReference*> References;
+	TArray<UBaseContentReference*> References;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Archived", Category="Beam")
 	FOptionalBool bArchived;
 
@@ -32,4 +32,5 @@ public:
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override;
+	
 };

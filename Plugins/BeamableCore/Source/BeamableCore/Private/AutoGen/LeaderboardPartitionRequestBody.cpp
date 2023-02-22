@@ -5,7 +5,7 @@
 
 
 
-void ULeaderboardPartitionRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void ULeaderboardPartitionRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("playerId"), PlayerId);
 }
@@ -15,7 +15,10 @@ void ULeaderboardPartitionRequestBody::BeamSerializeProperties(TUnrealPrettyJson
 	Serializer->WriteValue(TEXT("playerId"), PlayerId);		
 }
 
-void ULeaderboardPartitionRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void ULeaderboardPartitionRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("playerId")), PlayerId);
 }
+
+
+

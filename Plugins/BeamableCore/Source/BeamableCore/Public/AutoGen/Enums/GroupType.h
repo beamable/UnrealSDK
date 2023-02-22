@@ -8,8 +8,8 @@
 UENUM(BlueprintType, Category="Beam|Enums")
 enum class EGroupType : uint8
 {
-	guild UMETA(DisplayName="Guild"),
-	subgroup UMETA(DisplayName="Subgroup")		
+	BEAM_guild UMETA(DisplayName="Guild"),
+	BEAM_subgroup UMETA(DisplayName="Subgroup")		
 };
 
 UCLASS(BlueprintType, Category="Beam|Enums")
@@ -23,8 +23,10 @@ public:
 	{
 		const UEnum* Enum = StaticEnum<EGroupType>();
 		const int32 NameIndex = Enum->GetIndexByValue(static_cast<int64>(Value));
-		const FString SerializationName = Enum->GetNameStringByValue(NameIndex);		
-		return SerializationName;
+		const FString SerializationName = Enum->GetNameStringByIndex(NameIndex);
+
+		// We chop off the first five "BEAM_" characters. 		
+		return SerializationName.RightChop(5);
 		
 	}
 
@@ -34,7 +36,8 @@ public:
 		const UEnum* Enum = StaticEnum<EGroupType>();
 		for (int32 NameIndex = 0; NameIndex < Enum->NumEnums() - 1; ++NameIndex)
 		{
-			const FString& SerializationName = Enum->GetNameStringByValue(NameIndex);
+			// We chop off the first five "BEAM_" characters.
+			const FString& SerializationName = Enum->GetNameStringByIndex(NameIndex).RightChop(5);
 			if(Value == SerializationName)
 				return static_cast<EGroupType>(Enum->GetValueByIndex(NameIndex));
 		}

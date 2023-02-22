@@ -5,7 +5,7 @@
 
 
 
-void UGetChampionsRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetChampionsRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);
 	Serializer->WriteValue(TEXT("cycles"), Cycles);
@@ -17,8 +17,11 @@ void UGetChampionsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 	Serializer->WriteValue(TEXT("cycles"), Cycles);		
 }
 
-void UGetChampionsRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetChampionsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	TournamentId = Bag->GetStringField(TEXT("tournamentId"));
 	Cycles = Bag->GetIntegerField(TEXT("cycles"));
 }
+
+
+

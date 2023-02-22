@@ -5,7 +5,7 @@
 
 
 
-void UVariableReference ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UVariableReference::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("name"), Name);
 }
@@ -15,7 +15,10 @@ void UVariableReference::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 	Serializer->WriteValue(TEXT("name"), Name);		
 }
 
-void UVariableReference ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UVariableReference::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Name = Bag->GetStringField(TEXT("name"));
 }
+
+
+

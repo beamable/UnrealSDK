@@ -5,7 +5,7 @@
 
 
 
-void UNewGameRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UNewGameRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("gameName"), GameName);
 }
@@ -15,7 +15,10 @@ void UNewGameRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 	Serializer->WriteValue(TEXT("gameName"), GameName);		
 }
 
-void UNewGameRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UNewGameRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	GameName = Bag->GetStringField(TEXT("gameName"));
 }
+
+
+

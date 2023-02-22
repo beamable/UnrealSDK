@@ -5,7 +5,7 @@
 
 
 
-void UProject ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UProject::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("archived"), bArchived);
 	Serializer->WriteValue(TEXT("root"), bRoot);
@@ -41,7 +41,7 @@ void UProject::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) 
 	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("config"), &Config, Serializer);		
 }
 
-void UProject ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UProject::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bArchived = Bag->GetBoolField(TEXT("archived"));
 	bRoot = Bag->GetBoolField(TEXT("root"));
@@ -58,3 +58,6 @@ void UProject ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("children", Bag, Children, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TMap<FString, FString>, FString>("config", Bag, Config, OuterOwner);
 }
+
+
+

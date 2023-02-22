@@ -5,7 +5,7 @@
 
 
 
-void UPlayerIdRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UPlayerIdRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("playerId"), &PlayerId, Serializer);
 }
@@ -15,7 +15,10 @@ void UPlayerIdRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("playerId"), &PlayerId, Serializer);		
 }
 
-void UPlayerIdRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UPlayerIdRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("playerId")), PlayerId, OuterOwner);
 }
+
+
+

@@ -171,7 +171,7 @@ void UBeamUserSlots::SetGamerTagAtSlot(FUserSlot SlotId, const FBeamGamerTag& Ga
 	auto& ExistingRealmUser = AuthenticatedUsers[UserSlotIdx];
 	ExistingRealmUser.GamerTag = GamerTag;
 
-	UE_LOG(LogBeamUserSlots, Verbose, TEXT("Updated GamerTag at slot!\nUSER_SLOT=%s, GAMERTAG=%lld"), *NamespacedSlotId, GamerTag.AsLong);
+	UE_LOG(LogBeamUserSlots, Verbose, TEXT("Updated GamerTag at slot!\nUSER_SLOT=%s, GAMERTAG=%llu"), *NamespacedSlotId, GamerTag.AsLong);
 }
 
 void UBeamUserSlots::SetAccountIdAtSlot(FUserSlot SlotId, const FBeamAccountId& AccountId, const UObject* CallingContext)
@@ -185,7 +185,7 @@ void UBeamUserSlots::SetAccountIdAtSlot(FUserSlot SlotId, const FBeamAccountId& 
 	auto& ExistingRealmUser = AuthenticatedUsers[UserSlotIdx];
 	ExistingRealmUser.AccountId = AccountId;
 
-	UE_LOG(LogBeamUserSlots, Verbose, TEXT("Updated GamerTag at slot!\nUSER_SLOT=%s, GAMERTAG=%lld"), *NamespacedSlotId, AccountId.AsLong);
+	UE_LOG(LogBeamUserSlots, Verbose, TEXT("Updated GamerTag at slot!\nUSER_SLOT=%s, GAMERTAG=%llu"), *NamespacedSlotId, AccountId.AsLong);
 }
 
 

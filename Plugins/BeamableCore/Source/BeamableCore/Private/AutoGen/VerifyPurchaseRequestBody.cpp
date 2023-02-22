@@ -5,7 +5,7 @@
 
 
 
-void UVerifyPurchaseRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UVerifyPurchaseRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("receipt"), Receipt);
 }
@@ -15,7 +15,10 @@ void UVerifyPurchaseRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 	Serializer->WriteValue(TEXT("receipt"), Receipt);		
 }
 
-void UVerifyPurchaseRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UVerifyPurchaseRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Receipt = Bag->GetStringField(TEXT("receipt"));
 }
+
+
+

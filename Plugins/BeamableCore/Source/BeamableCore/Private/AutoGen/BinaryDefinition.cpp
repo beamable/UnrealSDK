@@ -5,7 +5,7 @@
 
 
 
-void UBinaryDefinition ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UBinaryDefinition::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
 	Serializer->WriteValue(TEXT("checksum"), Checksum);
@@ -21,10 +21,13 @@ void UBinaryDefinition::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("tags"), &Tags, Serializer);		
 }
 
-void UBinaryDefinition ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UBinaryDefinition::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("id")), Id, OuterOwner);
 	Checksum = Bag->GetStringField(TEXT("checksum"));
 	UploadContentType = Bag->GetStringField(TEXT("uploadContentType"));
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("tags", Bag, Tags, OuterOwner);
 }
+
+
+

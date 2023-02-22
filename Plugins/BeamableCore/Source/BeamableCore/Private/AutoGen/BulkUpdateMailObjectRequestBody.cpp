@@ -5,7 +5,7 @@
 
 
 
-void UBulkUpdateMailObjectRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UBulkUpdateMailObjectRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UMyMailUpdate*>(TEXT("updateMailRequests"), UpdateMailRequests, Serializer);
 }
@@ -15,7 +15,10 @@ void UBulkUpdateMailObjectRequestBody::BeamSerializeProperties(TUnrealPrettyJson
 	UBeamJsonUtils::SerializeArray<UMyMailUpdate*>(TEXT("updateMailRequests"), UpdateMailRequests, Serializer);		
 }
 
-void UBulkUpdateMailObjectRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UBulkUpdateMailObjectRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UMyMailUpdate*>(Bag->GetArrayField(TEXT("updateMailRequests")), UpdateMailRequests, OuterOwner);
 }
+
+
+

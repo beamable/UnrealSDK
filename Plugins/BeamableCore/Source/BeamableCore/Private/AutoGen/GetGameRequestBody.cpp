@@ -5,7 +5,7 @@
 
 
 
-void UGetGameRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetGameRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("rootPID"), &RootPID, Serializer);
 }
@@ -15,7 +15,10 @@ void UGetGameRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("rootPID"), &RootPID, Serializer);		
 }
 
-void UGetGameRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetGameRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("rootPID")), RootPID, OuterOwner);
 }
+
+
+

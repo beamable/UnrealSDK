@@ -5,7 +5,7 @@
 
 
 
-void UPasswordUpdateConfirmation ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UPasswordUpdateConfirmation::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("code"), Code);
 	Serializer->WriteValue(TEXT("newPassword"), NewPassword);
@@ -19,9 +19,12 @@ void UPasswordUpdateConfirmation::BeamSerializeProperties(TUnrealPrettyJsonSeria
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("email"), &Email, Serializer);		
 }
 
-void UPasswordUpdateConfirmation ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UPasswordUpdateConfirmation::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Code = Bag->GetStringField(TEXT("code"));
 	NewPassword = Bag->GetStringField(TEXT("newPassword"));
 	UBeamJsonUtils::DeserializeOptional<FString>("email", Bag, Email, OuterOwner);
 }
+
+
+

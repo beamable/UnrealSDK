@@ -5,7 +5,7 @@
 
 
 
-void UEventClaimRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UEventClaimRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("eventId"), EventId);
 }
@@ -15,7 +15,10 @@ void UEventClaimRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 	Serializer->WriteValue(TEXT("eventId"), EventId);		
 }
 
-void UEventClaimRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UEventClaimRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	EventId = Bag->GetStringField(TEXT("eventId"));
 }
+
+
+

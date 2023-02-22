@@ -5,7 +5,7 @@
 
 
 
-void UGetMetricsUrlRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetMetricsUrlRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("serviceName"), ServiceName);
 	Serializer->WriteValue(TEXT("metricName"), MetricName);
@@ -23,7 +23,7 @@ void UGetMetricsUrlRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("period"), &Period, Serializer);		
 }
 
-void UGetMetricsUrlRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetMetricsUrlRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	ServiceName = Bag->GetStringField(TEXT("serviceName"));
 	MetricName = Bag->GetStringField(TEXT("metricName"));
@@ -31,3 +31,6 @@ void UGetMetricsUrlRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJso
 	UBeamJsonUtils::DeserializeOptional<int64>("endTime", Bag, EndTime, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("period", Bag, Period, OuterOwner);
 }
+
+
+

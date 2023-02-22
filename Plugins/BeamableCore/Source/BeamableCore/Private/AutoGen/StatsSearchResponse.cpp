@@ -10,7 +10,7 @@ void UStatsSearchResponse::DeserializeRequestResponse(UObject* RequestData, FStr
 	BeamDeserialize(ResponseContent);	
 }
 
-void UStatsSearchResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UStatsSearchResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<FBeamGamerTag, int64>(TEXT("ids"), Ids, Serializer);
 }
@@ -20,7 +20,10 @@ void UStatsSearchResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 	UBeamJsonUtils::SerializeArray<FBeamGamerTag, int64>(TEXT("ids"), Ids, Serializer);		
 }
 
-void UStatsSearchResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UStatsSearchResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<FBeamGamerTag, int64>(Bag->GetArrayField(TEXT("ids")), Ids, OuterOwner);
 }
+
+
+

@@ -10,7 +10,7 @@ void UContentBasicManifestChecksum::DeserializeRequestResponse(UObject* RequestD
 	BeamDeserialize(ResponseContent);	
 }
 
-void UContentBasicManifestChecksum ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UContentBasicManifestChecksum::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
 	Serializer->WriteValue(TEXT("checksum"), Checksum);
@@ -26,10 +26,13 @@ void UContentBasicManifestChecksum::BeamSerializeProperties(TUnrealPrettyJsonSer
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("archived"), &bArchived, Serializer);		
 }
 
-void UContentBasicManifestChecksum ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UContentBasicManifestChecksum::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("id")), Id, OuterOwner);
 	Checksum = Bag->GetStringField(TEXT("checksum"));
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("createdAt")), CreatedAt);
 	UBeamJsonUtils::DeserializeOptional<bool>("archived", Bag, bArchived, OuterOwner);
 }
+
+
+

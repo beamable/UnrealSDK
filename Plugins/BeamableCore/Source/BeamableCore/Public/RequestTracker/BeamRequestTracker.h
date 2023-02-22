@@ -67,18 +67,18 @@ private:
 	 * @param RequestId The request that completed.
 	 */
 	UFUNCTION()
-	void TickOnRequestIdCompleted(int64 RequestId);
+	void HandleRequestIdCompleted(int64 RequestId);
 
 	/**
 	 * @brief This is bound to UBeamBackend's CleanUp delegate.
 	 * Beam Backend keeps references to all request/response UObjects in internal maps. Other systems, instead of keeping references themselves keep only the RequestId as a handle.
-	 * Every once in a while, BeamBackend will trigger a clean up where it figures out which requests are done and removes them from these internal maps.
+	 * Every time a request is completed, BeamBackend will trigger a clean up where it figures out which requests are done and removes them from these internal maps.
 	 * In order to guarantee other systems don't lose data they depend on, they must register a callback like this and fill out this list informing beam backend of all RequestIds they
 	 * depend on.
 	 * @param OutUsingRequestIds A list of all Request Ids this system currently depends on.
 	 */
 	UFUNCTION()
-	void TickOnBackendCleanUp(TArray<int64>& OutUsingRequestIds);
+	void HandleBackendCleanUp(TArray<int64>& OutUsingRequestIds);
 
 public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly)
@@ -111,6 +111,11 @@ public:
 	TMap<FBeamWaitHandle, FOnWaitComplete> ActiveWaitHandleCallbacks;
 
 	/**
+	 * @brief Maps each WaitHandle to their WaitComplete code callback.
+	 */
+	TMap<FBeamWaitHandle, FOnWaitCompleteCode> ActiveWaitHandleCodeCallbacks;
+
+	/**
 	 * @brief Given a set of contexts, waits until the frame they are all done and then calls OnComplete. 
 	 * @param RequestContexts The set of Request Contexts to wait for.
 	 * @param Operations The set of Operations to wait for.
@@ -121,6 +126,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="RequestContexts,Operations,Waits", BeamFlowFunction))
 	FBeamWaitHandle WaitAll(const TArray<FBeamRequestContext>& RequestContexts, const TArray<FBeamOperationHandle>& Operations, const TArray<FBeamWaitHandle>& Waits, FOnWaitComplete OnComplete);
 
+	FBeamWaitHandle CPP_WaitAll(const TArray<FBeamRequestContext>& RequestContexts, const TArray<FBeamOperationHandle>& Operations, const TArray<FBeamWaitHandle>& Waits, FOnWaitCompleteCode OnCompleteCode);
 
 	/**
 	 * @brief List of all active operations. See BeginOperation and MarkOperation____ functions.

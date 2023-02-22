@@ -10,7 +10,7 @@ void UBeginPurchaseResponse::DeserializeRequestResponse(UObject* RequestData, FS
 	BeamDeserialize(ResponseContent);	
 }
 
-void UBeginPurchaseResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UBeginPurchaseResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("txid"), Txid);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("access_token"), &AccessToken, Serializer);
@@ -22,8 +22,11 @@ void UBeginPurchaseResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("access_token"), &AccessToken, Serializer);		
 }
 
-void UBeginPurchaseResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UBeginPurchaseResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("txid")), Txid);
 	UBeamJsonUtils::DeserializeOptional<FString>("access_token", Bag, AccessToken, OuterOwner);
 }
+
+
+

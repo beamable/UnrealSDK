@@ -5,7 +5,7 @@
 
 
 
-void USKUDefinitions ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void USKUDefinitions::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("version"), Version);
 	Serializer->WriteValue(TEXT("created"), Created);
@@ -19,9 +19,12 @@ void USKUDefinitions::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seria
 	UBeamJsonUtils::SerializeArray<USKU*>(TEXT("definitions"), Definitions, Serializer);		
 }
 
-void USKUDefinitions ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void USKUDefinitions::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("version")), Version);
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("created")), Created);
 	UBeamJsonUtils::DeserializeArray<USKU*>(Bag->GetArrayField(TEXT("definitions")), Definitions, OuterOwner);
 }
+
+
+

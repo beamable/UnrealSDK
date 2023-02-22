@@ -5,7 +5,7 @@
 
 
 
-void UJoinRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UJoinRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);
 }
@@ -15,7 +15,10 @@ void UJoinRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);		
 }
 
-void UJoinRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UJoinRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	TournamentId = Bag->GetStringField(TEXT("tournamentId"));
 }
+
+
+

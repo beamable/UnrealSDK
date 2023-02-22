@@ -5,7 +5,7 @@
 
 
 
-void UGroupMetaData ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGroupMetaData::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("id"), Id);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("name"), &Name, Serializer);
@@ -19,9 +19,12 @@ void UGroupMetaData::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("tag"), &Tag, Serializer);		
 }
 
-void UGroupMetaData ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGroupMetaData::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("id")), Id);
 	UBeamJsonUtils::DeserializeOptional<FString>("name", Bag, Name, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("tag", Bag, Tag, OuterOwner);
 }
+
+
+

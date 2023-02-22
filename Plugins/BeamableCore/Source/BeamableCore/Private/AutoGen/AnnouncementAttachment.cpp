@@ -5,7 +5,7 @@
 
 
 
-void UAnnouncementAttachment ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UAnnouncementAttachment::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("symbol"), Symbol);
 	Serializer->WriteValue(TEXT("count"), Count);
@@ -21,10 +21,13 @@ void UAnnouncementAttachment::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 	UBeamJsonUtils::SerializeOptional<TArray<UAttachmentProperty*>, UAttachmentProperty*>(TEXT("properties"), &Properties, Serializer);		
 }
 
-void UAnnouncementAttachment ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UAnnouncementAttachment::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Symbol = Bag->GetStringField(TEXT("symbol"));
 	Count = Bag->GetIntegerField(TEXT("count"));
 	UBeamJsonUtils::DeserializeOptional<FString>("type", Bag, Type, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UAttachmentProperty*>, UAttachmentProperty*>("properties", Bag, Properties, OuterOwner);
 }
+
+
+

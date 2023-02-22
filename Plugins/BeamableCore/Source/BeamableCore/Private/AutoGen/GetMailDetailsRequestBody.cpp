@@ -5,7 +5,7 @@
 
 
 
-void UGetMailDetailsRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetMailDetailsRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("mid"), Mid);
 }
@@ -15,7 +15,10 @@ void UGetMailDetailsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 	Serializer->WriteValue(TEXT("mid"), Mid);		
 }
 
-void UGetMailDetailsRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetMailDetailsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("mid")), Mid);
 }
+
+
+

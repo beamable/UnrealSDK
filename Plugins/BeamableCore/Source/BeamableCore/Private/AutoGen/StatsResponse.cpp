@@ -10,7 +10,7 @@ void UStatsResponse::DeserializeRequestResponse(UObject* RequestData, FString Re
 	BeamDeserialize(ResponseContent);	
 }
 
-void UStatsResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UStatsResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("id"), &Id, Serializer);
 	UBeamJsonUtils::SerializeMap<FString>(TEXT("stats"), Stats, Serializer);
@@ -22,8 +22,11 @@ void UStatsResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 	UBeamJsonUtils::SerializeMap<FString>(TEXT("stats"), Stats, Serializer);		
 }
 
-void UStatsResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UStatsResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("id")), Id, OuterOwner);
 	UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("stats")), Stats, OuterOwner);
 }
+
+
+

@@ -15,7 +15,7 @@ struct BEAMABLECORE_API FBeamContentManifestId : public FBeamSemanticType
 
 	FBeamContentManifestId() = default;
 
-	FBeamContentManifestId(const FString& Pid) : AsString(Pid)
+	FBeamContentManifestId(const FString& ManifestName) : AsString(ManifestName)
 	{
 	}
 
@@ -52,3 +52,6 @@ struct BEAMABLECORE_API FBeamContentManifestId : public FBeamSemanticType
 		}
 	}
 };
+
+FORCEINLINE uint32 GetTypeHash(const FBeamContentManifestId& ContentManifestId) { return GetTypeHash(ContentManifestId.AsString); }
+

@@ -5,7 +5,7 @@
 
 
 
-void URewardCalendarDay ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void URewardCalendarDay::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UEntitlementGenerator*>(TEXT("obtain"), Obtain, Serializer);
 }
@@ -15,7 +15,10 @@ void URewardCalendarDay::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 	UBeamJsonUtils::SerializeArray<UEntitlementGenerator*>(TEXT("obtain"), Obtain, Serializer);		
 }
 
-void URewardCalendarDay ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void URewardCalendarDay::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UEntitlementGenerator*>(Bag->GetArrayField(TEXT("obtain")), Obtain, OuterOwner);
 }
+
+
+

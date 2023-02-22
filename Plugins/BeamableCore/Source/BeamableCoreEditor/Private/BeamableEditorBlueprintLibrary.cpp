@@ -31,11 +31,6 @@ void UBeamableEditorBlueprintLibrary::StartWidget(UWidgetBlueprint* Blueprint)
 }
 
 
-FString UBeamableEditorBlueprintLibrary::GetCidFromInt(int64 Cid)
-{
-	return FString::Printf(TEXT("%llu"), Cid);
-}
-
 void UBeamableEditorBlueprintLibrary::GetRealmsForProject(const FBeamCustomerProjectData& CustomerProjectData, const FString ProjectName, TArray<FBeamProjectRealmData>& ProjectRealms)
 {
 	for (const auto& Realm : CustomerProjectData.AllRealms)

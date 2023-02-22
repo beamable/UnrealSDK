@@ -10,7 +10,7 @@ void UGroupUser::DeserializeRequestResponse(UObject* RequestData, FString Respon
 	BeamDeserialize(ResponseContent);	
 }
 
-void UGroupUser ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGroupUser::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("gamerTag"), GamerTag);
 	Serializer->WriteValue(TEXT("updated"), Updated);
@@ -30,7 +30,7 @@ void UGroupUser::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer
 	UBeamJsonUtils::SerializeOptional<TArray<UGroupScoreBinding*>, UGroupScoreBinding*>(TEXT("scores"), &Scores, Serializer);		
 }
 
-void UGroupUser ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGroupUser::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("gamerTag")), GamerTag);
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("updated")), Updated);
@@ -39,3 +39,6 @@ void UGroupUser ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	UBeamJsonUtils::DeserializeOptional<TArray<UInFlightMessage*>, UInFlightMessage*>("inFlight", Bag, InFlight, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UGroupScoreBinding*>, UGroupScoreBinding*>("scores", Bag, Scores, OuterOwner);
 }
+
+
+

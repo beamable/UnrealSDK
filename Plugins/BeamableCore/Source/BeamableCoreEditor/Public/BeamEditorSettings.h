@@ -58,6 +58,18 @@ class BEAMABLECOREEDITOR_API UBeamEditorSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
 public:
+	/**
+	 * @brief User-defined path to where LocalContentManifests (UDataTables) that are supposed to be included in the build are stored.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
+	TArray<FDirectoryPath> CookedManifestsPath;
+
+	/**
+	 * @brief User-defined path to where LocalContentManifests (UDataTables) that are NOT supposed to be included in the build are stored.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
+	TArray<FDirectoryPath> UncookedManifestsPath;
+
 	
 	
 
@@ -69,7 +81,6 @@ public:
 
 	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="UI/UX")
 	TMap<FString, FLinearColor> OptionalTypePinColors;
-	
 
 
 	/* Soft path will be converted to content reference before use */

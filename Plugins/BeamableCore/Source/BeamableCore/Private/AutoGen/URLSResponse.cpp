@@ -10,7 +10,7 @@ void UURLSResponse::DeserializeRequestResponse(UObject* RequestData, FString Res
 	BeamDeserialize(ResponseContent);	
 }
 
-void UURLSResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UURLSResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UURLResponse*>(TEXT("response"), Response, Serializer);
 }
@@ -20,7 +20,10 @@ void UURLSResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 	UBeamJsonUtils::SerializeArray<UURLResponse*>(TEXT("response"), Response, Serializer);		
 }
 
-void UURLSResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UURLSResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UURLResponse*>(Bag->GetArrayField(TEXT("response")), Response, OuterOwner);
 }
+
+
+

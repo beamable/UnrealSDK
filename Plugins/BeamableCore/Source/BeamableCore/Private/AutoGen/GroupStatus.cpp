@@ -5,7 +5,7 @@
 
 
 
-void UGroupStatus ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGroupStatus::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("lastUpdateCycle"), LastUpdateCycle);
 	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);
@@ -27,7 +27,7 @@ void UGroupStatus::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 	UBeamJsonUtils::SerializeOptional<TArray<UCompletedStatus*>, UCompletedStatus*>(TEXT("completed"), &Completed, Serializer);		
 }
 
-void UGroupStatus ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGroupStatus::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	LastUpdateCycle = Bag->GetIntegerField(TEXT("lastUpdateCycle"));
 	TournamentId = Bag->GetStringField(TEXT("tournamentId"));
@@ -37,3 +37,6 @@ void UGroupStatus ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag
 	ContentId = Bag->GetStringField(TEXT("contentId"));
 	UBeamJsonUtils::DeserializeOptional<TArray<UCompletedStatus*>, UCompletedStatus*>("completed", Bag, Completed, OuterOwner);
 }
+
+
+

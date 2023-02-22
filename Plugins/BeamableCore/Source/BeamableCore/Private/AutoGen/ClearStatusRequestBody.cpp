@@ -5,7 +5,7 @@
 
 
 
-void UClearStatusRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UClearStatusRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("store"), Store);
 }
@@ -15,7 +15,10 @@ void UClearStatusRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 	Serializer->WriteValue(TEXT("store"), Store);		
 }
 
-void UClearStatusRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UClearStatusRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Store = Bag->GetStringField(TEXT("store"));
 }
+
+
+

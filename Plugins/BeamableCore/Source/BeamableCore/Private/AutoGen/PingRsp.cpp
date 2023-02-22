@@ -10,7 +10,7 @@ void UPingRsp::DeserializeRequestResponse(UObject* RequestData, FString Response
 	BeamDeserialize(ResponseContent);	
 }
 
-void UPingRsp ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UPingRsp::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("keepAlive"), bKeepAlive);
 }
@@ -20,7 +20,10 @@ void UPingRsp::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) 
 	Serializer->WriteValue(TEXT("keepAlive"), bKeepAlive);		
 }
 
-void UPingRsp ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UPingRsp::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bKeepAlive = Bag->GetBoolField(TEXT("keepAlive"));
 }
+
+
+

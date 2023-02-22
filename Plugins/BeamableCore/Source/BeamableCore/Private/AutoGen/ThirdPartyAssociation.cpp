@@ -5,7 +5,7 @@
 
 
 
-void UThirdPartyAssociation ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UThirdPartyAssociation::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("name"), Name);
 	Serializer->WriteValue(TEXT("userAppId"), UserAppId);
@@ -25,7 +25,7 @@ void UThirdPartyAssociation::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("userBusinessId"), &UserBusinessId, Serializer);		
 }
 
-void UThirdPartyAssociation ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UThirdPartyAssociation::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Name = Bag->GetStringField(TEXT("name"));
 	UserAppId = Bag->GetStringField(TEXT("userAppId"));
@@ -34,3 +34,6 @@ void UThirdPartyAssociation ::BeamDeserializeProperties(const TSharedPtr<FJsonOb
 	UBeamJsonUtils::DeserializeOptional<FString>("email", Bag, Email, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("userBusinessId", Bag, UserBusinessId, OuterOwner);
 }
+
+
+

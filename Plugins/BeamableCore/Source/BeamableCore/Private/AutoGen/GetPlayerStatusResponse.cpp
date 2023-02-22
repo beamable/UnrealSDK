@@ -10,7 +10,7 @@ void UGetPlayerStatusResponse::DeserializeRequestResponse(UObject* RequestData, 
 	BeamDeserialize(ResponseContent);	
 }
 
-void UGetPlayerStatusResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetPlayerStatusResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UPlayerStatus*>(TEXT("statuses"), Statuses, Serializer);
 }
@@ -20,7 +20,10 @@ void UGetPlayerStatusResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 	UBeamJsonUtils::SerializeArray<UPlayerStatus*>(TEXT("statuses"), Statuses, Serializer);		
 }
 
-void UGetPlayerStatusResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetPlayerStatusResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UPlayerStatus*>(Bag->GetArrayField(TEXT("statuses")), Statuses, OuterOwner);
 }
+
+
+

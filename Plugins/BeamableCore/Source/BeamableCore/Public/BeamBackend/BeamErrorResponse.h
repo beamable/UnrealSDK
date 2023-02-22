@@ -14,7 +14,7 @@ struct FBeamErrorResponse
 	 * @brief The HTTP Status Code. 
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, DisplayName="Status")
-	int64 status;
+	int64 status = 400;
 
 	/**
 	 * @brief Beamable's own Error Code.

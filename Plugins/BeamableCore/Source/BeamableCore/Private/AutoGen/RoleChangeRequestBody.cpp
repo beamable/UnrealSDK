@@ -5,7 +5,7 @@
 
 
 
-void URoleChangeRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void URoleChangeRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("gamerTag"), GamerTag);
 	Serializer->WriteValue(TEXT("role"), Role);
@@ -19,9 +19,12 @@ void URoleChangeRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("subGroup"), &SubGroup, Serializer);		
 }
 
-void URoleChangeRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void URoleChangeRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("gamerTag")), GamerTag);
 	Role = Bag->GetStringField(TEXT("role"));
 	UBeamJsonUtils::DeserializeOptional<int64>("subGroup", Bag, SubGroup, OuterOwner);
 }
+
+
+

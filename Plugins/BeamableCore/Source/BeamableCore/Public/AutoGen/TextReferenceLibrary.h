@@ -18,8 +18,8 @@ public:
 	static FString TextReferenceToJsonString(const UTextReference* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make TextReference", meta=(DefaultToSelf="Outer", AdvancedDisplay="Checksum, LastChanged, Created, Outer", NativeMakeFunc))
-	static UTextReference* Make(FString ContentPrefix, FString Uri, FString Version, FBeamContentId Id, FString Type, FString Visibility, TArray<FString> Tags, FOptionalString Checksum, FOptionalInt64 LastChanged, FOptionalInt64 Created, UObject* Outer);
+	static UTextReference* Make(FString Uri, FString Version, FBeamContentId Id, FString Type, FString Visibility, TArray<FString> Tags, FOptionalString Checksum, FOptionalInt64 LastChanged, FOptionalInt64 Created, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break TextReference", meta=(NativeBreakFunc))
-	static void Break(const UTextReference* Serializable, FString& ContentPrefix, FString& Uri, FString& Version, FBeamContentId& Id, FString& Type, FString& Visibility, TArray<FString>& Tags, FOptionalString& Checksum, FOptionalInt64& LastChanged, FOptionalInt64& Created);
+	static void Break(const UTextReference* Serializable, FString& Uri, FString& Version, FBeamContentId& Id, FString& Type, FString& Visibility, TArray<FString>& Tags, FOptionalString& Checksum, FOptionalInt64& LastChanged, FOptionalInt64& Created);
 };

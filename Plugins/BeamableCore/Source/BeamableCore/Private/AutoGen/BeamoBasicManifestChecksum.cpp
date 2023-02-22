@@ -5,7 +5,7 @@
 
 
 
-void UBeamoBasicManifestChecksum ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UBeamoBasicManifestChecksum::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("id"), Id);
 	Serializer->WriteValue(TEXT("checksum"), Checksum);
@@ -19,9 +19,12 @@ void UBeamoBasicManifestChecksum::BeamSerializeProperties(TUnrealPrettyJsonSeria
 	Serializer->WriteValue(TEXT("createdAt"), CreatedAt);		
 }
 
-void UBeamoBasicManifestChecksum ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UBeamoBasicManifestChecksum::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Id = Bag->GetStringField(TEXT("id"));
 	Checksum = Bag->GetStringField(TEXT("checksum"));
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("createdAt")), CreatedAt);
 }
+
+
+

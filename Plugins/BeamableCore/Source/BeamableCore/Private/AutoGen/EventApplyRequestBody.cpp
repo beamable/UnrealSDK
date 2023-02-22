@@ -5,7 +5,7 @@
 
 
 
-void UEventApplyRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UEventApplyRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeUObject<UEvent*>("content", Content, Serializer);
 }
@@ -15,7 +15,10 @@ void UEventApplyRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 	UBeamJsonUtils::SerializeUObject<UEvent*>("content", Content, Serializer);		
 }
 
-void UEventApplyRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UEventApplyRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeUObject<UEvent*>("content", Bag, Content, OuterOwner);
 }
+
+
+

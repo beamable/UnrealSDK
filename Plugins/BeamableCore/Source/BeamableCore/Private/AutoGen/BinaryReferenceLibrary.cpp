@@ -22,11 +22,10 @@ FString UBinaryReferenceLibrary::BinaryReferenceToJsonString(const UBinaryRefere
 	return Result;
 }	
 
-UBinaryReference* UBinaryReferenceLibrary::Make(FString UploadMethod, FString ContentPrefix, FString Uri, FString Version, FBeamContentId Id, FString UploadUri, FString Type, EContentVisibility Visibility, TArray<FString> Tags, FOptionalString Checksum, FOptionalInt64 LastChanged, FOptionalInt64 Created, UObject* Outer)
+UBinaryReference* UBinaryReferenceLibrary::Make(FString UploadMethod, FString Uri, FString Version, FBeamContentId Id, FString UploadUri, FString Type, FString Visibility, TArray<FString> Tags, FOptionalString Checksum, FOptionalString LastChanged, FOptionalString Created, UObject* Outer)
 {
 	auto Serializable = NewObject<UBinaryReference>(Outer);
 	Serializable->UploadMethod = UploadMethod;
-	Serializable->ContentPrefix = ContentPrefix;
 	Serializable->Uri = Uri;
 	Serializable->Version = Version;
 	Serializable->Id = Id;
@@ -41,10 +40,9 @@ UBinaryReference* UBinaryReferenceLibrary::Make(FString UploadMethod, FString Co
 	return Serializable;
 }
 
-void UBinaryReferenceLibrary::Break(const UBinaryReference* Serializable, FString& UploadMethod, FString& ContentPrefix, FString& Uri, FString& Version, FBeamContentId& Id, FString& UploadUri, FString& Type, EContentVisibility& Visibility, TArray<FString>& Tags, FOptionalString& Checksum, FOptionalInt64& LastChanged, FOptionalInt64& Created)
+void UBinaryReferenceLibrary::Break(const UBinaryReference* Serializable, FString& UploadMethod, FString& Uri, FString& Version, FBeamContentId& Id, FString& UploadUri, FString& Type, FString& Visibility, TArray<FString>& Tags, FOptionalString& Checksum, FOptionalString& LastChanged, FOptionalString& Created)
 {
 	UploadMethod = Serializable->UploadMethod;
-	ContentPrefix = Serializable->ContentPrefix;
 	Uri = Serializable->Uri;
 	Version = Serializable->Version;
 	Id = Serializable->Id;

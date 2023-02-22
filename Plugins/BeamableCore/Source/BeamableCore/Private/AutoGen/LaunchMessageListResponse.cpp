@@ -10,7 +10,7 @@ void ULaunchMessageListResponse::DeserializeRequestResponse(UObject* RequestData
 	BeamDeserialize(ResponseContent);	
 }
 
-void ULaunchMessageListResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void ULaunchMessageListResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("files"), Files, Serializer);
 }
@@ -20,7 +20,10 @@ void ULaunchMessageListResponse::BeamSerializeProperties(TUnrealPrettyJsonSerial
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("files"), Files, Serializer);		
 }
 
-void ULaunchMessageListResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void ULaunchMessageListResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("files")), Files, OuterOwner);
 }
+
+
+

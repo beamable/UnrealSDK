@@ -112,5 +112,5 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle FrictionlessAuthentication(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext = nullptr);
-	void FetchAndUpdateAccountId(FUserSlot UserSlot, FBeamOperationHandle Handle, UObject* CallingContext);
+
 };

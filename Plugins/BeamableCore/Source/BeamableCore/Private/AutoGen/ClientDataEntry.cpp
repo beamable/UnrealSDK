@@ -5,7 +5,7 @@
 
 
 
-void UClientDataEntry ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UClientDataEntry::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("name"), Name);
 	Serializer->WriteValue(TEXT("value"), Value);
@@ -17,8 +17,11 @@ void UClientDataEntry::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 	Serializer->WriteValue(TEXT("value"), Value);		
 }
 
-void UClientDataEntry ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UClientDataEntry::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Name = Bag->GetStringField(TEXT("name"));
 	Value = Bag->GetStringField(TEXT("value"));
 }
+
+
+

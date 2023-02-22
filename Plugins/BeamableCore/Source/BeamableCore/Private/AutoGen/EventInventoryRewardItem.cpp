@@ -5,7 +5,7 @@
 
 
 
-void UEventInventoryRewardItem ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UEventInventoryRewardItem::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("id"), Id);
 	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("properties"), &Properties, Serializer);
@@ -17,8 +17,11 @@ void UEventInventoryRewardItem::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("properties"), &Properties, Serializer);		
 }
 
-void UEventInventoryRewardItem ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UEventInventoryRewardItem::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Id = Bag->GetStringField(TEXT("id"));
 	UBeamJsonUtils::DeserializeOptional<TMap<FString, FString>, FString>("properties", Bag, Properties, OuterOwner);
 }
+
+
+

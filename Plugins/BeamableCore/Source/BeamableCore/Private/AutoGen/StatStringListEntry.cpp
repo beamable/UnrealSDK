@@ -5,7 +5,7 @@
 
 
 
-void UStatStringListEntry ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UStatStringListEntry::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("k"), K);
 	Serializer->WriteValue(TEXT("v"), V);
@@ -17,8 +17,11 @@ void UStatStringListEntry::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 	Serializer->WriteValue(TEXT("v"), V);		
 }
 
-void UStatStringListEntry ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UStatStringListEntry::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	K = Bag->GetStringField(TEXT("k"));
 	V = Bag->GetStringField(TEXT("v"));
 }
+
+
+

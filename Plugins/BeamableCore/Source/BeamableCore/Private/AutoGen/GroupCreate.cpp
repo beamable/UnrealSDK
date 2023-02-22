@@ -5,7 +5,7 @@
 
 
 
-void UGroupCreate ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGroupCreate::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("name"), Name);
 	Serializer->WriteValue(TEXT("enrollmentType"), EnrollmentType);
@@ -33,7 +33,7 @@ void UGroupCreate::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 	UBeamJsonUtils::SerializeOptional<TArray<UGroupScoreBinding*>, UGroupScoreBinding*>(TEXT("scores"), &Scores, Serializer);		
 }
 
-void UGroupCreate ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGroupCreate::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Name = Bag->GetStringField(TEXT("name"));
 	EnrollmentType = Bag->GetStringField(TEXT("enrollmentType"));
@@ -46,3 +46,6 @@ void UGroupCreate ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag
 	UBeamJsonUtils::DeserializeOptional<int64>("group", Bag, Group, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UGroupScoreBinding*>, UGroupScoreBinding*>("scores", Bag, Scores, OuterOwner);
 }
+
+
+

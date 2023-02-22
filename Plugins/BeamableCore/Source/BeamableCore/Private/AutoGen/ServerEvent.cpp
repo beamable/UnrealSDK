@@ -5,7 +5,7 @@
 
 
 
-void UServerEvent ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UServerEvent::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("event"), Event);
 	Serializer->WriteValue(TEXT("toAll"), bToAll);
@@ -19,9 +19,12 @@ void UServerEvent::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("payload"), &Payload, Serializer);		
 }
 
-void UServerEvent ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UServerEvent::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Event = Bag->GetStringField(TEXT("event"));
 	bToAll = Bag->GetBoolField(TEXT("toAll"));
 	UBeamJsonUtils::DeserializeOptional<FString>("payload", Bag, Payload, OuterOwner);
 }
+
+
+

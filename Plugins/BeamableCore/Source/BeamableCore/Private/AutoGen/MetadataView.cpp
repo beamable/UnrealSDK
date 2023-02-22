@@ -5,7 +5,7 @@
 
 
 
-void UMetadataView ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UMetadataView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("cohorted"), bCohorted);
 	Serializer->WriteValue(TEXT("frozen"), bFrozen);
@@ -33,7 +33,7 @@ void UMetadataView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("derivatives"), &Derivatives, Serializer);		
 }
 
-void UMetadataView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UMetadataView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bCohorted = Bag->GetBoolField(TEXT("cohorted"));
 	bFrozen = Bag->GetBoolField(TEXT("frozen"));
@@ -46,3 +46,6 @@ void UMetadataView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Ba
 	UBeamJsonUtils::DeserializeOptional<int64>("expiration", Bag, Expiration, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("derivatives", Bag, Derivatives, OuterOwner);
 }
+
+
+

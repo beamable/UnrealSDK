@@ -5,7 +5,7 @@
 
 
 
-void UOfferDefinition ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UOfferDefinition::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("symbol"), Symbol);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("titles"), Titles, Serializer);
@@ -31,7 +31,7 @@ void UOfferDefinition::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 	UBeamJsonUtils::SerializeOptional<TArray<UCurrencyChange*>, UCurrencyChange*>(TEXT("obtainCurrency"), &ObtainCurrency, Serializer);		
 }
 
-void UOfferDefinition ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UOfferDefinition::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Symbol = Bag->GetStringField(TEXT("symbol"));
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("titles")), Titles, OuterOwner);
@@ -43,3 +43,6 @@ void UOfferDefinition ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>&
 	UBeamJsonUtils::DeserializeOptional<TArray<UItemCreateRequestBody*>, UItemCreateRequestBody*>("obtainItems", Bag, ObtainItems, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UCurrencyChange*>, UCurrencyChange*>("obtainCurrency", Bag, ObtainCurrency, OuterOwner);
 }
+
+
+

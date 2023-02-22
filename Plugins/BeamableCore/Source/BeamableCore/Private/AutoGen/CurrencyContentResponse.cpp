@@ -10,7 +10,7 @@ void UCurrencyContentResponse::DeserializeRequestResponse(UObject* RequestData, 
 	BeamDeserialize(ResponseContent);	
 }
 
-void UCurrencyContentResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UCurrencyContentResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UCurrencyArchetype*>(TEXT("content"), Content, Serializer);
 }
@@ -20,7 +20,10 @@ void UCurrencyContentResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 	UBeamJsonUtils::SerializeArray<UCurrencyArchetype*>(TEXT("content"), Content, Serializer);		
 }
 
-void UCurrencyContentResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UCurrencyContentResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UCurrencyArchetype*>(Bag->GetArrayField(TEXT("content")), Content, OuterOwner);
 }
+
+
+

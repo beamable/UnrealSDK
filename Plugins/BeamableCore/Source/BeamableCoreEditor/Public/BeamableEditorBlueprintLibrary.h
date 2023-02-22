@@ -17,9 +17,6 @@ public:
 	static void StartWidget(UWidgetBlueprint* Blueprint);
 
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor")
-	static FString GetCidFromInt(int64 Cid);
-
-	UFUNCTION(BlueprintCallable, Category="Beam|Editor")
 	static void GetRealmsForProject(const FBeamCustomerProjectData& ProjectData, const FString ProjectName, TArray<FBeamProjectRealmData>& ProjectRealms);	
 
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor")

@@ -5,7 +5,7 @@
 
 
 
-void UNetworkSerializable ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UNetworkSerializable::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	
 }
@@ -15,7 +15,10 @@ void UNetworkSerializable::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 			
 }
 
-void UNetworkSerializable ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UNetworkSerializable::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	
 }
+
+
+

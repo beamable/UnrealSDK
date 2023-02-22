@@ -10,7 +10,7 @@ void UGroupMembershipResponse::DeserializeRequestResponse(UObject* RequestData, 
 	BeamDeserialize(ResponseContent);	
 }
 
-void UGroupMembershipResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGroupMembershipResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("member"), bMember);
 	Serializer->WriteValue(TEXT("type"), UGroupTypeLibrary::GroupTypeToSerializationName(Type));
@@ -28,7 +28,7 @@ void UGroupMembershipResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("gamerTag"), &GamerTag, Serializer);		
 }
 
-void UGroupMembershipResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGroupMembershipResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bMember = Bag->GetBoolField(TEXT("member"));
 	Type = UGroupTypeLibrary::SerializationNameToGroupType(Bag->GetStringField(TEXT("type")));
@@ -36,3 +36,6 @@ void UGroupMembershipResponse ::BeamDeserializeProperties(const TSharedPtr<FJson
 	UBeamJsonUtils::DeserializeArray<int64>(Bag->GetArrayField(TEXT("subGroups")), SubGroups, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("gamerTag", Bag, GamerTag, OuterOwner);
 }
+
+
+

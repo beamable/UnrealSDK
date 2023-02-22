@@ -5,7 +5,7 @@
 
 
 
-void UUpdatePlayerStatusRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UUpdatePlayerStatusRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("playerId"), PlayerId);
 	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);
@@ -19,9 +19,12 @@ void UUpdatePlayerStatusRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSe
 	UBeamJsonUtils::SerializeUObject<UPlayerStatusUpdate*>("update", Update, Serializer);		
 }
 
-void UUpdatePlayerStatusRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UUpdatePlayerStatusRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("playerId")), PlayerId);
 	TournamentId = Bag->GetStringField(TEXT("tournamentId"));
 	UBeamJsonUtils::DeserializeUObject<UPlayerStatusUpdate*>("update", Bag, Update, OuterOwner);
 }
+
+
+

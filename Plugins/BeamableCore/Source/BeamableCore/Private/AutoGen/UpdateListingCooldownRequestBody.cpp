@@ -5,7 +5,7 @@
 
 
 
-void UUpdateListingCooldownRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UUpdateListingCooldownRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("symbol"), Symbol);
 	Serializer->WriteValue(TEXT("cooldownReduction"), CooldownReduction);
@@ -17,8 +17,11 @@ void UUpdateListingCooldownRequestBody::BeamSerializeProperties(TUnrealPrettyJso
 	Serializer->WriteValue(TEXT("cooldownReduction"), CooldownReduction);		
 }
 
-void UUpdateListingCooldownRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UUpdateListingCooldownRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Symbol = Bag->GetStringField(TEXT("symbol"));
 	CooldownReduction = Bag->GetIntegerField(TEXT("cooldownReduction"));
 }
+
+
+

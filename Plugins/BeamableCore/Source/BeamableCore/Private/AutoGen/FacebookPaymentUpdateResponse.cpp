@@ -5,7 +5,7 @@
 
 
 
-void UFacebookPaymentUpdateResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UFacebookPaymentUpdateResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("result"), Result);
 }
@@ -15,7 +15,10 @@ void UFacebookPaymentUpdateResponse::BeamSerializeProperties(TUnrealPrettyJsonSe
 	Serializer->WriteValue(TEXT("result"), Result);		
 }
 
-void UFacebookPaymentUpdateResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UFacebookPaymentUpdateResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Result = Bag->GetStringField(TEXT("result"));
 }
+
+
+

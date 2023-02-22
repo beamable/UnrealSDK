@@ -5,7 +5,7 @@
 
 
 
-void UServiceTemplate ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UServiceTemplate::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("id"), Id);
 }
@@ -15,7 +15,10 @@ void UServiceTemplate::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 	Serializer->WriteValue(TEXT("id"), Id);		
 }
 
-void UServiceTemplate ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UServiceTemplate::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Id = Bag->GetStringField(TEXT("id"));
 }
+
+
+

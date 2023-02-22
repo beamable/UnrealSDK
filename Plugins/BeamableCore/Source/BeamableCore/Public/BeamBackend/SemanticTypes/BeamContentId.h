@@ -15,7 +15,11 @@ struct BEAMABLECORE_API FBeamContentId : public FBeamSemanticType
 
 	FBeamContentId() = default;
 
-	FBeamContentId(const FString& Pid) : AsString(Pid)
+	FBeamContentId(const FName& ContentId) : AsString(ContentId.ToString())
+	{
+	}
+	
+	FBeamContentId(const FString& ContentId) : AsString(ContentId)
 	{
 	}
 
@@ -47,8 +51,10 @@ struct BEAMABLECORE_API FBeamContentId : public FBeamSemanticType
 	{
 		if (RepresentationTypeName == TNameOf<FString>::GetName())
 		{
-			const auto Pid = *((FString*)Data);
-			AsString = Pid;
+			const auto ContentId = *((FString*)Data);
+			AsString = ContentId;
 		}
 	}
 };
+
+FORCEINLINE uint32 GetTypeHash(const FBeamContentId& ContentId) { return GetTypeHash(ContentId.AsString); }

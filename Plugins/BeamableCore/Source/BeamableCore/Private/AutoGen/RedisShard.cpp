@@ -5,7 +5,7 @@
 
 
 
-void URedisShard ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void URedisShard::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("shardId"), ShardId);
 	Serializer->WriteValue(TEXT("masterHost"), MasterHost);
@@ -19,9 +19,12 @@ void URedisShard::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serialize
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("slaveHosts"), SlaveHosts, Serializer);		
 }
 
-void URedisShard ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void URedisShard::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	ShardId = Bag->GetIntegerField(TEXT("shardId"));
 	MasterHost = Bag->GetStringField(TEXT("masterHost"));
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("slaveHosts")), SlaveHosts, OuterOwner);
 }
+
+
+

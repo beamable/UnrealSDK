@@ -5,7 +5,7 @@
 
 
 
-void ULeaderboardAddRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void ULeaderboardAddRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("score"), Score);
 	Serializer->WriteValue(TEXT("id"), Id);
@@ -25,7 +25,7 @@ void ULeaderboardAddRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("stats"), &Stats, Serializer);		
 }
 
-void ULeaderboardAddRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void ULeaderboardAddRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Score = Bag->GetNumberField(TEXT("score"));
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("id")), Id);
@@ -34,3 +34,6 @@ void ULeaderboardAddRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJs
 	UBeamJsonUtils::DeserializeOptional<double>("minScore", Bag, MinScore, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TMap<FString, FString>, FString>("stats", Bag, Stats, OuterOwner);
 }
+
+
+

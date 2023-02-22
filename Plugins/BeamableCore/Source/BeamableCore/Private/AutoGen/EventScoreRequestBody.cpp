@@ -5,7 +5,7 @@
 
 
 
-void UEventScoreRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UEventScoreRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("eventId"), EventId);
 	Serializer->WriteValue(TEXT("score"), Score);
@@ -21,10 +21,13 @@ void UEventScoreRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("stats"), &Stats, Serializer);		
 }
 
-void UEventScoreRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UEventScoreRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	EventId = Bag->GetStringField(TEXT("eventId"));
 	Score = Bag->GetNumberField(TEXT("score"));
 	UBeamJsonUtils::DeserializeOptional<bool>("increment", Bag, bIncrement, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TMap<FString, FString>, FString>("stats", Bag, Stats, OuterOwner);
 }
+
+
+

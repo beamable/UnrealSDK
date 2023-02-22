@@ -5,7 +5,7 @@
 
 
 
-void UCompletePurchaseRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UCompletePurchaseRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("txid"), Txid);
 	Serializer->WriteValue(TEXT("receipt"), Receipt);
@@ -21,10 +21,13 @@ void UCompletePurchaseRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeri
 	Serializer->WriteValue(TEXT("isoCurrencySymbol"), IsoCurrencySymbol);		
 }
 
-void UCompletePurchaseRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UCompletePurchaseRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("txid")), Txid);
 	Receipt = Bag->GetStringField(TEXT("receipt"));
 	PriceInLocalCurrency = Bag->GetStringField(TEXT("priceInLocalCurrency"));
 	IsoCurrencySymbol = Bag->GetStringField(TEXT("isoCurrencySymbol"));
 }
+
+
+

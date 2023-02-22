@@ -5,7 +5,7 @@
 
 
 
-void UGetSocialStatusesRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetSocialStatusesRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("playerIds"), PlayerIds, Serializer);
 }
@@ -15,7 +15,10 @@ void UGetSocialStatusesRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSer
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("playerIds"), PlayerIds, Serializer);		
 }
 
-void UGetSocialStatusesRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetSocialStatusesRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("playerIds")), PlayerIds, OuterOwner);
 }
+
+
+

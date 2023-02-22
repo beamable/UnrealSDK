@@ -22,10 +22,9 @@ FString UTextReferenceLibrary::TextReferenceToJsonString(const UTextReference* S
 	return Result;
 }	
 
-UTextReference* UTextReferenceLibrary::Make(FString ContentPrefix, FString Uri, FString Version, FBeamContentId Id, FString Type, FString Visibility, TArray<FString> Tags, FOptionalString Checksum, FOptionalInt64 LastChanged, FOptionalInt64 Created, UObject* Outer)
+UTextReference* UTextReferenceLibrary::Make(FString Uri, FString Version, FBeamContentId Id, FString Type, FString Visibility, TArray<FString> Tags, FOptionalString Checksum, FOptionalInt64 LastChanged, FOptionalInt64 Created, UObject* Outer)
 {
 	auto Serializable = NewObject<UTextReference>(Outer);
-	Serializable->ContentPrefix = ContentPrefix;
 	Serializable->Uri = Uri;
 	Serializable->Version = Version;
 	Serializable->Id = Id;
@@ -39,9 +38,8 @@ UTextReference* UTextReferenceLibrary::Make(FString ContentPrefix, FString Uri, 
 	return Serializable;
 }
 
-void UTextReferenceLibrary::Break(const UTextReference* Serializable, FString& ContentPrefix, FString& Uri, FString& Version, FBeamContentId& Id, FString& Type, FString& Visibility, TArray<FString>& Tags, FOptionalString& Checksum, FOptionalInt64& LastChanged, FOptionalInt64& Created)
+void UTextReferenceLibrary::Break(const UTextReference* Serializable, FString& Uri, FString& Version, FBeamContentId& Id, FString& Type, FString& Visibility, TArray<FString>& Tags, FOptionalString& Checksum, FOptionalInt64& LastChanged, FOptionalInt64& Created)
 {
-	ContentPrefix = Serializable->ContentPrefix;
 	Uri = Serializable->Uri;
 	Version = Serializable->Version;
 	Id = Serializable->Id;

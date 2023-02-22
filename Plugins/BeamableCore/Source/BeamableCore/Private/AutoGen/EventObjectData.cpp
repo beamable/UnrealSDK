@@ -10,7 +10,7 @@ void UEventObjectData::DeserializeRequestResponse(UObject* RequestData, FString 
 	BeamDeserialize(ResponseContent);	
 }
 
-void UEventObjectData ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UEventObjectData::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("done"), bDone);
 	Serializer->WriteValue(TEXT("running"), bRunning);
@@ -52,7 +52,7 @@ void UEventObjectData::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 	UBeamJsonUtils::SerializeOptional<TArray<UEventPhaseTime*>, UEventPhaseTime*>(TEXT("phaseTimes"), &PhaseTimes, Serializer);		
 }
 
-void UEventObjectData ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UEventObjectData::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bDone = Bag->GetBoolField(TEXT("done"));
 	bRunning = Bag->GetBoolField(TEXT("running"));
@@ -72,3 +72,6 @@ void UEventObjectData ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>&
 	UBeamJsonUtils::DeserializeOptional<TArray<UInFlightMessage*>, UInFlightMessage*>("inFlight", Bag, InFlight, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UEventPhaseTime*>, UEventPhaseTime*>("phaseTimes", Bag, PhaseTimes, OuterOwner);
 }
+
+
+

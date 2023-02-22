@@ -5,7 +5,7 @@
 
 
 
-void UServiceRoute ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UServiceRoute::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("service"), Service);
 	Serializer->WriteValue(TEXT("endpoint"), Endpoint);
@@ -19,9 +19,12 @@ void UServiceRoute::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 	Serializer->WriteValue(TEXT("serviceTypeStr"), UWebhookServiceTypeLibrary::WebhookServiceTypeToSerializationName(ServiceTypeStr));		
 }
 
-void UServiceRoute ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UServiceRoute::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Service = Bag->GetStringField(TEXT("service"));
 	Endpoint = Bag->GetStringField(TEXT("endpoint"));
 	ServiceTypeStr = UWebhookServiceTypeLibrary::SerializationNameToWebhookServiceType(Bag->GetStringField(TEXT("serviceTypeStr")));
 }
+
+
+

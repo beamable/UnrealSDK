@@ -38,13 +38,13 @@ struct BEAMABLECORE_API FBeamCacheConfig
 	 * @brief The Mode of this cache configuration.
 	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Beam")
-	TEnumAsByte<EBeamCacheMode> Mode;
+	TEnumAsByte<EBeamCacheMode> Mode = EBeamCacheMode::Disabled;
 
 	/**
 	 * @brief The amount of time in seconds in which the cache will be invalidated (or checked for invalidation when in ConditionalOnTime mode).
 	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Beam")
-	double Time;
+	double Time = 0.0;
 
 	/**
 	 * @brief The delegate to run to check for invalidation (only relevant if in ConditionalOnTime mode).

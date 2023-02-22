@@ -5,7 +5,7 @@
 
 
 
-void UFacebookPaymentUpdateRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UFacebookPaymentUpdateRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("object"), Object);
 	UBeamJsonUtils::SerializeArray<UFacebookUpdatedEntry*>(TEXT("entry"), Entry, Serializer);
@@ -17,8 +17,11 @@ void UFacebookPaymentUpdateRequestBody::BeamSerializeProperties(TUnrealPrettyJso
 	UBeamJsonUtils::SerializeArray<UFacebookUpdatedEntry*>(TEXT("entry"), Entry, Serializer);		
 }
 
-void UFacebookPaymentUpdateRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UFacebookPaymentUpdateRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Object = Bag->GetStringField(TEXT("object"));
 	UBeamJsonUtils::DeserializeArray<UFacebookUpdatedEntry*>(Bag->GetArrayField(TEXT("entry")), Entry, OuterOwner);
 }
+
+
+

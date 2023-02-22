@@ -41,10 +41,7 @@ void UBeamBackend::Initialize(FSubsystemCollectionBase& Collection)
 
 	// Set up the retry ticking to run at 15 ticks / second TODO: expose these as settings
 	RetryQueueTickHandle = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &UBeamBackend::TickRetryQueue), 4 / 60);
-
-	// Set up the cleanup ticking to run at 1 tick every 5 minutes TODO: expose these as settings
-	CleanupRequestsTickHandle = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &UBeamBackend::TickCleanUp), 60 * 5);
-
+	
 	// Get subsystem dependency...
 	BeamEnvironment = Cast<UBeamEnvironment>(Collection.InitializeDependency(UBeamEnvironment::StaticClass()));
 	BeamUserSlots = Cast<UBeamUserSlots>(Collection.InitializeDependency(UBeamUserSlots::StaticClass()));
@@ -74,9 +71,6 @@ void UBeamBackend::Initialize(FSubsystemCollectionBase& Collection)
 void UBeamBackend::Deinitialize()
 {
 	FTSTicker::GetCoreTicker().RemoveTicker(RetryQueueTickHandle);
-
-	FTSTicker::GetCoreTicker().RemoveTicker(CleanupRequestsTickHandle);
-
 	delete InFlightRequestId;
 }
 
@@ -106,6 +100,9 @@ void UBeamBackend::TryTriggerRequestCompleteDelegates(const int64& RequestId)
 			const auto bDidRun = OnRequestIdCompleted.ExecuteIfBound(RequestId);
 			UE_LOG(LogBeamBackend, Verbose, TEXT("Tried to invoke OnRequestIdCompleted Delegate | REQUEST_ID=%d, DID_RUN=%s"), RequestId, bDidRun ? TEXT("true") : TEXT("false"));
 		}
+
+		// After all request complete delegates have run, we try to clean up request data
+		const auto _ = CleanUpRequestData();
 	}
 }
 
@@ -1288,7 +1285,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 	return true;
 }
 
-bool UBeamBackend::TickCleanUp(float)
+bool UBeamBackend::CleanUpRequestData()
 {
 	DECLARE_SCOPE_CYCLE_COUNTER(TEXT("UBeamBackend.TickCleanup"), STATID_TickBeamBackend, STATGROUP_BeamBackend)
 

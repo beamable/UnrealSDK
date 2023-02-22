@@ -5,7 +5,7 @@
 
 
 
-void ULeaderboardMembershipRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void ULeaderboardMembershipRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("playerId"), PlayerId);
 }
@@ -15,7 +15,10 @@ void ULeaderboardMembershipRequestBody::BeamSerializeProperties(TUnrealPrettyJso
 	Serializer->WriteValue(TEXT("playerId"), PlayerId);		
 }
 
-void ULeaderboardMembershipRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void ULeaderboardMembershipRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("playerId")), PlayerId);
 }
+
+
+

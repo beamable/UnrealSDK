@@ -15,7 +15,7 @@ struct BEAMABLECORE_API FBeamCid : public FBeamSemanticType
 	FString AsString;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int64 AsLong;
+	int64 AsLong = -1;
 
 	FBeamCid() = default;
 
@@ -26,7 +26,7 @@ struct BEAMABLECORE_API FBeamCid : public FBeamSemanticType
 
 	FBeamCid(const int64& Cid) : AsLong(Cid)
 	{
-		AsString = FString::Printf(TEXT("%lld"), Cid);
+		AsString = FString::Printf(TEXT("%llu"), Cid);
 	}
 
 	FBeamCid(const FBeamCid& Other) : FBeamSemanticType(Other), AsString(Other.AsString), AsLong(Other.AsLong)
@@ -70,7 +70,7 @@ struct BEAMABLECORE_API FBeamCid : public FBeamSemanticType
 		if (RepresentationTypeName == TNameOf<int64>::GetName())
 		{
 			const auto Cid = *((int64*)Data);
-			AsString = FString::Printf(TEXT("%lld"), Cid);
+			AsString = FString::Printf(TEXT("%llu"), Cid);
 			AsLong = Cid;
 		}
 	}

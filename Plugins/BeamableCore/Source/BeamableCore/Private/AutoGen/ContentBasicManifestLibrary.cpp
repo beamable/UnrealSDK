@@ -22,7 +22,7 @@ FString UContentBasicManifestLibrary::ContentBasicManifestToJsonString(const UCo
 	return Result;
 }	
 
-UContentBasicManifest* UContentBasicManifestLibrary::Make(FBeamContentManifestId Id, FString Checksum, int64 Created, TArray<UContentBasicReference*> References, FOptionalBool bArchived, UObject* Outer)
+UContentBasicManifest* UContentBasicManifestLibrary::Make(FBeamContentManifestId Id, FString Checksum, int64 Created, TArray<UBaseContentReference*> References, FOptionalBool bArchived, UObject* Outer)
 {
 	auto Serializable = NewObject<UContentBasicManifest>(Outer);
 	Serializable->Id = Id;
@@ -34,7 +34,7 @@ UContentBasicManifest* UContentBasicManifestLibrary::Make(FBeamContentManifestId
 	return Serializable;
 }
 
-void UContentBasicManifestLibrary::Break(const UContentBasicManifest* Serializable, FBeamContentManifestId& Id, FString& Checksum, int64& Created, TArray<UContentBasicReference*>& References, FOptionalBool& bArchived)
+void UContentBasicManifestLibrary::Break(const UContentBasicManifest* Serializable, FBeamContentManifestId& Id, FString& Checksum, int64& Created, TArray<UBaseContentReference*>& References, FOptionalBool& bArchived)
 {
 	Id = Serializable->Id;
 	Checksum = Serializable->Checksum;

@@ -14,7 +14,7 @@ class UK2BeamNode_Operation_FrictionlessAuth : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Frictionless Authentication"); }
 
-	virtual FName GetRuntimeSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, FrictionlessAuthentication); }
 

@@ -5,7 +5,7 @@
 
 
 
-void UContentLimits ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UContentLimits::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("maxDistinctContentIds"), &MaxDistinctContentIds, Serializer);
 }
@@ -15,7 +15,10 @@ void UContentLimits::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("maxDistinctContentIds"), &MaxDistinctContentIds, Serializer);		
 }
 
-void UContentLimits ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UContentLimits::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeOptional<int32>("maxDistinctContentIds", Bag, MaxDistinctContentIds, OuterOwner);
 }
+
+
+

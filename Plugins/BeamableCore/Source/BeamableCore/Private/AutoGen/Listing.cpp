@@ -5,7 +5,7 @@
 
 
 
-void UListing ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UListing::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("offerSymbol"), OfferSymbol);
 	UBeamJsonUtils::SerializeUObject<UPrice*>("price", Price, Serializer);
@@ -45,7 +45,7 @@ void UListing::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) 
 	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("buttonText"), &ButtonText, Serializer);		
 }
 
-void UListing ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UListing::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	OfferSymbol = Bag->GetStringField(TEXT("offerSymbol"));
 	UBeamJsonUtils::DeserializeUObject<UPrice*>("price", Bag, Price, OuterOwner);
@@ -64,3 +64,6 @@ void UListing ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	UBeamJsonUtils::DeserializeOptional<UPeriod*>("activePeriod", Bag, ActivePeriod, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TMap<FString, FString>, FString>("buttonText", Bag, ButtonText, OuterOwner);
 }
+
+
+

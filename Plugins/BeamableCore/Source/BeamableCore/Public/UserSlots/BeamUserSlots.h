@@ -36,7 +36,7 @@ struct FUserSlotAuthData
 	 * @brief The DateTime in which the AccessToken will no longer be valid.
 	 */
 	UPROPERTY(BlueprintReadWrite)
-	int64 ExpiresIn;
+	int64 ExpiresIn = -1;
 
 	/**
 	 * @brief The CustomerId whose scope this user exists in.
@@ -199,7 +199,7 @@ public:
 	 * This is because you need to be authenticated in order to get the user's gamer tag.	  	 
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="AccountId", DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	void SetAccountIdAtSlot(FUserSlot SlotId, const FBeamAccountId& AccountId, const UObject* CallingContext);
+	void SetAccountIdAtSlot(FUserSlot SlotId, const FBeamAccountId& AccountId, const UObject* CallingContext = nullptr);
 
 	/**
 	 * @brief Sets the email to the account data of an authenticated user slot. If it's not authenticated, the email information isn't stored.	  

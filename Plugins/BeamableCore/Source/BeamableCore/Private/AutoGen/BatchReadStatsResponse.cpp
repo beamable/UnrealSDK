@@ -10,7 +10,7 @@ void UBatchReadStatsResponse::DeserializeRequestResponse(UObject* RequestData, F
 	BeamDeserialize(ResponseContent);	
 }
 
-void UBatchReadStatsResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UBatchReadStatsResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UNetworkSerializable*>(TEXT("results"), Results, Serializer);
 }
@@ -20,7 +20,10 @@ void UBatchReadStatsResponse::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 	UBeamJsonUtils::SerializeArray<UNetworkSerializable*>(TEXT("results"), Results, Serializer);		
 }
 
-void UBatchReadStatsResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UBatchReadStatsResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UNetworkSerializable*>(Bag->GetArrayField(TEXT("results")), Results, OuterOwner);
 }
+
+
+

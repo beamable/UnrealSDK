@@ -10,7 +10,7 @@ void URealmConfiguration::DeserializeRequestResponse(UObject* RequestData, FStri
 	BeamDeserialize(ResponseContent);	
 }
 
-void URealmConfiguration ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void URealmConfiguration::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeUObject<UWebSocketConfiguration*>("websocketConfig", WebsocketConfig, Serializer);
 	Serializer->WriteValue(TEXT("microserviceURI"), MicroserviceURI);
@@ -28,7 +28,7 @@ void URealmConfiguration::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 	Serializer->WriteValue(TEXT("environment"), Environment);		
 }
 
-void URealmConfiguration ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void URealmConfiguration::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeUObject<UWebSocketConfiguration*>("websocketConfig", Bag, WebsocketConfig, OuterOwner);
 	MicroserviceURI = Bag->GetStringField(TEXT("microserviceURI"));
@@ -36,3 +36,6 @@ void URealmConfiguration ::BeamDeserializeProperties(const TSharedPtr<FJsonObjec
 	StorageBrowserURI = Bag->GetStringField(TEXT("storageBrowserURI"));
 	Environment = Bag->GetStringField(TEXT("environment"));
 }
+
+
+

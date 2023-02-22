@@ -24,7 +24,7 @@ public:
 	TArray<int64> ExpectedRequestsInOperations;
 	TArray<FUserSlot> ExpectedParticipants;
 
-	TEnumAsByte<EBeamOperationEventType> ExpectedEventType;
+	EBeamOperationEventType ExpectedEventType;
 	uint8 ExpectedEventSubTypeCode;
 	int64 ExpectedEventRequestId;	
 	FString ExpectedEventSystem;

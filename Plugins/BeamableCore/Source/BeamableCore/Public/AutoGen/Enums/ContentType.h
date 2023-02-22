@@ -8,9 +8,9 @@
 UENUM(BlueprintType, Category="Beam|Enums")
 enum class EContentType : uint8
 {
-	content UMETA(DisplayName="Content"),
-	text UMETA(DisplayName="Text"),
-	binary UMETA(DisplayName="Binary")		
+	BEAM_content UMETA(DisplayName="Content"),
+	BEAM_text UMETA(DisplayName="Text"),
+	BEAM_binary UMETA(DisplayName="Binary")		
 };
 
 UCLASS(BlueprintType, Category="Beam|Enums")
@@ -24,8 +24,10 @@ public:
 	{
 		const UEnum* Enum = StaticEnum<EContentType>();
 		const int32 NameIndex = Enum->GetIndexByValue(static_cast<int64>(Value));
-		const FString SerializationName = Enum->GetNameStringByValue(NameIndex);		
-		return SerializationName;
+		const FString SerializationName = Enum->GetNameStringByIndex(NameIndex);
+
+		// We chop off the first five "BEAM_" characters. 		
+		return SerializationName.RightChop(5);
 		
 	}
 
@@ -35,7 +37,8 @@ public:
 		const UEnum* Enum = StaticEnum<EContentType>();
 		for (int32 NameIndex = 0; NameIndex < Enum->NumEnums() - 1; ++NameIndex)
 		{
-			const FString& SerializationName = Enum->GetNameStringByValue(NameIndex);
+			// We chop off the first five "BEAM_" characters.
+			const FString& SerializationName = Enum->GetNameStringByIndex(NameIndex).RightChop(5);
 			if(Value == SerializationName)
 				return static_cast<EContentType>(Enum->GetValueByIndex(NameIndex));
 		}

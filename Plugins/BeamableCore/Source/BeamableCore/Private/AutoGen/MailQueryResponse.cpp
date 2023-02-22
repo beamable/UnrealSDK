@@ -10,7 +10,7 @@ void UMailQueryResponse::DeserializeRequestResponse(UObject* RequestData, FStrin
 	BeamDeserialize(ResponseContent);	
 }
 
-void UMailQueryResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UMailQueryResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("unreadCount"), UnreadCount);
 }
@@ -20,7 +20,10 @@ void UMailQueryResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 	Serializer->WriteValue(TEXT("unreadCount"), UnreadCount);		
 }
 
-void UMailQueryResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UMailQueryResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("unreadCount")), UnreadCount);
 }
+
+
+

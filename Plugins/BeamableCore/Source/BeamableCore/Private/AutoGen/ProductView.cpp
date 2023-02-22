@@ -5,7 +5,7 @@
 
 
 
-void UProductView ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UProductView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("localizedPrice"), LocalizedPrice);
 	Serializer->WriteValue(TEXT("sku"), Sku);
@@ -23,7 +23,7 @@ void UProductView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 	Serializer->WriteValue(TEXT("localizedPriceString"), LocalizedPriceString);		
 }
 
-void UProductView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UProductView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	LocalizedPrice = Bag->GetNumberField(TEXT("localizedPrice"));
 	Sku = Bag->GetStringField(TEXT("sku"));
@@ -31,3 +31,6 @@ void UProductView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag
 	IsoCurrencyCode = Bag->GetStringField(TEXT("isoCurrencyCode"));
 	LocalizedPriceString = Bag->GetStringField(TEXT("localizedPriceString"));
 }
+
+
+

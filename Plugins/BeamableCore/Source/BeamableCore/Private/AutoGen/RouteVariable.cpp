@@ -5,7 +5,7 @@
 
 
 
-void URouteVariable ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void URouteVariable::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("name"), Name);
 	Serializer->WriteValue(TEXT("typeName"), TypeName);
@@ -17,8 +17,11 @@ void URouteVariable::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 	Serializer->WriteValue(TEXT("typeName"), TypeName);		
 }
 
-void URouteVariable ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void URouteVariable::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Name = Bag->GetStringField(TEXT("name"));
 	TypeName = Bag->GetStringField(TEXT("typeName"));
 }
+
+
+

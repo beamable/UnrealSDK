@@ -15,18 +15,18 @@ struct BEAMABLECORE_API FBeamAccountId : public FBeamSemanticType
 	FString AsString;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int64 AsLong;
+	int64 AsLong = -1;
 
 	FBeamAccountId() = default;
 
-	FBeamAccountId(const FString& Cid) : AsString(Cid)
+	FBeamAccountId(const FString& AccountId) : AsString(AccountId)
 	{		
-		FDefaultValueHelper::ParseInt64(Cid, AsLong);
+		FDefaultValueHelper::ParseInt64(AccountId, AsLong);
 	}
 
-	FBeamAccountId(const int64& Cid) : AsLong(Cid)
+	FBeamAccountId(const int64& AccountId) : AsLong(AccountId)
 	{		
-		AsString = FString::Printf(TEXT("%lld"), Cid);
+		AsString = FString::Printf(TEXT("%llu"), AccountId);
 	}
 
 	FBeamAccountId(const FBeamAccountId& Other) : FBeamSemanticType(Other), AsString(Other.AsString), AsLong(Other.AsLong)
@@ -62,16 +62,16 @@ struct BEAMABLECORE_API FBeamAccountId : public FBeamSemanticType
 	{
 		if (RepresentationTypeName == TNameOf<FString>::GetName())
 		{
-			const auto Cid = *((FString*)Data);
-			AsString = Cid;
-			FDefaultValueHelper::ParseInt64(Cid, AsLong);
+			const auto AccountId = *((FString*)Data);
+			AsString = AccountId;
+			FDefaultValueHelper::ParseInt64(AccountId, AsLong);
 		}
 
 		if (RepresentationTypeName == TNameOf<int64>::GetName())
 		{
-			const auto Cid = *((int64*)Data);
-			AsString = FString::Printf(TEXT("%lld"), Cid);
-			AsLong = Cid;
+			const auto AccountId = *((int64*)Data);
+			AsString = FString::Printf(TEXT("%llu"), AccountId);
+			AsLong = AccountId;
 		}
 	}
 

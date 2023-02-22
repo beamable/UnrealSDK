@@ -5,7 +5,7 @@
 
 
 
-void UDatabaseMeasurement ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UDatabaseMeasurement::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("name"), Name);
 	Serializer->WriteValue(TEXT("units"), Units);
@@ -19,9 +19,12 @@ void UDatabaseMeasurement::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 	UBeamJsonUtils::SerializeArray<UDataPoint*>(TEXT("dataPoints"), DataPoints, Serializer);		
 }
 
-void UDatabaseMeasurement ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UDatabaseMeasurement::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Name = Bag->GetStringField(TEXT("name"));
 	Units = Bag->GetStringField(TEXT("units"));
 	UBeamJsonUtils::DeserializeArray<UDataPoint*>(Bag->GetArrayField(TEXT("dataPoints")), DataPoints, OuterOwner);
 }
+
+
+

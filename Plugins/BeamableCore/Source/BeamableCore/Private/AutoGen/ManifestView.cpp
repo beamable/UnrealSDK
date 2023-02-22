@@ -5,7 +5,7 @@
 
 
 
-void UManifestView ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UManifestView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("id"), Id);
 	Serializer->WriteValue(TEXT("checksum"), Checksum);
@@ -27,7 +27,7 @@ void UManifestView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 	UBeamJsonUtils::SerializeOptional<TArray<UServiceStorageReference*>, UServiceStorageReference*>(TEXT("storageReference"), &StorageReference, Serializer);		
 }
 
-void UManifestView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UManifestView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Id = Bag->GetStringField(TEXT("id"));
 	Checksum = Bag->GetStringField(TEXT("checksum"));
@@ -37,3 +37,6 @@ void UManifestView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Ba
 	UBeamJsonUtils::DeserializeOptional<FString>("comments", Bag, Comments, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UServiceStorageReference*>, UServiceStorageReference*>("storageReference", Bag, StorageReference, OuterOwner);
 }
+
+
+

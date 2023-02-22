@@ -5,7 +5,7 @@
 
 
 
-void UGroupRole ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGroupRole::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("name"), Name);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("permissions"), Permissions, Serializer);
@@ -17,8 +17,11 @@ void UGroupRole::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("permissions"), Permissions, Serializer);		
 }
 
-void UGroupRole ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGroupRole::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Name = Bag->GetStringField(TEXT("name"));
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("permissions")), Permissions, OuterOwner);
 }
+
+
+

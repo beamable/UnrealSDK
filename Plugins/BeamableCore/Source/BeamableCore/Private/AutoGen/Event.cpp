@@ -5,7 +5,7 @@
 
 
 
-void UEvent ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UEvent::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("name"), Name);
 	Serializer->WriteValue(TEXT("start_date"), StartDate);
@@ -37,7 +37,7 @@ void UEvent::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) co
 	UBeamJsonUtils::SerializeOptional<TArray<UEventRewardContent*>, UEventRewardContent*>(TEXT("rank_rewards"), &RankRewards, Serializer);		
 }
 
-void UEvent ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UEvent::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Name = Bag->GetStringField(TEXT("name"));
 	StartDate = Bag->GetStringField(TEXT("start_date"));
@@ -52,3 +52,6 @@ void UEvent ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	UBeamJsonUtils::DeserializeOptional<TArray<UEventRewardContent*>, UEventRewardContent*>("score_rewards", Bag, ScoreRewards, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UEventRewardContent*>, UEventRewardContent*>("rank_rewards", Bag, RankRewards, OuterOwner);
 }
+
+
+

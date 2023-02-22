@@ -5,7 +5,7 @@
 
 
 
-void UTransferThirdPartyAssociation ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UTransferThirdPartyAssociation::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("fromAccountId"), FromAccountId);
 	UBeamJsonUtils::SerializeUObject<UThirdPartyAssociation*>("thirdParty", ThirdParty, Serializer);
@@ -17,8 +17,11 @@ void UTransferThirdPartyAssociation::BeamSerializeProperties(TUnrealPrettyJsonSe
 	UBeamJsonUtils::SerializeUObject<UThirdPartyAssociation*>("thirdParty", ThirdParty, Serializer);		
 }
 
-void UTransferThirdPartyAssociation ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UTransferThirdPartyAssociation::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("fromAccountId")), FromAccountId);
 	UBeamJsonUtils::DeserializeUObject<UThirdPartyAssociation*>("thirdParty", Bag, ThirdParty, OuterOwner);
 }
+
+
+

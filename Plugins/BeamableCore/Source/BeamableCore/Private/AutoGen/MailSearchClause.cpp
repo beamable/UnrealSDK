@@ -5,7 +5,7 @@
 
 
 
-void UMailSearchClause ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UMailSearchClause::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("onlyCount"), bOnlyCount);
 	Serializer->WriteValue(TEXT("name"), Name);
@@ -27,7 +27,7 @@ void UMailSearchClause::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("states"), &States, Serializer);		
 }
 
-void UMailSearchClause ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UMailSearchClause::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bOnlyCount = Bag->GetBoolField(TEXT("onlyCount"));
 	Name = Bag->GetStringField(TEXT("name"));
@@ -37,3 +37,6 @@ void UMailSearchClause ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("categories", Bag, Categories, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("states", Bag, States, OuterOwner);
 }
+
+
+

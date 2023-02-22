@@ -10,7 +10,7 @@ void UAdminPlayerStatus::DeserializeRequestResponse(UObject* RequestData, FStrin
 	BeamDeserialize(ResponseContent);	
 }
 
-void UAdminPlayerStatus ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UAdminPlayerStatus::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);
 	Serializer->WriteValue(TEXT("stage"), Stage);
@@ -36,7 +36,7 @@ void UAdminPlayerStatus::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 	UBeamJsonUtils::SerializeArray<UTournamentCurrencyReward*>(TEXT("unclaimedRewards"), UnclaimedRewards, Serializer);		
 }
 
-void UAdminPlayerStatus ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UAdminPlayerStatus::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	TournamentId = Bag->GetStringField(TEXT("tournamentId"));
 	Stage = Bag->GetIntegerField(TEXT("stage"));
@@ -48,3 +48,6 @@ void UAdminPlayerStatus ::BeamDeserializeProperties(const TSharedPtr<FJsonObject
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("nextCycleStartMs")), NextCycleStartMs);
 	UBeamJsonUtils::DeserializeArray<UTournamentCurrencyReward*>(Bag->GetArrayField(TEXT("unclaimedRewards")), UnclaimedRewards, OuterOwner);
 }
+
+
+

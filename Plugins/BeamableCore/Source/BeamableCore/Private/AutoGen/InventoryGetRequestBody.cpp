@@ -5,7 +5,7 @@
 
 
 
-void UInventoryGetRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UInventoryGetRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("scope"), &Scope, Serializer);
 }
@@ -15,7 +15,10 @@ void UInventoryGetRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("scope"), &Scope, Serializer);		
 }
 
-void UInventoryGetRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UInventoryGetRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeOptional<FString>("scope", Bag, Scope, OuterOwner);
 }
+
+
+

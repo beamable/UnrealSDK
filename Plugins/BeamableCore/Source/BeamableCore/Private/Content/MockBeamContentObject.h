@@ -78,9 +78,11 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FOptionalArrayOfBeamPid BeamOptionalArrayOfBeamPid;
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSoftObjectPtr<UTexture2D> UnrealSoftObjRef;
 };
 
 BEGIN_DEFINE_SPEC(FBeamContentObjectSpec, "BeamableUnreal.ContentObject", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
-UMockBeamContentObject* ContentObject;
+	UMockBeamContentObject* ContentObject;
 END_DEFINE_SPEC(FBeamContentObjectSpec)

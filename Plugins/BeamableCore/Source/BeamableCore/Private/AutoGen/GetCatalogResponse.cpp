@@ -10,7 +10,7 @@ void UGetCatalogResponse::DeserializeRequestResponse(UObject* RequestData, FStri
 	BeamDeserialize(ResponseContent);	
 }
 
-void UGetCatalogResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetCatalogResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<UCatalog*>(TEXT("catalog"), &Catalog, Serializer);
 }
@@ -20,7 +20,10 @@ void UGetCatalogResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 	UBeamJsonUtils::SerializeOptional<UCatalog*>(TEXT("catalog"), &Catalog, Serializer);		
 }
 
-void UGetCatalogResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetCatalogResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeOptional<UCatalog*>("catalog", Bag, Catalog, OuterOwner);
 }
+
+
+

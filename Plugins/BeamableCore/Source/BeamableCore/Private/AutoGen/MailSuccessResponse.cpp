@@ -10,7 +10,7 @@ void UMailSuccessResponse::DeserializeRequestResponse(UObject* RequestData, FStr
 	BeamDeserialize(ResponseContent);	
 }
 
-void UMailSuccessResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UMailSuccessResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("result"), bResult);
 }
@@ -20,7 +20,10 @@ void UMailSuccessResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 	Serializer->WriteValue(TEXT("result"), bResult);		
 }
 
-void UMailSuccessResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UMailSuccessResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bResult = Bag->GetBoolField(TEXT("result"));
 }
+
+
+

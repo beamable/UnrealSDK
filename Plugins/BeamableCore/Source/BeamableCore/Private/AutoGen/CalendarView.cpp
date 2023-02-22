@@ -5,7 +5,7 @@
 
 
 
-void UCalendarView ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UCalendarView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("nextIndex"), NextIndex);
 	Serializer->WriteValue(TEXT("nextClaimSeconds"), NextClaimSeconds);
@@ -23,7 +23,7 @@ void UCalendarView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 	UBeamJsonUtils::SerializeArray<URewardCalendarDay*>(TEXT("days"), Days, Serializer);		
 }
 
-void UCalendarView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UCalendarView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	NextIndex = Bag->GetIntegerField(TEXT("nextIndex"));
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("nextClaimSeconds")), NextClaimSeconds);
@@ -31,3 +31,6 @@ void UCalendarView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Ba
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("remainingSeconds")), RemainingSeconds);
 	UBeamJsonUtils::DeserializeArray<URewardCalendarDay*>(Bag->GetArrayField(TEXT("days")), Days, OuterOwner);
 }
+
+
+

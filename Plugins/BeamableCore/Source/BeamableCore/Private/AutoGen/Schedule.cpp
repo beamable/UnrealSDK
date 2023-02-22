@@ -5,7 +5,7 @@
 
 
 
-void USchedule ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void USchedule::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("activeFrom"), ActiveFrom);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("description"), &Description, Serializer);
@@ -23,7 +23,7 @@ void USchedule::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer)
 	UBeamJsonUtils::SerializeOptional<TArray<UScheduleDefinition*>, UScheduleDefinition*>(TEXT("definitions"), &Definitions, Serializer);		
 }
 
-void USchedule ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void USchedule::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	ActiveFrom = Bag->GetStringField(TEXT("activeFrom"));
 	UBeamJsonUtils::DeserializeOptional<FString>("description", Bag, Description, OuterOwner);
@@ -31,3 +31,6 @@ void USchedule ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("crons", Bag, Crons, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UScheduleDefinition*>, UScheduleDefinition*>("definitions", Bag, Definitions, OuterOwner);
 }
+
+
+

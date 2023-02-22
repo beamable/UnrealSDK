@@ -5,7 +5,7 @@
 
 
 
-void URoomInfo ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void URoomInfo::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("keepSubscribed"), bKeepSubscribed);
 	Serializer->WriteValue(TEXT("id"), Id);
@@ -21,10 +21,13 @@ void URoomInfo::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer)
 	UBeamJsonUtils::SerializeOptional<TArray<int64>, int64>(TEXT("players"), &Players, Serializer);		
 }
 
-void URoomInfo ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void URoomInfo::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bKeepSubscribed = Bag->GetBoolField(TEXT("keepSubscribed"));
 	Id = Bag->GetStringField(TEXT("id"));
 	Name = Bag->GetStringField(TEXT("name"));
 	UBeamJsonUtils::DeserializeOptional<TArray<int64>, int64>("players", Bag, Players, OuterOwner);
 }
+
+
+

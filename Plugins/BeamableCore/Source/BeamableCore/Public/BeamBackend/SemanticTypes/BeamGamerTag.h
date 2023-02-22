@@ -15,18 +15,18 @@ struct BEAMABLECORE_API FBeamGamerTag : public FBeamSemanticType
 	FString AsString;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int64 AsLong;
+	int64 AsLong = -1;
 
 	FBeamGamerTag() = default;
 
-	FBeamGamerTag(const FString& Cid) : AsString(Cid)
+	FBeamGamerTag(const FString& GamerTag) : AsString(GamerTag)
 	{		
-		FDefaultValueHelper::ParseInt64(Cid, AsLong);
+		FDefaultValueHelper::ParseInt64(GamerTag, AsLong);
 	}
 
-	FBeamGamerTag(const int64& Cid) : AsLong(Cid)
+	FBeamGamerTag(const int64& GamerTag) : AsLong(GamerTag)
 	{		
-		AsString = FString::Printf(TEXT("%lld"), Cid);
+		AsString = FString::Printf(TEXT("%llu"), GamerTag);
 	}
 
 	FBeamGamerTag(const FBeamGamerTag& Other) : FBeamSemanticType(Other), AsString(Other.AsString), AsLong(Other.AsLong)
@@ -62,16 +62,16 @@ struct BEAMABLECORE_API FBeamGamerTag : public FBeamSemanticType
 	{
 		if (RepresentationTypeName == TNameOf<FString>::GetName())
 		{
-			const auto Cid = *((FString*)Data);
-			AsString = Cid;
-			FDefaultValueHelper::ParseInt64(Cid, AsLong);;			
+			const auto GamerTag = *((FString*)Data);
+			AsString = GamerTag;
+			FDefaultValueHelper::ParseInt64(GamerTag, AsLong);;			
 		}
 
 		if (RepresentationTypeName == TNameOf<int64>::GetName())
 		{
-			const auto Cid = *((int64*)Data);
-			AsString = FString::Printf(TEXT("%lld"), Cid);
-			AsLong = Cid;
+			const auto GamerTag = *((int64*)Data);
+			AsString = FString::Printf(TEXT("%llu"), GamerTag);
+			AsLong = GamerTag;
 		}
 	}
 

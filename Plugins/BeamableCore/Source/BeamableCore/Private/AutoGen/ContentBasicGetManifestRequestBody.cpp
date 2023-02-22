@@ -5,7 +5,7 @@
 
 
 
-void UContentBasicGetManifestRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UContentBasicGetManifestRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<FBeamContentManifestId, FString>(TEXT("id"), &Id, Serializer);
 }
@@ -15,7 +15,10 @@ void UContentBasicGetManifestRequestBody::BeamSerializeProperties(TUnrealPrettyJ
 	UBeamJsonUtils::SerializeOptional<FBeamContentManifestId, FString>(TEXT("id"), &Id, Serializer);		
 }
 
-void UContentBasicGetManifestRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UContentBasicGetManifestRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeOptional<FBeamContentManifestId, FString>("id", Bag, Id, OuterOwner);
 }
+
+
+

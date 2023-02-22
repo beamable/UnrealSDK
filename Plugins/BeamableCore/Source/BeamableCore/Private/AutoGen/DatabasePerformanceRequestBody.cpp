@@ -5,7 +5,7 @@
 
 
 
-void UDatabasePerformanceRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UDatabasePerformanceRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("storageObjectName"), StorageObjectName);
 	Serializer->WriteValue(TEXT("granularity"), Granularity);
@@ -23,7 +23,7 @@ void UDatabasePerformanceRequestBody::BeamSerializeProperties(TUnrealPrettyJsonS
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("period"), &Period, Serializer);		
 }
 
-void UDatabasePerformanceRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UDatabasePerformanceRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	StorageObjectName = Bag->GetStringField(TEXT("storageObjectName"));
 	Granularity = Bag->GetStringField(TEXT("granularity"));
@@ -31,3 +31,6 @@ void UDatabasePerformanceRequestBody ::BeamDeserializeProperties(const TSharedPt
 	UBeamJsonUtils::DeserializeOptional<FString>("startDate", Bag, StartDate, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("period", Bag, Period, OuterOwner);
 }
+
+
+

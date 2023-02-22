@@ -10,7 +10,7 @@ void USubscriberDetailsResponse::DeserializeRequestResponse(UObject* RequestData
 	BeamDeserialize(ResponseContent);	
 }
 
-void USubscriberDetailsResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void USubscriberDetailsResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("customChannelPrefix"), CustomChannelPrefix);
 	Serializer->WriteValue(TEXT("playerForRealmChannel"), PlayerForRealmChannel);
@@ -32,7 +32,7 @@ void USubscriberDetailsResponse::BeamSerializeProperties(TUnrealPrettyJsonSerial
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("gameGlobalNotificationChannel"), &GameGlobalNotificationChannel, Serializer);		
 }
 
-void USubscriberDetailsResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void USubscriberDetailsResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	CustomChannelPrefix = Bag->GetStringField(TEXT("customChannelPrefix"));
 	PlayerForRealmChannel = Bag->GetStringField(TEXT("playerForRealmChannel"));
@@ -42,3 +42,6 @@ void USubscriberDetailsResponse ::BeamDeserializeProperties(const TSharedPtr<FJs
 	PlayerChannel = Bag->GetStringField(TEXT("playerChannel"));
 	UBeamJsonUtils::DeserializeOptional<FString>("gameGlobalNotificationChannel", Bag, GameGlobalNotificationChannel, OuterOwner);
 }
+
+
+

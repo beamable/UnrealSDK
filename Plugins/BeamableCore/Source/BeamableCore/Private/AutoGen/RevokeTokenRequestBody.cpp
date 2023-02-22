@@ -5,7 +5,7 @@
 
 
 
-void URevokeTokenRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void URevokeTokenRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("token"), Token);
 }
@@ -15,7 +15,10 @@ void URevokeTokenRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 	Serializer->WriteValue(TEXT("token"), Token);		
 }
 
-void URevokeTokenRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void URevokeTokenRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Token = Bag->GetStringField(TEXT("token"));
 }
+
+
+

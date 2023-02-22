@@ -10,7 +10,7 @@ void UToken::DeserializeRequestResponse(UObject* RequestData, FString ResponseCo
 	BeamDeserialize(ResponseContent);	
 }
 
-void UToken ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UToken::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);
 	Serializer->WriteValue(TEXT("token"), Token);
@@ -42,7 +42,7 @@ void UToken::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) co
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("scopes"), &Scopes, Serializer);		
 }
 
-void UToken ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UToken::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("cid")), Cid, OuterOwner);
 	Token = Bag->GetStringField(TEXT("token"));
@@ -57,3 +57,6 @@ void UToken ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	UBeamJsonUtils::DeserializeOptional<bool>("revoked", Bag, bRevoked, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("scopes", Bag, Scopes, OuterOwner);
 }
+
+
+

@@ -10,7 +10,7 @@ void UListAuditResponse::DeserializeRequestResponse(UObject* RequestData, FStrin
 	BeamDeserialize(ResponseContent);	
 }
 
-void UListAuditResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UListAuditResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UPaymentAuditEntryViewModel*>(TEXT("audits"), Audits, Serializer);
 }
@@ -20,7 +20,10 @@ void UListAuditResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 	UBeamJsonUtils::SerializeArray<UPaymentAuditEntryViewModel*>(TEXT("audits"), Audits, Serializer);		
 }
 
-void UListAuditResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UListAuditResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UPaymentAuditEntryViewModel*>(Bag->GetArrayField(TEXT("audits")), Audits, OuterOwner);
 }
+
+
+

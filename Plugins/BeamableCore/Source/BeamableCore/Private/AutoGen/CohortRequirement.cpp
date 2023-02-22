@@ -5,7 +5,7 @@
 
 
 
-void UCohortRequirement ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UCohortRequirement::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("trial"), Trial);
 	Serializer->WriteValue(TEXT("cohort"), Cohort);
@@ -19,9 +19,12 @@ void UCohortRequirement::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 	Serializer->WriteValue(TEXT("constraint"), Constraint);		
 }
 
-void UCohortRequirement ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UCohortRequirement::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Trial = Bag->GetStringField(TEXT("trial"));
 	Cohort = Bag->GetStringField(TEXT("cohort"));
 	Constraint = Bag->GetStringField(TEXT("constraint"));
 }
+
+
+

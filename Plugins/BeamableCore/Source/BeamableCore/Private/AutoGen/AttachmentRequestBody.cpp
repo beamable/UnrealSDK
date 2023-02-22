@@ -5,7 +5,7 @@
 
 
 
-void UAttachmentRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UAttachmentRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("symbol"), Symbol);
 	Serializer->WriteValue(TEXT("action"), Action);
@@ -23,7 +23,7 @@ void UAttachmentRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("target"), &Target, Serializer);		
 }
 
-void UAttachmentRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UAttachmentRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Symbol = Bag->GetStringField(TEXT("symbol"));
 	Action = Bag->GetStringField(TEXT("action"));
@@ -31,3 +31,6 @@ void UAttachmentRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonOb
 	UBeamJsonUtils::DeserializeOptional<FString>("specialization", Bag, Specialization, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("target", Bag, Target, OuterOwner);
 }
+
+
+

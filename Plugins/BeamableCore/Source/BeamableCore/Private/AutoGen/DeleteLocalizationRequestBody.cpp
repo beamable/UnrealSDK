@@ -5,7 +5,7 @@
 
 
 
-void UDeleteLocalizationRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UDeleteLocalizationRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<ULocalizationQuery*>(TEXT("localizations"), Localizations, Serializer);
 }
@@ -15,7 +15,10 @@ void UDeleteLocalizationRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSe
 	UBeamJsonUtils::SerializeArray<ULocalizationQuery*>(TEXT("localizations"), Localizations, Serializer);		
 }
 
-void UDeleteLocalizationRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UDeleteLocalizationRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<ULocalizationQuery*>(Bag->GetArrayField(TEXT("localizations")), Localizations, OuterOwner);
 }
+
+
+

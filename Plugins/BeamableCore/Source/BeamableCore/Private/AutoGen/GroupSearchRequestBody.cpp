@@ -5,7 +5,7 @@
 
 
 
-void UGroupSearchRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGroupSearchRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("type"), UGroupTypeLibrary::GroupTypeToSerializationName(Type));
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("hasSlots"), &bHasSlots, Serializer);
@@ -37,7 +37,7 @@ void UGroupSearchRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("limit"), &Limit, Serializer);		
 }
 
-void UGroupSearchRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGroupSearchRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Type = UGroupTypeLibrary::SerializationNameToGroupType(Bag->GetStringField(TEXT("type")));
 	UBeamJsonUtils::DeserializeOptional<bool>("hasSlots", Bag, bHasSlots, OuterOwner);
@@ -52,3 +52,6 @@ void UGroupSearchRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonO
 	UBeamJsonUtils::DeserializeOptional<int32>("sortValue", Bag, SortValue, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("limit", Bag, Limit, OuterOwner);
 }
+
+
+

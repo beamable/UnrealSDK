@@ -29,7 +29,7 @@ struct FBeamCachedRequestCallsite
 	 * @brief The calling context this request is being made from.
 	 */
 	UPROPERTY(BlueprintReadWrite, EditInstanceOnly)
-	const UObject* CallingContext;
+	const UObject* CallingContext = nullptr;
 
 	friend bool operator==(const FBeamCachedRequestCallsite& Lhs, const FBeamCachedRequestCallsite& RHS)
 	{

@@ -10,7 +10,7 @@ void UListTokenResponse::DeserializeRequestResponse(UObject* RequestData, FStrin
 	BeamDeserialize(ResponseContent);	
 }
 
-void UListTokenResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UListTokenResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UListTokenResponseItem*>(TEXT("items"), Items, Serializer);
 }
@@ -20,7 +20,10 @@ void UListTokenResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 	UBeamJsonUtils::SerializeArray<UListTokenResponseItem*>(TEXT("items"), Items, Serializer);		
 }
 
-void UListTokenResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UListTokenResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UListTokenResponseItem*>(Bag->GetArrayField(TEXT("items")), Items, OuterOwner);
 }
+
+
+

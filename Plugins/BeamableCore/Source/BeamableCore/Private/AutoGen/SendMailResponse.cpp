@@ -10,7 +10,7 @@ void USendMailResponse::DeserializeRequestResponse(UObject* RequestData, FString
 	BeamDeserialize(ResponseContent);	
 }
 
-void USendMailResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void USendMailResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("mailId"), &MailId, Serializer);
 }
@@ -20,7 +20,10 @@ void USendMailResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("mailId"), &MailId, Serializer);		
 }
 
-void USendMailResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void USendMailResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeOptional<int64>("mailId", Bag, MailId, OuterOwner);
 }
+
+
+

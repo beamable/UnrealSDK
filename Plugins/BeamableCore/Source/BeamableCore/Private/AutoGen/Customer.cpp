@@ -5,7 +5,7 @@
 
 
 
-void UCustomer ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UCustomer::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("name"), Name);
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);
@@ -35,7 +35,7 @@ void UCustomer::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer)
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("created"), &Created, Serializer);		
 }
 
-void UCustomer ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UCustomer::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Name = Bag->GetStringField(TEXT("name"));
 	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("cid")), Cid, OuterOwner);
@@ -49,3 +49,6 @@ void UCustomer ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	UBeamJsonUtils::DeserializeOptional<FString>("crm_link", Bag, CrmLink, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("created", Bag, Created, OuterOwner);
 }
+
+
+

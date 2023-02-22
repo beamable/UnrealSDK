@@ -82,5 +82,5 @@ struct FBeamOperationState
 	 * @brief The maximum number of Request Ids.
 	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	int32 MaximumRequestCount;
+	int32 MaximumRequestCount = -1;
 };

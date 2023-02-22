@@ -10,7 +10,7 @@ void UCalendarQueryResponse::DeserializeRequestResponse(UObject* RequestData, FS
 	BeamDeserialize(ResponseContent);	
 }
 
-void UCalendarQueryResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UCalendarQueryResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UCalendarView*>(TEXT("calendars"), Calendars, Serializer);
 }
@@ -20,7 +20,10 @@ void UCalendarQueryResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 	UBeamJsonUtils::SerializeArray<UCalendarView*>(TEXT("calendars"), Calendars, Serializer);		
 }
 
-void UCalendarQueryResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UCalendarQueryResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UCalendarView*>(Bag->GetArrayField(TEXT("calendars")), Calendars, OuterOwner);
 }
+
+
+

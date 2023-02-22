@@ -10,7 +10,7 @@ void UManifestChecksums::DeserializeRequestResponse(UObject* RequestData, FStrin
 	BeamDeserialize(ResponseContent);	
 }
 
-void UManifestChecksums ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UManifestChecksums::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UContentBasicManifestChecksum*>(TEXT("manifests"), Manifests, Serializer);
 }
@@ -20,7 +20,10 @@ void UManifestChecksums::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 	UBeamJsonUtils::SerializeArray<UContentBasicManifestChecksum*>(TEXT("manifests"), Manifests, Serializer);		
 }
 
-void UManifestChecksums ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UManifestChecksums::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UContentBasicManifestChecksum*>(Bag->GetArrayField(TEXT("manifests")), Manifests, OuterOwner);
 }
+
+
+

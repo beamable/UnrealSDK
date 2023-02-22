@@ -5,7 +5,7 @@
 
 
 
-void UGroupUserMember ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGroupUserMember::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("id"), Id);
 	UBeamJsonUtils::SerializeArray<UGroupUserMember*>(TEXT("subGroups"), SubGroups, Serializer);
@@ -19,9 +19,12 @@ void UGroupUserMember::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("joined"), &Joined, Serializer);		
 }
 
-void UGroupUserMember ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGroupUserMember::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("id")), Id);
 	UBeamJsonUtils::DeserializeArray<UGroupUserMember*>(Bag->GetArrayField(TEXT("subGroups")), SubGroups, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("joined", Bag, Joined, OuterOwner);
 }
+
+
+

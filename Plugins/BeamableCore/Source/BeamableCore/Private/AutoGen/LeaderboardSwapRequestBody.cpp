@@ -5,7 +5,7 @@
 
 
 
-void ULeaderboardSwapRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void ULeaderboardSwapRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("swapBase"), SwapBase);
 	Serializer->WriteValue(TEXT("delta"), Delta);
@@ -21,10 +21,13 @@ void ULeaderboardSwapRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeria
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("loserId"), &LoserId, Serializer);		
 }
 
-void ULeaderboardSwapRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void ULeaderboardSwapRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("swapBase")), SwapBase);
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("delta")), Delta);
 	UBeamJsonUtils::DeserializeOptional<int64>("winnerId", Bag, WinnerId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("loserId", Bag, LoserId, OuterOwner);
 }
+
+
+

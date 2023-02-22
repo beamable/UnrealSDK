@@ -5,7 +5,7 @@
 
 
 
-void UPromotable ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UPromotable::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("checksum"), Checksum);
 	Serializer->WriteValue(TEXT("createdAt"), CreatedAt);
@@ -17,8 +17,11 @@ void UPromotable::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serialize
 	Serializer->WriteValue(TEXT("createdAt"), CreatedAt);		
 }
 
-void UPromotable ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UPromotable::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Checksum = Bag->GetStringField(TEXT("checksum"));
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("createdAt")), CreatedAt);
 }
+
+
+

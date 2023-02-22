@@ -5,7 +5,7 @@
 
 
 
-void ULeaderboardPlayerAssignmentRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void ULeaderboardPlayerAssignmentRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("boardId"), BoardId);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("joinBoard"), &bJoinBoard, Serializer);
@@ -17,8 +17,11 @@ void ULeaderboardPlayerAssignmentRequestBody::BeamSerializeProperties(TUnrealPre
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("joinBoard"), &bJoinBoard, Serializer);		
 }
 
-void ULeaderboardPlayerAssignmentRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void ULeaderboardPlayerAssignmentRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	BoardId = Bag->GetStringField(TEXT("boardId"));
 	UBeamJsonUtils::DeserializeOptional<bool>("joinBoard", Bag, bJoinBoard, OuterOwner);
 }
+
+
+

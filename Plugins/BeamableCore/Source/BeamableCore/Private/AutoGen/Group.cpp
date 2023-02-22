@@ -10,7 +10,7 @@ void UGroup::DeserializeRequestResponse(UObject* RequestData, FString ResponseCo
 	BeamDeserialize(ResponseContent);	
 }
 
-void UGroup ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGroup::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("requirement"), Requirement);
 	Serializer->WriteValue(TEXT("maxSize"), MaxSize);
@@ -70,7 +70,7 @@ void UGroup::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) co
 	UBeamJsonUtils::SerializeOptional<TMap<FString, UDonationRequestBody*>, UDonationRequestBody*>(TEXT("maybeDonations"), &MaybeDonations, Serializer);		
 }
 
-void UGroup ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGroup::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("requirement")), Requirement);
 	MaxSize = Bag->GetIntegerField(TEXT("maxSize"));
@@ -99,3 +99,6 @@ void UGroup ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	UBeamJsonUtils::DeserializeOptional<TArray<UInFlightMessage*>, UInFlightMessage*>("inFlight", Bag, InFlight, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TMap<FString, UDonationRequestBody*>, UDonationRequestBody*>("maybeDonations", Bag, MaybeDonations, OuterOwner);
 }
+
+
+

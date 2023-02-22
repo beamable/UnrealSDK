@@ -18,8 +18,8 @@ public:
 	static FString CloudsavingBasicManifestToJsonString(const UCloudsavingBasicManifest* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make CloudsavingBasicManifest", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UCloudsavingBasicManifest* Make(bool bReplacement, FString Id, int64 Created, TArray<UCloudsavingBasicReference*> Manifest, UObject* Outer);
+	static UCloudsavingBasicManifest* Make(bool bReplacement, FString Id, int64 Created, TArray<UReference*> Manifest, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break CloudsavingBasicManifest", meta=(NativeBreakFunc))
-	static void Break(const UCloudsavingBasicManifest* Serializable, bool& bReplacement, FString& Id, int64& Created, TArray<UCloudsavingBasicReference*>& Manifest);
+	static void Break(const UCloudsavingBasicManifest* Serializable, bool& bReplacement, FString& Id, int64& Created, TArray<UReference*>& Manifest);
 };

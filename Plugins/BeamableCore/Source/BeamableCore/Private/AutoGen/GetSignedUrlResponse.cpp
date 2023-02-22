@@ -10,7 +10,7 @@ void UGetSignedUrlResponse::DeserializeRequestResponse(UObject* RequestData, FSt
 	BeamDeserialize(ResponseContent);	
 }
 
-void UGetSignedUrlResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetSignedUrlResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("url"), Url);
 	Serializer->WriteValue(TEXT("body"), Body);
@@ -26,10 +26,13 @@ void UGetSignedUrlResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 	UBeamJsonUtils::SerializeArray<UGetLogsUrlHeader*>(TEXT("headers"), Headers, Serializer);		
 }
 
-void UGetSignedUrlResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetSignedUrlResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Url = Bag->GetStringField(TEXT("url"));
 	Body = Bag->GetStringField(TEXT("body"));
 	Method = Bag->GetStringField(TEXT("method"));
 	UBeamJsonUtils::DeserializeArray<UGetLogsUrlHeader*>(Bag->GetArrayField(TEXT("headers")), Headers, OuterOwner);
 }
+
+
+

@@ -5,7 +5,7 @@
 
 
 
-void USubscriptionVerificationResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void USubscriptionVerificationResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("hubChallenge"), HubChallenge);
 }
@@ -15,7 +15,10 @@ void USubscriptionVerificationResponse::BeamSerializeProperties(TUnrealPrettyJso
 	Serializer->WriteValue(TEXT("hubChallenge"), HubChallenge);		
 }
 
-void USubscriptionVerificationResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void USubscriptionVerificationResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	HubChallenge = Bag->GetStringField(TEXT("hubChallenge"));
 }
+
+
+

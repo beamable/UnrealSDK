@@ -5,7 +5,7 @@
 
 
 
-void UEntitlementRequirement ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UEntitlementRequirement::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("symbol"), Symbol);
 	Serializer->WriteValue(TEXT("constraint"), Constraint);
@@ -21,10 +21,13 @@ void UEntitlementRequirement::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("specialization"), &Specialization, Serializer);		
 }
 
-void UEntitlementRequirement ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UEntitlementRequirement::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Symbol = Bag->GetStringField(TEXT("symbol"));
 	Constraint = Bag->GetStringField(TEXT("constraint"));
 	State = Bag->GetStringField(TEXT("state"));
 	UBeamJsonUtils::DeserializeOptional<FString>("specialization", Bag, Specialization, OuterOwner);
 }
+
+
+

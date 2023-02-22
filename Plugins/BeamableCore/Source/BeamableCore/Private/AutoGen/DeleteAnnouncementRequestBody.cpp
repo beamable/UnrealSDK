@@ -5,7 +5,7 @@
 
 
 
-void UDeleteAnnouncementRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UDeleteAnnouncementRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("symbol"), Symbol);
 }
@@ -15,7 +15,10 @@ void UDeleteAnnouncementRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSe
 	Serializer->WriteValue(TEXT("symbol"), Symbol);		
 }
 
-void UDeleteAnnouncementRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UDeleteAnnouncementRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Symbol = Bag->GetStringField(TEXT("symbol"));
 }
+
+
+

@@ -10,7 +10,7 @@ void UConnectionString::DeserializeRequestResponse(UObject* RequestData, FString
 	BeamDeserialize(ResponseContent);	
 }
 
-void UConnectionString ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UConnectionString::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("connectionString"), ConnectionString);
 }
@@ -20,7 +20,10 @@ void UConnectionString::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 	Serializer->WriteValue(TEXT("connectionString"), ConnectionString);		
 }
 
-void UConnectionString ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UConnectionString::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	ConnectionString = Bag->GetStringField(TEXT("connectionString"));
 }
+
+
+

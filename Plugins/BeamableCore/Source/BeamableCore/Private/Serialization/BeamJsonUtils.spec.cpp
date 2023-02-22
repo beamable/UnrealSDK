@@ -1174,7 +1174,7 @@ void FBeamJsonUtilsSpec::Define()
 			FTestBeamCid Test2;
 			Test2.BeamDeserialize(JsonInput);
 
-			TestTrue("Optional was deserialized as default value", Test2.a.Val.AsLong == 0);
+			TestTrue("Optional was deserialized as default value", Test2.a.Val.AsLong == -1);
 			TestFalse("Optional was deserialized with IsSet == false", Test2.a.IsSet);
 		});
 
@@ -1854,7 +1854,7 @@ void FBeamJsonUtilsSpec::Define()
 					TEXT(R"({
 						"a1" : { "a": "0" },
 						"a2": { "a": "1" },
-						"a3": { "a": "-1" }
+						"a3": { "a": "2" }
 					})");
 
 				FBeamMapOfMapOfBeamCid Test;
@@ -1862,7 +1862,7 @@ void FBeamJsonUtilsSpec::Define()
 
 				TestTrue("Optional was deserialized with correct value at idx 0", Test.Values.FindChecked("a1").Values.FindChecked("a").AsString.Equals(TEXT("0")));
 				TestTrue("Optional was deserialized with correct value at idx 1", Test.Values.FindChecked("a2").Values.FindChecked("a").AsString.Equals(TEXT("1")));
-				TestTrue("Optional was deserialized with correct value at idx 2", Test.Values.FindChecked("a3").Values.FindChecked("a").AsString.Equals(TEXT("-1")));
+				TestTrue("Optional was deserialized with correct value at idx 2", Test.Values.FindChecked("a3").Values.FindChecked("a").AsString.Equals(TEXT("2")));
 			}
 		});
 

@@ -10,7 +10,7 @@ void ULeaderboardMembershipResponse::DeserializeRequestResponse(UObject* Request
 	BeamDeserialize(ResponseContent);	
 }
 
-void ULeaderboardMembershipResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void ULeaderboardMembershipResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("result"), bResult);
 }
@@ -20,7 +20,10 @@ void ULeaderboardMembershipResponse::BeamSerializeProperties(TUnrealPrettyJsonSe
 	Serializer->WriteValue(TEXT("result"), bResult);		
 }
 
-void ULeaderboardMembershipResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void ULeaderboardMembershipResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bResult = Bag->GetBoolField(TEXT("result"));
 }
+
+
+

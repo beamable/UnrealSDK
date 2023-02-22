@@ -5,7 +5,7 @@
 
 
 
-void UNewCustomerRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UNewCustomerRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("projectName"), ProjectName);
 	Serializer->WriteValue(TEXT("email"), Email);
@@ -25,7 +25,7 @@ void UNewCustomerRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("alias"), &Alias, Serializer);		
 }
 
-void UNewCustomerRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UNewCustomerRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	ProjectName = Bag->GetStringField(TEXT("projectName"));
 	Email = Bag->GetStringField(TEXT("email"));
@@ -34,3 +34,6 @@ void UNewCustomerRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonO
 	UBeamJsonUtils::DeserializeOptional<FString>("customerName", Bag, CustomerName, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("alias", Bag, Alias, OuterOwner);
 }
+
+
+

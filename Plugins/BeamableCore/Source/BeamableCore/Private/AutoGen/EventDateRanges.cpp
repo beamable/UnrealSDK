@@ -5,7 +5,7 @@
 
 
 
-void UEventDateRanges ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UEventDateRanges::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("name"), Name);
 	Serializer->WriteValue(TEXT("state"), State);
@@ -23,7 +23,7 @@ void UEventDateRanges::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("createdAt"), &CreatedAt, Serializer);		
 }
 
-void UEventDateRanges ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UEventDateRanges::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Name = Bag->GetStringField(TEXT("name"));
 	State = Bag->GetStringField(TEXT("state"));
@@ -31,3 +31,6 @@ void UEventDateRanges ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>&
 	UBeamJsonUtils::DeserializeArray<UDateRange*>(Bag->GetArrayField(TEXT("dates")), Dates, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("createdAt", Bag, CreatedAt, OuterOwner);
 }
+
+
+

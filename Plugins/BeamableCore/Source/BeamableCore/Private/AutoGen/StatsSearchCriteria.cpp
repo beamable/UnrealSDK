@@ -5,7 +5,7 @@
 
 
 
-void UStatsSearchCriteria ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UStatsSearchCriteria::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("stat"), Stat);
 	Serializer->WriteValue(TEXT("rel"), Rel);
@@ -19,9 +19,12 @@ void UStatsSearchCriteria::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("value"), &Value, Serializer);		
 }
 
-void UStatsSearchCriteria ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UStatsSearchCriteria::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Stat = Bag->GetStringField(TEXT("stat"));
 	Rel = Bag->GetStringField(TEXT("rel"));
 	UBeamJsonUtils::DeserializeOptional<FString>("value", Bag, Value, OuterOwner);
 }
+
+
+

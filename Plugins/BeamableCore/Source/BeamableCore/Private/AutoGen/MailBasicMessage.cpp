@@ -5,7 +5,7 @@
 
 
 
-void UMailBasicMessage ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UMailBasicMessage::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("receiverGamerTag"), ReceiverGamerTag);
 	Serializer->WriteValue(TEXT("state"), State);
@@ -41,7 +41,7 @@ void UMailBasicMessage::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("claimedTimeMs"), &ClaimedTimeMs, Serializer);		
 }
 
-void UMailBasicMessage ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UMailBasicMessage::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("receiverGamerTag")), ReceiverGamerTag);
 	State = Bag->GetStringField(TEXT("state"));
@@ -58,3 +58,6 @@ void UMailBasicMessage ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>
 	UBeamJsonUtils::DeserializeOptional<int64>("bodyRef", Bag, BodyRef, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("claimedTimeMs", Bag, ClaimedTimeMs, OuterOwner);
 }
+
+
+

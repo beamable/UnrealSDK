@@ -5,7 +5,7 @@
 
 
 
-void URouteVariables ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void URouteVariables::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<URouteVariable*>(TEXT("variables"), Variables, Serializer);
 }
@@ -15,7 +15,10 @@ void URouteVariables::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seria
 	UBeamJsonUtils::SerializeArray<URouteVariable*>(TEXT("variables"), Variables, Serializer);		
 }
 
-void URouteVariables ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void URouteVariables::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<URouteVariable*>(Bag->GetArrayField(TEXT("variables")), Variables, OuterOwner);
 }
+
+
+

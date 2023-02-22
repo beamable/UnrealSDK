@@ -5,7 +5,7 @@
 
 
 
-void URegisterReq ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void URegisterReq::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("provider"), Provider);
 	Serializer->WriteValue(TEXT("token"), Token);
@@ -17,8 +17,11 @@ void URegisterReq::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 	Serializer->WriteValue(TEXT("token"), Token);		
 }
 
-void URegisterReq ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void URegisterReq::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Provider = Bag->GetStringField(TEXT("provider"));
 	Token = Bag->GetStringField(TEXT("token"));
 }
+
+
+

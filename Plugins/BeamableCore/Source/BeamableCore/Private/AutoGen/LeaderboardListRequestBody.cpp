@@ -5,7 +5,7 @@
 
 
 
-void ULeaderboardListRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void ULeaderboardListRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("skip"), &Skip, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("limit"), &Limit, Serializer);
@@ -17,8 +17,11 @@ void ULeaderboardListRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeria
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("limit"), &Limit, Serializer);		
 }
 
-void ULeaderboardListRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void ULeaderboardListRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeOptional<int32>("skip", Bag, Skip, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("limit", Bag, Limit, OuterOwner);
 }
+
+
+

@@ -10,7 +10,7 @@ void UGetActiveOffersResponse::DeserializeRequestResponse(UObject* RequestData, 
 	BeamDeserialize(ResponseContent);	
 }
 
-void UGetActiveOffersResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetActiveOffersResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UPlayerStoreView*>(TEXT("stores"), Stores, Serializer);
 }
@@ -20,7 +20,10 @@ void UGetActiveOffersResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 	UBeamJsonUtils::SerializeArray<UPlayerStoreView*>(TEXT("stores"), Stores, Serializer);		
 }
 
-void UGetActiveOffersResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetActiveOffersResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UPlayerStoreView*>(Bag->GetArrayField(TEXT("stores")), Stores, OuterOwner);
 }
+
+
+

@@ -5,7 +5,7 @@
 
 
 
-void UGetSkusReq ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetSkusReq::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("version"), &Version, Serializer);
 }
@@ -15,7 +15,10 @@ void UGetSkusReq::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serialize
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("version"), &Version, Serializer);		
 }
 
-void UGetSkusReq ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetSkusReq::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeOptional<int64>("version", Bag, Version, OuterOwner);
 }
+
+
+

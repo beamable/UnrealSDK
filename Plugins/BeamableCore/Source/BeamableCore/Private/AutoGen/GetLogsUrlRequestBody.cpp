@@ -5,7 +5,7 @@
 
 
 
-void UGetLogsUrlRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetLogsUrlRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("serviceName"), ServiceName);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("startTime"), &StartTime, Serializer);
@@ -25,7 +25,7 @@ void UGetLogsUrlRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("limit"), &Limit, Serializer);		
 }
 
-void UGetLogsUrlRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetLogsUrlRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	ServiceName = Bag->GetStringField(TEXT("serviceName"));
 	UBeamJsonUtils::DeserializeOptional<int64>("startTime", Bag, StartTime, OuterOwner);
@@ -34,3 +34,6 @@ void UGetLogsUrlRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonOb
 	UBeamJsonUtils::DeserializeOptional<int64>("endTime", Bag, EndTime, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("limit", Bag, Limit, OuterOwner);
 }
+
+
+

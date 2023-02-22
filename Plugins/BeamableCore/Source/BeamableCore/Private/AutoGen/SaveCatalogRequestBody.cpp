@@ -5,7 +5,7 @@
 
 
 
-void USaveCatalogRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void USaveCatalogRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UStore*>(TEXT("stores"), Stores, Serializer);
 	UBeamJsonUtils::SerializeArray<UOfferDefinition*>(TEXT("offerDefinitions"), OfferDefinitions, Serializer);
@@ -17,8 +17,11 @@ void USaveCatalogRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 	UBeamJsonUtils::SerializeArray<UOfferDefinition*>(TEXT("offerDefinitions"), OfferDefinitions, Serializer);		
 }
 
-void USaveCatalogRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void USaveCatalogRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UStore*>(Bag->GetArrayField(TEXT("stores")), Stores, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UOfferDefinition*>(Bag->GetArrayField(TEXT("offerDefinitions")), OfferDefinitions, OuterOwner);
 }
+
+
+

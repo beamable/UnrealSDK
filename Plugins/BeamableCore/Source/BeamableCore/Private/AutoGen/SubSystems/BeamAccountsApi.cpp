@@ -77,6 +77,66 @@ void UBeamAccountsApi::CPP_GetGetPersonallyIdentifiableInformationImpl(const FBe
 }
 
 		
+void UBeamAccountsApi::BP_GetAvailableExternal_identityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetAvailableExternal_identityRequest* RequestData,
+                                                  const FOnGetAvailableExternal_identitySuccess& OnSuccess, const FOnGetAvailableExternal_identityError& OnError, const FOnGetAvailableExternal_identityComplete& OnComplete,
+                                                  int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...	
+	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
+
+	// If cached...
+	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		Backend->RunBlueprintRequestProcessor<UGetAvailableExternal_identityRequest, UAccountAvailableResponse, FOnGetAvailableExternal_identitySuccess, FOnGetAvailableExternal_identityError, FOnGetAvailableExternal_identityComplete>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, OnSuccess, OnError, OnComplete);		
+	}
+	// If not cached...
+	else
+	{			
+		// Binds the handler to the static response handler (pre-generated)
+		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UGetAvailableExternal_identityRequest, UAccountAvailableResponse, FOnGetAvailableExternal_identitySuccess, FOnGetAvailableExternal_identityError, FOnGetAvailableExternal_identityComplete>
+			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
+		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);		
+	}	
+}
+
+void UBeamAccountsApi::CPP_GetAvailableExternal_identityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
+                                               UGetAvailableExternal_identityRequest* RequestData, const FOnGetAvailableExternal_identityFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...	
+	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
+
+	// If cached...
+	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		Backend->RunCodeRequestProcessor<UGetAvailableExternal_identityRequest, UAccountAvailableResponse>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, Handler);			
+	}
+	// If not cached...
+	else
+	{
+		// Binds the handler to the static response handler (pre-generated)	
+		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UGetAvailableExternal_identityRequest, UAccountAvailableResponse>
+			(OutRequestId, RequestData, Handler);
+		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
+
+		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+	}	
+}
+
+		
 void UBeamAccountsApi::BP_GetAvailableThirdPartyImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetAvailableThirdPartyRequest* RequestData,
                                                   const FOnGetAvailableThirdPartySuccess& OnSuccess, const FOnGetAvailableThirdPartyError& OnError, const FOnGetAvailableThirdPartyComplete& OnComplete,
                                                   int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
@@ -1939,6 +1999,17 @@ void UBeamAccountsApi::CPP_GetGetPersonallyIdentifiableInformation(UGetGetPerson
 }
 
 		
+void UBeamAccountsApi::CPP_GetAvailableExternal_identity(UGetAvailableExternal_identityRequest* Request, const FOnGetAvailableExternal_identityFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	FBeamRetryConfig RetryConfig;
+	Backend->GetRetryConfigForRequestType(UGetAvailableExternal_identityRequest::StaticClass()->GetName(), RetryConfig);
+	
+    int64 OutRequestId;
+	CPP_GetAvailableExternal_identityImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+}
+
+		
 void UBeamAccountsApi::CPP_GetAvailableThirdParty(UGetAvailableThirdPartyRequest* Request, const FOnGetAvailableThirdPartyFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	FBeamRetryConfig RetryConfig;
@@ -2376,6 +2447,18 @@ void UBeamAccountsApi::GetGetPersonallyIdentifiableInformation(UGetGetPersonally
 	
 	int64 OutRequestId = 0;
 	BP_GetGetPersonallyIdentifiableInformationImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+}
+
+		
+void UBeamAccountsApi::GetAvailableExternal_identity(UGetAvailableExternal_identityRequest* Request, const FOnGetAvailableExternal_identitySuccess& OnSuccess, const FOnGetAvailableExternal_identityError& OnError, const FOnGetAvailableExternal_identityComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+{
+	// AUTO-GENERATED...	
+	FBeamRetryConfig RetryConfig;
+	Backend->GetRetryConfigForRequestType(UGetAvailableExternal_identityRequest::StaticClass()->GetName(), RetryConfig);	
+	
+	int64 OutRequestId = 0;
+	BP_GetAvailableExternal_identityImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
 }
 

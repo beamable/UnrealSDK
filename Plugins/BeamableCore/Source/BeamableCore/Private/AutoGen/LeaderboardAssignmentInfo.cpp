@@ -10,7 +10,7 @@ void ULeaderboardAssignmentInfo::DeserializeRequestResponse(UObject* RequestData
 	BeamDeserialize(ResponseContent);	
 }
 
-void ULeaderboardAssignmentInfo ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void ULeaderboardAssignmentInfo::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("playerId"), PlayerId);
 	Serializer->WriteValue(TEXT("leaderboardId"), LeaderboardId);
@@ -22,8 +22,11 @@ void ULeaderboardAssignmentInfo::BeamSerializeProperties(TUnrealPrettyJsonSerial
 	Serializer->WriteValue(TEXT("leaderboardId"), LeaderboardId);		
 }
 
-void ULeaderboardAssignmentInfo ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void ULeaderboardAssignmentInfo::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("playerId")), PlayerId);
 	LeaderboardId = Bag->GetStringField(TEXT("leaderboardId"));
 }
+
+
+

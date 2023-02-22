@@ -5,7 +5,7 @@
 
 
 
-void UTokenRequestWrapper ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UTokenRequestWrapper::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("grant_type"), GrantType);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("customerScoped"), &bCustomerScoped, Serializer);
@@ -47,7 +47,7 @@ void UTokenRequestWrapper::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("scope"), &Scope, Serializer);		
 }
 
-void UTokenRequestWrapper ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UTokenRequestWrapper::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	GrantType = Bag->GetStringField(TEXT("grant_type"));
 	UBeamJsonUtils::DeserializeOptional<bool>("customerScoped", Bag, bCustomerScoped, OuterOwner);
@@ -67,3 +67,6 @@ void UTokenRequestWrapper ::BeamDeserializeProperties(const TSharedPtr<FJsonObje
 	UBeamJsonUtils::DeserializeOptional<FString>("password", Bag, Password, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("scope", Bag, Scope, OuterOwner);
 }
+
+
+

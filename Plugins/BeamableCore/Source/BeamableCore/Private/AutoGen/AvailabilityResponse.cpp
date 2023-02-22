@@ -10,7 +10,7 @@ void UAvailabilityResponse::DeserializeRequestResponse(UObject* RequestData, FSt
 	BeamDeserialize(ResponseContent);	
 }
 
-void UAvailabilityResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UAvailabilityResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("name"), bName);
 	Serializer->WriteValue(TEXT("tag"), bTag);
@@ -22,8 +22,11 @@ void UAvailabilityResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 	Serializer->WriteValue(TEXT("tag"), bTag);		
 }
 
-void UAvailabilityResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UAvailabilityResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bName = Bag->GetBoolField(TEXT("name"));
 	bTag = Bag->GetBoolField(TEXT("tag"));
 }
+
+
+

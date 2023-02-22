@@ -5,7 +5,7 @@
 
 
 
-void UFriend ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UFriend::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("playerId"), &PlayerId, Serializer);
 	Serializer->WriteValue(TEXT("source"), UFriendSourceLibrary::FriendSourceToSerializationName(Source));
@@ -17,8 +17,11 @@ void UFriend::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) c
 	Serializer->WriteValue(TEXT("source"), UFriendSourceLibrary::FriendSourceToSerializationName(Source));		
 }
 
-void UFriend ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UFriend::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("playerId")), PlayerId, OuterOwner);
 	Source = UFriendSourceLibrary::SerializationNameToFriendSource(Bag->GetStringField(TEXT("source")));
 }
+
+
+

@@ -5,7 +5,7 @@
 
 
 
-void UEventPlayerGroupState ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UEventPlayerGroupState::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("groupScore"), GroupScore);
 	Serializer->WriteValue(TEXT("groupRank"), GroupRank);
@@ -23,7 +23,7 @@ void UEventPlayerGroupState::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("groupId"), &GroupId, Serializer);		
 }
 
-void UEventPlayerGroupState ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UEventPlayerGroupState::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	GroupScore = Bag->GetNumberField(TEXT("groupScore"));
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("groupRank")), GroupRank);
@@ -31,3 +31,6 @@ void UEventPlayerGroupState ::BeamDeserializeProperties(const TSharedPtr<FJsonOb
 	UBeamJsonUtils::DeserializeArray<UEventRewardState*>(Bag->GetArrayField(TEXT("scoreRewards")), ScoreRewards, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("groupId", Bag, GroupId, OuterOwner);
 }
+
+
+

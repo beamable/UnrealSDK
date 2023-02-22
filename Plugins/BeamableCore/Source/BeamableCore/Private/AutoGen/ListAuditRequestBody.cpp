@@ -5,7 +5,7 @@
 
 
 
-void UListAuditRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UListAuditRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("providerid"), &Providerid, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("provider"), &Provider, Serializer);
@@ -27,7 +27,7 @@ void UListAuditRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("limit"), &Limit, Serializer);		
 }
 
-void UListAuditRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UListAuditRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeOptional<FString>("providerid", Bag, Providerid, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("provider", Bag, Provider, OuterOwner);
@@ -37,3 +37,6 @@ void UListAuditRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObj
 	UBeamJsonUtils::DeserializeOptional<int32>("start", Bag, Start, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("limit", Bag, Limit, OuterOwner);
 }
+
+
+

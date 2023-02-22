@@ -5,7 +5,7 @@
 
 
 
-void UMember ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UMember::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("role"), Role);
 	Serializer->WriteValue(TEXT("gamerTag"), GamerTag);
@@ -25,7 +25,7 @@ void UMember::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) c
 	UBeamJsonUtils::SerializeOptional<TArray<UGroupScoreBinding*>, UGroupScoreBinding*>(TEXT("scores"), &Scores, Serializer);		
 }
 
-void UMember ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UMember::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Role = Bag->GetStringField(TEXT("role"));
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("gamerTag")), GamerTag);
@@ -34,3 +34,6 @@ void UMember ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	UBeamJsonUtils::DeserializeOptional<bool>("canPromote", Bag, bCanPromote, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UGroupScoreBinding*>, UGroupScoreBinding*>("scores", Bag, Scores, OuterOwner);
 }
+
+
+

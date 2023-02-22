@@ -5,7 +5,7 @@
 
 
 
-void UDeleteDevicesRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UDeleteDevicesRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("deviceIds"), &DeviceIds, Serializer);
 }
@@ -15,7 +15,10 @@ void UDeleteDevicesRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("deviceIds"), &DeviceIds, Serializer);		
 }
 
-void UDeleteDevicesRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UDeleteDevicesRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("deviceIds", Bag, DeviceIds, OuterOwner);
 }
+
+
+

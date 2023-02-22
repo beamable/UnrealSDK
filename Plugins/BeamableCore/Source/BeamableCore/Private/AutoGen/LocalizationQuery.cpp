@@ -5,7 +5,7 @@
 
 
 
-void ULocalizationQuery ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void ULocalizationQuery::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("id"), Id);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("languages"), &Languages, Serializer);
@@ -17,8 +17,11 @@ void ULocalizationQuery::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("languages"), &Languages, Serializer);		
 }
 
-void ULocalizationQuery ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void ULocalizationQuery::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Id = Bag->GetStringField(TEXT("id"));
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("languages", Bag, Languages, OuterOwner);
 }
+
+
+

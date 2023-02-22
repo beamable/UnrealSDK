@@ -5,7 +5,7 @@
 
 
 
-void UWebhookComet ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UWebhookComet::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("method"), Method);
 	UBeamJsonUtils::SerializeUObject<URouteVariables*>("variables", Variables, Serializer);
@@ -25,7 +25,7 @@ void UWebhookComet::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("description"), &Description, Serializer);		
 }
 
-void UWebhookComet ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UWebhookComet::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Method = Bag->GetStringField(TEXT("method"));
 	UBeamJsonUtils::DeserializeUObject<URouteVariables*>("variables", Bag, Variables, OuterOwner);
@@ -34,3 +34,6 @@ void UWebhookComet ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Ba
 	UBeamJsonUtils::DeserializeUObject<URouteParameters*>("parameters", Bag, Parameters, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("description", Bag, Description, OuterOwner);
 }
+
+
+

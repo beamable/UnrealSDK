@@ -5,7 +5,7 @@
 
 
 
-void UImportFriendsRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UImportFriendsRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("source"), Source);
 	Serializer->WriteValue(TEXT("token"), Token);
@@ -17,8 +17,11 @@ void UImportFriendsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 	Serializer->WriteValue(TEXT("token"), Token);		
 }
 
-void UImportFriendsRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UImportFriendsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Source = Bag->GetStringField(TEXT("source"));
 	Token = Bag->GetStringField(TEXT("token"));
 }
+
+
+

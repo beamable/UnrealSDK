@@ -5,7 +5,7 @@
 
 
 
-void UPlayerReward ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UPlayerReward::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UItemCreateRequestBody*>(TEXT("addItemRequests"), AddItemRequests, Serializer);
 	UBeamJsonUtils::SerializeMap<FString>(TEXT("addCurrencyMap"), AddCurrencyMap, Serializer);
@@ -27,7 +27,7 @@ void UPlayerReward::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 	UBeamJsonUtils::SerializeOptional<TArray<UNewItemReward*>, UNewItemReward*>(TEXT("addItems"), &AddItems, Serializer);		
 }
 
-void UPlayerReward ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UPlayerReward::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UItemCreateRequestBody*>(Bag->GetArrayField(TEXT("addItemRequests")), AddItemRequests, OuterOwner);
 	UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("addCurrencyMap")), AddCurrencyMap, OuterOwner);
@@ -37,3 +37,6 @@ void UPlayerReward ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Ba
 	UBeamJsonUtils::DeserializeOptional<TArray<UWebhookReward*>, UWebhookReward*>("callWebhooks", Bag, CallWebhooks, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UNewItemReward*>, UNewItemReward*>("addItems", Bag, AddItems, OuterOwner);
 }
+
+
+

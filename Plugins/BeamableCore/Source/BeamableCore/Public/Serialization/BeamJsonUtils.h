@@ -191,7 +191,7 @@ class UBeamJsonUtils final : public UBlueprintFunctionLibrary
 			for (const auto& Kvp : Map)
 			{
 				Serializer->WriteIdentifierPrefix(Kvp.Key);
-				Kvp.Value.BeamSerializeProperties(Serializer);				
+				Kvp.Value.BeamSerializeProperties(Serializer);
 			}
 		}
 		// Compile-time branch for Map of Arrays
@@ -256,22 +256,21 @@ class UBeamJsonUtils final : public UBlueprintFunctionLibrary
 	}
 
 public:
-
 	template <typename TSemanticTypeRepresentation>
 	static void SerializeSemanticType(const FString& Identifier, const FBeamSemanticType* ToSerialize, TUnrealJsonSerializer& Serializer)
 	{
-		_SerializeSemanticType<TSemanticTypeRepresentation, TUnrealJsonSerializer>(Identifier, ToSerialize, Serializer);		
+		_SerializeSemanticType<TSemanticTypeRepresentation, TUnrealJsonSerializer>(Identifier, ToSerialize, Serializer);
 	}
 
 	template <typename TSemanticTypeRepresentation>
 	static void SerializeSemanticType(const FString& Identifier, const FBeamSemanticType* ToSerialize, TUnrealPrettyJsonSerializer& Serializer)
 	{
-		_SerializeSemanticType<TSemanticTypeRepresentation, TUnrealPrettyJsonSerializer>(Identifier, ToSerialize, Serializer);		
-	}	
-	
+		_SerializeSemanticType<TSemanticTypeRepresentation, TUnrealPrettyJsonSerializer>(Identifier, ToSerialize, Serializer);
+	}
+
 	template <typename TOptionalType, typename TDataType = TOptionalType, typename TSemanticTypeRepresentation = TDataType>
 	static void SerializeOptional(const FString& Identifier, const FBeamOptional* ToSerialize, TUnrealJsonSerializer Serializer)
-	{		
+	{
 		_SerializeOptional<TOptionalType, TDataType, TSemanticTypeRepresentation, TUnrealJsonSerializer>(Identifier, ToSerialize, Serializer);
 	}
 
@@ -489,7 +488,9 @@ public:
 		ToDeserialize->OuterOwner = OuterOwner;
 		if (Identifier.IsEmpty())
 			ToDeserialize->BeamDeserializeProperties(OwnerBag);
-		else
+		// If the OwnerBag has the field, we deserialize it into the object.
+		// Most of the time, this affects polymorphic response types as means we won't deserialize it 
+		else if (OwnerBag->HasField(Identifier))
 			ToDeserialize->BeamDeserializeProperties(OwnerBag->GetObjectField(Identifier));
 	}
 

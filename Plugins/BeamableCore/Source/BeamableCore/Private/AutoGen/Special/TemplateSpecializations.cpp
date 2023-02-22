@@ -21,6 +21,7 @@
 #include "AutoGen/SubSystems/Content/GetManifestChecksumsRequest.h"
 #include "AutoGen/SubSystems/Content/BasicContentGetManifestsRequest.h"
 #include "AutoGen/SubSystems/Beamo/PostMetricsUrlRequest.h"
+#include "AutoGen/SubSystems/Beamo/GetMicroserviceSecretRequest.h"
 #include "AutoGen/SubSystems/Beamo/GetStoragePerformanceRequest.h"
 #include "AutoGen/SubSystems/Beamo/BasicBeamoGetManifestsRequest.h"
 #include "AutoGen/SubSystems/Beamo/GetTemplatesRequest.h"
@@ -73,6 +74,7 @@
 #include "AutoGen/SubSystems/Inventory/GetInventoryRequest.h"
 #include "AutoGen/SubSystems/Inventory/PostInventoryRequest.h"
 #include "AutoGen/SubSystems/Inventory/PutInventoryRequest.h"
+#include "AutoGen/SubSystems/Inventory/PutProxyReloadRequest.h"
 #include "AutoGen/SubSystems/Inventory/DeleteTransactionRequest.h"
 #include "AutoGen/SubSystems/Inventory/PutTransferRequest.h"
 #include "AutoGen/SubSystems/Leaderboards/GetRanksRequest.h"
@@ -96,6 +98,7 @@
 #include "AutoGen/SubSystems/Leaderboards/GetDetailsRequest.h"
 #include "AutoGen/SubSystems/Leaderboards/PutSwapRequest.h"
 #include "AutoGen/SubSystems/Accounts/GetGetPersonallyIdentifiableInformationRequest.h"
+#include "AutoGen/SubSystems/Accounts/GetAvailableExternal_identityRequest.h"
 #include "AutoGen/SubSystems/Accounts/GetAvailableThirdPartyRequest.h"
 #include "AutoGen/SubSystems/Accounts/PostPasswordUpdateInitRequest.h"
 #include "AutoGen/SubSystems/Accounts/GetAvailableDeviceIdRequest.h"
@@ -127,16 +130,16 @@
 #include "AutoGen/SubSystems/Accounts/PutAccountsRequest.h"
 #include "AutoGen/SubSystems/Accounts/DeleteAdminForgetRequest.h"
 #include "AutoGen/SubSystems/Stats/GetClientBatchRequest.h"
-#include "AutoGen/SubSystems/Stats/PostClientStringlistRequest.h"
-#include "AutoGen/SubSystems/Stats/GetClientRequest.h"
-#include "AutoGen/SubSystems/Stats/PostClientRequest.h"
 #include "AutoGen/SubSystems/Stats/PutSubscribeRequest.h"
 #include "AutoGen/SubSystems/Stats/PostBatchRequest.h"
 #include "AutoGen/SubSystems/Stats/BasicStatsPostSearchRequest.h"
 #include "AutoGen/SubSystems/Stats/PostSearchExtendedRequest.h"
+#include "AutoGen/SubSystems/Stats/PostClientStringlistRequest.h"
 #include "AutoGen/SubSystems/Stats/GetStatsRequest.h"
 #include "AutoGen/SubSystems/Stats/PostStatsRequest.h"
 #include "AutoGen/SubSystems/Stats/DeleteStatsRequest.h"
+#include "AutoGen/SubSystems/Stats/GetClientRequest.h"
+#include "AutoGen/SubSystems/Stats/PostClientRequest.h"
 #include "AutoGen/SubSystems/Tournaments/PostSearchGroupsRequest.h"
 #include "AutoGen/SubSystems/Tournaments/BasicTournamentsGetTournamentsRequest.h"
 #include "AutoGen/SubSystems/Tournaments/PostScoreRequest.h"
@@ -650,6 +653,21 @@ template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestPr
 template FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64&, UPostMetricsUrlRequest*, TBeamFullResponseHandler<UPostMetricsUrlRequest*, UGetSignedUrlResponse*>, const UObject*);
 template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UPostMetricsUrlRequest*,
                                                                                    TBeamFullResponseHandler<UPostMetricsUrlRequest*, UGetSignedUrlResponse*>, const UObject*);
+
+
+
+template TUnrealRequestPtr UBeamBackend::CreateRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const UGetMicroserviceSecretRequest*);
+template TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const FBeamAuthToken&, const UGetMicroserviceSecretRequest*);
+
+template FBeamRequestProcessor UBeamBackend::MakeBlueprintRequestProcessor<UGetMicroserviceSecretRequest, UMicroserviceSecretResponse>(
+	const int64&, UGetMicroserviceSecretRequest*, FOnGetMicroserviceSecretSuccess, FOnGetMicroserviceSecretError, FOnGetMicroserviceSecretComplete, const UObject*);
+
+template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestProcessor<UGetMicroserviceSecretRequest, UMicroserviceSecretResponse>(
+	const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UGetMicroserviceSecretRequest*, FOnGetMicroserviceSecretSuccess, FOnGetMicroserviceSecretError, FOnGetMicroserviceSecretComplete, const UObject*);
+
+template FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64&, UGetMicroserviceSecretRequest*, TBeamFullResponseHandler<UGetMicroserviceSecretRequest*, UMicroserviceSecretResponse*>, const UObject*);
+template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UGetMicroserviceSecretRequest*,
+                                                                                   TBeamFullResponseHandler<UGetMicroserviceSecretRequest*, UMicroserviceSecretResponse*>, const UObject*);
 
 
 
@@ -1433,6 +1451,21 @@ template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcess
 
 
 
+template TUnrealRequestPtr UBeamBackend::CreateRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const UPutProxyReloadRequest*);
+template TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const FBeamAuthToken&, const UPutProxyReloadRequest*);
+
+template FBeamRequestProcessor UBeamBackend::MakeBlueprintRequestProcessor<UPutProxyReloadRequest, UCommonResponse>(
+	const int64&, UPutProxyReloadRequest*, FOnPutProxyReloadSuccess, FOnPutProxyReloadError, FOnPutProxyReloadComplete, const UObject*);
+
+template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestProcessor<UPutProxyReloadRequest, UCommonResponse>(
+	const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UPutProxyReloadRequest*, FOnPutProxyReloadSuccess, FOnPutProxyReloadError, FOnPutProxyReloadComplete, const UObject*);
+
+template FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64&, UPutProxyReloadRequest*, TBeamFullResponseHandler<UPutProxyReloadRequest*, UCommonResponse*>, const UObject*);
+template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UPutProxyReloadRequest*,
+                                                                                   TBeamFullResponseHandler<UPutProxyReloadRequest*, UCommonResponse*>, const UObject*);
+
+
+
 template TUnrealRequestPtr UBeamBackend::CreateRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const UDeleteTransactionRequest*);
 template TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const FBeamAuthToken&, const UDeleteTransactionRequest*);
 
@@ -1775,6 +1808,21 @@ template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestPr
 template FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64&, UGetGetPersonallyIdentifiableInformationRequest*, TBeamFullResponseHandler<UGetGetPersonallyIdentifiableInformationRequest*, UAccountPersonallyIdentifiableInformationResponse*>, const UObject*);
 template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UGetGetPersonallyIdentifiableInformationRequest*,
                                                                                    TBeamFullResponseHandler<UGetGetPersonallyIdentifiableInformationRequest*, UAccountPersonallyIdentifiableInformationResponse*>, const UObject*);
+
+
+
+template TUnrealRequestPtr UBeamBackend::CreateRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const UGetAvailableExternal_identityRequest*);
+template TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const FBeamAuthToken&, const UGetAvailableExternal_identityRequest*);
+
+template FBeamRequestProcessor UBeamBackend::MakeBlueprintRequestProcessor<UGetAvailableExternal_identityRequest, UAccountAvailableResponse>(
+	const int64&, UGetAvailableExternal_identityRequest*, FOnGetAvailableExternal_identitySuccess, FOnGetAvailableExternal_identityError, FOnGetAvailableExternal_identityComplete, const UObject*);
+
+template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestProcessor<UGetAvailableExternal_identityRequest, UAccountAvailableResponse>(
+	const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UGetAvailableExternal_identityRequest*, FOnGetAvailableExternal_identitySuccess, FOnGetAvailableExternal_identityError, FOnGetAvailableExternal_identityComplete, const UObject*);
+
+template FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64&, UGetAvailableExternal_identityRequest*, TBeamFullResponseHandler<UGetAvailableExternal_identityRequest*, UAccountAvailableResponse*>, const UObject*);
+template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UGetAvailableExternal_identityRequest*,
+                                                                                   TBeamFullResponseHandler<UGetAvailableExternal_identityRequest*, UAccountAvailableResponse*>, const UObject*);
 
 
 
@@ -2243,51 +2291,6 @@ template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcess
 
 
 
-template TUnrealRequestPtr UBeamBackend::CreateRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const UPostClientStringlistRequest*);
-template TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const FBeamAuthToken&, const UPostClientStringlistRequest*);
-
-template FBeamRequestProcessor UBeamBackend::MakeBlueprintRequestProcessor<UPostClientStringlistRequest, UEmptyResponse>(
-	const int64&, UPostClientStringlistRequest*, FOnPostClientStringlistSuccess, FOnPostClientStringlistError, FOnPostClientStringlistComplete, const UObject*);
-
-template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestProcessor<UPostClientStringlistRequest, UEmptyResponse>(
-	const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UPostClientStringlistRequest*, FOnPostClientStringlistSuccess, FOnPostClientStringlistError, FOnPostClientStringlistComplete, const UObject*);
-
-template FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64&, UPostClientStringlistRequest*, TBeamFullResponseHandler<UPostClientStringlistRequest*, UEmptyResponse*>, const UObject*);
-template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UPostClientStringlistRequest*,
-                                                                                   TBeamFullResponseHandler<UPostClientStringlistRequest*, UEmptyResponse*>, const UObject*);
-
-
-
-template TUnrealRequestPtr UBeamBackend::CreateRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const UGetClientRequest*);
-template TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const FBeamAuthToken&, const UGetClientRequest*);
-
-template FBeamRequestProcessor UBeamBackend::MakeBlueprintRequestProcessor<UGetClientRequest, UStatsResponse>(
-	const int64&, UGetClientRequest*, FOnGetClientSuccess, FOnGetClientError, FOnGetClientComplete, const UObject*);
-
-template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestProcessor<UGetClientRequest, UStatsResponse>(
-	const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UGetClientRequest*, FOnGetClientSuccess, FOnGetClientError, FOnGetClientComplete, const UObject*);
-
-template FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64&, UGetClientRequest*, TBeamFullResponseHandler<UGetClientRequest*, UStatsResponse*>, const UObject*);
-template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UGetClientRequest*,
-                                                                                   TBeamFullResponseHandler<UGetClientRequest*, UStatsResponse*>, const UObject*);
-
-
-
-template TUnrealRequestPtr UBeamBackend::CreateRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const UPostClientRequest*);
-template TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const FBeamAuthToken&, const UPostClientRequest*);
-
-template FBeamRequestProcessor UBeamBackend::MakeBlueprintRequestProcessor<UPostClientRequest, UEmptyResponse>(
-	const int64&, UPostClientRequest*, FOnPostClientSuccess, FOnPostClientError, FOnPostClientComplete, const UObject*);
-
-template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestProcessor<UPostClientRequest, UEmptyResponse>(
-	const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UPostClientRequest*, FOnPostClientSuccess, FOnPostClientError, FOnPostClientComplete, const UObject*);
-
-template FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64&, UPostClientRequest*, TBeamFullResponseHandler<UPostClientRequest*, UEmptyResponse*>, const UObject*);
-template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UPostClientRequest*,
-                                                                                   TBeamFullResponseHandler<UPostClientRequest*, UEmptyResponse*>, const UObject*);
-
-
-
 template TUnrealRequestPtr UBeamBackend::CreateRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const UPutSubscribeRequest*);
 template TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const FBeamAuthToken&, const UPutSubscribeRequest*);
 
@@ -2348,6 +2351,21 @@ template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcess
 
 
 
+template TUnrealRequestPtr UBeamBackend::CreateRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const UPostClientStringlistRequest*);
+template TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const FBeamAuthToken&, const UPostClientStringlistRequest*);
+
+template FBeamRequestProcessor UBeamBackend::MakeBlueprintRequestProcessor<UPostClientStringlistRequest, UEmptyResponse>(
+	const int64&, UPostClientStringlistRequest*, FOnPostClientStringlistSuccess, FOnPostClientStringlistError, FOnPostClientStringlistComplete, const UObject*);
+
+template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestProcessor<UPostClientStringlistRequest, UEmptyResponse>(
+	const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UPostClientStringlistRequest*, FOnPostClientStringlistSuccess, FOnPostClientStringlistError, FOnPostClientStringlistComplete, const UObject*);
+
+template FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64&, UPostClientStringlistRequest*, TBeamFullResponseHandler<UPostClientStringlistRequest*, UEmptyResponse*>, const UObject*);
+template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UPostClientStringlistRequest*,
+                                                                                   TBeamFullResponseHandler<UPostClientStringlistRequest*, UEmptyResponse*>, const UObject*);
+
+
+
 template TUnrealRequestPtr UBeamBackend::CreateRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const UGetStatsRequest*);
 template TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const FBeamAuthToken&, const UGetStatsRequest*);
 
@@ -2390,6 +2408,36 @@ template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestPr
 template FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64&, UDeleteStatsRequest*, TBeamFullResponseHandler<UDeleteStatsRequest*, UEmptyResponse*>, const UObject*);
 template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UDeleteStatsRequest*,
                                                                                    TBeamFullResponseHandler<UDeleteStatsRequest*, UEmptyResponse*>, const UObject*);
+
+
+
+template TUnrealRequestPtr UBeamBackend::CreateRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const UGetClientRequest*);
+template TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const FBeamAuthToken&, const UGetClientRequest*);
+
+template FBeamRequestProcessor UBeamBackend::MakeBlueprintRequestProcessor<UGetClientRequest, UStatsResponse>(
+	const int64&, UGetClientRequest*, FOnGetClientSuccess, FOnGetClientError, FOnGetClientComplete, const UObject*);
+
+template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestProcessor<UGetClientRequest, UStatsResponse>(
+	const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UGetClientRequest*, FOnGetClientSuccess, FOnGetClientError, FOnGetClientComplete, const UObject*);
+
+template FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64&, UGetClientRequest*, TBeamFullResponseHandler<UGetClientRequest*, UStatsResponse*>, const UObject*);
+template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UGetClientRequest*,
+                                                                                   TBeamFullResponseHandler<UGetClientRequest*, UStatsResponse*>, const UObject*);
+
+
+
+template TUnrealRequestPtr UBeamBackend::CreateRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const UPostClientRequest*);
+template TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const FBeamAuthToken&, const UPostClientRequest*);
+
+template FBeamRequestProcessor UBeamBackend::MakeBlueprintRequestProcessor<UPostClientRequest, UEmptyResponse>(
+	const int64&, UPostClientRequest*, FOnPostClientSuccess, FOnPostClientError, FOnPostClientComplete, const UObject*);
+
+template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestProcessor<UPostClientRequest, UEmptyResponse>(
+	const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UPostClientRequest*, FOnPostClientSuccess, FOnPostClientError, FOnPostClientComplete, const UObject*);
+
+template FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64&, UPostClientRequest*, TBeamFullResponseHandler<UPostClientRequest*, UEmptyResponse*>, const UObject*);
+template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UPostClientRequest*,
+                                                                                   TBeamFullResponseHandler<UPostClientRequest*, UEmptyResponse*>, const UObject*);
 
 
 

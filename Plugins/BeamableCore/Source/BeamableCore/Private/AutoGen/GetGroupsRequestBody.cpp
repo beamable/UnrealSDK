@@ -5,7 +5,7 @@
 
 
 
-void UGetGroupsRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetGroupsRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("max"), &Max, Serializer);
@@ -23,7 +23,7 @@ void UGetGroupsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("from"), &From, Serializer);		
 }
 
-void UGetGroupsRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetGroupsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	TournamentId = Bag->GetStringField(TEXT("tournamentId"));
 	UBeamJsonUtils::DeserializeOptional<int32>("max", Bag, Max, OuterOwner);
@@ -31,3 +31,6 @@ void UGetGroupsRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObj
 	UBeamJsonUtils::DeserializeOptional<int32>("cycle", Bag, Cycle, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("from", Bag, From, OuterOwner);
 }
+
+
+

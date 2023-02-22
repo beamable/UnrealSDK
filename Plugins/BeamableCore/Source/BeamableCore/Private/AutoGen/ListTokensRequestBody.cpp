@@ -5,7 +5,7 @@
 
 
 
-void UListTokensRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UListTokensRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("pageSize"), PageSize);
 	Serializer->WriteValue(TEXT("page"), Page);
@@ -23,7 +23,7 @@ void UListTokensRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 	UBeamJsonUtils::SerializeOptional<FBeamPid, FString>(TEXT("pid"), &Pid, Serializer);		
 }
 
-void UListTokensRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UListTokensRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	PageSize = Bag->GetIntegerField(TEXT("pageSize"));
 	Page = Bag->GetIntegerField(TEXT("page"));
@@ -31,3 +31,6 @@ void UListTokensRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonOb
 	UBeamJsonUtils::DeserializeOptional<FBeamCid, int64>("cid", Bag, Cid, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FBeamPid, FString>("pid", Bag, Pid, OuterOwner);
 }
+
+
+

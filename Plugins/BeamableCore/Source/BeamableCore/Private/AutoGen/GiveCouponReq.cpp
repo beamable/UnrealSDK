@@ -5,7 +5,7 @@
 
 
 
-void UGiveCouponReq ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGiveCouponReq::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("listing"), Listing);
 }
@@ -15,7 +15,10 @@ void UGiveCouponReq::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 	Serializer->WriteValue(TEXT("listing"), Listing);		
 }
 
-void UGiveCouponReq ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGiveCouponReq::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Listing = Bag->GetStringField(TEXT("listing"));
 }
+
+
+

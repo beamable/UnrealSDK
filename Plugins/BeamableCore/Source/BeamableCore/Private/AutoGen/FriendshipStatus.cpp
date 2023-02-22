@@ -10,7 +10,7 @@ void UFriendshipStatus::DeserializeRequestResponse(UObject* RequestData, FString
 	BeamDeserialize(ResponseContent);	
 }
 
-void UFriendshipStatus ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UFriendshipStatus::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("isBlocked"), bIsBlocked);
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("friendId"), &FriendId, Serializer);
@@ -24,9 +24,12 @@ void UFriendshipStatus::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("playerId"), &PlayerId, Serializer);		
 }
 
-void UFriendshipStatus ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UFriendshipStatus::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bIsBlocked = Bag->GetBoolField(TEXT("isBlocked"));
 	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("friendId")), FriendId, OuterOwner);
 	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("playerId")), PlayerId, OuterOwner);
 }
+
+
+

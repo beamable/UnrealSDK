@@ -5,7 +5,7 @@
 
 
 
-void ULeaderboardCreateRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void ULeaderboardCreateRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("sharded"), bSharded);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("partitioned"), &bPartitioned, Serializer);
@@ -31,7 +31,7 @@ void ULeaderboardCreateRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSer
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("derivatives"), &Derivatives, Serializer);		
 }
 
-void ULeaderboardCreateRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void ULeaderboardCreateRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bSharded = Bag->GetBoolField(TEXT("sharded"));
 	UBeamJsonUtils::DeserializeOptional<bool>("partitioned", Bag, bPartitioned, OuterOwner);
@@ -43,3 +43,6 @@ void ULeaderboardCreateRequestBody ::BeamDeserializeProperties(const TSharedPtr<
 	UBeamJsonUtils::DeserializeOptional<int64>("ttl", Bag, Ttl, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("derivatives", Bag, Derivatives, OuterOwner);
 }
+
+
+

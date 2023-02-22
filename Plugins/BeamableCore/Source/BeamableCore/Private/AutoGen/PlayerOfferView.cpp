@@ -5,7 +5,7 @@
 
 
 
-void UPlayerOfferView ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UPlayerOfferView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("coupons"), Coupons);
 	UBeamJsonUtils::SerializeUObject<UPrice*>("price", Price, Serializer);
@@ -33,7 +33,7 @@ void UPlayerOfferView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("buttonText"), &ButtonText, Serializer);		
 }
 
-void UPlayerOfferView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UPlayerOfferView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Coupons = Bag->GetIntegerField(TEXT("coupons"));
 	UBeamJsonUtils::DeserializeUObject<UPrice*>("price", Bag, Price, OuterOwner);
@@ -46,3 +46,6 @@ void UPlayerOfferView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>&
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("obtain")), Obtain, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("buttonText", Bag, ButtonText, OuterOwner);
 }
+
+
+

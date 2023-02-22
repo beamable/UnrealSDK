@@ -28,7 +28,7 @@ struct FBeamRetryConfig
 	 * @brief Timeout for the request.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam|Retry Rules")
-	int64 Timeout;
+	int64 Timeout = 10;
 
 	/**
 	 * @brief How much time will we wait between each request.

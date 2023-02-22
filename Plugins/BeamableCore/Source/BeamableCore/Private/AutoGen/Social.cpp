@@ -10,7 +10,7 @@ void USocial::DeserializeRequestResponse(UObject* RequestData, FString ResponseC
 	BeamDeserialize(ResponseContent);	
 }
 
-void USocial ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void USocial::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("playerId"), &PlayerId, Serializer);
 	UBeamJsonUtils::SerializeArray<UFriend*>(TEXT("friends"), Friends, Serializer);
@@ -26,10 +26,13 @@ void USocial::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) c
 	UBeamJsonUtils::SerializeArray<UInvite*>(TEXT("invites"), Invites, Serializer);		
 }
 
-void USocial ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void USocial::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("playerId")), PlayerId, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UFriend*>(Bag->GetArrayField(TEXT("friends")), Friends, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UPlayerId*>(Bag->GetArrayField(TEXT("blocked")), Blocked, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UInvite*>(Bag->GetArrayField(TEXT("invites")), Invites, OuterOwner);
 }
+
+
+

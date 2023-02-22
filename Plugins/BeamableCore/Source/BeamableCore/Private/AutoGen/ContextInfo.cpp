@@ -5,7 +5,7 @@
 
 
 
-void UContextInfo ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UContextInfo::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("platform"), Platform);
 	Serializer->WriteValue(TEXT("device"), Device);
@@ -17,8 +17,11 @@ void UContextInfo::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 	Serializer->WriteValue(TEXT("device"), Device);		
 }
 
-void UContextInfo ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UContextInfo::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Platform = Bag->GetStringField(TEXT("platform"));
 	Device = Bag->GetStringField(TEXT("device"));
 }
+
+
+

@@ -5,7 +5,7 @@
 
 
 
-void UEventPlayerStateView ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UEventPlayerStateView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("running"), bRunning);
 	Serializer->WriteValue(TEXT("name"), Name);
@@ -37,7 +37,7 @@ void UEventPlayerStateView::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 	UBeamJsonUtils::SerializeOptional<UEventPlayerGroupState*>(TEXT("groupRewards"), &GroupRewards, Serializer);		
 }
 
-void UEventPlayerStateView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UEventPlayerStateView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bRunning = Bag->GetBoolField(TEXT("running"));
 	Name = Bag->GetStringField(TEXT("name"));
@@ -52,3 +52,6 @@ void UEventPlayerStateView ::BeamDeserializeProperties(const TSharedPtr<FJsonObj
 	UBeamJsonUtils::DeserializeOptional<UEventPlayerPhaseView*>("currentPhase", Bag, CurrentPhase, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UEventPlayerGroupState*>("groupRewards", Bag, GroupRewards, OuterOwner);
 }
+
+
+

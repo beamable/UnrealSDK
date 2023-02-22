@@ -5,7 +5,7 @@
 
 
 
-void UAccountRegistration ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UAccountRegistration::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("email"), Email);
 	Serializer->WriteValue(TEXT("password"), Password);
@@ -17,8 +17,11 @@ void UAccountRegistration::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 	Serializer->WriteValue(TEXT("password"), Password);		
 }
 
-void UAccountRegistration ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UAccountRegistration::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Email = Bag->GetStringField(TEXT("email"));
 	Password = Bag->GetStringField(TEXT("password"));
 }
+
+
+

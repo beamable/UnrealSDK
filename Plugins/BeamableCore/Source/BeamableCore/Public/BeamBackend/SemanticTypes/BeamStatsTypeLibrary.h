@@ -18,10 +18,10 @@ public:
 	UFUNCTION(BlueprintPure, Category="Beam|Semantic Types", meta = (DisplayName = "Beam - Make StatsType"))
 	static FBeamStatsType MakeStatsType(TEnumAsByte<EBeamStatsDomain> Domain, TEnumAsByte<EBeamStatsVisibility> Visibility, FBeamGamerTag GamerTag)
 	{
-		const FString DomainAsStr = StaticEnum<EBeamStatsDomain>()->GetNameByValue(Domain).ToString();
-		const FString VisibilityAsStr = StaticEnum<EBeamStatsVisibility>()->GetNameByValue(Visibility).ToString();
+		const FString DomainAsStr = StaticEnum<EBeamStatsDomain>()->GetNameByValue(Domain).ToString().ToLower();
+		const FString VisibilityAsStr = StaticEnum<EBeamStatsVisibility>()->GetNameByValue(Visibility).ToString().ToLower();
 		const FString AsStr = DomainAsStr + TEXT(".") + VisibilityAsStr + TEXT(".player.") + GamerTag.AsString;
-
+		
 		return FBeamStatsType(AsStr);
 	}
 

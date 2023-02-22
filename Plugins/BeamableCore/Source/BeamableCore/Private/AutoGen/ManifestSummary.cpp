@@ -5,7 +5,7 @@
 
 
 
-void UManifestSummary ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UManifestSummary::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("uid"), Uid);
 	UBeamJsonUtils::SerializeUObject<UContentBasicManifestChecksum*>("manifest", Manifest, Serializer);
@@ -17,8 +17,11 @@ void UManifestSummary::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 	UBeamJsonUtils::SerializeUObject<UContentBasicManifestChecksum*>("manifest", Manifest, Serializer);		
 }
 
-void UManifestSummary ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UManifestSummary::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Uid = Bag->GetStringField(TEXT("uid"));
 	UBeamJsonUtils::DeserializeUObject<UContentBasicManifestChecksum*>("manifest", Bag, Manifest, OuterOwner);
 }
+
+
+

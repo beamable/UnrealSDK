@@ -8,9 +8,9 @@
 UENUM(BlueprintType, Category="Beam|Enums")
 enum class EWebhookRetryType : uint8
 {
-	None UMETA(DisplayName="None"),
-	Once UMETA(DisplayName="Once"),
-	ExponentialBackoff UMETA(DisplayName="Exponential Backoff")		
+	BEAM_None UMETA(DisplayName="None"),
+	BEAM_Once UMETA(DisplayName="Once"),
+	BEAM_ExponentialBackoff UMETA(DisplayName="Exponential Backoff")		
 };
 
 UCLASS(BlueprintType, Category="Beam|Enums")
@@ -24,8 +24,10 @@ public:
 	{
 		const UEnum* Enum = StaticEnum<EWebhookRetryType>();
 		const int32 NameIndex = Enum->GetIndexByValue(static_cast<int64>(Value));
-		const FString SerializationName = Enum->GetNameStringByValue(NameIndex);		
-		return SerializationName;
+		const FString SerializationName = Enum->GetNameStringByIndex(NameIndex);
+
+		// We chop off the first five "BEAM_" characters. 		
+		return SerializationName.RightChop(5);
 		
 	}
 
@@ -35,7 +37,8 @@ public:
 		const UEnum* Enum = StaticEnum<EWebhookRetryType>();
 		for (int32 NameIndex = 0; NameIndex < Enum->NumEnums() - 1; ++NameIndex)
 		{
-			const FString& SerializationName = Enum->GetNameStringByValue(NameIndex);
+			// We chop off the first five "BEAM_" characters.
+			const FString& SerializationName = Enum->GetNameStringByIndex(NameIndex).RightChop(5);
 			if(Value == SerializationName)
 				return static_cast<EWebhookRetryType>(Enum->GetValueByIndex(NameIndex));
 		}

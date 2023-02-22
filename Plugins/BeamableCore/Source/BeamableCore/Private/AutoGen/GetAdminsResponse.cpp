@@ -10,7 +10,7 @@ void UGetAdminsResponse::DeserializeRequestResponse(UObject* RequestData, FStrin
 	BeamDeserialize(ResponseContent);	
 }
 
-void UGetAdminsResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetAdminsResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UAccountPortalView*>(TEXT("accounts"), Accounts, Serializer);
 }
@@ -20,7 +20,10 @@ void UGetAdminsResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 	UBeamJsonUtils::SerializeArray<UAccountPortalView*>(TEXT("accounts"), Accounts, Serializer);		
 }
 
-void UGetAdminsResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetAdminsResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UAccountPortalView*>(Bag->GetArrayField(TEXT("accounts")), Accounts, OuterOwner);
 }
+
+
+

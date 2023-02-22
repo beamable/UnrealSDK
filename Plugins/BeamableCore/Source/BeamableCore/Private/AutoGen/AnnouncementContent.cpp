@@ -5,7 +5,7 @@
 
 
 
-void UAnnouncementContent ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UAnnouncementContent::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("body"), Body);
 	Serializer->WriteValue(TEXT("channel"), Channel);
@@ -37,7 +37,7 @@ void UAnnouncementContent::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("clientData"), &ClientData, Serializer);		
 }
 
-void UAnnouncementContent ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UAnnouncementContent::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Body = Bag->GetStringField(TEXT("body"));
 	Channel = Bag->GetStringField(TEXT("channel"));
@@ -52,3 +52,6 @@ void UAnnouncementContent ::BeamDeserializeProperties(const TSharedPtr<FJsonObje
 	UBeamJsonUtils::DeserializeOptional<TArray<UAnnouncementAttachment*>, UAnnouncementAttachment*>("attachments", Bag, Attachments, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TMap<FString, FString>, FString>("clientData", Bag, ClientData, OuterOwner);
 }
+
+
+

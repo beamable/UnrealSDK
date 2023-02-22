@@ -10,7 +10,7 @@ void UAttachExternalIdentityApiResponse::DeserializeRequestResponse(UObject* Req
 	BeamDeserialize(ResponseContent);	
 }
 
-void UAttachExternalIdentityApiResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UAttachExternalIdentityApiResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("result"), Result);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("challenge_token"), &ChallengeToken, Serializer);
@@ -22,8 +22,11 @@ void UAttachExternalIdentityApiResponse::BeamSerializeProperties(TUnrealPrettyJs
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("challenge_token"), &ChallengeToken, Serializer);		
 }
 
-void UAttachExternalIdentityApiResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UAttachExternalIdentityApiResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Result = Bag->GetStringField(TEXT("result"));
 	UBeamJsonUtils::DeserializeOptional<FString>("challenge_token", Bag, ChallengeToken, OuterOwner);
 }
+
+
+

@@ -5,7 +5,7 @@
 
 
 
-void UStatsSearchRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UStatsSearchRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("domain"), Domain);
 	Serializer->WriteValue(TEXT("access"), Access);
@@ -21,10 +21,13 @@ void UStatsSearchRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 	UBeamJsonUtils::SerializeArray<UStatsSearchCriteria*>(TEXT("criteria"), Criteria, Serializer);		
 }
 
-void UStatsSearchRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UStatsSearchRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Domain = Bag->GetStringField(TEXT("domain"));
 	Access = Bag->GetStringField(TEXT("access"));
 	ObjectType = Bag->GetStringField(TEXT("objectType"));
 	UBeamJsonUtils::DeserializeArray<UStatsSearchCriteria*>(Bag->GetArrayField(TEXT("criteria")), Criteria, OuterOwner);
 }
+
+
+

@@ -5,7 +5,7 @@
 
 
 
-void UPostManifestRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UPostManifestRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UServiceReference*>(TEXT("manifest"), Manifest, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("autoDeploy"), &bAutoDeploy, Serializer);
@@ -21,10 +21,13 @@ void UPostManifestRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 	UBeamJsonUtils::SerializeOptional<TArray<UServiceStorageReference*>, UServiceStorageReference*>(TEXT("storageReferences"), &StorageReferences, Serializer);		
 }
 
-void UPostManifestRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UPostManifestRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UServiceReference*>(Bag->GetArrayField(TEXT("manifest")), Manifest, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("autoDeploy", Bag, bAutoDeploy, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("comments", Bag, Comments, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UServiceStorageReference*>, UServiceStorageReference*>("storageReferences", Bag, StorageReferences, OuterOwner);
 }
+
+
+

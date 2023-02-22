@@ -10,7 +10,7 @@ void USendMessageResponse::DeserializeRequestResponse(UObject* RequestData, FStr
 	BeamDeserialize(ResponseContent);	
 }
 
-void USendMessageResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void USendMessageResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeUObject<UChatV2ObjectMessage*>("message", Message, Serializer);
 }
@@ -20,7 +20,10 @@ void USendMessageResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 	UBeamJsonUtils::SerializeUObject<UChatV2ObjectMessage*>("message", Message, Serializer);		
 }
 
-void USendMessageResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void USendMessageResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeUObject<UChatV2ObjectMessage*>("message", Bag, Message, OuterOwner);
 }
+
+
+

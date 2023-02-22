@@ -81,6 +81,68 @@ void UBeamBeamoApi::CPP_PostMetricsUrlImpl(const FBeamRealmHandle& TargetRealm, 
 }
 
 		
+void UBeamBeamoApi::BP_GetMicroserviceSecretImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                                UGetMicroserviceSecretRequest* RequestData, const FOnGetMicroserviceSecretSuccess& OnSuccess, const FOnGetMicroserviceSecretError& OnError, const FOnGetMicroserviceSecretComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...	
+	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
+
+	// If cached...
+	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UGetMicroserviceSecretRequest, UMicroserviceSecretResponse, FOnGetMicroserviceSecretSuccess, FOnGetMicroserviceSecretError, FOnGetMicroserviceSecretComplete>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
+	}
+	// If not cached...
+	else
+	{
+		// Binds the handler to the static response handler (pre-generated)
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetMicroserviceSecretRequest, UMicroserviceSecretResponse, FOnGetMicroserviceSecretSuccess, FOnGetMicroserviceSecretError, FOnGetMicroserviceSecretComplete>
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
+	    
+		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+	}
+}
+
+void UBeamBeamoApi::CPP_GetMicroserviceSecretImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                              UGetMicroserviceSecretRequest* RequestData, const FOnGetMicroserviceSecretFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...
+	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
+	
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
+
+	// If cached...
+	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		Backend->RunAuthenticatedCodeRequestProcessor<UGetMicroserviceSecretRequest, UMicroserviceSecretResponse>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
+	}
+	// If not cached...
+	else
+	{
+		// Binds the handler to the static response handler (pre-generated)	
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetMicroserviceSecretRequest, UMicroserviceSecretResponse>
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
+
+		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+	}
+}
+
+		
 void UBeamBeamoApi::BP_GetStoragePerformanceImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
                                 UGetStoragePerformanceRequest* RequestData, const FOnGetStoragePerformanceSuccess& OnSuccess, const FOnGetStoragePerformanceError& OnError, const FOnGetStoragePerformanceComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
@@ -906,6 +968,21 @@ void UBeamBeamoApi::CPP_PostMetricsUrl(const FUserSlot& UserSlot, UPostMetricsUr
 }
 
 		
+void UBeamBeamoApi::CPP_GetMicroserviceSecret(const FUserSlot& UserSlot, UGetMicroserviceSecretRequest* Request, const FOnGetMicroserviceSecretFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...
+	FBeamRealmUser AuthenticatedUser;
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
+
+	FBeamRetryConfig RetryConfig;
+	Backend->GetRetryConfigForUserSlotAndRequestType(UGetMicroserviceSecretRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+
+    int64 OutRequestId;
+	CPP_GetMicroserviceSecretImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+}
+
+		
 void UBeamBeamoApi::CPP_GetStoragePerformance(const FUserSlot& UserSlot, UGetStoragePerformanceRequest* Request, const FOnGetStoragePerformanceFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
@@ -1116,6 +1193,21 @@ void UBeamBeamoApi::PostMetricsUrl(FUserSlot UserSlot, UPostMetricsUrlRequest* R
 
 	int64 OutRequestId;
 	BP_PostMetricsUrlImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+}
+
+		
+void UBeamBeamoApi::GetMicroserviceSecret(FUserSlot UserSlot, UGetMicroserviceSecretRequest* Request, const FOnGetMicroserviceSecretSuccess& OnSuccess, const FOnGetMicroserviceSecretError& OnError, const FOnGetMicroserviceSecretComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+{
+	// AUTO-GENERATED...
+	FBeamRealmUser AuthenticatedUser;
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
+
+	FBeamRetryConfig RetryConfig;
+	Backend->GetRetryConfigForUserSlotAndRequestType(UGetMicroserviceSecretRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+
+	int64 OutRequestId;
+	BP_GetMicroserviceSecretImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 

@@ -10,7 +10,7 @@ void ULeaderboardUidResponse::DeserializeRequestResponse(UObject* RequestData, F
 	BeamDeserialize(ResponseContent);	
 }
 
-void ULeaderboardUidResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void ULeaderboardUidResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("id"), Id);
 }
@@ -20,7 +20,10 @@ void ULeaderboardUidResponse::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 	Serializer->WriteValue(TEXT("id"), Id);		
 }
 
-void ULeaderboardUidResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void ULeaderboardUidResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("id")), Id);
 }
+
+
+

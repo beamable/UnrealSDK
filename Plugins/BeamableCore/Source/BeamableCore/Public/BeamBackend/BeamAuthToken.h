@@ -14,7 +14,7 @@ struct FBeamAuthToken
 	UPROPERTY(BlueprintReadOnly)
 	FString RefreshToken;
 	UPROPERTY(BlueprintReadOnly)
-	int64 ExpiresIn;
+	int64 ExpiresIn = -1;
 
 	friend bool operator==(const FBeamAuthToken& Lhs, const FBeamAuthToken& RHS)
 	{

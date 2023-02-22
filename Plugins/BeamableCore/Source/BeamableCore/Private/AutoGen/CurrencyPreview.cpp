@@ -5,7 +5,7 @@
 
 
 
-void UCurrencyPreview ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UCurrencyPreview::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("id"), Id);
 	Serializer->WriteValue(TEXT("amount"), Amount);
@@ -19,9 +19,12 @@ void UCurrencyPreview::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 	Serializer->WriteValue(TEXT("originalAmount"), OriginalAmount);		
 }
 
-void UCurrencyPreview ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UCurrencyPreview::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Id = Bag->GetStringField(TEXT("id"));
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("amount")), Amount);
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("originalAmount")), OriginalAmount);
 }
+
+
+

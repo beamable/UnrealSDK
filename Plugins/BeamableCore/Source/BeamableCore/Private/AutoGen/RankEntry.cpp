@@ -5,7 +5,7 @@
 
 
 
-void URankEntry ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void URankEntry::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("rank"), Rank);
 	Serializer->WriteValue(TEXT("gt"), Gt);
@@ -23,7 +23,7 @@ void URankEntry::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer
 	UBeamJsonUtils::SerializeOptional<TArray<URankEntryStat*>, URankEntryStat*>(TEXT("stats"), &Stats, Serializer);		
 }
 
-void URankEntry ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void URankEntry::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("rank")), Rank);
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("gt")), Gt);
@@ -31,3 +31,6 @@ void URankEntry ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	UBeamJsonUtils::DeserializeOptional<double>("score", Bag, Score, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<URankEntryStat*>, URankEntryStat*>("stats", Bag, Stats, OuterOwner);
 }
+
+
+

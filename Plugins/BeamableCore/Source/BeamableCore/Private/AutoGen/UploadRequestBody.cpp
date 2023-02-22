@@ -5,7 +5,7 @@
 
 
 
-void UUploadRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UUploadRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("objectKey"), ObjectKey);
 	Serializer->WriteValue(TEXT("sizeInBytes"), SizeInBytes);
@@ -25,7 +25,7 @@ void UUploadRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 	UBeamJsonUtils::SerializeOptional<TArray<UMetadataPair*>, UMetadataPair*>(TEXT("metadata"), &Metadata, Serializer);		
 }
 
-void UUploadRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UUploadRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	ObjectKey = Bag->GetStringField(TEXT("objectKey"));
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("sizeInBytes")), SizeInBytes);
@@ -34,3 +34,6 @@ void UUploadRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject
 	UBeamJsonUtils::DeserializeOptional<FString>("checksum", Bag, Checksum, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UMetadataPair*>, UMetadataPair*>("metadata", Bag, Metadata, OuterOwner);
 }
+
+
+

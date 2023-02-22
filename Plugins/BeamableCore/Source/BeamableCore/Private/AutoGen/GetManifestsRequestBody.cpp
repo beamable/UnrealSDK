@@ -5,7 +5,7 @@
 
 
 
-void UGetManifestsRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetManifestsRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("archived"), &bArchived, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("limit"), &Limit, Serializer);
@@ -19,9 +19,12 @@ void UGetManifestsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("offset"), &Offset, Serializer);		
 }
 
-void UGetManifestsRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetManifestsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeOptional<bool>("archived", Bag, bArchived, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("limit", Bag, Limit, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("offset", Bag, Offset, OuterOwner);
 }
+
+
+

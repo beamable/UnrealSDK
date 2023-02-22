@@ -5,7 +5,7 @@
 
 
 
-void UCooldownModifierRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UCooldownModifierRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("gamerTag"), GamerTag);
 	UBeamJsonUtils::SerializeArray<UUpdateListingCooldownRequestBody*>(TEXT("updateListingCooldownRequests"), UpdateListingCooldownRequests, Serializer);
@@ -17,8 +17,11 @@ void UCooldownModifierRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeri
 	UBeamJsonUtils::SerializeArray<UUpdateListingCooldownRequestBody*>(TEXT("updateListingCooldownRequests"), UpdateListingCooldownRequests, Serializer);		
 }
 
-void UCooldownModifierRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UCooldownModifierRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("gamerTag")), GamerTag);
 	UBeamJsonUtils::DeserializeArray<UUpdateListingCooldownRequestBody*>(Bag->GetArrayField(TEXT("updateListingCooldownRequests")), UpdateListingCooldownRequests, OuterOwner);
 }
+
+
+

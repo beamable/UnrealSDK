@@ -5,7 +5,7 @@
 
 
 
-void UCommerceLootRoll ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UCommerceLootRoll::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("preroll"), bPreroll);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("externalTables"), &ExternalTables, Serializer);
@@ -17,8 +17,11 @@ void UCommerceLootRoll::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("externalTables"), &ExternalTables, Serializer);		
 }
 
-void UCommerceLootRoll ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UCommerceLootRoll::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bPreroll = Bag->GetBoolField(TEXT("preroll"));
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("externalTables", Bag, ExternalTables, OuterOwner);
 }
+
+
+

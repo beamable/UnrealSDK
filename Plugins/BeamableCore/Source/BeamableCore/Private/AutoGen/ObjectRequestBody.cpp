@@ -5,7 +5,7 @@
 
 
 
-void UObjectRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UObjectRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("objectKey"), ObjectKey);
 }
@@ -15,7 +15,10 @@ void UObjectRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 	Serializer->WriteValue(TEXT("objectKey"), ObjectKey);		
 }
 
-void UObjectRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UObjectRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	ObjectKey = Bag->GetStringField(TEXT("objectKey"));
 }
+
+
+

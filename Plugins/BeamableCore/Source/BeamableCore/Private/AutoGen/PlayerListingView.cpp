@@ -5,7 +5,7 @@
 
 
 
-void UPlayerListingView ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UPlayerListingView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("active"), bActive);
 	Serializer->WriteValue(TEXT("queryAfterPurchase"), bQueryAfterPurchase);
@@ -33,7 +33,7 @@ void UPlayerListingView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("secondsRemain"), &SecondsRemain, Serializer);		
 }
 
-void UPlayerListingView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UPlayerListingView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bActive = Bag->GetBoolField(TEXT("active"));
 	bQueryAfterPurchase = Bag->GetBoolField(TEXT("queryAfterPurchase"));
@@ -46,3 +46,6 @@ void UPlayerListingView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject
 	UBeamJsonUtils::DeserializeOptional<int32>("purchasesRemain", Bag, PurchasesRemain, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("secondsRemain", Bag, SecondsRemain, OuterOwner);
 }
+
+
+

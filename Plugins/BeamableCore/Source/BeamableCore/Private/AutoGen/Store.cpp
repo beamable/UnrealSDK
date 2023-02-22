@@ -5,7 +5,7 @@
 
 
 
-void UStore ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UStore::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("symbol"), Symbol);
 	UBeamJsonUtils::SerializeArray<UListing*>(TEXT("listings"), Listings, Serializer);
@@ -27,7 +27,7 @@ void UStore::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) co
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("title"), &Title, Serializer);		
 }
 
-void UStore ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UStore::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Symbol = Bag->GetStringField(TEXT("symbol"));
 	UBeamJsonUtils::DeserializeArray<UListing*>(Bag->GetArrayField(TEXT("listings")), Listings, OuterOwner);
@@ -37,3 +37,6 @@ void UStore ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	UBeamJsonUtils::DeserializeOptional<int32>("refreshTime", Bag, RefreshTime, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("title", Bag, Title, OuterOwner);
 }
+
+
+

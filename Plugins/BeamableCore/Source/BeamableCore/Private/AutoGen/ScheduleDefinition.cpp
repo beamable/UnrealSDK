@@ -5,7 +5,7 @@
 
 
 
-void UScheduleDefinition ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UScheduleDefinition::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("dayOfWeek"), DayOfWeek, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("minute"), Minute, Serializer);
@@ -27,7 +27,7 @@ void UScheduleDefinition::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("month"), Month, Serializer);		
 }
 
-void UScheduleDefinition ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UScheduleDefinition::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("dayOfWeek")), DayOfWeek, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("minute")), Minute, OuterOwner);
@@ -37,3 +37,6 @@ void UScheduleDefinition ::BeamDeserializeProperties(const TSharedPtr<FJsonObjec
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("second")), Second, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("month")), Month, OuterOwner);
 }
+
+
+

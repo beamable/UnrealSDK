@@ -10,7 +10,7 @@ void UAnnouncementQueryResponse::DeserializeRequestResponse(UObject* RequestData
 	BeamDeserialize(ResponseContent);	
 }
 
-void UAnnouncementQueryResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UAnnouncementQueryResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UAnnouncementView*>(TEXT("announcements"), Announcements, Serializer);
 }
@@ -20,7 +20,10 @@ void UAnnouncementQueryResponse::BeamSerializeProperties(TUnrealPrettyJsonSerial
 	UBeamJsonUtils::SerializeArray<UAnnouncementView*>(TEXT("announcements"), Announcements, Serializer);		
 }
 
-void UAnnouncementQueryResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UAnnouncementQueryResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UAnnouncementView*>(Bag->GetArrayField(TEXT("announcements")), Announcements, OuterOwner);
 }
+
+
+

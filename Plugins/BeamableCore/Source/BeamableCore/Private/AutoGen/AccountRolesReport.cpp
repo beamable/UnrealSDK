@@ -10,7 +10,7 @@ void UAccountRolesReport::DeserializeRequestResponse(UObject* RequestData, FStri
 	BeamDeserialize(ResponseContent);	
 }
 
-void UAccountRolesReport ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UAccountRolesReport::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("accountId"), AccountId);
 	Serializer->WriteValue(TEXT("email"), Email);
@@ -24,9 +24,12 @@ void UAccountRolesReport::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 	UBeamJsonUtils::SerializeArray<URealmRolesReport*>(TEXT("realms"), Realms, Serializer);		
 }
 
-void UAccountRolesReport ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UAccountRolesReport::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("accountId")), AccountId);
 	Email = Bag->GetStringField(TEXT("email"));
 	UBeamJsonUtils::DeserializeArray<URealmRolesReport*>(Bag->GetArrayField(TEXT("realms")), Realms, OuterOwner);
 }
+
+
+

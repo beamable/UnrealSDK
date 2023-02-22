@@ -10,7 +10,7 @@ void USteamOrderInfoResponse::DeserializeRequestResponse(UObject* RequestData, F
 	BeamDeserialize(ResponseContent);	
 }
 
-void USteamOrderInfoResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void USteamOrderInfoResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("usstate"), Usstate);
 	Serializer->WriteValue(TEXT("country"), Country);
@@ -38,7 +38,7 @@ void USteamOrderInfoResponse::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 	UBeamJsonUtils::SerializeArray<USteamOrderInfoItem*>(TEXT("items"), Items, Serializer);		
 }
 
-void USteamOrderInfoResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void USteamOrderInfoResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Usstate = Bag->GetStringField(TEXT("usstate"));
 	Country = Bag->GetStringField(TEXT("country"));
@@ -51,3 +51,6 @@ void USteamOrderInfoResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonO
 	Time = Bag->GetStringField(TEXT("time"));
 	UBeamJsonUtils::DeserializeArray<USteamOrderInfoItem*>(Bag->GetArrayField(TEXT("items")), Items, OuterOwner);
 }
+
+
+

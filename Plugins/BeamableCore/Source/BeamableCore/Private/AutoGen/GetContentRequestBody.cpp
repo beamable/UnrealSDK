@@ -5,7 +5,7 @@
 
 
 
-void UGetContentRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetContentRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("contentId"), &ContentId, Serializer);
 	Serializer->WriteValue(TEXT("version"), Version);
@@ -17,8 +17,11 @@ void UGetContentRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 	Serializer->WriteValue(TEXT("version"), Version);		
 }
 
-void UGetContentRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetContentRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("contentId")), ContentId, OuterOwner);
 	Version = Bag->GetStringField(TEXT("version"));
 }
+
+
+

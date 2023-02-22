@@ -113,19 +113,19 @@ struct FBeamMockGetRequestCSVResponseRow : public FTableRowBase
 	const static TArray<FString> HeaderFields;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	int32 Field1;
+	int32 Field1 = 0;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	FString Field2;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	int64 Field3;
+	int64 Field3 = 0;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	FString Field4;
 	
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	EGroupType Field5;
+	EGroupType Field5 = EGroupType::BEAM_guild;
 };
 
 UCLASS(BlueprintType)

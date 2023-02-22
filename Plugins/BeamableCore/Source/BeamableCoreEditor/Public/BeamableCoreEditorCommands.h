@@ -23,4 +23,9 @@ public:
 public:
 
 	TSharedPtr<FUICommandInfo> OpenBeamableWindowCommand;
+
+	TSharedPtr<FUICommandInfo> CreateContentObjectInLocalManifest;
+	TSharedPtr<FUICommandInfo> EditContentObjectInLocalManifest;
+	
+	TSharedPtr<FUICommandInfo> PublishManifest;	
 };

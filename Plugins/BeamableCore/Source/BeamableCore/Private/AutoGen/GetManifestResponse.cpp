@@ -10,7 +10,7 @@ void UGetManifestResponse::DeserializeRequestResponse(UObject* RequestData, FStr
 	BeamDeserialize(ResponseContent);	
 }
 
-void UGetManifestResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetManifestResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeUObject<UManifestView*>("manifest", Manifest, Serializer);
 }
@@ -20,7 +20,10 @@ void UGetManifestResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 	UBeamJsonUtils::SerializeUObject<UManifestView*>("manifest", Manifest, Serializer);		
 }
 
-void UGetManifestResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetManifestResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeUObject<UManifestView*>("manifest", Bag, Manifest, OuterOwner);
 }
+
+
+

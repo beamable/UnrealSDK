@@ -10,7 +10,7 @@ void UGetLambdaURI::DeserializeRequestResponse(UObject* RequestData, FString Res
 	BeamDeserialize(ResponseContent);	
 }
 
-void UGetLambdaURI ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetLambdaURI::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("uri"), Uri);
 }
@@ -20,7 +20,10 @@ void UGetLambdaURI::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 	Serializer->WriteValue(TEXT("uri"), Uri);		
 }
 
-void UGetLambdaURI ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetLambdaURI::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Uri = Bag->GetStringField(TEXT("uri"));
 }
+
+
+

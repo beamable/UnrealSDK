@@ -5,7 +5,7 @@
 
 
 
-void UUpdateMailRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UUpdateMailRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("mailId"), MailId);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("acceptAttachments"), &bAcceptAttachments, Serializer);
@@ -27,7 +27,7 @@ void UUpdateMailRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("category"), &Category, Serializer);		
 }
 
-void UUpdateMailRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UUpdateMailRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("mailId")), MailId);
 	UBeamJsonUtils::DeserializeOptional<bool>("acceptAttachments", Bag, bAcceptAttachments, OuterOwner);
@@ -37,3 +37,6 @@ void UUpdateMailRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonOb
 	UBeamJsonUtils::DeserializeOptional<FString>("state", Bag, State, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("category", Bag, Category, OuterOwner);
 }
+
+
+

@@ -10,7 +10,7 @@ void UEventClaimResponse::DeserializeRequestResponse(UObject* RequestData, FStri
 	BeamDeserialize(ResponseContent);	
 }
 
-void UEventClaimResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UEventClaimResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeUObject<UEventPlayerStateView*>("view", View, Serializer);
 	Serializer->WriteValue(TEXT("gameRspJson"), GameRspJson);
@@ -22,8 +22,11 @@ void UEventClaimResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 	Serializer->WriteValue(TEXT("gameRspJson"), GameRspJson);		
 }
 
-void UEventClaimResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UEventClaimResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeUObject<UEventPlayerStateView*>("view", Bag, View, OuterOwner);
 	GameRspJson = Bag->GetStringField(TEXT("gameRspJson"));
 }
+
+
+

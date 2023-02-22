@@ -5,7 +5,7 @@
 
 
 
-void UCreateLaunchMessageRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UCreateLaunchMessageRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("name"), Name);
 	Serializer->WriteValue(TEXT("body"), Body);
@@ -17,8 +17,11 @@ void UCreateLaunchMessageRequestBody::BeamSerializeProperties(TUnrealPrettyJsonS
 	Serializer->WriteValue(TEXT("body"), Body);		
 }
 
-void UCreateLaunchMessageRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UCreateLaunchMessageRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Name = Bag->GetStringField(TEXT("name"));
 	Body = Bag->GetStringField(TEXT("body"));
 }
+
+
+

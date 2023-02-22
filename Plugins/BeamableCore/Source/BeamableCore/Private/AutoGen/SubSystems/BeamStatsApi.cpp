@@ -76,186 +76,6 @@ void UBeamStatsApi::CPP_GetClientBatchImpl(const FBeamRealmHandle& TargetRealm, 
 	}	
 }
 
-		
-void UBeamStatsApi::BP_PostClientStringlistImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UPostClientStringlistRequest* RequestData,
-                                                  const FOnPostClientStringlistSuccess& OnSuccess, const FOnPostClientStringlistError& OnError, const FOnPostClientStringlistComplete& OnComplete,
-                                                  int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
-{
-	// AUTO-GENERATED...	
-	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
-
-	// If we are making this request as part of an operation, we add it to it.
-	if(OpHandle.OperationId >= 0)
-		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
-
-	// If cached...
-	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
-	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunBlueprintRequestProcessor<UPostClientStringlistRequest, UEmptyResponse, FOnPostClientStringlistSuccess, FOnPostClientStringlistError, FOnPostClientStringlistComplete>
-			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, OnSuccess, OnError, OnComplete);		
-	}
-	// If not cached...
-	else
-	{			
-		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UPostClientStringlistRequest, UEmptyResponse, FOnPostClientStringlistSuccess, FOnPostClientStringlistError, FOnPostClientStringlistComplete>
-			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
-		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);		
-	}	
-}
-
-void UBeamStatsApi::CPP_PostClientStringlistImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
-                                               UPostClientStringlistRequest* RequestData, const FOnPostClientStringlistFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
-{
-	// AUTO-GENERATED...	
-	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
-
-	// If we are making this request as part of an operation, we add it to it.
-	if(OpHandle.OperationId >= 0)
-		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
-
-	// If cached...
-	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
-	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunCodeRequestProcessor<UPostClientStringlistRequest, UEmptyResponse>
-			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, Handler);			
-	}
-	// If not cached...
-	else
-	{
-		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UPostClientStringlistRequest, UEmptyResponse>
-			(OutRequestId, RequestData, Handler);
-		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
-
-		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
-}
-
-		
-void UBeamStatsApi::BP_GetClientImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetClientRequest* RequestData,
-                                                  const FOnGetClientSuccess& OnSuccess, const FOnGetClientError& OnError, const FOnGetClientComplete& OnComplete,
-                                                  int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
-{
-	// AUTO-GENERATED...	
-	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
-
-	// If we are making this request as part of an operation, we add it to it.
-	if(OpHandle.OperationId >= 0)
-		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
-
-	// If cached...
-	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
-	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunBlueprintRequestProcessor<UGetClientRequest, UStatsResponse, FOnGetClientSuccess, FOnGetClientError, FOnGetClientComplete>
-			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, OnSuccess, OnError, OnComplete);		
-	}
-	// If not cached...
-	else
-	{			
-		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UGetClientRequest, UStatsResponse, FOnGetClientSuccess, FOnGetClientError, FOnGetClientComplete>
-			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
-		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);		
-	}	
-}
-
-void UBeamStatsApi::CPP_GetClientImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
-                                               UGetClientRequest* RequestData, const FOnGetClientFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
-{
-	// AUTO-GENERATED...	
-	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
-
-	// If we are making this request as part of an operation, we add it to it.
-	if(OpHandle.OperationId >= 0)
-		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
-
-	// If cached...
-	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
-	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunCodeRequestProcessor<UGetClientRequest, UStatsResponse>
-			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, Handler);			
-	}
-	// If not cached...
-	else
-	{
-		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UGetClientRequest, UStatsResponse>
-			(OutRequestId, RequestData, Handler);
-		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
-
-		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
-}
-
-		
-void UBeamStatsApi::BP_PostClientImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UPostClientRequest* RequestData,
-                                                  const FOnPostClientSuccess& OnSuccess, const FOnPostClientError& OnError, const FOnPostClientComplete& OnComplete,
-                                                  int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
-{
-	// AUTO-GENERATED...	
-	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
-
-	// If we are making this request as part of an operation, we add it to it.
-	if(OpHandle.OperationId >= 0)
-		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
-
-	// If cached...
-	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
-	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunBlueprintRequestProcessor<UPostClientRequest, UEmptyResponse, FOnPostClientSuccess, FOnPostClientError, FOnPostClientComplete>
-			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, OnSuccess, OnError, OnComplete);		
-	}
-	// If not cached...
-	else
-	{			
-		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UPostClientRequest, UEmptyResponse, FOnPostClientSuccess, FOnPostClientError, FOnPostClientComplete>
-			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
-		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);		
-	}	
-}
-
-void UBeamStatsApi::CPP_PostClientImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
-                                               UPostClientRequest* RequestData, const FOnPostClientFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
-{
-	// AUTO-GENERATED...	
-	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
-
-	// If we are making this request as part of an operation, we add it to it.
-	if(OpHandle.OperationId >= 0)
-		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
-
-	// If cached...
-	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
-	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunCodeRequestProcessor<UPostClientRequest, UEmptyResponse>
-			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, Handler);			
-	}
-	// If not cached...
-	else
-	{
-		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UPostClientRequest, UEmptyResponse>
-			(OutRequestId, RequestData, Handler);
-		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
-
-		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
-}
-
 
 
 void UBeamStatsApi::BP_PutSubscribeImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -506,6 +326,68 @@ void UBeamStatsApi::CPP_PostSearchExtendedImpl(const FBeamRealmHandle& TargetRea
 }
 
 		
+void UBeamStatsApi::BP_PostClientStringlistImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                                UPostClientStringlistRequest* RequestData, const FOnPostClientStringlistSuccess& OnSuccess, const FOnPostClientStringlistError& OnError, const FOnPostClientStringlistComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...	
+	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
+
+	// If cached...
+	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UPostClientStringlistRequest, UEmptyResponse, FOnPostClientStringlistSuccess, FOnPostClientStringlistError, FOnPostClientStringlistComplete>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
+	}
+	// If not cached...
+	else
+	{
+		// Binds the handler to the static response handler (pre-generated)
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostClientStringlistRequest, UEmptyResponse, FOnPostClientStringlistSuccess, FOnPostClientStringlistError, FOnPostClientStringlistComplete>
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
+	    
+		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+	}
+}
+
+void UBeamStatsApi::CPP_PostClientStringlistImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                              UPostClientStringlistRequest* RequestData, const FOnPostClientStringlistFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...
+	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
+	
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
+
+	// If cached...
+	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		Backend->RunAuthenticatedCodeRequestProcessor<UPostClientStringlistRequest, UEmptyResponse>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
+	}
+	// If not cached...
+	else
+	{
+		// Binds the handler to the static response handler (pre-generated)	
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostClientStringlistRequest, UEmptyResponse>
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
+
+		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+	}
+}
+
+		
 void UBeamStatsApi::BP_GetStatsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
                                 UGetStatsRequest* RequestData, const FOnGetStatsSuccess& OnSuccess, const FOnGetStatsError& OnError, const FOnGetStatsComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
@@ -691,6 +573,130 @@ void UBeamStatsApi::CPP_DeleteStatsImpl(const FBeamRealmHandle& TargetRealm, con
 	}
 }
 
+		
+void UBeamStatsApi::BP_GetClientImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                                UGetClientRequest* RequestData, const FOnGetClientSuccess& OnSuccess, const FOnGetClientError& OnError, const FOnGetClientComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...	
+	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
+
+	// If cached...
+	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UGetClientRequest, UStatsResponse, FOnGetClientSuccess, FOnGetClientError, FOnGetClientComplete>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
+	}
+	// If not cached...
+	else
+	{
+		// Binds the handler to the static response handler (pre-generated)
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetClientRequest, UStatsResponse, FOnGetClientSuccess, FOnGetClientError, FOnGetClientComplete>
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
+	    
+		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+	}
+}
+
+void UBeamStatsApi::CPP_GetClientImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                              UGetClientRequest* RequestData, const FOnGetClientFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...
+	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
+	
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
+
+	// If cached...
+	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		Backend->RunAuthenticatedCodeRequestProcessor<UGetClientRequest, UStatsResponse>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
+	}
+	// If not cached...
+	else
+	{
+		// Binds the handler to the static response handler (pre-generated)	
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetClientRequest, UStatsResponse>
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
+
+		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+	}
+}
+
+		
+void UBeamStatsApi::BP_PostClientImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                                UPostClientRequest* RequestData, const FOnPostClientSuccess& OnSuccess, const FOnPostClientError& OnError, const FOnPostClientComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...	
+	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
+
+	// If cached...
+	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UPostClientRequest, UEmptyResponse, FOnPostClientSuccess, FOnPostClientError, FOnPostClientComplete>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
+	}
+	// If not cached...
+	else
+	{
+		// Binds the handler to the static response handler (pre-generated)
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostClientRequest, UEmptyResponse, FOnPostClientSuccess, FOnPostClientError, FOnPostClientComplete>
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
+	    
+		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+	}
+}
+
+void UBeamStatsApi::CPP_PostClientImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                              UPostClientRequest* RequestData, const FOnPostClientFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...
+	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
+	
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
+
+	// If cached...
+	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		Backend->RunAuthenticatedCodeRequestProcessor<UPostClientRequest, UEmptyResponse>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
+	}
+	// If not cached...
+	else
+	{
+		// Binds the handler to the static response handler (pre-generated)	
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostClientRequest, UEmptyResponse>
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
+
+		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+	}
+}
+
 
 
 
@@ -701,39 +707,6 @@ void UBeamStatsApi::CPP_GetClientBatch(UGetClientBatchRequest* Request, const FO
 	
     int64 OutRequestId;
 	CPP_GetClientBatchImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
-}
-
-		
-void UBeamStatsApi::CPP_PostClientStringlist(UPostClientStringlistRequest* Request, const FOnPostClientStringlistFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
-{
-	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForRequestType(UPostClientStringlistRequest::StaticClass()->GetName(), RetryConfig);
-	
-    int64 OutRequestId;
-	CPP_PostClientStringlistImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
-}
-
-		
-void UBeamStatsApi::CPP_GetClient(UGetClientRequest* Request, const FOnGetClientFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
-{
-	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForRequestType(UGetClientRequest::StaticClass()->GetName(), RetryConfig);
-	
-    int64 OutRequestId;
-	CPP_GetClientImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
-}
-
-		
-void UBeamStatsApi::CPP_PostClient(UPostClientRequest* Request, const FOnPostClientFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
-{
-	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForRequestType(UPostClientRequest::StaticClass()->GetName(), RetryConfig);
-	
-    int64 OutRequestId;
-	CPP_PostClientImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
 }
 
@@ -799,6 +772,21 @@ void UBeamStatsApi::CPP_PostSearchExtended(const FUserSlot& UserSlot, UPostSearc
 }
 
 		
+void UBeamStatsApi::CPP_PostClientStringlist(const FUserSlot& UserSlot, UPostClientStringlistRequest* Request, const FOnPostClientStringlistFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...
+	FBeamRealmUser AuthenticatedUser;
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
+
+	FBeamRetryConfig RetryConfig;
+	Backend->GetRetryConfigForUserSlotAndRequestType(UPostClientStringlistRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+
+    int64 OutRequestId;
+	CPP_PostClientStringlistImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+}
+
+		
 void UBeamStatsApi::CPP_GetStats(const FUserSlot& UserSlot, UGetStatsRequest* Request, const FOnGetStatsFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
@@ -843,6 +831,36 @@ void UBeamStatsApi::CPP_DeleteStats(const FUserSlot& UserSlot, UDeleteStatsReque
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
+		
+void UBeamStatsApi::CPP_GetClient(const FUserSlot& UserSlot, UGetClientRequest* Request, const FOnGetClientFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...
+	FBeamRealmUser AuthenticatedUser;
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
+
+	FBeamRetryConfig RetryConfig;
+	Backend->GetRetryConfigForUserSlotAndRequestType(UGetClientRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+
+    int64 OutRequestId;
+	CPP_GetClientImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+}
+
+		
+void UBeamStatsApi::CPP_PostClient(const FUserSlot& UserSlot, UPostClientRequest* Request, const FOnPostClientFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...
+	FBeamRealmUser AuthenticatedUser;
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
+
+	FBeamRetryConfig RetryConfig;
+	Backend->GetRetryConfigForUserSlotAndRequestType(UPostClientRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+
+    int64 OutRequestId;
+	CPP_PostClientImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+}
+
 
 
 
@@ -854,42 +872,6 @@ void UBeamStatsApi::GetClientBatch(UGetClientBatchRequest* Request, const FOnGet
 	
 	int64 OutRequestId = 0;
 	BP_GetClientBatchImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
-}
-
-		
-void UBeamStatsApi::PostClientStringlist(UPostClientStringlistRequest* Request, const FOnPostClientStringlistSuccess& OnSuccess, const FOnPostClientStringlistError& OnError, const FOnPostClientStringlistComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
-{
-	// AUTO-GENERATED...	
-	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForRequestType(UPostClientStringlistRequest::StaticClass()->GetName(), RetryConfig);	
-	
-	int64 OutRequestId = 0;
-	BP_PostClientStringlistImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
-}
-
-		
-void UBeamStatsApi::GetClient(UGetClientRequest* Request, const FOnGetClientSuccess& OnSuccess, const FOnGetClientError& OnError, const FOnGetClientComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
-{
-	// AUTO-GENERATED...	
-	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForRequestType(UGetClientRequest::StaticClass()->GetName(), RetryConfig);	
-	
-	int64 OutRequestId = 0;
-	BP_GetClientImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
-}
-
-		
-void UBeamStatsApi::PostClient(UPostClientRequest* Request, const FOnPostClientSuccess& OnSuccess, const FOnPostClientError& OnError, const FOnPostClientComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
-{
-	// AUTO-GENERATED...	
-	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForRequestType(UPostClientRequest::StaticClass()->GetName(), RetryConfig);	
-	
-	int64 OutRequestId = 0;
-	BP_PostClientImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
 }
 
@@ -955,6 +937,21 @@ void UBeamStatsApi::PostSearchExtended(FUserSlot UserSlot, UPostSearchExtendedRe
 }
 
 		
+void UBeamStatsApi::PostClientStringlist(FUserSlot UserSlot, UPostClientStringlistRequest* Request, const FOnPostClientStringlistSuccess& OnSuccess, const FOnPostClientStringlistError& OnError, const FOnPostClientStringlistComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+{
+	// AUTO-GENERATED...
+	FBeamRealmUser AuthenticatedUser;
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
+
+	FBeamRetryConfig RetryConfig;
+	Backend->GetRetryConfigForUserSlotAndRequestType(UPostClientStringlistRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+
+	int64 OutRequestId;
+	BP_PostClientStringlistImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+}
+
+		
 void UBeamStatsApi::GetStats(FUserSlot UserSlot, UGetStatsRequest* Request, const FOnGetStatsSuccess& OnSuccess, const FOnGetStatsError& OnError, const FOnGetStatsComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
@@ -996,6 +993,36 @@ void UBeamStatsApi::DeleteStats(FUserSlot UserSlot, UDeleteStatsRequest* Request
 
 	int64 OutRequestId;
 	BP_DeleteStatsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+}
+
+		
+void UBeamStatsApi::GetClient(FUserSlot UserSlot, UGetClientRequest* Request, const FOnGetClientSuccess& OnSuccess, const FOnGetClientError& OnError, const FOnGetClientComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+{
+	// AUTO-GENERATED...
+	FBeamRealmUser AuthenticatedUser;
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
+
+	FBeamRetryConfig RetryConfig;
+	Backend->GetRetryConfigForUserSlotAndRequestType(UGetClientRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+
+	int64 OutRequestId;
+	BP_GetClientImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+}
+
+		
+void UBeamStatsApi::PostClient(FUserSlot UserSlot, UPostClientRequest* Request, const FOnPostClientSuccess& OnSuccess, const FOnPostClientError& OnError, const FOnPostClientComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+{
+	// AUTO-GENERATED...
+	FBeamRealmUser AuthenticatedUser;
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
+
+	FBeamRetryConfig RetryConfig;
+	Backend->GetRetryConfigForUserSlotAndRequestType(UPostClientRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+
+	int64 OutRequestId;
+	BP_PostClientImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 

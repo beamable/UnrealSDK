@@ -10,7 +10,7 @@ void UAccountAvailableResponse::DeserializeRequestResponse(UObject* RequestData,
 	BeamDeserialize(ResponseContent);	
 }
 
-void UAccountAvailableResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UAccountAvailableResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("available"), bAvailable);
 }
@@ -20,7 +20,10 @@ void UAccountAvailableResponse::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 	Serializer->WriteValue(TEXT("available"), bAvailable);		
 }
 
-void UAccountAvailableResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UAccountAvailableResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bAvailable = Bag->GetBoolField(TEXT("available"));
 }
+
+
+

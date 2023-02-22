@@ -5,7 +5,7 @@
 
 
 
-void UPaymentHistoryEntryViewModel ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UPaymentHistoryEntryViewModel::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("change"), Change);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("data"), &Data, Serializer);
@@ -19,9 +19,12 @@ void UPaymentHistoryEntryViewModel::BeamSerializeProperties(TUnrealPrettyJsonSer
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("timestamp"), &Timestamp, Serializer);		
 }
 
-void UPaymentHistoryEntryViewModel ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UPaymentHistoryEntryViewModel::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Change = Bag->GetStringField(TEXT("change"));
 	UBeamJsonUtils::DeserializeOptional<FString>("data", Bag, Data, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("timestamp", Bag, Timestamp, OuterOwner);
 }
+
+
+

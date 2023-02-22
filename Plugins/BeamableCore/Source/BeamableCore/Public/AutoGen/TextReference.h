@@ -16,8 +16,6 @@ class BEAMABLECORE_API UTextReference : public UObject, public FBeamJsonSerializ
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Prefix", Category="Beam")
-	FString ContentPrefix;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Uri", Category="Beam")
 	FString Uri;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Version", Category="Beam")
@@ -42,4 +40,5 @@ public:
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override;
+	
 };

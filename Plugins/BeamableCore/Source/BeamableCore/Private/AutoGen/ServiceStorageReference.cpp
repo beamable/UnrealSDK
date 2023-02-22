@@ -5,7 +5,7 @@
 
 
 
-void UServiceStorageReference ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UServiceStorageReference::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("archived"), bArchived);
 	Serializer->WriteValue(TEXT("enabled"), bEnabled);
@@ -25,7 +25,7 @@ void UServiceStorageReference::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("templateId"), &TemplateId, Serializer);		
 }
 
-void UServiceStorageReference ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UServiceStorageReference::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bArchived = Bag->GetBoolField(TEXT("archived"));
 	bEnabled = Bag->GetBoolField(TEXT("enabled"));
@@ -34,3 +34,6 @@ void UServiceStorageReference ::BeamDeserializeProperties(const TSharedPtr<FJson
 	Checksum = Bag->GetStringField(TEXT("checksum"));
 	UBeamJsonUtils::DeserializeOptional<FString>("templateId", Bag, TemplateId, OuterOwner);
 }
+
+
+

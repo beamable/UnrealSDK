@@ -5,7 +5,7 @@
 
 
 
-void UAcceptMultipleAttachments ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UAcceptMultipleAttachments::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<int64>(TEXT("mailIds"), MailIds, Serializer);
 }
@@ -15,7 +15,10 @@ void UAcceptMultipleAttachments::BeamSerializeProperties(TUnrealPrettyJsonSerial
 	UBeamJsonUtils::SerializeArray<int64>(TEXT("mailIds"), MailIds, Serializer);		
 }
 
-void UAcceptMultipleAttachments ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UAcceptMultipleAttachments::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<int64>(Bag->GetArrayField(TEXT("mailIds")), MailIds, OuterOwner);
 }
+
+
+

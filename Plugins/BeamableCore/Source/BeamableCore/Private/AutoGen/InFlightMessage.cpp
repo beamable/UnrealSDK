@@ -5,7 +5,7 @@
 
 
 
-void UInFlightMessage ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UInFlightMessage::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("method"), Method);
 	Serializer->WriteValue(TEXT("body"), Body);
@@ -27,7 +27,7 @@ void UInFlightMessage::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("shard"), &Shard, Serializer);		
 }
 
-void UInFlightMessage ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UInFlightMessage::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Method = Bag->GetStringField(TEXT("method"));
 	Body = Bag->GetStringField(TEXT("body"));
@@ -37,3 +37,6 @@ void UInFlightMessage ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>&
 	UBeamJsonUtils::DeserializeOptional<int64>("gamerTag", Bag, GamerTag, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("shard", Bag, Shard, OuterOwner);
 }
+
+
+

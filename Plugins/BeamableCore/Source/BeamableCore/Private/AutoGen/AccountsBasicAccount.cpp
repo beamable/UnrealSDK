@@ -10,7 +10,7 @@ void UAccountsBasicAccount::DeserializeRequestResponse(UObject* RequestData, FSt
 	BeamDeserialize(ResponseContent);	
 }
 
-void UAccountsBasicAccount ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UAccountsBasicAccount::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("privilegedAccount"), bPrivilegedAccount);
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("id"), &Id, Serializer);
@@ -58,7 +58,7 @@ void UAccountsBasicAccount::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 	UBeamJsonUtils::SerializeOptional<TArray<UInFlightMessage*>, UInFlightMessage*>(TEXT("inFlight"), &InFlight, Serializer);		
 }
 
-void UAccountsBasicAccount ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UAccountsBasicAccount::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bPrivilegedAccount = Bag->GetBoolField(TEXT("privilegedAccount"));
 	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("id")), Id, OuterOwner);
@@ -81,3 +81,6 @@ void UAccountsBasicAccount ::BeamDeserializeProperties(const TSharedPtr<FJsonObj
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("deviceIds", Bag, DeviceIds, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UInFlightMessage*>, UInFlightMessage*>("inFlight", Bag, InFlight, OuterOwner);
 }
+
+
+

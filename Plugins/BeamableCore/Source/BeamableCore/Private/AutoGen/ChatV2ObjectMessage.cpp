@@ -5,7 +5,7 @@
 
 
 
-void UChatV2ObjectMessage ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UChatV2ObjectMessage::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("roomId"), RoomId);
 	Serializer->WriteValue(TEXT("gamerTag"), GamerTag);
@@ -27,7 +27,7 @@ void UChatV2ObjectMessage::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 	UBeamJsonUtils::SerializeMap<FString>(TEXT("reactions"), Reactions, Serializer);		
 }
 
-void UChatV2ObjectMessage ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UChatV2ObjectMessage::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	RoomId = Bag->GetStringField(TEXT("roomId"));
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("gamerTag")), GamerTag);
@@ -37,3 +37,6 @@ void UChatV2ObjectMessage ::BeamDeserializeProperties(const TSharedPtr<FJsonObje
 	Content = Bag->GetStringField(TEXT("content"));
 	UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("reactions")), Reactions, OuterOwner);
 }
+
+
+

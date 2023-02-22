@@ -5,7 +5,7 @@
 
 
 
-void UMyMailUpdate ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UMyMailUpdate::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("id"), Id);
 	UBeamJsonUtils::SerializeUObject<UUpdateMailRequestBody*>("update", Update, Serializer);
@@ -17,8 +17,11 @@ void UMyMailUpdate::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 	UBeamJsonUtils::SerializeUObject<UUpdateMailRequestBody*>("update", Update, Serializer);		
 }
 
-void UMyMailUpdate ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UMyMailUpdate::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("id")), Id);
 	UBeamJsonUtils::DeserializeUObject<UUpdateMailRequestBody*>("update", Bag, Update, OuterOwner);
 }
+
+
+

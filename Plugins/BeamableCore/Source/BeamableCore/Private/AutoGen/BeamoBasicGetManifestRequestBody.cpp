@@ -5,7 +5,7 @@
 
 
 
-void UBeamoBasicGetManifestRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UBeamoBasicGetManifestRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("id"), Id);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("archived"), &bArchived, Serializer);
@@ -17,8 +17,11 @@ void UBeamoBasicGetManifestRequestBody::BeamSerializeProperties(TUnrealPrettyJso
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("archived"), &bArchived, Serializer);		
 }
 
-void UBeamoBasicGetManifestRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UBeamoBasicGetManifestRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Id = Bag->GetStringField(TEXT("id"));
 	UBeamJsonUtils::DeserializeOptional<bool>("archived", Bag, bArchived, OuterOwner);
 }
+
+
+

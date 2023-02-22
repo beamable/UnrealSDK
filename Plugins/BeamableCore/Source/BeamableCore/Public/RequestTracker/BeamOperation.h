@@ -59,19 +59,19 @@ struct BEAMABLECORE_API FBeamOperationEvent
 	 * @brief The event type of this event.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
-	TEnumAsByte<EBeamOperationEventType> EventType;
+	TEnumAsByte<EBeamOperationEventType> EventType = EBeamOperationEventType::SUCCESS;
 
 	/**
 	 * @brief If this event is being called from inside a Request's response handler, we pass in that Request's Id so users can check for number of attempts among other things.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
-	int64 RequestId;
+	int64 RequestId = -1;
 
 	/**
 	 * @brief An code indicating the an operation-specific type of the event that happened. It is the value of an operation-specific Enum.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
-	uint8 EventSubTypeCode;
+	uint8 EventSubTypeCode = 0;
 
 	/**
 	 * @brief The Beamable Runtime System where the Operation event originated.

@@ -5,7 +5,7 @@
 
 
 
-void UEndTransactionRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UEndTransactionRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("transaction"), Transaction);
 }
@@ -15,7 +15,10 @@ void UEndTransactionRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 	Serializer->WriteValue(TEXT("transaction"), Transaction);		
 }
 
-void UEndTransactionRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UEndTransactionRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Transaction = Bag->GetStringField(TEXT("transaction"));
 }
+
+
+

@@ -44,6 +44,7 @@
 #include "thirdparty.hpp"
 #include "instantiations_RdEditorRoot.h"
 
+#include "UE4Library/ConnectionInfo.Generated.h"
 #include "UE4Library/UnrealLogEvent.Generated.h"
 #include "UE4Library/BlueprintReference.Generated.h"
 #include "UE4Library/UClass.Generated.h"
@@ -93,6 +94,7 @@ public:
 
 protected:
     // fields
+    rd::RdProperty<ConnectionInfo, rd::Polymorphic<ConnectionInfo>> connectionInfo_;
     rd::RdSignal<UnrealLogEvent, rd::Polymorphic<UnrealLogEvent>> unrealLog_;
     rd::RdSignal<BlueprintReference, rd::Polymorphic<BlueprintReference>> openBlueprint_;
     rd::RdSignal<UClass, rd::Polymorphic<UClass>> onBlueprintAdded_;
@@ -117,7 +119,7 @@ private:
 
 public:
     // primary ctor
-    RdEditorModel(rd::RdSignal<UnrealLogEvent, rd::Polymorphic<UnrealLogEvent>> unrealLog_, rd::RdSignal<BlueprintReference, rd::Polymorphic<BlueprintReference>> openBlueprint_, rd::RdSignal<UClass, rd::Polymorphic<UClass>> onBlueprintAdded_, rd::RdEndpoint<FString, bool, rd::Polymorphic<FString>, rd::Polymorphic<bool>> isBlueprintPathName_, rd::RdEndpoint<FString, rd::optional<FString>, rd::Polymorphic<FString>, RdEditorModel::__FStringNullableSerializer> getPathNameByPath_, rd::RdCall<int32_t, bool, rd::Polymorphic<int32_t>, rd::Polymorphic<bool>> allowSetForegroundWindow_, rd::RdProperty<bool, rd::Polymorphic<bool>> isGameControlModuleInitialized_, rd::RdSignal<PlayState, rd::Polymorphic<PlayState>> playStateFromEditor_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> requestPlayFromRider_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> requestPauseFromRider_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> requestResumeFromRider_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> requestStopFromRider_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> requestFrameSkipFromRider_, rd::RdSignal<RequestResultBase, rd::AbstractPolymorphic<RequestResultBase>> notificationReplyFromEditor_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> playModeFromEditor_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> playModeFromRider_);
+    RdEditorModel(rd::RdProperty<ConnectionInfo, rd::Polymorphic<ConnectionInfo>> connectionInfo_, rd::RdSignal<UnrealLogEvent, rd::Polymorphic<UnrealLogEvent>> unrealLog_, rd::RdSignal<BlueprintReference, rd::Polymorphic<BlueprintReference>> openBlueprint_, rd::RdSignal<UClass, rd::Polymorphic<UClass>> onBlueprintAdded_, rd::RdEndpoint<FString, bool, rd::Polymorphic<FString>, rd::Polymorphic<bool>> isBlueprintPathName_, rd::RdEndpoint<FString, rd::optional<FString>, rd::Polymorphic<FString>, RdEditorModel::__FStringNullableSerializer> getPathNameByPath_, rd::RdCall<int32_t, bool, rd::Polymorphic<int32_t>, rd::Polymorphic<bool>> allowSetForegroundWindow_, rd::RdProperty<bool, rd::Polymorphic<bool>> isGameControlModuleInitialized_, rd::RdSignal<PlayState, rd::Polymorphic<PlayState>> playStateFromEditor_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> requestPlayFromRider_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> requestPauseFromRider_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> requestResumeFromRider_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> requestStopFromRider_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> requestFrameSkipFromRider_, rd::RdSignal<RequestResultBase, rd::AbstractPolymorphic<RequestResultBase>> notificationReplyFromEditor_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> playModeFromEditor_, rd::RdSignal<int32_t, rd::Polymorphic<int32_t>> playModeFromRider_);
     
     // default ctors and dtors
     
@@ -140,6 +142,7 @@ public:
     void identify(const rd::Identities &identities, rd::RdId const &id) const override;
     
     // getters
+    rd::IProperty<ConnectionInfo> const & get_connectionInfo() const;
     rd::ISignal<UnrealLogEvent> const & get_unrealLog() const;
     rd::ISignal<BlueprintReference> const & get_openBlueprint() const;
     rd::ISignal<UClass> const & get_onBlueprintAdded() const;

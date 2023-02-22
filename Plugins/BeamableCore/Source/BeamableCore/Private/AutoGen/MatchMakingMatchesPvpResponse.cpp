@@ -10,7 +10,7 @@ void UMatchMakingMatchesPvpResponse::DeserializeRequestResponse(UObject* Request
 	BeamDeserialize(ResponseContent);	
 }
 
-void UMatchMakingMatchesPvpResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UMatchMakingMatchesPvpResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("result"), Result);
 	Serializer->WriteValue(TEXT("totalEntries"), TotalEntries);
@@ -26,10 +26,13 @@ void UMatchMakingMatchesPvpResponse::BeamSerializeProperties(TUnrealPrettyJsonSe
 	UBeamJsonUtils::SerializeArray<UMatchMakingWindowResp*>(TEXT("windows"), Windows, Serializer);		
 }
 
-void UMatchMakingMatchesPvpResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UMatchMakingMatchesPvpResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Result = Bag->GetStringField(TEXT("result"));
 	TotalEntries = Bag->GetIntegerField(TEXT("totalEntries"));
 	UBeamJsonUtils::DeserializeUObject<UMatchMakingRanking*>("playerRank", Bag, PlayerRank, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UMatchMakingWindowResp*>(Bag->GetArrayField(TEXT("windows")), Windows, OuterOwner);
 }
+
+
+

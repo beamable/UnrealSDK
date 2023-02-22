@@ -5,7 +5,7 @@
 
 
 
-void UEventInventoryPendingRewards ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UEventInventoryPendingRewards::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("empty"), bEmpty);
 	UBeamJsonUtils::SerializeOptional<TArray<UItemCreateRequestBody*>, UItemCreateRequestBody*>(TEXT("items"), &Items, Serializer);
@@ -19,9 +19,12 @@ void UEventInventoryPendingRewards::BeamSerializeProperties(TUnrealPrettyJsonSer
 	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("currencies"), &Currencies, Serializer);		
 }
 
-void UEventInventoryPendingRewards ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UEventInventoryPendingRewards::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bEmpty = Bag->GetBoolField(TEXT("empty"));
 	UBeamJsonUtils::DeserializeOptional<TArray<UItemCreateRequestBody*>, UItemCreateRequestBody*>("items", Bag, Items, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TMap<FString, FString>, FString>("currencies", Bag, Currencies, OuterOwner);
 }
+
+
+

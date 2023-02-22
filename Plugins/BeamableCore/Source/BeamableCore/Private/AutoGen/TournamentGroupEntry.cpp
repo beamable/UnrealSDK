@@ -5,7 +5,7 @@
 
 
 
-void UTournamentGroupEntry ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UTournamentGroupEntry::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("rank"), Rank);
 	Serializer->WriteValue(TEXT("score"), Score);
@@ -23,7 +23,7 @@ void UTournamentGroupEntry::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 	UBeamJsonUtils::SerializeArray<UTournamentCurrencyReward*>(TEXT("currencyRewards"), CurrencyRewards, Serializer);		
 }
 
-void UTournamentGroupEntry ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UTournamentGroupEntry::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("rank")), Rank);
 	Score = Bag->GetNumberField(TEXT("score"));
@@ -31,3 +31,6 @@ void UTournamentGroupEntry ::BeamDeserializeProperties(const TSharedPtr<FJsonObj
 	StageChange = Bag->GetIntegerField(TEXT("stageChange"));
 	UBeamJsonUtils::DeserializeArray<UTournamentCurrencyReward*>(Bag->GetArrayField(TEXT("currencyRewards")), CurrencyRewards, OuterOwner);
 }
+
+
+

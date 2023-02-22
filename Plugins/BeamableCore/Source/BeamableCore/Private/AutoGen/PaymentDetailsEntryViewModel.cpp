@@ -5,7 +5,7 @@
 
 
 
-void UPaymentDetailsEntryViewModel ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UPaymentDetailsEntryViewModel::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("reference"), Reference);
 	Serializer->WriteValue(TEXT("name"), Name);
@@ -35,7 +35,7 @@ void UPaymentDetailsEntryViewModel::BeamSerializeProperties(TUnrealPrettyJsonSer
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("localCurrency"), &LocalCurrency, Serializer);		
 }
 
-void UPaymentDetailsEntryViewModel ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UPaymentDetailsEntryViewModel::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Reference = Bag->GetStringField(TEXT("reference"));
 	Name = Bag->GetStringField(TEXT("name"));
@@ -49,3 +49,6 @@ void UPaymentDetailsEntryViewModel ::BeamDeserializeProperties(const TSharedPtr<
 	UBeamJsonUtils::DeserializeOptional<FString>("category", Bag, Category, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("localCurrency", Bag, LocalCurrency, OuterOwner);
 }
+
+
+

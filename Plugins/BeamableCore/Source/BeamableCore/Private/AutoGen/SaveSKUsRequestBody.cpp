@@ -5,7 +5,7 @@
 
 
 
-void USaveSKUsRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void USaveSKUsRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<USKU*>(TEXT("definitions"), Definitions, Serializer);
 }
@@ -15,7 +15,10 @@ void USaveSKUsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 	UBeamJsonUtils::SerializeArray<USKU*>(TEXT("definitions"), Definitions, Serializer);		
 }
 
-void USaveSKUsRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void USaveSKUsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<USKU*>(Bag->GetArrayField(TEXT("definitions")), Definitions, OuterOwner);
 }
+
+
+

@@ -5,7 +5,7 @@
 
 
 
-void UAnnouncementView ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UAnnouncementView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("isClaimed"), bIsClaimed);
 	Serializer->WriteValue(TEXT("isDeleted"), bIsDeleted);
@@ -43,7 +43,7 @@ void UAnnouncementView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("tags"), &Tags, Serializer);		
 }
 
-void UAnnouncementView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UAnnouncementView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bIsClaimed = Bag->GetBoolField(TEXT("isClaimed"));
 	bIsDeleted = Bag->GetBoolField(TEXT("isDeleted"));
@@ -61,3 +61,6 @@ void UAnnouncementView ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>
 	UBeamJsonUtils::DeserializeOptional<FString>("startDate", Bag, StartDate, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("tags", Bag, Tags, OuterOwner);
 }
+
+
+

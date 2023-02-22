@@ -5,7 +5,7 @@
 
 
 
-void UGetGroupStatusRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetGroupStatusRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("contentId"), &ContentId, Serializer);
 }
@@ -15,7 +15,10 @@ void UGetGroupStatusRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("contentId"), &ContentId, Serializer);		
 }
 
-void UGetGroupStatusRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetGroupStatusRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeOptional<FString>("contentId", Bag, ContentId, OuterOwner);
 }
+
+
+

@@ -5,7 +5,7 @@
 
 
 
-void UMakeFriendshipRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UMakeFriendshipRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("gamerTag"), &GamerTag, Serializer);
 }
@@ -15,7 +15,10 @@ void UMakeFriendshipRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("gamerTag"), &GamerTag, Serializer);		
 }
 
-void UMakeFriendshipRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UMakeFriendshipRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("gamerTag")), GamerTag, OuterOwner);
 }
+
+
+

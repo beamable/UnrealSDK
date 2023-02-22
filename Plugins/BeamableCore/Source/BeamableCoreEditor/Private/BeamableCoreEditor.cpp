@@ -3,11 +3,15 @@
 #include "BeamableCoreEditorCommands.h"
 #include "BeamEditorSettings.h"
 #include "BeamableCoreGraphWidgetFactory.h"
-#include "BeamableCoreStyle.h"
 #include "BeamableEditorBlueprintLibrary.h"
+#include "DataTableEditorModule.h"
+#include "IDataTableEditor.h"
 #include "LevelEditor.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "PropertyType/RequestTypeCustomization.h"
 #include "Subsystems/BeamEditor.h"
+#include "Subsystems/Content/BeamEditorContent.h"
+#include "Toolkits/AssetEditorToolkit.h"
 
 #define LOCTEXT_NAMESPACE "FBeamableCoreEditorModule"
 
@@ -48,7 +52,13 @@ void FBeamableCoreEditorModule::StartupModule()
 
 		PropertyModule.NotifyCustomizationModuleChanged();
 	}
+
+	// Set up DataTable extensions
+	{
+		
+	}
 }
+
 
 void FBeamableCoreEditorModule::ShutdownModule()
 {
@@ -61,7 +71,7 @@ void FBeamableCoreEditorModule::ShutdownModule()
 		FPropertyEditorModule& PropertyModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FRequestType::StaticStruct()->GetFName());
 
-		
+
 		PropertyModule.NotifyCustomizationModuleChanged();
 	}
 }
@@ -73,7 +83,7 @@ void FBeamableCoreEditorModule::AddBeamableButtons(FToolBarBuilder& Builder)
 
 void FBeamableCoreEditorModule::OpenMainBeamableWindow() const
 {
-	UBeamableEditorBlueprintLibrary::StartWidget(GetDefault<UBeamEditorSettings>()->BeamableMainWindow.Get());
+	UBeamableEditorBlueprintLibrary::StartWidget(GetDefault<UBeamEditorSettings>()->BeamableMainWindow.LoadSynchronous());
 }
 
 #undef LOCTEXT_NAMESPACE

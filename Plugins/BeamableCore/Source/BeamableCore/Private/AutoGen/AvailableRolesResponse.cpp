@@ -10,7 +10,7 @@ void UAvailableRolesResponse::DeserializeRequestResponse(UObject* RequestData, F
 	BeamDeserialize(ResponseContent);	
 }
 
-void UAvailableRolesResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UAvailableRolesResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("roles"), Roles, Serializer);
 }
@@ -20,7 +20,10 @@ void UAvailableRolesResponse::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("roles"), Roles, Serializer);		
 }
 
-void UAvailableRolesResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UAvailableRolesResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("roles")), Roles, OuterOwner);
 }
+
+
+

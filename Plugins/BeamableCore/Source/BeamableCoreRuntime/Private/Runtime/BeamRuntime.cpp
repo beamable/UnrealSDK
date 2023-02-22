@@ -104,7 +104,7 @@ FBeamOperationHandle UBeamRuntime::FrictionlessAuthentication(FUserSlot UserSlot
 
 		const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateLambda([this, UserSlot, OnOperationEvent, CallingContext, Handle](FAuthenticateFullResponse Resp)
 		{
-			if (Resp.State == Success)
+			if (Resp.State == EBeamFullResponseState::Success)
 			{
 				const auto Token = Resp.SuccessData;
 
@@ -122,7 +122,7 @@ FBeamOperationHandle UBeamRuntime::FrictionlessAuthentication(FUserSlot UserSlot
 			}
 		});
 		FBeamRequestContext RequestContext;
-		AuthSubsystem->CPP_Authenticate(Req, AuthenticateHandler, RequestContext, Handle);
+		AuthSubsystem->CPP_Authenticate(Req, AuthenticateHandler, RequestContext, Handle);		
 	}
 
 	return Handle;
@@ -135,11 +135,11 @@ void UBeamRuntime::FetchAndUpdateGamerTag(FUserSlot UserSlot, FBeamOperationHand
 
 	const auto GetMeHandler = FOnBasicAccountsGetMeFullResponse::CreateLambda([this, UserSlot, CallingContext, Handle](FBasicAccountsGetMeFullResponse Resp)
 	{
-		if (Resp.State == Success)
+		if (Resp.State == EBeamFullResponseState::Success)
 		{
 			const auto GamerTag = Resp.SuccessData->Id;
 			UserSlotSystem->SetGamerTagAtSlot(UserSlot, GamerTag, CallingContext);
-			UserSlotSystem->SaveSlot(UserSlot, CallingContext);
+			UserSlotSystem->SaveSlot(UserSlot, CallingContext);			
 			RequestTrackerSystem->TriggerOperationSuccess(Handle, TEXT(""));
 		}
 		else

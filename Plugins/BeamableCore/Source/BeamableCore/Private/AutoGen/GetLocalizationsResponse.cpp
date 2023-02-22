@@ -10,7 +10,7 @@ void UGetLocalizationsResponse::DeserializeRequestResponse(UObject* RequestData,
 	BeamDeserialize(ResponseContent);	
 }
 
-void UGetLocalizationsResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetLocalizationsResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeMap<FArrayOfLocalizedValue>(TEXT("localizations"), Localizations, Serializer);
 }
@@ -20,7 +20,10 @@ void UGetLocalizationsResponse::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 	UBeamJsonUtils::SerializeMap<FArrayOfLocalizedValue>(TEXT("localizations"), Localizations, Serializer);		
 }
 
-void UGetLocalizationsResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetLocalizationsResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeMap<FArrayOfLocalizedValue>(Bag->GetObjectField(TEXT("localizations")), Localizations, OuterOwner);
 }
+
+
+

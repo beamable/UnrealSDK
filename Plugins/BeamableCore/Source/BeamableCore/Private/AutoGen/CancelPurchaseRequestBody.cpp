@@ -5,7 +5,7 @@
 
 
 
-void UCancelPurchaseRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UCancelPurchaseRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("txid"), Txid);
 }
@@ -15,7 +15,10 @@ void UCancelPurchaseRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 	Serializer->WriteValue(TEXT("txid"), Txid);		
 }
 
-void UCancelPurchaseRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UCancelPurchaseRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("txid")), Txid);
 }
+
+
+

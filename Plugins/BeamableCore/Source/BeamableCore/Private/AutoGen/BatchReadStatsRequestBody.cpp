@@ -5,7 +5,7 @@
 
 
 
-void UBatchReadStatsRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UBatchReadStatsRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("objectIds"), &ObjectIds, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("stats"), &Stats, Serializer);
@@ -19,9 +19,12 @@ void UBatchReadStatsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("format"), &Format, Serializer);		
 }
 
-void UBatchReadStatsRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UBatchReadStatsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("objectIds")), ObjectIds, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("stats", Bag, Stats, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("format", Bag, Format, OuterOwner);
 }
+
+
+

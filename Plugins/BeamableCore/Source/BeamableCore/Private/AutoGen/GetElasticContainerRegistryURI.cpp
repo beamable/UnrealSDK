@@ -10,7 +10,7 @@ void UGetElasticContainerRegistryURI::DeserializeRequestResponse(UObject* Reques
 	BeamDeserialize(ResponseContent);	
 }
 
-void UGetElasticContainerRegistryURI ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UGetElasticContainerRegistryURI::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("uri"), Uri);
 }
@@ -20,7 +20,10 @@ void UGetElasticContainerRegistryURI::BeamSerializeProperties(TUnrealPrettyJsonS
 	Serializer->WriteValue(TEXT("uri"), Uri);		
 }
 
-void UGetElasticContainerRegistryURI ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UGetElasticContainerRegistryURI::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Uri = Bag->GetStringField(TEXT("uri"));
 }
+
+
+

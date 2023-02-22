@@ -10,7 +10,7 @@ void UContentOrText::DeserializeRequestResponse(UObject* RequestData, FString Re
 	BeamDeserialize(ResponseContent);	
 }
 
-void UContentOrText ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UContentOrText::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
 	Serializer->WriteValue(TEXT("version"), Version);
@@ -24,9 +24,12 @@ void UContentOrText::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 	UBeamJsonUtils::SerializeMap<FString>(TEXT("properties"), Properties, Serializer);		
 }
 
-void UContentOrText ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UContentOrText::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("id")), Id, OuterOwner);
 	Version = Bag->GetStringField(TEXT("version"));
 	UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("properties")), Properties, OuterOwner);
 }
+
+
+

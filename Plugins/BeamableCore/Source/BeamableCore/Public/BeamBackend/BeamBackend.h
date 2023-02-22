@@ -30,13 +30,13 @@ struct FBeamConnectivity
 	 * @brief Whether or not the last request was successful (true) or failed due to connectivity issues (false).
 	 */
 	UPROPERTY(BlueprintReadOnly)
-	bool IsConnected;
+	bool IsConnected = true;
 
 	/**
 	 * @brief The time in ticks since the last successful request occurred.
 	 */
 	UPROPERTY(BlueprintReadOnly)
-	int64 LastTimeSinceSuccessfulRequest;
+	int64 LastTimeSinceSuccessfulRequest = 0;
 };
 
 /**
@@ -185,11 +185,6 @@ private:
 	FTSTicker::FDelegateHandle RetryQueueTickHandle;
 
 	/**
-	 * @brief Delegate handle to the tick function of the UBeamBackend sub-system used to clean up completed requests.
-	 */
-	FTSTicker::FDelegateHandle CleanupRequestsTickHandle;
-
-	/**
 	 * @brief Queue of failed requests that we must retry.
 	 */
 	TQueue<FRequestToRetry> EnqueuedRetries;
@@ -218,7 +213,7 @@ private:
 	
 	bool TickRetryQueue(float DeltaTime);	
 
-	bool TickCleanUp(float deltaTime);
+	bool CleanUpRequestData();
 
 
 public:

@@ -10,7 +10,7 @@ void UListLeaderBoardViewResponse::DeserializeRequestResponse(UObject* RequestDa
 	BeamDeserialize(ResponseContent);	
 }
 
-void UListLeaderBoardViewResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UListLeaderBoardViewResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("result"), Result);
 	UBeamJsonUtils::SerializeArray<ULeaderBoardView*>(TEXT("lbs"), Lbs, Serializer);
@@ -22,8 +22,11 @@ void UListLeaderBoardViewResponse::BeamSerializeProperties(TUnrealPrettyJsonSeri
 	UBeamJsonUtils::SerializeArray<ULeaderBoardView*>(TEXT("lbs"), Lbs, Serializer);		
 }
 
-void UListLeaderBoardViewResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UListLeaderBoardViewResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Result = Bag->GetStringField(TEXT("result"));
 	UBeamJsonUtils::DeserializeArray<ULeaderBoardView*>(Bag->GetArrayField(TEXT("lbs")), Lbs, OuterOwner);
 }
+
+
+

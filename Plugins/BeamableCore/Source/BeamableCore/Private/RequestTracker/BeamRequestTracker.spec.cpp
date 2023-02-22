@@ -55,6 +55,8 @@ void FBeamRequestTrackerSpec::Define()
 			*RequestTrackerSystem->WaitHandleId = -1;
 			RequestTrackerSystem->ActiveWaitHandles.Reset();
 			RequestTrackerSystem->ActiveWaitHandleCallbacks.Reset();
+			RequestTrackerSystem->ActiveWaitHandleCodeCallbacks.Reset();
+
 			RequestTrackerSystem->ActiveRequestsForWaitHandles.Reset();
 			RequestTrackerSystem->ActiveOperationsForWaitHandles.Reset();
 			RequestTrackerSystem->ActiveWaitHandlesForWaitHandles.Reset();
@@ -217,7 +219,64 @@ void FBeamRequestTrackerSpec::Define()
 				WaitAllCallbacks->ExpectedResponses = {nullptr, nullptr}; // We expect null because we don't actually make the requests.
 
 				// Tick so that the callback assertions run.
-				RequestTrackerSystem->TickOnRequestIdCompleted(-1);
+				RequestTrackerSystem->HandleRequestIdCompleted(-1);
+
+				// Discard Requests as we are not actually going to make them
+				BeamBackendSystem->CancelRequest(ReqId);
+				FakeGetRequest->MarkAsGarbage();
+				BeamBackendSystem->CancelRequest(ReqId2);
+				FakeGetRequest2->MarkAsGarbage();
+			}
+		});
+
+		It("should correctly run the complete callback (code) with correct data", [=, this]()
+		{
+			// Try to configure a wait handle with non-existent 
+			{
+				UBeamMockGetRequest* FakeGetRequest = NewObject<UBeamMockGetRequest>();
+				UBeamMockGetRequest* FakeGetRequest2 = NewObject<UBeamMockGetRequest>();
+
+				int64 ReqId;
+				int64 ReqId2;
+				const auto Request = BeamBackendSystem->CreateAuthenticatedRequest(ReqId, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken, FakeGetRequest);
+				const auto Request2 = BeamBackendSystem->CreateAuthenticatedRequest(ReqId2, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken, FakeGetRequest2);
+
+				// Create a fake operation
+				FBeamOperationEventHandler Handler;
+				Handler.BindUFunction(OperationCallbacks, GET_FUNCTION_NAME_CHECKED(UBeamRequestTrackerOperationTestCallbacks, MockOperationEvent_Fail));
+				const auto OpHandle = RequestTrackerSystem->BeginOperation({FakeUserSlot}, GetTestName(), Handler, -1);
+				RequestTrackerSystem->AddRequestToOperation(OpHandle, ReqId2);
+
+				// Create the first wait handle with Req1 and Operation (which contains req2 as a dep)
+				const TArray<FBeamRequestContext> FirstContexts{FBeamRequestContext{ReqId}};
+				const TArray<FBeamOperationHandle> FirstOperations{OpHandle};
+				FOnWaitCompleteCode FirstOnComplete;
+				FirstOnComplete.BindUFunction(WaitAllCallbacks, GET_FUNCTION_NAME_CHECKED(UBeamRequestTrackerWaitAllTestCallbacks, MockWaitCompleteEvent_Expected));
+				const auto FirstWaitHandle = RequestTrackerSystem->CPP_WaitAll(FirstContexts, FirstOperations, {}, FirstOnComplete);
+
+				// Now we assert that if we gather the dependencies for the first wait handle
+				const TArray<int64> FirstExpectedRequestDeps{ReqId, ReqId2};
+				TArray<int64> GatheredDeps;
+				RequestTrackerSystem->GatherRequestIdsFromWaitHandle(FirstWaitHandle, GatheredDeps);
+				GatheredDeps.Sort();
+				TestEqual("First wait handle's dependencies are correctly gathered", GatheredDeps, FirstExpectedRequestDeps);
+
+				// We forcibly tag the requests as completed here so we can see if the wait callback will trigger
+				{
+					auto& Ctx = *BeamBackendSystem->InFlightRequestContexts.Find(ReqId);
+					Ctx.BeamStatus = Completed;
+					auto& Ctx2 = *BeamBackendSystem->InFlightRequestContexts.Find(ReqId2);
+					Ctx2.BeamStatus = Completed;
+				}
+
+				// Now we run the tick OnRequestCompleted to see if it triggers the WaitComplete callback.
+				WaitAllCallbacks->ExpectedContexts = {FBeamRequestContext{ReqId}, FBeamRequestContext{ReqId2}};
+				WaitAllCallbacks->ExpectedRequests = {FakeGetRequest, FakeGetRequest2};
+				WaitAllCallbacks->ExpectedErrors = {FBeamErrorResponse{}, FBeamErrorResponse{}}; // We expect blank because we don't actually make the requests.
+				WaitAllCallbacks->ExpectedResponses = {nullptr, nullptr}; // We expect null because we don't actually make the requests.
+
+				// Tick so that the callback assertions run.
+				RequestTrackerSystem->HandleRequestIdCompleted(-1);
 
 				// Discard Requests as we are not actually going to make them
 				BeamBackendSystem->CancelRequest(ReqId);
@@ -265,6 +324,7 @@ void FBeamRequestTrackerSpec::Define()
 			*RequestTrackerSystem->WaitHandleId = -1;
 			RequestTrackerSystem->ActiveWaitHandles.Reset();
 			RequestTrackerSystem->ActiveWaitHandleCallbacks.Reset();
+			RequestTrackerSystem->ActiveWaitHandleCodeCallbacks.Reset();
 			RequestTrackerSystem->ActiveRequestsForWaitHandles.Reset();
 			RequestTrackerSystem->ActiveOperationsForWaitHandles.Reset();
 			RequestTrackerSystem->ActiveWaitHandlesForWaitHandles.Reset();
@@ -427,7 +487,7 @@ void FBeamRequestTrackerSpec::Define()
 
 				const auto OpHandle = RequestTrackerSystem->BeginOperation({FakeUserSlot}, GetTestName(), Handler, -1);
 				RequestTrackerSystem->AddRequestToOperation(OpHandle, ReqId);
-				RequestTrackerSystem->TriggerOperationEvent(OpHandle, SUCCESS, 1, TEXT("SuccessData"));
+				RequestTrackerSystem->TriggerOperationEvent(OpHandle, EBeamOperationEventType::SUCCESS, 1, TEXT("SuccessData"));
 
 				// Discard Request as we are not actually going to make it
 				BeamBackendSystem->CancelRequest(ReqId);
@@ -448,7 +508,7 @@ void FBeamRequestTrackerSpec::Define()
 				OperationCallbacks->ExpectedRequestsInOperations = {};
 
 				const auto OpHandle = RequestTrackerSystem->BeginOperation({FakeUserSlot}, GetTestName(), Handler, -1);
-				RequestTrackerSystem->TriggerOperationEvent(OpHandle, SUCCESS, 1, TEXT("SuccessData"));
+				RequestTrackerSystem->TriggerOperationEvent(OpHandle, EBeamOperationEventType::SUCCESS, 1, TEXT("SuccessData"));
 			}
 		});
 	});
@@ -490,6 +550,7 @@ void FBeamRequestTrackerSpec::Define()
 			*RequestTrackerSystem->WaitHandleId = -1;
 			RequestTrackerSystem->ActiveWaitHandles.Reset();
 			RequestTrackerSystem->ActiveWaitHandleCallbacks.Reset();
+			RequestTrackerSystem->ActiveWaitHandleCodeCallbacks.Reset();
 			RequestTrackerSystem->ActiveRequestsForWaitHandles.Reset();
 			RequestTrackerSystem->ActiveOperationsForWaitHandles.Reset();
 			RequestTrackerSystem->ActiveWaitHandlesForWaitHandles.Reset();
@@ -541,7 +602,7 @@ void FBeamRequestTrackerSpec::Define()
 
 			// Clean up and get the requests that this system depends on
 			TArray<int64> DependsOnRequests;
-			RequestTrackerSystem->TickOnBackendCleanUp(DependsOnRequests);
+			RequestTrackerSystem->HandleBackendCleanUp(DependsOnRequests);
 
 			// Test that we cleaned up the operation that was cancelled
 			TestFalse("First operation is no longer active", RequestTrackerSystem->ActiveOperations.Contains(OpHandle));
@@ -570,36 +631,59 @@ void FBeamRequestTrackerSpec::Define()
 
 			// Create the first wait handle with Req1 and Operation (which contains req2 as a dep)
 			FOnWaitComplete FirstOnComplete;
+			FOnWaitCompleteCode FirstOnCompleteCode;
+			FirstOnCompleteCode.BindLambda([this](const TArray<FBeamRequestContext>& BeamRequestContexts, const TArray<TScriptInterface<IBeamBaseRequestInterface>>& BeamBaseRequestInterfaces,
+			                                      const TArray<UObject*>& Objects, const TArray<FBeamErrorResponse>& BeamErrorResponses)
+			{
+				TestTrue("Callback should not be invoked!", false);
+			});
 			FirstOnComplete.BindUFunction(WaitAllCallbacks, GET_FUNCTION_NAME_CHECKED(UBeamRequestTrackerWaitAllTestCallbacks, MockWaitCompleteEvent_Fail));
 			const auto FirstWaitHandle = RequestTrackerSystem->WaitAll({FBeamRequestContext{ReqId}},
 			                                                           {},
 			                                                           {},
 			                                                           FirstOnComplete);
+			const auto FirstWaitHandleCpp = RequestTrackerSystem->CPP_WaitAll({FBeamRequestContext{ReqId}},
+																	   {},
+																	   {},
+																	   FirstOnCompleteCode);
 
 			// Create the first wait handle with Req1 and Operation (which contains req2 as a dep)
 			FOnWaitComplete SecondOnComplete;
-			FirstOnComplete.BindUFunction(WaitAllCallbacks, GET_FUNCTION_NAME_CHECKED(UBeamRequestTrackerWaitAllTestCallbacks, MockWaitCompleteEvent_Fail));
+			FOnWaitCompleteCode SecondOnCompleteCode;
+			SecondOnCompleteCode.BindLambda([this](const TArray<FBeamRequestContext>& BeamRequestContexts, const TArray<TScriptInterface<IBeamBaseRequestInterface>>& BeamBaseRequestInterfaces,
+			                                       const TArray<UObject*>& Objects, const TArray<FBeamErrorResponse>& BeamErrorResponses)
+			{
+				TestTrue("Callback should not be invoked!", false);
+			});
+			SecondOnComplete.BindUFunction(WaitAllCallbacks, GET_FUNCTION_NAME_CHECKED(UBeamRequestTrackerWaitAllTestCallbacks, MockWaitCompleteEvent_Fail));
 			const auto SecondWaitHandle = RequestTrackerSystem->WaitAll({FBeamRequestContext{ReqId2}},
 			                                                            {},
 			                                                            {},
 			                                                            SecondOnComplete);
+			const auto SecondWaitHandleCpp = RequestTrackerSystem->CPP_WaitAll({FBeamRequestContext{ReqId2}},
+																		{},
+																		{},
+																		SecondOnCompleteCode);
 
 			// Forcibly complete the first wait handle only
 			RequestTrackerSystem->ActiveWaitHandles.FindByKey(FirstWaitHandle)->Status = Completed;
+			RequestTrackerSystem->ActiveWaitHandles.FindByKey(FirstWaitHandleCpp)->Status = Completed;
 			
+
 			// Now we assert that if we gather the dependencies for the first wait handle
 			const TArray<int64> ExpectedLiveDependencies{ReqId2};
 
 			// Clean up and get the requests that this system depends on
 			TArray<int64> DependsOnRequests;
-			RequestTrackerSystem->TickOnBackendCleanUp(DependsOnRequests);
+			RequestTrackerSystem->HandleBackendCleanUp(DependsOnRequests);
 
 			// Test that we cleaned up the operation that was cancelled
 			TestFalse("First wait handle is no longer active", RequestTrackerSystem->ActiveWaitHandles.Contains(FirstWaitHandle));
 			TestTrue("First wait handle callback was cleared", !RequestTrackerSystem->ActiveWaitHandleCallbacks.Contains(FirstWaitHandle));
+			TestTrue("First wait handle callback was cleared", !RequestTrackerSystem->ActiveWaitHandleCodeCallbacks.Contains(FirstWaitHandle));
 			TestTrue("First wait handle has no active requests anymore", !RequestTrackerSystem->ActiveRequestsForWaitHandles.Contains(FirstWaitHandle));
 			TestTrue("First wait handle has no active operations anymore", !RequestTrackerSystem->ActiveOperationsForWaitHandles.Contains(FirstWaitHandle));
-			TestTrue("First wait handle has no active WaitHandles anymore", !RequestTrackerSystem->ActiveWaitHandlesForWaitHandles.Contains(FirstWaitHandle));			
+			TestTrue("First wait handle has no active WaitHandles anymore", !RequestTrackerSystem->ActiveWaitHandlesForWaitHandles.Contains(FirstWaitHandle));
 
 			TestEqual("We correctly generated a list of all Request Ids that are currently in the wait handles", DependsOnRequests, ExpectedLiveDependencies);
 

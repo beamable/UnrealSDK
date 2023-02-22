@@ -5,7 +5,7 @@
 
 
 
-void UInvite ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UInvite::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("playerId"), &PlayerId, Serializer);
 	Serializer->WriteValue(TEXT("direction"), UInvitationDirectionLibrary::InvitationDirectionToSerializationName(Direction));
@@ -17,8 +17,11 @@ void UInvite::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) c
 	Serializer->WriteValue(TEXT("direction"), UInvitationDirectionLibrary::InvitationDirectionToSerializationName(Direction));		
 }
 
-void UInvite ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UInvite::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("playerId")), PlayerId, OuterOwner);
 	Direction = UInvitationDirectionLibrary::SerializationNameToInvitationDirection(Bag->GetStringField(TEXT("direction")));
 }
+
+
+

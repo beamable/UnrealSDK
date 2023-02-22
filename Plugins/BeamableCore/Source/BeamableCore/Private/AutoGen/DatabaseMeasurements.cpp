@@ -5,7 +5,7 @@
 
 
 
-void UDatabaseMeasurements ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UDatabaseMeasurements::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("databaseName"), DatabaseName);
 	UBeamJsonUtils::SerializeArray<ULink*>(TEXT("links"), Links, Serializer);
@@ -31,7 +31,7 @@ void UDatabaseMeasurements::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 	UBeamJsonUtils::SerializeOptional<TArray<UDatabaseMeasurement*>, UDatabaseMeasurement*>(TEXT("measurements"), &Measurements, Serializer);		
 }
 
-void UDatabaseMeasurements ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UDatabaseMeasurements::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	DatabaseName = Bag->GetStringField(TEXT("databaseName"));
 	UBeamJsonUtils::DeserializeArray<ULink*>(Bag->GetArrayField(TEXT("links")), Links, OuterOwner);
@@ -43,3 +43,6 @@ void UDatabaseMeasurements ::BeamDeserializeProperties(const TSharedPtr<FJsonObj
 	UBeamJsonUtils::DeserializeOptional<FString>("processId", Bag, ProcessId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UDatabaseMeasurement*>, UDatabaseMeasurement*>("measurements", Bag, Measurements, OuterOwner);
 }
+
+
+

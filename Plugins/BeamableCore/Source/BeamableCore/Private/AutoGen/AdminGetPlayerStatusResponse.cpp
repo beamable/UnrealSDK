@@ -10,7 +10,7 @@ void UAdminGetPlayerStatusResponse::DeserializeRequestResponse(UObject* RequestD
 	BeamDeserialize(ResponseContent);	
 }
 
-void UAdminGetPlayerStatusResponse ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UAdminGetPlayerStatusResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<UAdminPlayerStatus*>(TEXT("statuses"), Statuses, Serializer);
 }
@@ -20,7 +20,10 @@ void UAdminGetPlayerStatusResponse::BeamSerializeProperties(TUnrealPrettyJsonSer
 	UBeamJsonUtils::SerializeArray<UAdminPlayerStatus*>(TEXT("statuses"), Statuses, Serializer);		
 }
 
-void UAdminGetPlayerStatusResponse ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UAdminGetPlayerStatusResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<UAdminPlayerStatus*>(Bag->GetArrayField(TEXT("statuses")), Statuses, OuterOwner);
 }
+
+
+

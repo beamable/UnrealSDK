@@ -5,9 +5,8 @@
 
 
 
-void UTextReference ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UTextReference::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("contentPrefix"), ContentPrefix);
 	Serializer->WriteValue(TEXT("uri"), Uri);
 	Serializer->WriteValue(TEXT("version"), Version);
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
@@ -21,7 +20,6 @@ void UTextReference ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer)
 
 void UTextReference::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("contentPrefix"), ContentPrefix);
 	Serializer->WriteValue(TEXT("uri"), Uri);
 	Serializer->WriteValue(TEXT("version"), Version);
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
@@ -33,9 +31,8 @@ void UTextReference::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("created"), &Created, Serializer);		
 }
 
-void UTextReference ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UTextReference::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	ContentPrefix = Bag->GetStringField(TEXT("contentPrefix"));
 	Uri = Bag->GetStringField(TEXT("uri"));
 	Version = Bag->GetStringField(TEXT("version"));
 	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("id")), Id, OuterOwner);
@@ -46,3 +43,6 @@ void UTextReference ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& B
 	UBeamJsonUtils::DeserializeOptional<int64>("lastChanged", Bag, LastChanged, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("created", Bag, Created, OuterOwner);
 }
+
+
+

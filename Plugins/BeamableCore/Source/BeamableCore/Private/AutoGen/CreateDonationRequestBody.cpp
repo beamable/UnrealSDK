@@ -5,7 +5,7 @@
 
 
 
-void UCreateDonationRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void UCreateDonationRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("currencyId"), CurrencyId);
 	Serializer->WriteValue(TEXT("amount"), Amount);
@@ -19,9 +19,12 @@ void UCreateDonationRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("config"), &Config, Serializer);		
 }
 
-void UCreateDonationRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void UCreateDonationRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	CurrencyId = Bag->GetStringField(TEXT("currencyId"));
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("amount")), Amount);
 	UBeamJsonUtils::DeserializeOptional<FString>("config", Bag, Config, OuterOwner);
 }
+
+
+

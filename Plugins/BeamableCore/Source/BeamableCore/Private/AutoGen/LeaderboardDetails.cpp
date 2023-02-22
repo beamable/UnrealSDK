@@ -10,7 +10,7 @@ void ULeaderboardDetails::DeserializeRequestResponse(UObject* RequestData, FStri
 	BeamDeserialize(ResponseContent);	
 }
 
-void ULeaderboardDetails ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void ULeaderboardDetails::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("lbid"), Lbid);
 	Serializer->WriteValue(TEXT("numberOfEntries"), NumberOfEntries);
@@ -30,7 +30,7 @@ void ULeaderboardDetails::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 	UBeamJsonUtils::SerializeOptional<UMetadataView*>(TEXT("metaData"), &MetaData, Serializer);		
 }
 
-void ULeaderboardDetails ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void ULeaderboardDetails::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Lbid = Bag->GetStringField(TEXT("lbid"));
 	NumberOfEntries = Bag->GetIntegerField(TEXT("numberOfEntries"));
@@ -39,3 +39,6 @@ void ULeaderboardDetails ::BeamDeserializeProperties(const TSharedPtr<FJsonObjec
 	UBeamJsonUtils::DeserializeOptional<UOrderRules*>("orules", Bag, Orules, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UMetadataView*>("metaData", Bag, MetaData, OuterOwner);
 }
+
+
+

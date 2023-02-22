@@ -268,7 +268,7 @@ void FBeamBackendSpec::Define()
 				FOnMockFullResponse ResponseHandler;
 				ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
 				{
-					TestTrue("State was Success", BeamFullResponse.State == Success);
+					TestTrue("State was Success", BeamFullResponse.State == EBeamFullResponseState::Success);
 
 					TestTrue("Request Id was correctly forwarded", BeamFullResponse.Context.RequestId == ReqId);
 					TestTrue("Attempt Number was correctly forwarded", BeamFullResponse.AttemptNumber == 0);
@@ -290,7 +290,7 @@ void FBeamBackendSpec::Define()
 				FOnMockFullResponse ResponseHandler;
 				ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
 				{
-					TestTrue("State was Success", BeamFullResponse.State == Success);
+					TestTrue("State was Success", BeamFullResponse.State == EBeamFullResponseState::Success);
 
 					TestTrue("Request Id was correctly forwarded", BeamFullResponse.Context.RequestId == ReqId);
 					TestTrue("Attempt Number was correctly forwarded", BeamFullResponse.AttemptNumber == 0);
@@ -869,7 +869,7 @@ void FBeamBackendSpec::Define()
 			ResponseHandler.BindLambda([this, Done](const FMockFullResponse FullResponse)
 			{
 				TestTrue("Beam back-end correctly stores the state as cancelled", BeamBackendSystem->IsRequestCancelled(FullResponse.Context.RequestId));
-				TestTrue("Response state was Cancelled", FullResponse.State == Cancelled);
+				TestTrue("Response state was Cancelled", FullResponse.State == EBeamFullResponseState::Cancelled);
 				TestTrue("Response state was Cancelled on the first attempt", FullResponse.AttemptNumber == 0);
 				Done.Execute();
 			});
@@ -903,7 +903,7 @@ void FBeamBackendSpec::Define()
 			ResponseHandler.BindLambda([this, Done](const FMockFullResponse FullResponse)
 			{
 				TestTrue("Beam back-end correctly stores the state as cancelled", BeamBackendSystem->IsRequestCancelled(FullResponse.Context.RequestId));
-				TestTrue("Response state was Cancelled", FullResponse.State == Cancelled);
+				TestTrue("Response state was Cancelled", FullResponse.State == EBeamFullResponseState::Cancelled);
 				TestTrue("Response state was Cancelled on the first attempt", FullResponse.AttemptNumber == 0);
 				Done.Execute();
 			});
@@ -947,7 +947,7 @@ void FBeamBackendSpec::Define()
 			FTickOnBackendCleanUp CleanUpHandler;
 			CleanUpHandler.BindUFunction(Callbacks, GET_FUNCTION_NAME_CHECKED(UBeamBackendTestCallbacks, GenerateExternalRequestIds));
 			BeamBackendSystem->TickOnBackendCleanUpDelegates.Add(CleanUpHandler);
-			BeamBackendSystem->TickCleanUp(0);
+			BeamBackendSystem->CleanUpRequestData();
 			BeamBackendSystem->TickOnBackendCleanUpDelegates.Remove(CleanUpHandler);
 
 			// Because it's NOT an external dependency and it's completed, we can clean it up.

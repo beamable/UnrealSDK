@@ -436,6 +436,66 @@ void UBeamInventoryApi::CPP_PutInventoryImpl(const FBeamRealmHandle& TargetRealm
 	}	
 }
 
+		
+void UBeamInventoryApi::BP_PutProxyReloadImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UPutProxyReloadRequest* RequestData,
+                                                  const FOnPutProxyReloadSuccess& OnSuccess, const FOnPutProxyReloadError& OnError, const FOnPutProxyReloadComplete& OnComplete,
+                                                  int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...	
+	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
+
+	// If cached...
+	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		Backend->RunBlueprintRequestProcessor<UPutProxyReloadRequest, UCommonResponse, FOnPutProxyReloadSuccess, FOnPutProxyReloadError, FOnPutProxyReloadComplete>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, OnSuccess, OnError, OnComplete);		
+	}
+	// If not cached...
+	else
+	{			
+		// Binds the handler to the static response handler (pre-generated)
+		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UPutProxyReloadRequest, UCommonResponse, FOnPutProxyReloadSuccess, FOnPutProxyReloadError, FOnPutProxyReloadComplete>
+			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
+		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);		
+	}	
+}
+
+void UBeamInventoryApi::CPP_PutProxyReloadImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
+                                               UPutProxyReloadRequest* RequestData, const FOnPutProxyReloadFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...	
+	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
+
+	// If cached...
+	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		Backend->RunCodeRequestProcessor<UPutProxyReloadRequest, UCommonResponse>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, Handler);			
+	}
+	// If not cached...
+	else
+	{
+		// Binds the handler to the static response handler (pre-generated)	
+		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UPutProxyReloadRequest, UCommonResponse>
+			(OutRequestId, RequestData, Handler);
+		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
+
+		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+	}	
+}
+
 
 
 void UBeamInventoryApi::BP_DeleteTransactionImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
@@ -640,6 +700,17 @@ void UBeamInventoryApi::CPP_PutInventory(UPutInventoryRequest* Request, const FO
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
 }
 
+		
+void UBeamInventoryApi::CPP_PutProxyReload(UPutProxyReloadRequest* Request, const FOnPutProxyReloadFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	FBeamRetryConfig RetryConfig;
+	Backend->GetRetryConfigForRequestType(UPutProxyReloadRequest::StaticClass()->GetName(), RetryConfig);
+	
+    int64 OutRequestId;
+	CPP_PutProxyReloadImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+}
+
 
 
 void UBeamInventoryApi::CPP_DeleteTransaction(const FUserSlot& UserSlot, UDeleteTransactionRequest* Request, const FOnDeleteTransactionFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
@@ -754,6 +825,18 @@ void UBeamInventoryApi::PutInventory(UPutInventoryRequest* Request, const FOnPut
 	
 	int64 OutRequestId = 0;
 	BP_PutInventoryImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+}
+
+		
+void UBeamInventoryApi::PutProxyReload(UPutProxyReloadRequest* Request, const FOnPutProxyReloadSuccess& OnSuccess, const FOnPutProxyReloadError& OnError, const FOnPutProxyReloadComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+{
+	// AUTO-GENERATED...	
+	FBeamRetryConfig RetryConfig;
+	Backend->GetRetryConfigForRequestType(UPutProxyReloadRequest::StaticClass()->GetName(), RetryConfig);	
+	
+	int64 OutRequestId = 0;
+	BP_PutProxyReloadImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
 }
 

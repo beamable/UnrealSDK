@@ -5,7 +5,7 @@
 
 
 
-void URepeatManifestRequestBody ::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void URepeatManifestRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("uid"), Uid);
 }
@@ -15,7 +15,10 @@ void URepeatManifestRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 	Serializer->WriteValue(TEXT("uid"), Uid);		
 }
 
-void URepeatManifestRequestBody ::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void URepeatManifestRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Uid = Bag->GetStringField(TEXT("uid"));
 }
+
+
+
