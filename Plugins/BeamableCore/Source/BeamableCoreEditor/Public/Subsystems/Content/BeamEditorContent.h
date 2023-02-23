@@ -102,7 +102,7 @@ private:
 	FBeamOperationHandle PublishManifest(FBeamContentManifestId ContentManifestId, FBeamOperationEventHandler Handler);
 	void PublishManifest_OnGetManifest(FBasicContentGetManifestFullResponse Response, FBeamOperationHandle Op, FBeamContentManifestId ContentManifestId);
 	void PublishManifest_OnPostContent(FPostContentFullResponse Response, FBeamOperationHandle Op, FBeamContentManifestId ContentManifestId);
-	void PublishManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response, FBeamOperationHandle Op, FBeamContentManifestId ContentManifestId);
+	void PublishManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response, FBeamOperationHandle Op, FBeamContentManifestId ContentManifestId) const;
 
 	static void BuildChangeSetForManifest(TArray<UBaseContentReference*> LocalReferences, TArray<UBaseContentReference*> RemoteReferences, FManifestChangeSet& ChangeSet);
 	static FString MakePublishKey(const UBaseContentReference* Ref, FString Visibility = {});

@@ -483,7 +483,7 @@ void UBeamEditorContent::PublishManifest_OnPostContent(FPostContentFullResponse 
 	RequestTracker->TriggerOperationCancelled(Op, TEXT(""), Response.Context.RequestId);
 }
 
-void UBeamEditorContent::PublishManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response, FBeamOperationHandle Op, FBeamContentManifestId ContentManifestId)
+void UBeamEditorContent::PublishManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response, FBeamOperationHandle Op, FBeamContentManifestId ContentManifestId) const
 {
 	if (Response.State == Error)
 	{

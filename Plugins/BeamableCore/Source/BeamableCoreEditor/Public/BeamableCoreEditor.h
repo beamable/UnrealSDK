@@ -11,9 +11,7 @@ public:
 
 private:
     TSharedPtr<class FUICommandList> PluginCommands;
-    FDelegateHandle LocalContentManifestDataTableHandler;
-
-    void HandleAssetOpenedInEditor(UObject* Object, IAssetEditorInstance* AssetEditorInstance);
+    FDelegateHandle LocalContentManifestDataTableHandler;    
 
     static void AddBeamableButtons(FToolBarBuilder& Builder);
     void OpenMainBeamableWindow() const;

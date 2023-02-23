@@ -7,6 +7,7 @@
 #include "BeamBackend/SemanticTypes/BeamContentManifestId.h"
 #include "Content/BeamContentObject.h"
 #include "Content/LocalContentManifestRow.h"
+#include "Dialog/SCustomDialog.h"
 
 #include "LocalContentManifestEditor.generated.h"
 
@@ -49,6 +50,7 @@ public:
 	TSharedPtr<IDetailsView> EditingObjectDetailsPanel;
 	FDelegateHandle EditingObjectOnPropertyChangeHandle;
 
+	TSharedPtr<SWindow> PublishingWindow;
 
 	void PrepareEditingUI();
 
@@ -67,7 +69,7 @@ private:
 	void PublishButtonClicked();
 
 	UFUNCTION()
-	void OnPublishEvent(const TArray<FUserSlot>& UserSlots, FBeamOperationEvent OperationEvent);
+	void OnPublishEvent(const TArray<FUserSlot>& UserSlots, FBeamOperationEvent OperationEvent) const;
 };
 
 #undef LOCTEXT_NAMESPACE

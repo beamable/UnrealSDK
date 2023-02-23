@@ -55,7 +55,6 @@ void FBeamableCoreEditorModule::StartupModule()
 
 	// Set up DataTable extensions
 	{
-		
 	}
 }
 
@@ -78,7 +77,9 @@ void FBeamableCoreEditorModule::ShutdownModule()
 
 void FBeamableCoreEditorModule::AddBeamableButtons(FToolBarBuilder& Builder)
 {
-	Builder.AddToolBarButton(FBeamableCoreEditorCommands::Get().OpenBeamableWindowCommand);
+	Builder.AddToolBarButton(FBeamableCoreEditorCommands::Get().OpenBeamableWindowCommand, NAME_None,
+	                         LOCTEXT("Beamable", "Beamable"), LOCTEXT("BeamableTooltip", "Opens the Beamable Window"),
+	                         FSlateIcon(FName(TEXT("BeamableCore")), FName(TEXT("BeamIconSpaceship"))));
 }
 
 void FBeamableCoreEditorModule::OpenMainBeamableWindow() const

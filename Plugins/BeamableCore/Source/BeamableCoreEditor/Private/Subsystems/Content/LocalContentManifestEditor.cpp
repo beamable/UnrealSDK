@@ -1,10 +1,12 @@
 ﻿#include "Subsystems/Content/LocalContentManifestEditor.h"
 
 #include "BeamableCoreEditorCommands.h"
+#include "BeamEditorSettings.h"
 #include "IDataTableEditor.h"
 #include "Dialog/SCustomDialog.h"
 #include "Subsystems/Content/BeamEditorContent.h"
 #include "EditorScriptingUtilities/Public/EditorDialogLibrary.h"
+#include "Subsystems/BeamEditor.h"
 
 #define LOCTEXT_NAMESPACE "ULocalContentManifestEditorState"
 
@@ -59,54 +61,52 @@ void ULocalContentManifestEditorState::PostChange(const UDataTable* Changed, FDa
 	// We also early out if the selection was changed in a data table that is not the one being managed by this editor.
 	if (Changed != EditingTable) return;
 
-	if (ChangedType == FDataTableEditorUtils::EDataTableChangeInfo::RowList)
+	// INFO: For now, we'll rebuild and revalidate the entire table on each change to it... This won't scale, but we'll need epic to trigger the callbacks correctly so that we can avoid this.	
+	RebuildContentNamesForTable();
+	SelectedContentIdx = FMath::Clamp(SelectedContentIdx, 0, EditingTableContentNames.Num());
+
+	const auto Rows = Changed->GetRowNames();
+	TArray<FString> MissingTypeTags;
+	for (const auto& Row : Rows)
 	{
-		RebuildContentNamesForTable();
-		SelectedContentIdx = FMath::Clamp(SelectedContentIdx, 0, EditingTableContentNames.Num());
+		const auto SelectedRow = Row;
+		const auto EntryInManifest = EditingTable->FindRow<FLocalContentManifestRow>(SelectedRow, TEXT("Validating Manifest"));
 
-		const auto Rows = Changed->GetRowNames();
-		TArray<FString> MissingTypeTags;
-		for (const auto& Row : Rows)
+		const auto TypeTag = EntryInManifest->Tags.FindByPredicate([](FString Tag) { return Tag.StartsWith(UBeamContentObject::Beam_Tag_Type); });
+		if (!TypeTag)
 		{
-			const auto SelectedRow = Row;
-			const auto EntryInManifest = EditingTable->FindRow<FLocalContentManifestRow>(SelectedRow, TEXT("Validating Manifest"));
-
-			const auto TypeTag = EntryInManifest->Tags.FindByPredicate([](FString Tag) { return Tag.StartsWith(UBeamContentObject::Beam_Tag_Type); });
-			if (!TypeTag)
+			MissingTypeTags.Add(SelectedRow.ToString());
+		}
+		else
+		{
+			const auto TypeName = UBeamContentObject::GetTypeClassNameFromTypeTag(*TypeTag);
+			UBeamContentObject* Obj;
+			if (!EditorContentSystem->TryLoadContentObject(ManifestId, SelectedRow, TypeName, Obj))
 			{
-				MissingTypeTags.Add(SelectedRow.ToString());
+				const auto ErrTitle = LOCTEXT("NonExistentContentObject", "Error - Non-Existent Content Object");
+				const auto ErrMsg = FText::FromString(FString::Format(TEXT("Trying to load a content object that doesn't exist {0}"), {SelectedRow.ToString()}));
+				UEditorDialogLibrary::ShowMessage(ErrTitle, ErrMsg, EAppMsgType::Ok, EAppReturnType::Ok);
 			}
 			else
 			{
-				const auto TypeName = UBeamContentObject::GetTypeClassNameFromTypeTag(*TypeTag);
-				UBeamContentObject* Obj;
-				if (!EditorContentSystem->TryLoadContentObject(ManifestId, SelectedRow, TypeName, Obj))
+				if (const auto ValidationErrorCode = Obj->IsValidRowForType(*TypeTag, EntryInManifest); ValidationErrorCode)
 				{
-					const auto ErrTitle = LOCTEXT("NonExistentContentObject", "Error - Non-Existent Content Object");
-					const auto ErrMsg = FText::FromString(FString::Format(TEXT("Trying to load a content object that doesn't exist {0}"), {SelectedRow.ToString()}));
-					UEditorDialogLibrary::ShowMessage(ErrTitle, ErrMsg, EAppMsgType::Ok, EAppReturnType::Ok);
-				}
-				else
-				{
-					if (const auto ValidationErrorCode = Obj->IsValidRowForType(*TypeTag, EntryInManifest); ValidationErrorCode)
-					{
-						Obj->FixManifestRowForType(ValidationErrorCode, EntryInManifest);
-					}
+					Obj->FixManifestRowForType(ValidationErrorCode, EntryInManifest);
 				}
 			}
 		}
+	}
 
-		if (MissingTypeTags.Num() > 0)
-		{
-			const auto ErrTitle = LOCTEXT("UntypedContentObject", "Error - Untyped Content Object");
-			const auto ErrMsg = FText::FromString(
-				FString::Format(
-					TEXT("Found a content object that doesn't have a type tag. Please add a type tag in the format of \"{0}ConcreteContentTypeName\" to the manifest row: {1}."),
-					{UBeamContentObject::Beam_Tag_Type, FString::Join(MissingTypeTags, TEXT(", "))}
-				)
-			);
-			UEditorDialogLibrary::ShowMessage(ErrTitle, ErrMsg, EAppMsgType::Ok, EAppReturnType::Ok);
-		}
+	if (MissingTypeTags.Num() > 0)
+	{
+		const auto ErrTitle = LOCTEXT("UntypedContentObject", "Error - Untyped Content Object");
+		const auto ErrMsg = FText::FromString(
+			FString::Format(
+				TEXT("Found a content object that doesn't have a type tag. Please add a type tag in the format of \"{0}ConcreteContentTypeName\" to the manifest row: {1}."),
+				{UBeamContentObject::Beam_Tag_Type, FString::Join(MissingTypeTags, TEXT(", "))}
+			)
+		);
+		UEditorDialogLibrary::ShowMessage(ErrTitle, ErrMsg, EAppMsgType::Ok, EAppReturnType::Ok);
 	}
 }
 
@@ -282,19 +282,103 @@ void ULocalContentManifestEditorState::EditContentButtonClicked()
 
 void ULocalContentManifestEditorState::PublishButtonClicked()
 {
-	FBeamOperationEventHandler Handler;
-	Handler.BindUFunction(this, GET_FUNCTION_NAME_CHECKED(ULocalContentManifestEditorState, OnPublishEvent));
-	const auto Operation = EditorContentSystem->PublishManifest(ManifestId, Handler);
+	const auto CoreSettings = GetDefault<UBeamCoreSettings>();
+	const auto TargetRealmPid = CoreSettings->TargetRealm.Pid;
+	const auto Settings = GetDefault<UBeamEditorSettings>();
+
+	// Find the name of the realm we published to.
+	FString RealmName;
+	{
+		const auto EditorSlot = EditorContentSystem->Editor->GetMainEditorSlot();
+		TArray<FBeamProjectRealmData> KnownRealms = Settings->PerSlotDeveloperProjectData.FindChecked(EditorSlot.Name).AllRealms;
+		for (const auto& Realm : KnownRealms)
+		{
+			if (Realm.PID == TargetRealmPid) RealmName = Realm.RealmName;
+		}
+	}
+
+	auto PublishDialog = SNew(SCustomDialog)
+		.Content()[
+			SNew(SVerticalBox)
+			+ SVerticalBox::Slot().FillHeight(1)[
+				SNew(STextBlock).Text(FText::FromString(FString::Format(TEXT("Do you wish to upload content and manifest to the current target realm ({0})?."), {RealmName})))
+			]
+		].Buttons({
+			SCustomDialog::FButton(LOCTEXT("CancelPublish", "Cancel"), FSimpleDelegate::CreateLambda([this]()
+			{
+				PublishingWindow->RequestDestroyWindow();
+			})),
+
+			SCustomDialog::FButton(LOCTEXT("ConfirmPublish", "Confirm"), FSimpleDelegate::CreateLambda([this, RealmName]()
+			{
+				FBeamOperationEventHandler Handler;
+				Handler.BindUFunction(this, GET_FUNCTION_NAME_CHECKED(ULocalContentManifestEditorState, OnPublishEvent));
+				[[maybe_unused]] const auto Operation = EditorContentSystem->PublishManifest(ManifestId, Handler);
+				PublishingWindow->DestroyWindowImmediately();
+
+				const auto Title = LOCTEXT("PublishingWait", "Waiting for Publish");
+				const auto Msg = FText::FromString(FString::Format(TEXT("Uploading content and manifest to Current Target Realm={0}."), {ManifestId.AsString, RealmName}));
+
+				PublishingWindow = SNew(SWindow)
+				.Title(Title)
+				.ClientSize({512, 128})
+				.Content()
+				[
+					SNew(SHorizontalBox)
+					+ SHorizontalBox::Slot().HAlign(HAlign_Center).VAlign(VAlign_Center)
+					[
+						SNew(STextBlock).Text(Msg).Justification(ETextJustify::Center)
+					]
+				];
+
+				// Show it as a modal of the DataTable editor.
+				FSlateApplication::Get().AddModalWindow(PublishingWindow.ToSharedRef(), FSlateApplication::Get().FindBestParentWindowForDialogs(SelectedContentComboBox), true);
+				PublishingWindow->ShowWindow();
+			}))
+		});
+
+	PublishingWindow = PublishDialog;
+	PublishDialog->ShowModal();
 }
 
-void ULocalContentManifestEditorState::OnPublishEvent(const TArray<FUserSlot>& UserSlots, FBeamOperationEvent OperationEvent)
+void ULocalContentManifestEditorState::OnPublishEvent(const TArray<FUserSlot>& UserSlots, FBeamOperationEvent OperationEvent) const
 {
+	const auto CoreSettings = GetDefault<UBeamCoreSettings>();
+	const auto TargetRealmPid = CoreSettings->TargetRealm.Pid;
+	const auto Settings = GetDefault<UBeamEditorSettings>();
+
+	// Find the name of the realm we published to.
+	FString RealmName;
+	{
+		const auto EditorSlot = UserSlots[0];
+		TArray<FBeamProjectRealmData> KnownRealms = Settings->PerSlotDeveloperProjectData.FindChecked(EditorSlot.Name).AllRealms;
+		for (const auto& Realm : KnownRealms)
+		{
+			if (Realm.PID == TargetRealmPid) RealmName = Realm.RealmName;
+		}
+	}
+
+	PublishingWindow->RequestDestroyWindow();
+
 	if (OperationEvent.EventType == SUCCESS)
 	{
-		UE_LOG(LogBeamContent, Display, TEXT("Content Publish sucessfull!\n%s"), *OperationEvent.EventData);		
+		// If it is the final success event (as in, the operation completed successfully)
+		if (OperationEvent.EventSubTypeCode == 0)
+		{
+			const auto ContentManifestId = OperationEvent.EventData;
+
+			const auto Title = LOCTEXT("PublishSuccessful", "Publish Successful");
+			const auto Msg = FText::FromString(FString::Format(TEXT("Successfully published manifest with Id={0} to Realm={1}."), {ContentManifestId, RealmName}));
+			UEditorDialogLibrary::ShowMessage(Title, Msg, EAppMsgType::Ok, EAppReturnType::Ok);
+		}
+
+		UE_LOG(LogBeamContent, Display, TEXT("Content Publish sucessfull!\n%s"), *OperationEvent.EventData);
 	}
 	else if (OperationEvent.EventType == ERROR)
 	{
+		const auto Title = LOCTEXT("PublishSuccessful", "Publish Failed");
+		const auto Msg = FText::FromString(FString::Format(TEXT("Manifest failed to be published manifest Realm={0}.\nError={1}"), {RealmName, OperationEvent.EventData}));
+		UEditorDialogLibrary::ShowMessage(Title, Msg, EAppMsgType::Ok, EAppReturnType::Ok);
 		UE_LOG(LogBeamContent, Error, TEXT("Content Publish Had error %s."), *OperationEvent.EventData);
 	}
 	else

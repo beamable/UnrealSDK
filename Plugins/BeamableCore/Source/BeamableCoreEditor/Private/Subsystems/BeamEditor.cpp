@@ -362,7 +362,7 @@ void UBeamEditor::CacheProjectDataForUserSlot(FUserSlot UserSlot, UCustomerViewR
 }
 
 
-bool UBeamEditor::GetActiveProjectAndRealmData(FBeamCustomerProjectData& ProjectData, FBeamProjectRealmData& RealmData) const
+bool UBeamEditor::GetActiveProjectAndRealmData(FBeamCustomerProjectData& ProjectData, FBeamProjectRealmData& RealmData)
 {
 	const auto EditorSettings = GetDefault<UBeamEditorSettings>();
 

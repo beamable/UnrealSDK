@@ -222,8 +222,8 @@ public:
 	/**
 	 * @brief Gets the project and realm data structures for the currently authenticated MainEditorUser slot; if the data is there already.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam", meta=(ExpandBoolAsExecs))
-	bool GetActiveProjectAndRealmData(FBeamCustomerProjectData& ProjectData, FBeamProjectRealmData& RealmData) const;
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool GetActiveProjectAndRealmData(FBeamCustomerProjectData& ProjectData, FBeamProjectRealmData& RealmData);
 
 	/**
 	 * @brief Change the current target realm to a new target realm.

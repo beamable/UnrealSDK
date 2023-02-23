@@ -15,7 +15,7 @@ public:
 			TEXT("BeamableCoreEditor"), 
 			NSLOCTEXT("Contexts", "BeamableCoreEditor", "Beamable Plugin"), 
 			NAME_None,
-			TEXT("BeamableCore")
+			FBeamableCoreStyle::Get().GetStyleSetName()
 		){}
 
 	virtual void RegisterCommands() override;
