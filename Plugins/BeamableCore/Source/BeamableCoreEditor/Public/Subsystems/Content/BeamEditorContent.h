@@ -90,6 +90,13 @@ public:
 	virtual FBeamOperationHandle InitializeWhenEditorReady() override;
 	virtual FBeamOperationHandle InitializeFromRealm(FBeamRealmHandle NewRealm) override;
 
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	void GetLocalManifestIds(TArray<FString>& Keys) const;
+
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetLocalManifestById(const FBeamContentManifestId& Id, UDataTable*& Manifest);
+
+
 	UClass** FindContentTypeByName(FString TypeName);
 
 	bool TryLoadContentObject(const FBeamContentManifestId& OwnerManifest, const FBeamContentId& ContentId, FString TypeName, UBeamContentObject*& OutLoadedContentObject);

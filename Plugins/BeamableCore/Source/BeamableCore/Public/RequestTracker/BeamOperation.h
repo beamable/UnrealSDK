@@ -94,3 +94,5 @@ struct BEAMABLECORE_API FBeamOperationEvent
 
 
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FBeamOperationEventHandler, const TArray<FUserSlot>&, UserSlots, FBeamOperationEvent, OperationEvent);
+
+DECLARE_DELEGATE_TwoParams(FBeamOperationEventHandlerCode, const TArray<FUserSlot>&, FBeamOperationEvent);

@@ -76,7 +76,7 @@ void UBeamRequestTracker::HandleRequestIdCompleted(int64)
 	// If they have, we run their register FOnWaitCompleted callback.
 	for (int i = 0; i < ActiveWaitHandles.Num(); ++i)
 	{
-		auto& ActiveWaitHandle = ActiveWaitHandles[i];	
+		auto& ActiveWaitHandle = ActiveWaitHandles[i];
 		if (ActiveWaitHandle.Status == Completed)
 		{
 			UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Beamable WaitHandle | WaitHandle is already completed and awaiting clean up. WAIT_HANDLE=%llu"), ActiveWaitHandle.WaitHandleId);
@@ -128,12 +128,12 @@ void UBeamRequestTracker::HandleRequestIdCompleted(int64)
 				UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Beamable WaitHandles | Completed WAIT_HANDLE=%llu, REQUEST_IDS=[%s]"), ActiveWaitHandle.WaitHandleId, *IdList);
 
 				ActiveWaitHandle.Status = Completed;
-				
-				if(const auto OnComplete = ActiveWaitHandleCodeCallbacks.Find(ActiveWaitHandle))
+
+				if (const auto OnComplete = ActiveWaitHandleCodeCallbacks.Find(ActiveWaitHandle))
 					auto _ = OnComplete->ExecuteIfBound(Contexts, RequestData, ResponseBodies, ResponseErrors);
-				
-				if(const auto OnComplete = ActiveWaitHandleCallbacks.Find(ActiveWaitHandle))
-					auto _ = OnComplete->ExecuteIfBound(Contexts, RequestData, ResponseBodies, ResponseErrors);				
+
+				if (const auto OnComplete = ActiveWaitHandleCallbacks.Find(ActiveWaitHandle))
+					auto _ = OnComplete->ExecuteIfBound(Contexts, RequestData, ResponseBodies, ResponseErrors);
 			}
 		}
 	}
@@ -275,7 +275,7 @@ FBeamWaitHandle UBeamRequestTracker::WaitAll(const TArray<FBeamRequestContext>& 
 }
 
 FBeamWaitHandle UBeamRequestTracker::CPP_WaitAll(const TArray<FBeamRequestContext>& RequestContexts, const TArray<FBeamOperationHandle>& Operations, const TArray<FBeamWaitHandle>& Waits,
-	FOnWaitCompleteCode OnCompleteCode)
+                                                 FOnWaitCompleteCode OnCompleteCode)
 {
 	// Ensures we get a valid Next Id even if requests get made from multiple threads.
 	const auto NextId = _InterlockedIncrement(WaitHandleId);
@@ -358,6 +358,21 @@ FBeamOperationHandle UBeamRequestTracker::BeginOperation(const TArray<FUserSlot>
 	return OperationHandle;
 }
 
+FBeamOperationHandle UBeamRequestTracker::CPP_BeginOperation(const TArray<FUserSlot>& Participants, const FString& CallingSystem, FBeamOperationEventHandlerCode OnEvent, int MaxRequestsInOperation)
+{
+	// Ensures we get a valid Next Id even if requests get made from multiple threads.
+	const auto NextId = _InterlockedIncrement(OperationHandleId);
+	const auto OperationHandle = FBeamOperationHandle{NextId};
+	ActiveOperations.Add(OperationHandle);
+
+	// Initialize it's state.
+	auto State = FBeamOperationState{false, CallingSystem, {}, Participants, MaxRequestsInOperation};
+	ActiveOperationState.Add(OperationHandle, State);
+	ActiveOperationEventHandlersCode.Add(OperationHandle, OnEvent);
+
+	return OperationHandle;
+}
+
 void UBeamRequestTracker::AddRequestToOperation(const FBeamOperationHandle& Op, int64 RequestId)
 {
 	auto& OperationState = ActiveOperationState.FindChecked(Op);
@@ -393,16 +408,30 @@ void UBeamRequestTracker::TriggerOperationEventFull(const FBeamOperationHandle& 
 {
 	checkf(!ActiveOperationState.FindRef(Op).Status, TEXT("Cannot trigger an operation event after it's being completed!"));
 
-	const auto& OperationEventHandler = ActiveOperationEventHandlers.FindChecked(Op);
-	const FBeamOperationEvent Result{Type, RequestId, SubEvent, CallingSystem, EventData, Op};
-	if (OperationEventHandler.ExecuteIfBound(UserSlots, Result))
-	{
-		TArray<FString> SlotsStr;
-		for (const auto& UserSlot : UserSlots)
-			SlotsStr.Add(UserSlot.Name);
+	const auto& OperationEventHandlerCode = ActiveOperationEventHandlersCode.Find(Op);
+	const auto& OperationEventHandler = ActiveOperationEventHandlers.Find(Op);
 
-		const auto SlotsJoinedStr = FString::Join(SlotsStr, TEXT(","));
-		UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Handling Operation Event: OPERATION_ID=%lld SLOTS=[%s], EVENT_TYPE=%s, SUB_EVENT=%c, CALLING_SYSTEM=%s, DATA=%s"),
+	const FBeamOperationEvent Result{Type, RequestId, SubEvent, CallingSystem, EventData, Op};
+
+	TArray<FString> SlotsStr;
+	for (const auto& UserSlot : UserSlots)
+		SlotsStr.Add(UserSlot.Name);
+	const auto SlotsJoinedStr = FString::Join(SlotsStr, TEXT(","));
+
+	if (OperationEventHandlerCode && OperationEventHandlerCode->ExecuteIfBound(UserSlots, Result))
+	{
+		UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Called CPP Handler for Operation Event: OPERATION_ID=%lld SLOTS=[%s], EVENT_TYPE=%s, SUB_EVENT=%c, CALLING_SYSTEM=%s, DATA=%s"),
+		       Op.OperationId,
+		       *SlotsJoinedStr,
+		       *StaticEnum<EBeamOperationEventType>()->GetNameStringByValue(static_cast<uint8>(Type)),
+		       SubEvent,
+		       *CallingSystem,
+		       *EventData);
+	}
+
+	if (OperationEventHandler && OperationEventHandler->ExecuteIfBound(UserSlots, Result))
+	{
+		UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Called Dynamic Handler for Operation Event: OPERATION_ID=%lld SLOTS=[%s], EVENT_TYPE=%s, SUB_EVENT=%c, CALLING_SYSTEM=%s, DATA=%s"),
 		       Op.OperationId,
 		       *SlotsJoinedStr,
 		       *StaticEnum<EBeamOperationEventType>()->GetNameStringByValue(static_cast<uint8>(Type)),

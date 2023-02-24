@@ -23,6 +23,7 @@ class BEAMABLECORE_API UBeamRequestTracker : public UEngineSubsystem
 	GENERATED_BODY()
 
 	friend class FBeamRequestTrackerSpec;
+
 private:
 	/**
 	 * @brief  Just an Auto-Increment ID of each running request.
@@ -126,7 +127,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="RequestContexts,Operations,Waits", BeamFlowFunction))
 	FBeamWaitHandle WaitAll(const TArray<FBeamRequestContext>& RequestContexts, const TArray<FBeamOperationHandle>& Operations, const TArray<FBeamWaitHandle>& Waits, FOnWaitComplete OnComplete);
 
-	FBeamWaitHandle CPP_WaitAll(const TArray<FBeamRequestContext>& RequestContexts, const TArray<FBeamOperationHandle>& Operations, const TArray<FBeamWaitHandle>& Waits, FOnWaitCompleteCode OnCompleteCode);
+	FBeamWaitHandle CPP_WaitAll(const TArray<FBeamRequestContext>& RequestContexts, const TArray<FBeamOperationHandle>& Operations, const TArray<FBeamWaitHandle>& Waits,
+	                            FOnWaitCompleteCode OnCompleteCode);
 
 	/**
 	 * @brief List of all active operations. See BeginOperation and MarkOperation____ functions.
@@ -139,9 +141,14 @@ public:
 	TMap<FBeamOperationHandle, FBeamOperationState> ActiveOperationState;
 
 	/**
-	 * @brief Current state of each operation --- keeps track of the maximum number of requests we can expect, current list of requests we depend on and the Status of the operation.
+	 * @brief Dynamic event handlers associated with each running Operation.
 	 */
 	TMap<FBeamOperationHandle, FBeamOperationEventHandler> ActiveOperationEventHandlers;
+
+	/**
+	* @brief Event handlers associated with each running Operation. (Can bind lambdas to these)
+	 */
+	TMap<FBeamOperationHandle, FBeamOperationEventHandlerCode> ActiveOperationEventHandlersCode;
 
 
 	/**
@@ -154,6 +161,16 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(AutoCreateRefTerm="CallingSystem"))
 	FBeamOperationHandle BeginOperation(const TArray<FUserSlot>& Participants, const FString& CallingSystem, FBeamOperationEventHandler OnEvent, int MaxRequestsInOperation = -1);
+
+	/**
+	 * @brief This begins an Operation.
+	 * The returning OperationWaitHandle can be used to Wait on an entire chain of requests.
+	 * @param Participants The list of all potential user slots that are participating in this operation.
+	 * @param OnEvent An event handler to handle all potential events of this operation.
+	 * @param MaxRequestsInOperation This is the expected number of requests in the operation. -1, to ignore this. 
+	 * @return An Operation Handle you can use to enable callers to wait on the operation. 
+	 */	
+	FBeamOperationHandle CPP_BeginOperation(const TArray<FUserSlot>& Participants, const FString& CallingSystem, FBeamOperationEventHandlerCode OnEvent, int MaxRequestsInOperation = -1);
 
 	/**
 	 * @brief Adds a request to this transaction. This means that every WaitHandle that is waiting on this Operation will now be waiting on this request still.

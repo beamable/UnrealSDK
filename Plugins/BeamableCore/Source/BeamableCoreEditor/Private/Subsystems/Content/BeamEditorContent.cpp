@@ -96,6 +96,27 @@ FBeamOperationHandle UBeamEditorContent::InitializeFromRealm(FBeamRealmHandle Ne
 	return EnsureGlobalManifest();
 }
 
+void UBeamEditorContent::GetLocalManifestIds(TArray<FString>& Keys) const
+{		
+	TArray<FBeamContentManifestId> Ids;		
+	Keys.Reserve(LocalManifests.GetKeys(Ids));
+	for (const auto& Id : Ids)
+	{
+		Keys.Add(Id.AsString);	
+	}		
+}
+
+bool UBeamEditorContent::TryGetLocalManifestById(const FBeamContentManifestId& Id, UDataTable*& Manifest)
+{
+	if (LocalManifests.Contains(Id))
+	{
+		Manifest = LocalManifests.FindChecked(Id);
+		return true;
+	}
+
+	return false;
+}
+
 
 FBeamOperationHandle UBeamEditorContent::EnsureGlobalManifest()
 {
