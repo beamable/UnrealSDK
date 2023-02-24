@@ -97,13 +97,13 @@ FBeamOperationHandle UBeamEditorContent::InitializeFromRealm(FBeamRealmHandle Ne
 }
 
 void UBeamEditorContent::GetLocalManifestIds(TArray<FString>& Keys) const
-{		
-	TArray<FBeamContentManifestId> Ids;		
+{
+	TArray<FBeamContentManifestId> Ids;
 	Keys.Reserve(LocalManifests.GetKeys(Ids));
 	for (const auto& Id : Ids)
 	{
-		Keys.Add(Id.AsString);	
-	}		
+		Keys.Add(Id.AsString);
+	}
 }
 
 bool UBeamEditorContent::TryGetLocalManifestById(const FBeamContentManifestId& Id, UDataTable*& Manifest)
@@ -292,6 +292,20 @@ void UBeamEditorContent::EnsureGlobalManifest_OnPostManifest(FBasicContentPostMa
 			TArray<UObject*> Objects;
 			Objects.Add(Manifest);
 			ContentBrowserModule->Get().SyncBrowserToAssets(Objects);
+		}
+		else
+		{
+			// Load the manifest that is already there
+			UDataTable* Manifest;
+			if (bExistsInCooked) Manifest = Cast<UDataTable>(EditorAssetSubsystem->LoadAsset(CookedAssetPath));
+			if (bExistsInUncooked) Manifest = Cast<UDataTable>(EditorAssetSubsystem->LoadAsset(UncookedAssetPath));
+
+			// Add the newly created global manifest to the local manifest list
+			LocalManifests.Add(Global_Manifest, Manifest);
+			auto NewEditorState = NewObject<ULocalContentManifestEditorState>();
+			NewEditorState->ManifestId = Global_Manifest;
+			NewEditorState->EditingTable = Manifest;
+			EditorStates.Add(Global_Manifest, NewEditorState);
 		}
 
 		RequestTracker->TriggerOperationSuccess(Op, Response.SuccessData->Id.AsString);
