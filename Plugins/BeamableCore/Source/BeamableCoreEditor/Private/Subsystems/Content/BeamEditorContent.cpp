@@ -13,7 +13,7 @@
 void UBeamEditorContent::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-	UE_LOG(LogTemp, Error, TEXT("Initializing Beam Editor - Content System!"))
+	UE_LOG(LogTemp, Display, TEXT("Initializing Beam Editor - Content System!"))
 
 	ContentApi = GEngine->GetEngineSubsystem<UBeamContentApi>();
 	AssetEditorSubsystem = Collection.InitializeDependency<UAssetEditorSubsystem>();

@@ -378,7 +378,7 @@ void UBeamEditor::SelectRealm_OnReadyForChange(const TArray<FBeamRequestContext>
 	auto Settings = GetMutableDefault<UBeamCoreSettings>();
 
 	Settings->TargetRealm = NewRealmHandle;
-	Settings->SaveConfig();
+	Settings->SaveConfig(CPF_Config, *Settings->GetDefaultConfigFilename());
 
 	const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
 
@@ -468,7 +468,7 @@ void UBeamEditor::SetActiveTargetRealmUnsafe(const FBeamRealmHandle& NewRealmHan
 	const auto LeavingRealm = Settings->TargetRealm;
 
 	Settings->TargetRealm = NewRealmHandle;
-	Settings->SaveConfig();
+	Settings->SaveConfig(CPF_Config, *Settings->GetDefaultConfigFilename());
 }
 
 

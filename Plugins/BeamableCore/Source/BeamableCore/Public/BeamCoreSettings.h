@@ -35,7 +35,7 @@ public:
 	*
 	* When you create an account or sign into a customer for the first time in this project, we default you to that customer's Dev realm if this is ever empty.
 	*/
-	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category="Request/Response")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Request/Response")
 	FBeamRealmHandle TargetRealm;
 
 	/**

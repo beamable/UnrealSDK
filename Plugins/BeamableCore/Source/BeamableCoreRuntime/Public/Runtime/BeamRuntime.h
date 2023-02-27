@@ -117,9 +117,6 @@ public:
 	static UBeamRuntime* GetSelf(const UObject* CallingContext) { return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamRuntime>(); }
 
 	UPROPERTY()
-	const UBeamCoreSettings* CoreSettings;
-
-	UPROPERTY()
 	UBeamUserSlots* UserSlotSystem;
 
 	UPROPERTY()

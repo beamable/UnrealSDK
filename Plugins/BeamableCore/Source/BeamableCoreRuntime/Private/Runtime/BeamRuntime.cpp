@@ -20,7 +20,6 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 
 	// Set us up to handle sign-in/out flows in editor as well as tracking multiple developer user slots.
-	CoreSettings = GetDefault<UBeamCoreSettings>();
 	UserSlotSystem = GEngine->GetEngineSubsystem<UBeamUserSlots>();
 	RequestTrackerSystem = GEngine->GetEngineSubsystem<UBeamRequestTracker>();
 
@@ -28,14 +27,12 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 	UserSlotClearedHandler = UserSlotSystem->GlobalUserSlotClearedCodeHandler.AddUObject(this, &UBeamRuntime::OnUserSlotCleared);
 
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UBeamRuntime::Initialize_DelayedInit);
-
-
 	UE_LOG(LogBeamRuntime, Verbose, TEXT("Initializing UBeamRuntime Subsystem!"));
 }
 
 void UBeamRuntime::Initialize_DelayedInit()
-{
-	const auto TargetRealm = CoreSettings->TargetRealm;
+{	
+	const auto TargetRealm = GetDefault<UBeamCoreSettings>()->TargetRealm;
 
 	if (TargetRealm.Cid.AsLong == -1 || TargetRealm.Pid.AsString.IsEmpty())
 	{
@@ -81,7 +78,7 @@ void UBeamRuntime::Initialize_OnRuntimeSubsystemsInitialized(const TArray<FBeamR
 {
 	// TODO: Expose configurations in core settings about which UserSlots should we try to sign in automatically.
 	// INFO: By default (and, for now), only UserSlot at index 0 of RuntimeUserSlots always gets loaded.		
-	const auto UserSlot = CoreSettings->RuntimeUserSlots[0];
+	const auto UserSlot = GetDefault<UBeamCoreSettings>()->RuntimeUserSlots[0];
 	if (UserSlotSystem->TryLoadSavedUserAtSlot(UserSlot, this))
 	{
 		UE_LOG(LogBeamRuntime, Verbose, TEXT("Authenticated User at Slot! SLOT=%s"), *UserSlot);
@@ -162,7 +159,7 @@ void UBeamRuntime::OnUserSlotAuthenticated_PostUserSignedIn(const TArray<FBeamRe
 	// TODO: Expose configurations in core settings about which UserSlots should we try to sign in automatically.
 	// INFO: By default (and, for now), only UserSlot at index 0 of RuntimeUserSlots always gets loaded.
 	// INFO: This will actually only be called ONCE
-	if (!bDidBeamableRuntimeBoot && UserSlot.Name.Equals(CoreSettings->RuntimeUserSlots[0]))
+	if (!bDidBeamableRuntimeBoot && UserSlot.Name.Equals(GetDefault<UBeamCoreSettings>()->RuntimeUserSlots[0]))
 	{
 		if (const UWorld* World = GetWorld())
 		{
@@ -238,7 +235,7 @@ void UBeamRuntime::Deinitialize()
 	UserSlotSystem->GlobalUserSlotAuthenticatedCodeHandler.Remove(UserSlotAuthenticatedHandler);
 	UserSlotSystem->GlobalUserSlotClearedCodeHandler.Remove(UserSlotClearedHandler);
 
-	for (const auto& SlotName : CoreSettings->RuntimeUserSlots)
+	for (const auto& SlotName : GetDefault<UBeamCoreSettings>()->RuntimeUserSlots)
 	{
 		UserSlotSystem->ClearUserAtSlot(SlotName, ExitPIE, false, this);
 	}
