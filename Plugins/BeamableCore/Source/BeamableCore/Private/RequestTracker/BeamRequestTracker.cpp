@@ -335,8 +335,8 @@ FBeamWaitHandle UBeamRequestTracker::CPP_WaitAll(const TArray<FBeamRequestContex
 		if (bAreAllComplete)
 		{
 			HandleRequestIdCompleted(-1);
-			UE_LOG(LogBeamRequestTracker, Warning,
-			       TEXT("All Wait Dependencies were completed by the time you called this. Consider revisiting your code that caused this to happen. OWNER_WAIT_HANDLE=%lld"), WaitHandle.WaitHandleId);
+			UE_LOG(LogBeamRequestTracker, Verbose, TEXT("All Wait Dependencies were completed by the time you called this. Be extra careful when doing this. OWNER_WAIT_HANDLE=%lld"),
+			       WaitHandle.WaitHandleId);
 		}
 	}
 

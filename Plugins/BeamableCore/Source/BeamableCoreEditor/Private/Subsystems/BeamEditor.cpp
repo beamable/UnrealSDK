@@ -101,6 +101,15 @@ void UBeamEditorBootstrapper::Run_TrySignIntoMainEditorSlot()
 		const auto Op = BeamEditor->RequestTracker->BeginOperation({MainEditorSlot}, GetName(), OperationEventHandler);
 		BeamEditor->UpdateSignedInUserData_OnUserSlotAuthenticated(MainEditorSlot, User, this, Op);
 	}
+	else
+	{
+		// If we are not signed in, clear the target realm.
+		UE_LOG(LogBeamEditor, Display, TEXT("Not signed in so clearing target realm!"))
+		
+		BeamEditor->SetActiveTargetRealmUnsafe({});
+		TArray<FUserSlot> SlotsStub;
+		Run_EditorReady(SlotsStub, {});
+	}
 }
 
 void UBeamEditorBootstrapper::Run_EditorReady(TArray<FUserSlot>& UserSlots, FBeamOperationEvent OperationEvent)

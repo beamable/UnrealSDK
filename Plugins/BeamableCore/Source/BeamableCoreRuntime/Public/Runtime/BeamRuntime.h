@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AutoGen/SubSystems/BeamAccountsApi.h"
+#include "AutoGen/SubSystems/BeamAuthApi.h"
 
 #include "RequestTracker/BeamOperation.h"
 #include "RequestTracker/BeamOperationHandle.h"
@@ -12,10 +14,6 @@
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRuntimeStateChangedEvent);
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRuntimeUserSlotAuthenticatedEvent, FUserSlot, UserSlot);
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRuntimeUserSlotClearedEvent, FUserSlot, UserSlot, EUserSlotClearedReason, ClearedReason);
 
 /**
  * 
@@ -33,37 +31,86 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 * This enables all subsystems to have a chance to subscribe to BeamRuntime events should they choose to do so.
 	 * This is handled automatically for by all UBeamRuntimeSubsystems.
 	 */
-	virtual void DelayedInitialize();
+	virtual void Initialize_DelayedInit();
+
+	/**
+	 * @brief This gets called after all runtime systems had the opportunity to get ready for authentication to happen.
+	 */
+	void Initialize_OnRuntimeSubsystemsInitialized(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&,
+	                                               const TArray<FBeamErrorResponse>&);
+
+
+	/**
+	 * @brief Callback added to the UserSlot global callback so that we can respond to users signing in. 
+	 */
+	void OnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const UObject* Context);
+
+	/**
+	 * @brief After all subsystems have finished their respective handling of UserSlot sign-in, we give them all a chance to respond to that. 
+	 */
+	void OnUserSlotAuthenticated_PostUserSignedIn(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&,
+	                                              const TArray<FBeamErrorResponse>&, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser);
+
+	/**
+	 * @brief Callback added to the UserSlot global callback so that we can respond to users signing out. 
+	 */
+	UFUNCTION()
+	void OnUserSlotCleared(const EUserSlotClearedReason& Reason, const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const UObject* Context);
+
+	/**
+	 * @brief After all subsystems have finished their respective handling of UserSlot sign-out, we give them all a chance to respond to that. 
+	 */
+	void OnUserSlotCleared_PostUserSignedOut(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&,
+	                                         const TArray<FBeamErrorResponse>&, FUserSlot UserSlot, EUserSlotClearedReason Reason, FBeamRealmUser BeamRealmUser);
 
 	/** Cleans up the system.  */
 	virtual void Deinitialize() override;
 
 	/**
-	 * @brief Called after we authenticate to go fetch the users GamerTag. 
-	 * @param UserSlot The user that we just authenticated and whose GamerTag we want to fetch.
-	 * @param OnComplete What we'll do once we fetch or fail.
-	 * @param CallingContext The calling Actor, World, Subsystem or Blueprint.
-	 */
-	void FetchAndUpdateGamerTag(FUserSlot UserSlot, FBeamOperationHandle Handle, UObject* CallingContext);
-
-	/**
 	 * @brief Stored lambda delegate handle for what this subsystem does when a user slot is authenticated.
 	 */
-	TMap<FUserSlot, FDelegateHandle> UserSlotAuthenticatedHandler;
+	FDelegateHandle UserSlotAuthenticatedHandler;
 
 	/**
 	 * @brief Stored lambda delegate handle for what this subsystem does when a user slot is cleared.
 	 */
-	TMap<FUserSlot, FDelegateHandle> UserSlotClearedHandler;
+	FDelegateHandle UserSlotClearedHandler;
+
+	/**
+	 * @brief When we boot up the game instance (and it's subsystems), after all Initialize calls have finished, we allow BeamSubsystems to kick-off operations in parallel.
+	 * They return operation handles that we wait on. When done, these subsystems are be ready to make unauthenticated requests to the Beamable backend.
+	 */
+	TArray<FBeamOperationHandle> InitializeAfterGameInstanceOps = {};
+	FBeamWaitHandle OnInitializeAfterGameInstanceWait;
+	FOnWaitCompleteCode OnInitializeAfterGameInstance;
 
 
-protected:
-	UPROPERTY()
-	UBeamUserSlots* UserSlotSystem;
+	/**
+	 * @brief Every time a user signs into beamable, we give each subsystem the ability to run an operation for that user.
+	 * We also give them the list of currently authenticated UserSlots (so that they can tell if the user that just signed in is the last one for example).
+	 */
+	TMap<FUserSlot, TArray<FBeamOperationHandle>> OnUserSignedInOps = {};
+	TMap<FUserSlot, FBeamWaitHandle> OnUserSignedInWaits;
+	TMap<FUserSlot, FOnWaitCompleteCode> OnOnUserSignedIn;
 
-	UPROPERTY()
-	UBeamRequestTracker* RequestTrackerSystem;
+	/**
+	 * @brief Every time a user signs out of beamable we give each subsystem the ability to run an operation for that user.
+	 * We also give them the list of currently authenticated User Slots and the reason for the sign out so that they can correctly decide what to do in each instance.
+	 */
+	TMap<FUserSlot, TArray<FBeamOperationHandle>> OnUserSignedOutOps = {};
+	TMap<FUserSlot, FBeamWaitHandle> OnUserSignedOutWaits;
+	TMap<FUserSlot, FOnWaitCompleteCode> OnOnUserSignedOut;
 
+	/**
+	 * @brief This flag is used for beamable's automatic initialization. It ensures that the OnBeamableReady event is only ever called once in one of two moments after the game boots up:
+	 *  - If UserSlot at index 0 is signed in already, we wait for it's authentication flow to finish and then call it.
+	 *  - If UserSlot at index 0 is NOT signed in already, we call it during DelayedInitialize (for now, we assume this is the "owner" player of the game -- player 1).
+	 *
+	 *  BeamRuntimeSubsystems can implement their OnBeamableReady event to: either set up UIs or kick-off operations to fetch data (and let the UIs poll whatever subsystems
+	 *  they need to be ready).
+	 *	  
+	 */
+	bool bDidBeamableRuntimeBoot = false;
 
 public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
@@ -72,45 +119,27 @@ public:
 	UPROPERTY()
 	const UBeamCoreSettings* CoreSettings;
 
-	/**
-	 * @brief Whenever a Runtime User Slot is authenticated successfully.
-	 * Existing UBeamRuntimeSubsystems all subscribe to this during their initialization in order to know when they can start making requests to fetch the data that might be necessary for them.
-	 * Each UBeamRuntimeSubsystems is responsible for defining when they're loaded data is ready for use and exposing them to blueprint.
-	 * We provide no such guarantees here.
-	 *
-	 * Relevant info and guarantees:
-	 *  - The Slot will be correctly authenticated and you can make authenticated requests with said FBeamRealmUser.
-	 *  - There are no guarantees regarding the order of these events, so registered callbacks should not assume another callback will have ran. 
-	 *  - Basically, each registered callback cannot depend on data retrieved by another callback.	 
-	 */
 	UPROPERTY()
-	FRuntimeUserSlotAuthenticatedEvent OnRuntimeUserSlotAuthenticatedEvents;
+	UBeamUserSlots* UserSlotSystem;
 
-	/**
-	 * @brief Whenever a Runtime User Slot is cleared successfully.
-	 * Existing UBeamRuntimeSubsystems all subscribe to this during their initialization in order to clean up data associated with that user slot.
-	 *
-	 * Relevant info and guarantees:
-	 *  - The Slot will be cleared and you can no longer make authenticated requests with it.
-	 *  - There are no guarantees regarding the order of these events, so registered callbacks should not assume another callback will have ran. 
-	 *  - Basically, each registered callback cannot depend on data retrieved by another callback.	 
-	 */
 	UPROPERTY()
-	FRuntimeUserSlotClearedEvent OnRuntimeUserSlotClearedEvent;
+	UBeamRequestTracker* RequestTrackerSystem;
 
 	/**
-	 * @brief Callback that exposes to Blueprints an event that gets called as the last step in DelayedInitialize.
-	 * At this point, BPs can query the UserSlot system and get valid FBeamRealmUsers.
-	 * Here you are not guaranteed to have the data from UBeamRuntimeSubsystems available. For that, use that subsystem's own events.
-	 *
-	 * The main use for this is to kick off the frictionless auth flow from Blueprints.
-	 * At the time this event is called all slots are guaranteed to be authenticated if there was a serialized authentication data stored locally.
-	 * Therefore, if a slot is not auth'ed here it means there is no signed in user and we need to perform the Frictionless Auth flow.  
+	 * @brief An operation that will authenticate a user with the beamable and persist that authentication locally.
 	 */
-	UPROPERTY(BlueprintAssignable)
-	FRuntimeStateChangedEvent OnInitialized;
-
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle FrictionlessAuthentication(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext = nullptr);
+	FBeamOperationHandle AuthenticateFrictionlessOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext = nullptr);
 
+	/**
+	 * @brief An operation that will authenticate a user with the beamable and persist that authentication locally.
+	 */
+	FBeamOperationHandle CPP_AuthenticateFrictionlessOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent, UObject* CallingContext = nullptr);
+
+	// Operation Implementations
+private:
+	void AuthenticateFrictionless(FUserSlot UserSlot, FBeamOperationHandle Op, UObject* CallingContext);
+	void AuthenticateFrictionless_OnAuthenticated(FAuthenticateFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op);
+	void UpdateAuthenticatedUserData(FUserSlot UserSlot, FString AccessToken, FString RefreshToken, int64 ExpiresIn, FBeamCid Cid, FBeamPid Pid, FBeamOperationHandle Op);
+	void UpdateAuthenticatedUserData_OnFetchAndUpdateGamerTag(FBasicAccountsGetMeFullResponse Response, FUserSlot UserSlot, FBeamOperationHandle Op);
 };

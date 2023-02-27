@@ -3,62 +3,61 @@
 
 #include "Runtime/BeamRuntimeSubsystem.h"
 
+#include "BeamLogging.h"
+
 void UBeamRuntimeSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-
 	Runtime = Cast<UBeamRuntime>(Collection.InitializeDependency(UBeamRuntime::StaticClass()));
-
-	Runtime->OnInitialized.AddDynamic(this, &UBeamRuntimeSubsystem::OnBeamableReady);
-	Runtime->OnRuntimeUserSlotAuthenticatedEvents.AddDynamic(this, &UBeamRuntimeSubsystem::OnUserSlotAuthenticated);
-	Runtime->OnRuntimeUserSlotClearedEvent.AddDynamic(this, &UBeamRuntimeSubsystem::OnUserSlotCleared);
-
-	for (const auto& SlotName : Runtime->CoreSettings->RuntimeUserSlots)
-		UserSlotInitialDataLoaded.Add(SlotName, false);
 }
 
 void UBeamRuntimeSubsystem::Deinitialize()
 {
 	Super::Deinitialize();
-
-	Runtime->OnInitialized.RemoveDynamic(this, &UBeamRuntimeSubsystem::OnBeamableReady);
-	Runtime->OnRuntimeUserSlotAuthenticatedEvents.RemoveDynamic(this, &UBeamRuntimeSubsystem::OnUserSlotAuthenticated);
-	Runtime->OnRuntimeUserSlotClearedEvent.RemoveDynamic(this, &UBeamRuntimeSubsystem::OnUserSlotCleared);
 }
 
-bool UBeamRuntimeSubsystem::IsInitialized(FUserSlot Slot) const
+FBeamOperationHandle UBeamRuntimeSubsystem::InitializeWhenUnrealReady()
 {
-	return UserSlotInitialDataLoaded.Contains(Slot) ? UserSlotInitialDataLoaded.FindChecked(Slot) : false;
+	UE_LOG(LogBeamRuntime, Verbose, TEXT("Runtime Subsystem %s - Initializing after GameInstance is ready"), *GetName())
+
+	// By default, just return an empty completed operation
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({}, GetName(), {});
+	Runtime->RequestTrackerSystem->TriggerOperationSuccess(Handle, {});
+	return Handle;
 }
 
-bool UBeamRuntimeSubsystem::AreAllInitialized() const
+FBeamOperationHandle UBeamRuntimeSubsystem::OnUserSignedIn(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser)
 {
-	bool bAreAllInitialized = true;
-	for (const auto& SlotInitialDataLoaded : UserSlotInitialDataLoaded)
-	{
-		bAreAllInitialized &= SlotInitialDataLoaded.Value;
-	}
-	return bAreAllInitialized;
+	UE_LOG(LogBeamRuntime, Verbose, TEXT("Runtime Subsystem %s - On User Signed In from Slot %s"), *GetName(), *UserSlot.Name)
+
+	// By default, just return an empty completed operation
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({}, GetName(), {});
+	Runtime->RequestTrackerSystem->TriggerOperationSuccess(Handle, {});
+	return Handle;
 }
 
-void UBeamRuntimeSubsystem::TriggerOnInitialUserSlotDataReady(FUserSlot Slot)
+void UBeamRuntimeSubsystem::OnPostUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser)
 {
-	UserSlotInitialDataLoaded[Slot] = true;
-	OnInitialUserSlotDataReady.Broadcast(Slot);
-
-	if (AreAllInitialized())
-		OnAllInitialUserSlotDataReady.Broadcast();
+	UE_LOG(LogBeamRuntime, Verbose, TEXT("Runtime Subsystem %s - On Post User Signed In"), *GetName())
 }
 
+FBeamOperationHandle UBeamRuntimeSubsystem::OnUserSignedOut(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser)
+{
+	UE_LOG(LogBeamRuntime, Verbose, TEXT("Runtime Subsystem %s - On User Signed Out from Slot %s and Reason %s"), *GetName(), *UserSlot.Name,
+	       *StaticEnum<EUserSlotClearedReason>()->GetValueAsString(Reason))
+
+	// By default, just return an empty completed operation
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({}, GetName(), {});
+	Runtime->RequestTrackerSystem->TriggerOperationSuccess(Handle, {});
+	return Handle;
+}
+
+void UBeamRuntimeSubsystem::OnPostUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser)
+{
+	UE_LOG(LogBeamRuntime, Verbose, TEXT("Runtime Subsystem %s - On Post User Signed Out"), *GetName())
+}
 
 void UBeamRuntimeSubsystem::OnBeamableReady_Implementation()
 {
-}
-
-void UBeamRuntimeSubsystem::OnUserSlotAuthenticated_Implementation(FUserSlot UserSlot)
-{
-}
-
-void UBeamRuntimeSubsystem::OnUserSlotCleared_Implementation(FUserSlot UserSlot, EUserSlotClearedReason ClearedReason)
-{
+	bIsInitialized = true;
 }

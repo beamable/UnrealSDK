@@ -23,7 +23,7 @@ FName UK2BeamNode_Operation::GetSubsystemSelfFunctionName() const
 
 FName UK2BeamNode_Operation::GetOperationFunctionName() const
 {
-	return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, FrictionlessAuthentication);
+	return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, AuthenticateFrictionlessOperation);
 }
 
 void UK2BeamNode_Operation::BuildPinToolTipMap(TMap<FName, FString>& OutTooltipMap)

@@ -12,7 +12,8 @@ public class BeamableCoreRuntime : ModuleRules
 				"BeamableCore",
 				"Core",
 				"CoreUObject", "Engine", "InputCore",
-				"HeadMountedDisplay", "Json", "JsonUtilities", 
+				"HeadMountedDisplay", "Json", 
+				"JsonUtilities",
 				"DeveloperSettings",
 			}
 		);

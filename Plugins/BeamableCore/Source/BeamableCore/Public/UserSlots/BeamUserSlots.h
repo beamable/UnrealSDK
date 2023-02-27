@@ -58,7 +58,7 @@ struct FUserSlotAccountData
 
 	UPROPERTY(BlueprintReadWrite)
 	FBeamAccountId AccountId;
-	
+
 	UPROPERTY(BlueprintReadWrite)
 	FBeamGamerTag GamerTag;
 
@@ -92,6 +92,9 @@ class BEAMABLECORE_API UBeamUserSlots : public UEngineSubsystem
 	// Forward declaration of the Automated Testing class so we can make it a friend and make it easier to test internal state.
 	// Also, mock request types declared for Automated Testing purposes.
 	friend class FBeamUserSlotsSpec;
+
+	friend class UBeamRuntime;
+	friend class UBeamEditor;
 
 private:
 	/**
@@ -241,7 +244,7 @@ public:
 		 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
 	bool IsUserSlotAuthenticated(FUserSlot SlotId, const UObject* CallingContext = nullptr);
-	
+
 	/**
 	 * @brief Attempts to quickly authenticate a user with locally stored, serialized data.	  
 	 * @return True, if there was a user authenticated at that slot. False, if no serialized user slot file was found or if the file does not contain a refresh token.  
@@ -274,7 +277,7 @@ public:
   \____/|___/\___|_|    |_____/|_|\___/ \__|  \_____\__,_|_|_|_.__/ \__,_|\___|_|\_\___/																						
 																						
 	 */
-
+private:
 	/**	 
 	 * @brief A global handler delegate that'll be called when a UserSlot gets cleared.
 	 * It'll have access to the data associated with that slot at the time when it was cleared out but the slot itself will be empty
