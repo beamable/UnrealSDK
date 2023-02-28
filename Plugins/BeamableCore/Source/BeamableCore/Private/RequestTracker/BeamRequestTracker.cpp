@@ -345,13 +345,13 @@ FBeamWaitHandle UBeamRequestTracker::CPP_WaitAll(const TArray<FBeamRequestContex
 
 FBeamOperationHandle UBeamRequestTracker::BeginOperation(const TArray<FUserSlot>& Participants, const FString& CallingSystem, FBeamOperationEventHandler OnEvent, int MaxRequestsInOperation)
 {
-	// Ensures we get a valid Next Id even if requests get made from multiple threads.
+	// Ensures we get a valid Next Id even if requests get made from multiple threads.	
 	const auto NextId = _InterlockedIncrement(OperationHandleId);
 	const auto OperationHandle = FBeamOperationHandle{NextId};
 	ActiveOperations.Add(OperationHandle);
 
 	// Initialize it's state.
-	auto State = FBeamOperationState{false, CallingSystem, {}, Participants, MaxRequestsInOperation};
+	auto State = FBeamOperationState{EBeamOperationEventType::NONE, CallingSystem, {}, Participants, MaxRequestsInOperation};
 	ActiveOperationState.Add(OperationHandle, State);
 	ActiveOperationEventHandlers.Add(OperationHandle, OnEvent);
 
@@ -366,7 +366,7 @@ FBeamOperationHandle UBeamRequestTracker::CPP_BeginOperation(const TArray<FUserS
 	ActiveOperations.Add(OperationHandle);
 
 	// Initialize it's state.
-	auto State = FBeamOperationState{false, CallingSystem, {}, Participants, MaxRequestsInOperation};
+	auto State = FBeamOperationState{EBeamOperationEventType::NONE, CallingSystem, {}, Participants, MaxRequestsInOperation};
 	ActiveOperationState.Add(OperationHandle, State);
 	ActiveOperationEventHandlersCode.Add(OperationHandle, OnEvent);
 
@@ -406,8 +406,8 @@ void UBeamRequestTracker::TriggerOperationEvent(const FBeamOperationHandle& Op, 
 void UBeamRequestTracker::TriggerOperationEventFull(const FBeamOperationHandle& Op, const EBeamOperationEventType Type, uint8 SubEvent, const TArray<FUserSlot>& UserSlots, const FString& EventData,
                                                     const FString& CallingSystem, const int64 RequestId)
 {
-	checkf(!ActiveOperationState.FindRef(Op).Status, TEXT("Cannot trigger an operation event after it's being completed!"));
-
+	checkf(ActiveOperationState.FindRef(Op).Status <= 0, TEXT("Cannot trigger an operation event after it's being completed! %s, %d"), *ActiveOperationState.FindRef(Op).CallingSystem, ActiveOperationState.FindRef(Op).Status);
+	
 	const auto& OperationEventHandlerCode = ActiveOperationEventHandlersCode.Find(Op);
 	const auto& OperationEventHandler = ActiveOperationEventHandlers.Find(Op);
 
@@ -457,7 +457,7 @@ void UBeamRequestTracker::TriggerOperationError(const FBeamOperationHandle& Op, 
 
 void UBeamRequestTracker::TriggerOperationCancelled(const FBeamOperationHandle& Op, const FString& EventData, const int64& RequestId)
 {
-	auto& OperationState = ActiveOperationState.FindChecked(Op);
 	TriggerOperationEvent(Op, EBeamOperationEventType::CANCELLED, Final, EventData, RequestId);
+	auto& OperationState = ActiveOperationState.FindChecked(Op);
 	OperationState.Status = FBeamOperationState::CANCELED;
 }

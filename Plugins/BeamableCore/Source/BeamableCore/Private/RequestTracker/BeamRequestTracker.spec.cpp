@@ -385,7 +385,7 @@ void FBeamRequestTrackerSpec::Define()
 			FakeGetRequest->MarkAsGarbage();
 		});
 
-		It("should trigger the shortcut events for FINAL succes/error/cancelled", [=, this]()
+		It("should trigger the shortcut events for FINAL success/error/cancelled", [=, this]()
 		{
 			// Initialize and trigger the operation's success
 			{
@@ -399,12 +399,12 @@ void FBeamRequestTrackerSpec::Define()
 				OperationCallbacks->ExpectedEventRequestId = ReqId;
 				OperationCallbacks->ExpectedEventType = EBeamOperationEventType::SUCCESS;
 				OperationCallbacks->ExpectedEventSubTypeCode = EDefaultOperationEventSubType::Final;
-				OperationCallbacks->ExpectedEventSystem = GetTestName();
+				OperationCallbacks->ExpectedEventSystem =  TEXT("Success Test");
 				OperationCallbacks->ExpectedEventData = TEXT("SuccessData");
 				OperationCallbacks->ExpectedParticipants = {FakeUserSlot};
 				OperationCallbacks->ExpectedRequestsInOperations = {ReqId};
 
-				const auto OpHandle = RequestTrackerSystem->BeginOperation({FakeUserSlot}, GetTestName(), Handler, -1);
+				const auto OpHandle = RequestTrackerSystem->BeginOperation({FakeUserSlot},  TEXT("Success Test"), Handler, -1);
 				RequestTrackerSystem->AddRequestToOperation(OpHandle, ReqId);
 				RequestTrackerSystem->TriggerOperationSuccess(OpHandle, TEXT("SuccessData"));
 
@@ -412,33 +412,39 @@ void FBeamRequestTrackerSpec::Define()
 				BeamBackendSystem->CancelRequest(ReqId);
 				FakeGetRequest->MarkAsGarbage();
 			}
+		});
 
+		It("should trigger the shortcut events for FINAL error", [=, this]()
+		{
 			// Initialize and trigger the operation's success
 			{
 				UBeamMockGetRequest* FakeGetRequest = NewObject<UBeamMockGetRequest>();
-				int64 ReqId;
-				const auto Request = BeamBackendSystem->CreateAuthenticatedRequest(ReqId, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken, FakeGetRequest);
+				int64 ErrorReqId;
+				const auto Request = BeamBackendSystem->CreateAuthenticatedRequest(ErrorReqId, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken, FakeGetRequest);
 
 				// Set up the handler and expected data
 				FBeamOperationEventHandler Handler;
 				Handler.BindUFunction(OperationCallbacks, GET_FUNCTION_NAME_CHECKED(UBeamRequestTrackerOperationTestCallbacks, MockOperationEvent_Expected));
-				OperationCallbacks->ExpectedEventRequestId = ReqId;
+				OperationCallbacks->ExpectedEventRequestId = ErrorReqId;
 				OperationCallbacks->ExpectedEventType = EBeamOperationEventType::ERROR;
 				OperationCallbacks->ExpectedEventSubTypeCode = EDefaultOperationEventSubType::Final;
-				OperationCallbacks->ExpectedEventSystem = GetTestName();
+				OperationCallbacks->ExpectedEventSystem = TEXT("Error Test");
 				OperationCallbacks->ExpectedEventData = TEXT("ErrorData");
 				OperationCallbacks->ExpectedParticipants = {FakeUserSlot};
-				OperationCallbacks->ExpectedRequestsInOperations = {ReqId};
+				OperationCallbacks->ExpectedRequestsInOperations = {ErrorReqId};
 
-				const auto OpHandle = RequestTrackerSystem->BeginOperation({FakeUserSlot}, GetTestName(), Handler, -1);
-				RequestTrackerSystem->AddRequestToOperation(OpHandle, ReqId);
-				RequestTrackerSystem->TriggerOperationError(OpHandle, TEXT("ErrorData"));
+				const auto ErrorTestOpHandle = RequestTrackerSystem->BeginOperation({FakeUserSlot},  TEXT("Error Test"), Handler, -1);
+				RequestTrackerSystem->AddRequestToOperation(ErrorTestOpHandle, ErrorReqId);
+				RequestTrackerSystem->TriggerOperationError(ErrorTestOpHandle, TEXT("ErrorData"));
 
 				// Discard Request as we are not actually going to make it
-				BeamBackendSystem->CancelRequest(ReqId);
+				BeamBackendSystem->CancelRequest(ErrorReqId);
 				FakeGetRequest->MarkAsGarbage();
 			}
+		});
 
+		It("should trigger the shortcut events for FINAL cancelled", [=, this]()
+		{
 			// Initialize and trigger the operation's success
 			{
 				UBeamMockGetRequest* FakeGetRequest = NewObject<UBeamMockGetRequest>();
@@ -451,12 +457,12 @@ void FBeamRequestTrackerSpec::Define()
 				OperationCallbacks->ExpectedEventRequestId = ReqId;
 				OperationCallbacks->ExpectedEventType = EBeamOperationEventType::CANCELLED;
 				OperationCallbacks->ExpectedEventSubTypeCode = EDefaultOperationEventSubType::Final;
-				OperationCallbacks->ExpectedEventSystem = GetTestName();
+				OperationCallbacks->ExpectedEventSystem =  TEXT("Cancelled Test");
 				OperationCallbacks->ExpectedEventData = TEXT("CancelledData");
 				OperationCallbacks->ExpectedParticipants = {FakeUserSlot};
 				OperationCallbacks->ExpectedRequestsInOperations = {ReqId};
 
-				const auto OpHandle = RequestTrackerSystem->BeginOperation({FakeUserSlot}, GetTestName(), Handler, -1);
+				const auto OpHandle = RequestTrackerSystem->BeginOperation({FakeUserSlot},  TEXT("Cancelled Test"), Handler, -1);
 				RequestTrackerSystem->AddRequestToOperation(OpHandle, ReqId);
 				RequestTrackerSystem->TriggerOperationCancelled(OpHandle, TEXT("CancelledData"));
 
@@ -643,9 +649,9 @@ void FBeamRequestTrackerSpec::Define()
 			                                                           {},
 			                                                           FirstOnComplete);
 			const auto FirstWaitHandleCpp = RequestTrackerSystem->CPP_WaitAll({FBeamRequestContext{ReqId}},
-																	   {},
-																	   {},
-																	   FirstOnCompleteCode);
+			                                                                  {},
+			                                                                  {},
+			                                                                  FirstOnCompleteCode);
 
 			// Create the first wait handle with Req1 and Operation (which contains req2 as a dep)
 			FOnWaitComplete SecondOnComplete;
@@ -661,14 +667,14 @@ void FBeamRequestTrackerSpec::Define()
 			                                                            {},
 			                                                            SecondOnComplete);
 			const auto SecondWaitHandleCpp = RequestTrackerSystem->CPP_WaitAll({FBeamRequestContext{ReqId2}},
-																		{},
-																		{},
-																		SecondOnCompleteCode);
+			                                                                   {},
+			                                                                   {},
+			                                                                   SecondOnCompleteCode);
 
 			// Forcibly complete the first wait handle only
 			RequestTrackerSystem->ActiveWaitHandles.FindByKey(FirstWaitHandle)->Status = Completed;
 			RequestTrackerSystem->ActiveWaitHandles.FindByKey(FirstWaitHandleCpp)->Status = Completed;
-			
+
 
 			// Now we assert that if we gather the dependencies for the first wait handle
 			const TArray<int64> ExpectedLiveDependencies{ReqId2};
