@@ -105,7 +105,7 @@ void UBeamEditorBootstrapper::Run_TrySignIntoMainEditorSlot()
 	{
 		// If we are not signed in, clear the target realm.
 		UE_LOG(LogBeamEditor, Display, TEXT("Not signed in so clearing target realm!"))
-		
+
 		BeamEditor->SetActiveTargetRealmUnsafe({});
 		TArray<FUserSlot> SlotsStub;
 		Run_EditorReady(SlotsStub, {});
@@ -375,17 +375,14 @@ void UBeamEditor::SelectRealm(const FBeamRealmHandle& NewRealmHandle, const FBea
 void UBeamEditor::SelectRealm_OnReadyForChange(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&,
                                                const TArray<FBeamErrorResponse>&, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op)
 {
-	auto Settings = GetMutableDefault<UBeamCoreSettings>();
-
-	Settings->TargetRealm = NewRealmHandle;
-	Settings->SaveConfig(CPF_Config, *Settings->GetDefaultConfigFilename());
+	SetActiveTargetRealmUnsafe(NewRealmHandle);
 
 	const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
 
 	InitalizeFromRealmOps.Reset(Subsystems.Num());
 	for (auto& Subsystem : Subsystems)
 	{
-		const auto Handle = Subsystem->InitializeFromRealm(Settings->TargetRealm);
+		const auto Handle = Subsystem->InitializeFromRealm(NewRealmHandle);
 		InitalizeFromRealmOps.Add(Handle);
 	}
 	InitializedFromRealmHandler = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, SelectRealm_OnSystemsReady), NewRealmHandle, Op);
@@ -468,6 +465,12 @@ void UBeamEditor::SetActiveTargetRealmUnsafe(const FBeamRealmHandle& NewRealmHan
 	const auto LeavingRealm = Settings->TargetRealm;
 
 	Settings->TargetRealm = NewRealmHandle;
+	Settings->SaveConfig();
+}
+
+void UBeamEditor::ApplyCurrentSettingsToBuild()
+{
+	auto Settings = GetMutableDefault<UBeamCoreSettings>();
 	Settings->SaveConfig(CPF_Config, *Settings->GetDefaultConfigFilename());
 }
 
@@ -502,7 +505,8 @@ void UBeamEditor::UpdateSignedInUserData_OnGetRealms(const FGetGamesFullResponse
 			// We change the editor developer realm automatically to the default Root PID. 
 			const auto Pid = Games[0]->Pid;
 			SetActiveTargetRealmUnsafe(FBeamRealmHandle{Cid, Pid});
-
+			
+			
 			UserSlots->SetPIDAtSlot(GetMainEditorSlot(), Pid);
 
 			// Now, we need to get the admin me data so we can know all the projects/realms associated with this CID

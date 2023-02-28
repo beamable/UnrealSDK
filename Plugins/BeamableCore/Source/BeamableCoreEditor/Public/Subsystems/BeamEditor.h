@@ -325,6 +325,17 @@ private:
 	UFUNCTION(BlueprintCallable, Category="Beam")
 	void SetActiveTargetRealmUnsafe(const FBeamRealmHandle& NewRealmHandle);
 
+
+	/**
+	 * @brief Use this to apply all the current settings in saved (TargetRealm, mainly) to the project's actual DefaultEngine.ini file.
+	 * Normally, we save TargetRealm per-developer (it stays in your local Saved/Config/Engine.ini file); once this get's called, this is applied.
+	 *
+	 * The use case for this is to keep each branches' build settings correctly stored in version control while developers to move between realms locally without having to worry about not commiting
+	 * the DefaultEngine.ini file (the one in Config/DefaultEngine.ini). 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	void ApplyCurrentSettingsToBuild();
+
 	UFUNCTION(BlueprintCallable, Category="Beam")
 	void UpdateSignedInUserData(FBeamOperationHandle Op, FBeamCid Cid, FString AccessToken, FString RefreshToken, int64 ExpiresIn);
 };
