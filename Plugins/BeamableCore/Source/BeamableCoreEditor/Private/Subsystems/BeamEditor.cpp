@@ -270,7 +270,9 @@ void UBeamEditor::SignUp_OnPostCustomer(const FPostCustomerFullResponse Response
 {
 	if (Response.State == Error)
 	{
-		RequestTracker->TriggerOperationError(Op, Response.ErrorData.message, Response.Context.RequestId);
+		FString Error;
+		FJsonObjectConverter::UStructToJsonObjectString(Response.ErrorData, Error);
+		RequestTracker->TriggerOperationError(Op, Error, Response.Context.RequestId);
 		return;
 	}
 
@@ -299,7 +301,9 @@ void UBeamEditor::SignIn_OnGetCustomerAliasAvailable(const FGetCustomerAliasAvai
 {
 	if (Response.State == Error)
 	{
-		RequestTracker->TriggerOperationError(Op, Response.ErrorData.message, Response.Context.RequestId);
+		FString Error;
+		FJsonObjectConverter::UStructToJsonObjectString(Response.ErrorData, Error);
+		RequestTracker->TriggerOperationError(Op, Error, Response.Context.RequestId);
 		return;
 	}
 
@@ -338,7 +342,9 @@ void UBeamEditor::SignIn_OnAuthenticate(const FAuthenticateFullResponse Response
 {
 	if (Response.State == Error)
 	{
-		RequestTracker->TriggerOperationError(Op, Response.ErrorData.message, Response.Context.RequestId);
+		FString Error;
+		FJsonObjectConverter::UStructToJsonObjectString(Response.ErrorData, Error);
+		RequestTracker->TriggerOperationError(Op, Error, Response.Context.RequestId);
 		return;
 	}
 
@@ -375,6 +381,7 @@ void UBeamEditor::SelectRealm(const FBeamRealmHandle& NewRealmHandle, const FBea
 void UBeamEditor::SelectRealm_OnReadyForChange(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&,
                                                const TArray<FBeamErrorResponse>&, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op)
 {
+	// TODO: Expose error handling for BeamErrorResponses that happen in the PrepareRealmChange operations
 	SetActiveTargetRealmUnsafe(NewRealmHandle);
 
 	const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
@@ -392,6 +399,8 @@ void UBeamEditor::SelectRealm_OnReadyForChange(const TArray<FBeamRequestContext>
 void UBeamEditor::SelectRealm_OnSystemsReady(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&, const TArray<FBeamErrorResponse>&,
                                              FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op) const
 {
+	// TODO: Expose error handling for BeamErrorResponses that happen in the InitializeFromRealm operations
+	
 	// We update the UserSlot info with the new PID.
 	FBeamRealmUser UserData;
 	const auto MainEditorSlot = GetMainEditorSlot(UserData);
@@ -492,7 +501,9 @@ void UBeamEditor::UpdateSignedInUserData_OnGetRealms(const FGetGamesFullResponse
 {
 	if (Response.State == Error)
 	{
-		RequestTracker->TriggerOperationError(Op, Response.ErrorData.message, Response.Context.RequestId);
+		FString Error;
+		FJsonObjectConverter::UStructToJsonObjectString(Response.ErrorData, Error);
+		RequestTracker->TriggerOperationError(Op, Error, Response.Context.RequestId);
 		return;
 	}
 
@@ -527,7 +538,9 @@ void UBeamEditor::UpdateSignedInUserData_OnGetAdminMe(const FBeamFullResponse<UG
 {
 	if (Response.State == Error)
 	{
-		RequestTracker->TriggerOperationError(Op, Response.ErrorData.message, Response.Context.RequestId);
+		FString Error;
+		FJsonObjectConverter::UStructToJsonObjectString(Response.ErrorData, Error);
+		RequestTracker->TriggerOperationError(Op, Error, Response.Context.RequestId);
 		return;
 	}
 

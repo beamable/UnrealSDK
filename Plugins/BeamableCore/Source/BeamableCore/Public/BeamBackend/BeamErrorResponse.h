@@ -1,4 +1,5 @@
 #pragma once
+#include "JsonObjectConverter.h"
 
 #include "BeamErrorResponse.generated.h"
 
@@ -33,4 +34,19 @@ struct FBeamErrorResponse
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, DisplayName="Message")
 	FString message;
+};
+
+UCLASS(BlueprintType)
+class BEAMABLECORE_API UBeamErrorResponseLibrary : public UBlueprintFunctionLibrary
+{
+	GENERATED_BODY()
+
+public:
+	UFUNCTION(BlueprintCallable, Category="Beam|Json", DisplayName="Beam - JSON String to Beam Error")
+	static FBeamErrorResponse JsonStringToBeamErrorResponse(FString Json)
+	{
+		FBeamErrorResponse Err;
+		FJsonObjectConverter::JsonObjectStringToUStruct(Json, &Err);
+		return Err;
+	}
 };
