@@ -84,7 +84,7 @@ void FBeamableCoreEditorModule::AddBeamableButtons(FToolBarBuilder& Builder)
 
 void FBeamableCoreEditorModule::OpenMainBeamableWindow() const
 {
-	UBeamableEditorBlueprintLibrary::StartWidget(GetDefault<UBeamEditorSettings>()->BeamableMainWindow.LoadSynchronous());
+	UBeamableEditorBlueprintLibrary::StartEditorWidget(GetDefault<UBeamEditorSettings>()->BeamableMainWindow.LoadSynchronous());
 }
 
 #undef LOCTEXT_NAMESPACE

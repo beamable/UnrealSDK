@@ -5,27 +5,23 @@
 
 #include "BeamEditorSettings.h"
 #include "BeamCoreSettings.h"
+#include "EditorUtilitySubsystem.h"
 #include "EditorUtilityWidget.h"
+#include "EditorUtilityWidgetBlueprint.h"
 #include "LevelEditor.h"
 
-void UBeamableEditorBlueprintLibrary::StartWidget(UWidgetBlueprint* Blueprint)
+void UBeamableEditorBlueprintLibrary::StartEditorWidget(UWidgetBlueprint* Blueprint)
 {
+	// INFO: See AssetTypeActions_EditorUtilityWidgetBlueprint.cpp (method ExecuteRun).
 	if (Blueprint->GeneratedClass->IsChildOf(UEditorUtilityWidget::StaticClass()))
 	{
-		const UEditorUtilityWidget* CDO = Cast<UEditorUtilityWidget>(Blueprint->GeneratedClass->GetDefaultObject());		
-		if (CDO->ShouldAutoRunDefaultAction())
+		if (Blueprint->GeneratedClass->IsChildOf(UEditorUtilityWidget::StaticClass()))
 		{
-			// This is an instant-run blueprint, just execute it
-			UEditorUtilityWidget* Instance = NewObject<UEditorUtilityWidget>(GetTransientPackage(), Blueprint->GeneratedClass);
-			Instance->ExecuteDefaultAction();
-		}
-		else
-		{
-			const auto RegistrationName = FName(*(Blueprint->GetPathName() + TEXT("_ActiveTab")));
-			auto DisplayName = FText::FromString(Blueprint->GetName());
-			const auto& LevelEditorModule = FModuleManager::GetModuleChecked<FLevelEditorModule>(TEXT("LevelEditor"));
-			const auto LevelEditorTabManager = LevelEditorModule.GetLevelEditorTabManager();
-			auto NewDockTab = LevelEditorTabManager->TryInvokeTab(RegistrationName);			
+			if (UEditorUtilityWidgetBlueprint* EditorWidget = Cast<UEditorUtilityWidgetBlueprint>(Blueprint))
+			{
+				UEditorUtilitySubsystem* EditorUtilitySubsystem = GEditor->GetEditorSubsystem<UEditorUtilitySubsystem>();
+				EditorUtilitySubsystem->SpawnAndRegisterTab(EditorWidget);
+			}
 		}
 	}
 }
@@ -35,23 +31,21 @@ void UBeamableEditorBlueprintLibrary::GetRealmsForProject(const FBeamCustomerPro
 {
 	for (const auto& Realm : CustomerProjectData.AllRealms)
 	{
-		if(Realm.ProjectName == ProjectName)
+		if (Realm.ProjectName == ProjectName)
 			ProjectRealms.Add(Realm);
-	}	
+	}
 }
 
 bool UBeamableEditorBlueprintLibrary::GetRunningPIEWorld(UWorld*& PIEWorld)
-{	
+{
 	for (const FWorldContext& WorldContext : GEngine->GetWorldContexts())
 	{
 		if (WorldContext.WorldType == EWorldType::PIE)
 		{
 			PIEWorld = WorldContext.World();
-			return true;			
+			return true;
 		}
 	}
 	PIEWorld = nullptr;
 	return false;
 }
-
-

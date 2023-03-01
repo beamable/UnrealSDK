@@ -14,7 +14,7 @@ class BEAMABLECOREEDITOR_API UBeamableEditorBlueprintLibrary : public UBlueprint
 
 public:
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor")
-	static void StartWidget(UWidgetBlueprint* Blueprint);
+	static void StartEditorWidget(UWidgetBlueprint* Blueprint);
 
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor")
 	static void GetRealmsForProject(const FBeamCustomerProjectData& ProjectData, const FString ProjectName, TArray<FBeamProjectRealmData>& ProjectRealms);	

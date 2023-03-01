@@ -71,8 +71,23 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 	const auto RequestTracker = GEngine->GetEngineSubsystem<UBeamRequestTracker>();
 	const auto BeamEditor = GEditor->GetEditorSubsystem<UBeamEditor>();
 
-	auto Settings = GetMutableDefault<UBeamCoreSettings>();
-	const auto LeavingRealm = Settings->TargetRealm;
+	/* INFO - Make sure our core settings and environment settings are correctly set up for our users.
+	 * When this plugin gets added to the project, there are some default settings that we can pre-set for our users so that they don't have to do it.
+	 * This is where we do that.
+	 */
+	auto CoreSettings = GetMutableDefault<UBeamCoreSettings>();
+	if (CoreSettings->BeamableEnvironment.IsNull())
+	{
+		CoreSettings->BeamableEnvironment = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/BeamProdEnv.BeamProdEnv'"));
+		CoreSettings->SaveConfig(CPF_Config, *CoreSettings->GetDefaultConfigFilename());
+	}
+
+	auto EditorSettings = GetMutableDefault<UBeamEditorSettings>();
+	if(EditorSettings->BeamableMainWindow.IsNull())
+	{
+		EditorSettings->BeamableMainWindow = FSoftObjectPath(TEXT("/Script/Blutility.EditorUtilityWidgetBlueprint'/BeamableCore/Editor/EWBP_BeamableWindow.EWBP_BeamableWindow'"));
+		EditorSettings->SaveConfig(CPF_Config, *EditorSettings->GetDefaultConfigFilename());
+	}
 
 	const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
 	BeamEditor->InitializeAfterEditorReadyOps.Reset(Subsystems.Num());
@@ -400,7 +415,7 @@ void UBeamEditor::SelectRealm_OnSystemsReady(const TArray<FBeamRequestContext>&,
                                              FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op) const
 {
 	// TODO: Expose error handling for BeamErrorResponses that happen in the InitializeFromRealm operations
-	
+
 	// We update the UserSlot info with the new PID.
 	FBeamRealmUser UserData;
 	const auto MainEditorSlot = GetMainEditorSlot(UserData);
@@ -516,8 +531,8 @@ void UBeamEditor::UpdateSignedInUserData_OnGetRealms(const FGetGamesFullResponse
 			// We change the editor developer realm automatically to the default Root PID. 
 			const auto Pid = Games[0]->Pid;
 			SetActiveTargetRealmUnsafe(FBeamRealmHandle{Cid, Pid});
-			
-			
+
+
 			UserSlots->SetPIDAtSlot(GetMainEditorSlot(), Pid);
 
 			// Now, we need to get the admin me data so we can know all the projects/realms associated with this CID

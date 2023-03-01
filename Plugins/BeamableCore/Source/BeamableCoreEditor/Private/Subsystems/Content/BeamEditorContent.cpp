@@ -57,20 +57,28 @@ FBeamOperationHandle UBeamEditorContent::InitializeWhenEditorReady()
 	const auto Op = RequestTracker->BeginOperation({Editor->GetMainEditorSlot()}, GetName(), {});
 
 	// Ensure we are properly configured with at least one path for baked content.
-	const auto BeamEditorSettings = GetMutableDefault<UBeamEditorSettings>();
+	const auto EditorSettings = GetMutableDefault<UBeamEditorSettings>();
 
-	if (BeamEditorSettings->CookedManifestsPath.IsEmpty()) BeamEditorSettings->CookedManifestsPath.Add(FDirectoryPath{DefaultBeamableCookedContentManifestsPath});
-	if (BeamEditorSettings->UncookedManifestsPath.IsEmpty()) BeamEditorSettings->UncookedManifestsPath.Add(FDirectoryPath{DefaultBeamableUncookedContentManifestsPath});
+	const auto bIsCookedManifestPathsEmpty = EditorSettings->CookedManifestsPath.IsEmpty();
+	const auto bIsUncookedManifestPathsEmpty = EditorSettings->UncookedManifestsPath.IsEmpty();
+
+	if (bIsCookedManifestPathsEmpty) EditorSettings->CookedManifestsPath.Add(FDirectoryPath{DefaultBeamableCookedContentManifestsPath});
+	if (bIsUncookedManifestPathsEmpty) EditorSettings->UncookedManifestsPath.Add(FDirectoryPath{DefaultBeamableUncookedContentManifestsPath});
+
+	// We save this out to the default editor configuration so that this default is always versioned (unless we save config with these parameters, changes to settings objects are local to this developer)
+	if (bIsCookedManifestPathsEmpty || bIsUncookedManifestPathsEmpty)
+		EditorSettings->SaveConfig(CPF_Config, *EditorSettings->GetDefaultConfigFilename());
+
 
 	// Ensure that all directories in the cooked manifest paths array exist.
-	for (const auto& CookedManifestsPath : BeamEditorSettings->CookedManifestsPath)
+	for (const auto& CookedManifestsPath : EditorSettings->CookedManifestsPath)
 	{
 		if (!EditorAssetSubsystem->DoesDirectoryExist(CookedManifestsPath.Path))
 			EditorAssetSubsystem->MakeDirectory(CookedManifestsPath.Path);
 	}
 
 	// Ensure that all directories in the uncooked manifest paths array exist AND are added to the project settings as excluded from cooked builds.
-	for (const auto& UncookedManifestsPath : BeamEditorSettings->UncookedManifestsPath)
+	for (const auto& UncookedManifestsPath : EditorSettings->UncookedManifestsPath)
 	{
 		if (!EditorAssetSubsystem->DoesDirectoryExist(UncookedManifestsPath.Path))
 			EditorAssetSubsystem->MakeDirectory(UncookedManifestsPath.Path);
