@@ -23,7 +23,7 @@
 		{
 			"Name": "BeamableCoreBlueprintNodes",
 			"Type": "UncookedOnly",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "PreDefault"
 		},
 		{
 			"Name": "BeamableCoreEditor",

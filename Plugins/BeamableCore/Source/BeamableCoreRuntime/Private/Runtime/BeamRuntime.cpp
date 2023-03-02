@@ -21,7 +21,7 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 
 	// Set us up to handle sign-in/out flows in editor as well as tracking multiple developer user slots.
 	UserSlotSystem = GEngine->GetEngineSubsystem<UBeamUserSlots>();
-	RequestTrackerSystem = GEngine->GetEngineSubsystem<UBeamRequestTracker>();
+	RequestTrackerSystem =  GEngine->GetEngineSubsystem<UBeamRequestTracker>();
 
 	UserSlotAuthenticatedHandler = UserSlotSystem->GlobalUserSlotAuthenticatedCodeHandler.AddUObject(this, &UBeamRuntime::OnUserSlotAuthenticated);
 	UserSlotClearedHandler = UserSlotSystem->GlobalUserSlotClearedCodeHandler.AddUObject(this, &UBeamRuntime::OnUserSlotCleared);
@@ -168,7 +168,7 @@ void UBeamRuntime::OnUserSlotAuthenticated_PostUserSignedIn(const TArray<FBeamRe
 				const auto Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
 				for (auto& Subsystem : Subsystems)
 				{
-					Subsystem->OnBeamableReady();
+					Subsystem->OnBeamableReady();					
 				}
 			}
 		}

@@ -16,22 +16,12 @@ class BEAMABLECORERUNTIME_API UBeamRuntimeSubsystem : public UGameInstanceSubsys
 {
 	GENERATED_BODY()
 
+protected:
 	/** @brief Initializes the subsystem.  */
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 	/** Cleans up the system.  */
 	virtual void Deinitialize() override;
-
-
-	/**
-	 * @brief Handle for the registered OnUserSlotAuthenticated binding to UBeamRuntime authenticated event.
-	 */
-	FDelegateHandle OnAuthenticatedUserHandle;
-
-	/**
-	 * @brief Handle for the registered OnUserSlotAuthenticated binding to UBeamRuntime cleared event.
-	 */
-	FDelegateHandle OnClearedUserHandle;
 
 public:
 	UPROPERTY()
@@ -53,32 +43,35 @@ public:
 	 * The returned operation is added to a list of operations containing all other subsystem's OnUserSignedIn operation.
 	 * We wait for this list of operations to finish and then call OnPostUserSignedIn.
 	 */
-	FBeamOperationHandle OnUserSignedIn(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser);
+	virtual FBeamOperationHandle OnUserSignedIn(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser);
 	/**
 	 * @brief Called whenever a user signs out of a user slot.
 	 * The returned operation is added to a list of operations containing all other subsystem's OnUserSignedOut operation.
 	 * We wait for this list of operations to finish and then call OnPostUserSignedOut.
 	 */
-	FBeamOperationHandle OnUserSignedOut(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser);
+	virtual FBeamOperationHandle OnUserSignedOut(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser);
 
 	/**
 	 * @brief Called on each BeamRuntimeSubsystem after the OnUserSignedIn operations of ALL BeamRuntimeSubsystems have run to completion (success or otherwise). 
 	 */
 	UFUNCTION(BlueprintNativeEvent)
 	void OnPostUserSignedIn(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser);
+	virtual void OnPostUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser);
 
 	/**
 	 * @brief Called on each BeamRuntimeSubsystem after the OnUserSignedOut operations of ALL BeamRuntimeSubsystems have run to completion (success or otherwise). 
 	 */
 	UFUNCTION(BlueprintNativeEvent)
 	void OnPostUserSignedOut(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser);
+	virtual void OnPostUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser);
+
 
 	/**
 	 * @brief Called whenever UBeamRuntime is fully initialized. You can think of this as OnBeginPlay, but for use with Beamable.
 	 */
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintNativeEvent)
 	void OnBeamableReady();
-	void OnBeamableReady_Implementation();
+	virtual void OnBeamableReady_Implementation();
 };
 
 

@@ -6,6 +6,7 @@
 
 #include "BeamRuntimeSettings.generated.h"
 
+class UDataTable;
 /**
  * 
  */
@@ -18,11 +19,16 @@ public:
 	UBeamRuntimeSettings();
 
 
-	
-
 	/**
-	 * @brief References to all 
+	 * @brief References to all Blueprint-first Runtime Subsystems that exist. 
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Beam Systems")
 	TArray<TSubclassOf<USubsystem>> BeamRuntimeSubsystemBlueprints;
+
+
+	/**
+	 * @brief References to all cooked content manifests (baked into the builds via cooking process).
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Beam Systems")
+	TArray<TSoftObjectPtr<UDataTable>> CookedManifests;
 };

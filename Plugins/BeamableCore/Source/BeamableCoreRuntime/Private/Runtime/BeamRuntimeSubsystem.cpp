@@ -8,7 +8,7 @@
 void UBeamRuntimeSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-	Runtime = Cast<UBeamRuntime>(Collection.InitializeDependency(UBeamRuntime::StaticClass()));
+	Runtime = Collection.InitializeDependency<UBeamRuntime>();
 }
 
 void UBeamRuntimeSubsystem::Deinitialize()
