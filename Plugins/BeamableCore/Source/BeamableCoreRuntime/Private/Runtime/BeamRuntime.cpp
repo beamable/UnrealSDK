@@ -21,7 +21,7 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 
 	// Set us up to handle sign-in/out flows in editor as well as tracking multiple developer user slots.
 	UserSlotSystem = GEngine->GetEngineSubsystem<UBeamUserSlots>();
-	RequestTrackerSystem =  GEngine->GetEngineSubsystem<UBeamRequestTracker>();
+	RequestTrackerSystem = GEngine->GetEngineSubsystem<UBeamRequestTracker>();
 
 	UserSlotAuthenticatedHandler = UserSlotSystem->GlobalUserSlotAuthenticatedCodeHandler.AddUObject(this, &UBeamRuntime::OnUserSlotAuthenticated);
 	UserSlotClearedHandler = UserSlotSystem->GlobalUserSlotClearedCodeHandler.AddUObject(this, &UBeamRuntime::OnUserSlotCleared);
@@ -31,7 +31,7 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 }
 
 void UBeamRuntime::Initialize_DelayedInit()
-{	
+{
 	const auto TargetRealm = GetDefault<UBeamCoreSettings>()->TargetRealm;
 
 	if (TargetRealm.Cid.AsLong == -1 || TargetRealm.Pid.AsString.IsEmpty())
@@ -76,30 +76,39 @@ void UBeamRuntime::Initialize_DelayedInit()
 void UBeamRuntime::Initialize_OnRuntimeSubsystemsInitialized(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&,
                                                              const TArray<FBeamErrorResponse>&)
 {
-	// TODO: Expose configurations in core settings about which UserSlots should we try to sign in automatically.
-	// INFO: By default (and, for now), only UserSlot at index 0 of RuntimeUserSlots always gets loaded.		
-	const auto UserSlot = GetDefault<UBeamCoreSettings>()->RuntimeUserSlots[0];
-	if (UserSlotSystem->TryLoadSavedUserAtSlot(UserSlot, this))
+	// Sign in automatically to the owner player slot.		
+	const auto OwnerPlayerUserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+	if (UserSlotSystem->TryLoadSavedUserAtSlot(OwnerPlayerUserSlot, this))
 	{
-		UE_LOG(LogBeamRuntime, Verbose, TEXT("Authenticated User at Slot! SLOT=%s"), *UserSlot);
+		UE_LOG(LogBeamRuntime, Verbose, TEXT("Authenticated User at Slot! SLOT=%s"), *OwnerPlayerUserSlot.Name);
 	}
 	else
 	{
-		// If we are not already signed-into the first user slot, we simply let all of our BeamRuntimeSubsystems know that we are ready. 
+		// If we are not already signed-into the first user slot and we are configured to automatically run auth, we run it. Otherwise, we call OnBeamableStarted on every runtime subsystem.
+		// OnBeamableStarted basically means we are ready for authentication, but nothing else. And... that until you authenticate into the OwnerPlayer slot, OnBeamableReady functions will not run
+		// on BeamableRuntimeSubsystems.
 		if (!bDidBeamableRuntimeBoot)
 		{
-			if (const UWorld* World = GetWorld())
+			if (GetDefault<UBeamCoreSettings>()->bAutomaticFrictionlessAuthForOwnerPlayer)
 			{
-				if (const UGameInstance* GameInstance = World->GetGameInstance())
+				CPP_AuthenticateFrictionlessOperation(OwnerPlayerUserSlot, {}, this);
+			}
+			else
+			{
+				// By default, only UserSlot at index 0 of RuntimeUserSlots always gets loaded. This actually only be called ONCE during the entire lifecycle of your program.
+				if (const UWorld* World = GetWorld())
 				{
-					const auto Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
-					for (auto& Subsystem : Subsystems)
+					if (const UGameInstance* GameInstance = World->GetGameInstance())
 					{
-						Subsystem->OnBeamableReady();
+						const auto Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
+						for (auto& Subsystem : Subsystems)
+						{
+							Subsystem->OnBeamableStarted();
+						}
 					}
 				}
+				bDidBeamableRuntimeBoot = true;
 			}
-			bDidBeamableRuntimeBoot = true;
 		}
 	}
 }
@@ -156,10 +165,8 @@ void UBeamRuntime::OnUserSlotAuthenticated_PostUserSignedIn(const TArray<FBeamRe
 		}
 	}
 
-	// TODO: Expose configurations in core settings about which UserSlots should we try to sign in automatically.
-	// INFO: By default (and, for now), only UserSlot at index 0 of RuntimeUserSlots always gets loaded.
-	// INFO: This will actually only be called ONCE
-	if (!bDidBeamableRuntimeBoot && UserSlot.Name.Equals(GetDefault<UBeamCoreSettings>()->RuntimeUserSlots[0]))
+	// By default, only UserSlot at index 0 of RuntimeUserSlots always gets loaded. This actually only be called ONCE during the entire lifecycle of your program.
+	if (!bDidBeamableRuntimeBoot && UserSlot.Name.Equals(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot()))
 	{
 		if (const UWorld* World = GetWorld())
 		{
@@ -168,7 +175,7 @@ void UBeamRuntime::OnUserSlotAuthenticated_PostUserSignedIn(const TArray<FBeamRe
 				const auto Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
 				for (auto& Subsystem : Subsystems)
 				{
-					Subsystem->OnBeamableReady();					
+					Subsystem->OnBeamableReady();
 				}
 			}
 		}
@@ -317,7 +324,8 @@ void UBeamRuntime::UpdateAuthenticatedUserData_OnFetchAndUpdateGamerTag(FBasicAc
 	{
 		const auto GamerTag = Response.SuccessData->Id;
 		UserSlotSystem->SetGamerTagAtSlot(UserSlot, GamerTag, this);
-		UserSlotSystem->SaveSlot(UserSlot, this);
+		UserSlotSystem->SaveSlot(UserSlot, this);		
+		UserSlotSystem->TriggerUserAuthenticatedIntoSlot(UserSlot, this);
 		RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
 	}
 	else

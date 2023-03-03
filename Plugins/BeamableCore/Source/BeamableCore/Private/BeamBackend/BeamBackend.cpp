@@ -94,11 +94,11 @@ void UBeamBackend::TryTriggerRequestCompleteDelegates(const int64& RequestId)
 {
 	if (InFlightRequestContexts.Find(RequestId)->BeamStatus == Completed)
 	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Checking OnRequestIdCompleted Delegates | REQUEST_ID=%d, DELEGATE_COUNT=%d"), RequestId, TickOnRequestIdCompletedDelegates.Num());
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Checking OnRequestIdCompleted Delegates | REQUEST_ID=%lld, DELEGATE_COUNT=%d"), RequestId, TickOnRequestIdCompletedDelegates.Num());
 		for (const auto& OnRequestIdCompleted : TickOnRequestIdCompletedDelegates)
 		{
 			const auto bDidRun = OnRequestIdCompleted.ExecuteIfBound(RequestId);
-			UE_LOG(LogBeamBackend, Verbose, TEXT("Tried to invoke OnRequestIdCompleted Delegate | REQUEST_ID=%d, DID_RUN=%s"), RequestId, bDidRun ? TEXT("true") : TEXT("false"));
+			UE_LOG(LogBeamBackend, Verbose, TEXT("Tried to invoke OnRequestIdCompleted Delegate | REQUEST_ID=%lld, DID_RUN=%s"), RequestId, bDidRun ? TEXT("true") : TEXT("false"));
 		}
 
 		// After all request complete delegates have run, we try to clean up request data
@@ -373,13 +373,13 @@ void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FStr
 	// If the request was cancelled, we'll only run the OnComplete call 
 	if (InFlightRequestsCancelled.Contains(RequestId))
 	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Ignoring Request Response since it was cancelled. REQUEST_ID=%d"), RequestId);
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Ignoring Request Response since it was cancelled. REQUEST_ID=%lld"), RequestId);
 
 		// Execute the handler if it's bound.
 		const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(*Context, RequestData);
 		if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 		{
-			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Canceled | REQUEST_ID=%d, NUM_FAILURES=%d"), RequestId, InFlightFailureCount.FindRef(RequestId));
+			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, NUM_FAILURES=%d"), RequestId, InFlightFailureCount.FindRef(RequestId));
 		}
 
 		// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
@@ -415,7 +415,7 @@ void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FStr
 		// We only log the response if no callsite is given or if we are configured to always run it.
 		if (AlwaysLogSuccessResponses || !ExecutedCallsiteHandler)
 		{
-			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Successfull | REQUEST_ID=%d, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"), RequestId, ResponseCode, CurrFailedCount,
+			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Successfull | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"), RequestId, ResponseCode, CurrFailedCount,
 			       *ContentAsString);
 		}
 	}
@@ -462,7 +462,7 @@ void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FStr
 		// We log the error only if neither callback was set OR if we are configured to do so.
 		if (AlwaysLogErrorResponses || !bExecutedGlobalHandler && !ExecutedCallsiteHandler)
 		{
-			UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed | REQUEST_ID=%d, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"), RequestId, ResponseCode,
+			UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"), RequestId, ResponseCode,
 			       CurrFailedCount,
 			       bWillRetry ? TEXT("true") : TEXT("false"), *ContentAsString);
 		}
@@ -478,7 +478,7 @@ void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FStr
 		const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(*Context, RequestData);
 		if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 		{
-			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Completed | REQUEST_ID=%d, RESPONSE_CODE=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
+			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Completed | REQUEST_ID=%lld, RESPONSE_CODE=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
 			       RequestId, ResponseCode, bWasSuccess ? TEXT("true") : TEXT("false"), CurrFailedCount);
 		}
 
@@ -562,13 +562,13 @@ void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCod
 	// If the request was cancelled, we'll only run the OnComplete call 
 	if (InFlightRequestsCancelled.Contains(RequestId))
 	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Ignoring Request Response since it was cancelled. REQUEST_ID=%d"), RequestId);
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Ignoring Request Response since it was cancelled. REQUEST_ID=%lld"), RequestId);
 
 		// Execute the handler if it's bound.		
 		const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(*Context, RequestData);
 		if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 		{
-			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Canceled | REQUEST_ID=%d, USER_SLOT=%s, NUM_FAILURES=%d"),
+			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, USER_SLOT=%s, NUM_FAILURES=%d"),
 			       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : *FString(TEXT("Made Without UserSlot")), InFlightFailureCount.FindRef(RequestId));
 		}
 
@@ -606,7 +606,7 @@ void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCod
 		// We only log the response if no callsite is given or if we are configured to always run it.
 		if (AlwaysLogSuccessResponses || !ExecutedCallsiteHandler)
 		{
-			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Successfull | REQUEST_ID=%d, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"),
+			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Successfull | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"),
 			       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : TEXT("Made Without UserSlot"), ResponseCode, CurrFailedCount, *ContentAsString);
 		}
 	}
@@ -662,7 +662,7 @@ void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCod
 			// We log the error only if neither callback was set OR if we are configured to do so.
 			if (AlwaysLogErrorResponses || !bExecutedGlobalHandler && !ExecutedCallsiteHandler)
 			{
-				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed | REQUEST_ID=%d, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"),
+				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"),
 				       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : TEXT("Made Without UserSlot"), ResponseCode, CurrFailedCount, bWillRetry ? TEXT("true") : TEXT("false"),
 				       *ContentAsString);
 			}
@@ -679,7 +679,7 @@ void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCod
 		const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(*Context, RequestData);
 		if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 		{
-			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Completed | REQUEST_ID=%d, USER_SLOT=%s, RESPONSE_CODE=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
+			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Completed | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
 			       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : TEXT("Made Without UserSlot"), ResponseCode, bWasSuccess ? TEXT("true") : TEXT("false"), CurrFailedCount);
 		}
 
@@ -835,7 +835,7 @@ void UBeamBackend::ProcessCodeRequest(const int32& ResponseCode, const FString& 
 		// We log if we are configured to do so or as a fallback if no handler is configured
 		if (AlwaysLogErrorResponses || (!bExecutedCallsiteHandler && !bRanGlobalHandlers))
 		{
-			UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed - Retrying | REQUEST_ID=%d, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"),
+			UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed - Retrying | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"),
 			       RequestId, ResponseCode, CurrFailedCount, bWillRetry ? TEXT("true") : TEXT("false"), *ContentAsString);
 		}
 	}
@@ -850,26 +850,26 @@ void UBeamBackend::ProcessCodeRequest(const int32& ResponseCode, const FString& 
 			// We only log the response for code if we are configured to always run it.
 			if (AlwaysLogSuccessResponses && FullResponse.State == Success)
 			{
-				UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Successfull | REQUEST_ID=%d, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"),
+				UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Successfull | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"),
 				       RequestId, ResponseCode, CurrFailedCount, *ContentAsString);
 			}
 
 			// We log the error only if neither callback was set OR if we are configured to do so.
 			if (AlwaysLogErrorResponses && FullResponse.State == Error)
 			{
-				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed | REQUEST_ID=%d, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"),
+				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"),
 				       RequestId, ResponseCode, CurrFailedCount, *ContentAsString);
 			}
 
 			const auto bWasSuccess = FullResponse.State == Success;
 			if (FullResponse.State == Cancelled)
 			{
-				UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Canceled | REQUEST_ID=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
+				UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
 				       RequestId, bWasSuccess ? TEXT("true") : TEXT("false"), InFlightFailureCount.FindRef(RequestId));
 			}
 			else
 			{
-				UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Completed | REQUEST_ID=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
+				UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Completed | REQUEST_ID=%lld, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
 				       RequestId, bWasSuccess ? TEXT("true") : TEXT("false"), InFlightFailureCount.FindRef(RequestId));
 			}
 		}
@@ -1042,7 +1042,7 @@ void UBeamBackend::ProcessAuthenticatedCodeRequest(const int32& ResponseCode, co
 			// We log if we are configured to do so or as a fallback if no handler is configured
 			if (AlwaysLogErrorResponses || (!bExecutedCallsiteHandler && !bRanGlobalHandlers))
 			{
-				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed - Retrying | REQUEST_ID=%d, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"),
+				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed - Retrying | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"),
 				       RequestId, *UserSlotLog, ResponseCode, CurrFailedCount, bWillRetry ? TEXT("true") : TEXT("false"),
 				       *ContentAsString);
 			}
@@ -1060,26 +1060,26 @@ void UBeamBackend::ProcessAuthenticatedCodeRequest(const int32& ResponseCode, co
 			// We only log the response for code if we are configured to always run it.
 			if (AlwaysLogSuccessResponses && FullResponse.State == Success)
 			{
-				UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Successfull | REQUEST_ID=%d, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"),
+				UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Successfull | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"),
 				       RequestId, *UserSlotLog, ResponseCode, CurrFailedCount, *ContentAsString);
 			}
 
 			// We log the error only if neither callback was set OR if we are configured to do so.
 			if (AlwaysLogErrorResponses && FullResponse.State == Error)
 			{
-				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed | REQUEST_ID=%d, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"),
+				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"),
 				       RequestId, *UserSlotLog, ResponseCode, CurrFailedCount, bWillRetry ? TEXT("true") : TEXT("false"), *ContentAsString);
 			}
 
 			const auto bWasSuccess = FullResponse.State == Success;
 			if (FullResponse.State == Cancelled)
 			{
-				UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Canceled | REQUEST_ID=%d, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
+				UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
 				       RequestId, *UserSlotLog, bWasSuccess ? TEXT("true") : TEXT("false"), InFlightFailureCount.FindRef(RequestId));
 			}
 			else
 			{
-				UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Completed | REQUEST_ID=%d, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
+				UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Completed | REQUEST_ID=%lld, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
 				       RequestId, *UserSlotLog, bWasSuccess ? TEXT("true") : TEXT("false"), InFlightFailureCount.FindRef(RequestId));
 			}
 		}
@@ -1202,7 +1202,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 							// The reason that we simply assume there'll always be a UserSlot is to make integration tests
 							if (WasMadeWithUserSlot)
 							{
-								UE_LOG(LogBeamBackend, Verbose, TEXT("Identified User Slot and Re-authing it. REQUEST_ID=%d, USER_SLOT=%s"), ReqId, *UserSlot.Name);
+								UE_LOG(LogBeamBackend, Verbose, TEXT("Identified User Slot and Re-authing it. REQUEST_ID=%lld, USER_SLOT=%s"), ReqId, *UserSlot.Name);
 								// Re-auth the user at the found slot so that subsequent requests use the new token rather than this one.
 								BeamUserSlots->SetAuthenticationDataAtSlot(UserSlot, NewToken.AccessToken, NewToken.RefreshToken, NewToken.ExpiresIn,
 								                                           RealmUserData.RealmHandle.Cid, RealmUserData.RealmHandle.Pid, this);
@@ -1229,7 +1229,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 						// ...would allow for users to use level blueprints to subscribe to this effectively defining ("when a user fails re-auth in this level, this is what happens".												
 						else
 						{
-							UE_LOG(LogBeamBackend, Verbose, TEXT("Discarding Request since the user failed to re-authenticated. REQUEST_ID=%d"), ReqId);
+							UE_LOG(LogBeamBackend, Verbose, TEXT("Discarding Request since the user failed to re-authenticated. REQUEST_ID=%lld"), ReqId);
 
 							// If the failed re-auth was made using a user slot, we clear that slot.
 							if (WasMadeWithUserSlot)
@@ -1267,7 +1267,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 				const auto Route = FailedReq->GetURL();
 				const auto Verb = FailedReq->GetVerb();
 				const auto Body = FString(UTF8_TO_TCHAR(FailedReq->GetContent().GetData()));
-				ensureAlwaysMsgf(false, TEXT("This request should not have been enqueued for retry, but it was. REQUEST_ID=%d, VERB=%s, ROUTE=%s, BODY=%s, RETRY_RESP_CODES=%s, RETRY_ERR_CODES=%s"),
+				ensureAlwaysMsgf(false, TEXT("This request should not have been enqueued for retry, but it was. REQUEST_ID=%lld, VERB=%s, ROUTE=%s, BODY=%s, RETRY_RESP_CODES=%s, RETRY_ERR_CODES=%s"),
 				                 ProcessingReq.RequestToRetry.RequestId, *Route, *Verb, *Body,
 				                 *FString::JoinBy(RetryConfig.HttpResponseCodes, TEXT(","), [](int64 c) { return FString::FromInt(c); }),
 				                 *FString::Join(RetryConfig.CustomErrorCodes, TEXT(",")));

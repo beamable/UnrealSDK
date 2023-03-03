@@ -81,10 +81,13 @@ public:
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Request/Response")
 	FBeamCacheConfig GlobalCacheConfiguration{Disabled, 600,};
-	
+
 
 	/**
-	 * @brief These are the expected user slots for your game. TODO User slots not registered here will not be allowed to be authenticated into.
+	 * @brief These are the expected user slots for your game.
+	 *
+	 * INFO: Index 0 here is considered the "Owner Player" slot. Typically, this is what most games without local-multiplayer will care about.
+	 * INFO: We have an option here to automatically authenticate into the "OwnerPlayer" slot. If it is turned off, please use the OnBeamableReady to call the FrictionlessAuth operation.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "User Slots")
 	TArray<FString> RuntimeUserSlots{"Player0"};
@@ -98,8 +101,19 @@ public:
 	TArray<FString> DeveloperUserSlots{"MainEditorDeveloper"};
 
 	/**
+	 * @brief Whether or not we should automatically sign in for the Owner Player. If you do not wish this to be true and want to control when you sign into Beamable, you can disable this.
+	 * If you disable it and want to replicate the default behaviour for whatever reason, simply call the Frictionless Authentication operation at the OnBeamableStarted of a "BootBeamableSubsystem"
+	 * and you will get the same behaviour.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="User Slots")
+	bool bAutomaticFrictionlessAuthForOwnerPlayer = true;
+
+	/**
 	 * @brief Whether or not we should persist the Auth data for Runtime User Slots when we are in PIE.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="User Slots")
-	bool bPersistRuntimeSlotDataWhenInPIE = false;
+	bool bPersistRuntimeSlotDataWhenInPIE = true;
+
+	UFUNCTION(BlueprintCallable)
+	FUserSlot GetOwnerPlayerSlot() const { return FUserSlot{RuntimeUserSlots[0]}; }
 };

@@ -72,6 +72,15 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void OnBeamableReady();
 	virtual void OnBeamableReady_Implementation();
+
+	/**
+	 * @brief Called whenever UBeamRuntime is ready for users to be authenticated into Beamable. This is only called if you disable automatic frictionless authentication in order to control
+	 * when the owner player signs into Beamable in your game. By default, sign in is automatic and you can expect OnBeamableReady to be called when the current local user is signed in and
+	 * ready to make requests to Beamable.
+	 */
+	UFUNCTION(BlueprintNativeEvent)
+	void OnBeamableStarted();
+	virtual void OnBeamableStarted_Implementation();
 };
 
 

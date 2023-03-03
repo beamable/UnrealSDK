@@ -59,5 +59,10 @@ void UBeamRuntimeSubsystem::OnPostUserSignedOut_Implementation(const FUserSlot& 
 
 void UBeamRuntimeSubsystem::OnBeamableReady_Implementation()
 {
+	UE_LOG(LogBeamRuntime, Display, TEXT("Runtime Subsystem %s - OnBeamableReady"), *GetName())
 	bIsInitialized = true;
+}
+
+void UBeamRuntimeSubsystem::OnBeamableStarted_Implementation()
+{
 }
