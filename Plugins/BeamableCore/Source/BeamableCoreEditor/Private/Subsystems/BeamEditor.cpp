@@ -50,7 +50,7 @@ void UBeamEditor::Initialize(FSubsystemCollectionBase& Collection)
 	const auto DefaultBootstrapper = GetDefault<UBeamEditorBootstrapper>();
 	const auto SoftPathToDefaultBoostrapper = FSoftObjectPath{DefaultBootstrapper->GetPathName()};
 	if (!EditorUtilitySubsystem->StartupObjects.Contains(SoftPathToDefaultBoostrapper))
-		EditorUtilitySubsystem->StartupObjects.Add(SoftPathToDefaultBoostrapper);
+		EditorUtilitySubsystem->StartupObjects.Add(SoftPathToDefaultBoostrapper);	
 }
 
 void UBeamEditor::Deinitialize()

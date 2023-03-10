@@ -20,10 +20,22 @@ public:
 
 
 	/**
-	 * @brief References to all Blueprint-first Runtime Subsystems that exist. 
+	 * @brief References to all Blueprint-first Runtime Subsystems that exist (will get created in both Client/Game/Server builds). 
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Beam Systems")
-	TArray<TSubclassOf<USubsystem>> BeamRuntimeSubsystemBlueprints;
+	TArray<TSubclassOf<USubsystem>> RuntimeSubsystemBlueprints;
+
+	/**
+	 * @brief References to all Blueprint-first Runtime Subsystems that exist (will get created in Server builds --- only). 
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Beam Systems")
+	TArray<TSubclassOf<USubsystem>> ServerOnlyRuntimeSubsystemBlueprints;
+
+	/**
+	 * @brief References to all Blueprint-first Runtime Subsystems that exist (will get created in Client/Game builds --- only). 
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Beam Systems")
+	TArray<TSubclassOf<USubsystem>> ClientRuntimeSubsystemBlueprints;
 
 
 	/**

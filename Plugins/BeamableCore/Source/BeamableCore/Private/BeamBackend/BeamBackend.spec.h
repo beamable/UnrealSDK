@@ -3,8 +3,11 @@
 #include "BeamBackend/BeamBackend.h"
 class UBeamBackendTestCallbacks;
 
-BEGIN_DEFINE_SPEC(FBeamBackendSpec, "BeamableUnreal.BeamBackend", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
-	UBeamBackend* BeamBackendSystem;	
+BEGIN_DEFINE_SPEC(FBeamBackendSpec, "BeamableUnreal.BeamBackend",
+                  EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+	UBeamBackend* BeamBackendSystem;
+	UObject* RequestFuncUObject;
+	FName RequestFuncName;
 
 	UBeamBackendTestCallbacks* Callbacks;
 

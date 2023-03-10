@@ -75,7 +75,7 @@ struct FRequestToRetry
 	/**
 	 * @brief The unique request id.
 	 */
-	FBeamRequestId RequestId = 0;	
+	FBeamRequestId RequestId = 0;
 
 	/**
 	 * @brief Whether or not the request was made with a blueprint compatible handler. 
@@ -95,7 +95,7 @@ struct FRequestToRetry
 	/**
 	 * @brief The authentication token used in the request, if any.
 	 */
-	FBeamAuthToken AuthToken;	
+	FBeamAuthToken AuthToken;
 
 	/**
 	 * @brief A custom error code independent of the HTTP status code.
@@ -142,10 +142,14 @@ struct FProcessingRequestRetry
 DECLARE_DELEGATE_TwoParams(FBeamMakeRequestDelegate, int64 /*ActiveRequestId*/, FBeamConnectivity& /*Connectivity*/);
 
 DECLARE_DELEGATE_TwoParams(FGlobalRequestErrorCodeHandler, const FBeamRequestContext&, const FBeamErrorResponse&);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGlobalRequestErrorHandler, const FBeamRequestContext&, RequestContext, const FBeamErrorResponse&, Error);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGlobalRequestErrorHandler, const FBeamRequestContext&, RequestContext,
+                                             const FBeamErrorResponse&, Error);
 
-DECLARE_MULTICAST_DELEGATE_ThreeParams(FGlobalConnectivityChangedCodeHandler, const FBeamRequestContext&, const FRequestType&, const bool);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FGlobalConnectivityChangedHandler, const FBeamRequestContext&, RequestContext, const FRequestType&, FailedRequestType, const bool, bConnected);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FGlobalConnectivityChangedCodeHandler, const FBeamRequestContext&,
+                                       const FRequestType&, const bool);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FGlobalConnectivityChangedHandler, const FBeamRequestContext&,
+                                               RequestContext, const FRequestType&, FailedRequestType, const bool,
+                                               bConnected);
 
 /**
 * @brief Subsystems that associate data with in-flight requests and require guarantees that those request objects stay alive need to tell the backend subsystem which
@@ -201,20 +205,19 @@ private:
 	 * The guarantees here is that OnComplete will have run in all cases for all types of request.
 	 */
 	TArray<FTickOnRequestIdCompleted> TickOnRequestIdCompletedDelegates;
-	
+
 
 	template <class TRequestData>
 	static void StaticCheckForRequestType();
 
 	template <class TResponseData>
 	static void StaticCheckForResponseType();
-	
+
 	void TryTriggerRequestCompleteDelegates(const int64& RequestId);
-	
-	bool TickRetryQueue(float DeltaTime);	
+
+	bool TickRetryQueue(float DeltaTime);
 
 	bool CleanUpRequestData();
-
 
 public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly)
@@ -234,7 +237,6 @@ public:
 	 */
 	const static TArray<FString> AUTH_ERROR_CODE_RETRY_ALLOWED;
 
-	
 
 	/**
 	 * @brief Pointer to the UBeamEnvironment Engine Subsystem. Gathers which platform we are running as well as the Beamable SDK version.
@@ -272,6 +274,12 @@ public:
 	 * @brief A delegate wrapper so we can easily replace the code that sends the request by assertions over the request data. 
 	 */
 	FBeamMakeRequestDelegate ExecuteRequestDelegate;
+
+	/**
+	 * @brief This must be set if DedicatedServerExecuteRequestImpl will be used (it'll use this to sign requests). When running in insecure devices (non-dedicated servers),
+	 * this must always be empty.
+	 */
+	FString RealmSecret;
 
 	/**
 	 * @brief When set to true, the Global Request Error Handlers will run IN ADDITION to the one provided at the callsite. 
@@ -370,6 +378,11 @@ public:
 	 */
 	UFUNCTION()
 	void DefaultExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity);
+	/**
+	 * @brief Used as delegate set in ExecuteRequestDelegate when running as a dedicated server. 
+	 */
+	UFUNCTION()
+	void DedicatedServerExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity);
 
 	/**
 	 * @brief Creates a request and prepares it to be sent out. This does not bind the lambda --- see any auto-generated API to understand how to manually make
@@ -384,7 +397,8 @@ public:
 	 * @return A TUnrealRequest object that will be tracked by UBeamBackend.
 	 */
 	template <class TRequestData>
-	TUnrealRequestPtr CreateRequest(int64& OutRequestId, const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const TRequestData* RequestData);
+	TUnrealRequestPtr CreateRequest(int64& OutRequestId, const FBeamRealmHandle& TargetRealm,
+	                                const FBeamRetryConfig& RetryConfig, const TRequestData* RequestData);
 
 	/**
 	 * @brief Creates an authenticated request and prepares it to be sent out.
@@ -400,7 +414,8 @@ public:
 	 * @return A TUnrealRequest object that will be tracked by UBeamBackend.
 	 */
 	template <typename TRequestData>
-	TUnrealRequestPtr CreateAuthenticatedRequest(int64& OutRequestId, const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
+	TUnrealRequestPtr CreateAuthenticatedRequest(int64& OutRequestId, const FBeamRealmHandle& TargetRealm,
+	                                             const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
 	                                             const TRequestData* RequestData);
 
 	/**
@@ -460,7 +475,8 @@ public:
 	 * @param RealmHandle A RealmHandle describing which realm this request is talking too.
 	 * @param UnrealRequest The actual HttpRequest we are configuring to send out through the Unreal Http Module.
 	 */
-	static void PrepareBeamableRequestToRealm(const TUnrealRequestPtr& UnrealRequest, const FBeamRealmHandle& RealmHandle);
+	static void PrepareBeamableRequestToRealm(const TUnrealRequestPtr& UnrealRequest,
+	                                          const FBeamRealmHandle& RealmHandle);
 
 	/**
 	 * @brief Prepares an TUnrealRequest using data from a FBeamRealmHandle and an FBeamAuthToken by setting up a JWT Authentication header.
@@ -468,7 +484,9 @@ public:
 	 * @param AuthToken An AuthToken to configure the authentication data required for the request.
 	 * @param UnrealRequest The actual HttpRequest we are configuring to send out through the Unreal Http Module. 
 	 */
-	static void PrepareBeamableRequestToRealmWithAuthToken(const TUnrealRequestPtr& UnrealRequest, const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken);
+	static void PrepareBeamableRequestToRealmWithAuthToken(const TUnrealRequestPtr& UnrealRequest,
+	                                                       const FBeamRealmHandle& RealmHandle,
+	                                                       const FBeamAuthToken& AuthToken);
 
 	/**
 	 * @brief Prepares an TUnrealRequest using any UStruct containing the data (route and body params) we need to make the request.
@@ -478,7 +496,8 @@ public:
 	 * @param TargetBeamableUrl The target beamable URL --- typically from the current UBeamEnvironment.
 	 */
 	template <typename TRequestData>
-	void PrepareBeamableRequestVerbRouteBody(const TUnrealRequestPtr& Request, const TRequestData* RequestData, const FString& TargetBeamableUrl);
+	void PrepareBeamableRequestVerbRouteBody(const TUnrealRequestPtr& Request, const TRequestData* RequestData,
+	                                         const FString& TargetBeamableUrl);
 
 	/**
 	 * @brief The blueprint-only version of the Beamable Request Processor implementation. This generates a function to be used as the lambda for the HttpRequest completion.
@@ -497,9 +516,12 @@ public:
 	 * 
 	 * @return The request processor function, with correctly captured variables and properly set up to handle errors, retry and other utilities.
 	 */
-	template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename TCompleteCallback>
-	FBeamRequestProcessor MakeBlueprintRequestProcessor(const int64& RequestId, TRequestData* RequestData, TSuccessCallback OnSuccess, TErrorCallback OnError,
-	                                                    TCompleteCallback OnComplete, const UObject* CallingContext = nullptr);
+	template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback,
+	          typename TCompleteCallback>
+	FBeamRequestProcessor MakeBlueprintRequestProcessor(const int64& RequestId, TRequestData* RequestData,
+	                                                    TSuccessCallback OnSuccess, TErrorCallback OnError,
+	                                                    TCompleteCallback OnComplete,
+	                                                    const UObject* CallingContext = nullptr);
 
 	/**
 	* @brief Runs the blueprint-only version of the Beamable Request Processor implementation for un-authenticated requests.
@@ -517,17 +539,22 @@ public:
 	 * @param OnError The callback to handle irrecoverable errors.
 	 * @param OnComplete The callback to run after success/errors have been handled.	 
 	 */
-	template <class TRequestData, class TResponseData, class TSuccessCallback, class TErrorCallback, class TCompleteCallback>
-	void RunBlueprintRequestProcessor(const int32& ResponseCode, const FString& ContentAsString, TUnrealRequestStatus RequestStatus, const int64& RequestId, TRequestData* RequestData,
+	template <class TRequestData, class TResponseData, class TSuccessCallback, class TErrorCallback, class
+	          TCompleteCallback>
+	void RunBlueprintRequestProcessor(const int32& ResponseCode, const FString& ContentAsString,
+	                                  TUnrealRequestStatus RequestStatus, const int64& RequestId,
+	                                  TRequestData* RequestData,
 	                                  TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete);
 
 	/**
 	 * @brief Callback that MakeBlueprintRequestProcessor uses to handle un-authenticated requests.	  
 	 */
-	template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename TCompleteCallback>
-	void ProcessBlueprintRequest(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus,
+	template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback,
+	          typename TCompleteCallback>
+	void ProcessBlueprintRequest(const int32& ResponseCode, const FString& ContentAsString,
+	                             const TUnrealRequestStatus RequestStatus,
 	                             const int64& RequestId, TRequestData* RequestData,
-	                             TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete);	
+	                             TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete);
 
 	/**
 	 * @brief The blueprint-only version of the Beamable Request Processor implementation for authenticated requests.	 * 
@@ -547,9 +574,15 @@ public:
 	 * @param CallingContext A UObject that defines a context for the caller. Used to support multiple PIE sessions and read-only request cache.
 	 * @return A function to be used as the lambda for the HttpRequest completion callback.
 	 */
-	template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename TCompleteCallback>
-	FBeamRequestProcessor MakeAuthenticatedBlueprintRequestProcessor(const int64& RequestId, const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken,
-	                                                                 TRequestData* RequestData, TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete, const UObject* CallingContext = nullptr);
+	template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback,
+	          typename TCompleteCallback>
+	FBeamRequestProcessor MakeAuthenticatedBlueprintRequestProcessor(const int64& RequestId,
+	                                                                 const FBeamRealmHandle& RealmHandle,
+	                                                                 const FBeamAuthToken& AuthToken,
+	                                                                 TRequestData* RequestData,
+	                                                                 TSuccessCallback OnSuccess, TErrorCallback OnError,
+	                                                                 TCompleteCallback OnComplete,
+	                                                                 const UObject* CallingContext = nullptr);
 
 	/**
 	 * @brief Runs the blueprint-only version of the Beamable Request Processor implementation for authenticated requests.
@@ -569,18 +602,26 @@ public:
 	 * @param OnError The callback to handle irrecoverable errors.
 	 * @param OnComplete The callback to run after success/errors have been handled.
 	 */
-	template <class TRequestData, class TResponseData, class TSuccessCallback, class TErrorCallback, class TCompleteCallback>
-	void RunAuthenticatedBlueprintRequestProcessor(const int32& ResponseCode, const FString& ContentAsString, TUnrealRequestStatus RequestStatus, const int64& RequestId,
-	                                               const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken, TRequestData* RequestData, TSuccessCallback OnSuccess, TErrorCallback OnError,
+	template <class TRequestData, class TResponseData, class TSuccessCallback, class TErrorCallback, class
+	          TCompleteCallback>
+	void RunAuthenticatedBlueprintRequestProcessor(const int32& ResponseCode, const FString& ContentAsString,
+	                                               TUnrealRequestStatus RequestStatus, const int64& RequestId,
+	                                               const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken,
+	                                               TRequestData* RequestData, TSuccessCallback OnSuccess,
+	                                               TErrorCallback OnError,
 	                                               TCompleteCallback OnComplete);
 
 	/**
 	 * @brief Callback that MakeAuthenticatedBlueprintRequestProcessor uses to handle authenticated requests. 
 	 */
-	template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename TCompleteCallback>
-	void ProcessAuthenticatedBlueprintRequest(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus,
-	                                          const int64& RequestId, const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken,
-	                                          TRequestData* RequestData, TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete);
+	template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback,
+	          typename TCompleteCallback>
+	void ProcessAuthenticatedBlueprintRequest(const int32& ResponseCode, const FString& ContentAsString,
+	                                          const TUnrealRequestStatus RequestStatus,
+	                                          const int64& RequestId, const FBeamRealmHandle& RealmHandle,
+	                                          const FBeamAuthToken& AuthToken,
+	                                          TRequestData* RequestData, TSuccessCallback OnSuccess,
+	                                          TErrorCallback OnError, TCompleteCallback OnComplete);
 
 	/**
 	 * @brief The code-only version of the Beamable Request Processor implementation. This generates 2 things:
@@ -596,7 +637,9 @@ public:
 	 * @return The request processor function, with correctly captured variables and properly set up to handle errors, retry and other utilities.
 	 */
 	template <typename TRequestData, typename TResponseData>
-	FBeamRequestProcessor MakeCodeRequestProcessor(const int64& RequestId, TRequestData* RequestData, TBeamFullResponseHandler<TRequestData*, TResponseData*> ResponseHandler, const UObject* CallingContext = nullptr);
+	FBeamRequestProcessor MakeCodeRequestProcessor(const int64& RequestId, TRequestData* RequestData,
+	                                               TBeamFullResponseHandler<TRequestData*, TResponseData*>
+	                                               ResponseHandler, const UObject* CallingContext = nullptr);
 
 	/**
 	 * @brief Runs the code-only version of the Beamable Request Processor implementation for un-authenticated requests.
@@ -610,15 +653,19 @@ public:
 	 * @return The request processor function, with correctly captured variables and properly set up to handle errors, retry and other utilities.
 	 */
 	template <typename TRequestData, typename TResponseData>
-	void RunCodeRequestProcessor(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus,
-									  const int64& RequestId, TRequestData* RequestData, TBeamFullResponseHandler<TRequestData*, TResponseData*> ResponseHandler);
-	
+	void RunCodeRequestProcessor(const int32& ResponseCode, const FString& ContentAsString,
+	                             const TUnrealRequestStatus RequestStatus,
+	                             const int64& RequestId, TRequestData* RequestData,
+	                             TBeamFullResponseHandler<TRequestData*, TResponseData*> ResponseHandler);
+
 	/**
 	 * @brief Callback that MakeCodeRequestProcessor uses to handle requests that don't require authentication.	  
 	 */
 	template <typename TRequestData, typename TResponseData>
-	void ProcessCodeRequest(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus,
-	                        const int64& RequestId, TRequestData* RequestData, TBeamFullResponseHandler<TRequestData*, TResponseData*> ResponseHandler);
+	void ProcessCodeRequest(const int32& ResponseCode, const FString& ContentAsString,
+	                        const TUnrealRequestStatus RequestStatus,
+	                        const int64& RequestId, TRequestData* RequestData,
+	                        TBeamFullResponseHandler<TRequestData*, TResponseData*> ResponseHandler);
 
 	/**
 	 * @brief The code-only version of the Beamable Request Processor implementation. This generates 2 things:
@@ -636,8 +683,13 @@ public:
 	 * @return The request processor function, with correctly captured variables and properly set up to handle errors, retry and other utilities.
 	 */
 	template <typename TRequestData, typename TResponseData>
-	FBeamRequestProcessor MakeAuthenticatedCodeRequestProcessor(const int64& RequestId, const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken,
-	                                                            TRequestData* RequestData, TBeamFullResponseHandler<TRequestData*, TResponseData*> ResponseHandler, const UObject* CallingContext = nullptr);
+	FBeamRequestProcessor MakeAuthenticatedCodeRequestProcessor(const int64& RequestId,
+	                                                            const FBeamRealmHandle& RealmHandle,
+	                                                            const FBeamAuthToken& AuthToken,
+	                                                            TRequestData* RequestData,
+	                                                            TBeamFullResponseHandler<TRequestData*, TResponseData*>
+	                                                            ResponseHandler,
+	                                                            const UObject* CallingContext = nullptr);
 
 	/**
 	 * @brief Runs the code-only version of the Beamable Request Processor implementation for authenticated requests.
@@ -653,17 +705,23 @@ public:
 	 * @return The request processor function, with correctly captured variables and properly set up to handle errors, retry and other utilities.
 	 */
 	template <typename TRequestData, typename TResponseData>
-	void RunAuthenticatedCodeRequestProcessor(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus,
-												   const int64& RequestId, const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken, TRequestData* RequestData,
-												   const TBeamFullResponseHandler<TRequestData*, TResponseData*>& ResponseHandler);
-	
+	void RunAuthenticatedCodeRequestProcessor(const int32& ResponseCode, const FString& ContentAsString,
+	                                          const TUnrealRequestStatus RequestStatus,
+	                                          const int64& RequestId, const FBeamRealmHandle& RealmHandle,
+	                                          const FBeamAuthToken& AuthToken, TRequestData* RequestData,
+	                                          const TBeamFullResponseHandler<TRequestData*, TResponseData*>&
+	                                          ResponseHandler);
+
 	/**
 	 * @brief Callback that MakeAuthenticatedCodeRequestProcessor uses to handle authenticated request's responses.
 	 */
 	template <typename TRequestData, typename TResponseData>
-	void ProcessAuthenticatedCodeRequest(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus, const int64& RequestId,
-	                                     const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken, TRequestData* RequestData,
-	                                     const TBeamFullResponseHandler<TRequestData*, TResponseData*>& ResponseHandler);
+	void ProcessAuthenticatedCodeRequest(const int32& ResponseCode, const FString& ContentAsString,
+	                                     const TUnrealRequestStatus RequestStatus, const int64& RequestId,
+	                                     const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken,
+	                                     TRequestData* RequestData,
+	                                     const TBeamFullResponseHandler<TRequestData*, TResponseData*>&
+	                                     ResponseHandler);
 
 
 	/*
@@ -733,7 +791,8 @@ public:
 	 * @return True, if the returned config was the one you asked for. False, if a fallback was returned (happens if you call this without ever having set the retry configuration).
 	 */
 	UFUNCTION(BlueprintGetter, Category="Beam|Config", meta=(AutoCreateRefTerm="RequestType,Slot"))
-	bool GetRetryConfigForUserSlotAndRequestType(const FRequestType& RequestType, const FUserSlot& Slot, FBeamRetryConfig& Config) const;
+	bool GetRetryConfigForUserSlotAndRequestType(const FRequestType& RequestType, const FUserSlot& Slot,
+	                                             FBeamRetryConfig& Config) const;
 
 
 	/**
@@ -759,7 +818,8 @@ public:
 	 * @param RetryConfig The retry config you wish that user + request type combination to use.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Config", meta=(AutoCreateRefTerm="RequestType,Slot"))
-	void SetRetryConfigForUserSlotAndRequestType(const FUserSlot& Slot, const FRequestType& RequestType, const FBeamRetryConfig& RetryConfig);
+	void SetRetryConfigForUserSlotAndRequestType(const FUserSlot& Slot, const FRequestType& RequestType,
+	                                             const FBeamRetryConfig& RetryConfig);
 
 	/**
 	 * @brief Resets the Retry Configuration for the given request type  back to the default retry configuration.
@@ -800,7 +860,8 @@ private:
 	/**
 	* @brief Called whenever a request is completed in order to update our connectivity status in accordance with UE's output codes.
 	*/
-	void UpdateConnectivity(const FBeamRequestContext& RequestContext, const TUnrealRequestStatus RequestStatus, const FRequestType RequestType);
+	void UpdateConnectivity(const FBeamRequestContext& RequestContext, const TUnrealRequestStatus RequestStatus,
+	                        const FRequestType RequestType);
 
 public:
 	/**

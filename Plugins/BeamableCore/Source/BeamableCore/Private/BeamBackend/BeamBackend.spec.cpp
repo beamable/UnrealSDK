@@ -29,6 +29,9 @@ void FBeamBackendSpec::Define()
 			Callbacks->BeamBackend = BeamBackendSystem;
 			Callbacks->Spec = this;
 
+			RequestFuncUObject = BeamBackendSystem->ExecuteRequestDelegate.GetUObject();
+			RequestFuncName = BeamBackendSystem->ExecuteRequestDelegate.TryGetBoundFunctionName();
+
 			FHttpModule::Get().ToggleNullHttp(true);
 		});
 
@@ -38,7 +41,7 @@ void FBeamBackendSpec::Define()
 			Callbacks = nullptr;
 
 			// Make sure that the execute request delegate is properly set up. 
-			BeamBackendSystem->ExecuteRequestDelegate.BindUFunction(BeamBackendSystem, "DefaultExecuteRequestImpl");
+			BeamBackendSystem->ExecuteRequestDelegate.BindUFunction(RequestFuncUObject, RequestFuncName);
 			FHttpModule::Get().ToggleNullHttp(false);
 
 			// Reset the request id counter to 0 and all the state related to InFlight Requests back to initial state

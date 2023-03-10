@@ -16,6 +16,40 @@ void UBeamRuntimeSubsystem::Deinitialize()
 	Super::Deinitialize();
 }
 
+bool UBeamRuntimeSubsystem::ShouldCreateSubsystem(UObject* Outer) const
+{
+	if (IsInBlueprint())
+	{
+		const auto RuntimeSettings = GetDefault<UBeamRuntimeSettings>();
+		for (const auto SubsystemBlueprint : RuntimeSettings->RuntimeSubsystemBlueprints)
+		{
+			if (this == SubsystemBlueprint->GetDefaultObject())
+				return true;
+		}
+
+		if (IsRunningDedicatedServer())
+		{
+			for (const auto SubsystemBlueprint : RuntimeSettings->ServerOnlyRuntimeSubsystemBlueprints)
+			{
+				if (this == SubsystemBlueprint->GetDefaultObject())
+					return true;
+			}
+		}
+		else
+		{
+			for (const auto SubsystemBlueprint : RuntimeSettings->ClientRuntimeSubsystemBlueprints)
+			{
+				if (this == SubsystemBlueprint->GetDefaultObject())
+					return true;
+			}
+		}
+
+		return false;
+	}
+
+	return true;
+}
+
 FBeamOperationHandle UBeamRuntimeSubsystem::InitializeWhenUnrealReady()
 {
 	UE_LOG(LogBeamRuntime, Verbose, TEXT("Runtime Subsystem %s - Initializing after GameInstance is ready"), *GetName())

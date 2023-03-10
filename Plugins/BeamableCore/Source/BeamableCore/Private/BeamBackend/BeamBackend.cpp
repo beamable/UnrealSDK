@@ -24,12 +24,15 @@ DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("RequestsCancelled"), STATID_RequestCancelle
 const FString UBeamBackend::HEADER_CONTENT_TYPE = FString(TEXT("Content-Type"));
 const FString UBeamBackend::HEADER_ACCEPT = FString(TEXT("Accept"));
 const FString UBeamBackend::HEADER_VALUE_ACCEPT_CONTENT_TYPE = FString(TEXT("application/json"));
+// C#-Stack => application/vnd.beamable.v1+json
 const FString UBeamBackend::HEADER_AUTHORIZATION = FString(TEXT("Authorization"));
 const FString UBeamBackend::HEADER_REQUEST_SCOPE = FString(TEXT("X-DE-SCOPE"));
 const FString UBeamBackend::HEADER_VALUE_AUTHORIZATION = FString(TEXT("Bearer {0}"));
 const FString UBeamBackend::HEADER_CLIENT_ID = FString(TEXT("X-KS-CLIENTID"));
 const FString UBeamBackend::HEADER_PROJECT_ID = FString(TEXT("X-KS-PROJECTID"));
-const TArray<FString> UBeamBackend::AUTH_ERROR_CODE_RETRY_ALLOWED = TArray<FString>{TEXT("InvalidTokenError"), TEXT("TokenValidationError"), TEXT("ExpiredTokenError")};
+const TArray<FString> UBeamBackend::AUTH_ERROR_CODE_RETRY_ALLOWED = TArray<FString>{
+	TEXT("InvalidTokenError"), TEXT("TokenValidationError"), TEXT("ExpiredTokenError")
+};
 
 void UBeamBackend::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -40,8 +43,9 @@ void UBeamBackend::Initialize(FSubsystemCollectionBase& Collection)
 	*InFlightRequestId = -1;
 
 	// Set up the retry ticking to run at 15 ticks / second TODO: expose these as settings
-	RetryQueueTickHandle = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateUObject(this, &UBeamBackend::TickRetryQueue), 4 / 60);
-	
+	RetryQueueTickHandle = FTSTicker::GetCoreTicker().AddTicker(
+		FTickerDelegate::CreateUObject(this, &UBeamBackend::TickRetryQueue), 4 / 60);
+
 	// Get subsystem dependency...
 	BeamEnvironment = Cast<UBeamEnvironment>(Collection.InitializeDependency(UBeamEnvironment::StaticClass()));
 	BeamUserSlots = Cast<UBeamUserSlots>(Collection.InitializeDependency(UBeamUserSlots::StaticClass()));
@@ -57,8 +61,8 @@ void UBeamBackend::Initialize(FSubsystemCollectionBase& Collection)
 	InFlightProcessingRequests.Reserve(16);
 
 
-	// Binds the default implementation to the DefaultExecuteRequestImpl method of the subsystem.
-	ExecuteRequestDelegate.BindUFunction(this, "DefaultExecuteRequestImpl");
+	const auto ExecuteRequestImpl = GET_FUNCTION_NAME_CHECKED(UBeamBackend, DefaultExecuteRequestImpl);
+	ExecuteRequestDelegate.BindUFunction(this, ExecuteRequestImpl);
 
 	// Prepares the default retry configuration	
 	DefaultRetryConfig = GetDefault<UBeamCoreSettings>()->FallbackRetryConfiguration;
@@ -78,14 +82,16 @@ void UBeamBackend::Deinitialize()
 template <typename TRequestData>
 void UBeamBackend::StaticCheckForRequestType()
 {
-	static_assert(TIsDerivedFrom<TRequestData, IBeamBaseRequestInterface>::Value, "TRequestData must be a IBeamBaseRequestInterface type.");
+	static_assert(TIsDerivedFrom<TRequestData, IBeamBaseRequestInterface>::Value,
+		"TRequestData must be a IBeamBaseRequestInterface type.");
 	static_assert(TIsDerivedFrom<TRequestData, UObject>::Value, "TRequestData must be a UObject type.");
 }
 
 template <typename TResponseData>
 void UBeamBackend::StaticCheckForResponseType()
 {
-	static_assert(TIsDerivedFrom<TResponseData, IBeamBaseResponseBodyInterface>::Value, "TResponseData must be a IBeamBaseResponseBodyInterface type.");	
+	static_assert(TIsDerivedFrom<TResponseData, IBeamBaseResponseBodyInterface>::Value,
+		"TResponseData must be a IBeamBaseResponseBodyInterface type.");
 	static_assert(TIsDerivedFrom<TResponseData, UObject>::Value, "TResponseData must be a UObject type.");
 }
 
@@ -94,11 +100,15 @@ void UBeamBackend::TryTriggerRequestCompleteDelegates(const int64& RequestId)
 {
 	if (InFlightRequestContexts.Find(RequestId)->BeamStatus == Completed)
 	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Checking OnRequestIdCompleted Delegates | REQUEST_ID=%lld, DELEGATE_COUNT=%d"), RequestId, TickOnRequestIdCompletedDelegates.Num());
+		UE_LOG(LogBeamBackend, Verbose,
+		       TEXT("Checking OnRequestIdCompleted Delegates | REQUEST_ID=%lld, DELEGATE_COUNT=%d"), RequestId,
+		       TickOnRequestIdCompletedDelegates.Num());
 		for (const auto& OnRequestIdCompleted : TickOnRequestIdCompletedDelegates)
 		{
 			const auto bDidRun = OnRequestIdCompleted.ExecuteIfBound(RequestId);
-			UE_LOG(LogBeamBackend, Verbose, TEXT("Tried to invoke OnRequestIdCompleted Delegate | REQUEST_ID=%lld, DID_RUN=%s"), RequestId, bDidRun ? TEXT("true") : TEXT("false"));
+			UE_LOG(LogBeamBackend, Verbose,
+			       TEXT("Tried to invoke OnRequestIdCompleted Delegate | REQUEST_ID=%lld, DID_RUN=%s"), RequestId,
+			       bDidRun ? TEXT("true") : TEXT("false"));
 		}
 
 		// After all request complete delegates have run, we try to clean up request data
@@ -106,7 +116,8 @@ void UBeamBackend::TryTriggerRequestCompleteDelegates(const int64& RequestId)
 	}
 }
 
-void UBeamBackend::UpdateConnectivity(const FBeamRequestContext& RequestContext, const TUnrealRequestStatus RequestStatus, const FRequestType RequestType)
+void UBeamBackend::UpdateConnectivity(const FBeamRequestContext& RequestContext,
+                                      const TUnrealRequestStatus RequestStatus, const FRequestType RequestType)
 {
 	if (RequestStatus == EHttpRequestStatus::Succeeded || RequestStatus == EHttpRequestStatus::Failed)
 	{
@@ -142,7 +153,8 @@ void UBeamBackend::UpdateConnectivity(const FBeamRequestContext& RequestContext,
 
 
 template <class TRequestData>
-TUnrealRequestPtr UBeamBackend::CreateRequest(int64& OutRequestId, const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const TRequestData* RequestData)
+TUnrealRequestPtr UBeamBackend::CreateRequest(int64& OutRequestId, const FBeamRealmHandle& TargetRealm,
+                                              const FBeamRetryConfig& RetryConfig, const TRequestData* RequestData)
 {
 	StaticCheckForRequestType<TRequestData>();
 
@@ -156,7 +168,8 @@ TUnrealRequestPtr UBeamBackend::CreateRequest(int64& OutRequestId, const FBeamRe
 
 	// Keep track of this request and it's data. 
 	InFlightRequestContexts.Add(ReqId, RequestContext);
-	InFlightRequestData.Add(RequestContext, TScriptInterface<IBeamBaseRequestInterface>(const_cast<TRequestData*>(RequestData)));
+	InFlightRequestData.Add(RequestContext,
+	                        TScriptInterface<IBeamBaseRequestInterface>(const_cast<TRequestData*>(RequestData)));
 
 	// Store make sure we have a slot waiting for the response/error value to be added
 	InFlightResponseBodyData.Add(RequestContext, nullptr);
@@ -169,7 +182,9 @@ TUnrealRequestPtr UBeamBackend::CreateRequest(int64& OutRequestId, const FBeamRe
 }
 
 template <typename TRequestData>
-TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64& OutRequestId, const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
+TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64& OutRequestId, const FBeamRealmHandle& TargetRealm,
+                                                           const FBeamRetryConfig& RetryConfig,
+                                                           const FBeamAuthToken& AuthToken,
                                                            const TRequestData* RequestData)
 {
 	StaticCheckForRequestType<TRequestData>();
@@ -189,7 +204,8 @@ TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64& OutRequestId, 
 
 	// Keep track of this request and it's data. 
 	InFlightRequestContexts.Add(ReqId, RequestContext);
-	InFlightRequestData.Add(RequestContext, TScriptInterface<IBeamBaseRequestInterface>(const_cast<TRequestData*>(RequestData)));
+	InFlightRequestData.Add(RequestContext,
+	                        TScriptInterface<IBeamBaseRequestInterface>(const_cast<TRequestData*>(RequestData)));
 
 	// Store make sure we have a slot waiting for the response/error value to be added
 	InFlightResponseBodyData.Add(RequestContext, nullptr);
@@ -225,7 +241,8 @@ void UBeamBackend::DiscardUnsentRequest(const int64& RequestId)
 
 void UBeamBackend::CancelRequest(int64 RequestId)
 {
-	if (!InFlightRequests.Contains(RequestId) || InFlightRequests.FindChecked(RequestId)->GetStatus() == EHttpRequestStatus::NotStarted)
+	if (!InFlightRequests.Contains(RequestId) || InFlightRequests.FindChecked(RequestId)->GetStatus() ==
+		EHttpRequestStatus::NotStarted)
 		DiscardUnsentRequest(RequestId);
 	else if (!InFlightRequestsCancelled.Contains(RequestId))
 		InFlightRequestsCancelled.Add(RequestId);
@@ -263,7 +280,8 @@ void UBeamBackend::PrepareBeamableRequestToRealm(const TUnrealRequestPtr& Reques
 	if (!Pid.AsString.IsEmpty())
 		Request->SetHeader(HEADER_PROJECT_ID, Pid.AsString);
 
-	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Headers: CID=%s PID=%s"), *Request->GetHeader(HEADER_CLIENT_ID), *Request->GetHeader(HEADER_PROJECT_ID));
+	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Headers: CID=%s PID=%s"),
+	       *Request->GetHeader(HEADER_CLIENT_ID), *Request->GetHeader(HEADER_PROJECT_ID));
 }
 
 void UBeamBackend::PrepareBeamableRequestToRealmWithAuthToken(const TUnrealRequestPtr& Request,
@@ -272,17 +290,44 @@ void UBeamBackend::PrepareBeamableRequestToRealmWithAuthToken(const TUnrealReque
 {
 	PrepareBeamableRequestToRealm(Request, RealmHandle);
 
-	const auto AuthTokenHeader = FString::Format(*HEADER_VALUE_AUTHORIZATION, {AuthToken.AccessToken});
-	Request->SetHeader(HEADER_AUTHORIZATION, AuthTokenHeader);
-	const auto ScopeHeader = RealmHandle.Pid.AsString.IsEmpty() ? RealmHandle.Cid.AsString : FString::Format(TEXT("{0}.{1}"), {RealmHandle.Cid.AsString, RealmHandle.Pid.AsString});
-	Request->SetHeader(HEADER_REQUEST_SCOPE, ScopeHeader);
+	if (!IsRunningDedicatedServer())
+	{
+		// For non-dedicated servers, we add an authorization header with the auth token. 
+		const auto AuthTokenHeader = FString::Format(*HEADER_VALUE_AUTHORIZATION, {AuthToken.AccessToken});
+		Request->SetHeader(HEADER_AUTHORIZATION, AuthTokenHeader);
 
-	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Auth: AUTH_HEADER=%s, SCOPE_HEADER=%s"), *AuthTokenHeader, *ScopeHeader);
+		const auto ScopeHeader = RealmHandle.Pid.AsString.IsEmpty()
+			                         ? RealmHandle.Cid.AsString
+			                         : FString::Format(
+				                         TEXT("{0}.{1}"), {RealmHandle.Cid.AsString, RealmHandle.Pid.AsString});
+		Request->SetHeader(HEADER_REQUEST_SCOPE, ScopeHeader);
+
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Auth: AUTH_HEADER=%s, SCOPE_HEADER=%s"),
+		       *AuthTokenHeader, *ScopeHeader);
+	}
+	else
+	{
+		// For dedicated servers, we don't add the Authorization header as we sign the request right before we send it along (see DedicatedServerExecuteRequestImpl)
+		// This will likely change once we have server auth tokens supported in both our backend stacks...
+		// When that happens, signed requests will likely be removed from the UE SDK in favor of these due to the improved perf characteristics of sending requests authorized via tokens.
+		const auto DedicatedServerRealm = GetDefault<UBeamCoreSettings>()->TargetRealm;
+		const auto ScopeHeader = DedicatedServerRealm.Pid.AsString.IsEmpty()
+			                         ? DedicatedServerRealm.Cid.AsString
+			                         : FString::Format(
+				                         TEXT("{0}.{1}"), {
+					                         DedicatedServerRealm.Cid.AsString, DedicatedServerRealm.Pid.AsString
+				                         });
+		Request->SetHeader(HEADER_REQUEST_SCOPE, ScopeHeader);
+		UE_LOG(LogBeamBackend, Display, TEXT("Request Preparation - Target Realm Header: SCOPE_HEADER=%s"),
+		       *ScopeHeader);
+	}
 }
 
 
 template <typename TRequestData>
-void UBeamBackend::PrepareBeamableRequestVerbRouteBody(const TUnrealRequestPtr& Request, const TRequestData* RequestData, const FString& TargetBeamableUrl)
+void UBeamBackend::PrepareBeamableRequestVerbRouteBody(const TUnrealRequestPtr& Request,
+                                                       const TRequestData* RequestData,
+                                                       const FString& TargetBeamableUrl)
 {
 	StaticCheckForRequestType<TRequestData>();
 
@@ -299,19 +344,23 @@ void UBeamBackend::PrepareBeamableRequestVerbRouteBody(const TUnrealRequestPtr& 
 	Request->SetVerb(Verb);
 	Request->SetContentAsString(Body);
 
-	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Verb, Route and Body: VERB=%s ROUTE=%s, BODY=%s"), *Verb, *Route, *Body);
+	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Verb, Route and Body: VERB=%s ROUTE=%s, BODY=%s"),
+	       *Verb, *Route, *Body);
 }
 
 
-template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename TCompleteCallback>
+template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename
+          TCompleteCallback>
 FBeamRequestProcessor UBeamBackend::MakeBlueprintRequestProcessor(const int64& RequestId, TRequestData* RequestData,
-                                                                  TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete,
+                                                                  TSuccessCallback OnSuccess, TErrorCallback OnError,
+                                                                  TCompleteCallback OnComplete,
                                                                   const UObject* CallingContext)
 {
 	StaticCheckForRequestType<TRequestData>();
 	StaticCheckForResponseType<TResponseData>();
 
-	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Processor Preparation: Making Blueprint Un-authenticated Request Processor"));
+	UE_LOG(LogBeamBackend, Verbose,
+	       TEXT("Request Preparation - Processor Preparation: Making Blueprint Un-authenticated Request Processor"));
 
 	FBeamRequestProcessor BoundResponseHandler(
 		// Capture, by-value, the Backend system, request id for this request and request data --- these are plain structs with no allocations.
@@ -322,11 +371,12 @@ FBeamRequestProcessor UBeamBackend::MakeBlueprintRequestProcessor(const int64& R
 		{
 			if (!Response.IsValid())
 			{
-				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"), RequestId);
+				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"),
+				       RequestId);
 				return;
 			}
 			UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld"), RequestId);
-			
+
 			// Get the response contents
 			const auto ResponseCode = Response->GetResponseCode();
 			const auto ContentAsString = Response->GetContentAsString();
@@ -334,9 +384,11 @@ FBeamRequestProcessor UBeamBackend::MakeBlueprintRequestProcessor(const int64& R
 
 			// If it was a success, we try to cache the response.
 			if (ResponseCode == 200)
-				GEngine->GetEngineSubsystem<UBeamResponseCache>()->UpdateResponseCache(RequestData->GetRequestType(), CallingContext, Request, ContentAsString);
+				GEngine->GetEngineSubsystem<UBeamResponseCache>()->UpdateResponseCache(
+					RequestData->GetRequestType(), CallingContext, Request, ContentAsString);
 
-			RunBlueprintRequestProcessor<TRequestData, TResponseData, TSuccessCallback, TErrorCallback, TCompleteCallback>
+			RunBlueprintRequestProcessor<TRequestData, TResponseData, TSuccessCallback, TErrorCallback,
+			                             TCompleteCallback>
 				(ResponseCode, ContentAsString, RequestStatus, RequestId, RequestData, OnSuccess, OnError, OnComplete);
 		});
 
@@ -344,10 +396,13 @@ FBeamRequestProcessor UBeamBackend::MakeBlueprintRequestProcessor(const int64& R
 	return BoundResponseHandler;
 }
 
-template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename TCompleteCallback>
-void UBeamBackend::RunBlueprintRequestProcessor(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus,
+template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename
+          TCompleteCallback>
+void UBeamBackend::RunBlueprintRequestProcessor(const int32& ResponseCode, const FString& ContentAsString,
+                                                const TUnrealRequestStatus RequestStatus,
                                                 const int64& RequestId, TRequestData* RequestData,
-                                                TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete)
+                                                TSuccessCallback OnSuccess, TErrorCallback OnError,
+                                                TCompleteCallback OnComplete)
 {
 	ProcessBlueprintRequest<TRequestData, TResponseData, TSuccessCallback, TErrorCallback, TCompleteCallback>
 		(ResponseCode, ContentAsString, RequestStatus, RequestId, RequestData, OnSuccess, OnError, OnComplete);
@@ -357,10 +412,13 @@ void UBeamBackend::RunBlueprintRequestProcessor(const int32& ResponseCode, const
 }
 
 
-template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename TCompleteCallback>
-void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus,
+template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename
+          TCompleteCallback>
+void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FString& ContentAsString,
+                                           const TUnrealRequestStatus RequestStatus,
                                            const int64& RequestId, TRequestData* RequestData,
-                                           TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete)
+                                           TSuccessCallback OnSuccess, TErrorCallback OnError,
+                                           TCompleteCallback OnComplete)
 {
 	StaticCheckForRequestType<TRequestData>();
 	StaticCheckForResponseType<TResponseData>();
@@ -373,13 +431,15 @@ void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FStr
 	// If the request was cancelled, we'll only run the OnComplete call 
 	if (InFlightRequestsCancelled.Contains(RequestId))
 	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Ignoring Request Response since it was cancelled. REQUEST_ID=%lld"), RequestId);
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Ignoring Request Response since it was cancelled. REQUEST_ID=%lld"),
+		       RequestId);
 
 		// Execute the handler if it's bound.
 		const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(*Context, RequestData);
 		if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 		{
-			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, NUM_FAILURES=%d"), RequestId, InFlightFailureCount.FindRef(RequestId));
+			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, NUM_FAILURES=%d"),
+			       RequestId, InFlightFailureCount.FindRef(RequestId));
 		}
 
 		// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
@@ -415,7 +475,10 @@ void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FStr
 		// We only log the response if no callsite is given or if we are configured to always run it.
 		if (AlwaysLogSuccessResponses || !ExecutedCallsiteHandler)
 		{
-			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Successfull | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"), RequestId, ResponseCode, CurrFailedCount,
+			UE_LOG(LogBeamBackend, Display,
+			       TEXT(
+				       "Beamable Request Successfull | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
+			       ), RequestId, ResponseCode, CurrFailedCount,
 			       *ContentAsString);
 		}
 	}
@@ -426,7 +489,8 @@ void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FStr
 		FJsonObjectConverter::JsonObjectStringToUStruct(*ContentAsString, &ErrorData);
 
 		// Now that we know we had an error, compute whether or not we should retry.
-		bWillRetry &= RetryConfig.HttpResponseCodes.Contains(ResponseCode) || RetryConfig.CustomErrorCodes.Contains(ErrorData.error);
+		bWillRetry &= RetryConfig.HttpResponseCodes.Contains(ResponseCode) || RetryConfig.CustomErrorCodes.Contains(
+			ErrorData.error);
 
 		// Store it so wait handles can grab at it later
 		InFlightResponseErrorData[*Context] = ErrorData;
@@ -451,7 +515,8 @@ void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FStr
 
 		// We fallback to global handler only if we didn't run the callsite one OR if we are configured to always run it.
 		bool bExecutedGlobalHandler = false;
-		if (AlwaysRunGlobalHandlers || !ExecutedCallsiteHandler && (GlobalRequestErrorHandler.IsBound() || GlobalRequestErrorCodeHandler.IsBound()))
+		if (AlwaysRunGlobalHandlers || !ExecutedCallsiteHandler && (GlobalRequestErrorHandler.IsBound() ||
+			GlobalRequestErrorCodeHandler.IsBound()))
 		{
 			GlobalRequestErrorHandler.Broadcast(*Context, ErrorData);
 			const auto _ = GlobalRequestErrorCodeHandler.ExecuteIfBound(*Context, ErrorData);
@@ -462,7 +527,10 @@ void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FStr
 		// We log the error only if neither callback was set OR if we are configured to do so.
 		if (AlwaysLogErrorResponses || !bExecutedGlobalHandler && !ExecutedCallsiteHandler)
 		{
-			UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"), RequestId, ResponseCode,
+			UE_LOG(LogBeamBackend, Error,
+			       TEXT(
+				       "Beamable Request Failed | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"
+			       ), RequestId, ResponseCode,
 			       CurrFailedCount,
 			       bWillRetry ? TEXT("true") : TEXT("false"), *ContentAsString);
 		}
@@ -478,7 +546,10 @@ void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FStr
 		const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(*Context, RequestData);
 		if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 		{
-			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Completed | REQUEST_ID=%lld, RESPONSE_CODE=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
+			UE_LOG(LogBeamBackend, Display,
+			       TEXT(
+				       "Beamable Request Completed | REQUEST_ID=%lld, RESPONSE_CODE=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d"
+			       ),
 			       RequestId, ResponseCode, bWasSuccess ? TEXT("true") : TEXT("false"), CurrFailedCount);
 		}
 
@@ -488,15 +559,18 @@ void UBeamBackend::ProcessBlueprintRequest(const int32& ResponseCode, const FStr
 }
 
 
-template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename TCompleteCallback>
-FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestProcessor(const int64& RequestId, const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken,
-                                                                               TRequestData* RequestData, TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete,
-                                                                               const UObject* CallingContext)
+template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename
+          TCompleteCallback>
+FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestProcessor(
+	const int64& RequestId, const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken,
+	TRequestData* RequestData, TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete,
+	const UObject* CallingContext)
 {
 	StaticCheckForRequestType<TRequestData>();
 	StaticCheckForResponseType<TResponseData>();
 
-	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Processor Preparation: Making Blueprint Authenticated Request Processor"));
+	UE_LOG(LogBeamBackend, Verbose,
+	       TEXT("Request Preparation - Processor Preparation: Making Blueprint Authenticated Request Processor"));
 
 	FBeamRequestProcessor BoundResponseHandler(
 		// Capture, by-value, the Backend system, request id for this request and request data --- these are plain structs with no allocations.
@@ -507,7 +581,8 @@ FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestProcessor(c
 		{
 			if (!Response.IsValid())
 			{
-				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"), RequestId);
+				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"),
+				       RequestId);
 				return;
 			}
 			UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld"), RequestId);
@@ -519,32 +594,46 @@ FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestProcessor(c
 
 			// If it was a success, we try to cache the response.
 			if (ResponseCode == 200)
-				GEngine->GetEngineSubsystem<UBeamResponseCache>()->UpdateResponseCache(RequestData->GetRequestType(), CallingContext, Request, ContentAsString);
+				GEngine->GetEngineSubsystem<UBeamResponseCache>()->UpdateResponseCache(
+					RequestData->GetRequestType(), CallingContext, Request, ContentAsString);
 
-			RunAuthenticatedBlueprintRequestProcessor<TRequestData, TResponseData, TSuccessCallback, TErrorCallback, TCompleteCallback>
-				(ResponseCode, ContentAsString, RequestStatus, RequestId, RealmHandle, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+			RunAuthenticatedBlueprintRequestProcessor<
+				TRequestData, TResponseData, TSuccessCallback, TErrorCallback, TCompleteCallback>
+			(ResponseCode, ContentAsString, RequestStatus, RequestId, RealmHandle, AuthToken, RequestData,
+			 OnSuccess, OnError, OnComplete);
 		});
 
 	// We return the build processor function so the API request function can bind it to UnrealHttpRequest's response handler delegate.
 	return BoundResponseHandler;
 }
 
-template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename TCompleteCallback>
-void UBeamBackend::RunAuthenticatedBlueprintRequestProcessor(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus,
-                                                             const int64& RequestId, const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken,
-                                                             TRequestData* RequestData, TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete)
+template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename
+          TCompleteCallback>
+void UBeamBackend::RunAuthenticatedBlueprintRequestProcessor(const int32& ResponseCode, const FString& ContentAsString,
+                                                             const TUnrealRequestStatus RequestStatus,
+                                                             const int64& RequestId,
+                                                             const FBeamRealmHandle& RealmHandle,
+                                                             const FBeamAuthToken& AuthToken,
+                                                             TRequestData* RequestData, TSuccessCallback OnSuccess,
+                                                             TErrorCallback OnError, TCompleteCallback OnComplete)
 {
-	ProcessAuthenticatedBlueprintRequest<TRequestData, TResponseData, TSuccessCallback, TErrorCallback, TCompleteCallback>
-		(ResponseCode, ContentAsString, RequestStatus, RequestId, RealmHandle, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+	ProcessAuthenticatedBlueprintRequest<TRequestData, TResponseData, TSuccessCallback, TErrorCallback,
+	                                     TCompleteCallback>
+	(ResponseCode, ContentAsString, RequestStatus, RequestId, RealmHandle, AuthToken, RequestData, OnSuccess,
+	 OnError, OnComplete);
 
 	// Run any registered callback for handling Request completion.
 	TryTriggerRequestCompleteDelegates(RequestId);
 }
 
-template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename TCompleteCallback>
-void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus,
-                                                        const int64& RequestId, const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken,
-                                                        TRequestData* RequestData, TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete)
+template <typename TRequestData, typename TResponseData, typename TSuccessCallback, typename TErrorCallback, typename
+          TCompleteCallback>
+void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCode, const FString& ContentAsString,
+                                                        const TUnrealRequestStatus RequestStatus,
+                                                        const int64& RequestId, const FBeamRealmHandle& RealmHandle,
+                                                        const FBeamAuthToken& AuthToken,
+                                                        TRequestData* RequestData, TSuccessCallback OnSuccess,
+                                                        TErrorCallback OnError, TCompleteCallback OnComplete)
 {
 	StaticCheckForRequestType<TRequestData>();
 	StaticCheckForResponseType<TResponseData>();
@@ -552,7 +641,8 @@ void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCod
 	// Get any UserSlot that matches this Pid/Auth Token, if any		
 	FBeamRealmUser User;
 	FUserSlot UserSlot;
-	const auto bWasMadeWithUserSlot = BeamUserSlots->GetUserDataWithRefreshTokenAndPid(AuthToken.RefreshToken, RealmHandle.Pid, User, UserSlot);
+	const auto bWasMadeWithUserSlot = BeamUserSlots->GetUserDataWithRefreshTokenAndPid(
+		AuthToken.RefreshToken, RealmHandle.Pid, User, UserSlot);
 
 	// Create the context to pass into the callbacks	
 	auto Context = InFlightRequestContexts.Find(RequestId);
@@ -562,14 +652,17 @@ void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCod
 	// If the request was cancelled, we'll only run the OnComplete call 
 	if (InFlightRequestsCancelled.Contains(RequestId))
 	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Ignoring Request Response since it was cancelled. REQUEST_ID=%lld"), RequestId);
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Ignoring Request Response since it was cancelled. REQUEST_ID=%lld"),
+		       RequestId);
 
 		// Execute the handler if it's bound.		
 		const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(*Context, RequestData);
 		if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 		{
-			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, USER_SLOT=%s, NUM_FAILURES=%d"),
-			       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : *FString(TEXT("Made Without UserSlot")), InFlightFailureCount.FindRef(RequestId));
+			UE_LOG(LogBeamBackend, Display,
+			       TEXT("Beamable Request Canceled | REQUEST_ID=%lld, USER_SLOT=%s, NUM_FAILURES=%d"),
+			       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : *FString(TEXT("Made Without UserSlot")),
+			       InFlightFailureCount.FindRef(RequestId));
 		}
 
 		// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
@@ -606,8 +699,12 @@ void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCod
 		// We only log the response if no callsite is given or if we are configured to always run it.
 		if (AlwaysLogSuccessResponses || !ExecutedCallsiteHandler)
 		{
-			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Successfull | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"),
-			       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : TEXT("Made Without UserSlot"), ResponseCode, CurrFailedCount, *ContentAsString);
+			UE_LOG(LogBeamBackend, Display,
+			       TEXT(
+				       "Beamable Request Successfull | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
+			       ),
+			       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : TEXT("Made Without UserSlot"), ResponseCode,
+			       CurrFailedCount, *ContentAsString);
 		}
 	}
 	else
@@ -621,7 +718,8 @@ void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCod
 
 		// Now that we know we had an error, compute whether or not we should retry.		
 		bWillReAuth &= AUTH_ERROR_CODE_RETRY_ALLOWED.Contains(ErrorData.error);
-		bWillRetry &= RetryConfig.HttpResponseCodes.Contains(ResponseCode) || RetryConfig.CustomErrorCodes.Contains(ErrorData.error);
+		bWillRetry &= RetryConfig.HttpResponseCodes.Contains(ResponseCode) || RetryConfig.CustomErrorCodes.Contains(
+			ErrorData.error);
 		// We always enqueue for retry if we need the re-auth, even if we are "out of retries". That's because Re-Auth retries don't count towards the retry limit.
 		bWillRetry |= bWillReAuth;
 
@@ -651,7 +749,8 @@ void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCod
 
 			// We fallback to global handler only if we didn't run the callsite one OR if we are configured to always run it.
 			bool bExecutedGlobalHandler = false;
-			if (AlwaysRunGlobalHandlers || !ExecutedCallsiteHandler && (GlobalRequestErrorHandler.IsBound() || GlobalRequestErrorCodeHandler.IsBound()))
+			if (AlwaysRunGlobalHandlers || !ExecutedCallsiteHandler && (GlobalRequestErrorHandler.IsBound() ||
+				GlobalRequestErrorCodeHandler.IsBound()))
 			{
 				GlobalRequestErrorHandler.Broadcast(*Context, ErrorData);
 				const auto _ = GlobalRequestErrorCodeHandler.ExecuteIfBound(*Context, ErrorData);
@@ -662,8 +761,12 @@ void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCod
 			// We log the error only if neither callback was set OR if we are configured to do so.
 			if (AlwaysLogErrorResponses || !bExecutedGlobalHandler && !ExecutedCallsiteHandler)
 			{
-				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"),
-				       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : TEXT("Made Without UserSlot"), ResponseCode, CurrFailedCount, bWillRetry ? TEXT("true") : TEXT("false"),
+				UE_LOG(LogBeamBackend, Error,
+				       TEXT(
+					       "Beamable Request Failed | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"
+				       ),
+				       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : TEXT("Made Without UserSlot"), ResponseCode,
+				       CurrFailedCount, bWillRetry ? TEXT("true") : TEXT("false"),
 				       *ContentAsString);
 			}
 		}
@@ -679,8 +782,12 @@ void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCod
 		const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(*Context, RequestData);
 		if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 		{
-			UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Completed | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
-			       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : TEXT("Made Without UserSlot"), ResponseCode, bWasSuccess ? TEXT("true") : TEXT("false"), CurrFailedCount);
+			UE_LOG(LogBeamBackend, Display,
+			       TEXT(
+				       "Beamable Request Completed | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d"
+			       ),
+			       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : TEXT("Made Without UserSlot"), ResponseCode,
+			       bWasSuccess ? TEXT("true") : TEXT("false"), CurrFailedCount);
 		}
 
 		// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
@@ -690,12 +797,14 @@ void UBeamBackend::ProcessAuthenticatedBlueprintRequest(const int32& ResponseCod
 
 template <typename TRequestData, typename TResponseData>
 FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64& RequestId, TRequestData* RequestData,
-                                                             TBeamFullResponseHandler<TRequestData*, TResponseData*> ResponseHandler, const UObject* CallingContext)
+                                                             TBeamFullResponseHandler<TRequestData*, TResponseData*>
+                                                             ResponseHandler, const UObject* CallingContext)
 {
 	StaticCheckForRequestType<TRequestData>();
 	StaticCheckForResponseType<TResponseData>();
 
-	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Processor Preparation: Making Code Un-authenticated Request Processor"));
+	UE_LOG(LogBeamBackend, Verbose,
+	       TEXT("Request Preparation - Processor Preparation: Making Code Un-authenticated Request Processor"));
 
 	// Get the handlers 
 	auto OutProcessor = FBeamRequestProcessor(
@@ -706,20 +815,23 @@ FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64& Reques
 		{
 			if (!Response.IsValid())
 			{
-				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"), RequestId);
+				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"),
+				       RequestId);
 				return;
 			}
 			UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld"), RequestId);
-			
+
 			const auto ResponseCode = Response->GetResponseCode();
 			const auto ContentAsString = Response->GetContentAsString();
 			const auto RequestStatus = Request->GetStatus();
 
 			// If it was a success, we try to cache the response.
 			if (ResponseCode == 200)
-				GEngine->GetEngineSubsystem<UBeamResponseCache>()->UpdateResponseCache(RequestData->GetRequestType(), CallingContext, Request, ContentAsString);
+				GEngine->GetEngineSubsystem<UBeamResponseCache>()->UpdateResponseCache(
+					RequestData->GetRequestType(), CallingContext, Request, ContentAsString);
 
-			RunCodeRequestProcessor<TRequestData, TResponseData>(ResponseCode, ContentAsString, RequestStatus, RequestId, RequestData, ResponseHandler);
+			RunCodeRequestProcessor<TRequestData, TResponseData>(ResponseCode, ContentAsString, RequestStatus,
+			                                                     RequestId, RequestData, ResponseHandler);
 		});
 
 	// We return the build processor function so the API request function can bind it to UnrealHttpRequest's response handler delegate.
@@ -727,18 +839,23 @@ FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64& Reques
 }
 
 template <typename TRequestData, typename TResponseData>
-void UBeamBackend::RunCodeRequestProcessor(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus,
-                                           const int64& RequestId, TRequestData* RequestData, TBeamFullResponseHandler<TRequestData*, TResponseData*> ResponseHandler)
+void UBeamBackend::RunCodeRequestProcessor(const int32& ResponseCode, const FString& ContentAsString,
+                                           const TUnrealRequestStatus RequestStatus,
+                                           const int64& RequestId, TRequestData* RequestData,
+                                           TBeamFullResponseHandler<TRequestData*, TResponseData*> ResponseHandler)
 {
-	ProcessCodeRequest<TRequestData, TResponseData>(ResponseCode, ContentAsString, RequestStatus, RequestId, RequestData, ResponseHandler);
+	ProcessCodeRequest<TRequestData, TResponseData>(ResponseCode, ContentAsString, RequestStatus, RequestId,
+	                                                RequestData, ResponseHandler);
 
 	// Run any registered callback for handling Request completion.
 	TryTriggerRequestCompleteDelegates(RequestId);
 }
 
 template <typename TRequestData, typename TResponseData>
-void UBeamBackend::ProcessCodeRequest(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus,
-                                      const int64& RequestId, TRequestData* RequestData, TBeamFullResponseHandler<TRequestData*, TResponseData*> ResponseHandler)
+void UBeamBackend::ProcessCodeRequest(const int32& ResponseCode, const FString& ContentAsString,
+                                      const TUnrealRequestStatus RequestStatus,
+                                      const int64& RequestId, TRequestData* RequestData,
+                                      TBeamFullResponseHandler<TRequestData*, TResponseData*> ResponseHandler)
 {
 	StaticCheckForRequestType<TRequestData>();
 	StaticCheckForResponseType<TResponseData>();
@@ -770,12 +887,13 @@ void UBeamBackend::ProcessCodeRequest(const int32& ResponseCode, const FString& 
 	// Get retry stuff
 	const auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
 	const auto RetryConfig = Context->RetryConfiguration;
-	const auto bShouldRetryIfFail = !bIsCancelled && RetryConfig.RetryMaxAttempt == -1 || RetryConfig.RetryMaxAttempt > CurrFailedCount;
+	const auto bShouldRetryIfFail = !bIsCancelled && RetryConfig.RetryMaxAttempt == -1 || RetryConfig.RetryMaxAttempt >
+		CurrFailedCount;
 
 
 	// Stores which attempt we are in
 	FullResponse.AttemptNumber = CurrFailedCount;
-		
+
 	// If it was an error, we'll compute this based on the error data.
 	bool bWillRetry = ResponseCode != 200 && bShouldRetryIfFail;
 	// Parse the appropriate response body...
@@ -794,7 +912,8 @@ void UBeamBackend::ProcessCodeRequest(const int32& ResponseCode, const FString& 
 		FJsonObjectConverter::JsonObjectStringToUStruct(*ContentAsString, &FullResponse.ErrorData);
 
 		// Now that we know we had an error, compute whether or not we should retry.
-		bWillRetry &= RetryConfig.HttpResponseCodes.Contains(ResponseCode) || RetryConfig.CustomErrorCodes.Contains(FullResponse.ErrorData.error);
+		bWillRetry &= RetryConfig.HttpResponseCodes.Contains(ResponseCode) || RetryConfig.CustomErrorCodes.Contains(
+			FullResponse.ErrorData.error);
 
 		// Store it so wait handles can grab at it later
 		InFlightResponseErrorData[*Context] = FullResponse.ErrorData;
@@ -835,8 +954,12 @@ void UBeamBackend::ProcessCodeRequest(const int32& ResponseCode, const FString& 
 		// We log if we are configured to do so or as a fallback if no handler is configured
 		if (AlwaysLogErrorResponses || (!bExecutedCallsiteHandler && !bRanGlobalHandlers))
 		{
-			UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed - Retrying | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"),
-			       RequestId, ResponseCode, CurrFailedCount, bWillRetry ? TEXT("true") : TEXT("false"), *ContentAsString);
+			UE_LOG(LogBeamBackend, Error,
+			       TEXT(
+				       "Beamable Request Failed - Retrying | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"
+			       ),
+			       RequestId, ResponseCode, CurrFailedCount, bWillRetry ? TEXT("true") : TEXT("false"),
+			       *ContentAsString);
 		}
 	}
 	// Only run the clean up and callbacks after we are done retrying.
@@ -850,26 +973,34 @@ void UBeamBackend::ProcessCodeRequest(const int32& ResponseCode, const FString& 
 			// We only log the response for code if we are configured to always run it.
 			if (AlwaysLogSuccessResponses && FullResponse.State == Success)
 			{
-				UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Successfull | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"),
+				UE_LOG(LogBeamBackend, Display,
+				       TEXT(
+					       "Beamable Request Successfull | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
+				       ),
 				       RequestId, ResponseCode, CurrFailedCount, *ContentAsString);
 			}
 
 			// We log the error only if neither callback was set OR if we are configured to do so.
 			if (AlwaysLogErrorResponses && FullResponse.State == Error)
 			{
-				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"),
+				UE_LOG(LogBeamBackend, Error,
+				       TEXT(
+					       "Beamable Request Failed | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
+				       ),
 				       RequestId, ResponseCode, CurrFailedCount, *ContentAsString);
 			}
 
 			const auto bWasSuccess = FullResponse.State == Success;
 			if (FullResponse.State == Cancelled)
 			{
-				UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
+				UE_LOG(LogBeamBackend, Display,
+				       TEXT("Beamable Request Canceled | REQUEST_ID=%lld, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
 				       RequestId, bWasSuccess ? TEXT("true") : TEXT("false"), InFlightFailureCount.FindRef(RequestId));
 			}
 			else
 			{
-				UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Completed | REQUEST_ID=%lld, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
+				UE_LOG(LogBeamBackend, Display,
+				       TEXT("Beamable Request Completed | REQUEST_ID=%lld, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
 				       RequestId, bWasSuccess ? TEXT("true") : TEXT("false"), InFlightFailureCount.FindRef(RequestId));
 			}
 		}
@@ -881,14 +1012,16 @@ void UBeamBackend::ProcessCodeRequest(const int32& ResponseCode, const FString& 
 
 
 template <typename TRequestData, typename TResponseData>
-FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(const int64& RequestId, const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken,
-                                                                          TRequestData* RequestData, TBeamFullResponseHandler<TRequestData*, TResponseData*> ResponseHandler,
-                                                                          const UObject* CallingContext)
+FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(
+	const int64& RequestId, const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken,
+	TRequestData* RequestData, TBeamFullResponseHandler<TRequestData*, TResponseData*> ResponseHandler,
+	const UObject* CallingContext)
 {
 	StaticCheckForRequestType<TRequestData>();
 	StaticCheckForResponseType<TResponseData>();
 
-	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Processor Preparation: Making Code Authenticated Request Processor"));
+	UE_LOG(LogBeamBackend, Verbose,
+	       TEXT("Request Preparation - Processor Preparation: Making Code Authenticated Request Processor"));
 
 	// Get the handlers 
 	auto OutProcessor = FBeamRequestProcessor(
@@ -899,20 +1032,24 @@ FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(const 
 		{
 			if (!Response.IsValid())
 			{
-				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"), RequestId);
+				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"),
+				       RequestId);
 				return;
 			}
 			UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld"), RequestId);
-			
+
 			const auto ResponseCode = Response->GetResponseCode();
 			const auto ContentAsString = Response->GetContentAsString();
 			const auto RequestStatus = Request->GetStatus();
 
 			// If it was a success, we try to cache the response.
 			if (ResponseCode == 200)
-				GEngine->GetEngineSubsystem<UBeamResponseCache>()->UpdateResponseCache(RequestData->GetRequestType(), CallingContext, Request, ContentAsString);
+				GEngine->GetEngineSubsystem<UBeamResponseCache>()->UpdateResponseCache(
+					RequestData->GetRequestType(), CallingContext, Request, ContentAsString);
 
-			RunAuthenticatedCodeRequestProcessor<TRequestData, TResponseData>(ResponseCode, ContentAsString, RequestStatus, RequestId, RealmHandle, AuthToken, RequestData, ResponseHandler);
+			RunAuthenticatedCodeRequestProcessor<TRequestData, TResponseData>(
+				ResponseCode, ContentAsString, RequestStatus, RequestId, RealmHandle, AuthToken, RequestData,
+				ResponseHandler);
 		});
 
 	// We return the build processor function so the API request function can bind it to UnrealHttpRequest's response handler delegate. 
@@ -920,20 +1057,28 @@ FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(const 
 }
 
 template <typename TRequestData, typename TResponseData>
-void UBeamBackend::RunAuthenticatedCodeRequestProcessor(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus,
-                                                        const int64& RequestId, const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken, TRequestData* RequestData,
-                                                        const TBeamFullResponseHandler<TRequestData*, TResponseData*>& ResponseHandler)
+void UBeamBackend::RunAuthenticatedCodeRequestProcessor(const int32& ResponseCode, const FString& ContentAsString,
+                                                        const TUnrealRequestStatus RequestStatus,
+                                                        const int64& RequestId, const FBeamRealmHandle& RealmHandle,
+                                                        const FBeamAuthToken& AuthToken, TRequestData* RequestData,
+                                                        const TBeamFullResponseHandler<TRequestData*, TResponseData*>&
+                                                        ResponseHandler)
 {
-	ProcessAuthenticatedCodeRequest<TRequestData, TResponseData>(ResponseCode, ContentAsString, RequestStatus, RequestId, RealmHandle, AuthToken, RequestData, ResponseHandler);
+	ProcessAuthenticatedCodeRequest<TRequestData, TResponseData>(ResponseCode, ContentAsString, RequestStatus,
+	                                                             RequestId, RealmHandle, AuthToken, RequestData,
+	                                                             ResponseHandler);
 
 	// Run any registered callback for handling Request completion.
 	TryTriggerRequestCompleteDelegates(RequestId);
 }
 
 template <typename TRequestData, typename TResponseData>
-void UBeamBackend::ProcessAuthenticatedCodeRequest(const int32& ResponseCode, const FString& ContentAsString, const TUnrealRequestStatus RequestStatus,
-                                                   const int64& RequestId, const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken, TRequestData* RequestData,
-                                                   const TBeamFullResponseHandler<TRequestData*, TResponseData*>& ResponseHandler)
+void UBeamBackend::ProcessAuthenticatedCodeRequest(const int32& ResponseCode, const FString& ContentAsString,
+                                                   const TUnrealRequestStatus RequestStatus,
+                                                   const int64& RequestId, const FBeamRealmHandle& RealmHandle,
+                                                   const FBeamAuthToken& AuthToken, TRequestData* RequestData,
+                                                   const TBeamFullResponseHandler<TRequestData*, TResponseData*>&
+                                                   ResponseHandler)
 {
 	StaticCheckForRequestType<TRequestData>();
 	StaticCheckForResponseType<TResponseData>();
@@ -941,7 +1086,8 @@ void UBeamBackend::ProcessAuthenticatedCodeRequest(const int32& ResponseCode, co
 	// Get any UserSlot that matches this Pid/Auth Token, if any
 	FBeamRealmUser User;
 	FUserSlot UserSlot;
-	const auto bWasMadeWithUserSlot = BeamUserSlots->GetUserDataWithRefreshTokenAndPid(AuthToken.RefreshToken, RealmHandle.Pid, User, UserSlot);
+	const auto bWasMadeWithUserSlot = BeamUserSlots->GetUserDataWithRefreshTokenAndPid(
+		AuthToken.RefreshToken, RealmHandle.Pid, User, UserSlot);
 	const auto UserSlotLog = bWasMadeWithUserSlot ? UserSlot.Name : TEXT("Made Without UserSlot");
 
 	// Get retry stuff	
@@ -965,7 +1111,8 @@ void UBeamBackend::ProcessAuthenticatedCodeRequest(const int32& ResponseCode, co
 
 	const auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
 	const auto RetryConfig = Context->RetryConfiguration;
-	const auto bShouldRetryIfFail = !bIsCancelled && RetryConfig.RetryMaxAttempt == -1 || RetryConfig.RetryMaxAttempt > CurrFailedCount;
+	const auto bShouldRetryIfFail = !bIsCancelled && RetryConfig.RetryMaxAttempt == -1 || RetryConfig.RetryMaxAttempt >
+		CurrFailedCount;
 
 
 	// Stores which attempt we are in
@@ -982,7 +1129,7 @@ void UBeamBackend::ProcessAuthenticatedCodeRequest(const int32& ResponseCode, co
 		FullResponse.SuccessData->DeserializeRequestResponse(RequestData, ContentAsString);
 
 		// Store it so wait handles can grab at it later
-		InFlightResponseBodyData[*Context] = FullResponse.SuccessData;		
+		InFlightResponseBodyData[*Context] = FullResponse.SuccessData;
 	}
 	else if (FullResponse.State == Error)
 	{
@@ -991,7 +1138,8 @@ void UBeamBackend::ProcessAuthenticatedCodeRequest(const int32& ResponseCode, co
 
 		// Now that we know we had an error, compute whether or not we should retry.
 		bWillReAuth &= AUTH_ERROR_CODE_RETRY_ALLOWED.Contains(FullResponse.ErrorData.error);
-		bWillRetry &= RetryConfig.HttpResponseCodes.Contains(ResponseCode) || RetryConfig.CustomErrorCodes.Contains(FullResponse.ErrorData.error);
+		bWillRetry &= RetryConfig.HttpResponseCodes.Contains(ResponseCode) || RetryConfig.CustomErrorCodes.Contains(
+			FullResponse.ErrorData.error);
 		// We always enqueue for retry if we need the re-auth, even if we are "out of retries". That's because Re-Auth retries don't count towards the retry limit.
 		bWillRetry |= bWillReAuth;
 
@@ -1035,15 +1183,20 @@ void UBeamBackend::ProcessAuthenticatedCodeRequest(const int32& ResponseCode, co
 			if (AlwaysRunGlobalHandlers || !bExecutedCallsiteHandler)
 			{
 				GlobalRequestErrorHandler.Broadcast(FullResponse.Context, FullResponse.ErrorData);
-				const auto _ = GlobalRequestErrorCodeHandler.ExecuteIfBound(FullResponse.Context, FullResponse.ErrorData);
+				const auto _ = GlobalRequestErrorCodeHandler.ExecuteIfBound(
+					FullResponse.Context, FullResponse.ErrorData);
 				bRanGlobalHandlers = true;
 			}
 
 			// We log if we are configured to do so or as a fallback if no handler is configured
 			if (AlwaysLogErrorResponses || (!bExecutedCallsiteHandler && !bRanGlobalHandlers))
 			{
-				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed - Retrying | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"),
-				       RequestId, *UserSlotLog, ResponseCode, CurrFailedCount, bWillRetry ? TEXT("true") : TEXT("false"),
+				UE_LOG(LogBeamBackend, Error,
+				       TEXT(
+					       "Beamable Request Failed - Retrying | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"
+				       ),
+				       RequestId, *UserSlotLog, ResponseCode, CurrFailedCount,
+				       bWillRetry ? TEXT("true") : TEXT("false"),
 				       *ContentAsString);
 			}
 		}
@@ -1060,27 +1213,41 @@ void UBeamBackend::ProcessAuthenticatedCodeRequest(const int32& ResponseCode, co
 			// We only log the response for code if we are configured to always run it.
 			if (AlwaysLogSuccessResponses && FullResponse.State == Success)
 			{
-				UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Successfull | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"),
+				UE_LOG(LogBeamBackend, Display,
+				       TEXT(
+					       "Beamable Request Successfull | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
+				       ),
 				       RequestId, *UserSlotLog, ResponseCode, CurrFailedCount, *ContentAsString);
 			}
 
 			// We log the error only if neither callback was set OR if we are configured to do so.
 			if (AlwaysLogErrorResponses && FullResponse.State == Error)
 			{
-				UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"),
-				       RequestId, *UserSlotLog, ResponseCode, CurrFailedCount, bWillRetry ? TEXT("true") : TEXT("false"), *ContentAsString);
+				UE_LOG(LogBeamBackend, Error,
+				       TEXT(
+					       "Beamable Request Failed | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"
+				       ),
+				       RequestId, *UserSlotLog, ResponseCode, CurrFailedCount,
+				       bWillRetry ? TEXT("true") : TEXT("false"), *ContentAsString);
 			}
 
 			const auto bWasSuccess = FullResponse.State == Success;
 			if (FullResponse.State == Cancelled)
 			{
-				UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
-				       RequestId, *UserSlotLog, bWasSuccess ? TEXT("true") : TEXT("false"), InFlightFailureCount.FindRef(RequestId));
+				UE_LOG(LogBeamBackend, Display,
+				       TEXT("Beamable Request Canceled | REQUEST_ID=%lld, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"
+				       ),
+				       RequestId, *UserSlotLog, bWasSuccess ? TEXT("true") : TEXT("false"),
+				       InFlightFailureCount.FindRef(RequestId));
 			}
 			else
 			{
-				UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Completed | REQUEST_ID=%lld, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
-				       RequestId, *UserSlotLog, bWasSuccess ? TEXT("true") : TEXT("false"), InFlightFailureCount.FindRef(RequestId));
+				UE_LOG(LogBeamBackend, Display,
+				       TEXT(
+					       "Beamable Request Completed | REQUEST_ID=%lld, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"
+				       ),
+				       RequestId, *UserSlotLog, bWasSuccess ? TEXT("true") : TEXT("false"),
+				       InFlightFailureCount.FindRef(RequestId));
 			}
 		}
 
@@ -1091,8 +1258,54 @@ void UBeamBackend::ProcessAuthenticatedCodeRequest(const int32& ResponseCode, co
 
 void UBeamBackend::DefaultExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity)
 {
-	UE_LOG(LogBeamBackend, Verbose, TEXT("Sending Request via Unreal HttpRequest's ProcessRequest. REQUEST_ID=%llu"), ActiveRequestId);
+	UE_LOG(LogBeamBackend, Display, TEXT("Sending Request via Unreal HttpRequest's ProcessRequest. REQUEST_ID=%llu"),
+	       ActiveRequestId);
 	if (InFlightRequests[ActiveRequestId]->ProcessRequest())
+	{
+		auto Context = InFlightRequestContexts.FindRef(ActiveRequestId);
+		Context.BeamStatus = InFlight;
+		InFlightRequestContexts[ActiveRequestId] = Context;
+	}
+}
+
+void UBeamBackend::DedicatedServerExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity)
+{
+	UE_LOG(LogBeamBackend, Verbose,
+	       TEXT("Sending Signed Request via Unreal HttpRequest's ProcessRequest . REQUEST_ID=%llu"), ActiveRequestId);
+
+	const auto HttpRequest = InFlightRequests[ActiveRequestId];
+
+	// Build and set the signature prior to sending the request along.
+	const auto Version = TEXT("1");
+	const auto Pid = GetDefault<UBeamCoreSettings>()->TargetRealm.Pid.AsString;
+	const auto Secret = RealmSecret;
+	// A full URL looks like this: https://dev.api.beamable.com/object/stats/game.public.player.1595037680985091/
+	// We are just getting the route (minus the domain) by finding the first forward slash after the '.' character.	
+	const auto FullUrl = HttpRequest->GetURL();
+	const auto Url = FullUrl.RightChop(FullUrl.Find(TEXT("/"),
+	                                                ESearchCase::IgnoreCase, ESearchDir::FromStart,
+	                                                FullUrl.Find(TEXT(".")) - 1)
+	);
+	const auto Body = FString(UTF8_TO_TCHAR(HttpRequest->GetContent().GetData()));
+
+	// Create an MD5 Hash of the UTF-8 representation of this string. 
+	const auto SigPartsUTF16 = Secret + Pid + Version + Url + Body;
+	const auto SigParts = TStringConversion<FTCHARToUTF8_Convert>(*SigPartsUTF16);	
+	uint8 Digest[16];
+	FMD5 Md5Gen;
+	Md5Gen.Update(reinterpret_cast<const unsigned char*>(SigParts.Get()), SigParts.Length());
+	Md5Gen.Final(Digest);
+
+	// Encode it into a Base64 string and set it as the signature header.
+	const auto Signature = FBase64::Encode(Digest, 16);
+	HttpRequest->SetHeader(TEXT("X-KS-SIGNATURE"), Signature);	
+
+	UE_LOG(LogBeamBackend, Verbose, TEXT(
+		       "Sending Signed Request via Unreal HttpRequest's ProcessRequest."
+		       " REQUEST_ID=%llu, PID=%s, URL=%s, BODY=%s, REALM_SECRET=%s, SIG_PARTS=%s, SIGNATURE=%s"
+	       ), ActiveRequestId, *Pid, *Url, *Body, *Secret, *SigPartsUTF16, *Signature)
+
+	if (HttpRequest->ProcessRequest())
 	{
 		auto Context = InFlightRequestContexts.FindRef(ActiveRequestId);
 		Context.BeamStatus = InFlight;
@@ -1114,10 +1327,13 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 		// Get the retry configuration for the given request
 		const auto RetryConfig = InFlightRequestContexts.FindChecked(ReqId).RetryConfiguration;
 		const auto CurrRetryIdx = InFlightFailureCount.FindChecked(ReqId) - 1;
-		const auto RetryFalloffIdx = CurrRetryIdx >= RetryConfig.RetryFalloffValues.Num() ? RetryConfig.RetryFalloffValues.Num() - 1 : CurrRetryIdx;
+		const auto RetryFalloffIdx = CurrRetryIdx >= RetryConfig.RetryFalloffValues.Num()
+			                             ? RetryConfig.RetryFalloffValues.Num() - 1
+			                             : CurrRetryIdx;
 		const auto TimeToWait = RetryFalloffIdx >= 0 ? RetryConfig.RetryFalloffValues[CurrRetryIdx] : 0;
 
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Failed Request so we are waiting for %.2f before trying again."), TimeToWait);
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Failed Request so we are waiting for %.2f before trying again."),
+		       TimeToWait);
 		InFlightProcessingRequests.Add(ReqId, FProcessingRequestRetry{FailedRequestCtx, TimeToWait, 0.0f});
 	}
 
@@ -1153,18 +1369,21 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 				Request->GrantType = "refresh_token";
 				PrepareBeamableRequestVerbRouteBody(ReAuthRequest, Request, BeamEnvironment->GetAPIUrl());
 
-				ReAuthRequest->OnProcessRequestComplete().BindLambda([this, ReqId, ReqAuthToken, ReqRealmHandle, &FailedReq]
+				ReAuthRequest->OnProcessRequestComplete().BindLambda(
+					[this, ReqId, ReqAuthToken, ReqRealmHandle, &FailedReq]
 				(const FHttpRequestPtr Request, const FHttpResponsePtr Response, bool)
 
 					{
 						// Checks if the request was made using a user-slot or if people manually passed in the realm handle and refresh tokens.
 						FBeamRealmUser RealmUserData;
 						FUserSlot UserSlot;
-						const auto WasMadeWithUserSlot = BeamUserSlots->GetUserDataWithRefreshTokenAndPid(ReqAuthToken.RefreshToken, ReqRealmHandle.Pid, RealmUserData, UserSlot);
+						const auto WasMadeWithUserSlot = BeamUserSlots->GetUserDataWithRefreshTokenAndPid(
+							ReqAuthToken.RefreshToken, ReqRealmHandle.Pid, RealmUserData, UserSlot);
 
 						const auto RequestStatus = Request->GetStatus();
 						// Update Connectivity Status
-						if (RequestStatus == EHttpRequestStatus::Succeeded || RequestStatus == EHttpRequestStatus::Failed)
+						if (RequestStatus == EHttpRequestStatus::Succeeded || RequestStatus ==
+							EHttpRequestStatus::Failed)
 						{
 							CurrentConnectivityStatus.IsConnected = true;
 							CurrentConnectivityStatus.LastTimeSinceSuccessfulRequest = FDateTime::UtcNow().GetTicks();
@@ -1181,7 +1400,8 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 						if (ResponseCode == 200)
 						{
 							// Extract the data from the response
-							ULoginRefreshTokenResponse* LoginRefreshTokenResponse = NewObject<ULoginRefreshTokenResponse>();
+							ULoginRefreshTokenResponse* LoginRefreshTokenResponse = NewObject<
+								ULoginRefreshTokenResponse>();
 							// This gets passed into all NewObject calls in the deserialization process. It's not great that we are allocating, but... it's not frequent enough to matter much.
 							// For normal requests, this is usually the Request Object the user created
 							// (which will usually be tied to a blueprint or sub-system and be disposed after the request finishes TODO unless the user explicitly tells us otherwise).
@@ -1202,10 +1422,13 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 							// The reason that we simply assume there'll always be a UserSlot is to make integration tests
 							if (WasMadeWithUserSlot)
 							{
-								UE_LOG(LogBeamBackend, Verbose, TEXT("Identified User Slot and Re-authing it. REQUEST_ID=%lld, USER_SLOT=%s"), ReqId, *UserSlot.Name);
+								UE_LOG(LogBeamBackend, Verbose,
+								       TEXT("Identified User Slot and Re-authing it. REQUEST_ID=%lld, USER_SLOT=%s"),
+								       ReqId, *UserSlot.Name);
 								// Re-auth the user at the found slot so that subsequent requests use the new token rather than this one.
-								BeamUserSlots->SetAuthenticationDataAtSlot(UserSlot, NewToken.AccessToken, NewToken.RefreshToken, NewToken.ExpiresIn,
-								                                           RealmUserData.RealmHandle.Cid, RealmUserData.RealmHandle.Pid, this);
+								BeamUserSlots->SetAuthenticationDataAtSlot(
+									UserSlot, NewToken.AccessToken, NewToken.RefreshToken, NewToken.ExpiresIn,
+									RealmUserData.RealmHandle.Cid, RealmUserData.RealmHandle.Pid, this);
 								BeamUserSlots->SetGamerTagAtSlot(UserSlot, RealmUserData.GamerTag, this);
 								BeamUserSlots->SetEmailAtSlot(UserSlot, RealmUserData.Email, this);
 								BeamUserSlots->TriggerUserAuthenticatedIntoSlot(UserSlot, this);
@@ -1229,13 +1452,17 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 						// ...would allow for users to use level blueprints to subscribe to this effectively defining ("when a user fails re-auth in this level, this is what happens".												
 						else
 						{
-							UE_LOG(LogBeamBackend, Verbose, TEXT("Discarding Request since the user failed to re-authenticated. REQUEST_ID=%lld"), ReqId);
+							UE_LOG(LogBeamBackend, Verbose,
+							       TEXT("Discarding Request since the user failed to re-authenticated. REQUEST_ID=%lld"
+							       ), ReqId);
 
 							// If the failed re-auth was made using a user slot, we clear that slot.
 							if (WasMadeWithUserSlot)
 							{
 								BeamUserSlots->ClearUserAtSlot(UserSlot, FailedAutomaticAuthentication, true);
-								UE_LOG(LogBeamBackend, Verbose, TEXT("Invalidated user data as the user failed to re-authenticated. USER_SLOT=%s"), *UserSlot.Name);
+								UE_LOG(LogBeamBackend, Verbose,
+								       TEXT("Invalidated user data as the user failed to re-authenticated. USER_SLOT=%s"
+								       ), *UserSlot.Name);
 							}
 
 							// Make it so it'll fail immediately instead of trying to the request again and then re-process the request.
@@ -1256,7 +1483,8 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 			}
 
 			// If we match a HTTP Response Code OR a custom beamable error code, it means we should retry and so we do.
-			else if (RetryConfig.HttpResponseCodes.Contains(RequestToRetry.ResponseCode) || RetryConfig.CustomErrorCodes.Contains(RequestToRetry.ErrorCode))
+			else if (RetryConfig.HttpResponseCodes.Contains(RequestToRetry.ResponseCode) || RetryConfig.CustomErrorCodes
+				.Contains(RequestToRetry.ErrorCode))
 			{
 				// If we should just retry, simply send out the request again.
 				UE_LOG(LogBeamBackend, Verbose, TEXT("Failed Request so we are resending it!!!!."));
@@ -1267,10 +1495,15 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 				const auto Route = FailedReq->GetURL();
 				const auto Verb = FailedReq->GetVerb();
 				const auto Body = FString(UTF8_TO_TCHAR(FailedReq->GetContent().GetData()));
-				ensureAlwaysMsgf(false, TEXT("This request should not have been enqueued for retry, but it was. REQUEST_ID=%lld, VERB=%s, ROUTE=%s, BODY=%s, RETRY_RESP_CODES=%s, RETRY_ERR_CODES=%s"),
-				                 ProcessingReq.RequestToRetry.RequestId, *Route, *Verb, *Body,
-				                 *FString::JoinBy(RetryConfig.HttpResponseCodes, TEXT(","), [](int64 c) { return FString::FromInt(c); }),
-				                 *FString::Join(RetryConfig.CustomErrorCodes, TEXT(",")));
+				ensureAlwaysMsgf(
+					false,
+					TEXT(
+						"This request should not have been enqueued for retry, but it was. REQUEST_ID=%lld, VERB=%s, ROUTE=%s, BODY=%s, RETRY_RESP_CODES=%s, RETRY_ERR_CODES=%s"
+					),
+					ProcessingReq.RequestToRetry.RequestId, *Route, *Verb, *Body,
+					*FString::JoinBy(RetryConfig.HttpResponseCodes, TEXT(","), [](int64 c) { return FString::FromInt(c);
+						}),
+					*FString::Join(RetryConfig.CustomErrorCodes, TEXT(",")));
 			}
 
 			RetriesSentOut.Add(InFlightProcessingRequest.Key);
@@ -1319,7 +1552,9 @@ bool UBeamBackend::CleanUpRequestData()
 	// Clean up all associated data with requests that are ready to be cleaned up.
 	for (const auto& IdToCleanUp : ReqIdsToCleanUp)
 	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable CleanUp | Cleaning up all Request Data associated with Request. REQUEST_ID=%llu"), IdToCleanUp);
+		UE_LOG(LogBeamBackend, Verbose,
+		       TEXT("Beamable CleanUp | Cleaning up all Request Data associated with Request. REQUEST_ID=%llu"),
+		       IdToCleanUp);
 
 		if (InFlightRequests.Contains(IdToCleanUp))
 			InFlightRequests.Remove(IdToCleanUp);
@@ -1374,7 +1609,9 @@ bool UBeamBackend::GetRetryConfigForRequestType(const FRequestType& RequestType,
 	}
 	else
 	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Falling back to Default Retry Configuration when getting config for Request Type!\nREQUEST_TYPE=%s"), *RequestType.Name);
+		UE_LOG(LogBeamBackend, Verbose,
+		       TEXT("Falling back to Default Retry Configuration when getting config for Request Type!\nREQUEST_TYPE=%s"
+		       ), *RequestType.Name);
 		Config = DefaultRetryConfig;
 	}
 
@@ -1392,20 +1629,26 @@ bool UBeamBackend::GetRetryConfigForUserSlot(const FUserSlot& Slot, FBeamRetryCo
 	}
 	else
 	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Falling back to Default Retry Configuration when getting config for User Slot!\nUSER_SLOT=%s"), *Slot.Name);
+		UE_LOG(LogBeamBackend, Verbose,
+		       TEXT("Falling back to Default Retry Configuration when getting config for User Slot!\nUSER_SLOT=%s"),
+		       *Slot.Name);
 		Config = DefaultRetryConfig;
 	}
 
 	return bUserHasSpecialConfig;
 }
 
-bool UBeamBackend::GetRetryConfigForUserSlotAndRequestType(const FRequestType& RequestType, const FUserSlot& Slot, FBeamRetryConfig& Config) const
+bool UBeamBackend::GetRetryConfigForUserSlotAndRequestType(const FRequestType& RequestType, const FUserSlot& Slot,
+                                                           FBeamRetryConfig& Config) const
 {
 	// If there's a retry config for this specific type of request and this specific user slot...
-	const auto bUserHasSpecialConfigForRequestType = PerUserPerTypeRetryConfig.Contains(RequestType.Name + "₢" + Slot.Name);
+	const auto bUserHasSpecialConfigForRequestType = PerUserPerTypeRetryConfig.Contains(
+		RequestType.Name + "₢" + Slot.Name);
 	if (bUserHasSpecialConfigForRequestType)
 	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Found Config for User Slot and Request Type!\nUSER_SLOT=%s, REQUEST_TYPE=%s"), *Slot.Name, *RequestType.Name);
+		UE_LOG(LogBeamBackend, Verbose,
+		       TEXT("Found Config for User Slot and Request Type!\nUSER_SLOT=%s, REQUEST_TYPE=%s"), *Slot.Name,
+		       *RequestType.Name);
 		Config = PerUserPerTypeRetryConfig.FindRef(RequestType.Name + "₢" + Slot.Name);
 	}
 	else
@@ -1413,7 +1656,10 @@ bool UBeamBackend::GetRetryConfigForUserSlotAndRequestType(const FRequestType& R
 		// If there's a retry config for this specific type of request...
 		if (PerTypeRetryConfigs.Contains(RequestType))
 		{
-			UE_LOG(LogBeamBackend, Verbose, TEXT("Falling back to RequestType-only Config when getting config for User Slot and Request Type!\nUSER_SLOT=%s, REQUEST_TYPE=%s"), *Slot.Name,
+			UE_LOG(LogBeamBackend, Verbose,
+			       TEXT(
+				       "Falling back to RequestType-only Config when getting config for User Slot and Request Type!\nUSER_SLOT=%s, REQUEST_TYPE=%s"
+			       ), *Slot.Name,
 			       *RequestType.Name);
 			Config = PerTypeRetryConfigs.FindRef(RequestType);
 		}
@@ -1422,13 +1668,19 @@ bool UBeamBackend::GetRetryConfigForUserSlotAndRequestType(const FRequestType& R
 			// If there's a retry config for requests from this user...
 			if (PerUserRetryConfig.Contains(Slot.Name))
 			{
-				UE_LOG(LogBeamBackend, Verbose, TEXT("Falling back to User-only Config when getting config for User Slot and Request Type!\nUSER_SLOT=%s, REQUEST_TYPE=%s"), *Slot.Name,
+				UE_LOG(LogBeamBackend, Verbose,
+				       TEXT(
+					       "Falling back to User-only Config when getting config for User Slot and Request Type!\nUSER_SLOT=%s, REQUEST_TYPE=%s"
+				       ), *Slot.Name,
 				       *RequestType.Name);
 				Config = PerUserRetryConfig.FindRef(Slot.Name);
 			}
 			else
 			{
-				UE_LOG(LogBeamBackend, Verbose, TEXT("Falling back to Default Retry Configuration when getting config for User Slot and Request Type!\nUSER_SLOT=%s, REQUEST_TYPE=%s"), *Slot.Name,
+				UE_LOG(LogBeamBackend, Verbose,
+				       TEXT(
+					       "Falling back to Default Retry Configuration when getting config for User Slot and Request Type!\nUSER_SLOT=%s, REQUEST_TYPE=%s"
+				       ), *Slot.Name,
 				       *RequestType.Name);
 				Config = DefaultRetryConfig; // Otherwise, just use the default one.
 			}
@@ -1447,7 +1699,8 @@ void UBeamBackend::SetRetryConfigForRequestType(const FRequestType& RequestType,
 
 	FString RetryString;
 	FJsonObjectConverter::UStructToJsonObjectString(RetryConfig, RetryString);
-	UE_LOG(LogBeamBackend, Verbose, TEXT("Setting retry config for RequestType.\nREQUEST_TYPE=%s, Config=%s"), *RequestType.Name, *RetryString);
+	UE_LOG(LogBeamBackend, Verbose, TEXT("Setting retry config for RequestType.\nREQUEST_TYPE=%s, Config=%s"),
+	       *RequestType.Name, *RetryString);
 }
 
 void UBeamBackend::SetRetryConfigForUserSlot(const FUserSlot Slot, const FBeamRetryConfig& RetryConfig)
@@ -1459,10 +1712,12 @@ void UBeamBackend::SetRetryConfigForUserSlot(const FUserSlot Slot, const FBeamRe
 
 	FString RetryString;
 	FJsonObjectConverter::UStructToJsonObjectString(RetryConfig, RetryString);
-	UE_LOG(LogBeamBackend, Verbose, TEXT("Setting retry config for UserSlot.\nUSER_SLOT=%s, RETRY_CONFIG=%s"), *Slot.Name, *RetryString);
+	UE_LOG(LogBeamBackend, Verbose, TEXT("Setting retry config for UserSlot.\nUSER_SLOT=%s, RETRY_CONFIG=%s"),
+	       *Slot.Name, *RetryString);
 }
 
-void UBeamBackend::SetRetryConfigForUserSlotAndRequestType(const FUserSlot& Slot, const FRequestType& RequestType, const FBeamRetryConfig& RetryConfig)
+void UBeamBackend::SetRetryConfigForUserSlotAndRequestType(const FUserSlot& Slot, const FRequestType& RequestType,
+                                                           const FBeamRetryConfig& RetryConfig)
 {
 	const auto Key = RequestType.Name + "₢" + Slot.Name;
 	if (!PerUserPerTypeRetryConfig.Contains(Key))
@@ -1472,7 +1727,9 @@ void UBeamBackend::SetRetryConfigForUserSlotAndRequestType(const FUserSlot& Slot
 
 	FString RetryString;
 	FJsonObjectConverter::UStructToJsonObjectString(RetryConfig, RetryString);
-	UE_LOG(LogBeamBackend, Verbose, TEXT("Setting retry config for UserSlot and RequestType.\nUSER_SLOT=%s, REQUEST_TYPE=%s, RETRY_CONFIG=%s"), *Slot.Name, *RequestType.Name, *RetryString);
+	UE_LOG(LogBeamBackend, Verbose,
+	       TEXT("Setting retry config for UserSlot and RequestType.\nUSER_SLOT=%s, REQUEST_TYPE=%s, RETRY_CONFIG=%s"),
+	       *Slot.Name, *RequestType.Name, *RetryString);
 }
 
 void UBeamBackend::ResetRetryConfigForRequestType(const FRequestType& RequestType)
@@ -1497,26 +1754,41 @@ void UBeamBackend::ResetRetryConfigForUserSlotAndRequestType(const FUserSlot& Sl
 	if (PerUserPerTypeRetryConfig.Contains(Key))
 		PerUserPerTypeRetryConfig.Remove(Key);
 
-	UE_LOG(LogBeamBackend, Verbose, TEXT("Reseting retry config for UserSlot and Request Type.\nUSER_SLOT=%s, REQUEST_TYPE=%s"), *Slot.Name, *RequestType.Name);
+	UE_LOG(LogBeamBackend, Verbose,
+	       TEXT("Reseting retry config for UserSlot and Request Type.\nUSER_SLOT=%s, REQUEST_TYPE=%s"), *Slot.Name,
+	       *RequestType.Name);
 }
 
 
 /**
  * Here we define the mock request types we have for test coverage.
  */
-template TUnrealRequestPtr UBeamBackend::CreateRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const UBeamMockGetRequest*);
-template TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const FBeamAuthToken&, const UBeamMockGetRequest*);
-template TUnrealRequestPtr UBeamBackend::CreateRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const UBeamMockPostRequest*);
-template TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&, const FBeamAuthToken&, const UBeamMockPostRequest*);
+template TUnrealRequestPtr UBeamBackend::CreateRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&,
+                                                       const UBeamMockGetRequest*);
+template TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64&, const FBeamRealmHandle&,
+                                                                    const FBeamRetryConfig&, const FBeamAuthToken&,
+                                                                    const UBeamMockGetRequest*);
+template TUnrealRequestPtr UBeamBackend::CreateRequest(int64&, const FBeamRealmHandle&, const FBeamRetryConfig&,
+                                                       const UBeamMockPostRequest*);
+template TUnrealRequestPtr UBeamBackend::CreateAuthenticatedRequest(int64&, const FBeamRealmHandle&,
+                                                                    const FBeamRetryConfig&, const FBeamAuthToken&,
+                                                                    const UBeamMockPostRequest*);
 
-template FBeamRequestProcessor UBeamBackend::MakeBlueprintRequestProcessor<UBeamMockGetRequest, UBeamMockGetRequestResponse>(
+template FBeamRequestProcessor UBeamBackend::MakeBlueprintRequestProcessor<
+	UBeamMockGetRequest, UBeamMockGetRequestResponse>(
 	const int64&, UBeamMockGetRequest*, FOnMockSuccess, FOnMockError, FOnMockComplete, const UObject*);
-template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestProcessor<UBeamMockGetRequest, UBeamMockGetRequestResponse>(
-	const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UBeamMockGetRequest*, FOnMockSuccess, FOnMockError, FOnMockComplete, const UObject*);
-template FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64&, UBeamMockGetRequest*, TBeamFullResponseHandler<UBeamMockGetRequest*, UBeamMockGetRequestResponse*>, const UObject*);
-template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UBeamMockGetRequest*,
-                                                                                   TBeamFullResponseHandler<UBeamMockGetRequest*, UBeamMockGetRequestResponse*>, const UObject*);
-
+template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedBlueprintRequestProcessor<
+	UBeamMockGetRequest, UBeamMockGetRequestResponse>(
+	const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UBeamMockGetRequest*, FOnMockSuccess, FOnMockError,
+	FOnMockComplete, const UObject*);
+template FBeamRequestProcessor UBeamBackend::MakeCodeRequestProcessor(const int64&, UBeamMockGetRequest*,
+                                                                      TBeamFullResponseHandler<
+	                                                                      UBeamMockGetRequest*,
+	                                                                      UBeamMockGetRequestResponse*>,
+                                                                      const UObject*);
+template FBeamRequestProcessor UBeamBackend::MakeAuthenticatedCodeRequestProcessor(
+	const int64&, const FBeamRealmHandle&, const FBeamAuthToken&, UBeamMockGetRequest*,
+	TBeamFullResponseHandler<UBeamMockGetRequest*, UBeamMockGetRequestResponse*>, const UObject*);
 
 
 /**

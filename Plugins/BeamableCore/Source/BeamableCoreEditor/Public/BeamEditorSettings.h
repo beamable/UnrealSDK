@@ -30,7 +30,7 @@ struct FBeamProjectRealmData
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	FString RealmName;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	FString RealmSecret;	
 };
 

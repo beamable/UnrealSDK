@@ -23,6 +23,8 @@ protected:
 	/** Cleans up the system.  */
 	virtual void Deinitialize() override;
 
+	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
+
 public:
 	UPROPERTY()
 	UBeamRuntime* Runtime;
@@ -49,7 +51,8 @@ public:
 	 * The returned operation is added to a list of operations containing all other subsystem's OnUserSignedOut operation.
 	 * We wait for this list of operations to finish and then call OnPostUserSignedOut.
 	 */
-	virtual FBeamOperationHandle OnUserSignedOut(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser);
+	virtual FBeamOperationHandle OnUserSignedOut(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason,
+	                                             const FBeamRealmUser& BeamRealmUser);
 
 	/**
 	 * @brief Called on each BeamRuntimeSubsystem after the OnUserSignedIn operations of ALL BeamRuntimeSubsystems have run to completion (success or otherwise). 
@@ -62,8 +65,10 @@ public:
 	 * @brief Called on each BeamRuntimeSubsystem after the OnUserSignedOut operations of ALL BeamRuntimeSubsystems have run to completion (success or otherwise). 
 	 */
 	UFUNCTION(BlueprintNativeEvent)
-	void OnPostUserSignedOut(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser);
-	virtual void OnPostUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser);
+	void OnPostUserSignedOut(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason,
+	                         const FBeamRealmUser& BeamRealmUser);
+	virtual void OnPostUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason,
+	                                                const FBeamRealmUser& BeamRealmUser);
 
 
 	/**
@@ -101,9 +106,24 @@ class BEAMABLECORERUNTIME_API UBeamRuntimeBlueprintSubsystems : public UGameInst
 	{
 		Super::Initialize(Collection);
 		const auto RuntimeSettings = GetDefault<UBeamRuntimeSettings>();
-		for (const auto SubsystemBlueprint : RuntimeSettings->BeamRuntimeSubsystemBlueprints)
+		for (const auto SubsystemBlueprint : RuntimeSettings->RuntimeSubsystemBlueprints)
 		{
 			Collection.InitializeDependency(SubsystemBlueprint);
+		}
+
+		if (IsRunningDedicatedServer())
+		{
+			for (const auto SubsystemBlueprint : RuntimeSettings->ServerOnlyRuntimeSubsystemBlueprints)
+			{
+				Collection.InitializeDependency(SubsystemBlueprint);
+			}
+		}
+		else
+		{
+			for (const auto SubsystemBlueprint : RuntimeSettings->ClientRuntimeSubsystemBlueprints)
+			{
+				Collection.InitializeDependency(SubsystemBlueprint);
+			}
 		}
 	}
 
