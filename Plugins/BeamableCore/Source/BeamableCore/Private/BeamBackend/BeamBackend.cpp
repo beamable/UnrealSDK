@@ -1286,7 +1286,8 @@ void UBeamBackend::DedicatedServerExecuteRequestImpl(int64 ActiveRequestId, FBea
 	                                                ESearchCase::IgnoreCase, ESearchDir::FromStart,
 	                                                FullUrl.Find(TEXT(".")) - 1)
 	);
-	const auto Body = FString(UTF8_TO_TCHAR(HttpRequest->GetContent().GetData()));
+	const auto BodyUTF8 = reinterpret_cast<const UTF8CHAR*>(HttpRequest->GetContent().GetData());
+	const auto Body = FString(TStringConversion<FUTF8ToTCHAR_Convert>(BodyUTF8, HttpRequest->GetContentLength()));
 
 	// Create an MD5 Hash of the UTF-8 representation of this string. 
 	const auto SigPartsUTF16 = Secret + Pid + Version + Url + Body;
