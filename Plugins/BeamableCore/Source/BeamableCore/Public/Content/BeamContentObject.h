@@ -34,26 +34,17 @@ public:
 	FDateTime LastChanged;
 
 	/**
-	 * @brief Returns whether or not the row was modified. Child classes that override this must always set the ID and add TypeTagVal to the list of tags here AFTER ANY MODIFICATION IS MADE TO THE ID.
-	 * @param TypeTagVal The special beamable tag that is associated with this type.
-	 * @param RowName The name of the row (can be modified here to add prefixes for specific content types).
-	 * @param Row The row to enforce things as.
-	 * @return Whether or not the row was modified.
-	 */
-	virtual void BuildManifestRow(const FString& TypeTagVal, FString& RowName, FLocalContentManifestRow* Row);
-
-	/**
 	 * @brief Called on each row of the manifest whenever it changes so that we can verify that the content object is configured correctly in the manifest. 
 	 * @param TypeTagVal The type of the content object.
 	 * @param Row The Manifest Row we are validating.
 	 * @return An error code that specifies what is the problem
 	 */
-	virtual int IsValidRowForType(const FString& TypeTagVal, FLocalContentManifestRow* Row)
+	virtual int IsValidRowForType(const FString& TypeTagVal, FLocalContentManifestRow& Row)
 	{
 		return 0;
 	}
 
-	virtual void FixManifestRowForType(const int ErrorCode, const FLocalContentManifestRow* Row)
+	virtual void FixManifestRowForType(const int ErrorCode, const FLocalContentManifestRow& Row)
 	{
 	}
 
@@ -67,9 +58,6 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam")
 	FString CreatePropertiesMD5Hash();
-
-	UFUNCTION(BlueprintCallable, Category="Beam")
-	FString BuildContentTypeString();
 
 	/**
 	 * @brief Generates a serialized string (in basic format) for this content object.	 
@@ -85,7 +73,7 @@ public:
 	void FromBasicJson(const FString& Json);
 	virtual void FromBasicJson_Implementation(const FString& Json);
 
-	
+
 	void ToPropertiesJson(FString& Serialized);
 	void FromPropertiesJson(const FString& Json);
 
@@ -109,7 +97,14 @@ public:
 	 */
 	virtual void ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>& JsonProperties);
 
+	/**
+	 * @brief Walks up the ContentObject class hierarchy and creates a '.'-separated string from the top-most type to the current one.
+	 * This is leveraged by the Beamable backend for various things (for legacy reasons). 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	FString BuildContentTypeString();
 
+public:
 	/**
 	 * UTILITIES FOR PARSING/SERIALIZING JSON PROPERTIES VIA REFLECTION. 
 	 */
@@ -180,3 +175,8 @@ public:
 		}
 	}
 };
+
+
+
+#define DEFINE_CONTENT_TYPE_NAME(ClassName, TypeName) \
+inline void ClassName::GetContentType_##ClassName(FString& Result){ Result = TEXT(TypeName); }

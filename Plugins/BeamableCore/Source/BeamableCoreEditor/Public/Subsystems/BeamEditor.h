@@ -21,6 +21,7 @@
 #include "BeamEditor.generated.h"
 
 
+DECLARE_DELEGATE(FEditorStateChangedHandlerCode);
 DECLARE_DYNAMIC_DELEGATE(FEditorStateChangedHandler);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEditorStateChangedEvent);

@@ -51,10 +51,13 @@ public:
 	FDelegateHandle EditingObjectOnPropertyChangeHandle;
 
 	TSharedPtr<SWindow> PublishingWindow;
+	TSharedPtr<SWindow> DownloadingWindow;
 
+	
 	void PrepareEditingUI();
+	
 
-	void AddDataTableToolbarExtension(FToolBarBuilder& Builder);
+	void AddDataTableToolbarExtension(FToolBarBuilder& Builder);	
 
 	/** Implementation of FDataTableEditorManager::ListenerType --- needed to respond to selection and table data modifications */
 	virtual void PreChange(const UDataTable* Changed, FDataTableEditorUtils::EDataTableChangeInfo ChangedType) override;
@@ -67,9 +70,12 @@ private:
 	void AddContentButtonClicked();
 	void EditContentButtonClicked();
 	void PublishButtonClicked();
+	void DownloadButtonClicked();
 
 	UFUNCTION()
 	void OnPublishEvent(const TArray<FUserSlot>& UserSlots, FBeamOperationEvent OperationEvent) const;
+
+	FString GetJsonBlobPath(FString RowName) const;
 };
 
 #undef LOCTEXT_NAMESPACE

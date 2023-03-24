@@ -27,5 +27,6 @@ public:
 	TSharedPtr<FUICommandInfo> CreateContentObjectInLocalManifest;
 	TSharedPtr<FUICommandInfo> EditContentObjectInLocalManifest;
 	
-	TSharedPtr<FUICommandInfo> PublishManifest;	
+	TSharedPtr<FUICommandInfo> PublishManifest;
+	TSharedPtr<FUICommandInfo> DownloadManifest;
 };

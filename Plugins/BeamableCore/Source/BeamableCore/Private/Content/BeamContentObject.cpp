@@ -25,13 +25,6 @@ FString UBeamContentObject::GetTypeClassNameFromTypeTag(const FString& TypeTag)
 	return FString(ViewOverTypeTag);
 }
 
-void UBeamContentObject::BuildManifestRow(const FString& TypeTagVal, FString& RowName, FLocalContentManifestRow* Row)
-{
-	Row->Checksum = CreatePropertiesMD5Hash();
-	Row->Tags.Add(TypeTagVal);
-	Row->JsonBlob.Reserve(1024);
-	ToBasicJson(Row->JsonBlob);
-}
 
 void UBeamContentObject::BuildContentDefinitionJsonObject(FJsonDomBuilder::FObject& OutContentDefinition)
 {
@@ -65,19 +58,41 @@ FString UBeamContentObject::CreatePropertiesMD5Hash()
 	return Hash;
 }
 
+struct FGetContentTypeParams
+{
+	FString Result;
+}; 
+
 FString UBeamContentObject::BuildContentTypeString()
 {
 	FString TypeId;
 	auto CurrClass = GetClass();
+	TArray<UClass*> ContentClassHierarchy;
 	while (CurrClass != UBeamContentObject::StaticClass())
 	{
-		const auto NextClass = CurrClass->GetSuperClass();
-		TypeId.Append(CurrClass->GetName().ToLower());
-		if (NextClass != UBeamContentObject::StaticClass())
-			TypeId.Append(".");
-
-		CurrClass = NextClass;
+		ContentClassHierarchy.Add(CurrClass);
+		CurrClass = CurrClass->GetSuperClass();
 	}
+
+	for (int i = ContentClassHierarchy.Num() - 1; i >= 0; --i)
+	{
+		const auto Iter = ContentClassHierarchy[i];
+		const auto FunctionName = FName(FString::Format(TEXT("GetContentType_U{0}"), {Iter->GetName()}));
+		const auto Function = Iter->FindFunctionByName(FunctionName);
+		if (!Function)
+			TypeId.Append(Iter->GetName().ToLower());
+		else
+		{
+			FGetContentTypeParams Result;
+			ProcessEvent(Function, &Result);
+			TypeId.Append(Result.Result);
+		}
+
+		// We don't append '.' for the hierarchy's leaf.
+		if (i != 0)
+			TypeId.Append(".");
+	}
+
 	return TypeId;
 }
 
@@ -637,7 +652,8 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 }
 
 
-void UBeamContentObject::SerializeArrayProperty(FString PropName, FJsonDomBuilder::FArray& JsonArray, const FArrayProperty* const ArrayProperty, const void* ArrayOwner)
+void UBeamContentObject::SerializeArrayProperty(FString PropName, FJsonDomBuilder::FArray& JsonArray,
+                                                const FArrayProperty* const ArrayProperty, const void* ArrayOwner)
 {
 	if (CastField<FSoftObjectProperty>(ArrayProperty->Inner))
 	{

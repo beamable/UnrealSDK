@@ -50,7 +50,8 @@ public class BeamableCoreEditor : ModuleRules
 				"DeveloperToolSettings",
 				"UnrealEd",
 				"ToolWidgets",
-				"EditorScriptingUtilities"
+				"EditorScriptingUtilities",
+				"HTTP"
 			}
 		);
 	}

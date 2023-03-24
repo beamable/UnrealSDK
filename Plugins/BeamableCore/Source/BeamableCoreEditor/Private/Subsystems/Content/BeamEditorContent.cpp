@@ -3,10 +3,13 @@
 
 #include "Subsystems/Content/BeamEditorContent.h"
 
+#include "HttpModule.h"
 #include "IContentBrowserSingleton.h"
 #include "AssetRegistry/IAssetRegistry.h"
 #include "AutoGen/BaseContentReference.h"
 #include "Factories/DataTableFactory.h"
+#include "Interfaces/IHttpResponse.h"
+#include "Misc/FileHelper.h"
 #include "Settings/ProjectPackagingSettings.h"
 #include "Subsystems/BeamEditor.h"
 
@@ -156,7 +159,7 @@ void UBeamEditorContent::EnsureGlobalManifest_OnGetManifests(FBasicContentGetMan
 			UE_LOG(LogBeamContent, Display, TEXT("Manifest Found = %s"), *Manifest->Id.AsString)
 		}
 
-		if (ManifestIds.Num() == 0)
+		if (Response.SuccessData->Manifests.Num() == 0)
 		{
 			UE_LOG(LogBeamContent, Error, TEXT("No Manifest Found!"))
 
@@ -170,9 +173,13 @@ void UBeamEditorContent::EnsureGlobalManifest_OnGetManifests(FBasicContentGetMan
 		}
 
 		// For the case where we already have content manifests, we need to make sure we have the local manifests created locally correctly.
-		for (const auto& Id : ManifestIds)
+		for (const auto& Manifest : Response.SuccessData->Manifests)
 		{
-			const auto ManifestAssetName = TEXT("BCM_") + Id.AsString.Mid(0, 1).ToUpper() + Id.AsString.Mid(1, Id.AsString.Len() - 1);
+			const auto Id = Manifest->Id;
+			ManifestIds.Add(Id);
+
+			const auto ManifestAssetName = TEXT("BCM_") + Id.AsString.Mid(0, 1).ToUpper() + Id.AsString.Mid(
+				1, Id.AsString.Len() - 1);
 
 			const auto UncookedAssetPath = DefaultBeamableUncookedContentManifestsPath / ManifestAssetName;
 			const auto CookedAssetPath = DefaultBeamableCookedContentManifestsPath / ManifestAssetName;
@@ -190,63 +197,83 @@ void UBeamEditorContent::EnsureGlobalManifest_OnGetManifests(FBasicContentGetMan
 				UPackage* Package = CreatePackage(*PackageName);
 				UDataTableFactory* MyFactory = NewObject<UDataTableFactory>();
 				MyFactory->Struct = FLocalContentManifestRow::StaticStruct();
-				UDataTable* Manifest = Cast<UDataTable>(AssetToolsModule->Get().CreateAsset(Name, PackagePath, UDataTable::StaticClass(), MyFactory));
-
-				// TODO: convert the received manifest into the local manifest format.
+				UDataTable* LocalManifest = Cast<UDataTable>(
+					AssetToolsModule->Get().CreateAsset(Name, PackagePath, UDataTable::StaticClass(), MyFactory));
 
 				FSavePackageArgs SaveArgs;
 				SaveArgs.TopLevelFlags = RF_Public | RF_Standalone;
-				UPackage::Save(Package, Manifest, *FPackageName::LongPackageNameToFilename(PackageName, FPackageName::GetAssetPackageExtension()), SaveArgs);
-
+				UPackage::Save(Package, LocalManifest, *FPackageName::LongPackageNameToFilename(PackageName, FPackageName::GetAssetPackageExtension()), SaveArgs);
 				// Add the newly created global manifest to the local manifest list
-				LocalManifests.Add(Id, Manifest);
+				LocalManifests.Add(Id, LocalManifest);
 				auto NewEditorState = NewObject<ULocalContentManifestEditorState>();
 				NewEditorState->ManifestId = Id;
-				NewEditorState->EditingTable = Manifest;
+				NewEditorState->EditingTable = LocalManifest;
 				EditorStates.Add(Id, NewEditorState);
 
 				// Inform asset registry
-				IAssetRegistry::Get()->AssetCreated(Manifest);
+				IAssetRegistry::Get()->AssetCreated(LocalManifest);
 
 
 				// Tell content browser to show the newly created asset					
 				TArray<UObject*> Objects;
-				Objects.Add(Manifest);
+				Objects.Add(LocalManifest);
 				ContentBrowserModule->Get().SyncBrowserToAssets(Objects);
 
 				UE_LOG(LogTemp, Verbose, TEXT("Created Local Manifest with Id=%s!"), *Id.AsString)
+
+				FEditorStateChangedHandlerCode OnSyncSuccess;
+				FEditorStateChangedHandlerCode OnSyncError;
+				OnSyncSuccess.BindLambda([this, Op, LocalManifest]
+				{
+					if (LocalManifest->MarkPackageDirty())
+					{
+						EditorAssetSubsystem->SaveLoadedAsset(LocalManifest);
+						RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+					}
+					else
+					{
+						RequestTracker->TriggerOperationError(Op, TEXT(""));
+					}
+				});
+				OnSyncError.BindLambda([this, Op]
+				{
+					RequestTracker->TriggerOperationError(Op, TEXT(""));
+				});
+
+				SynchronizeRemoteManifestWithLocalManifest(Id, Manifest, LocalManifest, OnSyncSuccess, OnSyncError);
 			}
 			// Otherwise, let's load it and keep it in the LocalManifests map
 			else
 			{
 				// Add the newly created global manifest to the local manifest list
-				UDataTable* Manifest = nullptr;
+				UDataTable* LocalManifest = nullptr;
 				if (bExistsInCooked)
-					Manifest = Cast<UDataTable>(EditorAssetSubsystem->LoadAsset(CookedAssetPath));
+					LocalManifest = Cast<UDataTable>(EditorAssetSubsystem->LoadAsset(CookedAssetPath));
 				if (bExistsInUncooked)
-					Manifest = Cast<UDataTable>(EditorAssetSubsystem->LoadAsset(UncookedAssetPath));
+					LocalManifest = Cast<UDataTable>(EditorAssetSubsystem->LoadAsset(UncookedAssetPath));
 
 				// For us to be here, we should have the manifest loaded in one of these two paths.
-				check(Manifest != nullptr)
+				check(LocalManifest != nullptr)
 
 
 				UE_LOG(LogTemp, Verbose, TEXT("Loaded Local Manifest with Id=%s!"), *Id.AsString)
-				LocalManifests.Add(Id, Manifest);
+				LocalManifests.Add(Id, LocalManifest);
 				auto NewEditorState = NewObject<ULocalContentManifestEditorState>();
 				NewEditorState->ManifestId = Id;
-				NewEditorState->EditingTable = Manifest;
+				NewEditorState->EditingTable = LocalManifest;
 				EditorStates.Add(Id, NewEditorState);
+				RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 			}
 		}
 
-		RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 		return;
 	}
 
 	RequestTracker->TriggerOperationCancelled(Op, TEXT(""), Response.Context.RequestId);
 }
 
-void UBeamEditorContent::EnsureGlobalManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response, const FBeamOperationHandle Op)
+void UBeamEditorContent::EnsureGlobalManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response,
+                                                             const FBeamOperationHandle Op)
 {
 	if (Response.State == Error)
 	{
@@ -351,7 +378,9 @@ FBeamOperationHandle UBeamEditorContent::PublishManifest(FBeamContentManifestId 
 	return Op;
 }
 
-void UBeamEditorContent::PublishManifest_OnGetManifest(FBasicContentGetManifestFullResponse Response, FBeamOperationHandle Op, FBeamContentManifestId ContentManifestId)
+void UBeamEditorContent::PublishManifest_OnGetManifest(FBasicContentGetManifestFullResponse Response,
+                                                       FBeamOperationHandle Op,
+                                                       FBeamContentManifestId ContentManifestId)
 {
 	if (Response.State == Error)
 	{
@@ -431,7 +460,8 @@ void UBeamEditorContent::PublishManifest_OnGetManifest(FBasicContentGetManifestF
 		for (UContentDefinition* ContentDefinition : ContentDefinitions)
 		{
 			FString DefJson;
-			TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&DefJson);
+			TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<
+				wchar_t>>::Create(&DefJson);
 			ContentDefinition->BeamSerialize(JsonSerializer);
 			JsonSerializer->Close();
 			Debug.Append(DefJson);
@@ -543,6 +573,124 @@ void UBeamEditorContent::PublishManifest_OnPostManifest(FBasicContentPostManifes
 	}
 
 	RequestTracker->TriggerOperationCancelled(Op, TEXT(""), Response.Context.RequestId);
+}
+
+FBeamOperationHandle UBeamEditorContent::DownloadManifest(FBeamContentManifestId ContentManifestId,
+                                                          FBeamOperationEventHandlerCode Handler)
+{
+	const auto EditorSlot = Editor->GetMainEditorSlot();
+	const auto Op = RequestTracker->CPP_BeginOperation({EditorSlot}, GetName(), Handler);
+
+	UContentDownloadState* DownloadState;
+	if (WorkingDownloadStates.Contains(ContentManifestId))
+	{
+		DownloadState = WorkingDownloadStates[ContentManifestId];
+		DownloadState->CurrentDownloadHandle = -1;
+		DownloadState->RemoteManifest = nullptr;
+		DownloadState->RemoteToLocalDiff.ToAdd.Reset();
+		DownloadState->RemoteToLocalDiff.ToModify.Reset();
+		DownloadState->RemoteToLocalDiff.ToDelete.Reset();
+	}
+	else
+	{
+		DownloadState = NewObject<UContentDownloadState>();
+		WorkingDownloadStates.Add(ContentManifestId, DownloadState);
+	}
+
+	FBeamRequestContext Ctx;
+	const auto ManifestRequest = UBasicContentGetManifestRequest::Make(
+		FOptionalBeamContentManifestId(ContentManifestId), GetTransientPackage());
+	const auto ManifestRequestHandler = FOnBasicContentGetManifestFullResponse::CreateUObject(
+		this, &UBeamEditorContent::DownloadManifest_OnGetManifest, Op, ContentManifestId);
+	ContentApi->CPP_GetManifest(EditorSlot, ManifestRequest, ManifestRequestHandler, Ctx, Op, this);
+	return Op;
+}
+
+void UBeamEditorContent::DownloadManifest_OnGetManifest(FBasicContentGetManifestFullResponse Response,
+                                                        FBeamOperationHandle Op,
+                                                        FBeamContentManifestId ManifestId)
+{
+	if (Response.State == Error || Response.State == Cancelled)
+	{
+		RequestTracker->TriggerOperationError(Op, Response.ErrorData.message);
+		return;
+	}
+
+	if (Response.State == Success)
+	{
+		// Build change set that says: which content will be added and which will be overwritten (no content is deleted when downloading)
+		const auto RemoteManifest = Response.SuccessData;
+		const auto LocalManifest = LocalManifests.FindChecked(ManifestId);
+
+		FManifestChangeSet Changes;
+		for (auto Reference : RemoteManifest->References)
+		{
+			if (Reference->GetCurrentType().Equals("content"))
+			{
+				const auto ContentRef = Reference->Content;
+				if (ContentRef->Visibility == EContentVisibility::BEAM_public)
+				{
+					const auto RowName = FName(ContentRef->Id.AsString);
+					const auto LocalRow = LocalManifest->FindRow<FLocalContentManifestRow>(RowName, TEXT(""));
+					if (!LocalRow)
+						Changes.ToAdd.Add(Reference);
+					else if (!LocalRow->Checksum.Equals(ContentRef->Checksum.Val))
+						Changes.ToModify.Add(Reference);
+				}
+			}
+		}
+
+		WorkingDownloadStates[ManifestId]->RemoteManifest = RemoteManifest;
+		WorkingDownloadStates[ManifestId]->RemoteToLocalDiff = Changes;
+		WorkingDownloadStates[ManifestId]->CurrentDownloadHandle = Op;
+
+
+		// Trigger a sub-event to let the UI react by asking the user whether or not we should continue given the changes that'll happen locally.
+		// We expect the user confirmation to eventually call "DownloadManifest_ApplyUserInput(bool)" with true/false given the user's choice of whether or not to apply the changes  
+		RequestTracker->TriggerOperationEvent(Op, SUCCESS, 1, {});
+	}
+}
+
+void UBeamEditorContent::DownloadManifest_ApplyUserInput(FBeamContentManifestId ManifestId, bool AcceptCurrentChanges)
+{
+	if (AcceptCurrentChanges)
+	{
+		// TODO: Apply changes locally.
+		auto& DownloadState = *WorkingDownloadStates[ManifestId];
+		const auto Op = DownloadState.CurrentDownloadHandle;
+		const auto LocalManifest = LocalManifests.FindChecked(ManifestId);
+
+		FEditorStateChangedHandlerCode OnSyncSuccess;
+		FEditorStateChangedHandlerCode OnSyncError;
+		OnSyncSuccess.BindLambda([this, Op, LocalManifest]
+		{
+			if (LocalManifest->MarkPackageDirty())
+			{
+				EditorAssetSubsystem->SaveLoadedAsset(LocalManifest);
+				RequestTracker->TriggerOperationSuccess(Op, {});
+			}
+			else
+			{
+				RequestTracker->TriggerOperationError(Op, {});
+			}
+		});
+		OnSyncError.BindLambda([this, Op]
+		{
+			RequestTracker->TriggerOperationError(Op, {});
+		});
+		SynchronizeRemoteManifestWithLocalManifest(ManifestId, DownloadState.RemoteManifest, LocalManifest,
+		                                           OnSyncSuccess, OnSyncError);
+	}
+	else
+	{
+		// Cleanup working state and send out a cancelled event
+		auto& DownloadState = *WorkingDownloadStates[ManifestId];
+		RequestTracker->TriggerOperationCancelled(DownloadState.CurrentDownloadHandle, TEXT(""));
+
+		DownloadState.RemoteToLocalDiff = {};
+		DownloadState.RemoteManifest = nullptr;
+		DownloadState.CurrentDownloadHandle = {};
+	}
 }
 
 
@@ -678,16 +826,156 @@ bool UBeamEditorContent::TryLoadContentObject(const FBeamContentManifestId& Owne
 	if (const auto Type = AllContentTypes.FindByPredicate([TypeName](const UClass* Class) { return Class->GetFName().ToString().Equals(TypeName); }))
 	{
 		const auto ManifestRow = LocalManifests[OwnerManifest]->FindRow<FLocalContentManifestRow>(FName(ContentId.AsString), TEXT("Saving Object"));
+		if (ManifestRow)
+		{
+			const auto FilePath = ManifestRow->JsonBlobPath;
+			FString FileContents;
+			if (FFileHelper::LoadFileToString(FileContents, *FilePath))
+			{
+				const auto ContentObject = NewObject<UBeamContentObject>(GetTransientPackage(), *Type);
+				LoadedContentObjects.Add(ContentId, ContentObject);
 
-		const auto FileContents = ManifestRow->JsonBlob;
-		const auto ContentObject = NewObject<UBeamContentObject>(GetTransientPackage(), *Type);
-		LoadedContentObjects.Add(ContentId, ContentObject);
+				OutLoadedContentObject = ContentObject;
+				OutLoadedContentObject->FromBasicJson(FileContents);
+				return true;
+			}
+		}
 
-		OutLoadedContentObject = ContentObject;
-		OutLoadedContentObject->FromBasicJson(FileContents);
-
-		return true;
+		return false;
 	}
 
 	return false;
+}
+
+struct FDownloadContentState
+{
+	UContentReference* ContentReference;
+	TUnrealRequestPtr Request;
+};
+
+void UBeamEditorContent::SynchronizeRemoteManifestWithLocalManifest(const FBeamContentManifestId Id,
+                                                                    const UContentBasicManifest* RemoteManifest,
+                                                                    UDataTable* LocalManifest,
+                                                                    FEditorStateChangedHandlerCode OnSuccess,
+                                                                    FEditorStateChangedHandlerCode OnError)
+{
+	// We keep track of each content we are downloading (the bool indicates whether or not we managed to write the file
+	// locally and add it to the local manifest. 
+	TArray<FDownloadContentState> DownloadContentOperations;
+
+	// First we build up the list of download requests we'll have to make (we only care about the 'public' content)
+	// If the content exists in the local manifest, we compare it's checksum to make sure it's modified and we need to download it.
+	// If the content doesn't exist in the local manifest OR if it's local file is missing, we fetch it.
+	FBeamRealmUser EditorUser;
+	const auto EditorSlot = Editor->GetMainEditorSlot(EditorUser);
+	for (auto Reference : RemoteManifest->References)
+	{
+		if (Reference->GetCurrentType().Equals("content"))
+		{
+			const auto ContentRef = Reference->Content;
+			if (ContentRef->Visibility == EContentVisibility::BEAM_public)
+			{
+				const auto RowName = FName(ContentRef->Id.AsString);
+				const auto LocalContent = LocalManifest->FindRow<FLocalContentManifestRow>(RowName, TEXT(""));
+				const auto LocalContentFileExists = IFileManager::Get().FileExists(
+					*GetJsonBlobPath(RowName.ToString(), Id));
+				if (!LocalContentFileExists || !LocalContent || LocalContent->Checksum != ContentRef->Checksum.Val)
+				{
+					TUnrealRequestPtr ptr = FHttpModule::Get().CreateRequest();
+					ptr->SetVerb("GET");
+					ptr->SetURL(ContentRef->Uri);
+					ptr->SetHeader(UBeamBackend::HEADER_ACCEPT, UBeamBackend::HEADER_VALUE_ACCEPT_CONTENT_TYPE);
+					DownloadContentOperations.Add(FDownloadContentState{ContentRef, ptr});
+				}
+			}
+		}
+	}
+
+	// For each download that we'll make, register a lambda that:
+	//  - Tries to save the downloaded file to the local '.beamable' folder.
+	//  - Checks to see if it was the last download and, if so, invoke the appropriate on success/error callback.
+	for (int DownloadIdx = 0; DownloadIdx < DownloadContentOperations.Num(); ++DownloadIdx)
+	{
+		const auto& DownloadContentOperation = DownloadContentOperations[DownloadIdx];
+		DownloadContentOperation.Request->OnProcessRequestComplete().BindLambda(
+			[this, DownloadContentOperations, DownloadContentOperation, Id, LocalManifest, OnSuccess, OnError]
+		(TSharedPtr<IHttpRequest, ESPMode::ThreadSafe>, TSharedPtr<IHttpResponse, ESPMode::ThreadSafe> HttpResponse,
+		 bool)
+			{
+				if (HttpResponse->GetResponseCode() == 200)
+				{
+					const auto ContentId = DownloadContentOperation.ContentReference->Id.AsString;
+
+					const auto ContentFileContents = HttpResponse->GetContentAsString();
+					const auto FilePath = GetJsonBlobPath(ContentId, Id);
+
+					if (!FFileHelper::SaveStringToFile(ContentFileContents, *FilePath))
+					{
+						UE_LOG(LogBeamContent, Error, TEXT("Failed to save content to path %s"), *FilePath);
+						return;
+					}
+
+					// We check if the row already exists, if it does we simply update it. Otherwise we add it.
+					const auto RowName = FName(ContentId);
+					if (const auto ExistingRow = LocalManifest->FindRow<FLocalContentManifestRow>(RowName, TEXT("")))
+					{
+						ExistingRow->OwnerManifestId = Id;
+						ExistingRow->JsonBlobPath = FilePath;
+						ExistingRow->Checksum = DownloadContentOperation.ContentReference->Checksum.Val;
+						ExistingRow->Tags = DownloadContentOperation.ContentReference->Tags;
+					}
+					else
+					{
+						FLocalContentManifestRow Row;
+						Row.OwnerManifestId = Id;
+						Row.JsonBlobPath = FilePath;
+						Row.Checksum = DownloadContentOperation.ContentReference->Checksum.Val;
+						Row.Tags = DownloadContentOperation.ContentReference->Tags;
+						LocalManifest->AddRow(RowName, Row);
+					}
+
+					// Clear from cache if it's there					
+					UBeamContentObject* ClearedFromCache;
+					LoadedContentObjects.RemoveAndCopyValue(FBeamContentId(ContentId), ClearedFromCache);
+				}
+
+				bool bAreAllFinished = true;
+				bool bAreAllSuccess = true;
+				bool bAreAnyFailed = false;
+				for (const auto& Download : DownloadContentOperations)
+				{
+					const auto DidSave = IFileManager::Get().FileExists(
+						*GetJsonBlobPath(Download.ContentReference->Id.AsString, Id));
+
+					const auto bIsSuccess = Download.Request->GetStatus() ==
+						EHttpRequestStatus::Succeeded;
+					const auto bIsFailure = Download.Request->GetStatus() ==
+						EHttpRequestStatus::Failed || (Download.Request->GetStatus() != EHttpRequestStatus::Processing
+							&& !DidSave);
+
+					bAreAllFinished &= bIsSuccess || bIsFailure;
+					bAreAllSuccess &= bIsSuccess;
+					bAreAnyFailed |= bIsFailure;
+				}
+
+				if (bAreAllFinished)
+				{
+					if (bAreAllSuccess)
+					{
+						OnSuccess.ExecuteIfBound();
+					}
+
+					if (bAreAnyFailed)
+					{
+						OnError.ExecuteIfBound();
+					}
+				}
+			});
+		DownloadContentOperation.Request->ProcessRequest();
+	}
+}
+
+FString UBeamEditorContent::GetJsonBlobPath(FString RowName, FBeamContentManifestId ManifestId)
+{
+	return DefaultBeamableProjectContentObjects / ManifestId.AsString / RowName + TEXT(".json");
 }

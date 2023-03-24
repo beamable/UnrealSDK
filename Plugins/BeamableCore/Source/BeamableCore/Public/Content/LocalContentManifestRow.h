@@ -17,7 +17,7 @@ struct BEAMABLECORE_API FLocalContentManifestRow : public FTableRowBase
 	TArray<FString> Tags;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	FString JsonBlob;
+	FString JsonBlobPath;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Checksum;

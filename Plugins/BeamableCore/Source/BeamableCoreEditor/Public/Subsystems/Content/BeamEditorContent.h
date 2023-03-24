@@ -12,6 +12,7 @@
 #include "AutoGen/SubSystems/BeamContentApi.h"
 #include "Content/BeamContentObject.h"
 #include "Content/LocalContentManifestRow.h"
+#include "Subsystems/BeamEditor.h"
 #include "Subsystems/BeamEditorSubsystem.h"
 #include "Subsystems/EditorAssetSubsystem.h"
 #include "UObject/SavePackage.h"
@@ -28,8 +29,27 @@ class UContentPublishState : public UObject
 	GENERATED_BODY()
 
 public:
+	UPROPERTY()
 	FManifestChangeSet CurrentChangeSet;
+
+	UPROPERTY()
 	TMap<FString, UBaseContentReference*> References;
+};
+
+UCLASS(BlueprintType)
+class UContentDownloadState : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+	FBeamOperationHandle CurrentDownloadHandle;
+
+	UPROPERTY()
+	FManifestChangeSet RemoteToLocalDiff;
+
+	UPROPERTY()
+	UContentBasicManifest* RemoteManifest;
 };
 
 
@@ -57,6 +77,8 @@ class BEAMABLECOREEDITOR_API UBeamEditorContent : public UBeamEditorSubsystem
 	TMap<FBeamContentManifestId, UDataTable*> LocalManifests;
 	UPROPERTY()
 	TMap<FBeamContentManifestId, UContentPublishState*> WorkingPublishStates;
+	UPROPERTY()
+	TMap<FBeamContentManifestId, UContentDownloadState*> WorkingDownloadStates;
 
 
 	UPROPERTY()
@@ -73,10 +95,13 @@ class BEAMABLECOREEDITOR_API UBeamEditorContent : public UBeamEditorSubsystem
 	FContentBrowserModule* ContentBrowserModule;
 
 public:
-	inline static const FString DefaultBeamableContentPath = FString(TEXT("/Game")) / TEXT("Beamable") / TEXT("Content");
+	inline static const FString DefaultBeamableContentPath = FString(TEXT("/Game")) / TEXT("Beamable") /
+		TEXT("Content");
 	inline static const FString DefaultBeamableContentManifestsPath = DefaultBeamableContentPath / TEXT("Manifests");
-	inline static const FString DefaultBeamableCookedContentManifestsPath = DefaultBeamableContentManifestsPath / TEXT("Cooked");
-	inline static const FString DefaultBeamableUncookedContentManifestsPath = DefaultBeamableContentManifestsPath / TEXT("Uncooked");
+	inline static const FString DefaultBeamableCookedContentManifestsPath = DefaultBeamableContentManifestsPath /
+		TEXT("Cooked");
+	inline static const FString DefaultBeamableUncookedContentManifestsPath = DefaultBeamableContentManifestsPath /
+		TEXT("Uncooked");
 
 	inline static const FString DefaultBeamableProjectPath = FPaths::ProjectDir() / TEXT(".beamable");
 	inline static const FString DefaultBeamableProjectContentObjects = DefaultBeamableProjectPath / TEXT("Content");
@@ -99,19 +124,39 @@ public:
 
 	UClass** FindContentTypeByName(FString TypeName);
 
-	bool TryLoadContentObject(const FBeamContentManifestId& OwnerManifest, const FBeamContentId& ContentId, FString TypeName, UBeamContentObject*& OutLoadedContentObject);
+	bool TryLoadContentObject(const FBeamContentManifestId& OwnerManifest, const FBeamContentId& ContentId,
+	                          FString TypeName, UBeamContentObject*& OutLoadedContentObject);
+	bool TryInvalidateContentObjectCache(const FBeamContentManifestId& OwnerManifest, const FBeamContentId& ContentId);
+	static FString GetJsonBlobPath(FString RowName, FBeamContentManifestId ManifestId);
+	void SynchronizeRemoteManifestWithLocalManifest(const FBeamContentManifestId Id,
+	                                                const UContentBasicManifest* RemoteManifest,
+	                                                UDataTable* LocalManifest, FEditorStateChangedHandlerCode OnSuccess,
+	                                                FEditorStateChangedHandlerCode OnError);
 
 private:
 	FBeamOperationHandle EnsureGlobalManifest();
-	void EnsureGlobalManifest_OnGetManifests(FBasicContentGetManifestsFullResponse Response, const FBeamOperationHandle Op);
-	void EnsureGlobalManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response, const FBeamOperationHandle Op);
+	void EnsureGlobalManifest_OnGetManifests(FBasicContentGetManifestsFullResponse Response,
+	                                         const FBeamOperationHandle Op);
+	void EnsureGlobalManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response,
+	                                         const FBeamOperationHandle Op);
 
 	FBeamOperationHandle PublishManifest(FBeamContentManifestId ContentManifestId, FBeamOperationEventHandler Handler);
-	void PublishManifest_OnGetManifest(FBasicContentGetManifestFullResponse Response, FBeamOperationHandle Op, FBeamContentManifestId ContentManifestId);
-	void PublishManifest_OnPostContent(FPostContentFullResponse Response, FBeamOperationHandle Op, FBeamContentManifestId ContentManifestId);
-	void PublishManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response, FBeamOperationHandle Op, FBeamContentManifestId ContentManifestId) const;
+	void PublishManifest_OnGetManifest(FBasicContentGetManifestFullResponse Response, FBeamOperationHandle Op,
+	                                   FBeamContentManifestId ContentManifestId);
+	void PublishManifest_OnPostContent(FPostContentFullResponse Response, FBeamOperationHandle Op,
+	                                   FBeamContentManifestId ContentManifestId);
+	void PublishManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response, FBeamOperationHandle Op,
+	                                    FBeamContentManifestId ContentManifestId) const;
 
-	static void BuildChangeSetForManifest(TArray<UBaseContentReference*> LocalReferences, TArray<UBaseContentReference*> RemoteReferences, FManifestChangeSet& ChangeSet);
+
+	FBeamOperationHandle DownloadManifest(FBeamContentManifestId ContentManifestId, FBeamOperationEventHandlerCode Handler);
+	void DownloadManifest_OnGetManifest(FBasicContentGetManifestFullResponse Response, FBeamOperationHandle Op,
+	                                    FBeamContentManifestId ManifestId);
+	void DownloadManifest_ApplyUserInput(FBeamContentManifestId ManifestId, bool AcceptCurrentChanges);
+
+	static void BuildChangeSetForManifest(TArray<UBaseContentReference*> LocalReferences,
+	                                      TArray<UBaseContentReference*> RemoteReferences,
+	                                      FManifestChangeSet& ChangeSet);
 	static FString MakePublishKey(const UBaseContentReference* Ref, FString Visibility = {});
 
 
