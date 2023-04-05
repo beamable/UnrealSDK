@@ -28,7 +28,8 @@ public class BeamableCoreEditor : ModuleRules
 				"Json", 
 				"JsonUtilities",
 				"DataTableEditor",
-				"DeveloperToolSettings",
+				"DeveloperToolSettings", 
+				"BeamableCoreRuntime",
 
 			}
 		);
@@ -51,7 +52,7 @@ public class BeamableCoreEditor : ModuleRules
 				"UnrealEd",
 				"ToolWidgets",
 				"EditorScriptingUtilities",
-				"HTTP"
+				"HTTP",
 			}
 		);
 	}

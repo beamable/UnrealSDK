@@ -6,6 +6,7 @@
 #include "AssetToolsModule.h"
 #include "ContentBrowserModule.h"
 #include "DataTableEditorUtils.h"
+#include "GameDelegates.h"
 #include "LocalContentManifestEditor.h"
 #include "SNameComboBox.h"
 #include "BeamBackend/SemanticTypes/BeamContentManifestId.h"
@@ -15,6 +16,7 @@
 #include "Subsystems/BeamEditor.h"
 #include "Subsystems/BeamEditorSubsystem.h"
 #include "Subsystems/EditorAssetSubsystem.h"
+#include "UObject/ObjectSaveContext.h"
 #include "UObject/SavePackage.h"
 #include "BeamEditorContent.generated.h"
 
@@ -93,6 +95,8 @@ class BEAMABLECOREEDITOR_API UBeamEditorContent : public UBeamEditorSubsystem
 	UAssetEditorSubsystem* AssetEditorSubsystem;
 	FAssetToolsModule* AssetToolsModule;
 	FContentBrowserModule* ContentBrowserModule;
+	FDelegateHandle ModifyCookDelegate;
+	FDelegateHandle OnWillEnterPIE;
 
 public:
 	inline static const FString DefaultBeamableContentPath = FString(TEXT("/Game")) / TEXT("Beamable") /
@@ -124,39 +128,30 @@ public:
 
 	UClass** FindContentTypeByName(FString TypeName);
 
-	bool TryLoadContentObject(const FBeamContentManifestId& OwnerManifest, const FBeamContentId& ContentId,
-	                          FString TypeName, UBeamContentObject*& OutLoadedContentObject);
-	bool TryInvalidateContentObjectCache(const FBeamContentManifestId& OwnerManifest, const FBeamContentId& ContentId);
+	bool TryLoadContentObject(const FBeamContentManifestId& OwnerManifest, const FBeamContentId& ContentId, FString TypeName, UBeamContentObject*& OutLoadedContentObject);
+
+	bool InstantiateContentObject(const UDataTable* Manifest, const FBeamContentId& ContentId, UBeamContentObject*& OutNewContentObject, UObject* Outer);
+
 	static FString GetJsonBlobPath(FString RowName, FBeamContentManifestId ManifestId);
-	void SynchronizeRemoteManifestWithLocalManifest(const FBeamContentManifestId Id,
-	                                                const UContentBasicManifest* RemoteManifest,
-	                                                UDataTable* LocalManifest, FEditorStateChangedHandlerCode OnSuccess,
+	void SynchronizeRemoteManifestWithLocalManifest(const FBeamContentManifestId Id, const UContentBasicManifest* RemoteManifest, UDataTable* LocalManifest, FEditorStateChangedHandlerCode OnSuccess,
 	                                                FEditorStateChangedHandlerCode OnError);
 
 private:
 	FBeamOperationHandle EnsureGlobalManifest();
-	void EnsureGlobalManifest_OnGetManifests(FBasicContentGetManifestsFullResponse Response,
-	                                         const FBeamOperationHandle Op);
-	void EnsureGlobalManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response,
-	                                         const FBeamOperationHandle Op);
+	void EnsureGlobalManifest_OnGetManifests(FBasicContentGetManifestsFullResponse Response, const FBeamOperationHandle Op);
+	void EnsureGlobalManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response, const FBeamOperationHandle Op);
 
 	FBeamOperationHandle PublishManifest(FBeamContentManifestId ContentManifestId, FBeamOperationEventHandler Handler);
-	void PublishManifest_OnGetManifest(FBasicContentGetManifestFullResponse Response, FBeamOperationHandle Op,
-	                                   FBeamContentManifestId ContentManifestId);
-	void PublishManifest_OnPostContent(FPostContentFullResponse Response, FBeamOperationHandle Op,
-	                                   FBeamContentManifestId ContentManifestId);
-	void PublishManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response, FBeamOperationHandle Op,
-	                                    FBeamContentManifestId ContentManifestId) const;
+	void PublishManifest_OnGetManifest(FBasicContentGetManifestFullResponse Response, FBeamOperationHandle Op, FBeamContentManifestId ContentManifestId);
+	void PublishManifest_OnPostContent(FPostContentFullResponse Response, FBeamOperationHandle Op, FBeamContentManifestId ContentManifestId);
+	void PublishManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response, FBeamOperationHandle Op, FBeamContentManifestId ContentManifestId) const;
 
 
 	FBeamOperationHandle DownloadManifest(FBeamContentManifestId ContentManifestId, FBeamOperationEventHandlerCode Handler);
-	void DownloadManifest_OnGetManifest(FBasicContentGetManifestFullResponse Response, FBeamOperationHandle Op,
-	                                    FBeamContentManifestId ManifestId);
+	void DownloadManifest_OnGetManifest(FBasicContentGetManifestFullResponse Response, FBeamOperationHandle Op, FBeamContentManifestId ManifestId);
 	void DownloadManifest_ApplyUserInput(FBeamContentManifestId ManifestId, bool AcceptCurrentChanges);
 
-	static void BuildChangeSetForManifest(TArray<UBaseContentReference*> LocalReferences,
-	                                      TArray<UBaseContentReference*> RemoteReferences,
-	                                      FManifestChangeSet& ChangeSet);
+	static void BuildChangeSetForManifest(TArray<UBaseContentReference*> LocalReferences, TArray<UBaseContentReference*> RemoteReferences, FManifestChangeSet& ChangeSet);
 	static FString MakePublishKey(const UBaseContentReference* Ref, FString Visibility = {});
 
 

@@ -12,6 +12,8 @@
 #include "Misc/FileHelper.h"
 #include "Settings/ProjectPackagingSettings.h"
 #include "Subsystems/BeamEditor.h"
+#include "Subsystems/Content/BeamContentSubsystem.h"
+#include "Subsystems/Content/BeamRuntimeContentCacheFactory.h"
 
 void UBeamEditorContent::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -40,11 +42,104 @@ void UBeamEditorContent::Initialize(FSubsystemCollectionBase& Collection)
 			AllContentTypeNames.Add(MakeShared<FName>(It->GetFName()));
 		}
 	}
+
+
+	// Set up delegate to ensure only existing baked content will be configured in the RuntimeSettings configuration.
+	// The reason this doesn't stick is because the ModifyCookDelegate doesn't seem to run in the same process as the editor.
+	// This means that, even though the asset change will be visible by the editor process the RuntimeSettings ones won't until the editor is restarted. 
+	OnWillEnterPIE = FEditorDelegates::PreBeginPIE.AddLambda([this](bool Cond)
+	{
+		UBeamRuntimeSettings* RuntimeSettings = GetMutableDefault<UBeamRuntimeSettings>();
+		for (int i = RuntimeSettings->BakedContentManifests.Num() - 1; i >= 0; --i)
+		{
+			const auto BeamRuntimeContentCache = RuntimeSettings->BakedContentManifests[i];
+			if (!EditorAssetSubsystem->DoesAssetExist(BeamRuntimeContentCache.ToSoftObjectPath().GetAssetPathString()))
+			{
+				RuntimeSettings->BakedContentManifests.RemoveAt(i);
+			}
+		}
+		RuntimeSettings->SaveConfig(CPF_Config, *RuntimeSettings->GetDefaultConfigFilename());
+		RuntimeSettings->SaveConfig();
+	});
+	
+	// This delegate ensures that, when you cook content, all existing 'BCC_' files in your cooked directory are correctly mapped to the current "BCM" files.
+	// This cooked content is saved as binary data so that we don't need to parse JSON at runtime when we load this up.
+	// This runs on a separate process than the editor process so we can't really attach a debugger to it (don't freak out if you try and it doesn't work).
+	//   - This also means that, since we make changes to the RuntimeSettings file, those changes will only be visible after a editor restart.
+	//   - TODO: I couldn't find an editor callback that runs after the 
+	ModifyCookDelegate = FGameDelegates::Get().GetModifyCookDelegate().AddLambda([this](TArrayView<const ITargetPlatform* const>, TArray<FName>& InOutPackagesToCook, TArray<FName>&)
+	{
+		const auto DeclaredManifestsToCook = EditorAssetSubsystem->ListAssets(DefaultBeamableCookedContentManifestsPath);
+
+		UBeamRuntimeSettings* RuntimeSettings = GetMutableDefault<UBeamRuntimeSettings>();
+		for (FString BakedContentFilePath : DeclaredManifestsToCook)
+		{
+			FString FileName, CookedManifestPath;
+			BakedContentFilePath.Split(".", &CookedManifestPath, &FileName, ESearchCase::CaseSensitive, ESearchDir::FromEnd);
+			FileName.ReplaceInline(TEXT("BCC_"),TEXT("BCM_"));
+			int32 UnderscoreIdx;
+			FileName.FindChar('_', UnderscoreIdx);
+			const auto ManifestId = FBeamContentManifestId(FileName.RightChop(UnderscoreIdx + 1).ToLower());
+
+			const auto UncookedAssetPath = DefaultBeamableUncookedContentManifestsPath / FileName;
+			const auto UncookedAssetPathAlt = DefaultBeamableUncookedContentManifestsPath / FileName.ToLower();
+
+			UBeamRuntimeContentCache* Cache = Cast<UBeamRuntimeContentCache>(EditorAssetSubsystem->LoadAsset(BakedContentFilePath));
+			checkf(EditorAssetSubsystem->DoesAssetExist(UncookedAssetPath) ||
+			       EditorAssetSubsystem->DoesAssetExist(UncookedAssetPathAlt),
+			       TEXT("Trying to bake content for a non-existent manifest. ManifestId=%s, UncookedPath=%s, UncookedPath_Alternative=%s, CookedPath=%s"),
+			       *ManifestId.AsString,
+			       *UncookedAssetPath,
+			       *UncookedAssetPathAlt,
+			       *BakedContentFilePath)
+
+			// Then, for each existing row in the Local Manifest, we find it's serialized JSON content, deserialize it and store it in the RuntimeCache that's being cooked.
+			UDataTable* LocalManifest = Cast<UDataTable>(EditorAssetSubsystem->LoadAsset(UncookedAssetPath));
+			LocalManifest = LocalManifest == nullptr ? Cast<UDataTable>(EditorAssetSubsystem->LoadAsset(UncookedAssetPathAlt)) : LocalManifest;
+
+			// We clear the manifest so that we're always clean building it --- we also store it's ManifestId there			
+			Cache->ManifestId = ManifestId;
+			LocalManifest->ForeachRow("", TFunctionRef<void (const FName&, const FLocalContentManifestRow& Value)>(
+				                          [this, Cache, ManifestId, LocalManifest](const FName& RowName, const FLocalContentManifestRow& RowData)
+				                          {
+					                          const bool bNotInCache = !Cache->Hashes.Contains(RowName);
+					                          const bool bInCacheButModified = Cache->Hashes.Contains(RowName) && !Cache->Hashes[RowName].Equals(RowData.Checksum);
+					                          if (bNotInCache || bInCacheButModified)
+					                          {
+						                          // Create a new BeamContentObject instance of each content Object
+						                          UBeamContentObject* Content;
+						                          InstantiateContentObject(LocalManifest, RowName, Content, Cache);
+
+						                          // Add it to the BCC_ BeamRuntimeContentCache.
+						                          Cache->Cache.Add(RowName, Content);
+						                          Cache->Hashes.Add(RowName, RowData.Checksum);
+					                          }
+				                          }));
+
+			EditorAssetSubsystem->SaveLoadedAsset(Cache, false);
+			RuntimeSettings->BakedContentManifests.Add(TSoftObjectPtr<UBeamRuntimeContentCache>(FSoftObjectPath(FObjectPtr(Cache))));
+			UE_LOG(LogBeamContent, Warning, TEXT("Created  cooked content for manifest = %s"), *ManifestId.AsString)
+			InOutPackagesToCook.Add(FName(EditorAssetSubsystem->GetPathNameForLoadedAsset(Cache)));
+		}
+
+		for (int i = RuntimeSettings->BakedContentManifests.Num() - 1; i >= 0; --i)
+		{
+			const auto BeamRuntimeContentCache = RuntimeSettings->BakedContentManifests[i];
+			if (!EditorAssetSubsystem->DoesAssetExist(BeamRuntimeContentCache.ToSoftObjectPath().GetAssetPathString()))
+			{
+				RuntimeSettings->BakedContentManifests.RemoveAt(i);
+			}
+		}
+
+		RuntimeSettings->SaveConfig(CPF_Config, *RuntimeSettings->GetDefaultConfigFilename());
+	});
 }
 
 void UBeamEditorContent::Deinitialize()
 {
 	Super::Deinitialize();
+	FGameDelegates::Get().GetModifyCookDelegate().Remove(ModifyCookDelegate);
+	FEditorDelegates::PreBeginPIE.Remove(OnWillEnterPIE);
 	// Clean up asset opened handlers
 	{
 		AssetEditorSubsystem->OnAssetOpenedInEditor().Remove(LocalContentManifestDataTableHandler);
@@ -844,6 +939,31 @@ bool UBeamEditorContent::TryLoadContentObject(const FBeamContentManifestId& Owne
 		return false;
 	}
 
+	return false;
+}
+
+bool UBeamEditorContent::InstantiateContentObject(const UDataTable* Manifest, const FBeamContentId& ContentId, UBeamContentObject*& OutNewContentObject, UObject* Outer)
+{
+	const auto ManifestRow = Manifest->FindRow<FLocalContentManifestRow>(FName(ContentId.AsString), TEXT("Saving Object"));
+	if (ManifestRow)
+	{
+		const auto TypeTag = ManifestRow->Tags.FindByPredicate([](FString Tag) { return Tag.StartsWith(UBeamContentObject::Beam_Tag_Type); });
+		const auto TypeName = UBeamContentObject::GetTypeClassNameFromTypeTag(*TypeTag);
+
+		// Otherwise, find the UClass for the content type. Load the JSON and deserialize it into the UBeamContentObject.
+		if (const auto Type = AllContentTypes.FindByPredicate([TypeName](const UClass* Class) { return Class->GetFName().ToString().Equals(TypeName); }))
+		{
+			const auto FilePath = ManifestRow->JsonBlobPath;
+			FString FileContents;
+			if (FFileHelper::LoadFileToString(FileContents, *FilePath))
+			{
+				const auto ContentObject = NewObject<UBeamContentObject>(Outer, *Type);
+				OutNewContentObject = ContentObject;
+				OutNewContentObject->FromBasicJson(FileContents);
+				return true;
+			}
+		}
+	}
 	return false;
 }
 

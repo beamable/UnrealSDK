@@ -60,7 +60,7 @@ FBeamOperationHandle UBeamRuntimeSubsystem::InitializeWhenUnrealReady()
 	return Handle;
 }
 
-FBeamOperationHandle UBeamRuntimeSubsystem::OnUserSignedIn(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser)
+FBeamOperationHandle UBeamRuntimeSubsystem::OnUserSignedIn(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsFirstAuth)
 {
 	UE_LOG(LogBeamRuntime, Verbose, TEXT("Runtime Subsystem %s - On User Signed In from Slot %s"), *GetName(), *UserSlot.Name)
 

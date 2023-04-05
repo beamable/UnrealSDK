@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/StreamableManager.h"
+
 
 #include "BeamRuntimeSettings.generated.h"
-
+class UBeamRuntimeContentCache;
 class UDataTable;
 /**
  * 
@@ -37,10 +39,16 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Beam Systems")
 	TArray<TSubclassOf<USubsystem>> ClientRuntimeSubsystemBlueprints;
 
+	/**
+	 * @brief As per UE docs, we have a streamable manager declared to load up beamable content asynchronously at runtime: https://docs.unrealengine.com/5.1/en-US/asynchronous-asset-loading-in-unreal-engine/.
+	 */
+	FStreamableManager ContentStreamingManager = {};
 
 	/**
-	 * @brief References to all cooked content manifests (baked into the builds via cooking process).
+	 * @brief References to all baked content files. This is automatically filled up whenever you cook a build and can be ignored by the end user.
 	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Beam Systems")
-	TArray<TSoftObjectPtr<UDataTable>> CookedManifests;
+	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="Content")
+	TArray<TSoftObjectPtr<UBeamRuntimeContentCache>> BakedContentManifests;
+
+	FStreamableManager& GetStreamableManager() { return ContentStreamingManager; }
 };

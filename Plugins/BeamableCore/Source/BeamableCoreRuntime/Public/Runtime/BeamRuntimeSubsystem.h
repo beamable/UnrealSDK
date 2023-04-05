@@ -45,7 +45,7 @@ public:
 	 * The returned operation is added to a list of operations containing all other subsystem's OnUserSignedIn operation.
 	 * We wait for this list of operations to finish and then call OnPostUserSignedIn.
 	 */
-	virtual FBeamOperationHandle OnUserSignedIn(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser);
+	virtual FBeamOperationHandle OnUserSignedIn(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsFirstAuth);
 	/**
 	 * @brief Called whenever a user signs out of a user slot.
 	 * The returned operation is added to a list of operations containing all other subsystem's OnUserSignedOut operation.

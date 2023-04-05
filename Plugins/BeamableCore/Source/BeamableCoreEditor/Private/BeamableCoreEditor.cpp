@@ -53,8 +53,13 @@ void FBeamableCoreEditorModule::StartupModule()
 		PropertyModule.NotifyCustomizationModuleChanged();
 	}
 
-	// Set up DataTable extensions
+	// Set up Custom Asset Types
 	{
+		if (FModuleManager::Get().IsModuleLoaded("AssetTools"))
+		{
+			BeamRuntimeContentCacheAssetTypeActions = MakeShared<FBeamRuntimeContentCacheAssetTypeActions>();
+			FAssetToolsModule::GetModule().Get().RegisterAssetTypeActions(BeamRuntimeContentCacheAssetTypeActions.ToSharedRef());
+		}
 	}
 }
 
@@ -72,6 +77,11 @@ void FBeamableCoreEditorModule::ShutdownModule()
 
 
 		PropertyModule.NotifyCustomizationModuleChanged();
+	}
+
+	if (FModuleManager::Get().IsModuleLoaded("AssetTools"))
+	{
+		FAssetToolsModule::GetModule().Get().UnregisterAssetTypeActions(BeamRuntimeContentCacheAssetTypeActions.ToSharedRef());
 	}
 }
 

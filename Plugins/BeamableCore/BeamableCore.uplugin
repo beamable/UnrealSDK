@@ -1,39 +1,45 @@
 {
-	"FileVersion": 3,
-	"Version": 1,
-	"VersionName": "0.1.0",
-	"FriendlyName": "Beamable - Core",
-	"Description": "Beamable's core systems, lowest-level API (blueprints and C++) as well as Authentication, Account, Content and Player Stats systems.",
-	"Category": "Online Platform",
-	"CreatedBy": "",
-	"CreatedByURL": "",
-	"DocsURL": "",
-	"MarketplaceURL": "",
-	"SupportURL": "",
-	"CanContainContent": true,
-	"IsBetaVersion": false,
-	"IsExperimentalVersion": false,
-	"Installed": false,
-	"Modules": [
-		{
-			"Name": "BeamableCore",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		},
-		{
-			"Name": "BeamableCoreBlueprintNodes",
-			"Type": "UncookedOnly",
-			"LoadingPhase": "PreDefault"
-		},
-		{
-			"Name": "BeamableCoreEditor",
-			"Type": "Editor",
-			"LoadingPhase": "Default"
-		},
-		{
-			"Name": "BeamableCoreRuntime",
-			"Type": "Runtime",
-			"LoadingPhase": "PostDefault"
-		}
-	]
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "0.1.0",
+  "FriendlyName": "Beamable - Core",
+  "Description": "Beamable's core systems, lowest-level API (blueprints and C++) as well as Authentication, Account, Content and Player Stats systems.",
+  "Category": "Online Platform",
+  "CreatedBy": "",
+  "CreatedByURL": "",
+  "DocsURL": "",
+  "MarketplaceURL": "",
+  "SupportURL": "",
+  "CanContainContent": true,
+  "IsBetaVersion": false,
+  "IsExperimentalVersion": false,
+  "Installed": false,
+  "Modules": [
+    {
+      "Name": "BeamableCore",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    },
+    {
+      "Name": "BeamableCoreBlueprintNodes",
+      "Type": "UncookedOnly",
+      "LoadingPhase": "PreDefault"
+    },
+    {
+      "Name": "BeamableCoreEditor",
+      "Type": "Editor",
+      "LoadingPhase": "Default"
+    },
+    {
+      "Name": "BeamableCoreRuntime",
+      "Type": "Runtime",
+      "LoadingPhase": "PostDefault"
+    }
+  ],
+  "Plugins": [
+    {
+      "Name": "EditorScriptingUtilities",
+      "Enabled": true
+    }
+  ]
 }

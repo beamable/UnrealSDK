@@ -15,6 +15,7 @@ public class BeamableCoreRuntime : ModuleRules
 				"HeadMountedDisplay", "Json", 
 				"JsonUtilities",
 				"DeveloperSettings",
+				"HTTP"
 			}
 		);
 

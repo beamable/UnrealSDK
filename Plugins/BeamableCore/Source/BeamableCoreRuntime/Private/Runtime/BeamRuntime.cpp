@@ -117,7 +117,7 @@ void UBeamRuntime::Initialize_OnRuntimeSubsystemsInitialized(const TArray<FBeamR
 			       ))
 		}
 		GEngine->GetEngineSubsystem<UBeamBackend>()->RealmSecret = RealmSecret;
-		
+
 		// In dedicated servers, after we have set up the RealmSecret --- the UBeamRuntimeSubsystem's OnBeamableStarted gets called.
 		// OnBeamableReady is never called in the server, as the server never authenticates via the UserSlot system.
 		// This is not great semantics, but necessary while we don't have server tokens for authentication. 
@@ -201,12 +201,11 @@ void UBeamRuntime::OnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBea
 			SignedInOps.Reset(Subsystems.Num());
 			for (auto& Subsystem : Subsystems)
 			{
-				const auto Handle = Subsystem->OnUserSignedIn(UserSlot, BeamRealmUser);
+				const auto Handle = Subsystem->OnUserSignedIn(UserSlot, BeamRealmUser, !bDidBeamableRuntimeBoot);
 				SignedInOps.Add(Handle);
-			}
+			}			
 
-			SignedInOpsHandler = FOnWaitCompleteCode::CreateUObject(
-				this, &UBeamRuntime::OnUserSlotAuthenticated_PostUserSignedIn, UserSlot, BeamRealmUser);
+			SignedInOpsHandler = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::OnUserSlotAuthenticated_PostUserSignedIn, UserSlot, BeamRealmUser);
 			SignedInOpsWait = RequestTracker->CPP_WaitAll({}, SignedInOps, {}, SignedInOpsHandler);
 		}
 	}

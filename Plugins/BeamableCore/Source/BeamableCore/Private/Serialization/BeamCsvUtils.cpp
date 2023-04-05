@@ -4,6 +4,7 @@
 #include "Serialization/BeamCsvUtils.h"
 #include "Engine/DataTable.h"
 #include "Serialization/Csv/CsvParser.h"
+#include "UObject/UnrealTypePrivate.h"
 
 void UBeamCsvUtils::AddHeaderRow(FString& Csv, const TArray<FString> HeaderNames)
 {
@@ -20,7 +21,7 @@ void UBeamCsvUtils::AddHeaderRow(FString& Csv, const TArray<FString> HeaderNames
 	ensureAlwaysMsgf(!bHasAllFields, TEXT("The given CSV already has a header. FIRST_LINE=%s, CSV=\n%s"), *FirstLine, *Csv);
 
 	// Then, we insert a row to function as the header
-	Csv.InsertAt(0, FString::Join(HeaderNames, TEXT(",")) + TEXT("\n"));
+	Csv.InsertAt(0, FString::Join(HeaderNames, TEXT(",")) + TEXT("\r\n"));
 }
 
 void UBeamCsvUtils::AddAutoGenKeyField(FString& Csv)

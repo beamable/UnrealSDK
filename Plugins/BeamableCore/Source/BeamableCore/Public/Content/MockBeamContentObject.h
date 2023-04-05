@@ -10,23 +10,20 @@
 #include "AutoGen/Optionals/OptionalBeamCid.h"
 #include "AutoGen/Optionals/OptionalBool.h"
 #include "AutoGen/Optionals/OptionalMapOfInt64.h"
-#include "UObject/Interface.h"
 #include "Content/BeamContentObject.h"
 
 #include "MockBeamContentObject.generated.h"
 
 
 UCLASS(BlueprintType)
-class UMockBeamContentObject : public UBeamContentObject
+class BEAMABLECORE_API UMockBeamContentObject : public UBeamContentObject
 {
 	GENERATED_BODY()
-	
-	
-public:
 
+public:
 	UFUNCTION()
 	void GetContentType_UMockBeamContentObject(FString& Result);
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Value;
 
@@ -87,9 +84,3 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSoftObjectPtr<UTexture2D> UnrealSoftObjRef;
 };
-
-BEGIN_DEFINE_SPEC(FBeamContentObjectSpec, "BeamableUnreal.ContentObject", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
-	UMockBeamContentObject* ContentObject;
-END_DEFINE_SPEC(FBeamContentObjectSpec)
-
-DEFINE_CONTENT_TYPE_NAME(UMockBeamContentObject, "mock")

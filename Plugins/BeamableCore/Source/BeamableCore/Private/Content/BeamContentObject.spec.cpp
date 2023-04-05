@@ -1,6 +1,6 @@
-﻿#include "MockBeamContentObject.h"
+﻿#include "BeamContentObject.spec.h"
 
-#include "Engine/Engine.h"
+#include "Content/MockBeamContentObject.h"
 #include "Misc/AutomationTest.h"
 
 
@@ -13,8 +13,8 @@ void FBeamContentObjectSpec::Define()
 	FString TestValueB = TEXT("2");
 	FString TestSoftObjPath = TEXT("/BeamableCore/Editor/Icons/BeamLogo.BeamLogo");
 	int32 TestValueAInt = 1;
-	int32 TestValueBInt = 2;	
-	
+	int32 TestValueBInt = 2;
+
 	FString FullObject = TEXT(R"({
   "id": "₢Id₢",
   "version": "₢Version₢",
@@ -229,7 +229,7 @@ void FBeamContentObjectSpec::Define()
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢ValueB₢"), *TestValueB);
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢SoftObjPath₢"), *TestSoftObjPath);
 
-	
+
 	Describe("Content Serialization", [=]()
 	{
 		BeforeEach([=, this]()
