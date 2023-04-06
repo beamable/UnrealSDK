@@ -318,7 +318,7 @@ The GraphNodeBaseBeam is the Node UI implementation that enables our Beamable br
 In this module, we have our Runtime environment. It is comprised of two main concepts: the `UBeamRuntime` `GameInstanceSubsystem` and implementations of the `UBeamRuntimeSubsystem`.
 
 ### UBeamRuntime & `UBeamRuntimeSubsystem`-Implementations
-`UBeamRuntime` is responsible for the `FrictionlessAuthentication` flow as well as providing some guarantees and callbacks to the implementations of `UBeamRuntimeSubsystem`. 
+`UBeamRuntime` is responsible for the various Authentication flows the SDK exposes (`FrictionlessAuthentication`, `AuthenticateWithToken`) as well as providing some guarantees and callbacks to the implementations of `UBeamRuntimeSubsystem`. 
 At its core, you can think of this as our SDK's runtime `void main()`.
 
 There are the following key lifecycle points you need to care about:
@@ -328,13 +328,20 @@ You can check out the implementation as it's fully commented if you wish to unde
 
 - `UBeamRuntimeSubsystem::OnBeamableStarted` runs after all the `InitializeWhenUnrealReady` Operations have finished (success or error). It has 2 different behaviours based on whether or not it is running in an Dedicated Server build:
   - **Dedicated Server**: This gets called after the `UBeamBackend` system is configured properly to make signed requests. For that configuration to work, load up the target realm secret from the follow hierarchy: 1st, if we received an cmd line argument called `--realm-secret <realm_secret>`, use it as the secret to sign requests with. 2nd, if there's an environment variable called `BEAMABLE_REALM_SECRET`, use that. Lastly, if neither of these are done --- we assert crash (the message explains what needs to be fixed).
-  - **Non-Dedicated Server**: This only gets called in client builds if if we fail to sign in automatically (or if you disable `Project Settings -> Beamable Core -> AutomaticFrictionlessAuthForOwnerPlayer`). This callback means that you can make un-authenticated requests to Beamable, but NO AUTHENTICATED REQUESTS CAN BE MADE. Typically, this will be used in cases where you don't want to run some code before deciding whether or not to authenticate with Beamable --- but for the most part, can be ignored in game/client builds.
+  - **Non-Dedicated Server with Frictionless Auth turned On**: This gets called if we fail to sign in automatically.
+  - **Non-Dedicated Server with Frictionless Auth turned Off**: If you disable `Project Settings -> Beamable Core -> AutomaticFrictionlessAuthForOwnerPlayer`, this callback gets invoked when the SDK is ready to make un-authenticated requests to Beamable. NO AUTHENTICATED REQUESTS CAN BE MADE before `OnBeamableReady` is called. Typically, this will be used in cases where you don't want to run some code before deciding whether or not to authenticate with Beamable.
   
-- `UBeamRuntimeSubsystem::OnBeamableReady` runs whenever the OwnerUserSlot is authenticated into. This will get called regardless of whether cached local data was used for authentication or if we authenticated via the `FrictionlesAuthentication` flow.
-  - At this point, you can make any authenticated requests using the `Player0` (or whatever you named your Owner User Slot). 
+- `UBeamRuntimeSubsystem::OnBeamableReady` runs whenever the `OwnerUserSlot` (defined in `Project Settings -> Beamable Core`) is authenticated.
+  - This will get called regardless of the authentication method: `UBeamUserSlots::TryLoadSavedUserAtSlot`, `UBeamRuntime::AuthenticateFrictionlessOperation` or `UBeamRuntime::AuthenticateWithTokenOperation`.  
+  - At this point, you can make any authenticated requests using the `Player0` (or whatever you named your Owner User Slot).
+  - At the moment, this will run only the first time a user gets authenticated into their user slot. This _might_ change in the future when we get to the offline support parts of the SDK. 
 
-- `UBeamRuntime::FrictionlessAuthentication` is an `Operation` that checks to see if the given slot is already authenticated. If it is, the operation completes. Otherwise, it makes an `Authenticate` request with the `grant_type = guest` and then another request to fetch the user's gamer tag. If both succeed, the `Operation` is successfully completed.
-  - For most games without local-coop, this should probably be left as an automatic process via `Project Settings -> Beamable Core -> AutomaticFrictionlessAuthForOwnerPlayer` (by default it is).
+- `UBeamRuntime::FrictionlessAuthenticationOperation` is an `Operation` that checks to see if the given slot is already authenticated. If it is, the operation completes. Otherwise, it makes an `Authenticate` request with the `grant_type = guest` and then another request to fetch the user's some useful user data. If both succeed, the `Operation` is successfully completed.
+  - For most games without local-coop, this should probably be left as an automatic process via `Project Settings -> Beamable Core -> AutomaticFrictionlessAuthForOwnerPlayer` (by default it is). 
+  
+- `UBeamRuntime::AuthenticateWithTokenOperation` is an `Operation` that takes an `UTokenResponse*` (it's the response to our `UBeamAuthApi::Authenticate` endpoint). 
+  - This is useful in case you want to turn off `FrictionlessAuthentication` and instead manage the Sign-In/Up process for your users manually.
+  - To use this, call Authenticate with the correct parameters (for email, use `grant_type = password` and pass in the email as `username` and the `password`).
 
 
 Implementations of `UBeamRuntimeSubsystem` are where the bulk of our functionality lives. 
@@ -342,7 +349,7 @@ That being said, we won't have a lot of these in our Core Plugin. Instead, we'll
 However, you might want to make these yourself and/or depend on the ones we build and ship. To that end, here's how to go about that:
 - Figure out the runtime data the system will manage and how to store it in order to expose a good API.
 - Expose an API comprised of Operations and regular UFUNCTIONS to Blueprint.
-- Overried the OnBeamableReady function to run things when UBeamRuntime becomes ready and prepare your subsystem for use.
+- Override the OnBeamableReady function to run things when UBeamRuntime becomes ready and prepare your subsystem for use.
 - If it is a dedicated server subsystem, override the OnBeamableStarted instead.
 
 These are, quite simply, where most of our work will happen. 
