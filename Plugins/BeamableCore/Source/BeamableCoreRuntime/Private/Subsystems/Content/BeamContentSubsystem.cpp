@@ -56,53 +56,47 @@ FBeamOperationHandle UBeamContentSubsystem::InitializeWhenUnrealReady()
 	return Op;
 }
 
-FBeamOperationHandle UBeamContentSubsystem::OnUserSignedIn(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsFirstAuth)
+void UBeamContentSubsystem::OnBeamableReady_Implementation()
 {
 	// If this is the first time we are authenticated with beamable, we'll go fetch the content from our backend
-	if (bIsFirstAuth)
+	FBeamOperationEventHandlerCode OpHandler;
+	OpHandler.BindLambda([](const TArray<FUserSlot>&, FBeamOperationEvent OpEvent)
 	{
-		FBeamOperationEventHandlerCode OpHandler;
-		OpHandler.BindLambda([](const TArray<FUserSlot>&, FBeamOperationEvent OpEvent)
+		if (OpEvent.EventType == ERROR)
 		{
-			if (OpEvent.EventType == ERROR)
-			{
-				// TODO: How should we handle when S3 explodes for some reason?
-			}
-		});
-		FBeamOperationHandle Op = GEngine->GetEngineSubsystem<UBeamRequestTracker>()->CPP_BeginOperation({UserSlot}, GetName(), OpHandler);
+			// TODO: How should we handle when S3 explodes for some reason?
+		}
+	});
+	FBeamOperationHandle Op = GEngine->GetEngineSubsystem<UBeamRequestTracker>()->CPP_BeginOperation({}, GetName(), OpHandler);
 
-		const auto ManifestId = FBeamContentManifestId{TEXT("global")};
-		const auto Request = UGetManifestPublicRequest::Make(FOptionalBeamContentManifestId(ManifestId), GetTransientPackage());
+	const auto ManifestId = FBeamContentManifestId{TEXT("global")};
+	const auto Request = UGetManifestPublicRequest::Make(FOptionalBeamContentManifestId(ManifestId), GetTransientPackage());
 
-		const auto Handler = FOnGetManifestPublicFullResponse::CreateLambda([this, ManifestId, Op](FGetManifestPublicFullResponse Resp)
+	const auto Handler = FOnGetManifestPublicFullResponse::CreateLambda([this, ManifestId, Op](FGetManifestPublicFullResponse Resp)
+	{
+		if (Resp.State == Success)
 		{
-			if (Resp.State == Success)
-			{
-				UBeamRuntimeContentCache* Cache = NewObject<UBeamRuntimeContentCache>();
-				Cache->ManifestId = ManifestId;
+			UBeamRuntimeContentCache* Cache = NewObject<UBeamRuntimeContentCache>();
+			Cache->ManifestId = ManifestId;
 
-				const auto NumEntries = Resp.SuccessData->CsvData->GetRowMap().Num();
-				Cache->Cache.Reserve(NumEntries);
-				Cache->Hashes.Reserve(NumEntries);
+			const auto NumEntries = Resp.SuccessData->CsvData->GetRowMap().Num();
+			Cache->Cache.Reserve(NumEntries);
+			Cache->Hashes.Reserve(NumEntries);
 
-				LiveContent.Add(ManifestId, Cache);
+			LiveContent.Add(ManifestId, Cache);
 
-				DownloadLiveContentObjectsData(ManifestId, Resp.SuccessData, FSimpleDelegate::CreateLambda([Op, this, Cache, ManifestId]
-				                               {
-					                               GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
-				                               }),
-				                               FSimpleDelegate::CreateLambda([Op]
-				                               {
-					                               GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, {});
-				                               }));
-			}
-		});
-		FBeamRequestContext Ctx;
-		ContentApi->CPP_GetManifestPublic(Request, Handler, Ctx, Op, this);
-		return Op;
-	}
-
-	return Super::OnUserSignedIn(UserSlot, BeamRealmUser, bIsFirstAuth);
+			DownloadLiveContentObjectsData(ManifestId, Resp.SuccessData, FSimpleDelegate::CreateLambda([Op, this, Cache, ManifestId]
+			                               {
+				                               GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
+			                               }),
+			                               FSimpleDelegate::CreateLambda([Op]
+			                               {
+				                               GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, {});
+			                               }));
+		}
+	});
+	FBeamRequestContext Ctx;
+	ContentApi->CPP_GetManifestPublic(Request, Handler, Ctx, Op, this);
 }
 
 struct FDownloadContentState
@@ -126,7 +120,7 @@ void UBeamContentSubsystem::DownloadLiveContentObjectsData(const FBeamContentMan
 	TArray<FClientContentInfoTableRow*> Rows;
 	PublicRemoteManifest->CsvData->GetAllRows(TEXT(""), Rows);
 
-	
+
 	if (Rows.Num() == 0)
 	{
 		OnSuccess.ExecuteIfBound();

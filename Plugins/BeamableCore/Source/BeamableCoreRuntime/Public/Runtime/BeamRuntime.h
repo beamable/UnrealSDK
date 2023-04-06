@@ -133,10 +133,23 @@ public:
 	 */
 	FBeamOperationHandle CPP_AuthenticateFrictionlessOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent, UObject* CallingContext = nullptr);
 
+	/**
+	 * Use this if you wish to authenticate by manually making an Authenticate Request to the Auth Service (pass in the Token you get as a response here).
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle AuthenticateWithTokenOperation(FUserSlot UserSlot, UTokenResponse* TokenResponse, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext = nullptr);
+
+	/**
+	 * Use this if you wish to authenticate by manually making an Authenticate Request to the Auth Service (pass in the Token you get as a response here).
+	 */
+	FBeamOperationHandle CPP_AuthenticateWithTokenOperation(FUserSlot UserSlot, const UTokenResponse* TokenResponse, FBeamOperationEventHandlerCode OnOperationEvent,
+	                                                        UObject* CallingContext = nullptr);
+
 	// Operation Implementations
 private:
 	void AuthenticateFrictionless(FUserSlot UserSlot, FBeamOperationHandle Op, UObject* CallingContext);
 	void AuthenticateFrictionless_OnAuthenticated(FAuthenticateFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op);
-	void UpdateAuthenticatedUserData(FUserSlot UserSlot, FString AccessToken, FString RefreshToken, int64 ExpiresIn, FBeamCid Cid, FBeamPid Pid, FBeamOperationHandle Op);
+
+	void UpdateAuthenticatedUserData(FUserSlot UserSlot, const UTokenResponse* Token, FBeamOperationHandle Op);
 	void UpdateAuthenticatedUserData_OnFetchAndUpdateGamerTag(FBasicAccountsGetMeFullResponse Response, FUserSlot UserSlot, FBeamOperationHandle Op);
 };

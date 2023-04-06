@@ -46,13 +46,15 @@ void UBeamRuntime::Initialize_DelayedInit()
 	if (TargetRealm.Cid.AsLong == -1 || TargetRealm.Pid.AsString.IsEmpty())
 	{
 #if WITH_EDITOR
-		UE_LOG(LogBeamRuntime, Error, TEXT("Cannot start beamable with no configured Target Realm!"));
-		UKismetSystemLibrary::QuitGame(GetWorld(), nullptr, EQuitPreference::Quit, true);
+		UE_LOG(LogBeamRuntime, Warning, TEXT("Starting PIE with no Target Realm configured for Beamable will make Beamable not work correctly."
+			       "Please sign-in and select a realm if you want to use Beamable features."));
+
 		//Creates a new notification info, we pass in our text as the parameter.
-		FNotificationInfo Info(LOCTEXT("Notification_NoTargetRealmConfigured", "No Target Realm configured!"));
+		FNotificationInfo Info(LOCTEXT("Notification_NoTargetRealmConfigured", "Starting PIE with no Target Realm configured for Beamable will make Beamable not work correctly."
+		                               "Please sign-in and select a realm if you want to use Beamable features."));
 		//Set a default expire duration
 		Info.ExpireDuration = 5.0f;
-		Info.Image = FCoreStyle::Get().GetBrush(TEXT("MessageLog.Error"));
+		Info.Image = FCoreStyle::Get().GetBrush(TEXT("MessageLog.Warning"));
 		FSlateNotificationManager::Get().AddNotification(Info);
 #else
 		checkf(false, TEXT("Builds with Beamable cannot exist without a configured target realm!"))
@@ -135,38 +137,37 @@ void UBeamRuntime::Initialize_OnRuntimeSubsystemsInitialized(const TArray<FBeamR
 	}
 	else
 	{
-		// Sign in automatically to the owner player slot.		
-		const auto OwnerPlayerUserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
-		if (UserSlotSystem->TryLoadSavedUserAtSlot(OwnerPlayerUserSlot, this))
+		// Sign in automatically to the owner player slot.
+		if (GetDefault<UBeamCoreSettings>()->bAutomaticFrictionlessAuthForOwnerPlayer)
 		{
-			UE_LOG(LogBeamRuntime, Verbose, TEXT("Authenticated User at Slot! SLOT=%s"), *OwnerPlayerUserSlot.Name);
-		}
-		else
-		{
-			// If we are not already signed-into the first user slot and we are configured to automatically run auth, we run it. Otherwise, we call OnBeamableStarted on every runtime subsystem.
-			// OnBeamableStarted basically means we are ready for authentication, but nothing else. And... that until you authenticate into the OwnerPlayer slot, OnBeamableReady functions will not run
-			// on BeamableRuntimeSubsystems.
-			if (!bDidBeamableRuntimeBoot)
+			const auto OwnerPlayerUserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+			if (UserSlotSystem->TryLoadSavedUserAtSlot(OwnerPlayerUserSlot, this))
 			{
-				if (GetDefault<UBeamCoreSettings>()->bAutomaticFrictionlessAuthForOwnerPlayer)
+				UE_LOG(LogBeamRuntime, Verbose, TEXT("Authenticated User at Slot! SLOT=%s"), *OwnerPlayerUserSlot.Name);
+			}
+			else
+			{
+				// If we are not already signed-into the first user slot and we are configured to automatically run auth, we run it. Otherwise, we call OnBeamableStarted on every runtime subsystem.
+				// OnBeamableStarted basically means we are ready for authentication, but nothing else. And... that until you authenticate into the OwnerPlayer slot, OnBeamableReady functions will not run
+				// on BeamableRuntimeSubsystems.
+				if (!bDidBeamableRuntimeBoot)
 				{
 					CPP_AuthenticateFrictionlessOperation(OwnerPlayerUserSlot, {}, this);
 				}
-				else
+			}
+		}
+		else
+		{
+			// By default, only UserSlot at index 0 of RuntimeUserSlots always gets loaded. This actually only be called ONCE during the entire lifecycle of your program.
+			if (const UWorld* World = GetWorld())
+			{
+				if (const UGameInstance* GameInstance = World->GetGameInstance())
 				{
-					// By default, only UserSlot at index 0 of RuntimeUserSlots always gets loaded. This actually only be called ONCE during the entire lifecycle of your program.
-					if (const UWorld* World = GetWorld())
+					const auto Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
+					for (auto& Subsystem : Subsystems)
 					{
-						if (const UGameInstance* GameInstance = World->GetGameInstance())
-						{
-							const auto Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
-							for (auto& Subsystem : Subsystems)
-							{
-								Subsystem->OnBeamableStarted();
-							}
-						}
+						Subsystem->OnBeamableStarted();
 					}
-					bDidBeamableRuntimeBoot = true;
 				}
 			}
 		}
@@ -203,7 +204,7 @@ void UBeamRuntime::OnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBea
 			{
 				const auto Handle = Subsystem->OnUserSignedIn(UserSlot, BeamRealmUser, !bDidBeamableRuntimeBoot);
 				SignedInOps.Add(Handle);
-			}			
+			}
 
 			SignedInOpsHandler = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::OnUserSlotAuthenticated_PostUserSignedIn, UserSlot, BeamRealmUser);
 			SignedInOpsWait = RequestTracker->CPP_WaitAll({}, SignedInOps, {}, SignedInOpsHandler);
@@ -374,14 +375,7 @@ void UBeamRuntime::AuthenticateFrictionless_OnAuthenticated(FAuthenticateFullRes
 	if (Resp.State == Success)
 	{
 		const auto Token = Resp.SuccessData;
-
-		const auto Cid = GetDefault<UBeamCoreSettings>()->TargetRealm.Cid;
-		const auto Pid = GetDefault<UBeamCoreSettings>()->TargetRealm.Pid;
-		const auto AccessToken = Token->AccessToken.Val;
-		const auto RefreshToken = Token->RefreshToken.Val;
-		const auto ExpiresIn = Token->ExpiresIn;
-
-		UpdateAuthenticatedUserData(UserSlot, AccessToken, RefreshToken, ExpiresIn, Cid, Pid, Op);
+		UpdateAuthenticatedUserData(UserSlot, Token, Op);
 	}
 	else
 	{
@@ -389,9 +383,28 @@ void UBeamRuntime::AuthenticateFrictionless_OnAuthenticated(FAuthenticateFullRes
 	}
 }
 
-void UBeamRuntime::UpdateAuthenticatedUserData(FUserSlot UserSlot, FString AccessToken, FString RefreshToken,
-                                               int64 ExpiresIn, FBeamCid Cid, FBeamPid Pid, FBeamOperationHandle Op)
+FBeamOperationHandle UBeamRuntime::AuthenticateWithTokenOperation(FUserSlot UserSlot, UTokenResponse* TokenResponse, FBeamOperationEventHandler Handler, UObject* CallingContext)
 {
+	const auto Op = RequestTrackerSystem->BeginOperation({UserSlot}, GetName(), Handler);
+	UpdateAuthenticatedUserData(UserSlot, TokenResponse, Op);
+	return Op;
+}
+
+FBeamOperationHandle UBeamRuntime::CPP_AuthenticateWithTokenOperation(FUserSlot UserSlot, const UTokenResponse* TokenResponse, FBeamOperationEventHandlerCode Handler, UObject* CallingContext)
+{
+	const auto Op = RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetName(), Handler);
+	UpdateAuthenticatedUserData(UserSlot, TokenResponse, Op);
+	return Op;
+}
+
+void UBeamRuntime::UpdateAuthenticatedUserData(FUserSlot UserSlot, const UTokenResponse* Token, FBeamOperationHandle Op)
+{
+	const auto Cid = GetDefault<UBeamCoreSettings>()->TargetRealm.Cid;
+	const auto Pid = GetDefault<UBeamCoreSettings>()->TargetRealm.Pid;
+	const auto AccessToken = Token->AccessToken.Val;
+	const auto RefreshToken = Token->RefreshToken.Val;
+	const auto ExpiresIn = Token->ExpiresIn;
+
 	UserSlotSystem->SetAuthenticationDataAtSlot(UserSlot, AccessToken, RefreshToken, ExpiresIn, Cid, Pid, this);
 
 	// Makes the GetMe request
@@ -409,7 +422,9 @@ void UBeamRuntime::UpdateAuthenticatedUserData_OnFetchAndUpdateGamerTag(FBasicAc
 	if (Response.State == Success)
 	{
 		const auto GamerTag = Response.SuccessData->Id;
+		const auto Email = Response.SuccessData->Email;
 		UserSlotSystem->SetGamerTagAtSlot(UserSlot, GamerTag, this);
+		if (Email.IsSet) UserSlotSystem->SetEmailAtSlot(UserSlot, Email.Val, this);
 		UserSlotSystem->SaveSlot(UserSlot, this);
 		UserSlotSystem->TriggerUserAuthenticatedIntoSlot(UserSlot, this);
 		RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));

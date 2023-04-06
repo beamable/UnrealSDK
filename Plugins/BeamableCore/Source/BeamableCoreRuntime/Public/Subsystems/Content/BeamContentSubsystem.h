@@ -73,7 +73,7 @@ public:
 	/**
 	 * If it's the first time this callback is being called (by our automatic auth flows for the owner UserSlot), we pull the latest 'global' manifest (default one) and cache it in-memory (and in a local file).
 	 */
-	virtual FBeamOperationHandle OnUserSignedIn(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsFirstAuth) override;
+	virtual void OnBeamableReady_Implementation() override;
 
 private:
 	/**
