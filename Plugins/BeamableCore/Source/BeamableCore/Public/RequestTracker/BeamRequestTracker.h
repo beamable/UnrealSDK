@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "BeamOperation.h"
 #include "BeamBackend/BeamBackend.h"
+#include "Chaos/AABB.h"
 #include "RequestTracker/BeamWaitHandle.h"
 #include "RequestTracker/BeamOperationHandle.h"
 
@@ -49,6 +50,11 @@ private:
 	 */
 	FTickOnBackendCleanUp TickOnBackendCleanUpDelegate;
 
+	/**
+	 * @brief Delegate instance that we bind to a ticking function (every X minutes) that'll run the CleanUp functions for WaitHandles and Operations.  
+	 */
+	FTSTicker::FDelegateHandle TickCleanUpRequestTracker;
+
 	/** @brief Initializes the subsystem.  */
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
@@ -60,7 +66,7 @@ private:
 	 * @param Handle The wait handle whose request dependencies you wish to get.
 	 * @param DependedOnRequests The dependent RequestIds for the given wait handle.
 	 */
-	void GatherRequestIdsFromWaitHandle(const FBeamWaitHandle Handle, TArray<FBeamRequestId>& DependedOnRequests) const;
+	void GatherRequestIdsFromWaitHandle(const FBeamWaitHandle Handle, TArray<FBeamRequestId>& DependedOnRequests, TArray<FBeamOperationId>& DependedOnOperations) const;
 
 	/**
 	 * @brief This is bound to UBeamBackend's request complete delegate.
@@ -68,7 +74,19 @@ private:
 	 * @param RequestId The request that completed.
 	 */
 	UFUNCTION()
-	void HandleRequestIdCompleted(int64 RequestId);
+	void CheckAndCompleteWaitHandles(int64 RequestId);
+
+	/**
+	 * @brief Iterates through all existing wait handles and clean up the ones that are completed and/or cancelled.
+	 */
+	UFUNCTION()
+	void CleanUpWaitHandles();
+
+	/**
+	 * @brief Iterates through all Operations and clean up all complete operations THAT ARE NOT BEING WAITED ON BY ANY WAIT_HANDLES. 
+	 */
+	UFUNCTION()
+	void CleanUpOperations();
 
 	/**
 	 * @brief This is bound to UBeamBackend's CleanUp delegate.
@@ -150,6 +168,11 @@ public:
 	 */
 	TMap<FBeamOperationHandle, FBeamOperationEventHandlerCode> ActiveOperationEventHandlersCode;
 
+	/**
+	 * @brief Maps all Operations to WaitHandles that are waiting on them to complete.
+	 */
+	TMultiMap<FBeamOperationHandle, FBeamWaitHandle> WaitHandlesForActiveOperations;
+
 
 	/**
 	 * @brief This begins an Operation.
@@ -169,7 +192,7 @@ public:
 	 * @param OnEvent An event handler to handle all potential events of this operation.
 	 * @param MaxRequestsInOperation This is the expected number of requests in the operation. -1, to ignore this. 
 	 * @return An Operation Handle you can use to enable callers to wait on the operation. 
-	 */	
+	 */
 	FBeamOperationHandle CPP_BeginOperation(const TArray<FUserSlot>& Participants, const FString& CallingSystem, FBeamOperationEventHandlerCode OnEvent, int MaxRequestsInOperation = -1);
 
 	/**

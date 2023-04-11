@@ -82,6 +82,11 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Request/Response")
 	FBeamCacheConfig GlobalCacheConfiguration{Disabled, 600,};
 
+	/**
+	 * @brief The interval (in seconds) over which the Request Tracker system will run it's CleanUp functions.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Request/Response")
+	float RequestTrackerCleanUpInterval = 300.0f;
 
 	/**
 	 * @brief These are the expected user slots for your game.

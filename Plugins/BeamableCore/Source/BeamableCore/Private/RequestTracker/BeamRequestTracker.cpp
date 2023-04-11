@@ -18,12 +18,24 @@ void UBeamRequestTracker::Initialize(FSubsystemCollectionBase& Collection)
 	Backend = Cast<UBeamBackend>(Collection.InitializeDependency(UBeamBackend::StaticClass()));
 
 	// Set up the RequestId-related cleanup
-	TickOnRequestIdCompletedDelegate.BindUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamRequestTracker, HandleRequestIdCompleted));
+	TickOnRequestIdCompletedDelegate.BindUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamRequestTracker, CheckAndCompleteWaitHandles));
 	Backend->TickOnRequestIdCompletedDelegates.Add(TickOnRequestIdCompletedDelegate);
 
 	// Set up the RequestId-related cleanup
 	TickOnBackendCleanUpDelegate.BindUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamRequestTracker, HandleBackendCleanUp));
 	Backend->TickOnBackendCleanUpDelegates.Add(TickOnBackendCleanUpDelegate);
+
+
+	TickCleanUpRequestTracker = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([this](const float)
+	{
+		// Clean up Completed wait handles
+		CleanUpWaitHandles();
+
+		// Clean up Completed Operations
+		CleanUpOperations();
+
+		return true;
+	}), GetDefault<UBeamCoreSettings>()->RequestTrackerCleanUpInterval);
 }
 
 void UBeamRequestTracker::Deinitialize()
@@ -36,23 +48,26 @@ void UBeamRequestTracker::Deinitialize()
 	TickOnBackendCleanUpDelegate.Clear();
 	TickOnRequestIdCompletedDelegate.Clear();
 
+	FTSTicker::GetCoreTicker().RemoveTicker(TickCleanUpRequestTracker);
+
 	delete WaitHandleId;
 	delete OperationHandleId;
 }
 
-void UBeamRequestTracker::GatherRequestIdsFromWaitHandle(const FBeamWaitHandle Handle, TArray<FBeamRequestId>& DependedOnRequests) const
+void UBeamRequestTracker::GatherRequestIdsFromWaitHandle(const FBeamWaitHandle Handle, TArray<FBeamRequestId>& DependedOnRequests, TArray<FBeamOperationId>& DependedOnOperations) const
 {
 	// We get all the Request Ids that were awaited on directly		
 	ActiveRequestsForWaitHandles.MultiFind(Handle, DependedOnRequests);
 
 	// Then, we get all the operations that we are waiting on
-	TArray<FBeamOperationId> DependedOnOperations;
-	ActiveOperationsForWaitHandles.MultiFind(Handle, DependedOnOperations);
-	for (const auto& Op : DependedOnOperations)
+	TArray<FBeamOperationId> Deps;
+	ActiveOperationsForWaitHandles.MultiFind(Handle, Deps);
+	for (const auto& Op : Deps)
 	{
 		check(ActiveOperations.Contains(Op))
-		const auto State = ActiveOperationState.FindChecked(Op);
+		DependedOnOperations.Add(Op);
 
+		const auto State = ActiveOperationState.FindChecked(Op);
 		for (const auto& Req : State.DependentRequests)
 		{
 			DependedOnRequests.AddUnique(Req);
@@ -66,15 +81,15 @@ void UBeamRequestTracker::GatherRequestIdsFromWaitHandle(const FBeamWaitHandle H
 	{
 		const auto DependedHandle = ActiveWaitHandles.FindByPredicate([DependentWaitHandleId](const FBeamWaitHandle& wh) { return wh.WaitHandleId == DependentWaitHandleId; });
 		ensureAlwaysMsgf(DependedHandle, TEXT("Somehow you are depending on a wait handle that doesn't exist... This should be impossible"));
-		GatherRequestIdsFromWaitHandle(*DependedHandle, DependedOnRequests);
+		GatherRequestIdsFromWaitHandle(*DependedHandle, DependedOnRequests, DependedOnOperations);
 	}
 }
 
-void UBeamRequestTracker::HandleRequestIdCompleted(int64)
+void UBeamRequestTracker::CheckAndCompleteWaitHandles(int64)
 {
 	// Go through all active wait handles and figure out which of them have been completed.
 	// If they have, we run their register FOnWaitCompleted callback.
-	for (int i = 0; i < ActiveWaitHandles.Num(); ++i)
+	for (int i = ActiveWaitHandles.Num() - 1; i >= 0; --i)
 	{
 		auto& ActiveWaitHandle = ActiveWaitHandles[i];
 		if (ActiveWaitHandle.Status == Completed)
@@ -85,16 +100,26 @@ void UBeamRequestTracker::HandleRequestIdCompleted(int64)
 
 		// We get all the Request Ids that were awaited on directly
 		TArray<FBeamRequestId> DependedOnRequests;
-		GatherRequestIdsFromWaitHandle(ActiveWaitHandle, DependedOnRequests);
+		TArray<FBeamOperationId> DependedOnOperations;
+		GatherRequestIdsFromWaitHandle(ActiveWaitHandle, DependedOnRequests, DependedOnOperations);
 
-		// We sort the dependencies so that they are returned in the order they were made.
+		// We also sort the dependencies so that they are returned in the order they were made.
 		DependedOnRequests.Sort();
-
 
 		// Handle the All case: Basically, all the dependency nodes need to be completed in order for us to fire off the wait event.
 		if (ActiveWaitHandle.Mode == All)
 		{
 			auto bAreAllDepsDone = true;
+
+			// If operations we depend on are still running, we are not done.
+			for (const auto& Op : DependedOnOperations)
+			{
+				check(ActiveOperations.Contains(Op))
+				const auto State = ActiveOperationState.FindChecked(Op);
+				bAreAllDepsDone &= State.Status != FBeamOperationState::ONGOING;
+			}
+
+			// If requests (from within each operation or individually made) are still running, we are not done.
 			for (const auto& DependedOnId : DependedOnRequests)
 			{
 				const auto& DependedOnCtx = Backend->InFlightRequestContexts.FindRef(DependedOnId);
@@ -139,69 +164,118 @@ void UBeamRequestTracker::HandleRequestIdCompleted(int64)
 	}
 }
 
+
+void UBeamRequestTracker::CleanUpWaitHandles()
+{
+	// Go through all active wait handles and figure out which of them have been completed.
+	// If they have, we run their register FOnWaitCompleted callback.
+	for (int i = ActiveWaitHandles.Num() - 1; i >= 0; --i)
+	{
+		auto ActiveWaitHandle = ActiveWaitHandles[i];
+		if (ActiveWaitHandle.Status != InFlight)
+		{
+			// Notify the Operations that this wait handle was completed so that any Operation that was dependent on it can clean itself up correctly in CleanUpOperations().
+			TArray<FBeamRequestId> DependedOnRequests;
+			TArray<FBeamOperationId> DependedOnOperations;
+			GatherRequestIdsFromWaitHandle(ActiveWaitHandle, DependedOnRequests, DependedOnOperations);
+			// First, we make sure remove this completed wait handle from the map of Operation->WaitHandles that depend on it.
+			for (const auto& DependedOnOperation : DependedOnOperations)
+			{
+				WaitHandlesForActiveOperations.Remove(DependedOnOperation, ActiveWaitHandle);
+			}
+
+			// Clear the handle from active ones
+			UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Beamable CleanUp | Cleaning Up Data associated with WaitHandle. WAIT_HANDLE_ID=%llu"), ActiveWaitHandle.WaitHandleId);
+			ActiveWaitHandles.RemoveAt(i);
+
+			// Clear the handle from the map of dependencies for them.
+			ActiveRequestsForWaitHandles.Remove(ActiveWaitHandle);
+			ActiveOperationsForWaitHandles.Remove(ActiveWaitHandle);
+			ActiveWaitHandlesForWaitHandles.Remove(ActiveWaitHandle);
+
+			// Clear the callback associated with the handle
+			ActiveWaitHandleCallbacks.Remove(ActiveWaitHandle);
+		}
+	}
+}
+
+
+void UBeamRequestTracker::CleanUpOperations()
+{
+	// Go through all active wait handles and figure out which of them have been completed.
+	// If they have, we run their register FOnWaitCompleted callback.
+	for (int i = ActiveOperations.Num() - 1; i >= 0; --i)
+	{
+		const auto OpId = ActiveOperations[i];
+
+		// We skip all non-completed operations
+		if (const auto& Op = ActiveOperationState[OpId]; Op.Status == FBeamOperationState::ONGOING)
+		{
+			UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Beamable Operations | Operation is ongoing so we won't clean it up. OP_ID=%llu"), OpId.OperationId);
+			continue;
+		}
+
+		// If they are completed, we need to figure out if anyone depends on it.
+		const auto bIsDependedOn = WaitHandlesForActiveOperations.Contains(OpId);
+		auto bDependenciesAreFinished = !bIsDependedOn;
+		if (bIsDependedOn)
+		{
+			TArray<FBeamWaitHandle> WaitHandles;
+			WaitHandlesForActiveOperations.MultiFind(OpId, WaitHandles);
+			for (const auto WaitHandle : WaitHandles)
+			{
+				bDependenciesAreFinished &= WaitHandle.Status != Completed;
+			}
+		}
+
+		// If the operation is done and no wait handle depends on it, just clean it up.
+		if (bDependenciesAreFinished)
+		{
+			UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Beamable CleanUp | Cleaning Up Operation. OP_ID=%llu"), OpId.OperationId);
+			ActiveOperations.RemoveAt(i);
+			ActiveOperationState.Remove(OpId);
+			ActiveOperationEventHandlers.Remove(OpId);
+			WaitHandlesForActiveOperations.Remove(OpId);
+		}
+	}
+}
+
 void UBeamRequestTracker::HandleBackendCleanUp(TArray<int64>& OutUsingRequestIds)
 {
-	// We start by finding all handles that are completed. 
-	TArray<FBeamWaitHandle> WaitHandlesToCleanUp;
-	TArray<FBeamOperationHandle> WaitedOnOperationHandles;
-	for (const auto& ActiveWaitHandle : ActiveWaitHandles)
-	{
-		if (ActiveWaitHandle.Status == Completed)
-			WaitHandlesToCleanUp.Add(ActiveWaitHandle);
-	}
-
-	// Then we go through them and clean our internal state up.
-	for (const auto& HandleToCleanUp : WaitHandlesToCleanUp)
-	{
-		UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Beamable CleanUp | Cleaning Up Data associated with WaitHandle. WAIT_HANDLE_ID=%llu"), HandleToCleanUp.WaitHandleId);
-
-		// Clear the handle from active ones
-		ActiveWaitHandles.Remove(HandleToCleanUp);
-
-		// Clear the handle from the map of dependencies for them.
-		ActiveRequestsForWaitHandles.Remove(HandleToCleanUp);
-		ActiveOperationsForWaitHandles.Remove(HandleToCleanUp);
-		ActiveWaitHandlesForWaitHandles.Remove(HandleToCleanUp);
-
-		// Clear the callback associated with the handle
-		ActiveWaitHandleCallbacks.Remove(HandleToCleanUp);
-	}
-
-	// Then, we go through all the ActiveOperations and find all operations that are no longer ongoing...
-	TArray<FBeamOperationHandle> OperationsToCleanUp;
-	for (const auto& ActiveOperationId : ActiveOperations)
-	{
-		const auto State = ActiveOperationState.FindChecked(ActiveOperationId);
-		if (State.Status != FBeamOperationState::ONGOING)
-			OperationsToCleanUp.Add(ActiveOperationId);
-	}
-
-	// ... and we clean them up.
-	for (const auto& CompletedOperationId : OperationsToCleanUp)
-	{
-		ActiveOperations.Remove(CompletedOperationId);
-		ActiveOperationState.Remove(CompletedOperationId);
-		ActiveOperationEventHandlers.Remove(CompletedOperationId);
-	}
-
 	// Finally, we go through the current wait handles and operations to find the all request ids that  
 	TArray<FBeamRequestId> RequestIdsHelper;
 	RequestIdsHelper.Reserve(16);
 
+	TArray<FBeamOperationId> IdsHelper;
+	TArray<FBeamOperationId> DependencyOperationIds;
+	IdsHelper.Reserve(4);
+	DependencyOperationIds.Reserve(16);
+
 	// For every active wait handle add their Request Ids so that BeamBackend knows not to clean them up yet.
 	for (const auto& ActiveWaitHandle : ActiveWaitHandles)
 	{
-		ActiveRequestsForWaitHandles.MultiFind(ActiveWaitHandle, RequestIdsHelper);
-		for (const auto& ReqId : RequestIdsHelper) OutUsingRequestIds.AddUnique(ReqId);
-		RequestIdsHelper.Reset();
+		if (ActiveWaitHandle.Status == InFlight)
+		{
+			ActiveRequestsForWaitHandles.MultiFind(ActiveWaitHandle, RequestIdsHelper);
+			for (const auto& ReqId : RequestIdsHelper) OutUsingRequestIds.AddUnique(ReqId);
+
+			ActiveOperationsForWaitHandles.MultiFind(ActiveWaitHandle, IdsHelper);
+			DependencyOperationIds.Append(IdsHelper);
+
+			RequestIdsHelper.Reset();
+			IdsHelper.Reset();
+		}
 	}
 
 	// For every active operation add their Request Ids so that BeamBackend knows not to clean them up yet.
 	for (const auto& ActiveOperationId : ActiveOperations)
 	{
 		const auto State = ActiveOperationState.FindChecked(ActiveOperationId);
-		for (const auto& Req : State.DependentRequests)
-			OutUsingRequestIds.AddUnique(Req);
+		if (State.Status == FBeamOperationState::ONGOING || DependencyOperationIds.Contains(ActiveOperationId.OperationId))
+		{
+			for (const auto& Req : State.DependentRequests)
+				OutUsingRequestIds.AddUnique(Req);
+		}
 	}
 }
 
@@ -210,7 +284,7 @@ FBeamWaitHandle UBeamRequestTracker::WaitAll(const TArray<FBeamRequestContext>& 
 {
 	// Ensures we get a valid Next Id even if requests get made from multiple threads.
 	const auto NextId = _InterlockedIncrement(WaitHandleId);
-	const auto WaitHandle = FBeamWaitHandle{NextId, Backend, All};
+	const auto WaitHandle = FBeamWaitHandle{NextId, Backend, All, InFlight};
 
 	ActiveWaitHandles.Add(WaitHandle);
 
@@ -232,6 +306,7 @@ FBeamWaitHandle UBeamRequestTracker::WaitAll(const TArray<FBeamRequestContext>& 
 
 		UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Adding Operation Dependency to WaitHandle. OWNER_WAIT_HANDLE=%lld, OPERATION_ID=%lld"), WaitHandle.WaitHandleId, Operation.OperationId);
 		ActiveOperationsForWaitHandles.AddUnique(WaitHandle, Operation.OperationId);
+		WaitHandlesForActiveOperations.Add(Operation, WaitHandle);
 	}
 
 	for (const auto& WaitDep : Waits)
@@ -250,25 +325,7 @@ FBeamWaitHandle UBeamRequestTracker::WaitAll(const TArray<FBeamRequestContext>& 
 	// We only run this section if all the dependencies exist. 
 	if (bDepExists)
 	{
-		TArray<int64> DependedOnRequests;
-		GatherRequestIdsFromWaitHandle(WaitHandle, DependedOnRequests);
-
-		bool bAreAllComplete = true;
-		for (const auto ReqId : DependedOnRequests)
-		{
-			bAreAllComplete &= Backend->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed;
-		}
-		// If all dependencies are already completed, we tick this to run the callback immediately.
-		// Couple of things to note:
-		//   - The ID here is irrelevant so we pass in -1. Its irrelevant because we always update all WaitHandles when we run this tick.
-		//   - This is OK to run as the request timeout is significantly smaller than the amount of time we wait between BeamBackend clean up ticks so we are guaranteed to still have the
-		//     data for Requests/Operations/Wait Handles every time this runs.
-		if (bAreAllComplete)
-		{
-			HandleRequestIdCompleted(-1);
-			UE_LOG(LogBeamRequestTracker, Warning,
-			       TEXT("All Wait Dependencies were completed by the time you called this. Consider revisiting your code that caused this to happen. OWNER_WAIT_HANDLE=%lld"), WaitHandle.WaitHandleId);
-		}
+		CheckAndCompleteWaitHandles(-1);
 	}
 
 	return WaitHandle;
@@ -279,7 +336,7 @@ FBeamWaitHandle UBeamRequestTracker::CPP_WaitAll(const TArray<FBeamRequestContex
 {
 	// Ensures we get a valid Next Id even if requests get made from multiple threads.
 	const auto NextId = _InterlockedIncrement(WaitHandleId);
-	const auto WaitHandle = FBeamWaitHandle{NextId, Backend, All};
+	const auto WaitHandle = FBeamWaitHandle{NextId, Backend, All, InFlight};
 
 	ActiveWaitHandles.Add(WaitHandle);
 
@@ -301,6 +358,7 @@ FBeamWaitHandle UBeamRequestTracker::CPP_WaitAll(const TArray<FBeamRequestContex
 
 		UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Adding Operation Dependency to WaitHandle. OWNER_WAIT_HANDLE=%lld, OPERATION_ID=%lld"), WaitHandle.WaitHandleId, Operation.OperationId);
 		ActiveOperationsForWaitHandles.AddUnique(WaitHandle, Operation.OperationId);
+		WaitHandlesForActiveOperations.Add(Operation, WaitHandle);
 	}
 
 	for (const auto& WaitDep : Waits)
@@ -319,25 +377,7 @@ FBeamWaitHandle UBeamRequestTracker::CPP_WaitAll(const TArray<FBeamRequestContex
 	// We only run this section if all the dependencies exist. 
 	if (bDepExists)
 	{
-		TArray<int64> DependedOnRequests;
-		GatherRequestIdsFromWaitHandle(WaitHandle, DependedOnRequests);
-
-		bool bAreAllComplete = true;
-		for (const auto ReqId : DependedOnRequests)
-		{
-			bAreAllComplete &= Backend->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed;
-		}
-		// If all dependencies are already completed, we tick this to run the callback immediately.
-		// Couple of things to note:
-		//   - The ID here is irrelevant so we pass in -1. Its irrelevant because we always update all WaitHandles when we run this tick.
-		//   - This is OK to run as the request timeout is significantly smaller than the amount of time we wait between BeamBackend clean up ticks so we are guaranteed to still have the
-		//     data for Requests/Operations/Wait Handles every time this runs.
-		if (bAreAllComplete)
-		{
-			HandleRequestIdCompleted(-1);
-			UE_LOG(LogBeamRequestTracker, Verbose, TEXT("All Wait Dependencies were completed by the time you called this. Be extra careful when doing this. OWNER_WAIT_HANDLE=%lld"),
-			       WaitHandle.WaitHandleId);
-		}
+		CheckAndCompleteWaitHandles(-1);
 	}
 
 	return WaitHandle;
@@ -406,8 +446,9 @@ void UBeamRequestTracker::TriggerOperationEvent(const FBeamOperationHandle& Op, 
 void UBeamRequestTracker::TriggerOperationEventFull(const FBeamOperationHandle& Op, const EBeamOperationEventType Type, uint8 SubEvent, const TArray<FUserSlot>& UserSlots, const FString& EventData,
                                                     const FString& CallingSystem, const int64 RequestId)
 {
-	checkf(ActiveOperationState.FindRef(Op).Status <= 0, TEXT("Cannot trigger an operation event after it's being completed! %s, %d"), *ActiveOperationState.FindRef(Op).CallingSystem, ActiveOperationState.FindRef(Op).Status);
-	
+	checkf(ActiveOperationState.FindRef(Op).Status <= 0, TEXT("Cannot trigger an operation event after it's being completed! %s, %d"), *ActiveOperationState.FindRef(Op).CallingSystem,
+	       ActiveOperationState.FindRef(Op).Status);
+
 	const auto& OperationEventHandlerCode = ActiveOperationEventHandlersCode.Find(Op);
 	const auto& OperationEventHandler = ActiveOperationEventHandlers.Find(Op);
 

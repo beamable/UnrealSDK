@@ -21,7 +21,7 @@ void UBeamCsvUtils::AddHeaderRow(FString& Csv, const TArray<FString> HeaderNames
 	ensureAlwaysMsgf(!bHasAllFields, TEXT("The given CSV already has a header. FIRST_LINE=%s, CSV=\n%s"), *FirstLine, *Csv);
 
 	// Then, we insert a row to function as the header
-	Csv.InsertAt(0, FString::Join(HeaderNames, TEXT(",")) + TEXT("\r\n"));
+	Csv.InsertAt(0, FString::Join(HeaderNames, TEXT(",")) + TEXT("\n"));
 }
 
 void UBeamCsvUtils::AddAutoGenKeyField(FString& Csv)
