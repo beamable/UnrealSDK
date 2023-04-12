@@ -1,5 +1,9 @@
 ﻿#pragma once
 
+#include "Json/Public/Serialization/JsonWriter.h"
+#include "Json/Public/Policies/CondensedJsonPrintPolicy.h"
+#include "Json/Public/Policies/PrettyJsonPrintPolicy.h"
+
 #include "BeamJsonSerializable.generated.h"
 
 /**
@@ -14,7 +18,7 @@ typedef TSharedRef<TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>> TUnrealPr
 
 
 USTRUCT(BlueprintType)
-struct FBeamJsonSerializable
+struct BEAMABLECORE_API FBeamJsonSerializable
 {
 	GENERATED_BODY()
 

@@ -10,7 +10,7 @@ public class BeamableUnreal : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "BeamableCore", "BeamableCoreRuntime" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "BeamableCore", "BeamableCoreRuntime", "Json", "JsonUtilities", "HTTP" });
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

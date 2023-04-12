@@ -3,13 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBaseResponseBodyInterface.h"
 #include "HttpManager.h"
 
 
 #include "BeamEnvironment.h"
+#include "BeamLogging.h"
 
 #include "BeamBackend/RequestType.h"
 #include "BeamBackend/BeamFullResponse.h"
+#include "Interfaces/IHttpResponse.h"
 
 #include "UserSlots/BeamUserSlots.h"
 
@@ -162,6 +165,14 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FTickOnBackendCleanUp, TArray<int64>&, OutUsin
 */
 DECLARE_DYNAMIC_DELEGATE_OneParam(FTickOnRequestIdCompleted, int64, CompletedRequestId);
 
+
+DECLARE_STATS_GROUP(TEXT("BeamBackend"), STATGROUP_BeamBackend, STATCAT_Backend)
+
+DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("RequestsStarted"), STATID_RequestStarted, STATGROUP_BeamBackend)
+DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("RequestsSucceeded"), STATID_RequestSucceeded, STATGROUP_BeamBackend)
+DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("RequestsFailed"), STATID_RequestFailed, STATGROUP_BeamBackend)
+DECLARE_DWORD_ACCUMULATOR_STAT(TEXT("RequestsCancelled"), STATID_RequestCancelled, STATGROUP_BeamBackend)
+
 /**
  * 
  */
@@ -208,10 +219,20 @@ private:
 
 
 	template <class TRequestData>
-	static void StaticCheckForRequestType();
+	static void StaticCheckForRequestType()
+	{
+		static_assert(TIsDerivedFrom<TRequestData, IBeamBaseRequestInterface>::Value,
+					  "TRequestData must be a IBeamBaseRequestInterface type.");
+		static_assert(TIsDerivedFrom<TRequestData, UObject>::Value, "TRequestData must be a UObject type.");
+	}
 
 	template <class TResponseData>
-	static void StaticCheckForResponseType();
+	static void StaticCheckForResponseType()
+	{
+		static_assert(TIsDerivedFrom<TResponseData, IBeamBaseResponseBodyInterface>::Value,
+					  "TResponseData must be a IBeamBaseResponseBodyInterface type.");
+		static_assert(TIsDerivedFrom<TResponseData, UObject>::Value, "TResponseData must be a UObject type.");
+	}
 
 	void TryTriggerRequestCompleteDelegates(const int64& RequestId);
 
@@ -398,7 +419,74 @@ public:
 	 */
 	template <class TRequestData>
 	TUnrealRequestPtr CreateRequest(int64& OutRequestId, const FBeamRealmHandle& TargetRealm,
-	                                const FBeamRetryConfig& RetryConfig, const TRequestData* RequestData);
+	                                const FBeamRetryConfig& RetryConfig, const TRequestData* RequestData)
+	{
+		StaticCheckForRequestType<TRequestData>();
+
+		// Ensures we get a valid Next Id even if requests get made from multiple threads.
+		int64 ReqId;
+		auto Req = CreateUnpreparedRequest(ReqId, RetryConfig);
+		PrepareBeamableRequestToRealm(Req, TargetRealm);
+		PrepareBeamableRequestVerbRouteBody<TRequestData>(Req, RequestData, BeamEnvironment->GetAPIUrl());
+
+		const auto RequestContext = FBeamRequestContext{ReqId, RetryConfig, TargetRealm, -1, FUserSlot(""), None};
+
+		// Keep track of this request and it's data. 
+		InFlightRequestContexts.Add(ReqId, RequestContext);
+		InFlightRequestData.Add(RequestContext,
+		                        TScriptInterface<IBeamBaseRequestInterface>(const_cast<TRequestData*>(RequestData)));
+
+		// Store make sure we have a slot waiting for the response/error value to be added
+		InFlightResponseBodyData.Add(RequestContext, nullptr);
+		InFlightResponseErrorData.Add(RequestContext, FBeamErrorResponse{});
+
+
+		INC_DWORD_STAT(STATID_RequestStarted)
+		OutRequestId = ReqId;
+		return Req;
+	}
+
+	/**
+	 * @brief Creates a Microservice Request and prepares it to be sent out.
+	 * This does not bind the lambda --- see any auto-generated API to understand how to manually make a beamable request.
+	 * 
+	 * @tparam TRequestData A type that implements the FBeamBaseRequest struct.
+	 * @param OutRequestId  The RequestId assigned to the returned TUnrealRequest.
+	 * @param TargetRealm The Realm with which we are communicating with.
+	 * @param RetryConfig The Retry Configuration for this request. 
+	 * @param RequestData An instance of the request type.
+	 * @param Prefix The Prefix for the Microservice that'll handle this request.
+	 * 
+	 * @return A TUnrealRequest object that will be tracked by UBeamBackend.
+	 */
+	template <class TRequestData>
+	TUnrealRequestPtr CreateMicroserviceRequest(int64& OutRequestId, const FBeamRealmHandle& TargetRealm,
+	                                            const FBeamRetryConfig& RetryConfig, const TRequestData* RequestData, const FString& Prefix)
+	{
+		StaticCheckForRequestType<TRequestData>();
+
+		// Ensures we get a valid Next Id even if requests get made from multiple threads.
+		int64 ReqId;
+		auto Req = CreateUnpreparedRequest(ReqId, RetryConfig);
+		PrepareBeamableRequestToRealm(Req, TargetRealm);
+		PrepareBeamableRequestVerbRouteBody<TRequestData>(Req, RequestData, BeamEnvironment->GetAPIUrl(), TargetRealm, Prefix);
+
+		const auto RequestContext = FBeamRequestContext{ReqId, RetryConfig, TargetRealm, -1, FUserSlot(""), None};
+
+		// Keep track of this request and it's data. 
+		InFlightRequestContexts.Add(ReqId, RequestContext);
+		InFlightRequestData.Add(RequestContext,
+		                        TScriptInterface<IBeamBaseRequestInterface>(const_cast<TRequestData*>(RequestData)));
+
+		// Store make sure we have a slot waiting for the response/error value to be added
+		InFlightResponseBodyData.Add(RequestContext, nullptr);
+		InFlightResponseErrorData.Add(RequestContext, FBeamErrorResponse{});
+
+
+		INC_DWORD_STAT(STATID_RequestStarted)
+		OutRequestId = ReqId;
+		return Req;
+	}
 
 	/**
 	 * @brief Creates an authenticated request and prepares it to be sent out.
@@ -416,7 +504,85 @@ public:
 	template <typename TRequestData>
 	TUnrealRequestPtr CreateAuthenticatedRequest(int64& OutRequestId, const FBeamRealmHandle& TargetRealm,
 	                                             const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
-	                                             const TRequestData* RequestData);
+	                                             const TRequestData* RequestData)
+	{
+		StaticCheckForRequestType<TRequestData>();
+
+		// Ensures we get a valid Next Id even if requests get made from multiple threads.
+		int64 ReqId;
+		auto Req = CreateUnpreparedRequest(ReqId, RetryConfig);
+		PrepareBeamableRequestToRealmWithAuthToken(Req, TargetRealm, AuthToken);
+		PrepareBeamableRequestVerbRouteBody<TRequestData>(Req, RequestData, BeamEnvironment->GetAPIUrl());
+
+		// Add to the InFlight request list
+		FUserSlot OutUserSlot;
+		FBeamRealmUser OutUserData;
+		BeamUserSlots->GetUserDataWithRefreshTokenAndPid(AuthToken.RefreshToken, TargetRealm.Pid, OutUserData, OutUserSlot);
+
+		const auto RequestContext = FBeamRequestContext{ReqId, RetryConfig, TargetRealm, -1, OutUserSlot, None};
+
+		// Keep track of this request and it's data. 
+		InFlightRequestContexts.Add(ReqId, RequestContext);
+		InFlightRequestData.Add(RequestContext,
+		                        TScriptInterface<IBeamBaseRequestInterface>(const_cast<TRequestData*>(RequestData)));
+
+		// Store make sure we have a slot waiting for the response/error value to be added
+		InFlightResponseBodyData.Add(RequestContext, nullptr);
+		InFlightResponseErrorData.Add(RequestContext, FBeamErrorResponse{});
+
+		OutRequestId = ReqId;
+		return Req;
+	}
+
+
+	/**
+	 * @brief Creates an authenticated request and prepares it to be sent out.
+	 * This does not bind the lambda --- see any auto-generated API to understand how to manually make a beamable request.
+	 * 
+	 * @tparam TRequestData A type that implements the FBeamBaseRequest struct.
+	 * @param OutRequestId  The RequestId assigned to the returned TUnrealRequest.
+	 * @param TargetRealm The Realm with which we are communicating with.
+	 * @param RetryConfig The Retry Configuration for this request.
+	 * @param AuthToken An AuthenticationToken to be used to make the request.
+	 * @param RequestData An instance of the request type.
+	 * @param Prefix The Prefix for the Microservice that'll handle this request.
+	 * 
+	 * @return A TUnrealRequest object that will be tracked by UBeamBackend.
+	 */
+	template <typename TRequestData>
+	TUnrealRequestPtr CreateMicroserviceAuthenticatedRequest(int64& OutRequestId, const FBeamRealmHandle& TargetRealm,
+	                                                         const FBeamRetryConfig& RetryConfig,
+	                                                         const FBeamAuthToken& AuthToken,
+	                                                         const TRequestData* RequestData,
+	                                                         const FString& Prefix)
+	{
+		StaticCheckForRequestType<TRequestData>();
+
+		// Ensures we get a valid Next Id even if requests get made from multiple threads.
+		int64 ReqId;
+		auto Req = CreateUnpreparedRequest(ReqId, RetryConfig);
+		PrepareBeamableRequestToRealmWithAuthToken(Req, TargetRealm, AuthToken);
+		PrepareBeamableRequestVerbRouteBody<TRequestData>(Req, RequestData, BeamEnvironment->GetAPIUrl(), TargetRealm, Prefix);
+
+		// Add to the InFlight request list
+		FUserSlot OutUserSlot;
+		FBeamRealmUser OutUserData;
+		BeamUserSlots->GetUserDataWithRefreshTokenAndPid(AuthToken.RefreshToken, TargetRealm.Pid, OutUserData, OutUserSlot);
+
+		const auto RequestContext = FBeamRequestContext{ReqId, RetryConfig, TargetRealm, -1, OutUserSlot, None};
+
+		// Keep track of this request and it's data. 
+		InFlightRequestContexts.Add(ReqId, RequestContext);
+		InFlightRequestData.Add(RequestContext,
+		                        TScriptInterface<IBeamBaseRequestInterface>(const_cast<TRequestData*>(RequestData)));
+
+		// Store make sure we have a slot waiting for the response/error value to be added
+		InFlightResponseBodyData.Add(RequestContext, nullptr);
+		InFlightResponseErrorData.Add(RequestContext, FBeamErrorResponse{});
+
+		OutRequestId = ReqId;
+		return Req;
+	}
 
 	/**
 	 * @brief Creates a TUnrealRequest that is tied to a specific InFlightRequestId.
@@ -497,7 +663,67 @@ public:
 	 */
 	template <typename TRequestData>
 	void PrepareBeamableRequestVerbRouteBody(const TUnrealRequestPtr& Request, const TRequestData* RequestData,
-	                                         const FString& TargetBeamableUrl);
+	                                         const FString& TargetBeamableUrl)
+	{
+		StaticCheckForRequestType<TRequestData>();
+
+		// Build Route --- this is determined by the environment we are in plus some other stuff
+		// Build verb --- this is solely determined by the type of request we are making.
+		// Build body from the request object			
+		FString Route = TargetBeamableUrl, Verb = TEXT(""), Body = TEXT("");
+		RequestData->BuildRoute(Route);
+		RequestData->BuildVerb(Verb);
+		RequestData->BuildBody(Body);
+
+		// Set the Verb/Route/Body...
+		Request->SetURL(Route);
+		Request->SetVerb(Verb);
+		Request->SetContentAsString(Body);
+
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Verb, Route and Body: VERB=%s ROUTE=%s, BODY=%s"),
+		       *Verb, *Route, *Body);
+	}
+
+
+	/**
+	 * @brief Prepares an TUnrealRequest using any UStruct containing the data (route and body params) we need to make the request to a Microservice.
+	 * @tparam TRequestData A type that implements the FBeamBaseRequest struct.
+	 * @param RequestData An instance of the request type.
+	 * @param Request The actual HttpRequest we are configuring to send out through the Unreal Http Module.
+	 * @param TargetBeamableUrl The target beamable URL --- typically from the current UBeamEnvironment.
+	 * @param RealmHandle The realm handle that we are talking to. 
+	 * @param Prefix The Prefix for the Microservice that we should talk to.
+	 */
+	template <typename TRequestData>
+	void PrepareBeamableRequestVerbRouteBody(const TUnrealRequestPtr& Request,
+	                                         const TRequestData* RequestData,
+	                                         const FString& TargetBeamableUrl,
+	                                         const FBeamRealmHandle& RealmHandle,
+	                                         const FString& Prefix)
+	{
+		StaticCheckForRequestType<TRequestData>();
+		FString Route = TEXT(""), Verb = TEXT(""), Body = TEXT("");
+
+		// Build Route --- Microservice requests return a string in the following format: 'micro_{servicename}/{endpoint}'
+		RequestData->BuildRoute(Route);
+		Route = TargetBeamableUrl + FString::Format(TEXT("/basic/{0}.{1}.{2}{3}"),
+		                                            {RealmHandle.Cid.AsString, RealmHandle.Pid.AsString, Prefix, Route});
+
+		// Build verb --- this is always POST in the case of a Microservice
+		RequestData->BuildVerb(Verb);
+
+		// Build body from the request object			
+		RequestData->BuildBody(Body);
+
+		// Set the Verb/Route/Body...
+		Request->SetURL(Route);
+		Request->SetVerb(Verb);
+		Request->SetContentAsString(Body);
+
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Verb, Route and Body: VERB=%s ROUTE=%s, BODY=%s"),
+		       *Verb, *Route, *Body);
+	}
+
 
 	/**
 	 * @brief The blueprint-only version of the Beamable Request Processor implementation. This generates a function to be used as the lambda for the HttpRequest completion.
@@ -521,7 +747,48 @@ public:
 	FBeamRequestProcessor MakeBlueprintRequestProcessor(const int64& RequestId, TRequestData* RequestData,
 	                                                    TSuccessCallback OnSuccess, TErrorCallback OnError,
 	                                                    TCompleteCallback OnComplete,
-	                                                    const UObject* CallingContext = nullptr);
+	                                                    const UObject* CallingContext = nullptr)
+	{
+		StaticCheckForRequestType<TRequestData>();
+		StaticCheckForResponseType<TResponseData>();
+
+		UE_LOG(LogBeamBackend, Verbose,
+		       TEXT("Request Preparation - Processor Preparation: Making Blueprint Un-authenticated Request Processor"));
+
+		FBeamRequestProcessor BoundResponseHandler(
+			// Capture, by-value, the Backend system, request id for this request and request data --- these are plain structs with no allocations.
+			[this, RequestId, RequestData, OnSuccess, OnError, OnComplete, CallingContext]
+
+			// This just passes the captured data along to the Process function (we do this so we can unit test the process function in isolation).
+		(const FHttpRequestPtr Request, const FHttpResponsePtr Response, const bool)
+			{
+				if (!Response.IsValid())
+				{
+					UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"),
+					       RequestId);
+					return;
+				}
+				UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld"), RequestId);
+
+				// Get the response contents
+				const auto ResponseCode = Response->GetResponseCode();
+				const auto ContentAsString = Response->GetContentAsString();
+				const auto RequestStatus = Request->GetStatus();
+				const auto RequestType = RequestData->GetRequestType();
+
+				// If it was a success, we try to cache the response.
+				if (ResponseCode == 200)
+					UpdateResponseCache(RequestType, CallingContext, Request, ContentAsString);
+
+
+				RunBlueprintRequestProcessor<TRequestData, TResponseData, TSuccessCallback, TErrorCallback,
+				                             TCompleteCallback>
+					(ResponseCode, ContentAsString, RequestStatus, RequestId, RequestData, OnSuccess, OnError, OnComplete);
+			});
+
+		// We return the build processor function so the API request function can bind it to UnrealHttpRequest's response handler delegate.
+		return BoundResponseHandler;
+	}
 
 	/**
 	* @brief Runs the blueprint-only version of the Beamable Request Processor implementation for un-authenticated requests.
@@ -544,7 +811,14 @@ public:
 	void RunBlueprintRequestProcessor(const int32& ResponseCode, const FString& ContentAsString,
 	                                  TUnrealRequestStatus RequestStatus, const int64& RequestId,
 	                                  TRequestData* RequestData,
-	                                  TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete);
+	                                  TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete)
+	{
+		ProcessBlueprintRequest<TRequestData, TResponseData, TSuccessCallback, TErrorCallback, TCompleteCallback>
+			(ResponseCode, ContentAsString, RequestStatus, RequestId, RequestData, OnSuccess, OnError, OnComplete);
+
+		// Run any registered callback for handling Request completion.
+		TryTriggerRequestCompleteDelegates(RequestId);
+	}
 
 	/**
 	 * @brief Callback that MakeBlueprintRequestProcessor uses to handle un-authenticated requests.	  
@@ -554,7 +828,145 @@ public:
 	void ProcessBlueprintRequest(const int32& ResponseCode, const FString& ContentAsString,
 	                             const TUnrealRequestStatus RequestStatus,
 	                             const int64& RequestId, TRequestData* RequestData,
-	                             TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete);
+	                             TSuccessCallback OnSuccess, TErrorCallback OnError, TCompleteCallback OnComplete)
+	{
+		StaticCheckForRequestType<TRequestData>();
+		StaticCheckForResponseType<TResponseData>();
+
+		// Update the context to pass into the response callbacks.
+		auto Context = InFlightRequestContexts.Find(RequestId);
+		Context->ResponseCode = ResponseCode;
+
+
+		// If the request was cancelled, we'll only run the OnComplete call 
+		if (InFlightRequestsCancelled.Contains(RequestId))
+		{
+			UE_LOG(LogBeamBackend, Verbose, TEXT("Ignoring Request Response since it was cancelled. REQUEST_ID=%lld"),
+			       RequestId);
+
+			// Execute the handler if it's bound.
+			const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(*Context, RequestData);
+			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
+			{
+				UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, NUM_FAILURES=%d"),
+				       RequestId, InFlightFailureCount.FindRef(RequestId));
+			}
+
+			// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
+			Context->BeamStatus = Completed;
+
+			return;
+		}
+
+		// Stores whether or not the request was successful
+		const auto bWasSuccess = ResponseCode == 200;
+
+
+		// Get retry stuff
+		const auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
+		const auto RetryConfig = Context->RetryConfiguration;
+		const auto bShouldRetryIfFail = RetryConfig.RetryMaxAttempt == -1 || CurrFailedCount < RetryConfig.RetryMaxAttempt;
+
+		// If it was an error, we'll compute this based on the error data.
+		bool bWillRetry = !bWasSuccess && bShouldRetryIfFail;
+		// Parse the appropriate response body...
+		if (bWasSuccess)
+		{
+			// Parse the response body and store it in the full response data.
+			auto SuccessData = NewObject<TResponseData>(RequestData);
+			SuccessData->DeserializeRequestResponse(RequestData, ContentAsString);
+
+			// Store it so wait handles can grab at it later
+			InFlightResponseBodyData[*Context] = SuccessData;
+
+			// Run the callsite handler
+			const auto ExecutedCallsiteHandler = OnSuccess.ExecuteIfBound(*Context, RequestData, SuccessData);
+
+			// We only log the response if no callsite is given or if we are configured to always run it.
+			if (AlwaysLogSuccessResponses || !ExecutedCallsiteHandler)
+			{
+				UE_LOG(LogBeamBackend, Display,
+				       TEXT(
+					       "Beamable Request Successfull | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
+				       ), RequestId, ResponseCode, CurrFailedCount,
+				       *ContentAsString);
+			}
+		}
+		else
+		{
+			// Otherwise, parse the body as an error response callback and store it in the full response data.
+			FBeamErrorResponse ErrorData;
+			FJsonObjectConverter::JsonObjectStringToUStruct(*ContentAsString, &ErrorData);
+
+			// Now that we know we had an error, compute whether or not we should retry.
+			bWillRetry &= RetryConfig.HttpResponseCodes.Contains(ResponseCode) || RetryConfig.CustomErrorCodes.Contains(
+				ErrorData.error);
+
+			// Store it so wait handles can grab at it later
+			InFlightResponseErrorData[*Context] = ErrorData;
+
+			// Bump the failed count associated with this request id.					
+			InFlightFailureCount[RequestId] = CurrFailedCount + 1;
+
+			// If we should still retry (-1 == infinite retry)
+			if (bWillRetry)
+			{
+				// Enqueue a request to try again
+				FRequestToRetry Retry;
+				Retry.RequestId = RequestId;
+				Retry.IsBlueprintCompatible = 1;
+				Retry.ResponseCode = ResponseCode;
+				Retry.ErrorCode = ErrorData.error;
+				EnqueuedRetries.Enqueue(Retry);
+			}
+
+			// Run the callsite handler, if any.
+			const auto ExecutedCallsiteHandler = OnError.ExecuteIfBound(*Context, RequestData, ErrorData);
+
+			// We fallback to global handler only if we didn't run the callsite one OR if we are configured to always run it.
+			bool bExecutedGlobalHandler = false;
+			if (AlwaysRunGlobalHandlers || !ExecutedCallsiteHandler && (GlobalRequestErrorHandler.IsBound() ||
+				GlobalRequestErrorCodeHandler.IsBound()))
+			{
+				GlobalRequestErrorHandler.Broadcast(*Context, ErrorData);
+				const auto _ = GlobalRequestErrorCodeHandler.ExecuteIfBound(*Context, ErrorData);
+
+				bExecutedGlobalHandler = true;
+			}
+
+			// We log the error only if neither callback was set OR if we are configured to do so.
+			if (AlwaysLogErrorResponses || !bExecutedGlobalHandler && !ExecutedCallsiteHandler)
+			{
+				UE_LOG(LogBeamBackend, Error,
+				       TEXT(
+					       "Beamable Request Failed | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"
+				       ), RequestId, ResponseCode,
+				       CurrFailedCount,
+				       bWillRetry ? TEXT("true") : TEXT("false"), *ContentAsString);
+			}
+		}
+
+		// Clean up from InFlightRequests, only if we are not meant to retry it.
+		if (bWasSuccess || !bWillRetry)
+		{
+			// Update Connectivity Status
+			UpdateConnectivity(*Context, RequestStatus, FRequestType{TRequestData::StaticClass()->GetName()});
+
+			// Execute the handler if it's bound.
+			const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(*Context, RequestData);
+			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
+			{
+				UE_LOG(LogBeamBackend, Display,
+				       TEXT(
+					       "Beamable Request Completed | REQUEST_ID=%lld, RESPONSE_CODE=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d"
+				       ),
+				       RequestId, ResponseCode, bWasSuccess ? TEXT("true") : TEXT("false"), CurrFailedCount);
+			}
+
+			// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
+			Context->BeamStatus = Completed;
+		}
+	}
 
 	/**
 	 * @brief The blueprint-only version of the Beamable Request Processor implementation for authenticated requests.	 * 
@@ -582,7 +994,49 @@ public:
 	                                                                 TRequestData* RequestData,
 	                                                                 TSuccessCallback OnSuccess, TErrorCallback OnError,
 	                                                                 TCompleteCallback OnComplete,
-	                                                                 const UObject* CallingContext = nullptr);
+	                                                                 const UObject* CallingContext = nullptr)
+	{
+		StaticCheckForRequestType<TRequestData>();
+		StaticCheckForResponseType<TResponseData>();
+
+		UE_LOG(LogBeamBackend, Verbose,
+		       TEXT("Request Preparation - Processor Preparation: Making Blueprint Authenticated Request Processor"));
+
+		FBeamRequestProcessor BoundResponseHandler(
+			// Capture, by-value, the Backend system, request id for this request and request data --- these are plain structs with no allocations.
+			[this, RequestId, AuthToken, RealmHandle, RequestData, OnSuccess, OnError, OnComplete, CallingContext]
+
+			// This just passes the captured data along to the Process function (we do this so we can unit test the process function in isolation).
+		(const FHttpRequestPtr Request, const FHttpResponsePtr Response, bool)
+			{
+				if (!Response.IsValid())
+				{
+					UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"),
+					       RequestId);
+					return;
+				}
+				UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld"), RequestId);
+
+				// Get the response contents
+				const auto ResponseCode = Response->GetResponseCode();
+				const auto ContentAsString = Response->GetContentAsString();
+				const auto RequestStatus = Request->GetStatus();
+				const auto RequestType = RequestData->GetRequestType();
+
+				// If it was a success, we try to cache the response.
+				if (ResponseCode == 200)
+					UpdateResponseCache(RequestType, CallingContext, Request, ContentAsString);
+
+
+				RunAuthenticatedBlueprintRequestProcessor<
+					TRequestData, TResponseData, TSuccessCallback, TErrorCallback, TCompleteCallback>
+				(ResponseCode, ContentAsString, RequestStatus, RequestId, RealmHandle, AuthToken, RequestData,
+				 OnSuccess, OnError, OnComplete);
+			});
+
+		// We return the build processor function so the API request function can bind it to UnrealHttpRequest's response handler delegate.
+		return BoundResponseHandler;
+	}
 
 	/**
 	 * @brief Runs the blueprint-only version of the Beamable Request Processor implementation for authenticated requests.
@@ -609,7 +1063,16 @@ public:
 	                                               const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken,
 	                                               TRequestData* RequestData, TSuccessCallback OnSuccess,
 	                                               TErrorCallback OnError,
-	                                               TCompleteCallback OnComplete);
+	                                               TCompleteCallback OnComplete)
+	{
+		ProcessAuthenticatedBlueprintRequest<TRequestData, TResponseData, TSuccessCallback, TErrorCallback,
+		                                     TCompleteCallback>
+		(ResponseCode, ContentAsString, RequestStatus, RequestId, RealmHandle, AuthToken, RequestData, OnSuccess,
+		 OnError, OnComplete);
+
+		// Run any registered callback for handling Request completion.
+		TryTriggerRequestCompleteDelegates(RequestId);
+	}
 
 	/**
 	 * @brief Callback that MakeAuthenticatedBlueprintRequestProcessor uses to handle authenticated requests. 
@@ -621,7 +1084,167 @@ public:
 	                                          const int64& RequestId, const FBeamRealmHandle& RealmHandle,
 	                                          const FBeamAuthToken& AuthToken,
 	                                          TRequestData* RequestData, TSuccessCallback OnSuccess,
-	                                          TErrorCallback OnError, TCompleteCallback OnComplete);
+	                                          TErrorCallback OnError, TCompleteCallback OnComplete)
+	{
+		StaticCheckForRequestType<TRequestData>();
+		StaticCheckForResponseType<TResponseData>();
+
+		// Get any UserSlot that matches this Pid/Auth Token, if any		
+		FBeamRealmUser User;
+		FUserSlot UserSlot;
+		const auto bWasMadeWithUserSlot = BeamUserSlots->GetUserDataWithRefreshTokenAndPid(
+			AuthToken.RefreshToken, RealmHandle.Pid, User, UserSlot);
+
+		// Create the context to pass into the callbacks	
+		auto Context = InFlightRequestContexts.Find(RequestId);
+		Context->ResponseCode = ResponseCode;
+		Context->UserSlot = bWasMadeWithUserSlot ? UserSlot : FUserSlot("");
+
+		// If the request was cancelled, we'll only run the OnComplete call 
+		if (InFlightRequestsCancelled.Contains(RequestId))
+		{
+			UE_LOG(LogBeamBackend, Verbose, TEXT("Ignoring Request Response since it was cancelled. REQUEST_ID=%lld"),
+			       RequestId);
+
+			// Execute the handler if it's bound.		
+			const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(*Context, RequestData);
+			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
+			{
+				UE_LOG(LogBeamBackend, Display,
+				       TEXT("Beamable Request Canceled | REQUEST_ID=%lld, USER_SLOT=%s, NUM_FAILURES=%d"),
+				       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : *FString(TEXT("Made Without UserSlot")),
+				       InFlightFailureCount.FindRef(RequestId));
+			}
+
+			// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
+			Context->BeamStatus = Completed;
+
+			return;
+		}
+		// Then, we handle success and error cases.
+
+		// Get retry stuff
+		const auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
+		const auto RetryConfig = Context->RetryConfiguration;
+		const auto bShouldRetryIfFail = RetryConfig.RetryMaxAttempt == -1 || CurrFailedCount < RetryConfig.RetryMaxAttempt;
+
+		// Stores whether or not the request was successful
+		const auto bWasSuccess = ResponseCode == 200;
+
+		// If it was an error, we'll compute if we should re-auth/retry based on the error data.
+		bool bWillRetry = !bWasSuccess && bShouldRetryIfFail;
+		bool bWillReAuth = !bWasSuccess;
+		// Parse the appropriate response body...
+		if (bWasSuccess)
+		{
+			// Parse the response body and store it in the full response data.		
+			auto SuccessData = NewObject<TResponseData>(RequestData);
+			SuccessData->DeserializeRequestResponse(RequestData, ContentAsString);
+
+			// Store it so wait handles can grab at it later
+			InFlightResponseBodyData[*Context] = SuccessData;
+
+			// Run the callsite handler
+			const auto ExecutedCallsiteHandler = OnSuccess.ExecuteIfBound(*Context, RequestData, SuccessData);
+
+			// We only log the response if no callsite is given or if we are configured to always run it.
+			if (AlwaysLogSuccessResponses || !ExecutedCallsiteHandler)
+			{
+				UE_LOG(LogBeamBackend, Display,
+				       TEXT(
+					       "Beamable Request Successfull | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
+				       ),
+				       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : TEXT("Made Without UserSlot"), ResponseCode,
+				       CurrFailedCount, *ContentAsString);
+			}
+		}
+		else
+		{
+			// Otherwise, parse the body as an error response callback and store it in the full response data.
+			FBeamErrorResponse ErrorData;
+			FJsonObjectConverter::JsonObjectStringToUStruct(*ContentAsString, &ErrorData);
+
+			// Store it so wait handles can grab at it later
+			InFlightResponseErrorData[*Context] = ErrorData;
+
+			// Now that we know we had an error, compute whether or not we should retry.		
+			bWillReAuth &= AUTH_ERROR_CODE_RETRY_ALLOWED.Contains(ErrorData.error);
+			bWillRetry &= RetryConfig.HttpResponseCodes.Contains(ResponseCode) || RetryConfig.CustomErrorCodes.Contains(
+				ErrorData.error);
+			// We always enqueue for retry if we need the re-auth, even if we are "out of retries". That's because Re-Auth retries don't count towards the retry limit.
+			bWillRetry |= bWillReAuth;
+
+			// Bump the failed count associated with this request id.					
+			InFlightFailureCount[RequestId] = bWillReAuth ? CurrFailedCount : CurrFailedCount + 1;
+
+			if (bWillRetry)
+			{
+				// Enqueue a request to try again
+				FRequestToRetry Retry;
+				Retry.RequestId = RequestId;
+				Retry.AuthToken = AuthToken;
+				Retry.RealmHandle = RealmHandle;
+				Retry.IsBlueprintCompatible = 1;
+				Retry.ResponseCode = ResponseCode;
+				Retry.ErrorCode = ErrorData.error;
+				EnqueuedRetries.Enqueue(Retry);
+			}
+
+			// Run callback with the Retrying state if we are going to retry AND it's not a 401 error.
+			// 401 errors are a special case of errors --- we make a special re-authentication request when we get them and then follow up with the original request.
+			// If the re-auth fail, this will run again but the retry configuration will be set to NOT RETRY ANYMORE and therefore the error callback will get run.
+			if (!bWillReAuth)
+			{
+				// Run the callsite handler, if any.
+				const auto ExecutedCallsiteHandler = OnError.ExecuteIfBound(*Context, RequestData, ErrorData);
+
+				// We fallback to global handler only if we didn't run the callsite one OR if we are configured to always run it.
+				bool bExecutedGlobalHandler = false;
+				if (AlwaysRunGlobalHandlers || !ExecutedCallsiteHandler && (GlobalRequestErrorHandler.IsBound() ||
+					GlobalRequestErrorCodeHandler.IsBound()))
+				{
+					GlobalRequestErrorHandler.Broadcast(*Context, ErrorData);
+					const auto _ = GlobalRequestErrorCodeHandler.ExecuteIfBound(*Context, ErrorData);
+
+					bExecutedGlobalHandler = true;
+				}
+
+				// We log the error only if neither callback was set OR if we are configured to do so.
+				if (AlwaysLogErrorResponses || !bExecutedGlobalHandler && !ExecutedCallsiteHandler)
+				{
+					UE_LOG(LogBeamBackend, Error,
+					       TEXT(
+						       "Beamable Request Failed | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"
+					       ),
+					       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : TEXT("Made Without UserSlot"), ResponseCode,
+					       CurrFailedCount, bWillRetry ? TEXT("true") : TEXT("false"),
+					       *ContentAsString);
+				}
+			}
+		}
+
+		// Clean up from InFlightRequests, only if we are not meant to retry it.
+		if (bWasSuccess || !bWillRetry)
+		{
+			// Update Connectivity Status
+			UpdateConnectivity(*Context, RequestStatus, FRequestType{TRequestData::StaticClass()->GetName()});
+
+			// Execute the handler if it's bound.
+			const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(*Context, RequestData);
+			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
+			{
+				UE_LOG(LogBeamBackend, Display,
+				       TEXT(
+					       "Beamable Request Completed | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d"
+				       ),
+				       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : TEXT("Made Without UserSlot"), ResponseCode,
+				       bWasSuccess ? TEXT("true") : TEXT("false"), CurrFailedCount);
+			}
+
+			// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
+			Context->BeamStatus = Completed;
+		}
+	}
 
 	/**
 	 * @brief The code-only version of the Beamable Request Processor implementation. This generates 2 things:
@@ -639,7 +1262,45 @@ public:
 	template <typename TRequestData, typename TResponseData>
 	FBeamRequestProcessor MakeCodeRequestProcessor(const int64& RequestId, TRequestData* RequestData,
 	                                               TBeamFullResponseHandler<TRequestData*, TResponseData*>
-	                                               ResponseHandler, const UObject* CallingContext = nullptr);
+	                                               ResponseHandler, const UObject* CallingContext = nullptr)
+	{
+		StaticCheckForRequestType<TRequestData>();
+		StaticCheckForResponseType<TResponseData>();
+
+		UE_LOG(LogBeamBackend, Verbose,
+		       TEXT("Request Preparation - Processor Preparation: Making Code Un-authenticated Request Processor"));
+
+		// Get the handlers 
+		auto OutProcessor = FBeamRequestProcessor(
+			// Capture, by-value, the Backend system, request id for this request and request data --- these are plain structs with no allocations.
+			[this, RequestId, RequestData, ResponseHandler, CallingContext]
+			// This just passes the captured data along to the Process function (we do this so we can unit test the process function in isolation).
+		(const FHttpRequestPtr Request, const FHttpResponsePtr Response, bool)
+			{
+				if (!Response.IsValid())
+				{
+					UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"),
+					       RequestId);
+					return;
+				}
+				UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld"), RequestId);
+
+				const auto ResponseCode = Response->GetResponseCode();
+				const auto ContentAsString = Response->GetContentAsString();
+				const auto RequestStatus = Request->GetStatus();
+				const auto RequestType = RequestData->GetRequestType();
+
+				// If it was a success, we try to cache the response.
+				if (ResponseCode == 200)
+					UpdateResponseCache(RequestType, CallingContext, Request, ContentAsString);
+
+				RunCodeRequestProcessor<TRequestData, TResponseData>(ResponseCode, ContentAsString, RequestStatus,
+				                                                     RequestId, RequestData, ResponseHandler);
+			});
+
+		// We return the build processor function so the API request function can bind it to UnrealHttpRequest's response handler delegate.
+		return OutProcessor;
+	}
 
 	/**
 	 * @brief Runs the code-only version of the Beamable Request Processor implementation for un-authenticated requests.
@@ -656,7 +1317,15 @@ public:
 	void RunCodeRequestProcessor(const int32& ResponseCode, const FString& ContentAsString,
 	                             const TUnrealRequestStatus RequestStatus,
 	                             const int64& RequestId, TRequestData* RequestData,
-	                             TBeamFullResponseHandler<TRequestData*, TResponseData*> ResponseHandler);
+	                             TBeamFullResponseHandler<TRequestData*, TResponseData*> ResponseHandler)
+	{
+		ProcessCodeRequest<TRequestData, TResponseData>(ResponseCode, ContentAsString, RequestStatus, RequestId,
+		                                                RequestData, ResponseHandler);
+
+		// Run any registered callback for handling Request completion.
+		TryTriggerRequestCompleteDelegates(RequestId);
+	}
+
 
 	/**
 	 * @brief Callback that MakeCodeRequestProcessor uses to handle requests that don't require authentication.	  
@@ -665,7 +1334,160 @@ public:
 	void ProcessCodeRequest(const int32& ResponseCode, const FString& ContentAsString,
 	                        const TUnrealRequestStatus RequestStatus,
 	                        const int64& RequestId, TRequestData* RequestData,
-	                        TBeamFullResponseHandler<TRequestData*, TResponseData*> ResponseHandler);
+	                        TBeamFullResponseHandler<TRequestData*, TResponseData*> ResponseHandler)
+	{
+		StaticCheckForRequestType<TRequestData>();
+		StaticCheckForResponseType<TResponseData>();
+
+		if (!RequestStatus)
+		{
+			// TODO Invoke Callback but mapped to Beamable specific signature.
+			return;
+		}
+
+		auto FullResponse = FBeamFullResponse<TRequestData*, TResponseData*>();
+
+		// Update and sets the request id for the request
+		auto Context = InFlightRequestContexts.Find(RequestId);
+		Context->ResponseCode = ResponseCode;
+		Context->UserSlot = FUserSlot("");
+		FullResponse.Context = *Context;
+
+		// Store the Request's data into the full response
+		FullResponse.RequestData = RequestData;
+
+		const bool bIsCancelled = InFlightRequestsCancelled.Contains(RequestId);
+		// Stores whether or not the request was successful, error or cancelled
+		if (bIsCancelled)
+			FullResponse.State = Cancelled;
+		else
+			FullResponse.State = ResponseCode == 200 ? Success : Error;
+
+		// Get retry stuff
+		const auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
+		const auto RetryConfig = Context->RetryConfiguration;
+		const auto bShouldRetryIfFail = !bIsCancelled && RetryConfig.RetryMaxAttempt == -1 || RetryConfig.RetryMaxAttempt >
+			CurrFailedCount;
+
+
+		// Stores which attempt we are in
+		FullResponse.AttemptNumber = CurrFailedCount;
+
+		// If it was an error, we'll compute this based on the error data.
+		bool bWillRetry = ResponseCode != 200 && bShouldRetryIfFail;
+		// Parse the appropriate response body...
+		if (FullResponse.State == Success)
+		{
+			// Parse the response body and store it in the full response data.				
+			FullResponse.SuccessData = NewObject<TResponseData>(RequestData);
+			FullResponse.SuccessData->DeserializeRequestResponse(RequestData, ContentAsString);
+
+			// Store it so wait handles can grab at it later
+			InFlightResponseBodyData[*Context] = FullResponse.SuccessData;
+		}
+		else if (FullResponse.State == Error)
+		{
+			// Otherwise, parse the body as an error response callback and store it in the full response data.				
+			FJsonObjectConverter::JsonObjectStringToUStruct(*ContentAsString, &FullResponse.ErrorData);
+
+			// Now that we know we had an error, compute whether or not we should retry.
+			bWillRetry &= RetryConfig.HttpResponseCodes.Contains(ResponseCode) || RetryConfig.CustomErrorCodes.Contains(
+				FullResponse.ErrorData.error);
+
+			// Store it so wait handles can grab at it later
+			InFlightResponseErrorData[*Context] = FullResponse.ErrorData;
+
+			// Bump the failed count associated with this request id.					
+			InFlightFailureCount[RequestId] = CurrFailedCount + 1;
+
+			// If we should still retry (-1 == infinite retry)
+			if (bWillRetry)
+			{
+				// Enqueue a request to try again
+				FRequestToRetry Retry;
+				Retry.RequestId = RequestId;
+				Retry.IsBlueprintCompatible = 0;
+				Retry.ResponseCode = ResponseCode;
+				Retry.ErrorCode = FullResponse.ErrorData.error;
+				EnqueuedRetries.Enqueue(Retry);
+
+				FullResponse.State = Retrying;
+			}
+		}
+
+		// We run the response handler
+		const auto bExecutedCallsiteHandler = ResponseHandler.ExecuteIfBound(FullResponse);
+
+		// For un-authenticated requests, we always invoke the callback with retrying state.	
+		if (bWillRetry)
+		{
+			// We run global handlers for this request if we are configured to always run them
+			auto bRanGlobalHandlers = false;
+			if (AlwaysRunGlobalHandlers || !bExecutedCallsiteHandler)
+			{
+				GlobalRequestErrorHandler.Broadcast(FullResponse.Context, FullResponse.ErrorData);
+				const auto _ = GlobalRequestErrorCodeHandler.ExecuteIfBound(FullResponse.Context, FullResponse.ErrorData);
+				bRanGlobalHandlers = true;
+			}
+
+			// We log if we are configured to do so or as a fallback if no handler is configured
+			if (AlwaysLogErrorResponses || (!bExecutedCallsiteHandler && !bRanGlobalHandlers))
+			{
+				UE_LOG(LogBeamBackend, Error,
+				       TEXT(
+					       "Beamable Request Failed - Retrying | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"
+				       ),
+				       RequestId, ResponseCode, CurrFailedCount, bWillRetry ? TEXT("true") : TEXT("false"),
+				       *ContentAsString);
+			}
+		}
+		// Only run the clean up and callbacks after we are done retrying.
+		else
+		{
+			// Update Connectivity Status
+			UpdateConnectivity(FullResponse.Context, RequestStatus, FRequestType{TRequestData::StaticClass()->GetName()});
+
+			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
+			{
+				// We only log the response for code if we are configured to always run it.
+				if (AlwaysLogSuccessResponses && FullResponse.State == Success)
+				{
+					UE_LOG(LogBeamBackend, Display,
+					       TEXT(
+						       "Beamable Request Successfull | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
+					       ),
+					       RequestId, ResponseCode, CurrFailedCount, *ContentAsString);
+				}
+
+				// We log the error only if neither callback was set OR if we are configured to do so.
+				if (AlwaysLogErrorResponses && FullResponse.State == Error)
+				{
+					UE_LOG(LogBeamBackend, Error,
+					       TEXT(
+						       "Beamable Request Failed | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
+					       ),
+					       RequestId, ResponseCode, CurrFailedCount, *ContentAsString);
+				}
+
+				const auto bWasSuccess = FullResponse.State == Success;
+				if (FullResponse.State == Cancelled)
+				{
+					UE_LOG(LogBeamBackend, Display,
+					       TEXT("Beamable Request Canceled | REQUEST_ID=%lld, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
+					       RequestId, bWasSuccess ? TEXT("true") : TEXT("false"), InFlightFailureCount.FindRef(RequestId));
+				}
+				else
+				{
+					UE_LOG(LogBeamBackend, Display,
+					       TEXT("Beamable Request Completed | REQUEST_ID=%lld, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
+					       RequestId, bWasSuccess ? TEXT("true") : TEXT("false"), InFlightFailureCount.FindRef(RequestId));
+				}
+			}
+
+			// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
+			Context->BeamStatus = Completed;
+		}
+	}
 
 	/**
 	 * @brief The code-only version of the Beamable Request Processor implementation. This generates 2 things:
@@ -689,7 +1511,46 @@ public:
 	                                                            TRequestData* RequestData,
 	                                                            TBeamFullResponseHandler<TRequestData*, TResponseData*>
 	                                                            ResponseHandler,
-	                                                            const UObject* CallingContext = nullptr);
+	                                                            const UObject* CallingContext = nullptr)
+	{
+		StaticCheckForRequestType<TRequestData>();
+		StaticCheckForResponseType<TResponseData>();
+
+		UE_LOG(LogBeamBackend, Verbose,
+		       TEXT("Request Preparation - Processor Preparation: Making Code Authenticated Request Processor"));
+
+		// Get the handlers 
+		auto OutProcessor = FBeamRequestProcessor(
+			// Capture, by-value, the Backend system, request id for this request and request data --- these are plain structs with no allocations.
+			[this, RequestId, RealmHandle, AuthToken, RequestData, ResponseHandler, CallingContext]
+			// This just passes the captured data along to the Process function (we do this so we can unit test the process function in isolation).
+		(const FHttpRequestPtr Request, const FHttpResponsePtr Response, bool)
+			{
+				if (!Response.IsValid())
+				{
+					UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"),
+					       RequestId);
+					return;
+				}
+				UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld"), RequestId);
+
+				const auto ResponseCode = Response->GetResponseCode();
+				const auto ContentAsString = Response->GetContentAsString();
+				const auto RequestStatus = Request->GetStatus();
+				const auto RequestType = RequestData->GetRequestType();
+
+				// If it was a success, we try to cache the response.
+				if (ResponseCode == 200)
+					UpdateResponseCache(RequestType, CallingContext, Request, ContentAsString);
+
+				RunAuthenticatedCodeRequestProcessor<TRequestData, TResponseData>(
+					ResponseCode, ContentAsString, RequestStatus, RequestId, RealmHandle, AuthToken, RequestData,
+					ResponseHandler);
+			});
+
+		// We return the build processor function so the API request function can bind it to UnrealHttpRequest's response handler delegate. 
+		return OutProcessor;
+	}
 
 	/**
 	 * @brief Runs the code-only version of the Beamable Request Processor implementation for authenticated requests.
@@ -710,7 +1571,15 @@ public:
 	                                          const int64& RequestId, const FBeamRealmHandle& RealmHandle,
 	                                          const FBeamAuthToken& AuthToken, TRequestData* RequestData,
 	                                          const TBeamFullResponseHandler<TRequestData*, TResponseData*>&
-	                                          ResponseHandler);
+	                                          ResponseHandler)
+	{
+		ProcessAuthenticatedCodeRequest<TRequestData, TResponseData>(ResponseCode, ContentAsString, RequestStatus,
+		                                                             RequestId, RealmHandle, AuthToken, RequestData,
+		                                                             ResponseHandler);
+
+		// Run any registered callback for handling Request completion.
+		TryTriggerRequestCompleteDelegates(RequestId);
+	}
 
 	/**
 	 * @brief Callback that MakeAuthenticatedCodeRequestProcessor uses to handle authenticated request's responses.
@@ -721,9 +1590,188 @@ public:
 	                                     const FBeamRealmHandle& RealmHandle, const FBeamAuthToken& AuthToken,
 	                                     TRequestData* RequestData,
 	                                     const TBeamFullResponseHandler<TRequestData*, TResponseData*>&
-	                                     ResponseHandler);
+	                                     ResponseHandler)
+	{
+		StaticCheckForRequestType<TRequestData>();
+		StaticCheckForResponseType<TResponseData>();
+
+		// Get any UserSlot that matches this Pid/Auth Token, if any
+		FBeamRealmUser User;
+		FUserSlot UserSlot;
+		const auto bWasMadeWithUserSlot = BeamUserSlots->GetUserDataWithRefreshTokenAndPid(
+			AuthToken.RefreshToken, RealmHandle.Pid, User, UserSlot);
+		const auto UserSlotLog = bWasMadeWithUserSlot ? UserSlot.Name : TEXT("Made Without UserSlot");
+
+		// Get retry stuff	
+		auto FullResponse = FBeamFullResponse<TRequestData*, TResponseData*>();
+
+		// Sets the request id for the request
+		auto Context = InFlightRequestContexts.Find(RequestId);
+		Context->ResponseCode = ResponseCode;
+		Context->UserSlot = bWasMadeWithUserSlot ? UserSlot : FUserSlot("");
+		FullResponse.Context = *Context;
+
+		// Store the Request's data into the full response
+		FullResponse.RequestData = RequestData;
+
+		bool bIsCancelled = InFlightRequestsCancelled.Contains(RequestId);
+		// Stores whether or not the request was successful, error or cancelled
+		if (bIsCancelled)
+			FullResponse.State = Cancelled;
+		else
+			FullResponse.State = ResponseCode == 200 ? Success : Error;
+
+		const auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
+		const auto RetryConfig = Context->RetryConfiguration;
+		const auto bShouldRetryIfFail = !bIsCancelled && RetryConfig.RetryMaxAttempt == -1 || RetryConfig.RetryMaxAttempt >
+			CurrFailedCount;
 
 
+		// Stores which attempt we are in
+		FullResponse.AttemptNumber = CurrFailedCount;
+
+		// If it was an error, we'll compute whether we should re-auth/retry based on the error data.
+		bool bWillRetry = ResponseCode != 200 && bShouldRetryIfFail;
+		bool bWillReAuth = ResponseCode != 200;
+		// Parse the appropriate response body...
+		if (FullResponse.State == Success)
+		{
+			// Parse the response body and store it in the full response data.						
+			FullResponse.SuccessData = NewObject<TResponseData>(RequestData);
+			FullResponse.SuccessData->DeserializeRequestResponse(RequestData, ContentAsString);
+
+			// Store it so wait handles can grab at it later
+			InFlightResponseBodyData[*Context] = FullResponse.SuccessData;
+		}
+		else if (FullResponse.State == Error)
+		{
+			// Otherwise, parse the body as an error response callback and store it in the full response data.				
+			FJsonObjectConverter::JsonObjectStringToUStruct(*ContentAsString, &FullResponse.ErrorData);
+
+			// Now that we know we had an error, compute whether or not we should retry.
+			bWillReAuth &= AUTH_ERROR_CODE_RETRY_ALLOWED.Contains(FullResponse.ErrorData.error);
+			bWillRetry &= RetryConfig.HttpResponseCodes.Contains(ResponseCode) || RetryConfig.CustomErrorCodes.Contains(
+				FullResponse.ErrorData.error);
+			// We always enqueue for retry if we need the re-auth, even if we are "out of retries". That's because Re-Auth retries don't count towards the retry limit.
+			bWillRetry |= bWillReAuth;
+
+			// Store it so wait handles can grab at it later
+			InFlightResponseErrorData[*Context] = FullResponse.ErrorData;
+
+			// Bump the failed count associated with this request id.					
+			InFlightFailureCount[RequestId] = bWillReAuth ? CurrFailedCount : CurrFailedCount + 1;
+
+			// If we should still retry (-1 == infinite retry)
+			if (bWillRetry)
+			{
+				// Enqueue a request to try again
+				FRequestToRetry Retry;
+				Retry.RequestId = RequestId;
+				Retry.AuthToken = AuthToken;
+				Retry.RealmHandle = RealmHandle;
+				Retry.IsBlueprintCompatible = 0;
+				Retry.ResponseCode = ResponseCode;
+				Retry.ErrorCode = FullResponse.ErrorData.error;
+				EnqueuedRetries.Enqueue(Retry);
+
+				// Set the state to retrying instead of error.
+				FullResponse.State = Retrying;
+			}
+		}
+
+		// Execute the handler if it's bound.			
+		if (bWillRetry)
+		{
+			// Run callback with the Retrying state if we are going to retry AND it's not one of the re-auth errors.
+			// 401 errors are a special case of errors --- we make a special re-authentication request when we get them and then follow up with the original request.
+			// If the re-auth fail, this will run again but the retry configuration will be set to NOT RETRY ANYMORE.
+			if (!bWillReAuth)
+			{
+				// We run the response handler when we error --- we assume that they switch on FullResponse.State to handle only the error cases.
+				const auto bExecutedCallsiteHandler = ResponseHandler.ExecuteIfBound(FullResponse);
+
+				// We run global handlers for this request if we are configured to always run them
+				auto bRanGlobalHandlers = false;
+				if (AlwaysRunGlobalHandlers || !bExecutedCallsiteHandler)
+				{
+					GlobalRequestErrorHandler.Broadcast(FullResponse.Context, FullResponse.ErrorData);
+					const auto _ = GlobalRequestErrorCodeHandler.ExecuteIfBound(
+						FullResponse.Context, FullResponse.ErrorData);
+					bRanGlobalHandlers = true;
+				}
+
+				// We log if we are configured to do so or as a fallback if no handler is configured
+				if (AlwaysLogErrorResponses || (!bExecutedCallsiteHandler && !bRanGlobalHandlers))
+				{
+					UE_LOG(LogBeamBackend, Error,
+					       TEXT(
+						       "Beamable Request Failed - Retrying | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"
+					       ),
+					       RequestId, *UserSlotLog, ResponseCode, CurrFailedCount,
+					       bWillRetry ? TEXT("true") : TEXT("false"),
+					       *ContentAsString);
+				}
+			}
+		}
+		// Only run the clean up after we are done retrying.
+		else
+		{
+			// Update Connectivity Status
+			UpdateConnectivity(FullResponse.Context, RequestStatus, FRequestType{TRequestData::StaticClass()->GetName()});
+
+			const auto bExecutedCallsiteHandler = ResponseHandler.ExecuteIfBound(FullResponse);
+			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
+			{
+				// We only log the response for code if we are configured to always run it.
+				if (AlwaysLogSuccessResponses && FullResponse.State == Success)
+				{
+					UE_LOG(LogBeamBackend, Display,
+					       TEXT(
+						       "Beamable Request Successfull | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
+					       ),
+					       RequestId, *UserSlotLog, ResponseCode, CurrFailedCount, *ContentAsString);
+				}
+
+				// We log the error only if neither callback was set OR if we are configured to do so.
+				if (AlwaysLogErrorResponses && FullResponse.State == Error)
+				{
+					UE_LOG(LogBeamBackend, Error,
+					       TEXT(
+						       "Beamable Request Failed | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"
+					       ),
+					       RequestId, *UserSlotLog, ResponseCode, CurrFailedCount,
+					       bWillRetry ? TEXT("true") : TEXT("false"), *ContentAsString);
+				}
+
+				const auto bWasSuccess = FullResponse.State == Success;
+				if (FullResponse.State == Cancelled)
+				{
+					UE_LOG(LogBeamBackend, Display,
+					       TEXT("Beamable Request Canceled | REQUEST_ID=%lld, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"
+					       ),
+					       RequestId, *UserSlotLog, bWasSuccess ? TEXT("true") : TEXT("false"),
+					       InFlightFailureCount.FindRef(RequestId));
+				}
+				else
+				{
+					UE_LOG(LogBeamBackend, Display,
+					       TEXT(
+						       "Beamable Request Completed | REQUEST_ID=%lld, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"
+					       ),
+					       RequestId, *UserSlotLog, bWasSuccess ? TEXT("true") : TEXT("false"),
+					       InFlightFailureCount.FindRef(RequestId));
+				}
+			}
+
+			// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
+			Context->BeamStatus = Completed;
+		}
+	}
+
+private:
+	void UpdateResponseCache(const FRequestType& RequestType, const UObject* CallingContext, const FHttpRequestPtr& Request, const FString& Content);
+
+public:
 	/*
 	 
   _____      _                 _____             __ _       
