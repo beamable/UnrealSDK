@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderboardPartitionRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardPartitionRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

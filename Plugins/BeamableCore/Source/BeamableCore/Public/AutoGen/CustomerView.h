@@ -5,8 +5,8 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamBackend/SemanticTypes/BeamCid.h"
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/ProjectView.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/ProjectView.h"
 
 #include "CustomerView.generated.h"
 

@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/CalendarQueryResponse.h"
+#include "BeamableCore/Public/AutoGen/CalendarQueryResponse.h"
 
 #include "GetCalendarsRequest.generated.h"
 

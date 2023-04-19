@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Mail/K2BeamNode_ApiRequest_GetDetail.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Mail/K2BeamNode_ApiRequest_GetDetail.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamMailApi.h"
-#include "AutoGen/SubSystems/Mail/GetDetailRequest.h"
-#include "AutoGen/MailResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamMailApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Mail/GetDetailRequest.h"
+#include "BeamableCore/Public/AutoGen/MailResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetDetail"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/ServiceStatusLibrary.h"
+#include "BeamableCore/Public/AutoGen/ServiceStatusLibrary.h"
 
 #include "CoreMinimal.h"
 

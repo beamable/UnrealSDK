@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Price.h"
+#include "BeamableCore/Public/AutoGen/Price.h"
 
 #include "PriceLibrary.generated.h"
 

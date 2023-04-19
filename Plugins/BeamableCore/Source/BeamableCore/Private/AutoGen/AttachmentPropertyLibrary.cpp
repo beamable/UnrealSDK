@@ -1,5 +1,5 @@
 
-#include "AutoGen/AttachmentPropertyLibrary.h"
+#include "BeamableCore/Public/AutoGen/AttachmentPropertyLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/EventObjectData.h"
+#include "BeamableCore/Public/AutoGen/EventObjectData.h"
 
 #include "GetEventsRequest.generated.h"
 

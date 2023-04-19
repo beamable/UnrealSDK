@@ -5,7 +5,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamBackend/SemanticTypes/BeamGamerTag.h"
-#include "AutoGen/Enums/InvitationDirection.h"
+#include "BeamableCore/Public/AutoGen/Enums/InvitationDirection.h"
 
 #include "Invite.generated.h"
 

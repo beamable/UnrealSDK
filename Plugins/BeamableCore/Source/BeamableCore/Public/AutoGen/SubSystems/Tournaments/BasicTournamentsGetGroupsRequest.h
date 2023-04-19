@@ -8,9 +8,9 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/Optionals/OptionalInt32.h"
-#include "AutoGen/Optionals/OptionalInt64.h"
-#include "AutoGen/GetGroupsResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
+#include "BeamableCore/Public/AutoGen/GetGroupsResponse.h"
 
 #include "BasicTournamentsGetGroupsRequest.generated.h"
 

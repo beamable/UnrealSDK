@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Cloudsaving/GetDataMetadataRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Cloudsaving/GetDataMetadataRequest.h"
 
 void UGetDataMetadataRequest::BuildVerb(FString& VerbString) const
 {

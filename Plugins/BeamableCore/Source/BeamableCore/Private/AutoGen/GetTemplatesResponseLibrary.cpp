@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetTemplatesResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/GetTemplatesResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

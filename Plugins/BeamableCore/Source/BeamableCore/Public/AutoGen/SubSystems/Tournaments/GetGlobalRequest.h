@@ -8,9 +8,9 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/Optionals/OptionalInt32.h"
-#include "AutoGen/Optionals/OptionalInt64.h"
-#include "AutoGen/GetStandingsResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
+#include "BeamableCore/Public/AutoGen/GetStandingsResponse.h"
 
 #include "GetGlobalRequest.generated.h"
 

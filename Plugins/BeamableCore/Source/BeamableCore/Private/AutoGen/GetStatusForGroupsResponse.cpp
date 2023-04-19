@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetStatusForGroupsResponse.h"
+#include "BeamableCore/Public/AutoGen/GetStatusForGroupsResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

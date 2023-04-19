@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/BeamoBasicManifestChecksum.h"
+#include "BeamableCore/Public/AutoGen/BeamoBasicManifestChecksum.h"
 
 #include "OptionalBeamoBasicManifestChecksum.generated.h"
 

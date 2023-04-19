@@ -1,5 +1,5 @@
 
-#include "AutoGen/ImportFriendsRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/ImportFriendsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

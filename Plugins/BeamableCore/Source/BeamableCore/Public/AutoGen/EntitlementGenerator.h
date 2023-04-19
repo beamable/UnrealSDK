@@ -4,10 +4,10 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalInt32.h"
-#include "AutoGen/Optionals/OptionalEntitlementClaimWindow.h"
-#include "AutoGen/Optionals/OptionalMapOfString.h"
-#include "AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalEntitlementClaimWindow.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "EntitlementGenerator.generated.h"
 

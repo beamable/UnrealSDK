@@ -4,8 +4,8 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/Optionals/OptionalArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
 
 #include "TokenResponse.generated.h"
 

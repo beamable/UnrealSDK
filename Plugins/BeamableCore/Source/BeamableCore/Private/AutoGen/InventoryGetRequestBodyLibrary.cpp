@@ -1,5 +1,5 @@
 
-#include "AutoGen/InventoryGetRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/InventoryGetRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/AccountPlayerView.h"
+#include "BeamableCore/Public/AutoGen/AccountPlayerView.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamBackend/SemanticTypes/BeamGamerTag.h"
-#include "AutoGen/InventoryQueryRequestBody.h"
-#include "AutoGen/InventoryView.h"
+#include "BeamableCore/Public/AutoGen/InventoryQueryRequestBody.h"
+#include "BeamableCore/Public/AutoGen/InventoryView.h"
 
 #include "PostInventoryRequest.generated.h"
 

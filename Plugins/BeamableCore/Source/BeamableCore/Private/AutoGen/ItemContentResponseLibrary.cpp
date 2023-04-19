@@ -1,5 +1,5 @@
 
-#include "AutoGen/ItemContentResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/ItemContentResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

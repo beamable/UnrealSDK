@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventInventoryPendingRewards.h"
+#include "BeamableCore/Public/AutoGen/EventInventoryPendingRewards.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

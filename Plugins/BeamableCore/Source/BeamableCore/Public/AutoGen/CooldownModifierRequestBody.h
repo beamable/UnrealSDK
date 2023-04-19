@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/UpdateListingCooldownRequestBody.h"
+#include "BeamableCore/Public/AutoGen/UpdateListingCooldownRequestBody.h"
 
 #include "CooldownModifierRequestBody.generated.h"
 

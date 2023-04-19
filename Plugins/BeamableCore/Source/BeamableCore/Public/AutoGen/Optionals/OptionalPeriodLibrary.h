@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalPeriod.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalPeriod.h"
 
 #include "OptionalPeriodLibrary.generated.h"
 

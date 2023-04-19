@@ -1,5 +1,5 @@
 
-#include "AutoGen/LaunchMessageListResponse.h"
+#include "BeamableCore/Public/AutoGen/LaunchMessageListResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

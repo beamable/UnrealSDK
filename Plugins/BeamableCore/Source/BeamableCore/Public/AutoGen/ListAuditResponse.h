@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/PaymentAuditEntryViewModel.h"
+#include "BeamableCore/Public/AutoGen/PaymentAuditEntryViewModel.h"
 
 #include "ListAuditResponse.generated.h"
 

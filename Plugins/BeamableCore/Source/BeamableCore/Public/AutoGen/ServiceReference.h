@@ -4,9 +4,10 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalInt64.h"
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/Optionals/OptionalArrayOfServiceDependencyReference.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfServiceComponent.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfServiceDependencyReference.h"
 
 #include "ServiceReference.generated.h"
 
@@ -36,6 +37,8 @@ public:
 	FOptionalString ImageCpuArch;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Comments", Category="Beam")
 	FOptionalString Comments;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Components", Category="Beam")
+	FOptionalArrayOfServiceComponent Components;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Dependencies", Category="Beam")
 	FOptionalArrayOfServiceDependencyReference Dependencies;
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/PromoteRealmResponseOld.h"
+#include "BeamableCore/Public/AutoGen/PromoteRealmResponseOld.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

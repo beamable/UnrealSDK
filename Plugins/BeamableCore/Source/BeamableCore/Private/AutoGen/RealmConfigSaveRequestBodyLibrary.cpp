@@ -1,5 +1,5 @@
 
-#include "AutoGen/RealmConfigSaveRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/RealmConfigSaveRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Notification/K2BeamNode_ApiRequest_PostCustom.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Notification/K2BeamNode_ApiRequest_PostCustom.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamNotificationApi.h"
-#include "AutoGen/SubSystems/Notification/PostCustomRequest.h"
-#include "AutoGen/CommonResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamNotificationApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Notification/PostCustomRequest.h"
+#include "BeamableCore/Public/AutoGen/CommonResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PostCustom"
 

@@ -4,10 +4,10 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
-#include "AutoGen/ContentMeta.h"
-#include "AutoGen/Optionals/OptionalArrayOfMapOfContentMeta.h"
+#include "BeamableCore/Public/AutoGen/ContentMeta.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfMapOfContentMeta.h"
 
 #include "ContentDefinition.generated.h"
 

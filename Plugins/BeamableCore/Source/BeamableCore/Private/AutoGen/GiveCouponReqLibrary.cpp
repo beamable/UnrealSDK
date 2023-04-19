@@ -1,5 +1,5 @@
 
-#include "AutoGen/GiveCouponReqLibrary.h"
+#include "BeamableCore/Public/AutoGen/GiveCouponReqLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Notification/BasicNotificationPostGameRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Notification/BasicNotificationPostGameRequest.h"
 
 void UBasicNotificationPostGameRequest::BuildVerb(FString& VerbString) const
 {

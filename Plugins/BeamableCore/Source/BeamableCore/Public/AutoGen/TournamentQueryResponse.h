@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/TournamentClientView.h"
+#include "BeamableCore/Public/AutoGen/TournamentClientView.h"
 
 #include "TournamentQueryResponse.generated.h"
 

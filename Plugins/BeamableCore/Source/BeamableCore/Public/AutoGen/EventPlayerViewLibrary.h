@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/EventPlayerView.h"
+#include "BeamableCore/Public/AutoGen/EventPlayerView.h"
 
 #include "EventPlayerViewLibrary.generated.h"
 

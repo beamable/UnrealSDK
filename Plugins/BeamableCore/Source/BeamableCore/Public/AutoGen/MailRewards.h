@@ -4,9 +4,9 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/CurrencyChange.h"
-#include "AutoGen/ItemCreateRequestBody.h"
-#include "AutoGen/Optionals/OptionalBool.h"
+#include "BeamableCore/Public/AutoGen/CurrencyChange.h"
+#include "BeamableCore/Public/AutoGen/ItemCreateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 
 #include "MailRewards.generated.h"
 

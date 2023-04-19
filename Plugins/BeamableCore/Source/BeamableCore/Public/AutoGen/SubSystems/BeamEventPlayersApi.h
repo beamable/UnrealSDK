@@ -7,9 +7,9 @@
 #include "BeamBackend/ResponseCache/BeamResponseCache.h"
 #include "RequestTracker/BeamRequestTracker.h"
 
-#include "EventPlayers/GetEventPlayersRequest.h"
-#include "EventPlayers/ObjectEventPlayersPostClaimRequest.h"
-#include "EventPlayers/PutScoreRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/EventPlayers/GetEventPlayersRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/EventPlayers/ObjectEventPlayersPostClaimRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/EventPlayers/PutScoreRequest.h"
 
 #include "BeamEventPlayersApi.generated.h"
 

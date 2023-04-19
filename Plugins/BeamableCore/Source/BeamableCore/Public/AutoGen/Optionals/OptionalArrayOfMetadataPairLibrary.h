@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfMetadataPair.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfMetadataPair.h"
 
 #include "OptionalArrayOfMetadataPairLibrary.generated.h"
 

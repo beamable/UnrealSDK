@@ -1,5 +1,5 @@
 
-#include "AutoGen/GroupRole.h"
+#include "BeamableCore/Public/AutoGen/GroupRole.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

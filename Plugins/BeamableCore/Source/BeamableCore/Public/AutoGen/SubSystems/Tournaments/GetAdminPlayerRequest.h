@@ -8,9 +8,9 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/Optionals/OptionalBool.h"
-#include "AutoGen/AdminGetPlayerStatusResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
+#include "BeamableCore/Public/AutoGen/AdminGetPlayerStatusResponse.h"
 
 #include "GetAdminPlayerRequest.generated.h"
 

@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/PingRsp.h"
+#include "BeamableCore/Public/AutoGen/PingRsp.h"
 
 #include "GetPingRequest.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/MatchMakingRankingLibrary.h"
+#include "BeamableCore/Public/AutoGen/MatchMakingRankingLibrary.h"
 
 #include "CoreMinimal.h"
 

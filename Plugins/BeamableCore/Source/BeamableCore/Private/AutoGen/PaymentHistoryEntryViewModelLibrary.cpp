@@ -1,5 +1,5 @@
 
-#include "AutoGen/PaymentHistoryEntryViewModelLibrary.h"
+#include "BeamableCore/Public/AutoGen/PaymentHistoryEntryViewModelLibrary.h"
 
 #include "CoreMinimal.h"
 

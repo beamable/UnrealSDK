@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/GetAdminAdminUsersRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetAdminAdminUsersRequest.h"
 
 void UGetAdminAdminUsersRequest::BuildVerb(FString& VerbString) const
 {

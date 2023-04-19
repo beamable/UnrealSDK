@@ -1,5 +1,5 @@
 
-#include "AutoGen/NetworkSerializableLibrary.h"
+#include "BeamableCore/Public/AutoGen/NetworkSerializableLibrary.h"
 
 #include "CoreMinimal.h"
 

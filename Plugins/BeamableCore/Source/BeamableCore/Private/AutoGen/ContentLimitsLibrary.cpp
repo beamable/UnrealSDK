@@ -1,5 +1,5 @@
 
-#include "AutoGen/ContentLimitsLibrary.h"
+#include "BeamableCore/Public/AutoGen/ContentLimitsLibrary.h"
 
 #include "CoreMinimal.h"
 

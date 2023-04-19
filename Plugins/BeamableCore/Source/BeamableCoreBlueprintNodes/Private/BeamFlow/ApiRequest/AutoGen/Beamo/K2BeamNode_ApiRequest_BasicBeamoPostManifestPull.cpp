@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Beamo/K2BeamNode_ApiRequest_BasicBeamoPostManifestPull.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Beamo/K2BeamNode_ApiRequest_BasicBeamoPostManifestPull.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamBeamoApi.h"
-#include "AutoGen/SubSystems/Beamo/BasicBeamoPostManifestPullRequest.h"
-#include "AutoGen/ManifestChecksums.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamBeamoApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Beamo/BasicBeamoPostManifestPullRequest.h"
+#include "BeamableCore/Public/AutoGen/ManifestChecksums.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_BasicBeamoPostManifestPull"
 

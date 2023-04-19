@@ -7,9 +7,9 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/Optionals/OptionalBool.h"
-#include "AutoGen/GetPlayerStatusResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
+#include "BeamableCore/Public/AutoGen/GetPlayerStatusResponse.h"
 
 #include "BasicTournamentsGetMeRequest.generated.h"
 

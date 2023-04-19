@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventGroupRewards.h"
+#include "BeamableCore/Public/AutoGen/EventGroupRewards.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

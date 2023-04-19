@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/StatsSearchCriteria.h"
+#include "BeamableCore/Public/AutoGen/StatsSearchCriteria.h"
 
 #include "StatsSearchCriteriaLibrary.generated.h"
 

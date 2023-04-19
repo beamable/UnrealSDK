@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/VerifyPurchaseRequestBody.h"
-#include "AutoGen/PaymentResultResponse.h"
+#include "BeamableCore/Public/AutoGen/VerifyPurchaseRequestBody.h"
+#include "BeamableCore/Public/AutoGen/PaymentResultResponse.h"
 
 #include "PostItunesPurchaseVerifyRequest.generated.h"
 

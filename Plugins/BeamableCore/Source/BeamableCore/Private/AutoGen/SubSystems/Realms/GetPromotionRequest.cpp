@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Realms/GetPromotionRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetPromotionRequest.h"
 
 void UGetPromotionRequest::BuildVerb(FString& VerbString) const
 {

@@ -7,17 +7,18 @@
 #include "BeamBackend/ResponseCache/BeamResponseCache.h"
 #include "RequestTracker/BeamRequestTracker.h"
 
-#include "Stats/GetClientBatchRequest.h"
-#include "Stats/PutSubscribeRequest.h"
-#include "Stats/PostBatchRequest.h"
-#include "Stats/BasicStatsPostSearchRequest.h"
-#include "Stats/PostSearchExtendedRequest.h"
-#include "Stats/PostClientStringlistRequest.h"
-#include "Stats/GetStatsRequest.h"
-#include "Stats/PostStatsRequest.h"
-#include "Stats/DeleteStatsRequest.h"
-#include "Stats/GetClientRequest.h"
-#include "Stats/PostClientRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/GetClientBatchRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/PutSubscribeRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/DeleteSubscribeRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/PostBatchRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/BasicStatsPostSearchRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/PostSearchExtendedRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/PostClientStringlistRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/GetStatsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/PostStatsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/DeleteStatsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/GetClientRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/PostClientRequest.h"
 
 #include "BeamStatsApi.generated.h"
 
@@ -71,6 +72,18 @@ private:
 	 */
 	void CPP_PutSubscribeImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UPutSubscribeRequest* RequestData,
 	                   const FOnPutSubscribeFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+		
+	/**
+	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
+	 */
+	void BP_DeleteSubscribeImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UDeleteSubscribeRequest* RequestData,
+	                  const FOnDeleteSubscribeSuccess& OnSuccess, const FOnDeleteSubscribeError& OnError, const FOnDeleteSubscribeComplete& OnComplete, 
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	/**
+	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
+	 */
+	void CPP_DeleteSubscribeImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UDeleteSubscribeRequest* RequestData,
+	                   const FOnDeleteSubscribeFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 		
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
@@ -217,6 +230,22 @@ public:
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
 	void CPP_PutSubscribe(const FUserSlot& UserSlot, UPutSubscribeRequest* Request, const FOnPutSubscribeFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Delete /basic/stats/subscribe endpoint of the Stats Service.
+	 *
+	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
+	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
+	 * 
+	 * @param UserSlot The Authenticated User Slot that is making this request.
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
+	 */
+	void CPP_DeleteSubscribe(const FUserSlot& UserSlot, UDeleteSubscribeRequest* Request, const FOnDeleteSubscribeFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -392,6 +421,21 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void PutSubscribe(FUserSlot UserSlot, UPutSubscribeRequest* Request, const FOnPutSubscribeSuccess& OnSuccess, const FOnPutSubscribeError& OnError, const FOnPutSubscribeComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Delete /basic/stats/subscribe endpoint of the Stats Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void DeleteSubscribe(FUserSlot UserSlot, UDeleteSubscribeRequest* Request, const FOnDeleteSubscribeSuccess& OnSuccess, const FOnDeleteSubscribeError& OnError, const FOnDeleteSubscribeComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**

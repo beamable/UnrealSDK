@@ -1,5 +1,5 @@
 
-#include "AutoGen/Attachment.h"
+#include "BeamableCore/Public/AutoGen/Attachment.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

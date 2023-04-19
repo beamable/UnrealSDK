@@ -1,5 +1,5 @@
 
-#include "AutoGen/DataPoint.h"
+#include "BeamableCore/Public/AutoGen/DataPoint.h"
 
 
 

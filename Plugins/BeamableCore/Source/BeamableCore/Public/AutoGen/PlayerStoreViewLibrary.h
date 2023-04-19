@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/PlayerStoreView.h"
+#include "BeamableCore/Public/AutoGen/PlayerStoreView.h"
 
 #include "PlayerStoreViewLibrary.generated.h"
 

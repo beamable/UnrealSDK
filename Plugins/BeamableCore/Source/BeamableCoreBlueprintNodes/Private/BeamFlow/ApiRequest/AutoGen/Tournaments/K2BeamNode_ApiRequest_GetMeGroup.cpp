@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Tournaments/K2BeamNode_ApiRequest_GetMeGroup.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Tournaments/K2BeamNode_ApiRequest_GetMeGroup.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamTournamentsApi.h"
-#include "AutoGen/SubSystems/Tournaments/GetMeGroupRequest.h"
-#include "AutoGen/GetGroupStatusResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamTournamentsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Tournaments/GetMeGroupRequest.h"
+#include "BeamableCore/Public/AutoGen/GetGroupStatusResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetMeGroup"
 

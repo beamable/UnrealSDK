@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/LaunchMessageListResponse.h"
+#include "BeamableCore/Public/AutoGen/LaunchMessageListResponse.h"
 
 #include "LaunchMessageListResponseLibrary.generated.h"
 

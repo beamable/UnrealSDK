@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/LocalizedPriceMap.h"
+#include "BeamableCore/Public/AutoGen/LocalizedPriceMap.h"
 
 #include "LocalizedPriceMapLibrary.generated.h"
 

@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/MakeDonationRequestBody.h"
-#include "AutoGen/EmptyResponse.h"
+#include "BeamableCore/Public/AutoGen/MakeDonationRequestBody.h"
+#include "BeamableCore/Public/AutoGen/EmptyResponse.h"
 
 #include "PutDonationsRequest.generated.h"
 

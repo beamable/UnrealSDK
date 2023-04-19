@@ -4,13 +4,13 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/LocalizationRef.h"
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/Optionals/OptionalArrayOfString.h"
-#include "AutoGen/Optionals/OptionalPlayerReward.h"
-#include "AutoGen/Optionals/OptionalArrayOfPlayerStatRequirement.h"
-#include "AutoGen/Optionals/OptionalMapOfString.h"
-#include "AutoGen/Optionals/OptionalArrayOfAnnouncementAttachment.h"
+#include "BeamableCore/Public/AutoGen/LocalizationRef.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalPlayerReward.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfPlayerStatRequirement.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfAnnouncementAttachment.h"
 
 #include "AnnouncementDto.generated.h"
 

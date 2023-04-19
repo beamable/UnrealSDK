@@ -1,5 +1,5 @@
 
-#include "AutoGen/EmailUpdateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/EmailUpdateRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

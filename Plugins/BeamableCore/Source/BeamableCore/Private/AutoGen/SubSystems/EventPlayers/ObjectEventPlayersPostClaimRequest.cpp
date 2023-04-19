@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/EventPlayers/ObjectEventPlayersPostClaimRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/EventPlayers/ObjectEventPlayersPostClaimRequest.h"
 
 void UObjectEventPlayersPostClaimRequest::BuildVerb(FString& VerbString) const
 {

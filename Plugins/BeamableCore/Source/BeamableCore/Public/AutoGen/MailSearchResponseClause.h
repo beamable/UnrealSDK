@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalArrayOfMailObjectMessage.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfMailObjectMessage.h"
 
 #include "MailSearchResponseClause.generated.h"
 

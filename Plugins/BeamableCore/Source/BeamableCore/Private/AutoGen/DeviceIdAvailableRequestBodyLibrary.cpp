@@ -1,5 +1,5 @@
 
-#include "AutoGen/DeviceIdAvailableRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/DeviceIdAvailableRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/CreateRoomRequestBody.h"
+#include "BeamableCore/Public/AutoGen/CreateRoomRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

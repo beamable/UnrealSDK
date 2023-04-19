@@ -1,5 +1,5 @@
 
-#include "AutoGen/RouteParameter.h"
+#include "BeamableCore/Public/AutoGen/RouteParameter.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

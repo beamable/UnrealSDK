@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalEventGroupRewards.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalEventGroupRewards.h"
 
 FOptionalEventGroupRewards::FOptionalEventGroupRewards()
 {

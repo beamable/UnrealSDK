@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfNewItemReward.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfNewItemReward.h"
 
 FOptionalArrayOfNewItemReward::FOptionalArrayOfNewItemReward()
 {

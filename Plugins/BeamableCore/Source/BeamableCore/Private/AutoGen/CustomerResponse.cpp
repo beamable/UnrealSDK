@@ -1,5 +1,5 @@
 
-#include "AutoGen/CustomerResponse.h"
+#include "BeamableCore/Public/AutoGen/CustomerResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

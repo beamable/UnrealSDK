@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Cloudsaving/PostDataUploadURLFromPortalRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Cloudsaving/PostDataUploadURLFromPortalRequest.h"
 
 void UPostDataUploadURLFromPortalRequest::BuildVerb(FString& VerbString) const
 {

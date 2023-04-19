@@ -1,5 +1,5 @@
 
-#include "AutoGen/RealmRolesReport.h"
+#include "BeamableCore/Public/AutoGen/RealmRolesReport.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/BeamChatV2Api.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamChatV2Api.h"
 #include "BeamCoreSettings.h"
 
 

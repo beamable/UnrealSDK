@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/ServiceLimits.h"
+#include "BeamableCore/Public/AutoGen/ServiceLimits.h"
 
 #include "OptionalServiceLimits.generated.h"
 

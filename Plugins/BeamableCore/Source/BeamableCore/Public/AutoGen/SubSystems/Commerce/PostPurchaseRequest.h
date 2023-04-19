@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/PurchaseRequestBody.h"
-#include "AutoGen/CommonResponse.h"
+#include "BeamableCore/Public/AutoGen/PurchaseRequestBody.h"
+#include "BeamableCore/Public/AutoGen/CommonResponse.h"
 
 #include "PostPurchaseRequest.generated.h"
 

@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/SteamAuthRequestBody.h"
-#include "AutoGen/EmptyResponse.h"
+#include "BeamableCore/Public/AutoGen/SteamAuthRequestBody.h"
+#include "BeamableCore/Public/AutoGen/EmptyResponse.h"
 
 #include "PostSteamAuthRequest.generated.h"
 

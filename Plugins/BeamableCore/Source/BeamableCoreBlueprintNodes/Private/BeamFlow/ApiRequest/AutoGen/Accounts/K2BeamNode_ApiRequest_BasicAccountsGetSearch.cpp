@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Accounts/K2BeamNode_ApiRequest_BasicAccountsGetSearch.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Accounts/K2BeamNode_ApiRequest_BasicAccountsGetSearch.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamAccountsApi.h"
-#include "AutoGen/SubSystems/Accounts/BasicAccountsGetSearchRequest.h"
-#include "AutoGen/AccountSearchResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamAccountsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/BasicAccountsGetSearchRequest.h"
+#include "BeamableCore/Public/AutoGen/AccountSearchResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_BasicAccountsGetSearch"
 

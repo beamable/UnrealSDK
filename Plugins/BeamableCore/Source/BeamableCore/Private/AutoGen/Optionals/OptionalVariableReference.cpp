@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalVariableReference.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalVariableReference.h"
 
 FOptionalVariableReference::FOptionalVariableReference()
 {

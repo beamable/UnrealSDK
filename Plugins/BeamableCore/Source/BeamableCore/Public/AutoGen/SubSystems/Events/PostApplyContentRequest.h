@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/EventApplyRequestBody.h"
-#include "AutoGen/CommonResponse.h"
+#include "BeamableCore/Public/AutoGen/EventApplyRequestBody.h"
+#include "BeamableCore/Public/AutoGen/CommonResponse.h"
 
 #include "PostApplyContentRequest.generated.h"
 

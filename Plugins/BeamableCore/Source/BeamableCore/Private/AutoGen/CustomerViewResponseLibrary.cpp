@@ -1,5 +1,5 @@
 
-#include "AutoGen/CustomerViewResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/CustomerViewResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

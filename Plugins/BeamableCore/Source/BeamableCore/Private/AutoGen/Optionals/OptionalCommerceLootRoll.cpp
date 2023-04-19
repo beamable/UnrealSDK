@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalCommerceLootRoll.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalCommerceLootRoll.h"
 
 FOptionalCommerceLootRoll::FOptionalCommerceLootRoll()
 {

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ManifestView.h"
+#include "BeamableCore/Public/AutoGen/ManifestView.h"
 
 #include "ManifestViewLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/ContentOrTextLibrary.h"
+#include "BeamableCore/Public/AutoGen/ContentOrTextLibrary.h"
 
 #include "CoreMinimal.h"
 

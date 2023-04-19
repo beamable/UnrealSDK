@@ -1,5 +1,5 @@
 
-#include "AutoGen/ItemArchetypeLibrary.h"
+#include "BeamableCore/Public/AutoGen/ItemArchetypeLibrary.h"
 
 #include "CoreMinimal.h"
 

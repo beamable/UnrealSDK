@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubscriptionVerificationResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/SubscriptionVerificationResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

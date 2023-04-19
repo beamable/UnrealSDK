@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/SendMessageResponse.h"
+#include "BeamableCore/Public/AutoGen/SendMessageResponse.h"
 
 #include "SendMessageResponseLibrary.generated.h"
 

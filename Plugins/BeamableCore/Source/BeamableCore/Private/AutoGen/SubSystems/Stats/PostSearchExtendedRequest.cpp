@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Stats/PostSearchExtendedRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/PostSearchExtendedRequest.h"
 
 void UPostSearchExtendedRequest::BuildVerb(FString& VerbString) const
 {

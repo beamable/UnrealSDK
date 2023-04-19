@@ -1,5 +1,5 @@
 
-#include "AutoGen/ListTokensRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/ListTokensRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

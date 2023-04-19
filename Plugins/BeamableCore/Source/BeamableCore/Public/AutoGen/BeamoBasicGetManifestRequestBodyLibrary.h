@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/BeamoBasicGetManifestRequestBody.h"
+#include "BeamableCore/Public/AutoGen/BeamoBasicGetManifestRequestBody.h"
 
 #include "BeamoBasicGetManifestRequestBodyLibrary.generated.h"
 

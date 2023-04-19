@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Beamo/GetTemplatesRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Beamo/GetTemplatesRequest.h"
 
 void UGetTemplatesRequest::BuildVerb(FString& VerbString) const
 {

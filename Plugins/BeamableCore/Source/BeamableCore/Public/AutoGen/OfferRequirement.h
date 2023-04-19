@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/OfferConstraint.h"
+#include "BeamableCore/Public/AutoGen/OfferConstraint.h"
 
 #include "OfferRequirement.generated.h"
 

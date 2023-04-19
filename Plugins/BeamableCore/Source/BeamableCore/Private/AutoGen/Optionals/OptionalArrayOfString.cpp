@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
 
 FOptionalArrayOfString::FOptionalArrayOfString()
 {

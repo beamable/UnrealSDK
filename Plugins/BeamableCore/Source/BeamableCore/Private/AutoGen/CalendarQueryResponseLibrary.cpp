@@ -1,5 +1,5 @@
 
-#include "AutoGen/CalendarQueryResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/CalendarQueryResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

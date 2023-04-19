@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalBeamoBasicManifestChecksum.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamoBasicManifestChecksum.h"
 
 FOptionalBeamoBasicManifestChecksum::FOptionalBeamoBasicManifestChecksum()
 {

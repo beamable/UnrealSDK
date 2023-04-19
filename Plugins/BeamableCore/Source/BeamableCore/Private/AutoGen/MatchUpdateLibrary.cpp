@@ -1,5 +1,5 @@
 
-#include "AutoGen/MatchUpdateLibrary.h"
+#include "BeamableCore/Public/AutoGen/MatchUpdateLibrary.h"
 
 #include "CoreMinimal.h"
 

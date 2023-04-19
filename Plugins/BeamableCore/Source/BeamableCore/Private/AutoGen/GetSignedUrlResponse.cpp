@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetSignedUrlResponse.h"
+#include "BeamableCore/Public/AutoGen/GetSignedUrlResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

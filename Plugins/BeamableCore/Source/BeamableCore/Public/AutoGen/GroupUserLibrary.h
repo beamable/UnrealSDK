@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GroupUser.h"
+#include "BeamableCore/Public/AutoGen/GroupUser.h"
 
 #include "GroupUserLibrary.generated.h"
 

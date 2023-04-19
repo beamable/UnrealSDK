@@ -5,7 +5,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamBackend/SemanticTypes/BeamStatsType.h"
-#include "AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "BatchReadStatsRequestBody.generated.h"
 

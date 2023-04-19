@@ -1,5 +1,5 @@
 
-#include "AutoGen/CurrencyContentResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/CurrencyContentResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

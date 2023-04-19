@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Accounts/K2BeamNode_ApiRequest_PostPasswordUpdateInit.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Accounts/K2BeamNode_ApiRequest_PostPasswordUpdateInit.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamAccountsApi.h"
-#include "AutoGen/SubSystems/Accounts/PostPasswordUpdateInitRequest.h"
-#include "AutoGen/EmptyResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamAccountsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PostPasswordUpdateInitRequest.h"
+#include "BeamableCore/Public/AutoGen/EmptyResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PostPasswordUpdateInit"
 

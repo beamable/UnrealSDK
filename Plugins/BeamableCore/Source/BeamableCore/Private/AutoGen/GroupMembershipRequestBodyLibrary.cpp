@@ -1,5 +1,5 @@
 
-#include "AutoGen/GroupMembershipRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/GroupMembershipRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

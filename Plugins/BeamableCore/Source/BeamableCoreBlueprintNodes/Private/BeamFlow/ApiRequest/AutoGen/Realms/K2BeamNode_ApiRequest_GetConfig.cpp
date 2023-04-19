@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Realms/K2BeamNode_ApiRequest_GetConfig.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Realms/K2BeamNode_ApiRequest_GetConfig.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamRealmsApi.h"
-#include "AutoGen/SubSystems/Realms/GetConfigRequest.h"
-#include "AutoGen/RealmConfigResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamRealmsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetConfigRequest.h"
+#include "BeamableCore/Public/AutoGen/RealmConfigResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetConfig"
 

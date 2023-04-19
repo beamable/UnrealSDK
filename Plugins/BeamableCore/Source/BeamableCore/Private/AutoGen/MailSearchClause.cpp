@@ -1,5 +1,5 @@
 
-#include "AutoGen/MailSearchClause.h"
+#include "BeamableCore/Public/AutoGen/MailSearchClause.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

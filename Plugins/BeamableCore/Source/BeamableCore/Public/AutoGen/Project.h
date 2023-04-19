@@ -4,12 +4,12 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/Optionals/OptionalArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
 #include "BeamBackend/SemanticTypes/BeamPid.h"
-#include "AutoGen/Optionals/OptionalMapOfString.h"
-#include "AutoGen/Optionals/OptionalBool.h"
-#include "AutoGen/Optionals/OptionalInt64.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 
 #include "Project.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Content/GetManifestHistoryRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Content/GetManifestHistoryRequest.h"
 
 void UGetManifestHistoryRequest::BuildVerb(FString& VerbString) const
 {

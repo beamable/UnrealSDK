@@ -7,38 +7,38 @@
 #include "BeamBackend/ResponseCache/BeamResponseCache.h"
 #include "RequestTracker/BeamRequestTracker.h"
 
-#include "Accounts/GetGetPersonallyIdentifiableInformationRequest.h"
-#include "Accounts/GetAvailableExternal_identityRequest.h"
-#include "Accounts/GetAvailableThirdPartyRequest.h"
-#include "Accounts/PostPasswordUpdateInitRequest.h"
-#include "Accounts/GetAvailableDeviceIdRequest.h"
-#include "Accounts/GetAvailableRequest.h"
-#include "Accounts/PostPasswordUpdateConfirmRequest.h"
-#include "Accounts/GetAvailableRolesRequest.h"
-#include "Accounts/DeleteMeDeviceRequest.h"
-#include "Accounts/BasicAccountsGetMeRequest.h"
-#include "Accounts/PutMeRequest.h"
-#include "Accounts/DeleteMeThirdPartyRequest.h"
-#include "Accounts/BasicAccountsGetSearchRequest.h"
-#include "Accounts/PostEmailUpdateInitRequest.h"
-#include "Accounts/PostEmailUpdateConfirmRequest.h"
-#include "Accounts/PostAdminAdminUserRequest.h"
-#include "Accounts/BasicAccountsPostRegisterRequest.h"
-#include "Accounts/GetAdminMeRequest.h"
-#include "Accounts/GetAdminAdminUsersRequest.h"
-#include "Accounts/GetFindRequest.h"
-#include "Accounts/PostExternal_identityRequest.h"
-#include "Accounts/DeleteExternal_identityRequest.h"
-#include "Accounts/PutAdminEmailRequest.h"
-#include "Accounts/GetRoleReportRequest.h"
-#include "Accounts/ObjectAccountsPutRoleRequest.h"
-#include "Accounts/DeleteRoleRequest.h"
-#include "Accounts/PutAdminScopeRequest.h"
-#include "Accounts/DeleteAdminScopeRequest.h"
-#include "Accounts/PutAdminThirdPartyRequest.h"
-#include "Accounts/DeleteAdminThirdPartyRequest.h"
-#include "Accounts/PutAccountsRequest.h"
-#include "Accounts/DeleteAdminForgetRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetGetPersonallyIdentifiableInformationRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetAvailableExternalIdentityRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetAvailableThirdPartyRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PostPasswordUpdateInitRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetAvailableDeviceIdRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetAvailableRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PostPasswordUpdateConfirmRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetAvailableRolesRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/DeleteMeDeviceRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/BasicAccountsGetMeRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PutMeRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/DeleteMeThirdPartyRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/BasicAccountsGetSearchRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PostEmailUpdateInitRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PostEmailUpdateConfirmRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PostAdminAdminUserRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/BasicAccountsPostRegisterRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetAdminMeRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetAdminAdminUsersRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetFindRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PostExternalIdentityRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/DeleteExternalIdentityRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PutAdminEmailRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetRoleReportRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/ObjectAccountsPutRoleRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/DeleteRoleRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PutAdminScopeRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/DeleteAdminScopeRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PutAdminThirdPartyRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/DeleteAdminThirdPartyRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PutAccountsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/DeleteAdminForgetRequest.h"
 
 #include "BeamAccountsApi.generated.h"
 
@@ -83,14 +83,14 @@ private:
 	/**
 	 * @brief Private implementation that all overloaded BP UFunctions call.	  
 	 */
-	void BP_GetAvailableExternal_identityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetAvailableExternal_identityRequest* RequestData,
-	                                const FOnGetAvailableExternal_identitySuccess& OnSuccess, const FOnGetAvailableExternal_identityError& OnError, const FOnGetAvailableExternal_identityComplete& OnComplete,
+	void BP_GetAvailableExternalIdentityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetAvailableExternalIdentityRequest* RequestData,
+	                                const FOnGetAvailableExternalIdentitySuccess& OnSuccess, const FOnGetAvailableExternalIdentityError& OnError, const FOnGetAvailableExternalIdentityComplete& OnComplete,
 	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
-	void CPP_GetAvailableExternal_identityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetAvailableExternal_identityRequest* RequestData,
-	                                 const FOnGetAvailableExternal_identityFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_GetAvailableExternalIdentityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetAvailableExternalIdentityRequest* RequestData,
+	                                 const FOnGetAvailableExternalIdentityFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -319,26 +319,26 @@ private:
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
-	void BP_PostExternal_identityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UPostExternal_identityRequest* RequestData,
-	                  const FOnPostExternal_identitySuccess& OnSuccess, const FOnPostExternal_identityError& OnError, const FOnPostExternal_identityComplete& OnComplete, 
+	void BP_PostExternalIdentityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UPostExternalIdentityRequest* RequestData,
+	                  const FOnPostExternalIdentitySuccess& OnSuccess, const FOnPostExternalIdentityError& OnError, const FOnPostExternalIdentityComplete& OnComplete, 
 					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
-	void CPP_PostExternal_identityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UPostExternal_identityRequest* RequestData,
-	                   const FOnPostExternal_identityFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_PostExternalIdentityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UPostExternalIdentityRequest* RequestData,
+	                   const FOnPostExternalIdentityFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 		
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
-	void BP_DeleteExternal_identityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UDeleteExternal_identityRequest* RequestData,
-	                  const FOnDeleteExternal_identitySuccess& OnSuccess, const FOnDeleteExternal_identityError& OnError, const FOnDeleteExternal_identityComplete& OnComplete, 
+	void BP_DeleteExternalIdentityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UDeleteExternalIdentityRequest* RequestData,
+	                  const FOnDeleteExternalIdentitySuccess& OnSuccess, const FOnDeleteExternalIdentityError& OnError, const FOnDeleteExternalIdentityComplete& OnComplete, 
 					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
-	void CPP_DeleteExternal_identityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UDeleteExternal_identityRequest* RequestData,
-	                   const FOnDeleteExternal_identityFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_DeleteExternalIdentityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UDeleteExternalIdentityRequest* RequestData,
+	                   const FOnDeleteExternalIdentityFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 		
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
@@ -494,7 +494,7 @@ public:
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_GetAvailableExternal_identity(UGetAvailableExternal_identityRequest* Request, const FOnGetAvailableExternal_identityFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_GetAvailableExternalIdentity(UGetAvailableExternalIdentityRequest* Request, const FOnGetAvailableExternalIdentityFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -793,7 +793,7 @@ public:
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_PostExternal_identity(const FUserSlot& UserSlot, UPostExternal_identityRequest* Request, const FOnPostExternal_identityFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_PostExternalIdentity(const FUserSlot& UserSlot, UPostExternalIdentityRequest* Request, const FOnPostExternalIdentityFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -809,7 +809,7 @@ public:
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_DeleteExternal_identity(const FUserSlot& UserSlot, UDeleteExternal_identityRequest* Request, const FOnDeleteExternal_identityFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_DeleteExternalIdentity(const FUserSlot& UserSlot, UDeleteExternalIdentityRequest* Request, const FOnDeleteExternalIdentityFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -998,7 +998,7 @@ public:
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void GetAvailableExternal_identity(UGetAvailableExternal_identityRequest* Request, const FOnGetAvailableExternal_identitySuccess& OnSuccess, const FOnGetAvailableExternal_identityError& OnError, const FOnGetAvailableExternal_identityComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+	void GetAvailableExternalIdentity(UGetAvailableExternalIdentityRequest* Request, const FOnGetAvailableExternalIdentitySuccess& OnSuccess, const FOnGetAvailableExternalIdentityError& OnError, const FOnGetAvailableExternalIdentityComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**
@@ -1278,7 +1278,7 @@ public:
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void PostExternal_identity(FUserSlot UserSlot, UPostExternal_identityRequest* Request, const FOnPostExternal_identitySuccess& OnSuccess, const FOnPostExternal_identityError& OnError, const FOnPostExternal_identityComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+	void PostExternalIdentity(FUserSlot UserSlot, UPostExternalIdentityRequest* Request, const FOnPostExternalIdentitySuccess& OnSuccess, const FOnPostExternalIdentityError& OnError, const FOnPostExternalIdentityComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**
@@ -1293,7 +1293,7 @@ public:
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void DeleteExternal_identity(FUserSlot UserSlot, UDeleteExternal_identityRequest* Request, const FOnDeleteExternal_identitySuccess& OnSuccess, const FOnDeleteExternal_identityError& OnError, const FOnDeleteExternal_identityComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+	void DeleteExternalIdentity(FUserSlot UserSlot, UDeleteExternalIdentityRequest* Request, const FOnDeleteExternalIdentitySuccess& OnSuccess, const FOnDeleteExternalIdentityError& OnError, const FOnDeleteExternalIdentityComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**

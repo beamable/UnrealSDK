@@ -1,5 +1,5 @@
 
-#include "AutoGen/DeleteAnnouncementRequestBody.h"
+#include "BeamableCore/Public/AutoGen/DeleteAnnouncementRequestBody.h"
 
 
 

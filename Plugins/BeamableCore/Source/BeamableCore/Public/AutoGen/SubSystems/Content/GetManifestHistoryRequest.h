@@ -7,9 +7,9 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/Optionals/OptionalBeamContentManifestId.h"
-#include "AutoGen/Optionals/OptionalInt32.h"
-#include "AutoGen/GetManifestHistoryResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamContentManifestId.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
+#include "BeamableCore/Public/AutoGen/GetManifestHistoryResponse.h"
 
 #include "GetManifestHistoryRequest.generated.h"
 

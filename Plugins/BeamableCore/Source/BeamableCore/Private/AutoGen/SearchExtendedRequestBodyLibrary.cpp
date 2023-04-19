@@ -1,5 +1,5 @@
 
-#include "AutoGen/SearchExtendedRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/SearchExtendedRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

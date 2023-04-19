@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/NotificationRequestData.h"
+#include "BeamableCore/Public/AutoGen/NotificationRequestData.h"
 
 #include "NotificationRequestDataLibrary.generated.h"
 

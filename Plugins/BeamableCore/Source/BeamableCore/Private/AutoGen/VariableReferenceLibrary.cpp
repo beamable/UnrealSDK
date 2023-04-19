@@ -1,5 +1,5 @@
 
-#include "AutoGen/VariableReferenceLibrary.h"
+#include "BeamableCore/Public/AutoGen/VariableReferenceLibrary.h"
 
 #include "CoreMinimal.h"
 

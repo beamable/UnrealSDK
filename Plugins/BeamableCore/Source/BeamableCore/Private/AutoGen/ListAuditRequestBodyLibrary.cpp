@@ -1,5 +1,5 @@
 
-#include "AutoGen/ListAuditRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/ListAuditRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

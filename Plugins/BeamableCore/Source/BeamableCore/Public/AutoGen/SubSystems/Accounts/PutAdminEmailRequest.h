@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamBackend/SemanticTypes/BeamAccountId.h"
-#include "AutoGen/EmailUpdateRequestBody.h"
-#include "AutoGen/AccountsObjectAccount.h"
+#include "BeamableCore/Public/AutoGen/EmailUpdateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/AccountsObjectAccount.h"
 
 #include "PutAdminEmailRequest.generated.h"
 

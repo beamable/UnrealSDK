@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/MetadataPair.h"
+#include "BeamableCore/Public/AutoGen/MetadataPair.h"
 
 #include "OptionalArrayOfMetadataPair.generated.h"
 

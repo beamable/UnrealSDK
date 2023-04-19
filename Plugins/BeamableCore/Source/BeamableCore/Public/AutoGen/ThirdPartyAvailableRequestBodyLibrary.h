@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ThirdPartyAvailableRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ThirdPartyAvailableRequestBody.h"
 
 #include "ThirdPartyAvailableRequestBodyLibrary.generated.h"
 

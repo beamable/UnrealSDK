@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/CommonResponse.h"
+#include "BeamableCore/Public/AutoGen/CommonResponse.h"
 
 #include "GetPaymentsRequest.generated.h"
 

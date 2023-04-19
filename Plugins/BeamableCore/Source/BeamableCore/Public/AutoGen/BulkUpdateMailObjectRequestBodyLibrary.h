@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/BulkUpdateMailObjectRequestBody.h"
+#include "BeamableCore/Public/AutoGen/BulkUpdateMailObjectRequestBody.h"
 
 #include "BulkUpdateMailObjectRequestBodyLibrary.generated.h"
 

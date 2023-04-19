@@ -1,5 +1,5 @@
 
-#include "AutoGen/RoleMapping.h"
+#include "BeamableCore/Public/AutoGen/RoleMapping.h"
 
 
 

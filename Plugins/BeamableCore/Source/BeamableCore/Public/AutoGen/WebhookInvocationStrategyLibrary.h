@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/WebhookInvocationStrategy.h"
+#include "BeamableCore/Public/AutoGen/WebhookInvocationStrategy.h"
 
 #include "WebhookInvocationStrategyLibrary.generated.h"
 

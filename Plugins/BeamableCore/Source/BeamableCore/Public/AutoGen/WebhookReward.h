@@ -4,9 +4,9 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/WebhookInvocationStrategy.h"
-#include "AutoGen/Optionals/OptionalWebhookComet.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/WebhookInvocationStrategy.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalWebhookComet.h"
 
 #include "WebhookReward.generated.h"
 

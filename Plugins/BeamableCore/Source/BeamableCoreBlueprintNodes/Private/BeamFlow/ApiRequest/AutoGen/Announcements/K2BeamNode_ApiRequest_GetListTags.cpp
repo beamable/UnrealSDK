@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Announcements/K2BeamNode_ApiRequest_GetListTags.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Announcements/K2BeamNode_ApiRequest_GetListTags.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamAnnouncementsApi.h"
-#include "AutoGen/SubSystems/Announcements/GetListTagsRequest.h"
-#include "AutoGen/ListTagsResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamAnnouncementsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Announcements/GetListTagsRequest.h"
+#include "BeamableCore/Public/AutoGen/ListTagsResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetListTags"
 

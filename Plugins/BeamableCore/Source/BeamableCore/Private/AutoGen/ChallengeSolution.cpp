@@ -1,5 +1,5 @@
 
-#include "AutoGen/ChallengeSolution.h"
+#include "BeamableCore/Public/AutoGen/ChallengeSolution.h"
 
 
 

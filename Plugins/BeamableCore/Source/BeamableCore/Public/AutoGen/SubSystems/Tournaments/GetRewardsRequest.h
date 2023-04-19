@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/RewardsResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/RewardsResponse.h"
 
 #include "GetRewardsRequest.generated.h"
 

@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalArrayOfEventRule.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfEventRule.h"
 
 #include "EventPhase.generated.h"
 

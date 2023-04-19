@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventContentResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/EventContentResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

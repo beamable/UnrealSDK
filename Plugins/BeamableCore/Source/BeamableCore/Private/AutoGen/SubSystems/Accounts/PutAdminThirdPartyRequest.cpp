@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/PutAdminThirdPartyRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PutAdminThirdPartyRequest.h"
 
 void UPutAdminThirdPartyRequest::BuildVerb(FString& VerbString) const
 {

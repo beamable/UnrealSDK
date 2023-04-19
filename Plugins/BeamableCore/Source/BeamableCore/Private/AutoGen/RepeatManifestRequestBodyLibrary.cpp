@@ -1,5 +1,5 @@
 
-#include "AutoGen/RepeatManifestRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/RepeatManifestRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

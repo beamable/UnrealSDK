@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Item.h"
+#include "BeamableCore/Public/AutoGen/Item.h"
 
 #include "ItemGroup.generated.h"
 

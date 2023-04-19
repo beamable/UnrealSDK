@@ -1,5 +1,5 @@
 
-#include "AutoGen/ActiveListingResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/ActiveListingResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

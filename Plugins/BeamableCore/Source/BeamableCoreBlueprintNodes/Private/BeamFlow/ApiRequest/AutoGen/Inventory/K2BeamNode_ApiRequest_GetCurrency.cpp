@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Inventory/K2BeamNode_ApiRequest_GetCurrency.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Inventory/K2BeamNode_ApiRequest_GetCurrency.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamInventoryApi.h"
-#include "AutoGen/SubSystems/Inventory/GetCurrencyRequest.h"
-#include "AutoGen/CurrencyContentResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamInventoryApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Inventory/GetCurrencyRequest.h"
+#include "BeamableCore/Public/AutoGen/CurrencyContentResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetCurrency"
 

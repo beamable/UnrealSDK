@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/Schedule.h"
+#include "BeamableCore/Public/AutoGen/Schedule.h"
 
 #include "OptionalSchedule.generated.h"
 

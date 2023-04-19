@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfMetadataPair.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfMetadataPair.h"
 
 FOptionalArrayOfMetadataPair::FOptionalArrayOfMetadataPair()
 {

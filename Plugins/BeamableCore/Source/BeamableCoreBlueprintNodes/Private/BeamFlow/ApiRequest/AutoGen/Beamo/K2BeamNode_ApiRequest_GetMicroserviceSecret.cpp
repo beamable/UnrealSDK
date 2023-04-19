@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Beamo/K2BeamNode_ApiRequest_GetMicroserviceSecret.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Beamo/K2BeamNode_ApiRequest_GetMicroserviceSecret.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamBeamoApi.h"
-#include "AutoGen/SubSystems/Beamo/GetMicroserviceSecretRequest.h"
-#include "AutoGen/MicroserviceSecretResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamBeamoApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Beamo/GetMicroserviceSecretRequest.h"
+#include "BeamableCore/Public/AutoGen/MicroserviceSecretResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetMicroserviceSecret"
 

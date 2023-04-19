@@ -1,5 +1,5 @@
 
-#include "AutoGen/ServiceStorageReference.h"
+#include "BeamableCore/Public/AutoGen/ServiceStorageReference.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

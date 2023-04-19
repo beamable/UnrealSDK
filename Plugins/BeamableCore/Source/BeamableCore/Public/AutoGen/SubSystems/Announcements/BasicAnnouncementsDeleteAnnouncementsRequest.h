@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/DeleteAnnouncementRequestBody.h"
-#include "AutoGen/EmptyResponse.h"
+#include "BeamableCore/Public/AutoGen/DeleteAnnouncementRequestBody.h"
+#include "BeamableCore/Public/AutoGen/EmptyResponse.h"
 
 #include "BasicAnnouncementsDeleteAnnouncementsRequest.generated.h"
 

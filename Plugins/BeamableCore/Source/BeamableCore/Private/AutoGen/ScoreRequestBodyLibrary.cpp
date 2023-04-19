@@ -1,5 +1,5 @@
 
-#include "AutoGen/ScoreRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/ScoreRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

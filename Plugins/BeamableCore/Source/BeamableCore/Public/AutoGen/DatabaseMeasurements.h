@@ -4,9 +4,9 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalArrayOfDatabaseMeasurement.h"
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/Link.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfDatabaseMeasurement.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Link.h"
 
 #include "DatabaseMeasurements.generated.h"
 

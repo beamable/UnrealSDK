@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GamerTagAssociation.h"
+#include "BeamableCore/Public/AutoGen/GamerTagAssociation.h"
 
 #include "GamerTagAssociationLibrary.generated.h"
 

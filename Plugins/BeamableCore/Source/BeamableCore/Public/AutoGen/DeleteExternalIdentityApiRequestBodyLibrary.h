@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/DeleteExternalIdentityApiRequestBody.h"
+#include "BeamableCore/Public/AutoGen/DeleteExternalIdentityApiRequestBody.h"
 
 #include "DeleteExternalIdentityApiRequestBodyLibrary.generated.h"
 

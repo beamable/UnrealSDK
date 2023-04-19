@@ -1,5 +1,5 @@
 
-#include "AutoGen/ReferenceSupersetLibrary.h"
+#include "BeamableCore/Public/AutoGen/ReferenceSupersetLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Beamo/GetMicroserviceSecretRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Beamo/GetMicroserviceSecretRequest.h"
 
 void UGetMicroserviceSecretRequest::BuildVerb(FString& VerbString) const
 {

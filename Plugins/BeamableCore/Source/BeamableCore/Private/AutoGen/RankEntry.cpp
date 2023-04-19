@@ -1,5 +1,5 @@
 
-#include "AutoGen/RankEntry.h"
+#include "BeamableCore/Public/AutoGen/RankEntry.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/ListTagsRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/ListTagsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

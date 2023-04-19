@@ -1,5 +1,5 @@
 
-#include "AutoGen/UpdateListingCooldownRequestBody.h"
+#include "BeamableCore/Public/AutoGen/UpdateListingCooldownRequestBody.h"
 
 #include "Misc/DefaultValueHelper.h"
 

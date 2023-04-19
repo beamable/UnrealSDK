@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetGroupsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GetGroupsRequestBody.h"
 
 #include "GetGroupsRequestBodyLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderboardPartitionRequestBody.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardPartitionRequestBody.h"
 
 #include "Misc/DefaultValueHelper.h"
 

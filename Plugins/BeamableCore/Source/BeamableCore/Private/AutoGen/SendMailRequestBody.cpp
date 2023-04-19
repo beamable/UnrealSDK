@@ -1,5 +1,5 @@
 
-#include "AutoGen/SendMailRequestBody.h"
+#include "BeamableCore/Public/AutoGen/SendMailRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

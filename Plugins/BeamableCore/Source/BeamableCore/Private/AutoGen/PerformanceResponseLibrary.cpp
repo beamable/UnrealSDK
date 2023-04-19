@@ -1,5 +1,5 @@
 
-#include "AutoGen/PerformanceResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/PerformanceResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

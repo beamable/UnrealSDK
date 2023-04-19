@@ -4,9 +4,9 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalArrayOfString.h"
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/Optionals/OptionalMapOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
 
 #include "NotificationRequestData.generated.h"
 

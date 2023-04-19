@@ -4,8 +4,8 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalBool.h"
-#include "AutoGen/Optionals/OptionalArrayOfGroupScoreBinding.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfGroupScoreBinding.h"
 
 #include "Member.generated.h"
 

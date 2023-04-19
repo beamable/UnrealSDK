@@ -1,5 +1,5 @@
 
-#include "AutoGen/Token.h"
+#include "BeamableCore/Public/AutoGen/Token.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

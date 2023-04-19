@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetProductResponse.h"
+#include "BeamableCore/Public/AutoGen/GetProductResponse.h"
 
 #include "Misc/DefaultValueHelper.h"
 

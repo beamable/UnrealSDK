@@ -1,5 +1,5 @@
 
-#include "AutoGen/AvailableRolesResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/AvailableRolesResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

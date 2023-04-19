@@ -1,5 +1,5 @@
 
-#include "AutoGen/TournamentCurrencyRewardLibrary.h"
+#include "BeamableCore/Public/AutoGen/TournamentCurrencyRewardLibrary.h"
 
 #include "CoreMinimal.h"
 

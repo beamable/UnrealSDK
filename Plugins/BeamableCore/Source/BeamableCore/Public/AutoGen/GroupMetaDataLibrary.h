@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GroupMetaData.h"
+#include "BeamableCore/Public/AutoGen/GroupMetaData.h"
 
 #include "GroupMetaDataLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Matchmaking/PostMatchRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Matchmaking/PostMatchRequest.h"
 
 void UPostMatchRequest::BuildVerb(FString& VerbString) const
 {

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalBeamoBasicManifestChecksum.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamoBasicManifestChecksum.h"
 
 #include "OptionalBeamoBasicManifestChecksumLibrary.generated.h"
 

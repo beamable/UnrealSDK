@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetCurrentManifestResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/GetCurrentManifestResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

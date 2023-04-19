@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamBackend/SemanticTypes/BeamPid.h"
-#include "AutoGen/Optionals/OptionalArrayOfString.h"
-#include "AutoGen/PromoteRealmResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/PromoteRealmResponse.h"
 
 #include "GetPromotionRequest.generated.h"
 

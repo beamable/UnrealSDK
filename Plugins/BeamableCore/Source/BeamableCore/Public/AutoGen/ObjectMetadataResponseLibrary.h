@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ObjectMetadataResponse.h"
+#include "BeamableCore/Public/AutoGen/ObjectMetadataResponse.h"
 
 #include "ObjectMetadataResponseLibrary.generated.h"
 

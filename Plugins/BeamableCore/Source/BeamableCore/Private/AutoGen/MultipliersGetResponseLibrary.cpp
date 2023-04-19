@@ -1,5 +1,5 @@
 
-#include "AutoGen/MultipliersGetResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/MultipliersGetResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SendNotification.h"
+#include "BeamableCore/Public/AutoGen/SendNotification.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

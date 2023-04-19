@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Cloudsaving/K2BeamNode_ApiRequest_PostDataUploadURL.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Cloudsaving/K2BeamNode_ApiRequest_PostDataUploadURL.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamCloudsavingApi.h"
-#include "AutoGen/SubSystems/Cloudsaving/PostDataUploadURLRequest.h"
-#include "AutoGen/URLSResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamCloudsavingApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Cloudsaving/PostDataUploadURLRequest.h"
+#include "BeamableCore/Public/AutoGen/URLSResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PostDataUploadURL"
 

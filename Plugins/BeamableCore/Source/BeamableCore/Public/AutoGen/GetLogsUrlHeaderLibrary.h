@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetLogsUrlHeader.h"
+#include "BeamableCore/Public/AutoGen/GetLogsUrlHeader.h"
 
 #include "GetLogsUrlHeaderLibrary.generated.h"
 

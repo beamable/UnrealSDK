@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Beamo/GetStatusRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Beamo/GetStatusRequest.h"
 
 void UGetStatusRequest::BuildVerb(FString& VerbString) const
 {

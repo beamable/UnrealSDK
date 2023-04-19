@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/GroupUsers/PostJoinRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/GroupUsers/PostJoinRequest.h"
 
 void UPostJoinRequest::BuildVerb(FString& VerbString) const
 {

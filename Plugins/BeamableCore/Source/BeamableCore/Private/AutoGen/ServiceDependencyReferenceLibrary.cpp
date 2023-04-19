@@ -1,5 +1,5 @@
 
-#include "AutoGen/ServiceDependencyReferenceLibrary.h"
+#include "BeamableCore/Public/AutoGen/ServiceDependencyReferenceLibrary.h"
 
 #include "CoreMinimal.h"
 

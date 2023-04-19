@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetMetricsUrlRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GetMetricsUrlRequestBody.h"
 
 #include "GetMetricsUrlRequestBodyLibrary.generated.h"
 

@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/CurrencyContentResponse.h"
+#include "BeamableCore/Public/AutoGen/CurrencyContentResponse.h"
 
 #include "GetCurrencyRequest.generated.h"
 

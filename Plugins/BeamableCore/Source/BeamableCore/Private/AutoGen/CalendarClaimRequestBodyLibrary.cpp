@@ -1,5 +1,5 @@
 
-#include "AutoGen/CalendarClaimRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/CalendarClaimRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

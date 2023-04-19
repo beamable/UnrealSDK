@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/PaymentResultResponse.h"
+#include "BeamableCore/Public/AutoGen/PaymentResultResponse.h"
 
 #include "PaymentResultResponseLibrary.generated.h"
 

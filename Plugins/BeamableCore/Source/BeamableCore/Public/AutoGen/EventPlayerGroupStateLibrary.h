@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/EventPlayerGroupState.h"
+#include "BeamableCore/Public/AutoGen/EventPlayerGroupState.h"
 
 #include "EventPlayerGroupStateLibrary.generated.h"
 

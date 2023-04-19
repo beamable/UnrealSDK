@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/SteamAuthRequestBody.h"
+#include "BeamableCore/Public/AutoGen/SteamAuthRequestBody.h"
 
 #include "SteamAuthRequestBodyLibrary.generated.h"
 

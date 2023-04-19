@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/SetContentRequestBody.h"
-#include "AutoGen/CommonResponse.h"
+#include "BeamableCore/Public/AutoGen/SetContentRequestBody.h"
+#include "BeamableCore/Public/AutoGen/CommonResponse.h"
 
 #include "PutContentRequest.generated.h"
 

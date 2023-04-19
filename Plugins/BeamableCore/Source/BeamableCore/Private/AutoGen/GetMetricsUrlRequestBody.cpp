@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetMetricsUrlRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GetMetricsUrlRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

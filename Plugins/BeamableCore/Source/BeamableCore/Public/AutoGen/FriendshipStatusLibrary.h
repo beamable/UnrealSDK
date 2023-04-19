@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/FriendshipStatus.h"
+#include "BeamableCore/Public/AutoGen/FriendshipStatus.h"
 
 #include "FriendshipStatusLibrary.generated.h"
 

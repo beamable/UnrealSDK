@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetActiveListingRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GetActiveListingRequestBody.h"
 
 #include "GetActiveListingRequestBodyLibrary.generated.h"
 

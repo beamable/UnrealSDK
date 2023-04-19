@@ -1,5 +1,5 @@
 
-#include "AutoGen/WebhookCometLibrary.h"
+#include "BeamableCore/Public/AutoGen/WebhookCometLibrary.h"
 
 #include "CoreMinimal.h"
 

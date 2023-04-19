@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetOrderInfoRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GetOrderInfoRequestBody.h"
 
 #include "GetOrderInfoRequestBodyLibrary.generated.h"
 

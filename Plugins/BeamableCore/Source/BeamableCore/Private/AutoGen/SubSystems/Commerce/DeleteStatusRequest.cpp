@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Commerce/DeleteStatusRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Commerce/DeleteStatusRequest.h"
 
 void UDeleteStatusRequest::BuildVerb(FString& VerbString) const
 {

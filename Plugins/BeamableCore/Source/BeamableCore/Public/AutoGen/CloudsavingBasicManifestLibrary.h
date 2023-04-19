@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/CloudsavingBasicManifest.h"
+#include "BeamableCore/Public/AutoGen/CloudsavingBasicManifest.h"
 
 #include "CloudsavingBasicManifestLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Inventory/PutTransferRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Inventory/PutTransferRequest.h"
 
 void UPutTransferRequest::BuildVerb(FString& VerbString) const
 {

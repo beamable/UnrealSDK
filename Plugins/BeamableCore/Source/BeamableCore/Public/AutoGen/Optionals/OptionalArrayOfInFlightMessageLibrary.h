@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfInFlightMessage.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfInFlightMessage.h"
 
 #include "OptionalArrayOfInFlightMessageLibrary.generated.h"
 

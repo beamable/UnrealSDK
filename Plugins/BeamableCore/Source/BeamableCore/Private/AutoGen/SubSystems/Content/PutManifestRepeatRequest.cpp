@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Content/PutManifestRepeatRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Content/PutManifestRepeatRequest.h"
 
 void UPutManifestRepeatRequest::BuildVerb(FString& VerbString) const
 {

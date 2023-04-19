@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/CurrencyPreview.h"
+#include "BeamableCore/Public/AutoGen/CurrencyPreview.h"
 
 #include "PreviewVipBonusResponse.generated.h"
 

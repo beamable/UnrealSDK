@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/PromoteRealmResponse.h"
+#include "BeamableCore/Public/AutoGen/PromoteRealmResponse.h"
 
 #include "PromoteRealmResponseLibrary.generated.h"
 

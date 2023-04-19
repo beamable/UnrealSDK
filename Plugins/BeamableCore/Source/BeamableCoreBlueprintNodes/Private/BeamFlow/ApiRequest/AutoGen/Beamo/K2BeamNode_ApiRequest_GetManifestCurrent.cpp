@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Beamo/K2BeamNode_ApiRequest_GetManifestCurrent.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Beamo/K2BeamNode_ApiRequest_GetManifestCurrent.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamBeamoApi.h"
-#include "AutoGen/SubSystems/Beamo/GetManifestCurrentRequest.h"
-#include "AutoGen/GetCurrentManifestResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamBeamoApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Beamo/GetManifestCurrentRequest.h"
+#include "BeamableCore/Public/AutoGen/GetCurrentManifestResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetManifestCurrent"
 

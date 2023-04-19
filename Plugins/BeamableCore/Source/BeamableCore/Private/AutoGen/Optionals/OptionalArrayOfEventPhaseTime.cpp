@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfEventPhaseTime.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfEventPhaseTime.h"
 
 FOptionalArrayOfEventPhaseTime::FOptionalArrayOfEventPhaseTime()
 {

@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Social/K2BeamNode_ApiRequest_GetSocial.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Social/K2BeamNode_ApiRequest_GetSocial.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamSocialApi.h"
-#include "AutoGen/SubSystems/Social/GetSocialRequest.h"
-#include "AutoGen/GetSocialStatusesResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamSocialApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Social/GetSocialRequest.h"
+#include "BeamableCore/Public/AutoGen/GetSocialStatusesResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetSocial"
 

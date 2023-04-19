@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Groups/PostPetitionRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Groups/PostPetitionRequest.h"
 
 void UPostPetitionRequest::BuildVerb(FString& VerbString) const
 {

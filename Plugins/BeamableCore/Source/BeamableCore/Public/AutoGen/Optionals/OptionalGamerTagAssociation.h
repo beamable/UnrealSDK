@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/GamerTagAssociation.h"
+#include "BeamableCore/Public/AutoGen/GamerTagAssociation.h"
 
 #include "OptionalGamerTagAssociation.generated.h"
 

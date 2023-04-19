@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Content/K2BeamNode_ApiRequest_GetManifestChecksum.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Content/K2BeamNode_ApiRequest_GetManifestChecksum.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamContentApi.h"
-#include "AutoGen/SubSystems/Content/GetManifestChecksumRequest.h"
-#include "AutoGen/ContentBasicManifestChecksum.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamContentApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Content/GetManifestChecksumRequest.h"
+#include "BeamableCore/Public/AutoGen/ContentBasicManifestChecksum.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetManifestChecksum"
 

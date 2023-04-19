@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GroupSearchRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GroupSearchRequestBody.h"
 
 #include "GroupSearchRequestBodyLibrary.generated.h"
 

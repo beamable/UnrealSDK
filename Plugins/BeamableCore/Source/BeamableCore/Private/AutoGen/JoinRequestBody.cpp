@@ -1,5 +1,5 @@
 
-#include "AutoGen/JoinRequestBody.h"
+#include "BeamableCore/Public/AutoGen/JoinRequestBody.h"
 
 
 

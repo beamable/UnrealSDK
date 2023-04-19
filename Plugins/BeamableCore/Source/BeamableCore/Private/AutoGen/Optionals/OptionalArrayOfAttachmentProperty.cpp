@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfAttachmentProperty.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfAttachmentProperty.h"
 
 FOptionalArrayOfAttachmentProperty::FOptionalArrayOfAttachmentProperty()
 {

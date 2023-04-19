@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderboardMembershipRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardMembershipRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

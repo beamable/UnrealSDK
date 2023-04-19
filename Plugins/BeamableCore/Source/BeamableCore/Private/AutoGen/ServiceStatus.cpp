@@ -1,5 +1,5 @@
 
-#include "AutoGen/ServiceStatus.h"
+#include "BeamableCore/Public/AutoGen/ServiceStatus.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

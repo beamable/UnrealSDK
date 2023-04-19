@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/AccountsBasicAccount.h"
+#include "BeamableCore/Public/AutoGen/AccountsBasicAccount.h"
 
 #include "AccountSearchResponse.generated.h"
 

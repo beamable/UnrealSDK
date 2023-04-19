@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/ChampionScore.h"
+#include "BeamableCore/Public/AutoGen/ChampionScore.h"
 
 #include "GetChampionsResponse.generated.h"
 

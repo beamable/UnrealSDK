@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/LeaderBoardViewResponse.h"
+#include "BeamableCore/Public/AutoGen/LeaderBoardViewResponse.h"
 
 #include "GetFriendsRequest.generated.h"
 

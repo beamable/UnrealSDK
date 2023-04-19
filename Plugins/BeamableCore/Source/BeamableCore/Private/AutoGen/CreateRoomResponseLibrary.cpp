@@ -1,5 +1,5 @@
 
-#include "AutoGen/CreateRoomResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/CreateRoomResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

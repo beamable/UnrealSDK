@@ -1,5 +1,5 @@
 
-#include "AutoGen/PlayerBasicCloudDataRequestBody.h"
+#include "BeamableCore/Public/AutoGen/PlayerBasicCloudDataRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

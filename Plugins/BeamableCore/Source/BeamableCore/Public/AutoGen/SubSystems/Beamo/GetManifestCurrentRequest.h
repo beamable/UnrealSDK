@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/Optionals/OptionalBool.h"
-#include "AutoGen/GetCurrentManifestResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
+#include "BeamableCore/Public/AutoGen/GetCurrentManifestResponse.h"
 
 #include "GetManifestCurrentRequest.generated.h"
 

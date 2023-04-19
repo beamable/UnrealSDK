@@ -1,5 +1,5 @@
 
-#include "AutoGen/MultipliersGetResponse.h"
+#include "BeamableCore/Public/AutoGen/MultipliersGetResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

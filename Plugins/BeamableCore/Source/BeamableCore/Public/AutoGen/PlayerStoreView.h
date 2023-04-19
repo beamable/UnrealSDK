@@ -4,9 +4,9 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/PlayerListingView.h"
-#include "AutoGen/Optionals/OptionalInt64.h"
-#include "AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/PlayerListingView.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "PlayerStoreView.generated.h"
 

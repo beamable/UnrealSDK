@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/StatUpdateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/StatUpdateRequestBody.h"
 
 #include "BatchSetStatsRequestBody.generated.h"
 

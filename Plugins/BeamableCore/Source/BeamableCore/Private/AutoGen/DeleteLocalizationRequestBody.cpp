@@ -1,5 +1,5 @@
 
-#include "AutoGen/DeleteLocalizationRequestBody.h"
+#include "BeamableCore/Public/AutoGen/DeleteLocalizationRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

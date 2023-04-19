@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/GroupUsers/K2BeamNode_ApiRequest_GetAvailability.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/GroupUsers/K2BeamNode_ApiRequest_GetAvailability.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamGroupUsersApi.h"
-#include "AutoGen/SubSystems/GroupUsers/GetAvailabilityRequest.h"
-#include "AutoGen/AvailabilityResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamGroupUsersApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/GroupUsers/GetAvailabilityRequest.h"
+#include "BeamableCore/Public/AutoGen/AvailabilityResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetAvailability"
 

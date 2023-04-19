@@ -1,5 +1,5 @@
 
-#include "AutoGen/StatsSubscribeRequestBody.h"
+#include "BeamableCore/Public/AutoGen/StatsSubscribeRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

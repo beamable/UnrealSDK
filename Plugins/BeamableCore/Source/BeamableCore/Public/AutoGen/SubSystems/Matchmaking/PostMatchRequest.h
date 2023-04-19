@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/MatchUpdate.h"
+#include "BeamableCore/Public/AutoGen/MatchUpdate.h"
 
 #include "PostMatchRequest.generated.h"
 

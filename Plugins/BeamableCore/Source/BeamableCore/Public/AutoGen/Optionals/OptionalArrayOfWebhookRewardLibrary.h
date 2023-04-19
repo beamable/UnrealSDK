@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfWebhookReward.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfWebhookReward.h"
 
 #include "OptionalArrayOfWebhookRewardLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/StatSubscriptionNotification.h"
+#include "BeamableCore/Public/AutoGen/StatSubscriptionNotification.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

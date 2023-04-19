@@ -1,5 +1,5 @@
 
-#include "AutoGen/URLSResponse.h"
+#include "BeamableCore/Public/AutoGen/URLSResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

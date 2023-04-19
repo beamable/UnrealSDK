@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Inventory/K2BeamNode_ApiRequest_GetMultipliers.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Inventory/K2BeamNode_ApiRequest_GetMultipliers.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamInventoryApi.h"
-#include "AutoGen/SubSystems/Inventory/GetMultipliersRequest.h"
-#include "AutoGen/MultipliersGetResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamInventoryApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Inventory/GetMultipliersRequest.h"
+#include "BeamableCore/Public/AutoGen/MultipliersGetResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetMultipliers"
 

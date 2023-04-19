@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Customer.h"
+#include "BeamableCore/Public/AutoGen/Customer.h"
 
 #include "CustomersResponse.generated.h"
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/PingRsp.h"
+#include "BeamableCore/Public/AutoGen/PingRsp.h"
 
 #include "PingRspLibrary.generated.h"
 

@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/ChallengeSolution.h"
+#include "BeamableCore/Public/AutoGen/ChallengeSolution.h"
 
 #include "OptionalChallengeSolution.generated.h"
 

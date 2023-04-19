@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Inventory/K2BeamNode_ApiRequest_PutTransfer.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Inventory/K2BeamNode_ApiRequest_PutTransfer.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamInventoryApi.h"
-#include "AutoGen/SubSystems/Inventory/PutTransferRequest.h"
-#include "AutoGen/CommonResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamInventoryApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Inventory/PutTransferRequest.h"
+#include "BeamableCore/Public/AutoGen/CommonResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PutTransfer"
 

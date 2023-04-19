@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/GroupUsers/K2BeamNode_ApiRequest_ObjectGroupUsersGetSearch.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/GroupUsers/K2BeamNode_ApiRequest_ObjectGroupUsersGetSearch.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamGroupUsersApi.h"
-#include "AutoGen/SubSystems/GroupUsers/ObjectGroupUsersGetSearchRequest.h"
-#include "AutoGen/GroupSearchResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamGroupUsersApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/GroupUsers/ObjectGroupUsersGetSearchRequest.h"
+#include "BeamableCore/Public/AutoGen/GroupSearchResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_ObjectGroupUsersGetSearch"
 

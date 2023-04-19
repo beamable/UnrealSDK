@@ -1,5 +1,5 @@
 
-#include "AutoGen/InFlightMessage.h"
+#include "BeamableCore/Public/AutoGen/InFlightMessage.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

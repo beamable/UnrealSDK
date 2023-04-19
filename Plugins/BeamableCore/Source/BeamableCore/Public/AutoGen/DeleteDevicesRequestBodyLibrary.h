@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/DeleteDevicesRequestBody.h"
+#include "BeamableCore/Public/AutoGen/DeleteDevicesRequestBody.h"
 
 #include "DeleteDevicesRequestBodyLibrary.generated.h"
 

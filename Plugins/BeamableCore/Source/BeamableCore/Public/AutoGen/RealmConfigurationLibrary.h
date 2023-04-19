@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/RealmConfiguration.h"
+#include "BeamableCore/Public/AutoGen/RealmConfiguration.h"
 
 #include "RealmConfigurationLibrary.generated.h"
 

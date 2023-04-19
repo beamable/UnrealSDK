@@ -1,5 +1,5 @@
 
-#include "AutoGen/PeriodLibrary.h"
+#include "BeamableCore/Public/AutoGen/PeriodLibrary.h"
 
 #include "CoreMinimal.h"
 

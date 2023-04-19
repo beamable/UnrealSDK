@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Leaderboards/GetUidRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Leaderboards/GetUidRequest.h"
 
 void UGetUidRequest::BuildVerb(FString& VerbString) const
 {

@@ -1,5 +1,5 @@
 
-#include "AutoGen/TrackPurchaseRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/TrackPurchaseRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Content/K2BeamNode_ApiRequest_GetLocalizations.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Content/K2BeamNode_ApiRequest_GetLocalizations.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamContentApi.h"
-#include "AutoGen/SubSystems/Content/GetLocalizationsRequest.h"
-#include "AutoGen/GetLocalizationsResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamContentApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Content/GetLocalizationsRequest.h"
+#include "BeamableCore/Public/AutoGen/GetLocalizationsResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetLocalizations"
 

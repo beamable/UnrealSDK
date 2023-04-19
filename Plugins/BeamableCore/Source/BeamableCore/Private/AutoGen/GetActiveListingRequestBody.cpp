@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetActiveListingRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GetActiveListingRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

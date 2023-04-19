@@ -4,8 +4,8 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalSendNotification.h"
-#include "AutoGen/Optionals/OptionalMapOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalSendNotification.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
 
 #include "SendMsg.generated.h"
 

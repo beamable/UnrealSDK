@@ -1,5 +1,5 @@
 
-#include "AutoGen/VerifyPurchaseRequestBody.h"
+#include "BeamableCore/Public/AutoGen/VerifyPurchaseRequestBody.h"
 
 
 

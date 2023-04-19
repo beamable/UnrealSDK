@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/AnnouncementContentResponse.h"
+#include "BeamableCore/Public/AutoGen/AnnouncementContentResponse.h"
 
 #include "BasicAnnouncementsGetContentRequest.generated.h"
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GatewayLimits.h"
+#include "BeamableCore/Public/AutoGen/GatewayLimits.h"
 
 #include "GatewayLimitsLibrary.generated.h"
 

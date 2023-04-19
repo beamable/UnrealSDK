@@ -1,5 +1,5 @@
 
-#include "AutoGen/TournamentClientView.h"
+#include "BeamableCore/Public/AutoGen/TournamentClientView.h"
 
 #include "Misc/DefaultValueHelper.h"
 

@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/SubscriberDetailsResponse.h"
+#include "BeamableCore/Public/AutoGen/SubscriberDetailsResponse.h"
 
 #include "GetNotificationRequest.generated.h"
 

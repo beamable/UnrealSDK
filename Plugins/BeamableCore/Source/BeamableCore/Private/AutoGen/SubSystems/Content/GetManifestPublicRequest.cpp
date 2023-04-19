@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Content/GetManifestPublicRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Content/GetManifestPublicRequest.h"
 
 void UGetManifestPublicRequest::BuildVerb(FString& VerbString) const
 {

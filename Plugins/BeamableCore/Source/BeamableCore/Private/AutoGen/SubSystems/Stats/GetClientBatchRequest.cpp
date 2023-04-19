@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Stats/GetClientBatchRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/GetClientBatchRequest.h"
 
 void UGetClientBatchRequest::BuildVerb(FString& VerbString) const
 {

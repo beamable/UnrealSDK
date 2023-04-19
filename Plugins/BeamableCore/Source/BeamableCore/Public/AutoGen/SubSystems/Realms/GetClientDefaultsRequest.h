@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/RealmConfiguration.h"
+#include "BeamableCore/Public/AutoGen/RealmConfiguration.h"
 
 #include "GetClientDefaultsRequest.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventsWithinDateRangeRequestBody.h"
+#include "BeamableCore/Public/AutoGen/EventsWithinDateRangeRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

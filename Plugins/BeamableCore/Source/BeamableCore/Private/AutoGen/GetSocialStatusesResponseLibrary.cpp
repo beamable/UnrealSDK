@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetSocialStatusesResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/GetSocialStatusesResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

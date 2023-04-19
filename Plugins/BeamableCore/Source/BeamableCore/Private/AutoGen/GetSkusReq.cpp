@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetSkusReq.h"
+#include "BeamableCore/Public/AutoGen/GetSkusReq.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

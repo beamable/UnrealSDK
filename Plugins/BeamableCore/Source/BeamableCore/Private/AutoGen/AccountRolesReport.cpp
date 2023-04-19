@@ -1,5 +1,5 @@
 
-#include "AutoGen/AccountRolesReport.h"
+#include "BeamableCore/Public/AutoGen/AccountRolesReport.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

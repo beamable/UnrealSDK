@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/WebSocketConfiguration.h"
+#include "BeamableCore/Public/AutoGen/WebSocketConfiguration.h"
 
 #include "RealmConfiguration.generated.h"
 

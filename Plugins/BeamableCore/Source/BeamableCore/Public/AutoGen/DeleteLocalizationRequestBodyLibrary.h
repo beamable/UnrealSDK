@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/DeleteLocalizationRequestBody.h"
+#include "BeamableCore/Public/AutoGen/DeleteLocalizationRequestBody.h"
 
 #include "DeleteLocalizationRequestBodyLibrary.generated.h"
 

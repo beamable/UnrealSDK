@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/MatchMakingWindowResp.h"
+#include "BeamableCore/Public/AutoGen/MatchMakingWindowResp.h"
 
 #include "MatchMakingWindowRespLibrary.generated.h"
 

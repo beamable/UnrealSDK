@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/TextReference.h"
+#include "BeamableCore/Public/AutoGen/TextReference.h"
 
 #include "TextReferenceLibrary.generated.h"
 

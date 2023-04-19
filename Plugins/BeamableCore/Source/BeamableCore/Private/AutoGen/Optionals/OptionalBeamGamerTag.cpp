@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalBeamGamerTag.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamGamerTag.h"
 
 FOptionalBeamGamerTag::FOptionalBeamGamerTag()
 {

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Leaderboards/PutSwapRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Leaderboards/PutSwapRequest.h"
 
 void UPutSwapRequest::BuildVerb(FString& VerbString) const
 {

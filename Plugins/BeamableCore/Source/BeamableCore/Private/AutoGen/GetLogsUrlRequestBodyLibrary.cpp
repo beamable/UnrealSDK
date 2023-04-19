@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetLogsUrlRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/GetLogsUrlRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfEventRule.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfEventRule.h"
 
 FOptionalArrayOfEventRule::FOptionalArrayOfEventRule()
 {

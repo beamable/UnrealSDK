@@ -1,5 +1,5 @@
 
-#include "AutoGen/PriceLibrary.h"
+#include "BeamableCore/Public/AutoGen/PriceLibrary.h"
 
 #include "CoreMinimal.h"
 

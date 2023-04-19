@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/RealmRolesReport.h"
+#include "BeamableCore/Public/AutoGen/RealmRolesReport.h"
 
 #include "AccountRolesReport.generated.h"
 

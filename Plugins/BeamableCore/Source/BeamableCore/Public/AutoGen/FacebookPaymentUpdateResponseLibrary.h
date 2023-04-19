@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/FacebookPaymentUpdateResponse.h"
+#include "BeamableCore/Public/AutoGen/FacebookPaymentUpdateResponse.h"
 
 #include "FacebookPaymentUpdateResponseLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfCurrencyChangeReward.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfCurrencyChangeReward.h"
 
 FOptionalArrayOfCurrencyChangeReward::FOptionalArrayOfCurrencyChangeReward()
 {

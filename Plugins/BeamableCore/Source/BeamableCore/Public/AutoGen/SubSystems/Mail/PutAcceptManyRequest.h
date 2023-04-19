@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/AcceptMultipleAttachments.h"
-#include "AutoGen/MailSuccessResponse.h"
+#include "BeamableCore/Public/AutoGen/AcceptMultipleAttachments.h"
+#include "BeamableCore/Public/AutoGen/MailSuccessResponse.h"
 
 #include "PutAcceptManyRequest.generated.h"
 

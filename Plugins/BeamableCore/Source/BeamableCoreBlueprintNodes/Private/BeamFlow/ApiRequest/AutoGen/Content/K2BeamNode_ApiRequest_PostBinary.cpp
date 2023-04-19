@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Content/K2BeamNode_ApiRequest_PostBinary.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Content/K2BeamNode_ApiRequest_PostBinary.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamContentApi.h"
-#include "AutoGen/SubSystems/Content/PostBinaryRequest.h"
-#include "AutoGen/SaveBinaryResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamContentApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Content/PostBinaryRequest.h"
+#include "BeamableCore/Public/AutoGen/SaveBinaryResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PostBinary"
 

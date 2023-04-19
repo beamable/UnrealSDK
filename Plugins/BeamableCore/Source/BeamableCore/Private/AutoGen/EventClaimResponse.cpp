@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventClaimResponse.h"
+#include "BeamableCore/Public/AutoGen/EventClaimResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

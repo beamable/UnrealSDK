@@ -1,5 +1,5 @@
 
-#include "AutoGen/TournamentQueryResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/TournamentQueryResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfServiceStorageReference.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfServiceStorageReference.h"
 
 FOptionalArrayOfServiceStorageReference::FOptionalArrayOfServiceStorageReference()
 {

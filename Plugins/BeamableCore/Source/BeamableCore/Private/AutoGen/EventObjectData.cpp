@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventObjectData.h"
+#include "BeamableCore/Public/AutoGen/EventObjectData.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

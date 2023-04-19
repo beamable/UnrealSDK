@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfEventPhaseTime.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfEventPhaseTime.h"
 
 #include "OptionalArrayOfEventPhaseTimeLibrary.generated.h"
 

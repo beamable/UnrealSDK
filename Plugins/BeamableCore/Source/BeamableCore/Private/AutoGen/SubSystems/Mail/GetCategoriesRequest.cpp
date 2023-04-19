@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Mail/GetCategoriesRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Mail/GetCategoriesRequest.h"
 
 void UGetCategoriesRequest::BuildVerb(FString& VerbString) const
 {

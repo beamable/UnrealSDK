@@ -1,5 +1,5 @@
 
-#include "AutoGen/ObjectMetadataResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/ObjectMetadataResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

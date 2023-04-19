@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/PlayerStatRequirement.h"
+#include "BeamableCore/Public/AutoGen/PlayerStatRequirement.h"
 
 #include "OptionalArrayOfPlayerStatRequirement.generated.h"
 

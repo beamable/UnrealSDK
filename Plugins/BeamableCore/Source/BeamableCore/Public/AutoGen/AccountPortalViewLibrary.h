@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/AccountPortalView.h"
+#include "BeamableCore/Public/AutoGen/AccountPortalView.h"
 
 #include "AccountPortalViewLibrary.generated.h"
 

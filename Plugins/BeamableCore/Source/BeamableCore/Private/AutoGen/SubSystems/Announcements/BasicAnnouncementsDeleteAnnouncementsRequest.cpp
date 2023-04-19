@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Announcements/BasicAnnouncementsDeleteAnnouncementsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Announcements/BasicAnnouncementsDeleteAnnouncementsRequest.h"
 
 void UBasicAnnouncementsDeleteAnnouncementsRequest::BuildVerb(FString& VerbString) const
 {

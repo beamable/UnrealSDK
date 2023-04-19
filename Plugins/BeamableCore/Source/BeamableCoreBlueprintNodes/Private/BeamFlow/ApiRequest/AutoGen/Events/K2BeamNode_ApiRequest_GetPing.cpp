@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Events/K2BeamNode_ApiRequest_GetPing.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Events/K2BeamNode_ApiRequest_GetPing.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamEventsApi.h"
-#include "AutoGen/SubSystems/Events/GetPingRequest.h"
-#include "AutoGen/PingRsp.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamEventsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Events/GetPingRequest.h"
+#include "BeamableCore/Public/AutoGen/PingRsp.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetPing"
 

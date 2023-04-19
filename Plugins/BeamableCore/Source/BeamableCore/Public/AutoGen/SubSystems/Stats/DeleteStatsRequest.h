@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamBackend/SemanticTypes/BeamStatsType.h"
-#include "AutoGen/StatRequestBody.h"
-#include "AutoGen/EmptyResponse.h"
+#include "BeamableCore/Public/AutoGen/StatRequestBody.h"
+#include "BeamableCore/Public/AutoGen/EmptyResponse.h"
 
 #include "DeleteStatsRequest.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Mail/ObjectMailPostSearchRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Mail/ObjectMailPostSearchRequest.h"
 
 void UObjectMailPostSearchRequest::BuildVerb(FString& VerbString) const
 {

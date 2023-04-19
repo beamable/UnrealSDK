@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/GroupInvite.h"
-#include "AutoGen/CommonResponse.h"
+#include "BeamableCore/Public/AutoGen/GroupInvite.h"
+#include "BeamableCore/Public/AutoGen/CommonResponse.h"
 
 #include "PostInviteRequest.generated.h"
 

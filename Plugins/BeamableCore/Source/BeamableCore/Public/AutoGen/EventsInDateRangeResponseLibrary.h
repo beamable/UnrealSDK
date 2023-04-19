@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/EventsInDateRangeResponse.h"
+#include "BeamableCore/Public/AutoGen/EventsInDateRangeResponse.h"
 
 #include "EventsInDateRangeResponseLibrary.generated.h"
 

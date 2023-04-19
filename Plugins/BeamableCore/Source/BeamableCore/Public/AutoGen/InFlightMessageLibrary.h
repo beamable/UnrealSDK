@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/InFlightMessage.h"
+#include "BeamableCore/Public/AutoGen/InFlightMessage.h"
 
 #include "InFlightMessageLibrary.generated.h"
 

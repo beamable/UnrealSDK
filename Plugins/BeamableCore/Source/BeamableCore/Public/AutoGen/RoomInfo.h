@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalArrayOfInt64.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfInt64.h"
 
 #include "RoomInfo.generated.h"
 

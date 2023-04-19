@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/Token.h"
+#include "BeamableCore/Public/AutoGen/Token.h"
 
 #include "GetTokenRequest.generated.h"
 

@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Group.h"
+#include "BeamableCore/Public/AutoGen/Group.h"
 
 #include "GroupSearchResponse.generated.h"
 

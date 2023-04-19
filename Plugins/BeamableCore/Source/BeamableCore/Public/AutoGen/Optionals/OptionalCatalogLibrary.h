@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalCatalog.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalCatalog.h"
 
 #include "OptionalCatalogLibrary.generated.h"
 

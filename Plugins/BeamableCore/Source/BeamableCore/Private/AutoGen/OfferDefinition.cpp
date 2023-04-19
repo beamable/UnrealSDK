@@ -1,5 +1,5 @@
 
-#include "AutoGen/OfferDefinition.h"
+#include "BeamableCore/Public/AutoGen/OfferDefinition.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

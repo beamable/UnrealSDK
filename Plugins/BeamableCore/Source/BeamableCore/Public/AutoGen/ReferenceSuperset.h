@@ -4,9 +4,9 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
-#include "AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "ReferenceSuperset.generated.h"
 

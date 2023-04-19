@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ContentDefinition.h"
+#include "BeamableCore/Public/AutoGen/ContentDefinition.h"
 
 #include "ContentDefinitionLibrary.generated.h"
 

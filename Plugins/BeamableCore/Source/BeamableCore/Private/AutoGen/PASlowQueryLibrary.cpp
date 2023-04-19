@@ -1,5 +1,5 @@
 
-#include "AutoGen/PASlowQueryLibrary.h"
+#include "BeamableCore/Public/AutoGen/PASlowQueryLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Groups/K2BeamNode_ApiRequest_PostKick.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Groups/K2BeamNode_ApiRequest_PostKick.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamGroupsApi.h"
-#include "AutoGen/SubSystems/Groups/PostKickRequest.h"
-#include "AutoGen/GroupMembershipResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamGroupsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Groups/PostKickRequest.h"
+#include "BeamableCore/Public/AutoGen/GroupMembershipResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PostKick"
 

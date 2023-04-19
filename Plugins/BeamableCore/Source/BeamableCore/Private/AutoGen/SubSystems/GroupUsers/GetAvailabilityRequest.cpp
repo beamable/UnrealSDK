@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/GroupUsers/GetAvailabilityRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/GroupUsers/GetAvailabilityRequest.h"
 
 void UGetAvailabilityRequest::BuildVerb(FString& VerbString) const
 {

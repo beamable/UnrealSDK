@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ItemArchetype.h"
+#include "BeamableCore/Public/AutoGen/ItemArchetype.h"
 
 #include "ItemArchetypeLibrary.generated.h"
 

@@ -5,7 +5,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamBackend/SemanticTypes/BeamPid.h"
-#include "AutoGen/Optionals/OptionalBeamContentManifestId.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamContentManifestId.h"
 
 #include "PullManifestRequestBody.generated.h"
 

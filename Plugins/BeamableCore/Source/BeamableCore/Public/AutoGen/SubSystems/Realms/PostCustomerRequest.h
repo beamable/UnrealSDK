@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/NewCustomerRequestBody.h"
-#include "AutoGen/NewCustomerResponse.h"
+#include "BeamableCore/Public/AutoGen/NewCustomerRequestBody.h"
+#include "BeamableCore/Public/AutoGen/NewCustomerResponse.h"
 
 #include "PostCustomerRequest.generated.h"
 

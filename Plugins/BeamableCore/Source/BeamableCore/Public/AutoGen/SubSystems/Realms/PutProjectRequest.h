@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/UnarchiveProjectRequestBody.h"
-#include "AutoGen/CommonResponse.h"
+#include "BeamableCore/Public/AutoGen/UnarchiveProjectRequestBody.h"
+#include "BeamableCore/Public/AutoGen/CommonResponse.h"
 
 #include "PutProjectRequest.generated.h"
 

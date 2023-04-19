@@ -1,5 +1,5 @@
 
-#include "AutoGen/BatchSetStatsRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/BatchSetStatsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

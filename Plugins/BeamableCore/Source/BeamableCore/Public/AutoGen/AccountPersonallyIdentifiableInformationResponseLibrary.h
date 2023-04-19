@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/AccountPersonallyIdentifiableInformationResponse.h"
+#include "BeamableCore/Public/AutoGen/AccountPersonallyIdentifiableInformationResponse.h"
 
 #include "AccountPersonallyIdentifiableInformationResponseLibrary.generated.h"
 

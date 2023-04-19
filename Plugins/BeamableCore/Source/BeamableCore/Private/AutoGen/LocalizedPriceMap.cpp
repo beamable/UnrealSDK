@@ -1,5 +1,5 @@
 
-#include "AutoGen/LocalizedPriceMap.h"
+#include "BeamableCore/Public/AutoGen/LocalizedPriceMap.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

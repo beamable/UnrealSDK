@@ -1,5 +1,5 @@
 
-#include "AutoGen/ListDefinitionsResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/ListDefinitionsResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

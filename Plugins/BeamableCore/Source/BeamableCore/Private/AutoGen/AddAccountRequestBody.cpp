@@ -1,5 +1,5 @@
 
-#include "AutoGen/AddAccountRequestBody.h"
+#include "BeamableCore/Public/AutoGen/AddAccountRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

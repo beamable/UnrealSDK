@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Commerce/GetSkusRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Commerce/GetSkusRequest.h"
 
 void UGetSkusRequest::BuildVerb(FString& VerbString) const
 {

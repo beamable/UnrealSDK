@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/VariableReference.h"
+#include "BeamableCore/Public/AutoGen/VariableReference.h"
 
 #include "OptionalVariableReference.generated.h"
 

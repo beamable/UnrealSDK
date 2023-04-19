@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/AnnouncementContentResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/AnnouncementContentResponse.h"
 
 #include "BasicAnnouncementsGetSearchRequest.generated.h"
 

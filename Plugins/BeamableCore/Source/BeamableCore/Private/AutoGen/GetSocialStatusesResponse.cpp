@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetSocialStatusesResponse.h"
+#include "BeamableCore/Public/AutoGen/GetSocialStatusesResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

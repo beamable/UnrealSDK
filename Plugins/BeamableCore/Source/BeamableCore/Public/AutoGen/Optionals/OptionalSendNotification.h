@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/SendNotification.h"
+#include "BeamableCore/Public/AutoGen/SendNotification.h"
 
 #include "OptionalSendNotification.generated.h"
 

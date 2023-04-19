@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfCompletedStatus.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfCompletedStatus.h"
 
 FOptionalArrayOfCompletedStatus::FOptionalArrayOfCompletedStatus()
 {

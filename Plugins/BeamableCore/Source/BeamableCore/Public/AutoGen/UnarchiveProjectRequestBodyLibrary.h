@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/UnarchiveProjectRequestBody.h"
+#include "BeamableCore/Public/AutoGen/UnarchiveProjectRequestBody.h"
 
 #include "UnarchiveProjectRequestBodyLibrary.generated.h"
 

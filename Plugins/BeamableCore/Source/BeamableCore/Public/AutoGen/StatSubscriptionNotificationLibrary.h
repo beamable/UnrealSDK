@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/StatSubscriptionNotification.h"
+#include "BeamableCore/Public/AutoGen/StatSubscriptionNotification.h"
 
 #include "StatSubscriptionNotificationLibrary.generated.h"
 

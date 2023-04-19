@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/FailPurchaseRequestBody.h"
-#include "AutoGen/PaymentResultResponse.h"
+#include "BeamableCore/Public/AutoGen/FailPurchaseRequestBody.h"
+#include "BeamableCore/Public/AutoGen/PaymentResultResponse.h"
 
 #include "PostSteamPurchaseFailRequest.generated.h"
 

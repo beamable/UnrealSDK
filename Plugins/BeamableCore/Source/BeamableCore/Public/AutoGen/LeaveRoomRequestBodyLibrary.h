@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/LeaveRoomRequestBody.h"
+#include "BeamableCore/Public/AutoGen/LeaveRoomRequestBody.h"
 
 #include "LeaveRoomRequestBodyLibrary.generated.h"
 

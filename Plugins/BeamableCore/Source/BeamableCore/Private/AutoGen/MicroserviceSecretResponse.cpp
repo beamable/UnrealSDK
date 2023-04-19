@@ -1,5 +1,5 @@
 
-#include "AutoGen/MicroserviceSecretResponse.h"
+#include "BeamableCore/Public/AutoGen/MicroserviceSecretResponse.h"
 
 
 

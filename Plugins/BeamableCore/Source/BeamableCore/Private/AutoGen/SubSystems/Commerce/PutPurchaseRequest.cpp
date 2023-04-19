@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Commerce/PutPurchaseRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Commerce/PutPurchaseRequest.h"
 
 void UPutPurchaseRequest::BuildVerb(FString& VerbString) const
 {

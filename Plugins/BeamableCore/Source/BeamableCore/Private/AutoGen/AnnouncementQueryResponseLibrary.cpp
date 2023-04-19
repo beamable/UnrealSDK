@@ -1,5 +1,5 @@
 
-#include "AutoGen/AnnouncementQueryResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/AnnouncementQueryResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

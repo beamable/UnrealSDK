@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/MailSuccessResponse.h"
+#include "BeamableCore/Public/AutoGen/MailSuccessResponse.h"
 
 #include "MailSuccessResponseLibrary.generated.h"
 

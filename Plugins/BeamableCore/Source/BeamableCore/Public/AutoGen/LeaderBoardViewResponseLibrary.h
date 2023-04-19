@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/LeaderBoardViewResponse.h"
+#include "BeamableCore/Public/AutoGen/LeaderBoardViewResponse.h"
 
 #include "LeaderBoardViewResponseLibrary.generated.h"
 

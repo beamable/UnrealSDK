@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Calendars/ObjectCalendarsPostClaimRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Calendars/ObjectCalendarsPostClaimRequest.h"
 
 void UObjectCalendarsPostClaimRequest::BuildVerb(FString& VerbString) const
 {

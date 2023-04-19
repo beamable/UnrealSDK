@@ -1,5 +1,5 @@
 
-#include "AutoGen/PromotionLibrary.h"
+#include "BeamableCore/Public/AutoGen/PromotionLibrary.h"
 
 #include "CoreMinimal.h"
 

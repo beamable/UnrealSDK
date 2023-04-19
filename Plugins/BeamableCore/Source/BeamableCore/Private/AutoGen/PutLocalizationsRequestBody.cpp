@@ -1,5 +1,5 @@
 
-#include "AutoGen/PutLocalizationsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/PutLocalizationsRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

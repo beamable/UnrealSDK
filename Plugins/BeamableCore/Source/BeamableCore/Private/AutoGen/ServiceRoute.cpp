@@ -1,5 +1,5 @@
 
-#include "AutoGen/ServiceRoute.h"
+#include "BeamableCore/Public/AutoGen/ServiceRoute.h"
 
 
 

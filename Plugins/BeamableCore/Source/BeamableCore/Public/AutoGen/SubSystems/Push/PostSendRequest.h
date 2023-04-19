@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/SendReq.h"
-#include "AutoGen/EmptyRsp.h"
+#include "BeamableCore/Public/AutoGen/SendReq.h"
+#include "BeamableCore/Public/AutoGen/EmptyRsp.h"
 
 #include "PostSendRequest.generated.h"
 

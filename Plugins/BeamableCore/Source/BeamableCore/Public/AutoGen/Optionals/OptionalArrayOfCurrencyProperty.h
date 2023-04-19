@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/CurrencyProperty.h"
+#include "BeamableCore/Public/AutoGen/CurrencyProperty.h"
 
 #include "OptionalArrayOfCurrencyProperty.generated.h"
 

@@ -4,10 +4,10 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/PANamespace.h"
-#include "AutoGen/PASuggestedIndex.h"
-#include "AutoGen/PASlowQuery.h"
-#include "AutoGen/DatabaseMeasurements.h"
+#include "BeamableCore/Public/AutoGen/PANamespace.h"
+#include "BeamableCore/Public/AutoGen/PASuggestedIndex.h"
+#include "BeamableCore/Public/AutoGen/PASlowQuery.h"
+#include "BeamableCore/Public/AutoGen/DatabaseMeasurements.h"
 
 #include "PerformanceResponse.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/GroupApplication.h"
+#include "BeamableCore/Public/AutoGen/GroupApplication.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

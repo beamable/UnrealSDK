@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/OrderRules.h"
+#include "BeamableCore/Public/AutoGen/OrderRules.h"
 
 #include "OptionalOrderRules.generated.h"
 

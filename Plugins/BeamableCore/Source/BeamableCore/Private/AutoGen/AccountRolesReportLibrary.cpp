@@ -1,5 +1,5 @@
 
-#include "AutoGen/AccountRolesReportLibrary.h"
+#include "BeamableCore/Public/AutoGen/AccountRolesReportLibrary.h"
 
 #include "CoreMinimal.h"
 

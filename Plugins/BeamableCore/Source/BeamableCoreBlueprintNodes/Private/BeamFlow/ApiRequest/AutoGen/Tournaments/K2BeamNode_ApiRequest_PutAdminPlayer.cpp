@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Tournaments/K2BeamNode_ApiRequest_PutAdminPlayer.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Tournaments/K2BeamNode_ApiRequest_PutAdminPlayer.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamTournamentsApi.h"
-#include "AutoGen/SubSystems/Tournaments/PutAdminPlayerRequest.h"
-#include "AutoGen/AdminPlayerStatus.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamTournamentsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Tournaments/PutAdminPlayerRequest.h"
+#include "BeamableCore/Public/AutoGen/AdminPlayerStatus.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PutAdminPlayer"
 

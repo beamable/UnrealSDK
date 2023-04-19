@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfServiceDependencyReference.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfServiceDependencyReference.h"
 
 #include "OptionalArrayOfServiceDependencyReferenceLibrary.generated.h"
 

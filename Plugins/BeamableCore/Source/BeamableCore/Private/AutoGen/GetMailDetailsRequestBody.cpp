@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetMailDetailsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GetMailDetailsRequestBody.h"
 
 #include "Misc/DefaultValueHelper.h"
 

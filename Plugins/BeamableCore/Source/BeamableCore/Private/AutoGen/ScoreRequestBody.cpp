@@ -1,5 +1,5 @@
 
-#include "AutoGen/ScoreRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ScoreRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

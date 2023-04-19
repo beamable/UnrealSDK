@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventsInDateRangeResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/EventsInDateRangeResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/DataDomain.h"
+#include "BeamableCore/Public/AutoGen/DataDomain.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

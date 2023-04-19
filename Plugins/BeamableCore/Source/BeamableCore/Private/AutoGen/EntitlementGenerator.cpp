@@ -1,5 +1,5 @@
 
-#include "AutoGen/EntitlementGenerator.h"
+#include "BeamableCore/Public/AutoGen/EntitlementGenerator.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

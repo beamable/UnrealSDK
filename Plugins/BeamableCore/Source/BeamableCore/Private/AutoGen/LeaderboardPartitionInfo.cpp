@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderboardPartitionInfo.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardPartitionInfo.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

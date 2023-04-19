@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/GroupSearchResponse.h"
+#include "BeamableCore/Public/AutoGen/GroupSearchResponse.h"
 
 #include "GetRecommendedRequest.generated.h"
 

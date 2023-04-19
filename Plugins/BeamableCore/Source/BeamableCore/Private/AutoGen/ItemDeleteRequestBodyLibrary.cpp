@@ -1,5 +1,5 @@
 
-#include "AutoGen/ItemDeleteRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/ItemDeleteRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

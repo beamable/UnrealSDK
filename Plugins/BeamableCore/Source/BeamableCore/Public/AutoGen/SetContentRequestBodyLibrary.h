@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/SetContentRequestBody.h"
+#include "BeamableCore/Public/AutoGen/SetContentRequestBody.h"
 
 #include "SetContentRequestBodyLibrary.generated.h"
 

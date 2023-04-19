@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Payments/GetFacebookProductRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Payments/GetFacebookProductRequest.h"
 
 void UGetFacebookProductRequest::BuildVerb(FString& VerbString) const
 {

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/SteamOrderInfoItem.h"
+#include "BeamableCore/Public/AutoGen/SteamOrderInfoItem.h"
 
 #include "SteamOrderInfoItemLibrary.generated.h"
 

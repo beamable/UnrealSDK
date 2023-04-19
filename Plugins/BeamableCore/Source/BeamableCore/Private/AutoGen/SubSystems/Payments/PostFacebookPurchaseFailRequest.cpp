@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Payments/PostFacebookPurchaseFailRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Payments/PostFacebookPurchaseFailRequest.h"
 
 void UPostFacebookPurchaseFailRequest::BuildVerb(FString& VerbString) const
 {

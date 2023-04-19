@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfInt64.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfInt64.h"
 
 #include "OptionalArrayOfInt64Library.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Commerce/GetOffersAdminRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Commerce/GetOffersAdminRequest.h"
 
 void UGetOffersAdminRequest::BuildVerb(FString& VerbString) const
 {

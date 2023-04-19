@@ -9,7 +9,7 @@
 
 
 
-#include "AutoGen/AccountSearchResponse.h"
+#include "BeamableCore/Public/AutoGen/AccountSearchResponse.h"
 
 #include "BasicAccountsGetSearchRequest.generated.h"
 

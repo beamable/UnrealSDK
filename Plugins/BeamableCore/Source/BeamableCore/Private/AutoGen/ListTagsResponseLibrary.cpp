@@ -1,5 +1,5 @@
 
-#include "AutoGen/ListTagsResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/ListTagsResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

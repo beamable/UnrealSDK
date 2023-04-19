@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ExternalIdentityAvailableApiRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ExternalIdentityAvailableApiRequestBody.h"
 
 #include "ExternalIdentityAvailableApiRequestBodyLibrary.generated.h"
 

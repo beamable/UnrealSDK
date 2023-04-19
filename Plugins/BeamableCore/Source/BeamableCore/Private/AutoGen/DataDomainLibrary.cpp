@@ -1,5 +1,5 @@
 
-#include "AutoGen/DataDomainLibrary.h"
+#include "BeamableCore/Public/AutoGen/DataDomainLibrary.h"
 
 #include "CoreMinimal.h"
 

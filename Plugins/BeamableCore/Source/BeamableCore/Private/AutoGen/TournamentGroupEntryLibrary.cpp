@@ -1,5 +1,5 @@
 
-#include "AutoGen/TournamentGroupEntryLibrary.h"
+#include "BeamableCore/Public/AutoGen/TournamentGroupEntryLibrary.h"
 
 #include "CoreMinimal.h"
 

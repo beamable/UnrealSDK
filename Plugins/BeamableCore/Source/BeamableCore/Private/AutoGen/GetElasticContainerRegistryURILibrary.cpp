@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetElasticContainerRegistryURILibrary.h"
+#include "BeamableCore/Public/AutoGen/GetElasticContainerRegistryURILibrary.h"
 
 #include "CoreMinimal.h"
 

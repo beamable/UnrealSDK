@@ -1,5 +1,5 @@
 
-#include "AutoGen/OrderRuleLibrary.h"
+#include "BeamableCore/Public/AutoGen/OrderRuleLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/GroupRole.h"
+#include "BeamableCore/Public/AutoGen/GroupRole.h"
 
 #include "OptionalArrayOfGroupRole.generated.h"
 

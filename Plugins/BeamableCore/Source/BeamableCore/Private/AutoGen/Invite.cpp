@@ -1,5 +1,5 @@
 
-#include "AutoGen/Invite.h"
+#include "BeamableCore/Public/AutoGen/Invite.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/MatchMakingWindowResp.h"
+#include "BeamableCore/Public/AutoGen/MatchMakingWindowResp.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

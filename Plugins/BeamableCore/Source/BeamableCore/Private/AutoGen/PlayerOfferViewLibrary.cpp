@@ -1,5 +1,5 @@
 
-#include "AutoGen/PlayerOfferViewLibrary.h"
+#include "BeamableCore/Public/AutoGen/PlayerOfferViewLibrary.h"
 
 #include "CoreMinimal.h"
 

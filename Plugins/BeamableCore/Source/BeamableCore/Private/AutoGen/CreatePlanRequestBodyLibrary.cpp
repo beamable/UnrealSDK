@@ -1,5 +1,5 @@
 
-#include "AutoGen/CreatePlanRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/CreatePlanRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

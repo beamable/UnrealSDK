@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Payments/K2BeamNode_ApiRequest_GetSteamProduct.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Payments/K2BeamNode_ApiRequest_GetSteamProduct.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamPaymentsApi.h"
-#include "AutoGen/SubSystems/Payments/GetSteamProductRequest.h"
-#include "AutoGen/GetProductResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamPaymentsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Payments/GetSteamProductRequest.h"
+#include "BeamableCore/Public/AutoGen/GetProductResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetSteamProduct"
 

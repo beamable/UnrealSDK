@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalMapOfDonationRequestBody.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfDonationRequestBody.h"
 
 #include "OptionalMapOfDonationRequestBodyLibrary.generated.h"
 

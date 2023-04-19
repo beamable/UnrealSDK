@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Beamo/GetUploadAPIRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Beamo/GetUploadAPIRequest.h"
 
 void UGetUploadAPIRequest::BuildVerb(FString& VerbString) const
 {

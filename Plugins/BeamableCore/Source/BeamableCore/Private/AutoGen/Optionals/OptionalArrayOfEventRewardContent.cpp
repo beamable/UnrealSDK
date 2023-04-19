@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfEventRewardContent.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfEventRewardContent.h"
 
 FOptionalArrayOfEventRewardContent::FOptionalArrayOfEventRewardContent()
 {

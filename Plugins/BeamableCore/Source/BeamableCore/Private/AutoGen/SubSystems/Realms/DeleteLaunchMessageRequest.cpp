@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Realms/DeleteLaunchMessageRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/DeleteLaunchMessageRequest.h"
 
 void UDeleteLaunchMessageRequest::BuildVerb(FString& VerbString) const
 {

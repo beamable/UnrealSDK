@@ -1,5 +1,5 @@
 
-#include "AutoGen/CurrencyPreviewLibrary.h"
+#include "BeamableCore/Public/AutoGen/CurrencyPreviewLibrary.h"
 
 #include "CoreMinimal.h"
 

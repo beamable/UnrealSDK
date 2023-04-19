@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Tournaments/K2BeamNode_ApiRequest_GetChampions.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Tournaments/K2BeamNode_ApiRequest_GetChampions.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamTournamentsApi.h"
-#include "AutoGen/SubSystems/Tournaments/GetChampionsRequest.h"
-#include "AutoGen/GetChampionsResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamTournamentsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Tournaments/GetChampionsRequest.h"
+#include "BeamableCore/Public/AutoGen/GetChampionsResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetChampions"
 

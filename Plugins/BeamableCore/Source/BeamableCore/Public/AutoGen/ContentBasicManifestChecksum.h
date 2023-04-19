@@ -5,7 +5,7 @@
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamBackend/SemanticTypes/BeamContentManifestId.h"
-#include "AutoGen/Optionals/OptionalBool.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 
 #include "ContentBasicManifestChecksum.generated.h"
 

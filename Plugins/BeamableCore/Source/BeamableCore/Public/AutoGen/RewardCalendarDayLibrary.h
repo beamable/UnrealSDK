@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/RewardCalendarDay.h"
+#include "BeamableCore/Public/AutoGen/RewardCalendarDay.h"
 
 #include "RewardCalendarDayLibrary.generated.h"
 

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalEntitlementClaimWindow.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalEntitlementClaimWindow.h"
 
 #include "OptionalEntitlementClaimWindowLibrary.generated.h"
 

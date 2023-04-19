@@ -1,5 +1,5 @@
 
-#include "AutoGen/RedisShard.h"
+#include "BeamableCore/Public/AutoGen/RedisShard.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

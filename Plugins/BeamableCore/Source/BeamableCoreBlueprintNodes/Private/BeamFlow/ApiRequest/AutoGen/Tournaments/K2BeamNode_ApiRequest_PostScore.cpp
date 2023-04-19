@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Tournaments/K2BeamNode_ApiRequest_PostScore.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Tournaments/K2BeamNode_ApiRequest_PostScore.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamTournamentsApi.h"
-#include "AutoGen/SubSystems/Tournaments/PostScoreRequest.h"
-#include "AutoGen/EmptyResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamTournamentsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Tournaments/PostScoreRequest.h"
+#include "BeamableCore/Public/AutoGen/EmptyResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PostScore"
 

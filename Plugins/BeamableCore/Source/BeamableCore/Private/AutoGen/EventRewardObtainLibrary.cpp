@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventRewardObtainLibrary.h"
+#include "BeamableCore/Public/AutoGen/EventRewardObtainLibrary.h"
 
 #include "CoreMinimal.h"
 

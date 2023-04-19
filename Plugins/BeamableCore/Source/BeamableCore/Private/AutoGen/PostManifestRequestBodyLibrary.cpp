@@ -1,5 +1,5 @@
 
-#include "AutoGen/PostManifestRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/PostManifestRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Beamo/BasicBeamoPostManifestRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Beamo/BasicBeamoPostManifestRequest.h"
 
 void UBasicBeamoPostManifestRequest::BuildVerb(FString& VerbString) const
 {

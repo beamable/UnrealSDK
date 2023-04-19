@@ -1,5 +1,5 @@
 
-#include "AutoGen/PlayerBasicCloudDataRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/PlayerBasicCloudDataRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

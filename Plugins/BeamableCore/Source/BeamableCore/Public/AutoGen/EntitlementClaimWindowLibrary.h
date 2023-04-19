@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/EntitlementClaimWindow.h"
+#include "BeamableCore/Public/AutoGen/EntitlementClaimWindow.h"
 
 #include "EntitlementClaimWindowLibrary.generated.h"
 

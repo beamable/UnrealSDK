@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/GetAdminsResponse.h"
+#include "BeamableCore/Public/AutoGen/GetAdminsResponse.h"
 
 #include "GetAdminAdminUsersRequest.generated.h"
 

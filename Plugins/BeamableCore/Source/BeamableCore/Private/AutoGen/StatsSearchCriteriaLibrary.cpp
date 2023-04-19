@@ -1,5 +1,5 @@
 
-#include "AutoGen/StatsSearchCriteriaLibrary.h"
+#include "BeamableCore/Public/AutoGen/StatsSearchCriteriaLibrary.h"
 
 #include "CoreMinimal.h"
 

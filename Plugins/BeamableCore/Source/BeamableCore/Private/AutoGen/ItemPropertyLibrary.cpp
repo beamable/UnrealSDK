@@ -1,5 +1,5 @@
 
-#include "AutoGen/ItemPropertyLibrary.h"
+#include "BeamableCore/Public/AutoGen/ItemPropertyLibrary.h"
 
 #include "CoreMinimal.h"
 

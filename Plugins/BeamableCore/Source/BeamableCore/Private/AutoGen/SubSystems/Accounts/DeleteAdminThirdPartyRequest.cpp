@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/DeleteAdminThirdPartyRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/DeleteAdminThirdPartyRequest.h"
 
 void UDeleteAdminThirdPartyRequest::BuildVerb(FString& VerbString) const
 {

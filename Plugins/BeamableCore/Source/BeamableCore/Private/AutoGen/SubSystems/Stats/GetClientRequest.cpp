@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Stats/GetClientRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/GetClientRequest.h"
 
 void UGetClientRequest::BuildVerb(FString& VerbString) const
 {

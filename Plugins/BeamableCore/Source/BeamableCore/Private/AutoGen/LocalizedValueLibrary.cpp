@@ -1,5 +1,5 @@
 
-#include "AutoGen/LocalizedValueLibrary.h"
+#include "BeamableCore/Public/AutoGen/LocalizedValueLibrary.h"
 
 #include "CoreMinimal.h"
 

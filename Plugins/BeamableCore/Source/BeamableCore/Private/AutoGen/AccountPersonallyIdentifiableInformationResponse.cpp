@@ -1,5 +1,5 @@
 
-#include "AutoGen/AccountPersonallyIdentifiableInformationResponse.h"
+#include "BeamableCore/Public/AutoGen/AccountPersonallyIdentifiableInformationResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/PingRspLibrary.h"
+#include "BeamableCore/Public/AutoGen/PingRspLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Leaderboards/GetRanksRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Leaderboards/GetRanksRequest.h"
 
 void UGetRanksRequest::BuildVerb(FString& VerbString) const
 {

@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/CalendarView.h"
+#include "BeamableCore/Public/AutoGen/CalendarView.h"
 
 #include "CalendarQueryResponse.generated.h"
 

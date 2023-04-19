@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Payments/PostGoogleplayPurchaseFailRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Payments/PostGoogleplayPurchaseFailRequest.h"
 
 void UPostGoogleplayPurchaseFailRequest::BuildVerb(FString& VerbString) const
 {

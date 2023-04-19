@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Announcements/ObjectAnnouncementsPostClaimRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Announcements/ObjectAnnouncementsPostClaimRequest.h"
 
 void UObjectAnnouncementsPostClaimRequest::BuildVerb(FString& VerbString) const
 {

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Stats/PostClientRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/PostClientRequest.h"
 
 void UPostClientRequest::BuildVerb(FString& VerbString) const
 {

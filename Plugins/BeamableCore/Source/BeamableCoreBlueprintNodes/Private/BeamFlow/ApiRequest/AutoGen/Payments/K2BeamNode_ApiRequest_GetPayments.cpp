@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Payments/K2BeamNode_ApiRequest_GetPayments.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Payments/K2BeamNode_ApiRequest_GetPayments.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamPaymentsApi.h"
-#include "AutoGen/SubSystems/Payments/GetPaymentsRequest.h"
-#include "AutoGen/CommonResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamPaymentsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Payments/GetPaymentsRequest.h"
+#include "BeamableCore/Public/AutoGen/CommonResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetPayments"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Inventory/PutPreviewRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Inventory/PutPreviewRequest.h"
 
 void UPutPreviewRequest::BuildVerb(FString& VerbString) const
 {

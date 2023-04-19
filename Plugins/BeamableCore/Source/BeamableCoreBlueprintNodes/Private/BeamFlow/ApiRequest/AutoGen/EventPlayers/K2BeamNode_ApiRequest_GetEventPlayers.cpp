@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/EventPlayers/K2BeamNode_ApiRequest_GetEventPlayers.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/EventPlayers/K2BeamNode_ApiRequest_GetEventPlayers.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamEventPlayersApi.h"
-#include "AutoGen/SubSystems/EventPlayers/GetEventPlayersRequest.h"
-#include "AutoGen/EventPlayerView.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamEventPlayersApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/EventPlayers/GetEventPlayersRequest.h"
+#include "BeamableCore/Public/AutoGen/EventPlayerView.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetEventPlayers"
 

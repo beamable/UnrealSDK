@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/GetGroupStatusResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/GetGroupStatusResponse.h"
 
 #include "GetMeGroupRequest.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/AccountPlayerViewLibrary.h"
+#include "BeamableCore/Public/AutoGen/AccountPlayerViewLibrary.h"
 
 #include "CoreMinimal.h"
 

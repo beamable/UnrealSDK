@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalBeamPid.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamPid.h"
 
 #include "OptionalBeamPidLibrary.generated.h"
 

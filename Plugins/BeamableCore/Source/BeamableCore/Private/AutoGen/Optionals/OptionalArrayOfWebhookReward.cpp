@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfWebhookReward.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfWebhookReward.h"
 
 FOptionalArrayOfWebhookReward::FOptionalArrayOfWebhookReward()
 {

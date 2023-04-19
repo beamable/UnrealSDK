@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetLocalizationsResponse.h"
+#include "BeamableCore/Public/AutoGen/GetLocalizationsResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

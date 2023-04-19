@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Content/DeleteLocalizationsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Content/DeleteLocalizationsRequest.h"
 
 void UDeleteLocalizationsRequest::BuildVerb(FString& VerbString) const
 {

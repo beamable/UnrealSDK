@@ -1,5 +1,5 @@
 
-#include "AutoGen/FacebookPaymentUpdateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/FacebookPaymentUpdateRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

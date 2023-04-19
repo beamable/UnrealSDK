@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetAdminsResponse.h"
+#include "BeamableCore/Public/AutoGen/GetAdminsResponse.h"
 
 #include "GetAdminsResponseLibrary.generated.h"
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/CurrencyPreview.h"
+#include "BeamableCore/Public/AutoGen/CurrencyPreview.h"
 
 #include "CurrencyPreviewLibrary.generated.h"
 

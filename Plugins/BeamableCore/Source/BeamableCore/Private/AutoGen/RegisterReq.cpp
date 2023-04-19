@@ -1,5 +1,5 @@
 
-#include "AutoGen/RegisterReq.h"
+#include "BeamableCore/Public/AutoGen/RegisterReq.h"
 
 
 

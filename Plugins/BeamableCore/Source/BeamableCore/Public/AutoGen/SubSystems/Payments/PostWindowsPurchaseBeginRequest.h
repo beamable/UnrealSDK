@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/BeginPurchaseRequestBody.h"
-#include "AutoGen/BeginPurchaseResponse.h"
+#include "BeamableCore/Public/AutoGen/BeginPurchaseRequestBody.h"
+#include "BeamableCore/Public/AutoGen/BeginPurchaseResponse.h"
 
 #include "PostWindowsPurchaseBeginRequest.generated.h"
 

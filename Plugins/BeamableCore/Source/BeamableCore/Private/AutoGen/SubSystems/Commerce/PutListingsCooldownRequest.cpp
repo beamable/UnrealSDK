@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Commerce/PutListingsCooldownRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Commerce/PutListingsCooldownRequest.h"
 
 void UPutListingsCooldownRequest::BuildVerb(FString& VerbString) const
 {

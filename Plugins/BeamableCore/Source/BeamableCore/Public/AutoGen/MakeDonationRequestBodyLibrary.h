@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/MakeDonationRequestBody.h"
+#include "BeamableCore/Public/AutoGen/MakeDonationRequestBody.h"
 
 #include "MakeDonationRequestBodyLibrary.generated.h"
 

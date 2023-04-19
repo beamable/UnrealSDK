@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalContentLimits.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalContentLimits.h"
 
 FOptionalContentLimits::FOptionalContentLimits()
 {

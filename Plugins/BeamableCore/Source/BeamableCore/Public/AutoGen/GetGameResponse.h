@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/ProjectView.h"
+#include "BeamableCore/Public/AutoGen/ProjectView.h"
 
 #include "GetGameResponse.generated.h"
 

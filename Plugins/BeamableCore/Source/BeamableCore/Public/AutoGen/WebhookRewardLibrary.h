@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/WebhookReward.h"
+#include "BeamableCore/Public/AutoGen/WebhookReward.h"
 
 #include "WebhookRewardLibrary.generated.h"
 

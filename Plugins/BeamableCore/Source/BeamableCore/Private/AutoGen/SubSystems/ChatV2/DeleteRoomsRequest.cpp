@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/ChatV2/DeleteRoomsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/ChatV2/DeleteRoomsRequest.h"
 
 void UDeleteRoomsRequest::BuildVerb(FString& VerbString) const
 {

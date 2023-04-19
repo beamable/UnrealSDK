@@ -4,8 +4,8 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalBeamPid.h"
-#include "AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamPid.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "DeleteRoleRequestBody.generated.h"
 

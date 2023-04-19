@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/BeamContentApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamContentApi.h"
 #include "BeamCoreSettings.h"
 
 
@@ -73,7 +73,7 @@ void UBeamContentApi::CPP_GetManifestPublicImpl(const FBeamRealmHandle& TargetRe
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -133,7 +133,7 @@ void UBeamContentApi::CPP_GetManifestChecksumImpl(const FBeamRealmHandle& Target
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 

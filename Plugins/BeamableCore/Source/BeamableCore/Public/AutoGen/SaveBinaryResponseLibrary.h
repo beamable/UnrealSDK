@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/SaveBinaryResponse.h"
+#include "BeamableCore/Public/AutoGen/SaveBinaryResponse.h"
 
 #include "SaveBinaryResponseLibrary.generated.h"
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/LeaderboardAddRequestBody.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardAddRequestBody.h"
 
 #include "LeaderboardAddRequestBodyLibrary.generated.h"
 

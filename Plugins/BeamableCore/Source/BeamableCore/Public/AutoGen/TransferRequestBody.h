@@ -4,9 +4,9 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamBackend/SemanticTypes/BeamGamerTag.h"
-#include "AutoGen/Optionals/OptionalMapOfInt64.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfInt64.h"
 
 #include "TransferRequestBody.generated.h"
 

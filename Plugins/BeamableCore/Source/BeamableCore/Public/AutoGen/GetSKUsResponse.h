@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/SKUDefinitions.h"
+#include "BeamableCore/Public/AutoGen/SKUDefinitions.h"
 
 #include "GetSKUsResponse.generated.h"
 

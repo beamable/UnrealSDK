@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Realms/BasicRealmsPostGameRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/BasicRealmsPostGameRequest.h"
 
 void UBasicRealmsPostGameRequest::BuildVerb(FString& VerbString) const
 {

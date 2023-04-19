@@ -4,14 +4,14 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/EventPhase.h"
-#include "AutoGen/Optionals/OptionalInt32.h"
-#include "AutoGen/Optionals/OptionalEventGroupRewards.h"
-#include "AutoGen/Optionals/OptionalLeaderboardCohortSettings.h"
-#include "AutoGen/Optionals/OptionalClientPermission.h"
-#include "AutoGen/Optionals/OptionalArrayOfString.h"
-#include "AutoGen/Optionals/OptionalArrayOfEventRewardContent.h"
-#include "AutoGen/Optionals/OptionalSchedule.h"
+#include "BeamableCore/Public/AutoGen/EventPhase.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalEventGroupRewards.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalLeaderboardCohortSettings.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalClientPermission.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfEventRewardContent.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalSchedule.h"
 
 #include "Event.generated.h"
 

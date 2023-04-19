@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/CompletedStatus.h"
+#include "BeamableCore/Public/AutoGen/CompletedStatus.h"
 
 #include "CompletedStatusLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/TokenRequestWrapper.h"
+#include "BeamableCore/Public/AutoGen/TokenRequestWrapper.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

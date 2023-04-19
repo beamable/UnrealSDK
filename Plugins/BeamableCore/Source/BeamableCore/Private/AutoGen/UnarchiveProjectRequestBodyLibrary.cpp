@@ -1,5 +1,5 @@
 
-#include "AutoGen/UnarchiveProjectRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/UnarchiveProjectRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

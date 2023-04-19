@@ -1,5 +1,5 @@
 
-#include "AutoGen/LocalizedPriceMapLibrary.h"
+#include "BeamableCore/Public/AutoGen/LocalizedPriceMapLibrary.h"
 
 #include "CoreMinimal.h"
 

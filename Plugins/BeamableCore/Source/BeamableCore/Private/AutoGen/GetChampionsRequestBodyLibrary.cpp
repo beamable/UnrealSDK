@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetChampionsRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/GetChampionsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

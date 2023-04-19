@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamBackend/SemanticTypes/BeamPid.h"
-#include "AutoGen/GetGameResponse.h"
+#include "BeamableCore/Public/AutoGen/GetGameResponse.h"
 
 #include "GetGameRequest.generated.h"
 

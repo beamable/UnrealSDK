@@ -1,5 +1,5 @@
 
-#include "AutoGen/AttachExternalIdentityApiRequestBody.h"
+#include "BeamableCore/Public/AutoGen/AttachExternalIdentityApiRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

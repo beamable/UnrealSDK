@@ -1,5 +1,5 @@
 
-#include "AutoGen/AliasAvailableResponse.h"
+#include "BeamableCore/Public/AutoGen/AliasAvailableResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

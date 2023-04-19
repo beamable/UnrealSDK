@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Inventory/GetMultipliersRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Inventory/GetMultipliersRequest.h"
 
 void UGetMultipliersRequest::BuildVerb(FString& VerbString) const
 {

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/TournamentQueryRequestBody.h"
+#include "BeamableCore/Public/AutoGen/TournamentQueryRequestBody.h"
 
 #include "TournamentQueryRequestBodyLibrary.generated.h"
 

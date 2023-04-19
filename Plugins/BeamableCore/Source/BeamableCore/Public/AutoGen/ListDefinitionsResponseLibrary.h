@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ListDefinitionsResponse.h"
+#include "BeamableCore/Public/AutoGen/ListDefinitionsResponse.h"
 
 #include "ListDefinitionsResponseLibrary.generated.h"
 

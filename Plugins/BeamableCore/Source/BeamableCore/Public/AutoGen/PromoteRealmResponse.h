@@ -5,7 +5,7 @@
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamBackend/SemanticTypes/BeamPid.h"
-#include "AutoGen/PromotionScope.h"
+#include "BeamableCore/Public/AutoGen/PromotionScope.h"
 
 #include "PromoteRealmResponse.generated.h"
 

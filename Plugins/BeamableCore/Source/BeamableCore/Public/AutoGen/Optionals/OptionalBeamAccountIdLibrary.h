@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalBeamAccountId.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamAccountId.h"
 
 #include "OptionalBeamAccountIdLibrary.generated.h"
 

@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/ServicePlansResponse.h"
+#include "BeamableCore/Public/AutoGen/ServicePlansResponse.h"
 
 #include "GetPlansRequest.generated.h"
 

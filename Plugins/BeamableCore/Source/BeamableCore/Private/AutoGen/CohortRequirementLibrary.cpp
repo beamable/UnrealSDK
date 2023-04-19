@@ -1,5 +1,5 @@
 
-#include "AutoGen/CohortRequirementLibrary.h"
+#include "BeamableCore/Public/AutoGen/CohortRequirementLibrary.h"
 
 #include "CoreMinimal.h"
 

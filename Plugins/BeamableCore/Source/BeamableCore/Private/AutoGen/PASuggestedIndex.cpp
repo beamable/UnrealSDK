@@ -1,5 +1,5 @@
 
-#include "AutoGen/PASuggestedIndex.h"
+#include "BeamableCore/Public/AutoGen/PASuggestedIndex.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

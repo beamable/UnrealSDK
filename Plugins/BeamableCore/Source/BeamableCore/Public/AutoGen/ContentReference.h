@@ -5,9 +5,9 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/Optionals/OptionalInt64.h"
-#include "AutoGen/Enums/ContentVisibility.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
+#include "BeamableCore/Public/AutoGen/Enums/ContentVisibility.h"
 
 #include "ContentReference.generated.h"
 

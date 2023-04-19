@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfRedisShard.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfRedisShard.h"
 
 FOptionalArrayOfRedisShard::FOptionalArrayOfRedisShard()
 {

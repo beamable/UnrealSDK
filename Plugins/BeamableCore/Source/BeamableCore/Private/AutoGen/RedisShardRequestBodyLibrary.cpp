@@ -1,5 +1,5 @@
 
-#include "AutoGen/RedisShardRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/RedisShardRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

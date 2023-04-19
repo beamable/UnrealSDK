@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/StatSubscriptionNotification.h"
-#include "AutoGen/CommonResponse.h"
+#include "BeamableCore/Public/AutoGen/StatSubscriptionNotification.h"
+#include "BeamableCore/Public/AutoGen/CommonResponse.h"
 
 #include "PostStatsUpdateRequest.generated.h"
 

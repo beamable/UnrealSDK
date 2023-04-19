@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/AcceptMultipleAttachments.h"
+#include "BeamableCore/Public/AutoGen/AcceptMultipleAttachments.h"
 
 #include "AcceptMultipleAttachmentsLibrary.generated.h"
 

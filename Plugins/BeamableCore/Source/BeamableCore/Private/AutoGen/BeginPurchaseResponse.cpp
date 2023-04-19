@@ -1,5 +1,5 @@
 
-#include "AutoGen/BeginPurchaseResponse.h"
+#include "BeamableCore/Public/AutoGen/BeginPurchaseResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

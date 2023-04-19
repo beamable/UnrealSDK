@@ -1,5 +1,5 @@
 
-#include "AutoGen/ServerEventLibrary.h"
+#include "BeamableCore/Public/AutoGen/ServerEventLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/BeamInventoryApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamInventoryApi.h"
 #include "BeamCoreSettings.h"
 
 
@@ -73,7 +73,7 @@ void UBeamInventoryApi::CPP_GetItemsImpl(const FBeamRealmHandle& TargetRealm, co
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -133,7 +133,7 @@ void UBeamInventoryApi::CPP_GetCurrencyImpl(const FBeamRealmHandle& TargetRealm,
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -193,7 +193,7 @@ void UBeamInventoryApi::CPP_PutPreviewImpl(const FBeamRealmHandle& TargetRealm, 
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -253,7 +253,7 @@ void UBeamInventoryApi::CPP_GetMultipliersImpl(const FBeamRealmHandle& TargetRea
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -313,7 +313,7 @@ void UBeamInventoryApi::CPP_GetInventoryImpl(const FBeamRealmHandle& TargetRealm
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -373,7 +373,7 @@ void UBeamInventoryApi::CPP_PostInventoryImpl(const FBeamRealmHandle& TargetReal
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -433,7 +433,7 @@ void UBeamInventoryApi::CPP_PutInventoryImpl(const FBeamRealmHandle& TargetRealm
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -493,7 +493,7 @@ void UBeamInventoryApi::CPP_PutProxyReloadImpl(const FBeamRealmHandle& TargetRea
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 

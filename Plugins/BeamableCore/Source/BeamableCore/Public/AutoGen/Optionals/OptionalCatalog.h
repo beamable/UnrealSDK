@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/Catalog.h"
+#include "BeamableCore/Public/AutoGen/Catalog.h"
 
 #include "OptionalCatalog.generated.h"
 

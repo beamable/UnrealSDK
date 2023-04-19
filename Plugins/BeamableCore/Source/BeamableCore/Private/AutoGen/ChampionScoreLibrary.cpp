@@ -1,5 +1,5 @@
 
-#include "AutoGen/ChampionScoreLibrary.h"
+#include "BeamableCore/Public/AutoGen/ChampionScoreLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Leaderboards/GetPartitionRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Leaderboards/GetPartitionRequest.h"
 
 void UGetPartitionRequest::BuildVerb(FString& VerbString) const
 {

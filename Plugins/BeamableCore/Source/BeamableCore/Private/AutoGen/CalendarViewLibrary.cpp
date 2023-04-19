@@ -1,5 +1,5 @@
 
-#include "AutoGen/CalendarViewLibrary.h"
+#include "BeamableCore/Public/AutoGen/CalendarViewLibrary.h"
 
 #include "CoreMinimal.h"
 

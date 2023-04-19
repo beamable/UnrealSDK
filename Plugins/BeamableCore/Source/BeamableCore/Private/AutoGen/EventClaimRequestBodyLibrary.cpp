@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventClaimRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/EventClaimRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

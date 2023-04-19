@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Realms/PostProjectBeamableRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/PostProjectBeamableRequest.h"
 
 void UPostProjectBeamableRequest::BuildVerb(FString& VerbString) const
 {

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ScheduleDefinition.h"
+#include "BeamableCore/Public/AutoGen/ScheduleDefinition.h"
 
 #include "ScheduleDefinitionLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderboardPartitionInfoLibrary.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardPartitionInfoLibrary.h"
 
 #include "CoreMinimal.h"
 

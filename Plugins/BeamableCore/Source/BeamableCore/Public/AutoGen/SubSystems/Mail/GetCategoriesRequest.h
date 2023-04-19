@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/ListMailCategoriesResponse.h"
+#include "BeamableCore/Public/AutoGen/ListMailCategoriesResponse.h"
 
 #include "GetCategoriesRequest.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalPeriod.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalPeriod.h"
 
 FOptionalPeriod::FOptionalPeriod()
 {

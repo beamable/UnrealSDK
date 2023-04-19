@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/InventoryView.h"
+#include "BeamableCore/Public/AutoGen/InventoryView.h"
 
 #include "InventoryViewLibrary.generated.h"
 

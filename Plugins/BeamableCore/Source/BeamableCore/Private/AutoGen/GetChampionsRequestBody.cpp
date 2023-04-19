@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetChampionsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GetChampionsRequestBody.h"
 
 #include "Misc/DefaultValueHelper.h"
 

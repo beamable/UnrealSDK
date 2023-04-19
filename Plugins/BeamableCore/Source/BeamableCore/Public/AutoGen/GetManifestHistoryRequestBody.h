@@ -4,8 +4,8 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalBeamContentManifestId.h"
-#include "AutoGen/Optionals/OptionalInt32.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamContentManifestId.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
 
 #include "GetManifestHistoryRequestBody.generated.h"
 

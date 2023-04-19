@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ObjectRequests.h"
+#include "BeamableCore/Public/AutoGen/ObjectRequests.h"
 
 #include "ObjectRequestsLibrary.generated.h"
 

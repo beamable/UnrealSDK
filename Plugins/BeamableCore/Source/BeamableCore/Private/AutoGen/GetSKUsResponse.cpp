@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetSKUsResponse.h"
+#include "BeamableCore/Public/AutoGen/GetSKUsResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Commerce/K2BeamNode_ApiRequest_PutPurchase.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Commerce/K2BeamNode_ApiRequest_PutPurchase.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamCommerceApi.h"
-#include "AutoGen/SubSystems/Commerce/PutPurchaseRequest.h"
-#include "AutoGen/ResultResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamCommerceApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Commerce/PutPurchaseRequest.h"
+#include "BeamableCore/Public/AutoGen/ResultResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PutPurchase"
 

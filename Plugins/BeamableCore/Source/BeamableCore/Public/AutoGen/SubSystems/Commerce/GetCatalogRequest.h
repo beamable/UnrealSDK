@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/Optionals/OptionalInt64.h"
-#include "AutoGen/GetCatalogResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
+#include "BeamableCore/Public/AutoGen/GetCatalogResponse.h"
 
 #include "GetCatalogRequest.generated.h"
 

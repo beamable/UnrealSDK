@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Groups/DeleteGroupsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Groups/DeleteGroupsRequest.h"
 
 void UDeleteGroupsRequest::BuildVerb(FString& VerbString) const
 {

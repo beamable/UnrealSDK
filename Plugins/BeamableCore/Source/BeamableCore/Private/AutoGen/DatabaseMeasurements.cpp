@@ -1,5 +1,5 @@
 
-#include "AutoGen/DatabaseMeasurements.h"
+#include "BeamableCore/Public/AutoGen/DatabaseMeasurements.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

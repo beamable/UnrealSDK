@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Maps/MapOfString.h"
+#include "BeamableCore/Public/AutoGen/Maps/MapOfString.h"
 
 #include "SearchExtendedResponse.generated.h"
 

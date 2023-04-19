@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetElasticContainerRegistryURI.h"
+#include "BeamableCore/Public/AutoGen/GetElasticContainerRegistryURI.h"
 
 
 

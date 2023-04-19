@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Groups/PostInviteRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Groups/PostInviteRequest.h"
 
 void UPostInviteRequest::BuildVerb(FString& VerbString) const
 {

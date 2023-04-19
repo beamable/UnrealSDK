@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/EventScoreRequestBody.h"
+#include "BeamableCore/Public/AutoGen/EventScoreRequestBody.h"
 
 #include "EventScoreRequestBodyLibrary.generated.h"
 

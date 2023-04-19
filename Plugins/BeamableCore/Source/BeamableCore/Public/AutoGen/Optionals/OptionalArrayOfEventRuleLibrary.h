@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfEventRule.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfEventRule.h"
 
 #include "OptionalArrayOfEventRuleLibrary.generated.h"
 

@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/EventInventoryRewardItem.h"
+#include "BeamableCore/Public/AutoGen/EventInventoryRewardItem.h"
 
 #include "OptionalArrayOfEventInventoryRewardItem.generated.h"
 

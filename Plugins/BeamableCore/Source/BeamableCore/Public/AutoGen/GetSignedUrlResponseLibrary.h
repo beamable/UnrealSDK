@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetSignedUrlResponse.h"
+#include "BeamableCore/Public/AutoGen/GetSignedUrlResponse.h"
 
 #include "GetSignedUrlResponseLibrary.generated.h"
 

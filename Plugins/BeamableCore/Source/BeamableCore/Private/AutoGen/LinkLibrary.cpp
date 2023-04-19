@@ -1,5 +1,5 @@
 
-#include "AutoGen/LinkLibrary.h"
+#include "BeamableCore/Public/AutoGen/LinkLibrary.h"
 
 #include "CoreMinimal.h"
 

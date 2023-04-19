@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/AnnouncementRawResponse.h"
+#include "BeamableCore/Public/AutoGen/AnnouncementRawResponse.h"
 
 #include "GetRawRequest.generated.h"
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ProjectView.h"
+#include "BeamableCore/Public/AutoGen/ProjectView.h"
 
 #include "ProjectViewLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/CooldownModifierRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/CooldownModifierRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetExactManifestRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/GetExactManifestRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

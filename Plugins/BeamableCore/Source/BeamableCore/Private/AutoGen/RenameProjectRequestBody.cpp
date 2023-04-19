@@ -1,5 +1,5 @@
 
-#include "AutoGen/RenameProjectRequestBody.h"
+#include "BeamableCore/Public/AutoGen/RenameProjectRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

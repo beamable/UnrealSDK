@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/OrderRule.h"
+#include "BeamableCore/Public/AutoGen/OrderRule.h"
 
 #include "OrderRules.generated.h"
 

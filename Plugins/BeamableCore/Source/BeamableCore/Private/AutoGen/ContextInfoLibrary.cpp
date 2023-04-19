@@ -1,5 +1,5 @@
 
-#include "AutoGen/ContextInfoLibrary.h"
+#include "BeamableCore/Public/AutoGen/ContextInfoLibrary.h"
 
 #include "CoreMinimal.h"
 

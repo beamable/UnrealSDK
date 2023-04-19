@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/CurrencyChangeReward.h"
+#include "BeamableCore/Public/AutoGen/CurrencyChangeReward.h"
 
 #include "OptionalArrayOfCurrencyChangeReward.generated.h"
 

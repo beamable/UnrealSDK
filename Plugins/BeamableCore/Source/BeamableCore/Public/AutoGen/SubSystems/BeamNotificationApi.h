@@ -7,12 +7,12 @@
 #include "BeamBackend/ResponseCache/BeamResponseCache.h"
 #include "RequestTracker/BeamRequestTracker.h"
 
-#include "Notification/PostPlayerRequest.h"
-#include "Notification/PostCustomRequest.h"
-#include "Notification/PostServerRequest.h"
-#include "Notification/PostGenericRequest.h"
-#include "Notification/GetNotificationRequest.h"
-#include "Notification/BasicNotificationPostGameRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Notification/PostPlayerRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Notification/PostCustomRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Notification/PostServerRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Notification/PostGenericRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Notification/GetNotificationRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Notification/BasicNotificationPostGameRequest.h"
 
 #include "BeamNotificationApi.generated.h"
 

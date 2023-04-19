@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/GetAvailableRolesRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetAvailableRolesRequest.h"
 
 void UGetAvailableRolesRequest::BuildVerb(FString& VerbString) const
 {

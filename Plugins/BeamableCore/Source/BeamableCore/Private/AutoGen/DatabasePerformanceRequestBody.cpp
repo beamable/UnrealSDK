@@ -1,5 +1,5 @@
 
-#include "AutoGen/DatabasePerformanceRequestBody.h"
+#include "BeamableCore/Public/AutoGen/DatabasePerformanceRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

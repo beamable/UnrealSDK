@@ -1,5 +1,5 @@
 
-#include "AutoGen/EmptyResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/EmptyResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

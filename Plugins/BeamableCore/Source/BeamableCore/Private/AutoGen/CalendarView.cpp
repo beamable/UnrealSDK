@@ -1,5 +1,5 @@
 
-#include "AutoGen/CalendarView.h"
+#include "BeamableCore/Public/AutoGen/CalendarView.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

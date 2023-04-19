@@ -1,5 +1,5 @@
 
-#include "AutoGen/SearchAccountsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/SearchAccountsRequestBody.h"
 
 #include "Misc/DefaultValueHelper.h"
 

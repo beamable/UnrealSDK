@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderboardDetails.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardDetails.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

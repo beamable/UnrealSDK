@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetMetricsUrlRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/GetMetricsUrlRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

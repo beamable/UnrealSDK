@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/VipBonus.h"
+#include "BeamableCore/Public/AutoGen/VipBonus.h"
 
 #include "MultipliersGetResponse.generated.h"
 

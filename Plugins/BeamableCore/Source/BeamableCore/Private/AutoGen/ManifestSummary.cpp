@@ -1,5 +1,5 @@
 
-#include "AutoGen/ManifestSummary.h"
+#include "BeamableCore/Public/AutoGen/ManifestSummary.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalArrayOfEventRewardContent.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfEventRewardContent.h"
 
 #include "EventGroupRewards.generated.h"
 

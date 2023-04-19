@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/PASuggestedIndex.h"
+#include "BeamableCore/Public/AutoGen/PASuggestedIndex.h"
 
 #include "PASuggestedIndexLibrary.generated.h"
 

@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Beamo/K2BeamNode_ApiRequest_GetTemplates.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Beamo/K2BeamNode_ApiRequest_GetTemplates.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamBeamoApi.h"
-#include "AutoGen/SubSystems/Beamo/GetTemplatesRequest.h"
-#include "AutoGen/GetTemplatesResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamBeamoApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Beamo/GetTemplatesRequest.h"
+#include "BeamableCore/Public/AutoGen/GetTemplatesResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetTemplates"
 

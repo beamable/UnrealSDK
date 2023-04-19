@@ -1,5 +1,5 @@
 
-#include "AutoGen/ManifestChecksums.h"
+#include "BeamableCore/Public/AutoGen/ManifestChecksums.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

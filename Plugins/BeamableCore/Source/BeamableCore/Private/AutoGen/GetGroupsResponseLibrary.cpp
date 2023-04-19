@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetGroupsResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/GetGroupsResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

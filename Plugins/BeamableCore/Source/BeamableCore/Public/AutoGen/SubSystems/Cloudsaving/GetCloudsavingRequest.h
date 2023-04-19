@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/Optionals/OptionalInt64.h"
-#include "AutoGen/CloudsavingBasicManifest.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
+#include "BeamableCore/Public/AutoGen/CloudsavingBasicManifest.h"
 
 #include "GetCloudsavingRequest.generated.h"
 

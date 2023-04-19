@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfMapOfContentMeta.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfMapOfContentMeta.h"
 
 #include "OptionalArrayOfMapOfContentMetaLibrary.generated.h"
 

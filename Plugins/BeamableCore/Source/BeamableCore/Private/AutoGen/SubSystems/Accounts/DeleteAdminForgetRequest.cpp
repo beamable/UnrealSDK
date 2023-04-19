@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/DeleteAdminForgetRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/DeleteAdminForgetRequest.h"
 
 void UDeleteAdminForgetRequest::BuildVerb(FString& VerbString) const
 {

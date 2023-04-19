@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Auth/K2BeamNode_ApiRequest_PutTokenRevoke.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Auth/K2BeamNode_ApiRequest_PutTokenRevoke.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamAuthApi.h"
-#include "AutoGen/SubSystems/Auth/PutTokenRevokeRequest.h"
-#include "AutoGen/CommonResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamAuthApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Auth/PutTokenRevokeRequest.h"
+#include "BeamableCore/Public/AutoGen/CommonResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PutTokenRevoke"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Content/BasicContentGetManifestsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Content/BasicContentGetManifestsRequest.h"
 
 void UBasicContentGetManifestsRequest::BuildVerb(FString& VerbString) const
 {

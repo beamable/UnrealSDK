@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalBool.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 
 #include "OptionalBoolLibrary.generated.h"
 

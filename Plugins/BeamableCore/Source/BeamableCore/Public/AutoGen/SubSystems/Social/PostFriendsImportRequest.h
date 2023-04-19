@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/ImportFriendsRequestBody.h"
-#include "AutoGen/EmptyResponse.h"
+#include "BeamableCore/Public/AutoGen/ImportFriendsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/EmptyResponse.h"
 
 #include "PostFriendsImportRequest.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/PreviewVipBonusResponse.h"
+#include "BeamableCore/Public/AutoGen/PreviewVipBonusResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

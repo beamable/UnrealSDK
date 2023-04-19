@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Accounts/K2BeamNode_ApiRequest_GetAdminMe.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Accounts/K2BeamNode_ApiRequest_GetAdminMe.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamAccountsApi.h"
-#include "AutoGen/SubSystems/Accounts/GetAdminMeRequest.h"
-#include "AutoGen/AccountPortalView.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamAccountsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetAdminMeRequest.h"
+#include "BeamableCore/Public/AutoGen/AccountPortalView.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetAdminMe"
 

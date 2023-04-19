@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalLeaderboardCohortSettings.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalLeaderboardCohortSettings.h"
 
 FOptionalLeaderboardCohortSettings::FOptionalLeaderboardCohortSettings()
 {

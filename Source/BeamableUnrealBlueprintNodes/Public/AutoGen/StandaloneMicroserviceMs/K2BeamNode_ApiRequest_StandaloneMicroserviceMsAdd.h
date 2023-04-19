@@ -4,15 +4,15 @@
 #include "CoreMinimal.h"
 #include "BeamFlow/ApiRequest/K2BeamNode_ApiRequest.h"
 
-#include "K2BeamNode_ApiRequest_DeleteExternal_identity.generated.h"
+#include "K2BeamNode_ApiRequest_StandaloneMicroserviceMsAdd.generated.h"
 
-#define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_DeleteExternal_identity"
+#define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_StandaloneMicroserviceMsAdd"
 
 /**
-* This is the code-gen'ed declaration for the Beam Flow's Endpoint: Delete /basic/accounts/external_identity  of the Accounts Service. 
+* This is the code-gen'ed declaration for the Beam Flow's Endpoint: Post /Add  of the StandaloneMicroserviceMs Service. 
 */
 UCLASS(meta=(BeamFlow))
-class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_ApiRequest_DeleteExternal_identity : public UK2BeamNode_ApiRequest
+class BEAMABLEUNREALBLUEPRINTNODES_API UK2BeamNode_ApiRequest_StandaloneMicroserviceMsAdd : public UK2BeamNode_ApiRequest
 {
 	GENERATED_BODY()
 

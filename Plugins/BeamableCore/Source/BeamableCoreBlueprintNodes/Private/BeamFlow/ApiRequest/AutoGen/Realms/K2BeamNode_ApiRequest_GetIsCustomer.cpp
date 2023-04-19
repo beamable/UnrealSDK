@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Realms/K2BeamNode_ApiRequest_GetIsCustomer.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Realms/K2BeamNode_ApiRequest_GetIsCustomer.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamRealmsApi.h"
-#include "AutoGen/SubSystems/Realms/GetIsCustomerRequest.h"
-#include "AutoGen/EmptyResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamRealmsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetIsCustomerRequest.h"
+#include "BeamableCore/Public/AutoGen/EmptyResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetIsCustomer"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Content/BasicContentGetContentRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Content/BasicContentGetContentRequest.h"
 
 void UBasicContentGetContentRequest::BuildVerb(FString& VerbString) const
 {

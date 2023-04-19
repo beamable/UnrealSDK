@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/JoinRequestBody.h"
-#include "AutoGen/PlayerStatus.h"
+#include "BeamableCore/Public/AutoGen/JoinRequestBody.h"
+#include "BeamableCore/Public/AutoGen/PlayerStatus.h"
 
 #include "PostTournamentsRequest.generated.h"
 

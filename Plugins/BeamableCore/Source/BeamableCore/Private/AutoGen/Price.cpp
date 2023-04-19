@@ -1,5 +1,5 @@
 
-#include "AutoGen/Price.h"
+#include "BeamableCore/Public/AutoGen/Price.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

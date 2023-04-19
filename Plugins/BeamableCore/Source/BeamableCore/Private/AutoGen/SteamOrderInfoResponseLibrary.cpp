@@ -1,5 +1,5 @@
 
-#include "AutoGen/SteamOrderInfoResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/SteamOrderInfoResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

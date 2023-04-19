@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Commerce/GetCommerceRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Commerce/GetCommerceRequest.h"
 
 void UGetCommerceRequest::BuildVerb(FString& VerbString) const
 {

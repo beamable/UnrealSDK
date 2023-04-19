@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/UploadRequestBody.h"
+#include "BeamableCore/Public/AutoGen/UploadRequestBody.h"
 
 #include "UploadRequestBodyLibrary.generated.h"
 

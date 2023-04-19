@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetTotalCouponResponse.h"
+#include "BeamableCore/Public/AutoGen/GetTotalCouponResponse.h"
 
 #include "GetTotalCouponResponseLibrary.generated.h"
 

@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/UpdateMailRequestBody.h"
-#include "AutoGen/MailSuccessResponse.h"
+#include "BeamableCore/Public/AutoGen/UpdateMailRequestBody.h"
+#include "BeamableCore/Public/AutoGen/MailSuccessResponse.h"
 
 #include "BasicMailPutMailRequest.generated.h"
 

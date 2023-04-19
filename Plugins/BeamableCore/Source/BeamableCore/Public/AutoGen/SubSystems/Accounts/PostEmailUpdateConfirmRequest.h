@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/EmailUpdateConfirmation.h"
-#include "AutoGen/EmptyResponse.h"
+#include "BeamableCore/Public/AutoGen/EmailUpdateConfirmation.h"
+#include "BeamableCore/Public/AutoGen/EmptyResponse.h"
 
 #include "PostEmailUpdateConfirmRequest.generated.h"
 

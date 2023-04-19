@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/RoomInfo.h"
+#include "BeamableCore/Public/AutoGen/RoomInfo.h"
 
 #include "RoomInfoLibrary.generated.h"
 

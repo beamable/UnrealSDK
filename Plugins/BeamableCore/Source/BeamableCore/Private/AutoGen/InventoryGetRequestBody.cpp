@@ -1,5 +1,5 @@
 
-#include "AutoGen/InventoryGetRequestBody.h"
+#include "BeamableCore/Public/AutoGen/InventoryGetRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

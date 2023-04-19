@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetCatalogResponse.h"
+#include "BeamableCore/Public/AutoGen/GetCatalogResponse.h"
 
 #include "GetCatalogResponseLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/Promotion.h"
+#include "BeamableCore/Public/AutoGen/Promotion.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

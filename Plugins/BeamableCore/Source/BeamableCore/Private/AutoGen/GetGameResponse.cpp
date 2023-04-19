@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetGameResponse.h"
+#include "BeamableCore/Public/AutoGen/GetGameResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/BeamEventPlayersApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamEventPlayersApi.h"
 #include "BeamCoreSettings.h"
 
 
@@ -73,7 +73,7 @@ void UBeamEventPlayersApi::CPP_GetEventPlayersImpl(const FBeamRealmHandle& Targe
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -133,7 +133,7 @@ void UBeamEventPlayersApi::CPP_PostClaimImpl(const FBeamRealmHandle& TargetRealm
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -193,7 +193,7 @@ void UBeamEventPlayersApi::CPP_PutScoreImpl(const FBeamRealmHandle& TargetRealm,
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 

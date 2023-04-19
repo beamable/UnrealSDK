@@ -1,5 +1,5 @@
 
-#include "AutoGen/Member.h"
+#include "BeamableCore/Public/AutoGen/Member.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

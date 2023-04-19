@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ChatV2ObjectMessage.h"
+#include "BeamableCore/Public/AutoGen/ChatV2ObjectMessage.h"
 
 #include "ChatV2ObjectMessageLibrary.generated.h"
 

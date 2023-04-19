@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ClearStatusRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ClearStatusRequestBody.h"
 
 #include "ClearStatusRequestBodyLibrary.generated.h"
 

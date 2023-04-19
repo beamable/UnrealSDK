@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/BeamAuthApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamAuthApi.h"
 #include "BeamCoreSettings.h"
 
 
@@ -73,7 +73,7 @@ void UBeamAuthApi::CPP_GetTokenImpl(const FBeamRealmHandle& TargetRealm, const F
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -133,7 +133,7 @@ void UBeamAuthApi::CPP_AuthenticateImpl(const FBeamRealmHandle& TargetRealm, con
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 

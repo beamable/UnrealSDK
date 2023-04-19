@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/EventPlayers/K2BeamNode_ApiRequest_PutScore.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/EventPlayers/K2BeamNode_ApiRequest_PutScore.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamEventPlayersApi.h"
-#include "AutoGen/SubSystems/EventPlayers/PutScoreRequest.h"
-#include "AutoGen/CommonResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamEventPlayersApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/EventPlayers/PutScoreRequest.h"
+#include "BeamableCore/Public/AutoGen/CommonResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PutScore"
 

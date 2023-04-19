@@ -4,8 +4,8 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalArchetypeProxy.h"
-#include "AutoGen/Optionals/OptionalClientPermission.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArchetypeProxy.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalClientPermission.h"
 
 #include "ItemArchetype.generated.h"
 

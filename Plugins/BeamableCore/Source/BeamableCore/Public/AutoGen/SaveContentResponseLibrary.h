@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/SaveContentResponse.h"
+#include "BeamableCore/Public/AutoGen/SaveContentResponse.h"
 
 #include "SaveContentResponseLibrary.generated.h"
 

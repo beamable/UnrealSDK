@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/MetadataPair.h"
+#include "BeamableCore/Public/AutoGen/MetadataPair.h"
 
 #include "MetadataPairLibrary.generated.h"
 

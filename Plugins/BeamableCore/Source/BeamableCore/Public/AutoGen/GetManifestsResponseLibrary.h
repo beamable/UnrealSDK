@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetManifestsResponse.h"
+#include "BeamableCore/Public/AutoGen/GetManifestsResponse.h"
 
 #include "GetManifestsResponseLibrary.generated.h"
 

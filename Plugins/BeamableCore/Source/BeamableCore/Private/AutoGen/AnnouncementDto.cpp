@@ -1,5 +1,5 @@
 
-#include "AutoGen/AnnouncementDto.h"
+#include "BeamableCore/Public/AutoGen/AnnouncementDto.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

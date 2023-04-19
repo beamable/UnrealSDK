@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetStandingsRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/GetStandingsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

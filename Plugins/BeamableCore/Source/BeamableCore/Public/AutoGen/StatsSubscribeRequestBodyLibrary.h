@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/StatsSubscribeRequestBody.h"
+#include "BeamableCore/Public/AutoGen/StatsSubscribeRequestBody.h"
 
 #include "StatsSubscribeRequestBodyLibrary.generated.h"
 

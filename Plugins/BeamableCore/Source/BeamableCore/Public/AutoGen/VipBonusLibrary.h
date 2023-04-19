@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/VipBonus.h"
+#include "BeamableCore/Public/AutoGen/VipBonus.h"
 
 #include "VipBonusLibrary.generated.h"
 

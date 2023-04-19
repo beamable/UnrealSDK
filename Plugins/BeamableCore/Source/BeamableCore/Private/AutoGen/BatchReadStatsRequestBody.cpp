@@ -1,5 +1,5 @@
 
-#include "AutoGen/BatchReadStatsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/BatchReadStatsRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

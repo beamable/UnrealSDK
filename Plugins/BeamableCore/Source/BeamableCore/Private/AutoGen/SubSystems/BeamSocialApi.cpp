@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/BeamSocialApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamSocialApi.h"
 #include "BeamCoreSettings.h"
 
 

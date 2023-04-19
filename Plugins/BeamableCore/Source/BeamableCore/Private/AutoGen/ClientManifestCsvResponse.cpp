@@ -6,7 +6,7 @@ void UClientManifestCsvResponse::DeserializeRequestResponse(UObject* RequestData
 {
 	CsvData = NewObject<UDataTable>(RequestData);
 
-
+	
 	// Change the response content to add a key, This should be a utility function and only be code-gen'ed if the OApi spec does not specify a key column. 
 	auto IntCursor = 0;
 	do
@@ -52,7 +52,7 @@ void UClientManifestCsvResponse::DeserializeRequestResponse(UObject* RequestData
 
 	// Generate this only if the CSV will not contain the header row
 	UBeamCsvUtils::AddHeaderRow(ResponseContent, FClientContentInfoTableRow::HeaderFields);
-
+	
 	// Generate this always.
 	UBeamCsvUtils::ParseIntoDataTable(CsvData,
 	                                  FClientContentInfoTableRow::StaticStruct(),

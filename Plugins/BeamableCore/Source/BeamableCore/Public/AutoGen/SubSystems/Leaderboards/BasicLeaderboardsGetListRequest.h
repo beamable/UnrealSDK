@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/Optionals/OptionalInt32.h"
-#include "AutoGen/LeaderboardListResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardListResponse.h"
 
 #include "BasicLeaderboardsGetListRequest.generated.h"
 

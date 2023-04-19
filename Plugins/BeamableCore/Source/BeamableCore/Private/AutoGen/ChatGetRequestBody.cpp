@@ -1,5 +1,5 @@
 
-#include "AutoGen/ChatGetRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ChatGetRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

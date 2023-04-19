@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalBeamGamerTag.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamGamerTag.h"
 
 #include "OptionalBeamGamerTagLibrary.generated.h"
 

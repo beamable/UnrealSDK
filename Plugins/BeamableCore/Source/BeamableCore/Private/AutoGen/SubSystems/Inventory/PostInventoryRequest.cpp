@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Inventory/PostInventoryRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Inventory/PostInventoryRequest.h"
 
 void UPostInventoryRequest::BuildVerb(FString& VerbString) const
 {

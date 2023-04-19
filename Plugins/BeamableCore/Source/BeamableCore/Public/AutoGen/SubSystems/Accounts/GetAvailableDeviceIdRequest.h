@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/AccountAvailableResponse.h"
+#include "BeamableCore/Public/AutoGen/AccountAvailableResponse.h"
 
 #include "GetAvailableDeviceIdRequest.generated.h"
 

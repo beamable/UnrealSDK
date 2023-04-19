@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Store.h"
+#include "BeamableCore/Public/AutoGen/Store.h"
 
 #include "StoreLibrary.generated.h"
 

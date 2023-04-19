@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Stats/PutSubscribeRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/PutSubscribeRequest.h"
 
 void UPutSubscribeRequest::BuildVerb(FString& VerbString) const
 {

@@ -9,7 +9,7 @@
 
 
 
-#include "AutoGen/LeaderboardMembershipResponse.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardMembershipResponse.h"
 
 #include "GetMembershipRequest.generated.h"
 

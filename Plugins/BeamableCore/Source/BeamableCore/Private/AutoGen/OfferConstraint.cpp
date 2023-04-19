@@ -1,5 +1,5 @@
 
-#include "AutoGen/OfferConstraint.h"
+#include "BeamableCore/Public/AutoGen/OfferConstraint.h"
 
 #include "Misc/DefaultValueHelper.h"
 

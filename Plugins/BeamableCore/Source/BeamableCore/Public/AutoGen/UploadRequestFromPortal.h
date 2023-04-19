@@ -4,8 +4,8 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalArrayOfMetadataPair.h"
-#include "AutoGen/Optionals/OptionalInt64.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfMetadataPair.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 
 #include "UploadRequestFromPortal.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderBoardViewResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/LeaderBoardViewResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/AnnouncementState.h"
+#include "BeamableCore/Public/AutoGen/AnnouncementState.h"
 
 
 

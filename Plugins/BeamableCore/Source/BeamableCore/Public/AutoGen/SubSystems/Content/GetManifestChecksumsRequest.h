@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/ManifestChecksums.h"
+#include "BeamableCore/Public/AutoGen/ManifestChecksums.h"
 
 #include "GetManifestChecksumsRequest.generated.h"
 

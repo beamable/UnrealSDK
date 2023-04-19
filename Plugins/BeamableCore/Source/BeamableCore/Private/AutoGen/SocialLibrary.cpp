@@ -1,5 +1,5 @@
 
-#include "AutoGen/SocialLibrary.h"
+#include "BeamableCore/Public/AutoGen/SocialLibrary.h"
 
 #include "CoreMinimal.h"
 

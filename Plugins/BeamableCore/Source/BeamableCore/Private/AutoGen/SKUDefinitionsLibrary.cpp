@@ -1,5 +1,5 @@
 
-#include "AutoGen/SKUDefinitionsLibrary.h"
+#include "BeamableCore/Public/AutoGen/SKUDefinitionsLibrary.h"
 
 #include "CoreMinimal.h"
 

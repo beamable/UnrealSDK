@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/UpdateGameHierarchyRequestBody.h"
+#include "BeamableCore/Public/AutoGen/UpdateGameHierarchyRequestBody.h"
 
 #include "UpdateGameHierarchyRequestBodyLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/UploadRequestFromPortalLibrary.h"
+#include "BeamableCore/Public/AutoGen/UploadRequestFromPortalLibrary.h"
 
 #include "CoreMinimal.h"
 

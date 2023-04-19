@@ -1,5 +1,5 @@
 
-#include "AutoGen/CurrencyArchetypeLibrary.h"
+#include "BeamableCore/Public/AutoGen/CurrencyArchetypeLibrary.h"
 
 #include "CoreMinimal.h"
 

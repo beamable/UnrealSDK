@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/LeaderboardCohort.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardCohort.h"
 
 #include "LeaderboardCohortSettings.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Beamo/GetStorageConnectionRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Beamo/GetStorageConnectionRequest.h"
 
 void UGetStorageConnectionRequest::BuildVerb(FString& VerbString) const
 {

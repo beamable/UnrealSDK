@@ -1,5 +1,5 @@
 
-#include "AutoGen/AccountAvailableResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/AccountAvailableResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/ListLeaderBoardViewResponse.h"
+#include "BeamableCore/Public/AutoGen/ListLeaderBoardViewResponse.h"
 
 #include "GetPlayerRequest.generated.h"
 

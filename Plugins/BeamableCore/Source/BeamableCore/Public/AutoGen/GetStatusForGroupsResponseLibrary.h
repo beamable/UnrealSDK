@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetStatusForGroupsResponse.h"
+#include "BeamableCore/Public/AutoGen/GetStatusForGroupsResponse.h"
 
 #include "GetStatusForGroupsResponseLibrary.generated.h"
 

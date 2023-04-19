@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/BeamEventsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamEventsApi.h"
 #include "BeamCoreSettings.h"
 
 
@@ -73,7 +73,7 @@ void UBeamEventsApi::CPP_GetRunningImpl(const FBeamRealmHandle& TargetRealm, con
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 

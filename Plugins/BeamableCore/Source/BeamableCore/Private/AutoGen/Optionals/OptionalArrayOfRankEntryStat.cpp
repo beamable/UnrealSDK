@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfRankEntryStat.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfRankEntryStat.h"
 
 FOptionalArrayOfRankEntryStat::FOptionalArrayOfRankEntryStat()
 {

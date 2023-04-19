@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Cloudsaving/PutDataCommitManifestRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Cloudsaving/PutDataCommitManifestRequest.h"
 
 void UPutDataCommitManifestRequest::BuildVerb(FString& VerbString) const
 {

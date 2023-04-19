@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ImportFriendsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ImportFriendsRequestBody.h"
 
 #include "ImportFriendsRequestBodyLibrary.generated.h"
 

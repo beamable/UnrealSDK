@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/EntitlementGenerator.h"
+#include "BeamableCore/Public/AutoGen/EntitlementGenerator.h"
 
 #include "RewardCalendarDay.generated.h"
 

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalOrderRules.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalOrderRules.h"
 
 #include "OptionalOrderRulesLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Commerce/GetCatalogRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Commerce/GetCatalogRequest.h"
 
 void UGetCatalogRequest::BuildVerb(FString& VerbString) const
 {

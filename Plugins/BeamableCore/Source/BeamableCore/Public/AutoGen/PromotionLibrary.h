@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Promotion.h"
+#include "BeamableCore/Public/AutoGen/Promotion.h"
 
 #include "PromotionLibrary.generated.h"
 

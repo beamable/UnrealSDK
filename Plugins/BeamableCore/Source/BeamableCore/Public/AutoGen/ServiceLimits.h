@@ -4,9 +4,9 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalBeamoLimits.h"
-#include "AutoGen/Optionals/OptionalContentLimits.h"
-#include "AutoGen/Optionals/OptionalGatewayLimits.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamoLimits.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalContentLimits.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalGatewayLimits.h"
 
 #include "ServiceLimits.generated.h"
 

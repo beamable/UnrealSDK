@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfInt64.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfInt64.h"
 
 FOptionalArrayOfInt64::FOptionalArrayOfInt64()
 {

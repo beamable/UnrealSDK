@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Content/PostManifestsUnarchiveRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Content/PostManifestsUnarchiveRequest.h"
 
 void UPostManifestsUnarchiveRequest::BuildVerb(FString& VerbString) const
 {

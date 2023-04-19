@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ServerEvent.h"
+#include "BeamableCore/Public/AutoGen/ServerEvent.h"
 
 #include "ServerEventLibrary.generated.h"
 

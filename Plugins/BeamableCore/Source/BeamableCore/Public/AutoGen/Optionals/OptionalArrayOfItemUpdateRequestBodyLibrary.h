@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfItemUpdateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfItemUpdateRequestBody.h"
 
 #include "OptionalArrayOfItemUpdateRequestBodyLibrary.generated.h"
 

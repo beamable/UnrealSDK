@@ -1,5 +1,5 @@
 
-#include "AutoGen/CommerceLootRoll.h"
+#include "BeamableCore/Public/AutoGen/CommerceLootRoll.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

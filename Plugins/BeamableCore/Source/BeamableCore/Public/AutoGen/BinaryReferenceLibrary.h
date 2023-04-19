@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/BinaryReference.h"
+#include "BeamableCore/Public/AutoGen/BinaryReference.h"
 
 #include "BinaryReferenceLibrary.generated.h"
 

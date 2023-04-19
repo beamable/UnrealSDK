@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/AccountRolesReport.h"
+#include "BeamableCore/Public/AutoGen/AccountRolesReport.h"
 
 #include "AccountRolesReportLibrary.generated.h"
 

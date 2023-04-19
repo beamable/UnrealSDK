@@ -1,5 +1,5 @@
 
-#include "AutoGen/FacebookPaymentUpdateResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/FacebookPaymentUpdateResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

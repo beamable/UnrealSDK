@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalSchedule.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalSchedule.h"
 
 FOptionalSchedule::FOptionalSchedule()
 {

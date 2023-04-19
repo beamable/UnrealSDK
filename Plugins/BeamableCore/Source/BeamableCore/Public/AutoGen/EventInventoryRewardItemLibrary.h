@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/EventInventoryRewardItem.h"
+#include "BeamableCore/Public/AutoGen/EventInventoryRewardItem.h"
 
 #include "EventInventoryRewardItemLibrary.generated.h"
 

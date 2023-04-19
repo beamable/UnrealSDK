@@ -1,5 +1,5 @@
 
-#include "AutoGen/ActiveListingResponse.h"
+#include "BeamableCore/Public/AutoGen/ActiveListingResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

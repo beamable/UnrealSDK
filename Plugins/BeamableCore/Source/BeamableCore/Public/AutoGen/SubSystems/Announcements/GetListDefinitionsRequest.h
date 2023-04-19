@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/ListDefinitionsResponse.h"
+#include "BeamableCore/Public/AutoGen/ListDefinitionsResponse.h"
 
 #include "GetListDefinitionsRequest.generated.h"
 

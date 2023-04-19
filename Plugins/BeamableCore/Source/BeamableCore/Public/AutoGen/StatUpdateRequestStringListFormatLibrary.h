@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/StatUpdateRequestStringListFormat.h"
+#include "BeamableCore/Public/AutoGen/StatUpdateRequestStringListFormat.h"
 
 #include "StatUpdateRequestStringListFormatLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/ObjectAccountsPutRoleRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/ObjectAccountsPutRoleRequest.h"
 
 void UObjectAccountsPutRoleRequest::BuildVerb(FString& VerbString) const
 {

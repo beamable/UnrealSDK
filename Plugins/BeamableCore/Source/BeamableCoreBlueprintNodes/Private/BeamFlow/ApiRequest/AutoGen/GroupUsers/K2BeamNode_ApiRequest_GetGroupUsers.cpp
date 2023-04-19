@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/GroupUsers/K2BeamNode_ApiRequest_GetGroupUsers.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/GroupUsers/K2BeamNode_ApiRequest_GetGroupUsers.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamGroupUsersApi.h"
-#include "AutoGen/SubSystems/GroupUsers/GetGroupUsersRequest.h"
-#include "AutoGen/GroupUser.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamGroupUsersApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/GroupUsers/GetGroupUsersRequest.h"
+#include "BeamableCore/Public/AutoGen/GroupUser.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetGroupUsers"
 

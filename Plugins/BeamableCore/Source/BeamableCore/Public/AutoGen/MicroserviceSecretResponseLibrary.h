@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/MicroserviceSecretResponse.h"
+#include "BeamableCore/Public/AutoGen/MicroserviceSecretResponse.h"
 
 #include "MicroserviceSecretResponseLibrary.generated.h"
 

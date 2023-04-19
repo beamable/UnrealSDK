@@ -1,5 +1,5 @@
 
-#include "AutoGen/EndTransactionRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/EndTransactionRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

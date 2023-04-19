@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/SteamOrderInfoResponse.h"
+#include "BeamableCore/Public/AutoGen/SteamOrderInfoResponse.h"
 
 #include "GetSteamOrderRequest.generated.h"
 

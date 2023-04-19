@@ -1,5 +1,5 @@
 
-#include "AutoGen/UploadRequests.h"
+#include "BeamableCore/Public/AutoGen/UploadRequests.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

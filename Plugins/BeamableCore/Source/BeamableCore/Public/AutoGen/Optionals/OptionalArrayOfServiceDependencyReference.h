@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/ServiceDependencyReference.h"
+#include "BeamableCore/Public/AutoGen/ServiceDependencyReference.h"
 
 #include "OptionalArrayOfServiceDependencyReference.generated.h"
 

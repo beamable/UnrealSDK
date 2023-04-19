@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetActiveOffersResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/GetActiveOffersResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ChampionScore.h"
+#include "BeamableCore/Public/AutoGen/ChampionScore.h"
 
 #include "ChampionScoreLibrary.generated.h"
 

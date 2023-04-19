@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventDateRangesLibrary.h"
+#include "BeamableCore/Public/AutoGen/EventDateRangesLibrary.h"
 
 #include "CoreMinimal.h"
 

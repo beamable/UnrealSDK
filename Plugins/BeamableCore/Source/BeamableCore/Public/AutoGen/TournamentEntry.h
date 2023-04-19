@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/TournamentCurrencyReward.h"
+#include "BeamableCore/Public/AutoGen/TournamentCurrencyReward.h"
 
 #include "TournamentEntry.generated.h"
 

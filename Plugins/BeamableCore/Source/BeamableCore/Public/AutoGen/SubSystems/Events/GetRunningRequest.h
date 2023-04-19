@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/EventQueryResponse.h"
+#include "BeamableCore/Public/AutoGen/EventQueryResponse.h"
 
 #include "GetRunningRequest.generated.h"
 

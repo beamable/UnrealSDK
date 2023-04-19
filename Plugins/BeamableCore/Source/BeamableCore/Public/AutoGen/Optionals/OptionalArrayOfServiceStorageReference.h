@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/ServiceStorageReference.h"
+#include "BeamableCore/Public/AutoGen/ServiceStorageReference.h"
 
 #include "OptionalArrayOfServiceStorageReference.generated.h"
 

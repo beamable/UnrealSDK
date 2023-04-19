@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/PutAdminEmailRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PutAdminEmailRequest.h"
 
 void UPutAdminEmailRequest::BuildVerb(FString& VerbString) const
 {

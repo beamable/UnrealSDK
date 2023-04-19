@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamBackend/SemanticTypes/BeamGamerTag.h"
-#include "AutoGen/MultipliersGetResponse.h"
+#include "BeamableCore/Public/AutoGen/MultipliersGetResponse.h"
 
 #include "GetMultipliersRequest.generated.h"
 

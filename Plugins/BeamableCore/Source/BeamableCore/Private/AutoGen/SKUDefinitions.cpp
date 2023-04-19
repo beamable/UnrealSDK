@@ -1,5 +1,5 @@
 
-#include "AutoGen/SKUDefinitions.h"
+#include "BeamableCore/Public/AutoGen/SKUDefinitions.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

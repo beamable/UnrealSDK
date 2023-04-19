@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
-#include "AutoGen/Enums/ContentType.h"
+#include "BeamableCore/Public/AutoGen/Enums/ContentType.h"
 
 
 

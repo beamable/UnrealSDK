@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderboardCohortSettings.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardCohortSettings.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

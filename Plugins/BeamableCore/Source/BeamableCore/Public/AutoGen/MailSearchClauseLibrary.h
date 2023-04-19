@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/MailSearchClause.h"
+#include "BeamableCore/Public/AutoGen/MailSearchClause.h"
 
 #include "MailSearchClauseLibrary.generated.h"
 

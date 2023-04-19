@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/GroupMembershipRequestBody.h"
-#include "AutoGen/GroupMembershipResponse.h"
+#include "BeamableCore/Public/AutoGen/GroupMembershipRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GroupMembershipResponse.h"
 
 #include "PostJoinRequest.generated.h"
 

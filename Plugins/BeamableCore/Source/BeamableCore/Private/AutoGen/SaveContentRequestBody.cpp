@@ -1,5 +1,5 @@
 
-#include "AutoGen/SaveContentRequestBody.h"
+#include "BeamableCore/Public/AutoGen/SaveContentRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

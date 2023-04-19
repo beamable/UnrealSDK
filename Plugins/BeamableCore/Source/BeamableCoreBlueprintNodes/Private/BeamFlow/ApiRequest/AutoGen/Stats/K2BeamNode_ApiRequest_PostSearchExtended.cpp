@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Stats/K2BeamNode_ApiRequest_PostSearchExtended.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Stats/K2BeamNode_ApiRequest_PostSearchExtended.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamStatsApi.h"
-#include "AutoGen/SubSystems/Stats/PostSearchExtendedRequest.h"
-#include "AutoGen/SearchExtendedResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamStatsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/PostSearchExtendedRequest.h"
+#include "BeamableCore/Public/AutoGen/SearchExtendedResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PostSearchExtended"
 

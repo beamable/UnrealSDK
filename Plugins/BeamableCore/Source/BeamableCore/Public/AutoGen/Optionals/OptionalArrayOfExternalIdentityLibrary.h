@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfExternalIdentity.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfExternalIdentity.h"
 
 #include "OptionalArrayOfExternalIdentityLibrary.generated.h"
 

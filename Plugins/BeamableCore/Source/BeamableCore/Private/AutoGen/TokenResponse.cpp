@@ -1,5 +1,5 @@
 
-#include "AutoGen/TokenResponse.h"
+#include "BeamableCore/Public/AutoGen/TokenResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

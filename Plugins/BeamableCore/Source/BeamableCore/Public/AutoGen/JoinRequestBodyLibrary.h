@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/JoinRequestBody.h"
+#include "BeamableCore/Public/AutoGen/JoinRequestBody.h"
 
 #include "JoinRequestBodyLibrary.generated.h"
 

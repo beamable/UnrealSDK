@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Social/DeleteFriendsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Social/DeleteFriendsRequest.h"
 
 void UDeleteFriendsRequest::BuildVerb(FString& VerbString) const
 {

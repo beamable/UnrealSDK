@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Payments/GetPaymentsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Payments/GetPaymentsRequest.h"
 
 void UGetPaymentsRequest::BuildVerb(FString& VerbString) const
 {

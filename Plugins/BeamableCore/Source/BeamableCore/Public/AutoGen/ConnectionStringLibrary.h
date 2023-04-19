@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ConnectionString.h"
+#include "BeamableCore/Public/AutoGen/ConnectionString.h"
 
 #include "ConnectionStringLibrary.generated.h"
 

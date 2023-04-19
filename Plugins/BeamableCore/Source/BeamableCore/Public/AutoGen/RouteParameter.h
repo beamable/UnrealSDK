@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalVariableReference.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalVariableReference.h"
 
 #include "RouteParameter.generated.h"
 

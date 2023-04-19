@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/DeleteAnnouncementRequestBody.h"
+#include "BeamableCore/Public/AutoGen/DeleteAnnouncementRequestBody.h"
 
 #include "DeleteAnnouncementRequestBodyLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/RenameProjectRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/RenameProjectRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/PasswordUpdateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/PasswordUpdateRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

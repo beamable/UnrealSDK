@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Beamo/K2BeamNode_ApiRequest_GetStoragePerformance.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Beamo/K2BeamNode_ApiRequest_GetStoragePerformance.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamBeamoApi.h"
-#include "AutoGen/SubSystems/Beamo/GetStoragePerformanceRequest.h"
-#include "AutoGen/PerformanceResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamBeamoApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Beamo/GetStoragePerformanceRequest.h"
+#include "BeamableCore/Public/AutoGen/PerformanceResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetStoragePerformance"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/AccountSearchResponse.h"
+#include "BeamableCore/Public/AutoGen/AccountSearchResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

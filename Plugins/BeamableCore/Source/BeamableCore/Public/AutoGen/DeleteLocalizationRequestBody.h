@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/LocalizationQuery.h"
+#include "BeamableCore/Public/AutoGen/LocalizationQuery.h"
 
 #include "DeleteLocalizationRequestBody.generated.h"
 

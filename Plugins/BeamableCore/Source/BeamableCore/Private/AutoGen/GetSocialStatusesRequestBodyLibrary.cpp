@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetSocialStatusesRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/GetSocialStatusesRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaveRoomRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/LeaveRoomRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

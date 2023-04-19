@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfMailObjectMessage.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfMailObjectMessage.h"
 
 FOptionalArrayOfMailObjectMessage::FOptionalArrayOfMailObjectMessage()
 {

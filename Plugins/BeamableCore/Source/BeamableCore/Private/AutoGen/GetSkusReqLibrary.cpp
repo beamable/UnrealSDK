@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetSkusReqLibrary.h"
+#include "BeamableCore/Public/AutoGen/GetSkusReqLibrary.h"
 
 #include "CoreMinimal.h"
 

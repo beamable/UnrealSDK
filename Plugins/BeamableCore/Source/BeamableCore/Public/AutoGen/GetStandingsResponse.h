@@ -4,8 +4,8 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/TournamentEntry.h"
-#include "AutoGen/Optionals/OptionalTournamentEntry.h"
+#include "BeamableCore/Public/AutoGen/TournamentEntry.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalTournamentEntry.h"
 
 #include "GetStandingsResponse.generated.h"
 

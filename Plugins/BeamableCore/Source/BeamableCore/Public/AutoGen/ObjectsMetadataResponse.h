@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/ObjectMetadataResponse.h"
+#include "BeamableCore/Public/AutoGen/ObjectMetadataResponse.h"
 
 #include "ObjectsMetadataResponse.generated.h"
 

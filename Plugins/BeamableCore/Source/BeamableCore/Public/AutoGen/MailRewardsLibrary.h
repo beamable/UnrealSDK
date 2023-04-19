@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/MailRewards.h"
+#include "BeamableCore/Public/AutoGen/MailRewards.h"
 
 #include "MailRewardsLibrary.generated.h"
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/DatabasePerformanceRequestBody.h"
+#include "BeamableCore/Public/AutoGen/DatabasePerformanceRequestBody.h"
 
 #include "DatabasePerformanceRequestBodyLibrary.generated.h"
 

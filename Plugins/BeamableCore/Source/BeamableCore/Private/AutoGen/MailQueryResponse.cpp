@@ -1,5 +1,5 @@
 
-#include "AutoGen/MailQueryResponse.h"
+#include "BeamableCore/Public/AutoGen/MailQueryResponse.h"
 
 #include "Misc/DefaultValueHelper.h"
 

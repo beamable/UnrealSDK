@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Stats/K2BeamNode_ApiRequest_GetClientBatch.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Stats/K2BeamNode_ApiRequest_GetClientBatch.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamStatsApi.h"
-#include "AutoGen/SubSystems/Stats/GetClientBatchRequest.h"
-#include "AutoGen/BatchReadStatsResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamStatsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/GetClientBatchRequest.h"
+#include "BeamableCore/Public/AutoGen/BatchReadStatsResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetClientBatch"
 

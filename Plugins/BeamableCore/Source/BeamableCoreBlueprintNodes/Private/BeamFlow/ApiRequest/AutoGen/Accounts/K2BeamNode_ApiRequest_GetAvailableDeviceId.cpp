@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Accounts/K2BeamNode_ApiRequest_GetAvailableDeviceId.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Accounts/K2BeamNode_ApiRequest_GetAvailableDeviceId.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamAccountsApi.h"
-#include "AutoGen/SubSystems/Accounts/GetAvailableDeviceIdRequest.h"
-#include "AutoGen/AccountAvailableResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamAccountsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetAvailableDeviceIdRequest.h"
+#include "BeamableCore/Public/AutoGen/AccountAvailableResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetAvailableDeviceId"
 

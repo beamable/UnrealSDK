@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderboardListRequestBody.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardListRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

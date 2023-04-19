@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/GroupUsers/DeleteJoinRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/GroupUsers/DeleteJoinRequest.h"
 
 void UDeleteJoinRequest::BuildVerb(FString& VerbString) const
 {

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfCompletedStatus.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfCompletedStatus.h"
 
 #include "OptionalArrayOfCompletedStatusLibrary.generated.h"
 

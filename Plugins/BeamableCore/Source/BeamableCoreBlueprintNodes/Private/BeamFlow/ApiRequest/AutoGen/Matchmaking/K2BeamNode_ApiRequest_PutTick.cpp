@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Matchmaking/K2BeamNode_ApiRequest_PutTick.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Matchmaking/K2BeamNode_ApiRequest_PutTick.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamMatchmakingApi.h"
-#include "AutoGen/SubSystems/Matchmaking/PutTickRequest.h"
-#include "AutoGen/EmptyResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamMatchmakingApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Matchmaking/PutTickRequest.h"
+#include "BeamableCore/Public/AutoGen/EmptyResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PutTick"
 

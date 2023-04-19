@@ -1,12 +1,12 @@
 
-#include "AutoGen/SubSystems/Accounts/PostExternal_identityRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PostExternalIdentityRequest.h"
 
-void UPostExternal_identityRequest::BuildVerb(FString& VerbString) const
+void UPostExternalIdentityRequest::BuildVerb(FString& VerbString) const
 {
 	VerbString = TEXT("POST");
 }
 
-void UPostExternal_identityRequest::BuildRoute(FString& RouteString) const
+void UPostExternalIdentityRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/basic/accounts/external_identity");
 	
@@ -18,7 +18,7 @@ void UPostExternal_identityRequest::BuildRoute(FString& RouteString) const
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
 }
 
-void UPostExternal_identityRequest::BuildBody(FString& BodyString) const
+void UPostExternalIdentityRequest::BuildBody(FString& BodyString) const
 {
 	ensureAlways(Body);
 
@@ -27,9 +27,9 @@ void UPostExternal_identityRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostExternal_identityRequest* UPostExternal_identityRequest::Make(FString _ProviderService, FString _ExternalToken, FOptionalChallengeSolution _ChallengeSolution, FOptionalString _ProviderNamespace, UObject* RequestOwner)
+UPostExternalIdentityRequest* UPostExternalIdentityRequest::Make(FString _ProviderService, FString _ExternalToken, FOptionalChallengeSolution _ChallengeSolution, FOptionalString _ProviderNamespace, UObject* RequestOwner)
 {
-	UPostExternal_identityRequest* Req = NewObject<UPostExternal_identityRequest>(RequestOwner);
+	UPostExternalIdentityRequest* Req = NewObject<UPostExternalIdentityRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

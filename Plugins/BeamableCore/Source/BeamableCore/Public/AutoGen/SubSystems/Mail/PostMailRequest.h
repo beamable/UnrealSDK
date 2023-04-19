@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/SendMailObjectRequestBody.h"
-#include "AutoGen/SendMailResponse.h"
+#include "BeamableCore/Public/AutoGen/SendMailObjectRequestBody.h"
+#include "BeamableCore/Public/AutoGen/SendMailResponse.h"
 
 #include "PostMailRequest.generated.h"
 

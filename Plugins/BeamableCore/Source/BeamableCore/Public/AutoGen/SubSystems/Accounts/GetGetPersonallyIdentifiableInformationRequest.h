@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/AccountPersonallyIdentifiableInformationResponse.h"
+#include "BeamableCore/Public/AutoGen/AccountPersonallyIdentifiableInformationResponse.h"
 
 #include "GetGetPersonallyIdentifiableInformationRequest.generated.h"
 

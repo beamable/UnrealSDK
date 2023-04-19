@@ -1,5 +1,5 @@
 
-#include "AutoGen/ObjectRequestsLibrary.h"
+#include "BeamableCore/Public/AutoGen/ObjectRequestsLibrary.h"
 
 #include "CoreMinimal.h"
 

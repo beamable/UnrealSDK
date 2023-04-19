@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/MailQueryResponse.h"
+#include "BeamableCore/Public/AutoGen/MailQueryResponse.h"
 
 #include "ObjectMailGetMailRequest.generated.h"
 

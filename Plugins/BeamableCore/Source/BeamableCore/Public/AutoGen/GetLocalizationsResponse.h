@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Arrays/ArrayOfLocalizedValue.h"
+#include "BeamableCore/Public/AutoGen/Arrays/ArrayOfLocalizedValue.h"
 
 #include "GetLocalizationsResponse.generated.h"
 

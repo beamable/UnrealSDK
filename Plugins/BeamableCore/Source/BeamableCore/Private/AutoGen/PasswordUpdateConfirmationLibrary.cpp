@@ -1,5 +1,5 @@
 
-#include "AutoGen/PasswordUpdateConfirmationLibrary.h"
+#include "BeamableCore/Public/AutoGen/PasswordUpdateConfirmationLibrary.h"
 
 #include "CoreMinimal.h"
 

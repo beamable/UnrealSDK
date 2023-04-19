@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/WebhookComet.h"
+#include "BeamableCore/Public/AutoGen/WebhookComet.h"
 
 #include "OptionalWebhookComet.generated.h"
 

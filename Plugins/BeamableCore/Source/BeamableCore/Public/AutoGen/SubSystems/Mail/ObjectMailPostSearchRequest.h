@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/MailSearchRequestBody.h"
-#include "AutoGen/MailSearchResponse.h"
+#include "BeamableCore/Public/AutoGen/MailSearchRequestBody.h"
+#include "BeamableCore/Public/AutoGen/MailSearchResponse.h"
 
 #include "ObjectMailPostSearchRequest.generated.h"
 

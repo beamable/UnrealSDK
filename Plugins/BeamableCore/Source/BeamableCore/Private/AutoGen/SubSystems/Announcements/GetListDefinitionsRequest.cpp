@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Announcements/GetListDefinitionsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Announcements/GetListDefinitionsRequest.h"
 
 void UGetListDefinitionsRequest::BuildVerb(FString& VerbString) const
 {

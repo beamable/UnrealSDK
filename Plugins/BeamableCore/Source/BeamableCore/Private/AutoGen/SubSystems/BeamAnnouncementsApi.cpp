@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/BeamAnnouncementsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamAnnouncementsApi.h"
 #include "BeamCoreSettings.h"
 
 

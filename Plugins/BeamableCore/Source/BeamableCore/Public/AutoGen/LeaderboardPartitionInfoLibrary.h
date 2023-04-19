@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/LeaderboardPartitionInfo.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardPartitionInfo.h"
 
 #include "LeaderboardPartitionInfoLibrary.generated.h"
 

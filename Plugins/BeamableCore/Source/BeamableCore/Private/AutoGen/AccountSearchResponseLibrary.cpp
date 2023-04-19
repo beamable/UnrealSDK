@@ -1,5 +1,5 @@
 
-#include "AutoGen/AccountSearchResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/AccountSearchResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

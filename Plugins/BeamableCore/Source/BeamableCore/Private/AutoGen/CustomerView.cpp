@@ -1,5 +1,5 @@
 
-#include "AutoGen/CustomerView.h"
+#include "BeamableCore/Public/AutoGen/CustomerView.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ServiceLimits.h"
+#include "BeamableCore/Public/AutoGen/ServiceLimits.h"
 
 #include "ServiceLimitsLibrary.generated.h"
 

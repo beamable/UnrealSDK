@@ -4,9 +4,9 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/ContentReference.h"
-#include "AutoGen/TextReference.h"
-#include "AutoGen/BinaryReference.h"
+#include "BeamableCore/Public/AutoGen/ContentReference.h"
+#include "BeamableCore/Public/AutoGen/TextReference.h"
+#include "BeamableCore/Public/AutoGen/BinaryReference.h"
 
 #include "BaseContentReference.generated.h"
 

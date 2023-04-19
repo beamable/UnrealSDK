@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Mail/K2BeamNode_ApiRequest_GetCategories.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Mail/K2BeamNode_ApiRequest_GetCategories.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamMailApi.h"
-#include "AutoGen/SubSystems/Mail/GetCategoriesRequest.h"
-#include "AutoGen/ListMailCategoriesResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamMailApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Mail/GetCategoriesRequest.h"
+#include "BeamableCore/Public/AutoGen/ListMailCategoriesResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetCategories"
 

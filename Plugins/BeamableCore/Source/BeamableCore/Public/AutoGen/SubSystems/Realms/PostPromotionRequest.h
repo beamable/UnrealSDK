@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/PromoteRealmRequestBody.h"
-#include "AutoGen/PromoteRealmResponse.h"
+#include "BeamableCore/Public/AutoGen/PromoteRealmRequestBody.h"
+#include "BeamableCore/Public/AutoGen/PromoteRealmResponse.h"
 
 #include "PostPromotionRequest.generated.h"
 

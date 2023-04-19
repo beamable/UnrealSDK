@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Leaderboards/GetMembershipRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Leaderboards/GetMembershipRequest.h"
 
 void UGetMembershipRequest::BuildVerb(FString& VerbString) const
 {

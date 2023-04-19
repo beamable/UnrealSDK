@@ -1,5 +1,5 @@
 
-#include "AutoGen/GroupApplicationLibrary.h"
+#include "BeamableCore/Public/AutoGen/GroupApplicationLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalArrayOfStatStringListEntry.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfStatStringListEntry.h"
 
 #include "StatUpdateRequestStringListFormat.generated.h"
 

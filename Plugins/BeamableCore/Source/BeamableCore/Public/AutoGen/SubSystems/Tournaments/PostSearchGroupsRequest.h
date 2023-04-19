@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/GetStatusForGroupsRequestBody.h"
-#include "AutoGen/GetStatusForGroupsResponse.h"
+#include "BeamableCore/Public/AutoGen/GetStatusForGroupsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GetStatusForGroupsResponse.h"
 
 #include "PostSearchGroupsRequest.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/ChatV2/PostRoomsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/ChatV2/PostRoomsRequest.h"
 
 void UPostRoomsRequest::BuildVerb(FString& VerbString) const
 {

@@ -1,5 +1,5 @@
 
-#include "AutoGen/GroupScoreBindingLibrary.h"
+#include "BeamableCore/Public/AutoGen/GroupScoreBindingLibrary.h"
 
 #include "CoreMinimal.h"
 

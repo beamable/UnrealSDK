@@ -1,5 +1,5 @@
 
-#include "AutoGen/StatSubscriptionNotificationLibrary.h"
+#include "BeamableCore/Public/AutoGen/StatSubscriptionNotificationLibrary.h"
 
 #include "CoreMinimal.h"
 

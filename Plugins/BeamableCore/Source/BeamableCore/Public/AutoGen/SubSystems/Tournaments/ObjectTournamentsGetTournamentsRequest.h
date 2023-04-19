@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/TournamentClientView.h"
+#include "BeamableCore/Public/AutoGen/TournamentClientView.h"
 
 #include "ObjectTournamentsGetTournamentsRequest.generated.h"
 

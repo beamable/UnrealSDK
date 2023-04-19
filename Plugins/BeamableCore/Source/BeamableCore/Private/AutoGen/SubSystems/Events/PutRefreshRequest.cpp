@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Events/PutRefreshRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Events/PutRefreshRequest.h"
 
 void UPutRefreshRequest::BuildVerb(FString& VerbString) const
 {

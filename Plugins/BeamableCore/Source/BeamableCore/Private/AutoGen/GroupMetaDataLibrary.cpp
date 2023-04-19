@@ -1,5 +1,5 @@
 
-#include "AutoGen/GroupMetaDataLibrary.h"
+#include "BeamableCore/Public/AutoGen/GroupMetaDataLibrary.h"
 
 #include "CoreMinimal.h"
 

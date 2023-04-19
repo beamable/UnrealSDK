@@ -1,5 +1,5 @@
 
-#include "AutoGen/GroupUser.h"
+#include "BeamableCore/Public/AutoGen/GroupUser.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

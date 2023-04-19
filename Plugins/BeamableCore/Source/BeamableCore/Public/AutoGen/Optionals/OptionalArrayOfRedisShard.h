@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/RedisShard.h"
+#include "BeamableCore/Public/AutoGen/RedisShard.h"
 
 #include "OptionalArrayOfRedisShard.generated.h"
 

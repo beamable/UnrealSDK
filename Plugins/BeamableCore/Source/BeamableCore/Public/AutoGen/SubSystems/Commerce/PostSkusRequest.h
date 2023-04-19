@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/SaveSKUsRequestBody.h"
-#include "AutoGen/ResultResponse.h"
+#include "BeamableCore/Public/AutoGen/SaveSKUsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ResultResponse.h"
 
 #include "PostSkusRequest.generated.h"
 

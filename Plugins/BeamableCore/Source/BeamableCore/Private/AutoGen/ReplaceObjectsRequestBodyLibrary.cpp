@@ -1,5 +1,5 @@
 
-#include "AutoGen/ReplaceObjectsRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/ReplaceObjectsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SendFriendRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/SendFriendRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

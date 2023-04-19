@@ -1,5 +1,5 @@
 
-#include "AutoGen/AliasAvailableRequestBody.h"
+#include "BeamableCore/Public/AutoGen/AliasAvailableRequestBody.h"
 
 
 

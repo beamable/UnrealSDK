@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Commerce/PostCouponsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Commerce/PostCouponsRequest.h"
 
 void UPostCouponsRequest::BuildVerb(FString& VerbString) const
 {

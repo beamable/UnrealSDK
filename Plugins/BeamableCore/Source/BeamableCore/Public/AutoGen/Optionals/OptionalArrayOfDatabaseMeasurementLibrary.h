@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfDatabaseMeasurement.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfDatabaseMeasurement.h"
 
 #include "OptionalArrayOfDatabaseMeasurementLibrary.generated.h"
 

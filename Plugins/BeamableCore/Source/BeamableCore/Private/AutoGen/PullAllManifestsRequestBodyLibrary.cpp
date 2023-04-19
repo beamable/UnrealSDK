@@ -1,5 +1,5 @@
 
-#include "AutoGen/PullAllManifestsRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/PullAllManifestsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

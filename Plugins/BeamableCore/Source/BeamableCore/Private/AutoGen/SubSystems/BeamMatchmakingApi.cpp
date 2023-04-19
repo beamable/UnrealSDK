@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/BeamMatchmakingApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamMatchmakingApi.h"
 #include "BeamCoreSettings.h"
 
 

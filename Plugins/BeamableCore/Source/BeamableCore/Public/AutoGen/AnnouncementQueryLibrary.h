@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/AnnouncementQuery.h"
+#include "BeamableCore/Public/AutoGen/AnnouncementQuery.h"
 
 #include "AnnouncementQueryLibrary.generated.h"
 

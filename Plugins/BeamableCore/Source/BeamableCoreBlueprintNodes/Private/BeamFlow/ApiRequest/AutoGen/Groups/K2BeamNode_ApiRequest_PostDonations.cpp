@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Groups/K2BeamNode_ApiRequest_PostDonations.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Groups/K2BeamNode_ApiRequest_PostDonations.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamGroupsApi.h"
-#include "AutoGen/SubSystems/Groups/PostDonationsRequest.h"
-#include "AutoGen/EmptyResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamGroupsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Groups/PostDonationsRequest.h"
+#include "BeamableCore/Public/AutoGen/EmptyResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PostDonations"
 

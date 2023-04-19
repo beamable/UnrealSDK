@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/LocalizationRef.h"
+#include "BeamableCore/Public/AutoGen/LocalizationRef.h"
 
 #include "LocalizationRefLibrary.generated.h"
 

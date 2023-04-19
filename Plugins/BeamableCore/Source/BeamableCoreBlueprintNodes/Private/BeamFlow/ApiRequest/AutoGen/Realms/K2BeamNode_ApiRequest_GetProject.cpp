@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Realms/K2BeamNode_ApiRequest_GetProject.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Realms/K2BeamNode_ApiRequest_GetProject.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamRealmsApi.h"
-#include "AutoGen/SubSystems/Realms/GetProjectRequest.h"
-#include "AutoGen/ProjectView.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamRealmsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetProjectRequest.h"
+#include "BeamableCore/Public/AutoGen/ProjectView.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetProject"
 

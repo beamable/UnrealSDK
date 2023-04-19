@@ -1,5 +1,5 @@
 
-#include "AutoGen/PASuggestedIndexLibrary.h"
+#include "BeamableCore/Public/AutoGen/PASuggestedIndexLibrary.h"
 
 #include "CoreMinimal.h"
 

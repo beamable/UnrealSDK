@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/MailObjectMessage.h"
+#include "BeamableCore/Public/AutoGen/MailObjectMessage.h"
 
 #include "MailObjectMessageLibrary.generated.h"
 

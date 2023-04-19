@@ -1,5 +1,5 @@
 
-#include "AutoGen/EntitlementClaimWindowLibrary.h"
+#include "BeamableCore/Public/AutoGen/EntitlementClaimWindowLibrary.h"
 
 #include "CoreMinimal.h"
 

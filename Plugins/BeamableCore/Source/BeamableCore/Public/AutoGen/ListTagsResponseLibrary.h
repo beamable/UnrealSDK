@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ListTagsResponse.h"
+#include "BeamableCore/Public/AutoGen/ListTagsResponse.h"
 
 #include "ListTagsResponseLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/ArchetypeProxyLibrary.h"
+#include "BeamableCore/Public/AutoGen/ArchetypeProxyLibrary.h"
 
 #include "CoreMinimal.h"
 

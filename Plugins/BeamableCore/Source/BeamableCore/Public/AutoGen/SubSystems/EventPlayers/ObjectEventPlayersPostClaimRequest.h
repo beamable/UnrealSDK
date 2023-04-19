@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/EventClaimRequestBody.h"
-#include "AutoGen/EventClaimResponse.h"
+#include "BeamableCore/Public/AutoGen/EventClaimRequestBody.h"
+#include "BeamableCore/Public/AutoGen/EventClaimResponse.h"
 
 #include "ObjectEventPlayersPostClaimRequest.generated.h"
 

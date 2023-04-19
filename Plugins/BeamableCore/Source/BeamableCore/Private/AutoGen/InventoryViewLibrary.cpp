@@ -1,5 +1,5 @@
 
-#include "AutoGen/InventoryViewLibrary.h"
+#include "BeamableCore/Public/AutoGen/InventoryViewLibrary.h"
 
 #include "CoreMinimal.h"
 

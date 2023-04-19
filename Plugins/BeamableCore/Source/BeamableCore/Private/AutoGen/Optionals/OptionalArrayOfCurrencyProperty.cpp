@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfCurrencyProperty.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfCurrencyProperty.h"
 
 FOptionalArrayOfCurrencyProperty::FOptionalArrayOfCurrencyProperty()
 {

@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/SKU.h"
+#include "BeamableCore/Public/AutoGen/SKU.h"
 
 #include "SaveSKUsRequestBody.generated.h"
 

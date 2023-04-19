@@ -1,5 +1,5 @@
 
-#include "AutoGen/ClientDataEntryLibrary.h"
+#include "BeamableCore/Public/AutoGen/ClientDataEntryLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/Catalog.h"
+#include "BeamableCore/Public/AutoGen/Catalog.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

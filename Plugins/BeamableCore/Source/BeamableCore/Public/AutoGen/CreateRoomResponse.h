@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/RoomInfo.h"
+#include "BeamableCore/Public/AutoGen/RoomInfo.h"
 
 #include "CreateRoomResponse.generated.h"
 

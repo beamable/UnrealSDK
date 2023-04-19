@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/BasicAccountsPostRegisterRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/BasicAccountsPostRegisterRequest.h"
 
 void UBasicAccountsPostRegisterRequest::BuildVerb(FString& VerbString) const
 {

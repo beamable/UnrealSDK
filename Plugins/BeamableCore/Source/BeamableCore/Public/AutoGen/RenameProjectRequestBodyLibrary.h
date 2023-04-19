@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/RenameProjectRequestBody.h"
+#include "BeamableCore/Public/AutoGen/RenameProjectRequestBody.h"
 
 #include "RenameProjectRequestBodyLibrary.generated.h"
 

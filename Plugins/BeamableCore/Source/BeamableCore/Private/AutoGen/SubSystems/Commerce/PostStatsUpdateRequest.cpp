@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Commerce/PostStatsUpdateRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Commerce/PostStatsUpdateRequest.h"
 
 void UPostStatsUpdateRequest::BuildVerb(FString& VerbString) const
 {

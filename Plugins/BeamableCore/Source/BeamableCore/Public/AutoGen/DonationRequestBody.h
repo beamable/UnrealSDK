@@ -4,8 +4,8 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/DonationEntry.h"
-#include "AutoGen/Currency.h"
+#include "BeamableCore/Public/AutoGen/DonationEntry.h"
+#include "BeamableCore/Public/AutoGen/Currency.h"
 
 #include "DonationRequestBody.generated.h"
 

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalCommerceLootRoll.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalCommerceLootRoll.h"
 
 #include "OptionalCommerceLootRollLibrary.generated.h"
 

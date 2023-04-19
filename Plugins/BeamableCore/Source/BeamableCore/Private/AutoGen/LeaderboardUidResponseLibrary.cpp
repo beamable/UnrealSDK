@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderboardUidResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardUidResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/PaymentResultResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/PaymentResultResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

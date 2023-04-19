@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GroupRole.h"
+#include "BeamableCore/Public/AutoGen/GroupRole.h"
 
 #include "GroupRoleLibrary.generated.h"
 

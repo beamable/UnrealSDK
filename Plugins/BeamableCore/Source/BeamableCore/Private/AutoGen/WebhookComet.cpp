@@ -1,5 +1,5 @@
 
-#include "AutoGen/WebhookComet.h"
+#include "BeamableCore/Public/AutoGen/WebhookComet.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

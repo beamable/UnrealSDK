@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/NewCustomerResponse.h"
+#include "BeamableCore/Public/AutoGen/NewCustomerResponse.h"
 
 #include "NewCustomerResponseLibrary.generated.h"
 

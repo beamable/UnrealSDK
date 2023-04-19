@@ -1,5 +1,5 @@
 
-#include "AutoGen/ServicePlanLibrary.h"
+#include "BeamableCore/Public/AutoGen/ServicePlanLibrary.h"
 
 #include "CoreMinimal.h"
 

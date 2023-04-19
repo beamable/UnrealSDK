@@ -1,5 +1,5 @@
 
-#include "AutoGen/CurrencyChangeReward.h"
+#include "BeamableCore/Public/AutoGen/CurrencyChangeReward.h"
 
 #include "Misc/DefaultValueHelper.h"
 

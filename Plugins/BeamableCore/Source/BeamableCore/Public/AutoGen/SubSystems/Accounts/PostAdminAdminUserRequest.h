@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/AddAccountRequestBody.h"
-#include "AutoGen/AccountPortalView.h"
+#include "BeamableCore/Public/AutoGen/AddAccountRequestBody.h"
+#include "BeamableCore/Public/AutoGen/AccountPortalView.h"
 
 #include "PostAdminAdminUserRequest.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalEntitlementClaimWindow.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalEntitlementClaimWindow.h"
 
 FOptionalEntitlementClaimWindow::FOptionalEntitlementClaimWindow()
 {

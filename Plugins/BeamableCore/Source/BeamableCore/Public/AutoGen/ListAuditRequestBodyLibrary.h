@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ListAuditRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ListAuditRequestBody.h"
 
 #include "ListAuditRequestBodyLibrary.generated.h"
 

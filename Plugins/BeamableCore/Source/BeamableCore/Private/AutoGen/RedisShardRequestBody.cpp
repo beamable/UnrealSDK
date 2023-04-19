@@ -1,5 +1,5 @@
 
-#include "AutoGen/RedisShardRequestBody.h"
+#include "BeamableCore/Public/AutoGen/RedisShardRequestBody.h"
 
 #include "Misc/DefaultValueHelper.h"
 

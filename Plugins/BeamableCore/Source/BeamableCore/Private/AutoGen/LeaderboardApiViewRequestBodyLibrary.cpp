@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderboardApiViewRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardApiViewRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

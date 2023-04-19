@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfServiceStorageStatus.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfServiceStorageStatus.h"
 
 FOptionalArrayOfServiceStorageStatus::FOptionalArrayOfServiceStorageStatus()
 {

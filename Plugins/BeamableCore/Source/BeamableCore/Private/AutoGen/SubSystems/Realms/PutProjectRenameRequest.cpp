@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Realms/PutProjectRenameRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/PutProjectRenameRequest.h"
 
 void UPutProjectRenameRequest::BuildVerb(FString& VerbString) const
 {

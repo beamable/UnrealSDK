@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/LocalizedPrice.h"
+#include "BeamableCore/Public/AutoGen/LocalizedPrice.h"
 
 #include "LocalizedPriceMap.generated.h"
 

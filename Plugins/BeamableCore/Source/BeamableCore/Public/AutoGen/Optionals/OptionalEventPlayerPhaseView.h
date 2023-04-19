@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/EventPlayerPhaseView.h"
+#include "BeamableCore/Public/AutoGen/EventPlayerPhaseView.h"
 
 #include "OptionalEventPlayerPhaseView.generated.h"
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/DeleteThirdPartyAssociation.h"
+#include "BeamableCore/Public/AutoGen/DeleteThirdPartyAssociation.h"
 
 #include "DeleteThirdPartyAssociationLibrary.generated.h"
 

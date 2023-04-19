@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Events/GetCalendarRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Events/GetCalendarRequest.h"
 
 void UGetCalendarRequest::BuildVerb(FString& VerbString) const
 {

@@ -1,5 +1,5 @@
 
-#include "AutoGen/PlayerStatRequirement.h"
+#include "BeamableCore/Public/AutoGen/PlayerStatRequirement.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/URLSResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/URLSResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

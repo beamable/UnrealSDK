@@ -1,12 +1,12 @@
 
-#include "AutoGen/SubSystems/Accounts/DeleteExternal_identityRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/DeleteExternalIdentityRequest.h"
 
-void UDeleteExternal_identityRequest::BuildVerb(FString& VerbString) const
+void UDeleteExternalIdentityRequest::BuildVerb(FString& VerbString) const
 {
 	VerbString = TEXT("DELETE");
 }
 
-void UDeleteExternal_identityRequest::BuildRoute(FString& RouteString) const
+void UDeleteExternalIdentityRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/basic/accounts/external_identity");
 	
@@ -18,7 +18,7 @@ void UDeleteExternal_identityRequest::BuildRoute(FString& RouteString) const
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
 }
 
-void UDeleteExternal_identityRequest::BuildBody(FString& BodyString) const
+void UDeleteExternalIdentityRequest::BuildBody(FString& BodyString) const
 {
 	ensureAlways(Body);
 
@@ -27,9 +27,9 @@ void UDeleteExternal_identityRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteExternal_identityRequest* UDeleteExternal_identityRequest::Make(FString _ProviderService, FString _UserId, FOptionalString _ProviderNamespace, UObject* RequestOwner)
+UDeleteExternalIdentityRequest* UDeleteExternalIdentityRequest::Make(FString _ProviderService, FString _UserId, FOptionalString _ProviderNamespace, UObject* RequestOwner)
 {
-	UDeleteExternal_identityRequest* Req = NewObject<UDeleteExternal_identityRequest>(RequestOwner);
+	UDeleteExternalIdentityRequest* Req = NewObject<UDeleteExternalIdentityRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

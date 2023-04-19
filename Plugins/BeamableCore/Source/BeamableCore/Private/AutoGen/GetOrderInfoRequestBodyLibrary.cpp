@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetOrderInfoRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/GetOrderInfoRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

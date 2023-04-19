@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/GetAvailableThirdPartyRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetAvailableThirdPartyRequest.h"
 
 void UGetAvailableThirdPartyRequest::BuildVerb(FString& VerbString) const
 {

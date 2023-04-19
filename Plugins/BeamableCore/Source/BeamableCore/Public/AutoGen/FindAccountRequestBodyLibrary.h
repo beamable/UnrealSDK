@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/FindAccountRequestBody.h"
+#include "BeamableCore/Public/AutoGen/FindAccountRequestBody.h"
 
 #include "FindAccountRequestBodyLibrary.generated.h"
 

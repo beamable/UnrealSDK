@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfGroupScoreBinding.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfGroupScoreBinding.h"
 
 #include "OptionalArrayOfGroupScoreBindingLibrary.generated.h"
 

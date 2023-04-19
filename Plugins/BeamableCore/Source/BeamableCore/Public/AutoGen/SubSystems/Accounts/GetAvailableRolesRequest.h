@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamBackend/SemanticTypes/BeamAccountId.h"
-#include "AutoGen/AvailableRolesResponse.h"
+#include "BeamableCore/Public/AutoGen/AvailableRolesResponse.h"
 
 #include "GetAvailableRolesRequest.generated.h"
 

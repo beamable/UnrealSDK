@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventRewardState.h"
+#include "BeamableCore/Public/AutoGen/EventRewardState.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

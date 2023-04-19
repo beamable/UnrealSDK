@@ -1,5 +1,5 @@
 
-#include "AutoGen/GamerTagAssociation.h"
+#include "BeamableCore/Public/AutoGen/GamerTagAssociation.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Groups/ObjectGroupsPutRoleRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Groups/ObjectGroupsPutRoleRequest.h"
 
 void UObjectGroupsPutRoleRequest::BuildVerb(FString& VerbString) const
 {

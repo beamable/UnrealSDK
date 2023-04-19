@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ListTokenResponseItem.h"
+#include "BeamableCore/Public/AutoGen/ListTokenResponseItem.h"
 
 #include "ListTokenResponseItemLibrary.generated.h"
 

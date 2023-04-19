@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/AccountPlayerView.h"
+#include "BeamableCore/Public/AutoGen/AccountPlayerView.h"
 
 #include "AccountPlayerViewLibrary.generated.h"
 

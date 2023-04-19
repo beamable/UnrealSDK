@@ -4,8 +4,8 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalMapOfString.h"
-#include "AutoGen/Optionals/OptionalArrayOfItemCreateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfItemCreateRequestBody.h"
 
 #include "EventInventoryPendingRewards.generated.h"
 

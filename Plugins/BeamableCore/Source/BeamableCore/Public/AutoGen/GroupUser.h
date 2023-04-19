@@ -4,10 +4,10 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalArrayOfInFlightMessage.h"
-#include "AutoGen/GroupUserMember.h"
-#include "AutoGen/Arrays/ArrayOfString.h"
-#include "AutoGen/Optionals/OptionalArrayOfGroupScoreBinding.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfInFlightMessage.h"
+#include "BeamableCore/Public/AutoGen/GroupUserMember.h"
+#include "BeamableCore/Public/AutoGen/Arrays/ArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfGroupScoreBinding.h"
 
 #include "GroupUser.generated.h"
 

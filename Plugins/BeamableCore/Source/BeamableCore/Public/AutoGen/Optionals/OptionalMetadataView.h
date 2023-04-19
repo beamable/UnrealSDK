@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/MetadataView.h"
+#include "BeamableCore/Public/AutoGen/MetadataView.h"
 
 #include "OptionalMetadataView.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/EntitlementClaimWindow.h"
+#include "BeamableCore/Public/AutoGen/EntitlementClaimWindow.h"
 
 #include "Misc/DefaultValueHelper.h"
 

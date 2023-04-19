@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/GetAvailableDeviceIdRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetAvailableDeviceIdRequest.h"
 
 void UGetAvailableDeviceIdRequest::BuildVerb(FString& VerbString) const
 {

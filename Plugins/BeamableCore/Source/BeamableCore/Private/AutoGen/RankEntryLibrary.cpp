@@ -1,5 +1,5 @@
 
-#include "AutoGen/RankEntryLibrary.h"
+#include "BeamableCore/Public/AutoGen/RankEntryLibrary.h"
 
 #include "CoreMinimal.h"
 

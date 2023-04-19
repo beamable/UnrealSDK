@@ -7,10 +7,10 @@
 #include "BeamBackend/ResponseCache/BeamResponseCache.h"
 #include "RequestTracker/BeamRequestTracker.h"
 
-#include "Matchmaking/PutTickRequest.h"
-#include "Matchmaking/GetMatchRequest.h"
-#include "Matchmaking/PostMatchRequest.h"
-#include "Matchmaking/DeleteMatchRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Matchmaking/PutTickRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Matchmaking/GetMatchRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Matchmaking/PostMatchRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Matchmaking/DeleteMatchRequest.h"
 
 #include "BeamMatchmakingApi.generated.h"
 

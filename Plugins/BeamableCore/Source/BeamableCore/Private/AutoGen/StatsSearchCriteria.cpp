@@ -1,5 +1,5 @@
 
-#include "AutoGen/StatsSearchCriteria.h"
+#include "BeamableCore/Public/AutoGen/StatsSearchCriteria.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

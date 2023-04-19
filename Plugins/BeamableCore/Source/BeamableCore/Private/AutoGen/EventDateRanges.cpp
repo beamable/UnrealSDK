@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventDateRanges.h"
+#include "BeamableCore/Public/AutoGen/EventDateRanges.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

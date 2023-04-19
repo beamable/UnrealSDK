@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/EndTransactionRequestBody.h"
+#include "BeamableCore/Public/AutoGen/EndTransactionRequestBody.h"
 
 #include "EndTransactionRequestBodyLibrary.generated.h"
 

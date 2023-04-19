@@ -1,5 +1,5 @@
 
-#include "AutoGen/TrackPurchaseRequestBody.h"
+#include "BeamableCore/Public/AutoGen/TrackPurchaseRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

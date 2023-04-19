@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Cloudsaving/K2BeamNode_ApiRequest_GetDataMetadata.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Cloudsaving/K2BeamNode_ApiRequest_GetDataMetadata.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamCloudsavingApi.h"
-#include "AutoGen/SubSystems/Cloudsaving/GetDataMetadataRequest.h"
-#include "AutoGen/ObjectsMetadataResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamCloudsavingApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Cloudsaving/GetDataMetadataRequest.h"
+#include "BeamableCore/Public/AutoGen/ObjectsMetadataResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetDataMetadata"
 

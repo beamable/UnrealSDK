@@ -4,9 +4,9 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalInt64.h"
-#include "AutoGen/Enums/GroupType.h"
-#include "AutoGen/GroupMetaData.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
+#include "BeamableCore/Public/AutoGen/Enums/GroupType.h"
+#include "BeamableCore/Public/AutoGen/GroupMetaData.h"
 
 #include "GroupMembershipResponse.generated.h"
 

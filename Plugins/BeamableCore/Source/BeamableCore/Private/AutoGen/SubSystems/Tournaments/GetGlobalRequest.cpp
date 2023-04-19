@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Tournaments/GetGlobalRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Tournaments/GetGlobalRequest.h"
 
 void UGetGlobalRequest::BuildVerb(FString& VerbString) const
 {

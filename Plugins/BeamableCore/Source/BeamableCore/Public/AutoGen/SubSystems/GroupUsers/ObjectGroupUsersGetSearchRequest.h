@@ -8,12 +8,12 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/Optionals/OptionalInt64.h"
-#include "AutoGen/Optionals/OptionalBool.h"
-#include "AutoGen/Optionals/OptionalInt32.h"
-#include "AutoGen/Enums/GroupType.h"
-#include "AutoGen/GroupSearchResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
+#include "BeamableCore/Public/AutoGen/Enums/GroupType.h"
+#include "BeamableCore/Public/AutoGen/GroupSearchResponse.h"
 
 #include "ObjectGroupUsersGetSearchRequest.generated.h"
 

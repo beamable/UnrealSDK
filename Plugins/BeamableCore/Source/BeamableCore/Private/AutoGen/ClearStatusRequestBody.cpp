@@ -1,5 +1,5 @@
 
-#include "AutoGen/ClearStatusRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ClearStatusRequestBody.h"
 
 
 

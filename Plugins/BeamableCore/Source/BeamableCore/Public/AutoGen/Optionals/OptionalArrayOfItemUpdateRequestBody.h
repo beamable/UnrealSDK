@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/ItemUpdateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ItemUpdateRequestBody.h"
 
 #include "OptionalArrayOfItemUpdateRequestBody.generated.h"
 

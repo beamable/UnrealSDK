@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/BeamCommerceApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamCommerceApi.h"
 #include "BeamCoreSettings.h"
 
 
@@ -73,7 +73,7 @@ void UBeamCommerceApi::CPP_GetSkusImpl(const FBeamRealmHandle& TargetRealm, cons
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -133,7 +133,7 @@ void UBeamCommerceApi::CPP_GetCouponsCountImpl(const FBeamRealmHandle& TargetRea
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 

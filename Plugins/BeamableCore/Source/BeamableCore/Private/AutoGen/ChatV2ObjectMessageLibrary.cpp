@@ -1,5 +1,5 @@
 
-#include "AutoGen/ChatV2ObjectMessageLibrary.h"
+#include "BeamableCore/Public/AutoGen/ChatV2ObjectMessageLibrary.h"
 
 #include "CoreMinimal.h"
 

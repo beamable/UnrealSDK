@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Social/GetSocialRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Social/GetSocialRequest.h"
 
 void UGetSocialRequest::BuildVerb(FString& VerbString) const
 {

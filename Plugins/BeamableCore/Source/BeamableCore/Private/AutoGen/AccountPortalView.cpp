@@ -1,5 +1,5 @@
 
-#include "AutoGen/AccountPortalView.h"
+#include "BeamableCore/Public/AutoGen/AccountPortalView.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

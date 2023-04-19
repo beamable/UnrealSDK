@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Realms/GetPlansRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetPlansRequest.h"
 
 void UGetPlansRequest::BuildVerb(FString& VerbString) const
 {

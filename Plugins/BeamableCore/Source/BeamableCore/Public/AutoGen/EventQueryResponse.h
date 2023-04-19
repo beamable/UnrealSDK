@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/EventObjectData.h"
+#include "BeamableCore/Public/AutoGen/EventObjectData.h"
 
 #include "EventQueryResponse.generated.h"
 

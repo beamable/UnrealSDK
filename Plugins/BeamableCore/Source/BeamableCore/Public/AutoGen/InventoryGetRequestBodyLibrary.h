@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/InventoryGetRequestBody.h"
+#include "BeamableCore/Public/AutoGen/InventoryGetRequestBody.h"
 
 #include "InventoryGetRequestBodyLibrary.generated.h"
 

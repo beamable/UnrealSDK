@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/CommerceLootRoll.h"
+#include "BeamableCore/Public/AutoGen/CommerceLootRoll.h"
 
 #include "CommerceLootRollLibrary.generated.h"
 

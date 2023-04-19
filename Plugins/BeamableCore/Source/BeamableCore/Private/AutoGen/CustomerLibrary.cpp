@@ -1,5 +1,5 @@
 
-#include "AutoGen/CustomerLibrary.h"
+#include "BeamableCore/Public/AutoGen/CustomerLibrary.h"
 
 #include "CoreMinimal.h"
 

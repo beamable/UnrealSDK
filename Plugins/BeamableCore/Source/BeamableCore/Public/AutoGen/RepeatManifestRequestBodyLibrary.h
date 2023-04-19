@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/RepeatManifestRequestBody.h"
+#include "BeamableCore/Public/AutoGen/RepeatManifestRequestBody.h"
 
 #include "RepeatManifestRequestBodyLibrary.generated.h"
 

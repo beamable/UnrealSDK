@@ -1,5 +1,5 @@
 
-#include "AutoGen/PlayerStoreViewLibrary.h"
+#include "BeamableCore/Public/AutoGen/PlayerStoreViewLibrary.h"
 
 #include "CoreMinimal.h"
 

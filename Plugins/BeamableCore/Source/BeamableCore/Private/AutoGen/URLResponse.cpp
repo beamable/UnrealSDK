@@ -1,5 +1,5 @@
 
-#include "AutoGen/URLResponse.h"
+#include "BeamableCore/Public/AutoGen/URLResponse.h"
 
 
 

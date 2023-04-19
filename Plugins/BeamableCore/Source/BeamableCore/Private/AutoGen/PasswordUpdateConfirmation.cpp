@@ -1,5 +1,5 @@
 
-#include "AutoGen/PasswordUpdateConfirmation.h"
+#include "BeamableCore/Public/AutoGen/PasswordUpdateConfirmation.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfMapOfContentMeta.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfMapOfContentMeta.h"
 
 FOptionalArrayOfMapOfContentMeta::FOptionalArrayOfMapOfContentMeta()
 {

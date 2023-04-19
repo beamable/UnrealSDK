@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaveRoomResponse.h"
+#include "BeamableCore/Public/AutoGen/LeaveRoomResponse.h"
 
 
 

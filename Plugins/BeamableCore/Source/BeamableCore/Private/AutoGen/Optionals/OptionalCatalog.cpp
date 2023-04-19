@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalCatalog.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalCatalog.h"
 
 FOptionalCatalog::FOptionalCatalog()
 {

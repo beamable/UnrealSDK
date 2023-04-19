@@ -1,5 +1,5 @@
 
-#include "AutoGen/GroupUpdateLibrary.h"
+#include "BeamableCore/Public/AutoGen/GroupUpdateLibrary.h"
 
 #include "CoreMinimal.h"
 

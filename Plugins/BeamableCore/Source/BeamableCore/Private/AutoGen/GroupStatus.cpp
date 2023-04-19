@@ -1,5 +1,5 @@
 
-#include "AutoGen/GroupStatus.h"
+#include "BeamableCore/Public/AutoGen/GroupStatus.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

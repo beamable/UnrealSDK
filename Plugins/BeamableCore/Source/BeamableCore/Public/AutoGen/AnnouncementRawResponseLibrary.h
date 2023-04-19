@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/AnnouncementRawResponse.h"
+#include "BeamableCore/Public/AutoGen/AnnouncementRawResponse.h"
 
 #include "AnnouncementRawResponseLibrary.generated.h"
 

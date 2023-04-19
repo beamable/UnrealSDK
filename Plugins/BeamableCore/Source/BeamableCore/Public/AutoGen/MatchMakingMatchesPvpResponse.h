@@ -4,8 +4,8 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/MatchMakingRanking.h"
-#include "AutoGen/MatchMakingWindowResp.h"
+#include "BeamableCore/Public/AutoGen/MatchMakingRanking.h"
+#include "BeamableCore/Public/AutoGen/MatchMakingWindowResp.h"
 
 #include "MatchMakingMatchesPvpResponse.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/AnnouncementRequestBody.h"
+#include "BeamableCore/Public/AutoGen/AnnouncementRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

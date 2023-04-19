@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Mail/GetTemplateRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Mail/GetTemplateRequest.h"
 
 void UGetTemplateRequest::BuildVerb(FString& VerbString) const
 {

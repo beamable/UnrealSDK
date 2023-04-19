@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 FOptionalString::FOptionalString()
 {

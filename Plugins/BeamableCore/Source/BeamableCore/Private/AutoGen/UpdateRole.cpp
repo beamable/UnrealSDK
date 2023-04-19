@@ -1,5 +1,5 @@
 
-#include "AutoGen/UpdateRole.h"
+#include "BeamableCore/Public/AutoGen/UpdateRole.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

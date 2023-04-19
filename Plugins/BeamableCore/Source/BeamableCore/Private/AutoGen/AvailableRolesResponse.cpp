@@ -1,5 +1,5 @@
 
-#include "AutoGen/AvailableRolesResponse.h"
+#include "BeamableCore/Public/AutoGen/AvailableRolesResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

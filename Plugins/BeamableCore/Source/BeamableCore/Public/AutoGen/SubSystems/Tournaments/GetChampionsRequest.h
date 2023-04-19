@@ -9,7 +9,7 @@
 
 
 
-#include "AutoGen/GetChampionsResponse.h"
+#include "BeamableCore/Public/AutoGen/GetChampionsResponse.h"
 
 #include "GetChampionsRequest.generated.h"
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/EventRule.h"
+#include "BeamableCore/Public/AutoGen/EventRule.h"
 
 #include "EventRuleLibrary.generated.h"
 

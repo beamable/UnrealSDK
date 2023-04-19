@@ -4,10 +4,10 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/ServiceReference.h"
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/Optionals/OptionalBool.h"
-#include "AutoGen/Optionals/OptionalArrayOfServiceStorageReference.h"
+#include "BeamableCore/Public/AutoGen/ServiceReference.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfServiceStorageReference.h"
 
 #include "PostManifestRequestBody.generated.h"
 

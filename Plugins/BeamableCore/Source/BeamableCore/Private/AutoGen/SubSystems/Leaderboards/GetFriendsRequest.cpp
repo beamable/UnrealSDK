@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Leaderboards/GetFriendsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Leaderboards/GetFriendsRequest.h"
 
 void UGetFriendsRequest::BuildVerb(FString& VerbString) const
 {

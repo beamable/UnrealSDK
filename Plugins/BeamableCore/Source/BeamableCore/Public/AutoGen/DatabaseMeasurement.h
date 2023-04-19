@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/DataPoint.h"
+#include "BeamableCore/Public/AutoGen/DataPoint.h"
 
 #include "DatabaseMeasurement.generated.h"
 

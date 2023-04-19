@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/DeleteAdminScopeRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/DeleteAdminScopeRequest.h"
 
 void UDeleteAdminScopeRequest::BuildVerb(FString& VerbString) const
 {

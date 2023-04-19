@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalBeamoBasicManifestChecksum.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamoBasicManifestChecksum.h"
 
 #include "PostManifestResponse.generated.h"
 

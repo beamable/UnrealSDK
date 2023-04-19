@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ReferenceSuperset.h"
+#include "BeamableCore/Public/AutoGen/ReferenceSuperset.h"
 
 #include "ReferenceSupersetLibrary.generated.h"
 

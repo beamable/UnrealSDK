@@ -1,5 +1,5 @@
 
-#include "AutoGen/EmptyRspLibrary.h"
+#include "BeamableCore/Public/AutoGen/EmptyRspLibrary.h"
 
 #include "CoreMinimal.h"
 

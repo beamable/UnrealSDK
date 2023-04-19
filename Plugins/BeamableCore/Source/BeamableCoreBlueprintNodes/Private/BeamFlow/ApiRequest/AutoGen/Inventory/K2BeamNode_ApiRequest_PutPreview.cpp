@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Inventory/K2BeamNode_ApiRequest_PutPreview.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Inventory/K2BeamNode_ApiRequest_PutPreview.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamInventoryApi.h"
-#include "AutoGen/SubSystems/Inventory/PutPreviewRequest.h"
-#include "AutoGen/PreviewVipBonusResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamInventoryApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Inventory/PutPreviewRequest.h"
+#include "BeamableCore/Public/AutoGen/PreviewVipBonusResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PutPreview"
 

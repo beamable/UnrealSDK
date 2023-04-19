@@ -1,5 +1,5 @@
 
-#include "AutoGen/AvailabilityResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/AvailabilityResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/GetLambdaURI.h"
+#include "BeamableCore/Public/AutoGen/GetLambdaURI.h"
 
 #include "GetUploadAPIRequest.generated.h"
 

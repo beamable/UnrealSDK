@@ -1,5 +1,5 @@
 
-#include "AutoGen/WebSocketConfiguration.h"
+#include "BeamableCore/Public/AutoGen/WebSocketConfiguration.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

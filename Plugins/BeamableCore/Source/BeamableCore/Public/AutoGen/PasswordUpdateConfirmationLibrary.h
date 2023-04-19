@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/PasswordUpdateConfirmation.h"
+#include "BeamableCore/Public/AutoGen/PasswordUpdateConfirmation.h"
 
 #include "PasswordUpdateConfirmationLibrary.generated.h"
 

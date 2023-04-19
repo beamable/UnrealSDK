@@ -1,5 +1,5 @@
 
-#include "AutoGen/GamerTagAssociationLibrary.h"
+#include "BeamableCore/Public/AutoGen/GamerTagAssociationLibrary.h"
 
 #include "CoreMinimal.h"
 

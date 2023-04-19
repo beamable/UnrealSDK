@@ -4,9 +4,9 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/Optionals/OptionalArrayOfExternalIdentity.h"
-#include "AutoGen/Optionals/OptionalGamerTagAssociation.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfExternalIdentity.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalGamerTagAssociation.h"
 
 #include "AccountUpdate.generated.h"
 

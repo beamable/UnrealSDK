@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderboardSwapRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardSwapRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Mail/BasicMailPutMailRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Mail/BasicMailPutMailRequest.h"
 
 void UBasicMailPutMailRequest::BuildVerb(FString& VerbString) const
 {

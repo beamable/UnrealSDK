@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Leaderboards/K2BeamNode_ApiRequest_GetPartition.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Leaderboards/K2BeamNode_ApiRequest_GetPartition.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamLeaderboardsApi.h"
-#include "AutoGen/SubSystems/Leaderboards/GetPartitionRequest.h"
-#include "AutoGen/LeaderboardPartitionInfo.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamLeaderboardsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Leaderboards/GetPartitionRequest.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardPartitionInfo.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetPartition"
 

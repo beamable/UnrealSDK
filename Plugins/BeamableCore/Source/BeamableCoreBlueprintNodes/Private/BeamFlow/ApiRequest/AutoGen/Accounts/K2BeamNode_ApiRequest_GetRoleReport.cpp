@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Accounts/K2BeamNode_ApiRequest_GetRoleReport.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Accounts/K2BeamNode_ApiRequest_GetRoleReport.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamAccountsApi.h"
-#include "AutoGen/SubSystems/Accounts/GetRoleReportRequest.h"
-#include "AutoGen/AccountRolesReport.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamAccountsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetRoleReportRequest.h"
+#include "BeamableCore/Public/AutoGen/AccountRolesReport.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetRoleReport"
 

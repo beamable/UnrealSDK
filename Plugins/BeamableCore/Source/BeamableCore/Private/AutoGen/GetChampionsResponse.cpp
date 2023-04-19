@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetChampionsResponse.h"
+#include "BeamableCore/Public/AutoGen/GetChampionsResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

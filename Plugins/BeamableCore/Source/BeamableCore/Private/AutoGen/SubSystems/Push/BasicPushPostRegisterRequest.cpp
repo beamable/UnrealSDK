@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Push/BasicPushPostRegisterRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Push/BasicPushPostRegisterRequest.h"
 
 void UBasicPushPostRegisterRequest::BuildVerb(FString& VerbString) const
 {

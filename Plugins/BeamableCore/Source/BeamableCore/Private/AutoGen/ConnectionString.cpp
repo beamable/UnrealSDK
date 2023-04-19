@@ -1,5 +1,5 @@
 
-#include "AutoGen/ConnectionString.h"
+#include "BeamableCore/Public/AutoGen/ConnectionString.h"
 
 
 

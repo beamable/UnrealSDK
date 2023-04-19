@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetTotalCouponResponse.h"
+#include "BeamableCore/Public/AutoGen/GetTotalCouponResponse.h"
 
 #include "Misc/DefaultValueHelper.h"
 

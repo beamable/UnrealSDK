@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfEventInventoryRewardCurrency.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfEventInventoryRewardCurrency.h"
 
 #include "OptionalArrayOfEventInventoryRewardCurrencyLibrary.generated.h"
 

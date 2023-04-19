@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetLambdaURILibrary.h"
+#include "BeamableCore/Public/AutoGen/GetLambdaURILibrary.h"
 
 #include "CoreMinimal.h"
 

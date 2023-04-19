@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Content/PostBinaryRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Content/PostBinaryRequest.h"
 
 void UPostBinaryRequest::BuildVerb(FString& VerbString) const
 {

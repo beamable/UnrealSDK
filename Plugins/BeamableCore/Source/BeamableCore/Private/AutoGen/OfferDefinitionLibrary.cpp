@@ -1,5 +1,5 @@
 
-#include "AutoGen/OfferDefinitionLibrary.h"
+#include "BeamableCore/Public/AutoGen/OfferDefinitionLibrary.h"
 
 #include "CoreMinimal.h"
 

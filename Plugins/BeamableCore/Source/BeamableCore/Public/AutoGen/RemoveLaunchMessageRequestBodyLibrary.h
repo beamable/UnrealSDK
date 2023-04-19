@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/RemoveLaunchMessageRequestBody.h"
+#include "BeamableCore/Public/AutoGen/RemoveLaunchMessageRequestBody.h"
 
 #include "RemoveLaunchMessageRequestBodyLibrary.generated.h"
 

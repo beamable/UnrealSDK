@@ -1,5 +1,5 @@
 
-#include "AutoGen/FacebookUpdatedEntry.h"
+#include "BeamableCore/Public/AutoGen/FacebookUpdatedEntry.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

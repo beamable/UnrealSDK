@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderboardAssignmentInfoLibrary.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardAssignmentInfoLibrary.h"
 
 #include "CoreMinimal.h"
 

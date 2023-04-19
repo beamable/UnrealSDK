@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Announcements/K2BeamNode_ApiRequest_BasicAnnouncementsGetList.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Announcements/K2BeamNode_ApiRequest_BasicAnnouncementsGetList.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamAnnouncementsApi.h"
-#include "AutoGen/SubSystems/Announcements/BasicAnnouncementsGetListRequest.h"
-#include "AutoGen/AnnouncementContentResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamAnnouncementsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Announcements/BasicAnnouncementsGetListRequest.h"
+#include "BeamableCore/Public/AutoGen/AnnouncementContentResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_BasicAnnouncementsGetList"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/GroupUsers/GetGroupUsersRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/GroupUsers/GetGroupUsersRequest.h"
 
 void UGetGroupUsersRequest::BuildVerb(FString& VerbString) const
 {

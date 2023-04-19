@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfDonationRequestBody.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfDonationRequestBody.h"
 
 FOptionalArrayOfDonationRequestBody::FOptionalArrayOfDonationRequestBody()
 {

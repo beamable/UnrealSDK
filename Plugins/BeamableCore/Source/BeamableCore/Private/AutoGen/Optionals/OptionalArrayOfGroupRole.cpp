@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfGroupRole.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfGroupRole.h"
 
 FOptionalArrayOfGroupRole::FOptionalArrayOfGroupRole()
 {

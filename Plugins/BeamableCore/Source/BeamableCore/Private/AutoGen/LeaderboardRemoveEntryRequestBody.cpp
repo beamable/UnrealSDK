@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderboardRemoveEntryRequestBody.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardRemoveEntryRequestBody.h"
 
 #include "Misc/DefaultValueHelper.h"
 

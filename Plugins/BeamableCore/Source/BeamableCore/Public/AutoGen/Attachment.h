@@ -4,8 +4,8 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/EntitlementGenerator.h"
-#include "AutoGen/Optionals/OptionalInt64.h"
+#include "BeamableCore/Public/AutoGen/EntitlementGenerator.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 
 #include "Attachment.generated.h"
 

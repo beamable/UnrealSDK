@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfAnnouncementAttachment.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfAnnouncementAttachment.h"
 
 FOptionalArrayOfAnnouncementAttachment::FOptionalArrayOfAnnouncementAttachment()
 {

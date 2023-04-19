@@ -1,5 +1,5 @@
 
-#include "AutoGen/PutLocalizationsRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/PutLocalizationsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalClientPermission.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalClientPermission.h"
 
 FOptionalClientPermission::FOptionalClientPermission()
 {

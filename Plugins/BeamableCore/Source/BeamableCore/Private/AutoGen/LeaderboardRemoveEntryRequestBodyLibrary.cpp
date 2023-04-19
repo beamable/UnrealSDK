@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderboardRemoveEntryRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardRemoveEntryRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

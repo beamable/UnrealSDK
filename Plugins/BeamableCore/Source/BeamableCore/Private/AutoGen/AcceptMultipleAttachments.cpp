@@ -1,5 +1,5 @@
 
-#include "AutoGen/AcceptMultipleAttachments.h"
+#include "BeamableCore/Public/AutoGen/AcceptMultipleAttachments.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

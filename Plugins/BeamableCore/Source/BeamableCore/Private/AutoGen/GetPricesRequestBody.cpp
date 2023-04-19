@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetPricesRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GetPricesRequestBody.h"
 
 #include "Misc/DefaultValueHelper.h"
 

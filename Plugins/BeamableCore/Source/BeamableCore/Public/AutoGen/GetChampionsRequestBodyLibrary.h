@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetChampionsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GetChampionsRequestBody.h"
 
 #include "GetChampionsRequestBodyLibrary.generated.h"
 

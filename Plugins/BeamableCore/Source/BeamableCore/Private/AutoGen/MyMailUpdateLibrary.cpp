@@ -1,5 +1,5 @@
 
-#include "AutoGen/MyMailUpdateLibrary.h"
+#include "BeamableCore/Public/AutoGen/MyMailUpdateLibrary.h"
 
 #include "CoreMinimal.h"
 

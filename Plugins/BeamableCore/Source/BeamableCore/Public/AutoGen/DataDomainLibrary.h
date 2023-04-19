@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/DataDomain.h"
+#include "BeamableCore/Public/AutoGen/DataDomain.h"
 
 #include "DataDomainLibrary.generated.h"
 

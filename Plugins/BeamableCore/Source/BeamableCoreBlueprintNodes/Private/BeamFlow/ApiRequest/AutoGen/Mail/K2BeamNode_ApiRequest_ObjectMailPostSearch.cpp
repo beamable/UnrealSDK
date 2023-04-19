@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Mail/K2BeamNode_ApiRequest_ObjectMailPostSearch.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Mail/K2BeamNode_ApiRequest_ObjectMailPostSearch.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamMailApi.h"
-#include "AutoGen/SubSystems/Mail/ObjectMailPostSearchRequest.h"
-#include "AutoGen/MailSearchResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamMailApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Mail/ObjectMailPostSearchRequest.h"
+#include "BeamableCore/Public/AutoGen/MailSearchResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_ObjectMailPostSearch"
 

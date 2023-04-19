@@ -1,5 +1,5 @@
 
-#include "AutoGen/CancelPurchaseRequestBody.h"
+#include "BeamableCore/Public/AutoGen/CancelPurchaseRequestBody.h"
 
 #include "Misc/DefaultValueHelper.h"
 

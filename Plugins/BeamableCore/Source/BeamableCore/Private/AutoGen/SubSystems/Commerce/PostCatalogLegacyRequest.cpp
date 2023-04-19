@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Commerce/PostCatalogLegacyRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Commerce/PostCatalogLegacyRequest.h"
 
 void UPostCatalogLegacyRequest::BuildVerb(FString& VerbString) const
 {

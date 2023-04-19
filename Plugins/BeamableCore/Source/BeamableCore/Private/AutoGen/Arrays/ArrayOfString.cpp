@@ -1,5 +1,5 @@
 
-#include "AutoGen/Arrays/ArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/Arrays/ArrayOfString.h"
 #include "Serialization/BeamJsonUtils.h"
 
 FArrayOfString::FArrayOfString() = default;

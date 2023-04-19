@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamBackend/SemanticTypes/BeamGamerTag.h"
-#include "AutoGen/CommonResponse.h"
+#include "BeamableCore/Public/AutoGen/CommonResponse.h"
 
 #include "PutProxyReloadRequest.generated.h"
 

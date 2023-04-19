@@ -1,5 +1,5 @@
 
-#include "AutoGen/MetadataViewLibrary.h"
+#include "BeamableCore/Public/AutoGen/MetadataViewLibrary.h"
 
 #include "CoreMinimal.h"
 

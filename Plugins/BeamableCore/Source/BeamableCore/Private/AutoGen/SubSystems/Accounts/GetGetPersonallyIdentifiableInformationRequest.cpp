@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/GetGetPersonallyIdentifiableInformationRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetGetPersonallyIdentifiableInformationRequest.h"
 
 void UGetGetPersonallyIdentifiableInformationRequest::BuildVerb(FString& VerbString) const
 {

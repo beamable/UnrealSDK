@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfInFlightMessage.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfInFlightMessage.h"
 
 FOptionalArrayOfInFlightMessage::FOptionalArrayOfInFlightMessage()
 {

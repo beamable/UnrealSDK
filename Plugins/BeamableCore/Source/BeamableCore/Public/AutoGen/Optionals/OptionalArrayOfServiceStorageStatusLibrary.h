@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfServiceStorageStatus.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfServiceStorageStatus.h"
 
 #include "OptionalArrayOfServiceStorageStatusLibrary.generated.h"
 

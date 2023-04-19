@@ -1,5 +1,5 @@
 
-#include "AutoGen/SaveSKUsRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/SaveSKUsRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

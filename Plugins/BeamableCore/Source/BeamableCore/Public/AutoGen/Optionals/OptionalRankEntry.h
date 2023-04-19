@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/RankEntry.h"
+#include "BeamableCore/Public/AutoGen/RankEntry.h"
 
 #include "OptionalRankEntry.generated.h"
 

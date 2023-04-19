@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Auth/AuthenticateRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Auth/AuthenticateRequest.h"
 
 void UAuthenticateRequest::BuildVerb(FString& VerbString) const
 {

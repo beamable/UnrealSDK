@@ -1,5 +1,5 @@
 
-#include "AutoGen/CalendarQueryResponse.h"
+#include "BeamableCore/Public/AutoGen/CalendarQueryResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

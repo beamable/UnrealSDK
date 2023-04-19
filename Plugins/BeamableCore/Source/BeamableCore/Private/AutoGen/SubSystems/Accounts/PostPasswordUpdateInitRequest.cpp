@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/PostPasswordUpdateInitRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PostPasswordUpdateInitRequest.h"
 
 void UPostPasswordUpdateInitRequest::BuildVerb(FString& VerbString) const
 {

@@ -1,5 +1,5 @@
 
-#include "AutoGen/AccountPersonallyIdentifiableInformationResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/AccountPersonallyIdentifiableInformationResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

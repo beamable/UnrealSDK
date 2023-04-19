@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalArrayOfCurrencyProperty.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfCurrencyProperty.h"
 
 #include "Currency.generated.h"
 

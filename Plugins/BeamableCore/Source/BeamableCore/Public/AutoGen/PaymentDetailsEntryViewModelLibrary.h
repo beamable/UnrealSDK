@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/PaymentDetailsEntryViewModel.h"
+#include "BeamableCore/Public/AutoGen/PaymentDetailsEntryViewModel.h"
 
 #include "PaymentDetailsEntryViewModelLibrary.generated.h"
 

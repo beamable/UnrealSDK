@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalTournamentEntry.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalTournamentEntry.h"
 
 #include "OptionalTournamentEntryLibrary.generated.h"
 

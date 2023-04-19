@@ -1,5 +1,5 @@
 
-#include "AutoGen/ListDefinitionsResponse.h"
+#include "BeamableCore/Public/AutoGen/ListDefinitionsResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetAdminsResponse.h"
+#include "BeamableCore/Public/AutoGen/GetAdminsResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

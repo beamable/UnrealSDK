@@ -1,5 +1,5 @@
 
-#include "AutoGen/EndTransactionRequestBody.h"
+#include "BeamableCore/Public/AutoGen/EndTransactionRequestBody.h"
 
 
 

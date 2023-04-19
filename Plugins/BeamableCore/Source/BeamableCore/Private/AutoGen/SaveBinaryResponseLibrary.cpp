@@ -1,5 +1,5 @@
 
-#include "AutoGen/SaveBinaryResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/SaveBinaryResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

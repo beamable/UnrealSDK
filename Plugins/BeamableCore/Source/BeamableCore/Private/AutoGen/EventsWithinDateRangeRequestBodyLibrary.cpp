@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventsWithinDateRangeRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/EventsWithinDateRangeRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

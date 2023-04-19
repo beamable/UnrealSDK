@@ -1,5 +1,5 @@
 
-#include "AutoGen/ContentBasicManifestChecksum.h"
+#include "BeamableCore/Public/AutoGen/ContentBasicManifestChecksum.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

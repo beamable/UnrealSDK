@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Leaderboards/GetPlayerRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Leaderboards/GetPlayerRequest.h"
 
 void UGetPlayerRequest::BuildVerb(FString& VerbString) const
 {

@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalBool.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 
 FOptionalBool::FOptionalBool()
 {

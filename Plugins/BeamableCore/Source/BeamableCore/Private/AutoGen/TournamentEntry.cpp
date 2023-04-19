@@ -1,5 +1,5 @@
 
-#include "AutoGen/TournamentEntry.h"
+#include "BeamableCore/Public/AutoGen/TournamentEntry.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

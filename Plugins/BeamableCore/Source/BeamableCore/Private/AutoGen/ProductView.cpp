@@ -1,5 +1,5 @@
 
-#include "AutoGen/ProductView.h"
+#include "BeamableCore/Public/AutoGen/ProductView.h"
 
 #include "Misc/DefaultValueHelper.h"
 

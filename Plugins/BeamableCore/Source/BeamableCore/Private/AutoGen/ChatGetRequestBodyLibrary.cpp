@@ -1,5 +1,5 @@
 
-#include "AutoGen/ChatGetRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/ChatGetRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

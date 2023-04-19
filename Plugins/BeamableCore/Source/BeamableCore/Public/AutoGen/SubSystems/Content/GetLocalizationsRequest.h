@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/GetLocalizationsResponse.h"
+#include "BeamableCore/Public/AutoGen/GetLocalizationsResponse.h"
 
 #include "GetLocalizationsRequest.generated.h"
 

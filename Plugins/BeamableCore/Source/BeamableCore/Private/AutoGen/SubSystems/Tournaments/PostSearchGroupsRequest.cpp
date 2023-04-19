@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Tournaments/PostSearchGroupsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Tournaments/PostSearchGroupsRequest.h"
 
 void UPostSearchGroupsRequest::BuildVerb(FString& VerbString) const
 {

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/DatabaseMeasurements.h"
+#include "BeamableCore/Public/AutoGen/DatabaseMeasurements.h"
 
 #include "DatabaseMeasurementsLibrary.generated.h"
 

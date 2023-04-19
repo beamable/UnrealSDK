@@ -1,5 +1,5 @@
 
-#include "AutoGen/DatabasePerformanceRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/DatabasePerformanceRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

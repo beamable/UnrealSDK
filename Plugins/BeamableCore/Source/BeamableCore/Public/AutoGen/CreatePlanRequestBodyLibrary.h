@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/CreatePlanRequestBody.h"
+#include "BeamableCore/Public/AutoGen/CreatePlanRequestBody.h"
 
 #include "CreatePlanRequestBodyLibrary.generated.h"
 

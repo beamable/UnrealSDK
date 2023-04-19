@@ -1,5 +1,5 @@
 
-#include "AutoGen/ExternalIdentityLibrary.h"
+#include "BeamableCore/Public/AutoGen/ExternalIdentityLibrary.h"
 
 #include "CoreMinimal.h"
 

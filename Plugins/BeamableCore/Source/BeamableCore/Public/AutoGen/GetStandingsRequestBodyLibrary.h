@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetStandingsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GetStandingsRequestBody.h"
 
 #include "GetStandingsRequestBodyLibrary.generated.h"
 

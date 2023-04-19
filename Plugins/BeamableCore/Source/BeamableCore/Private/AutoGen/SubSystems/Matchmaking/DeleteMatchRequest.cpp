@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Matchmaking/DeleteMatchRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Matchmaking/DeleteMatchRequest.h"
 
 void UDeleteMatchRequest::BuildVerb(FString& VerbString) const
 {

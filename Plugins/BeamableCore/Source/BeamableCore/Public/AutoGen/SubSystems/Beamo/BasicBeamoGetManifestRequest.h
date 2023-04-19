@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/Optionals/OptionalBool.h"
-#include "AutoGen/GetManifestResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
+#include "BeamableCore/Public/AutoGen/GetManifestResponse.h"
 
 #include "BasicBeamoGetManifestRequest.generated.h"
 

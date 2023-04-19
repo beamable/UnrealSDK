@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalSendNotification.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalSendNotification.h"
 
 #include "OptionalSendNotificationLibrary.generated.h"
 

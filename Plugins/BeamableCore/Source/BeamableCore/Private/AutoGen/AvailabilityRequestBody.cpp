@@ -1,5 +1,5 @@
 
-#include "AutoGen/AvailabilityRequestBody.h"
+#include "BeamableCore/Public/AutoGen/AvailabilityRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

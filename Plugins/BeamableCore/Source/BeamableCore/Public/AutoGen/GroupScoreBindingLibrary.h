@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GroupScoreBinding.h"
+#include "BeamableCore/Public/AutoGen/GroupScoreBinding.h"
 
 #include "GroupScoreBindingLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Tournaments/GetStandingsGroupRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Tournaments/GetStandingsGroupRequest.h"
 
 void UGetStandingsGroupRequest::BuildVerb(FString& VerbString) const
 {

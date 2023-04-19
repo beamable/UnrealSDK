@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/WebSocketConfiguration.h"
+#include "BeamableCore/Public/AutoGen/WebSocketConfiguration.h"
 
 #include "WebSocketConfigurationLibrary.generated.h"
 

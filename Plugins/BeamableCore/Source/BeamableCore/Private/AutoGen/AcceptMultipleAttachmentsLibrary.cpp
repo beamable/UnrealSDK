@@ -1,5 +1,5 @@
 
-#include "AutoGen/AcceptMultipleAttachmentsLibrary.h"
+#include "BeamableCore/Public/AutoGen/AcceptMultipleAttachmentsLibrary.h"
 
 #include "CoreMinimal.h"
 

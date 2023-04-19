@@ -1,5 +1,5 @@
 
-#include "AutoGen/Maps/MapOfContentMeta.h"
+#include "BeamableCore/Public/AutoGen/Maps/MapOfContentMeta.h"
 #include "Serialization/BeamJsonUtils.h"
 
 FMapOfContentMeta::FMapOfContentMeta() = default;

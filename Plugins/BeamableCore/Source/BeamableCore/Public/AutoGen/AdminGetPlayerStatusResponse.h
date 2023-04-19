@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/AdminPlayerStatus.h"
+#include "BeamableCore/Public/AutoGen/AdminPlayerStatus.h"
 
 #include "AdminGetPlayerStatusResponse.generated.h"
 

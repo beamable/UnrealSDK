@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Inventory/GetCurrencyRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Inventory/GetCurrencyRequest.h"
 
 void UGetCurrencyRequest::BuildVerb(FString& VerbString) const
 {

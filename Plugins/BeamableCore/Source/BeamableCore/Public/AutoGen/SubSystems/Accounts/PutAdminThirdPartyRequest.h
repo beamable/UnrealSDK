@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamBackend/SemanticTypes/BeamAccountId.h"
-#include "AutoGen/TransferThirdPartyAssociation.h"
-#include "AutoGen/EmptyResponse.h"
+#include "BeamableCore/Public/AutoGen/TransferThirdPartyAssociation.h"
+#include "BeamableCore/Public/AutoGen/EmptyResponse.h"
 
 #include "PutAdminThirdPartyRequest.generated.h"
 

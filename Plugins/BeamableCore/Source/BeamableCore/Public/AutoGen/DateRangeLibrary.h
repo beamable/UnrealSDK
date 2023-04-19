@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/DateRange.h"
+#include "BeamableCore/Public/AutoGen/DateRange.h"
 
 #include "DateRangeLibrary.generated.h"
 

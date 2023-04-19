@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/CalendarClaimRequestBody.h"
+#include "BeamableCore/Public/AutoGen/CalendarClaimRequestBody.h"
 
 #include "CalendarClaimRequestBodyLibrary.generated.h"
 

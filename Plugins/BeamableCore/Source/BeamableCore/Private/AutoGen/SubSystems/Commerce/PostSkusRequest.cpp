@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Commerce/PostSkusRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Commerce/PostSkusRequest.h"
 
 void UPostSkusRequest::BuildVerb(FString& VerbString) const
 {

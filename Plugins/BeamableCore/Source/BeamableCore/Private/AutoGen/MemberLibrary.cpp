@@ -1,5 +1,5 @@
 
-#include "AutoGen/MemberLibrary.h"
+#include "BeamableCore/Public/AutoGen/MemberLibrary.h"
 
 #include "CoreMinimal.h"
 

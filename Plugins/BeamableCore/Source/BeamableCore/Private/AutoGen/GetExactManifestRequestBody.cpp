@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetExactManifestRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GetExactManifestRequestBody.h"
 
 
 

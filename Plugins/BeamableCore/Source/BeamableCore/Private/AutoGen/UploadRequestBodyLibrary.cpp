@@ -1,5 +1,5 @@
 
-#include "AutoGen/UploadRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/UploadRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfMailObjectMessage.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfMailObjectMessage.h"
 
 #include "OptionalArrayOfMailObjectMessageLibrary.generated.h"
 

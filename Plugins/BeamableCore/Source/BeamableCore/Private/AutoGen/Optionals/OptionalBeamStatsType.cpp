@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalBeamStatsType.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamStatsType.h"
 
 FOptionalBeamStatsType::FOptionalBeamStatsType()
 {

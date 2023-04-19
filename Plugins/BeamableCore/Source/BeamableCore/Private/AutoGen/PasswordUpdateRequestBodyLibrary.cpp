@@ -1,5 +1,5 @@
 
-#include "AutoGen/PasswordUpdateRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/PasswordUpdateRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

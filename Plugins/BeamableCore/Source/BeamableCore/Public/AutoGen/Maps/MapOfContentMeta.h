@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamMap.h"
-#include "AutoGen/ContentMeta.h"
+#include "BeamableCore/Public/AutoGen/ContentMeta.h"
 
 #include "MapOfContentMeta.generated.h"
 

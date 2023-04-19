@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/PlayerStoreView.h"
+#include "BeamableCore/Public/AutoGen/PlayerStoreView.h"
 
 #include "GetActiveOffersResponse.generated.h"
 

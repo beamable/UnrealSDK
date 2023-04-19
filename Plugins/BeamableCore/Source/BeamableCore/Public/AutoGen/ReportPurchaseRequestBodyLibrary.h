@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ReportPurchaseRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ReportPurchaseRequestBody.h"
 
 #include "ReportPurchaseRequestBodyLibrary.generated.h"
 

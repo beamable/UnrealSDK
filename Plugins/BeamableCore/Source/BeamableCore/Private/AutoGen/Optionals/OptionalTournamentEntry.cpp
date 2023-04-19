@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalTournamentEntry.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalTournamentEntry.h"
 
 FOptionalTournamentEntry::FOptionalTournamentEntry()
 {

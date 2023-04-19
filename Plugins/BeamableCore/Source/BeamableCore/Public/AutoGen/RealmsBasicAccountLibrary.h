@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/RealmsBasicAccount.h"
+#include "BeamableCore/Public/AutoGen/RealmsBasicAccount.h"
 
 #include "RealmsBasicAccountLibrary.generated.h"
 

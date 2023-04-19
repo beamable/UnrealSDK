@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Item.h"
+#include "BeamableCore/Public/AutoGen/Item.h"
 
 #include "ItemLibrary.generated.h"
 

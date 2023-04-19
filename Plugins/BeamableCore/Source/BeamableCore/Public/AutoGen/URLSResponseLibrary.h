@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/URLSResponse.h"
+#include "BeamableCore/Public/AutoGen/URLSResponse.h"
 
 #include "URLSResponseLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalInt32.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
 
 FOptionalInt32::FOptionalInt32()
 {

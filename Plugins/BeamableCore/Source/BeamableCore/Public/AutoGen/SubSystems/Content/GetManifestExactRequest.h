@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/ContentBasicManifest.h"
+#include "BeamableCore/Public/AutoGen/ContentBasicManifest.h"
 
 #include "GetManifestExactRequest.generated.h"
 

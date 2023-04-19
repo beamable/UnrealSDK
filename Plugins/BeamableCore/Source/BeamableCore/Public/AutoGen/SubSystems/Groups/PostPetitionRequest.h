@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/GroupApplication.h"
-#include "AutoGen/CommonResponse.h"
+#include "BeamableCore/Public/AutoGen/GroupApplication.h"
+#include "BeamableCore/Public/AutoGen/CommonResponse.h"
 
 #include "PostPetitionRequest.generated.h"
 

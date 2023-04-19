@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Leaderboards/K2BeamNode_ApiRequest_GetMembership.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Leaderboards/K2BeamNode_ApiRequest_GetMembership.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamLeaderboardsApi.h"
-#include "AutoGen/SubSystems/Leaderboards/GetMembershipRequest.h"
-#include "AutoGen/LeaderboardMembershipResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamLeaderboardsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Leaderboards/GetMembershipRequest.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardMembershipResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetMembership"
 

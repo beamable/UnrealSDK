@@ -7,8 +7,8 @@
 #include "BeamBackend/ResponseCache/BeamResponseCache.h"
 #include "RequestTracker/BeamRequestTracker.h"
 
-#include "Calendars/ObjectCalendarsPostClaimRequest.h"
-#include "Calendars/GetCalendarsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Calendars/ObjectCalendarsPostClaimRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Calendars/GetCalendarsRequest.h"
 
 #include "BeamCalendarsApi.generated.h"
 

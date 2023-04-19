@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Matchmaking/K2BeamNode_ApiRequest_PostMatch.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Matchmaking/K2BeamNode_ApiRequest_PostMatch.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamMatchmakingApi.h"
-#include "AutoGen/SubSystems/Matchmaking/PostMatchRequest.h"
-#include "AutoGen/MatchUpdate.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamMatchmakingApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Matchmaking/PostMatchRequest.h"
+#include "BeamableCore/Public/AutoGen/MatchUpdate.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PostMatch"
 

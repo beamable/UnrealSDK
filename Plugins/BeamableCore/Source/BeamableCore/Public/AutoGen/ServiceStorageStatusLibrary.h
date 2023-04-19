@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ServiceStorageStatus.h"
+#include "BeamableCore/Public/AutoGen/ServiceStorageStatus.h"
 
 #include "ServiceStorageStatusLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/PullAllManifestsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/PullAllManifestsRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

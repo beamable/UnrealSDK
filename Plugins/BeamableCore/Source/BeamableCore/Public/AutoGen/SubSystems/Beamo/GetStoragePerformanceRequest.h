@@ -7,9 +7,9 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
-#include "AutoGen/PerformanceResponse.h"
+#include "BeamableCore/Public/AutoGen/PerformanceResponse.h"
 
 #include "GetStoragePerformanceRequest.generated.h"
 

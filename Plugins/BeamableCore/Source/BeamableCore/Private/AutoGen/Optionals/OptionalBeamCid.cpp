@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalBeamCid.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamCid.h"
 
 FOptionalBeamCid::FOptionalBeamCid()
 {

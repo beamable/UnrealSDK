@@ -1,5 +1,5 @@
 
-#include "AutoGen/PlayerStoreView.h"
+#include "BeamableCore/Public/AutoGen/PlayerStoreView.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/GetElasticContainerRegistryURI.h"
+#include "BeamableCore/Public/AutoGen/GetElasticContainerRegistryURI.h"
 
 #include "GetRegistryRequest.generated.h"
 

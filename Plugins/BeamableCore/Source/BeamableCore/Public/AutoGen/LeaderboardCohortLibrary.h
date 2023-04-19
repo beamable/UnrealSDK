@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/LeaderboardCohort.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardCohort.h"
 
 #include "LeaderboardCohortLibrary.generated.h"
 

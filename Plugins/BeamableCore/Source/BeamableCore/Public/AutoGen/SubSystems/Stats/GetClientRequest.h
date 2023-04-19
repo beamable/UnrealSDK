@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamBackend/SemanticTypes/BeamStatsType.h"
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/StatsResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/StatsResponse.h"
 
 #include "GetClientRequest.generated.h"
 

@@ -4,8 +4,8 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Event.h"
-#include "AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Event.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "SetContentRequestBody.generated.h"
 

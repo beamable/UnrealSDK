@@ -1,5 +1,5 @@
 
-#include "AutoGen/GroupMembershipResponse.h"
+#include "BeamableCore/Public/AutoGen/GroupMembershipResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

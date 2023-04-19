@@ -1,5 +1,5 @@
 
-#include "AutoGen/MailSearchResponseClauseLibrary.h"
+#include "BeamableCore/Public/AutoGen/MailSearchResponseClauseLibrary.h"
 
 #include "CoreMinimal.h"
 

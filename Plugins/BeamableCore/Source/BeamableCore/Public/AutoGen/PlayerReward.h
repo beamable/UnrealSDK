@@ -4,12 +4,12 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/ItemCreateRequestBody.h"
-#include "AutoGen/Optionals/OptionalArrayOfCurrencyChangeReward.h"
-#include "AutoGen/Optionals/OptionalArrayOfWebhookReward.h"
-#include "AutoGen/Optionals/OptionalArrayOfNewItemReward.h"
-#include "AutoGen/Optionals/OptionalBool.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/ItemCreateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfCurrencyChangeReward.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfWebhookReward.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfNewItemReward.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 
 #include "PlayerReward.generated.h"
 

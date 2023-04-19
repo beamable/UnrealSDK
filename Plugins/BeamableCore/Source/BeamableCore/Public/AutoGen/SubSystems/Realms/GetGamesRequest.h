@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/GetGameResponse.h"
+#include "BeamableCore/Public/AutoGen/GetGameResponse.h"
 
 #include "GetGamesRequest.generated.h"
 

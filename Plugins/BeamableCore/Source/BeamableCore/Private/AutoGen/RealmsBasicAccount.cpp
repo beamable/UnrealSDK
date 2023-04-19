@@ -1,5 +1,5 @@
 
-#include "AutoGen/RealmsBasicAccount.h"
+#include "BeamableCore/Public/AutoGen/RealmsBasicAccount.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

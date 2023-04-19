@@ -1,5 +1,5 @@
 
-#include "AutoGen/ListAuditResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/ListAuditResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

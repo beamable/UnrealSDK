@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/PostAdminAdminUserRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PostAdminAdminUserRequest.h"
 
 void UPostAdminAdminUserRequest::BuildVerb(FString& VerbString) const
 {

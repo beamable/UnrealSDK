@@ -1,5 +1,5 @@
 
-#include "AutoGen/DonationEntry.h"
+#include "BeamableCore/Public/AutoGen/DonationEntry.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

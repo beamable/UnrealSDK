@@ -5,7 +5,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamBackend/SemanticTypes/BeamPid.h"
-#include "AutoGen/ProjectView.h"
+#include "BeamableCore/Public/AutoGen/ProjectView.h"
 
 #include "UpdateGameHierarchyRequestBody.generated.h"
 

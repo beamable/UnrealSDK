@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventPhaseTime.h"
+#include "BeamableCore/Public/AutoGen/EventPhaseTime.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

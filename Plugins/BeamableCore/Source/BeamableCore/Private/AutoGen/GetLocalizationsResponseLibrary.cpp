@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetLocalizationsResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/GetLocalizationsResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

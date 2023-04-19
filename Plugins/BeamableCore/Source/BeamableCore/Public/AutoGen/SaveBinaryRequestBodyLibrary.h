@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/SaveBinaryRequestBody.h"
+#include "BeamableCore/Public/AutoGen/SaveBinaryRequestBody.h"
 
 #include "SaveBinaryRequestBodyLibrary.generated.h"
 

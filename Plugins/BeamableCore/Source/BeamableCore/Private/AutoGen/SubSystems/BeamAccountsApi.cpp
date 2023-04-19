@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/BeamAccountsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamAccountsApi.h"
 #include "BeamCoreSettings.h"
 
 
@@ -73,12 +73,12 @@ void UBeamAccountsApi::CPP_GetGetPersonallyIdentifiableInformationImpl(const FBe
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
-void UBeamAccountsApi::BP_GetAvailableExternal_identityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetAvailableExternal_identityRequest* RequestData,
-                                                  const FOnGetAvailableExternal_identitySuccess& OnSuccess, const FOnGetAvailableExternal_identityError& OnError, const FOnGetAvailableExternal_identityComplete& OnComplete,
+void UBeamAccountsApi::BP_GetAvailableExternalIdentityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetAvailableExternalIdentityRequest* RequestData,
+                                                  const FOnGetAvailableExternalIdentitySuccess& OnSuccess, const FOnGetAvailableExternalIdentityError& OnError, const FOnGetAvailableExternalIdentityComplete& OnComplete,
                                                   int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
@@ -92,22 +92,22 @@ void UBeamAccountsApi::BP_GetAvailableExternal_identityImpl(const FBeamRealmHand
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunBlueprintRequestProcessor<UGetAvailableExternal_identityRequest, UAccountAvailableResponse, FOnGetAvailableExternal_identitySuccess, FOnGetAvailableExternal_identityError, FOnGetAvailableExternal_identityComplete>
+		Backend->RunBlueprintRequestProcessor<UGetAvailableExternalIdentityRequest, UAccountAvailableResponse, FOnGetAvailableExternalIdentitySuccess, FOnGetAvailableExternalIdentityError, FOnGetAvailableExternalIdentityComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{			
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UGetAvailableExternal_identityRequest, UAccountAvailableResponse, FOnGetAvailableExternal_identitySuccess, FOnGetAvailableExternal_identityError, FOnGetAvailableExternal_identityComplete>
+		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UGetAvailableExternalIdentityRequest, UAccountAvailableResponse, FOnGetAvailableExternalIdentitySuccess, FOnGetAvailableExternalIdentityError, FOnGetAvailableExternalIdentityComplete>
 			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);		
 	}	
 }
 
-void UBeamAccountsApi::CPP_GetAvailableExternal_identityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
-                                               UGetAvailableExternal_identityRequest* RequestData, const FOnGetAvailableExternal_identityFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamAccountsApi::CPP_GetAvailableExternalIdentityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
+                                               UGetAvailableExternalIdentityRequest* RequestData, const FOnGetAvailableExternalIdentityFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
 	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
@@ -120,20 +120,20 @@ void UBeamAccountsApi::CPP_GetAvailableExternal_identityImpl(const FBeamRealmHan
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunCodeRequestProcessor<UGetAvailableExternal_identityRequest, UAccountAvailableResponse>
+		Backend->RunCodeRequestProcessor<UGetAvailableExternalIdentityRequest, UAccountAvailableResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, Handler);			
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UGetAvailableExternal_identityRequest, UAccountAvailableResponse>
+		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UGetAvailableExternalIdentityRequest, UAccountAvailableResponse>
 			(OutRequestId, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -193,7 +193,7 @@ void UBeamAccountsApi::CPP_GetAvailableThirdPartyImpl(const FBeamRealmHandle& Ta
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -253,7 +253,7 @@ void UBeamAccountsApi::CPP_PostPasswordUpdateInitImpl(const FBeamRealmHandle& Ta
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -313,7 +313,7 @@ void UBeamAccountsApi::CPP_GetAvailableDeviceIdImpl(const FBeamRealmHandle& Targ
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -373,7 +373,7 @@ void UBeamAccountsApi::CPP_GetAvailableImpl(const FBeamRealmHandle& TargetRealm,
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -433,7 +433,7 @@ void UBeamAccountsApi::CPP_PostPasswordUpdateConfirmImpl(const FBeamRealmHandle&
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -493,7 +493,7 @@ void UBeamAccountsApi::CPP_GetAvailableRolesImpl(const FBeamRealmHandle& TargetR
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 
@@ -1242,8 +1242,8 @@ void UBeamAccountsApi::CPP_GetFindImpl(const FBeamRealmHandle& TargetRealm, cons
 }
 
 		
-void UBeamAccountsApi::BP_PostExternal_identityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UPostExternal_identityRequest* RequestData, const FOnPostExternal_identitySuccess& OnSuccess, const FOnPostExternal_identityError& OnError, const FOnPostExternal_identityComplete& OnComplete, 
+void UBeamAccountsApi::BP_PostExternalIdentityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                                UPostExternalIdentityRequest* RequestData, const FOnPostExternalIdentitySuccess& OnSuccess, const FOnPostExternalIdentityError& OnError, const FOnPostExternalIdentityComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
@@ -1257,14 +1257,14 @@ void UBeamAccountsApi::BP_PostExternal_identityImpl(const FBeamRealmHandle& Targ
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UPostExternal_identityRequest, UAttachExternalIdentityApiResponse, FOnPostExternal_identitySuccess, FOnPostExternal_identityError, FOnPostExternal_identityComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UPostExternalIdentityRequest, UAttachExternalIdentityApiResponse, FOnPostExternalIdentitySuccess, FOnPostExternalIdentityError, FOnPostExternalIdentityComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostExternal_identityRequest, UAttachExternalIdentityApiResponse, FOnPostExternal_identitySuccess, FOnPostExternal_identityError, FOnPostExternal_identityComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostExternalIdentityRequest, UAttachExternalIdentityApiResponse, FOnPostExternalIdentitySuccess, FOnPostExternalIdentityError, FOnPostExternalIdentityComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -1273,8 +1273,8 @@ void UBeamAccountsApi::BP_PostExternal_identityImpl(const FBeamRealmHandle& Targ
 	}
 }
 
-void UBeamAccountsApi::CPP_PostExternal_identityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UPostExternal_identityRequest* RequestData, const FOnPostExternal_identityFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamAccountsApi::CPP_PostExternalIdentityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                              UPostExternalIdentityRequest* RequestData, const FOnPostExternalIdentityFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -1287,14 +1287,14 @@ void UBeamAccountsApi::CPP_PostExternal_identityImpl(const FBeamRealmHandle& Tar
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UPostExternal_identityRequest, UAttachExternalIdentityApiResponse>
+		Backend->RunAuthenticatedCodeRequestProcessor<UPostExternalIdentityRequest, UAttachExternalIdentityApiResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostExternal_identityRequest, UAttachExternalIdentityApiResponse>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostExternalIdentityRequest, UAttachExternalIdentityApiResponse>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -1304,8 +1304,8 @@ void UBeamAccountsApi::CPP_PostExternal_identityImpl(const FBeamRealmHandle& Tar
 }
 
 		
-void UBeamAccountsApi::BP_DeleteExternal_identityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UDeleteExternal_identityRequest* RequestData, const FOnDeleteExternal_identitySuccess& OnSuccess, const FOnDeleteExternal_identityError& OnError, const FOnDeleteExternal_identityComplete& OnComplete, 
+void UBeamAccountsApi::BP_DeleteExternalIdentityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                                UDeleteExternalIdentityRequest* RequestData, const FOnDeleteExternalIdentitySuccess& OnSuccess, const FOnDeleteExternalIdentityError& OnError, const FOnDeleteExternalIdentityComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
@@ -1319,14 +1319,14 @@ void UBeamAccountsApi::BP_DeleteExternal_identityImpl(const FBeamRealmHandle& Ta
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UDeleteExternal_identityRequest, UCommonResponse, FOnDeleteExternal_identitySuccess, FOnDeleteExternal_identityError, FOnDeleteExternal_identityComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UDeleteExternalIdentityRequest, UCommonResponse, FOnDeleteExternalIdentitySuccess, FOnDeleteExternalIdentityError, FOnDeleteExternalIdentityComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UDeleteExternal_identityRequest, UCommonResponse, FOnDeleteExternal_identitySuccess, FOnDeleteExternal_identityError, FOnDeleteExternal_identityComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UDeleteExternalIdentityRequest, UCommonResponse, FOnDeleteExternalIdentitySuccess, FOnDeleteExternalIdentityError, FOnDeleteExternalIdentityComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -1335,8 +1335,8 @@ void UBeamAccountsApi::BP_DeleteExternal_identityImpl(const FBeamRealmHandle& Ta
 	}
 }
 
-void UBeamAccountsApi::CPP_DeleteExternal_identityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UDeleteExternal_identityRequest* RequestData, const FOnDeleteExternal_identityFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamAccountsApi::CPP_DeleteExternalIdentityImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                              UDeleteExternalIdentityRequest* RequestData, const FOnDeleteExternalIdentityFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -1349,14 +1349,14 @@ void UBeamAccountsApi::CPP_DeleteExternal_identityImpl(const FBeamRealmHandle& T
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UDeleteExternal_identityRequest, UCommonResponse>
+		Backend->RunAuthenticatedCodeRequestProcessor<UDeleteExternalIdentityRequest, UCommonResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UDeleteExternal_identityRequest, UCommonResponse>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UDeleteExternalIdentityRequest, UCommonResponse>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -1999,13 +1999,13 @@ void UBeamAccountsApi::CPP_GetGetPersonallyIdentifiableInformation(UGetGetPerson
 }
 
 		
-void UBeamAccountsApi::CPP_GetAvailableExternal_identity(UGetAvailableExternal_identityRequest* Request, const FOnGetAvailableExternal_identityFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamAccountsApi::CPP_GetAvailableExternalIdentity(UGetAvailableExternalIdentityRequest* Request, const FOnGetAvailableExternalIdentityFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForRequestType(UGetAvailableExternal_identityRequest::StaticClass()->GetName(), RetryConfig);
+	Backend->GetRetryConfigForRequestType(UGetAvailableExternalIdentityRequest::StaticClass()->GetName(), RetryConfig);
 	
     int64 OutRequestId;
-	CPP_GetAvailableExternal_identityImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_GetAvailableExternalIdentityImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
 }
 
@@ -2257,32 +2257,32 @@ void UBeamAccountsApi::CPP_GetFind(const FUserSlot& UserSlot, UGetFindRequest* R
 }
 
 		
-void UBeamAccountsApi::CPP_PostExternal_identity(const FUserSlot& UserSlot, UPostExternal_identityRequest* Request, const FOnPostExternal_identityFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamAccountsApi::CPP_PostExternalIdentity(const FUserSlot& UserSlot, UPostExternalIdentityRequest* Request, const FOnPostExternalIdentityFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UPostExternal_identityRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UPostExternalIdentityRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_PostExternal_identityImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_PostExternalIdentityImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamAccountsApi::CPP_DeleteExternal_identity(const FUserSlot& UserSlot, UDeleteExternal_identityRequest* Request, const FOnDeleteExternal_identityFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamAccountsApi::CPP_DeleteExternalIdentity(const FUserSlot& UserSlot, UDeleteExternalIdentityRequest* Request, const FOnDeleteExternalIdentityFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UDeleteExternal_identityRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UDeleteExternalIdentityRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_DeleteExternal_identityImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_DeleteExternalIdentityImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
@@ -2451,14 +2451,14 @@ void UBeamAccountsApi::GetGetPersonallyIdentifiableInformation(UGetGetPersonally
 }
 
 		
-void UBeamAccountsApi::GetAvailableExternal_identity(UGetAvailableExternal_identityRequest* Request, const FOnGetAvailableExternal_identitySuccess& OnSuccess, const FOnGetAvailableExternal_identityError& OnError, const FOnGetAvailableExternal_identityComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+void UBeamAccountsApi::GetAvailableExternalIdentity(UGetAvailableExternalIdentityRequest* Request, const FOnGetAvailableExternalIdentitySuccess& OnSuccess, const FOnGetAvailableExternalIdentityError& OnError, const FOnGetAvailableExternalIdentityComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...	
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForRequestType(UGetAvailableExternal_identityRequest::StaticClass()->GetName(), RetryConfig);	
+	Backend->GetRetryConfigForRequestType(UGetAvailableExternalIdentityRequest::StaticClass()->GetName(), RetryConfig);	
 	
 	int64 OutRequestId = 0;
-	BP_GetAvailableExternal_identityImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
+	BP_GetAvailableExternalIdentityImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
 }
 
@@ -2716,32 +2716,32 @@ void UBeamAccountsApi::GetFind(FUserSlot UserSlot, UGetFindRequest* Request, con
 }
 
 		
-void UBeamAccountsApi::PostExternal_identity(FUserSlot UserSlot, UPostExternal_identityRequest* Request, const FOnPostExternal_identitySuccess& OnSuccess, const FOnPostExternal_identityError& OnError, const FOnPostExternal_identityComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+void UBeamAccountsApi::PostExternalIdentity(FUserSlot UserSlot, UPostExternalIdentityRequest* Request, const FOnPostExternalIdentitySuccess& OnSuccess, const FOnPostExternalIdentityError& OnError, const FOnPostExternalIdentityComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UPostExternal_identityRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UPostExternalIdentityRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PostExternal_identityImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	BP_PostExternalIdentityImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamAccountsApi::DeleteExternal_identity(FUserSlot UserSlot, UDeleteExternal_identityRequest* Request, const FOnDeleteExternal_identitySuccess& OnSuccess, const FOnDeleteExternal_identityError& OnError, const FOnDeleteExternal_identityComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+void UBeamAccountsApi::DeleteExternalIdentity(FUserSlot UserSlot, UDeleteExternalIdentityRequest* Request, const FOnDeleteExternalIdentitySuccess& OnSuccess, const FOnDeleteExternalIdentityError& OnError, const FOnDeleteExternalIdentityComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UDeleteExternal_identityRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UDeleteExternalIdentityRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_DeleteExternal_identityImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	BP_DeleteExternalIdentityImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 

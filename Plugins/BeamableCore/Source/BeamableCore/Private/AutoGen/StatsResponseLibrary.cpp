@@ -1,5 +1,5 @@
 
-#include "AutoGen/StatsResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/StatsResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

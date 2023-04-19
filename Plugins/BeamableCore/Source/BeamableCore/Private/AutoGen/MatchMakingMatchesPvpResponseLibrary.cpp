@@ -1,5 +1,5 @@
 
-#include "AutoGen/MatchMakingMatchesPvpResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/MatchMakingMatchesPvpResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

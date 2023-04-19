@@ -4,10 +4,10 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/ClientDataEntry.h"
-#include "AutoGen/Optionals/OptionalInt32.h"
-#include "AutoGen/PlayerOfferView.h"
-#include "AutoGen/Optionals/OptionalInt64.h"
+#include "BeamableCore/Public/AutoGen/ClientDataEntry.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
+#include "BeamableCore/Public/AutoGen/PlayerOfferView.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 
 #include "PlayerListingView.generated.h"
 

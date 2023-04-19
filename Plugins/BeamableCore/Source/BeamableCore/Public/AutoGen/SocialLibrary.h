@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Social.h"
+#include "BeamableCore/Public/AutoGen/Social.h"
 
 #include "SocialLibrary.generated.h"
 

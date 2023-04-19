@@ -1,5 +1,5 @@
 
-#include "AutoGen/WebhookInvocationStrategyLibrary.h"
+#include "BeamableCore/Public/AutoGen/WebhookInvocationStrategyLibrary.h"
 
 #include "CoreMinimal.h"
 

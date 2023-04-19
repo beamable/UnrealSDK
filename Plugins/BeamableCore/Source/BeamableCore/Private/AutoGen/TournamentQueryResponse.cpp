@@ -1,5 +1,5 @@
 
-#include "AutoGen/TournamentQueryResponse.h"
+#include "BeamableCore/Public/AutoGen/TournamentQueryResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

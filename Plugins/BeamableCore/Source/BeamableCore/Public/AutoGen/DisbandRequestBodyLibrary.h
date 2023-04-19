@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/DisbandRequestBody.h"
+#include "BeamableCore/Public/AutoGen/DisbandRequestBody.h"
 
 #include "DisbandRequestBodyLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetLogsUrlRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GetLogsUrlRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

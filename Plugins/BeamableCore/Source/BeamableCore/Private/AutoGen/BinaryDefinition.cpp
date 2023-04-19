@@ -1,5 +1,5 @@
 
-#include "AutoGen/BinaryDefinition.h"
+#include "BeamableCore/Public/AutoGen/BinaryDefinition.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

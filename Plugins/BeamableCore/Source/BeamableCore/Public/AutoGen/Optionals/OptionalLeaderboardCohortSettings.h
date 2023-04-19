@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/LeaderboardCohortSettings.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardCohortSettings.h"
 
 #include "OptionalLeaderboardCohortSettings.generated.h"
 

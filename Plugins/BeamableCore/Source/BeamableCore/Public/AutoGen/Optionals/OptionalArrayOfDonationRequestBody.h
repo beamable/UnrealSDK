@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/DonationRequestBody.h"
+#include "BeamableCore/Public/AutoGen/DonationRequestBody.h"
 
 #include "OptionalArrayOfDonationRequestBody.generated.h"
 

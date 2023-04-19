@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Leaderboards/K2BeamNode_ApiRequest_GetDetails.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Leaderboards/K2BeamNode_ApiRequest_GetDetails.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamLeaderboardsApi.h"
-#include "AutoGen/SubSystems/Leaderboards/GetDetailsRequest.h"
-#include "AutoGen/LeaderboardDetails.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamLeaderboardsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Leaderboards/GetDetailsRequest.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardDetails.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetDetails"
 

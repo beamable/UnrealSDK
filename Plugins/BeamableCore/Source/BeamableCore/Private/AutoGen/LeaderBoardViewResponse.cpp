@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderBoardViewResponse.h"
+#include "BeamableCore/Public/AutoGen/LeaderBoardViewResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

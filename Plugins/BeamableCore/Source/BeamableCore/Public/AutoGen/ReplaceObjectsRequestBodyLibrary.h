@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ReplaceObjectsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ReplaceObjectsRequestBody.h"
 
 #include "ReplaceObjectsRequestBodyLibrary.generated.h"
 

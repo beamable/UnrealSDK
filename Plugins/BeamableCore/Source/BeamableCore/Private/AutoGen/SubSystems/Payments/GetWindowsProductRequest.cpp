@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Payments/GetWindowsProductRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Payments/GetWindowsProductRequest.h"
 
 void UGetWindowsProductRequest::BuildVerb(FString& VerbString) const
 {

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/DeleteRoleRequestBody.h"
+#include "BeamableCore/Public/AutoGen/DeleteRoleRequestBody.h"
 
 #include "DeleteRoleRequestBodyLibrary.generated.h"
 

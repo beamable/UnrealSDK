@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Content/GetManifestPrivateRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Content/GetManifestPrivateRequest.h"
 
 void UGetManifestPrivateRequest::BuildVerb(FString& VerbString) const
 {

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Events/GetPingRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Events/GetPingRequest.h"
 
 void UGetPingRequest::BuildVerb(FString& VerbString) const
 {

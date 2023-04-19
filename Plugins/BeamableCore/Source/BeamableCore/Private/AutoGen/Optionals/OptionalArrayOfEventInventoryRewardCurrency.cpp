@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfEventInventoryRewardCurrency.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfEventInventoryRewardCurrency.h"
 
 FOptionalArrayOfEventInventoryRewardCurrency::FOptionalArrayOfEventInventoryRewardCurrency()
 {

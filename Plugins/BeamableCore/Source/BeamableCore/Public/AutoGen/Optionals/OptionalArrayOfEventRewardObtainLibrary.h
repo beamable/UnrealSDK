@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfEventRewardObtain.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfEventRewardObtain.h"
 
 #include "OptionalArrayOfEventRewardObtainLibrary.generated.h"
 

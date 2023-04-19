@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Leaderboards/PutFreezeRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Leaderboards/PutFreezeRequest.h"
 
 void UPutFreezeRequest::BuildVerb(FString& VerbString) const
 {

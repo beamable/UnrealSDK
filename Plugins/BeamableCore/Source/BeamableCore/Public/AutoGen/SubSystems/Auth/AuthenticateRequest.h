@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/TokenRequestWrapper.h"
-#include "AutoGen/TokenResponse.h"
+#include "BeamableCore/Public/AutoGen/TokenRequestWrapper.h"
+#include "BeamableCore/Public/AutoGen/TokenResponse.h"
 
 #include "AuthenticateRequest.generated.h"
 

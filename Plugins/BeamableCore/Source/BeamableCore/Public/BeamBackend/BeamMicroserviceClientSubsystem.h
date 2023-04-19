@@ -10,7 +10,7 @@ class BEAMABLECORE_API UBeamMicroserviceClientSubsystem : public UEngineSubsyste
 	/**
 	 * @brief Expose all private properties of this class to the MS Editor subsystem (so that the editor can do things to these subsystems as needed).
 	 */
-	friend class UBeamMicroservicesEditorSubsystem;
+	friend class UBeamMicroservicesEditor;
 
 protected:
 	/**

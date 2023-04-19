@@ -1,5 +1,5 @@
 
-#include "AutoGen/CompletedStatus.h"
+#include "BeamableCore/Public/AutoGen/CompletedStatus.h"
 
 #include "Misc/DefaultValueHelper.h"
 

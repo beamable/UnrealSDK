@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaveRoomResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/LeaveRoomResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

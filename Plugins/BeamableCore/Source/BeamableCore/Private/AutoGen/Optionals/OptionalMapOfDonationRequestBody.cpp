@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalMapOfDonationRequestBody.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfDonationRequestBody.h"
 
 FOptionalMapOfDonationRequestBody::FOptionalMapOfDonationRequestBody()
 {

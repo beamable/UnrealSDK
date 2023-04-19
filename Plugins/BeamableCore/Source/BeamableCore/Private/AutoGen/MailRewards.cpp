@@ -1,5 +1,5 @@
 
-#include "AutoGen/MailRewards.h"
+#include "BeamableCore/Public/AutoGen/MailRewards.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

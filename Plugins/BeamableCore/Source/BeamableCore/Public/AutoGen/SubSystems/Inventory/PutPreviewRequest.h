@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamBackend/SemanticTypes/BeamGamerTag.h"
-#include "AutoGen/InventoryUpdateRequestBody.h"
-#include "AutoGen/PreviewVipBonusResponse.h"
+#include "BeamableCore/Public/AutoGen/InventoryUpdateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/PreviewVipBonusResponse.h"
 
 #include "PutPreviewRequest.generated.h"
 

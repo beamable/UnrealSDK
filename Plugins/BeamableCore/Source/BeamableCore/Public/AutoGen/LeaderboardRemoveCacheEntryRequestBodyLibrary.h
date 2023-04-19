@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/LeaderboardRemoveCacheEntryRequestBody.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardRemoveCacheEntryRequestBody.h"
 
 #include "LeaderboardRemoveCacheEntryRequestBodyLibrary.generated.h"
 

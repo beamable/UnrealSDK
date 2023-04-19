@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/RoleMapping.h"
+#include "BeamableCore/Public/AutoGen/RoleMapping.h"
 
 #include "RoleMappingLibrary.generated.h"
 

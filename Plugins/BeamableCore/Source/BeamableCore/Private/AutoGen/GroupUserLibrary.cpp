@@ -1,5 +1,5 @@
 
-#include "AutoGen/GroupUserLibrary.h"
+#include "BeamableCore/Public/AutoGen/GroupUserLibrary.h"
 
 #include "CoreMinimal.h"
 

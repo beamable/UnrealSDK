@@ -1,5 +1,5 @@
 
-#include "AutoGen/PlayerStatusUpdateLibrary.h"
+#include "BeamableCore/Public/AutoGen/PlayerStatusUpdateLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/EventPhaseEndRequestBody.h"
+#include "BeamableCore/Public/AutoGen/EventPhaseEndRequestBody.h"
 
 #include "EventPhaseEndRequestBodyLibrary.generated.h"
 

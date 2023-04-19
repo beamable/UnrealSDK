@@ -1,5 +1,5 @@
 
-#include "AutoGen/MakeDonationRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/MakeDonationRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

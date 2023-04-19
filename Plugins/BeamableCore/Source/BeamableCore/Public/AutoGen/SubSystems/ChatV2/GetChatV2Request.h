@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/GetRoomsResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/GetRoomsResponse.h"
 
 #include "GetChatV2Request.generated.h"
 

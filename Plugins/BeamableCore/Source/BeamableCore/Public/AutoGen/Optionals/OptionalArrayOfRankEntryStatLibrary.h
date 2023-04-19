@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfRankEntryStat.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfRankEntryStat.h"
 
 #include "OptionalArrayOfRankEntryStatLibrary.generated.h"
 

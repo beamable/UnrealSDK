@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/BatchSetStatsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/BatchSetStatsRequestBody.h"
 
 #include "BatchSetStatsRequestBodyLibrary.generated.h"
 

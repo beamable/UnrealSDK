@@ -1,5 +1,5 @@
 
-#include "AutoGen/ServiceTemplateLibrary.h"
+#include "BeamableCore/Public/AutoGen/ServiceTemplateLibrary.h"
 
 #include "CoreMinimal.h"
 

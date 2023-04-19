@@ -1,5 +1,5 @@
 
-#include "AutoGen/PromoteRealmResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/PromoteRealmResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

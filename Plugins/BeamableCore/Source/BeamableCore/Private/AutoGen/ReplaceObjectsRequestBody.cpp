@@ -1,5 +1,5 @@
 
-#include "AutoGen/ReplaceObjectsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ReplaceObjectsRequestBody.h"
 
 #include "Misc/DefaultValueHelper.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/FindAccountRequestBody.h"
+#include "BeamableCore/Public/AutoGen/FindAccountRequestBody.h"
 
 
 

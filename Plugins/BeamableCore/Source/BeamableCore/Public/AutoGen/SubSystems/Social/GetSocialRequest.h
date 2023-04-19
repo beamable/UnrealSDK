@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/GetSocialStatusesResponse.h"
+#include "BeamableCore/Public/AutoGen/GetSocialStatusesResponse.h"
 
 #include "GetSocialRequest.generated.h"
 

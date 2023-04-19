@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/ItemContentResponse.h"
+#include "BeamableCore/Public/AutoGen/ItemContentResponse.h"
 
 #include "GetItemsRequest.generated.h"
 

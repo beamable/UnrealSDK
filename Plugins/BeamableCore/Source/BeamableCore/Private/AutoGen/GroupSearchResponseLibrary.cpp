@@ -1,5 +1,5 @@
 
-#include "AutoGen/GroupSearchResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/GroupSearchResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

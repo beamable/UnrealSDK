@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/GetRoomsResponse.h"
+#include "BeamableCore/Public/AutoGen/GetRoomsResponse.h"
 
 #include "GetRoomsRequest.generated.h"
 

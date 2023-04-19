@@ -1,5 +1,5 @@
 
-#include "AutoGen/AddAccountRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/AddAccountRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

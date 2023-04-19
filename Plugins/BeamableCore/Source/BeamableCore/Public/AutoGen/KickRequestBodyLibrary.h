@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/KickRequestBody.h"
+#include "BeamableCore/Public/AutoGen/KickRequestBody.h"
 
 #include "KickRequestBodyLibrary.generated.h"
 

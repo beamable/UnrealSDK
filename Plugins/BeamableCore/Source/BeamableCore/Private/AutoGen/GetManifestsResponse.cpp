@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetManifestsResponse.h"
+#include "BeamableCore/Public/AutoGen/GetManifestsResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

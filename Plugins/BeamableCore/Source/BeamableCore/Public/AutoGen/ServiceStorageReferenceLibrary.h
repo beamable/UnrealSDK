@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ServiceStorageReference.h"
+#include "BeamableCore/Public/AutoGen/ServiceStorageReference.h"
 
 #include "ServiceStorageReferenceLibrary.generated.h"
 

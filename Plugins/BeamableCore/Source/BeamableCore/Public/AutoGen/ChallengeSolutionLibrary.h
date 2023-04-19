@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ChallengeSolution.h"
+#include "BeamableCore/Public/AutoGen/ChallengeSolution.h"
 
 #include "ChallengeSolutionLibrary.generated.h"
 

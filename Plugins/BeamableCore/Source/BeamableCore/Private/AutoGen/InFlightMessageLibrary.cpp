@@ -1,5 +1,5 @@
 
-#include "AutoGen/InFlightMessageLibrary.h"
+#include "BeamableCore/Public/AutoGen/InFlightMessageLibrary.h"
 
 #include "CoreMinimal.h"
 

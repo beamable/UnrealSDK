@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/GetActiveOffersResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/GetActiveOffersResponse.h"
 
 #include "GetCommerceRequest.generated.h"
 

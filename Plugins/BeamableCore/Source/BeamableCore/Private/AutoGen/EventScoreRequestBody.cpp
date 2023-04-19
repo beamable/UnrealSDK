@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventScoreRequestBody.h"
+#include "BeamableCore/Public/AutoGen/EventScoreRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

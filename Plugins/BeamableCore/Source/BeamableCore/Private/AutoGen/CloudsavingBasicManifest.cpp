@@ -1,5 +1,5 @@
 
-#include "AutoGen/CloudsavingBasicManifest.h"
+#include "BeamableCore/Public/AutoGen/CloudsavingBasicManifest.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

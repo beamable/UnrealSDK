@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Calendars/K2BeamNode_ApiRequest_GetCalendars.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Calendars/K2BeamNode_ApiRequest_GetCalendars.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamCalendarsApi.h"
-#include "AutoGen/SubSystems/Calendars/GetCalendarsRequest.h"
-#include "AutoGen/CalendarQueryResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamCalendarsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Calendars/GetCalendarsRequest.h"
+#include "BeamableCore/Public/AutoGen/CalendarQueryResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetCalendars"
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetTokenRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GetTokenRequestBody.h"
 
 #include "GetTokenRequestBodyLibrary.generated.h"
 

@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Mail/K2BeamNode_ApiRequest_PutAttachments.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Mail/K2BeamNode_ApiRequest_PutAttachments.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamMailApi.h"
-#include "AutoGen/SubSystems/Mail/PutAttachmentsRequest.h"
-#include "AutoGen/MailSuccessResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamMailApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Mail/PutAttachmentsRequest.h"
+#include "BeamableCore/Public/AutoGen/MailSuccessResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PutAttachments"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Leaderboards/PostLeaderboardsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Leaderboards/PostLeaderboardsRequest.h"
 
 void UPostLeaderboardsRequest::BuildVerb(FString& VerbString) const
 {

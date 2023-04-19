@@ -1,5 +1,5 @@
 
-#include "AutoGen/CompletePurchaseRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/CompletePurchaseRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

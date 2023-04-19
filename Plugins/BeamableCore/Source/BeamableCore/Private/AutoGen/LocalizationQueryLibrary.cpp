@@ -1,5 +1,5 @@
 
-#include "AutoGen/LocalizationQueryLibrary.h"
+#include "BeamableCore/Public/AutoGen/LocalizationQueryLibrary.h"
 
 #include "CoreMinimal.h"
 

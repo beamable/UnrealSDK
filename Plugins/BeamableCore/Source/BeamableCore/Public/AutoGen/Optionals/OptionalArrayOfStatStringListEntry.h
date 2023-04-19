@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/StatStringListEntry.h"
+#include "BeamableCore/Public/AutoGen/StatStringListEntry.h"
 
 #include "OptionalArrayOfStatStringListEntry.generated.h"
 

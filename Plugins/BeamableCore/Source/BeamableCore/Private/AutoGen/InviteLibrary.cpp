@@ -1,5 +1,5 @@
 
-#include "AutoGen/InviteLibrary.h"
+#include "BeamableCore/Public/AutoGen/InviteLibrary.h"
 
 #include "CoreMinimal.h"
 

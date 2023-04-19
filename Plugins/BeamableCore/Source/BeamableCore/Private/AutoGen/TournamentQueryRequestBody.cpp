@@ -1,5 +1,5 @@
 
-#include "AutoGen/TournamentQueryRequestBody.h"
+#include "BeamableCore/Public/AutoGen/TournamentQueryRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/LaunchMessageListResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/LaunchMessageListResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

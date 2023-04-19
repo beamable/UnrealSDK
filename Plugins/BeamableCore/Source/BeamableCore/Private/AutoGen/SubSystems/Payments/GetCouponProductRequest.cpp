@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Payments/GetCouponProductRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Payments/GetCouponProductRequest.h"
 
 void UGetCouponProductRequest::BuildVerb(FString& VerbString) const
 {

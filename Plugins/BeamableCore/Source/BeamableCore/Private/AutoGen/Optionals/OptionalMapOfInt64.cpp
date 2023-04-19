@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalMapOfInt64.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfInt64.h"
 
 FOptionalMapOfInt64::FOptionalMapOfInt64()
 {

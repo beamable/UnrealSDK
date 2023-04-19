@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalMailRewards.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMailRewards.h"
 
 #include "OptionalMailRewardsLibrary.generated.h"
 

@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Content/K2BeamNode_ApiRequest_BasicContentGetContent.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Content/K2BeamNode_ApiRequest_BasicContentGetContent.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamContentApi.h"
-#include "AutoGen/SubSystems/Content/BasicContentGetContentRequest.h"
-#include "AutoGen/ContentOrText.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamContentApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Content/BasicContentGetContentRequest.h"
+#include "BeamableCore/Public/AutoGen/ContentOrText.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_BasicContentGetContent"
 

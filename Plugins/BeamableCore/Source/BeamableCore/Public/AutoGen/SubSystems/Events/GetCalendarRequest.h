@@ -7,9 +7,9 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/Optionals/OptionalInt32.h"
-#include "AutoGen/EventsInDateRangeResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
+#include "BeamableCore/Public/AutoGen/EventsInDateRangeResponse.h"
 
 #include "GetCalendarRequest.generated.h"
 

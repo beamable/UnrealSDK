@@ -1,5 +1,5 @@
 
-#include "AutoGen/Arrays/ArrayOfLocalizedValue.h"
+#include "BeamableCore/Public/AutoGen/Arrays/ArrayOfLocalizedValue.h"
 #include "Serialization/BeamJsonUtils.h"
 
 FArrayOfLocalizedValue::FArrayOfLocalizedValue() = default;

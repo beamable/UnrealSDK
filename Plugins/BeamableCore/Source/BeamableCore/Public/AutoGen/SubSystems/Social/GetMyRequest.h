@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/Social.h"
+#include "BeamableCore/Public/AutoGen/Social.h"
 
 #include "GetMyRequest.generated.h"
 

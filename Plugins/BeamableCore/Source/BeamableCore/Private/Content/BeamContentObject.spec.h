@@ -11,5 +11,3 @@
 BEGIN_DEFINE_SPEC(FBeamContentObjectSpec, "BeamableUnreal.ContentObject", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
 	UMockBeamContentObject* ContentObject;
 END_DEFINE_SPEC(FBeamContentObjectSpec)
-
-DEFINE_CONTENT_TYPE_NAME(UMockBeamContentObject, "mock")

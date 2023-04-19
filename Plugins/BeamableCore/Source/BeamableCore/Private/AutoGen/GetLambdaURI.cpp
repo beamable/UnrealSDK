@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetLambdaURI.h"
+#include "BeamableCore/Public/AutoGen/GetLambdaURI.h"
 
 
 

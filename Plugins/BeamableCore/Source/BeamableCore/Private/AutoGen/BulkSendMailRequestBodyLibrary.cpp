@@ -1,5 +1,5 @@
 
-#include "AutoGen/BulkSendMailRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/BulkSendMailRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

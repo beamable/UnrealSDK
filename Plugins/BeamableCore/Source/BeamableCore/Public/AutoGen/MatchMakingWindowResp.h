@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/MatchMakingRanking.h"
+#include "BeamableCore/Public/AutoGen/MatchMakingRanking.h"
 
 #include "MatchMakingWindowResp.generated.h"
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/StatStringListEntry.h"
+#include "BeamableCore/Public/AutoGen/StatStringListEntry.h"
 
 #include "StatStringListEntryLibrary.generated.h"
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/TournamentGroupEntry.h"
+#include "BeamableCore/Public/AutoGen/TournamentGroupEntry.h"
 
 #include "TournamentGroupEntryLibrary.generated.h"
 

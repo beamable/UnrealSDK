@@ -4,10 +4,10 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Price.h"
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/ItemCreateRequestBody.h"
-#include "AutoGen/CurrencyChange.h"
+#include "BeamableCore/Public/AutoGen/Price.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/ItemCreateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/CurrencyChange.h"
 
 #include "PlayerOfferView.generated.h"
 

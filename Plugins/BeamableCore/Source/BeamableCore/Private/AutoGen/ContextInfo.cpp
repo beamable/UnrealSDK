@@ -1,5 +1,5 @@
 
-#include "AutoGen/ContextInfo.h"
+#include "BeamableCore/Public/AutoGen/ContextInfo.h"
 
 
 

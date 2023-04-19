@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/EmptyRsp.h"
+#include "BeamableCore/Public/AutoGen/EmptyRsp.h"
 
 #include "EmptyRspLibrary.generated.h"
 

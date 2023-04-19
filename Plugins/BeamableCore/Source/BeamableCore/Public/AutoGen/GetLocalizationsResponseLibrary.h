@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetLocalizationsResponse.h"
+#include "BeamableCore/Public/AutoGen/GetLocalizationsResponse.h"
 
 #include "GetLocalizationsResponseLibrary.generated.h"
 

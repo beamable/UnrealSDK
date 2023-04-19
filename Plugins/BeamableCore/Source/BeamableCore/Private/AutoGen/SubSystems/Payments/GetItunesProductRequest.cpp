@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Payments/GetItunesProductRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Payments/GetItunesProductRequest.h"
 
 void UGetItunesProductRequest::BuildVerb(FString& VerbString) const
 {

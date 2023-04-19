@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Cloudsaving/DeleteDataRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Cloudsaving/DeleteDataRequest.h"
 
 void UDeleteDataRequest::BuildVerb(FString& VerbString) const
 {

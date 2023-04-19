@@ -1,5 +1,5 @@
 
-#include "AutoGen/Promotable.h"
+#include "BeamableCore/Public/AutoGen/Promotable.h"
 
 #include "Misc/DefaultValueHelper.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/BeamPushApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamPushApi.h"
 #include "BeamCoreSettings.h"
 
 

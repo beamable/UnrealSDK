@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderboardMembershipResponse.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardMembershipResponse.h"
 
 
 

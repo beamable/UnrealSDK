@@ -1,5 +1,5 @@
 
-#include "AutoGen/AnnouncementRawResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/AnnouncementRawResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

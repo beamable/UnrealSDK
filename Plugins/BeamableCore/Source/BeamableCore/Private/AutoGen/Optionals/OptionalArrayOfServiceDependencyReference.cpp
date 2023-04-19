@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfServiceDependencyReference.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfServiceDependencyReference.h"
 
 FOptionalArrayOfServiceDependencyReference::FOptionalArrayOfServiceDependencyReference()
 {

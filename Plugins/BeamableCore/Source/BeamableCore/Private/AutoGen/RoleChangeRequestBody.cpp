@@ -1,5 +1,5 @@
 
-#include "AutoGen/RoleChangeRequestBody.h"
+#include "BeamableCore/Public/AutoGen/RoleChangeRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

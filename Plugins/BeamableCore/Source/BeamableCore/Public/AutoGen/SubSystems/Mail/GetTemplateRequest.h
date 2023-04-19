@@ -9,7 +9,7 @@
 
 
 
-#include "AutoGen/MailTemplate.h"
+#include "BeamableCore/Public/AutoGen/MailTemplate.h"
 
 #include "GetTemplateRequest.generated.h"
 

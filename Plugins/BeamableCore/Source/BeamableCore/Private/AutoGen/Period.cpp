@@ -1,5 +1,5 @@
 
-#include "AutoGen/Period.h"
+#include "BeamableCore/Public/AutoGen/Period.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

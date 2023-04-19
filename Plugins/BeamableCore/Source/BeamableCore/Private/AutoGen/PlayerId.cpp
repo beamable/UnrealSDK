@@ -1,5 +1,5 @@
 
-#include "AutoGen/PlayerId.h"
+#include "BeamableCore/Public/AutoGen/PlayerId.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

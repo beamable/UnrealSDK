@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Commerce/K2BeamNode_ApiRequest_GetOffers.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Commerce/K2BeamNode_ApiRequest_GetOffers.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamCommerceApi.h"
-#include "AutoGen/SubSystems/Commerce/GetOffersRequest.h"
-#include "AutoGen/GetActiveOffersResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamCommerceApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Commerce/GetOffersRequest.h"
+#include "BeamableCore/Public/AutoGen/GetActiveOffersResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetOffers"
 

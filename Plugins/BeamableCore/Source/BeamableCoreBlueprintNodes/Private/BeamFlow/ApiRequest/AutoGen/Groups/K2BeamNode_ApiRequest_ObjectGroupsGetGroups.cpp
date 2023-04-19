@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Groups/K2BeamNode_ApiRequest_ObjectGroupsGetGroups.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Groups/K2BeamNode_ApiRequest_ObjectGroupsGetGroups.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamGroupsApi.h"
-#include "AutoGen/SubSystems/Groups/ObjectGroupsGetGroupsRequest.h"
-#include "AutoGen/Group.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamGroupsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Groups/ObjectGroupsGetGroupsRequest.h"
+#include "BeamableCore/Public/AutoGen/Group.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_ObjectGroupsGetGroups"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/KickRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/KickRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/EventDateRanges.h"
+#include "BeamableCore/Public/AutoGen/EventDateRanges.h"
 
 #include "EventsInDateRangeResponse.generated.h"
 

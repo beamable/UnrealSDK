@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/CommerceLootRoll.h"
+#include "BeamableCore/Public/AutoGen/CommerceLootRoll.h"
 
 #include "OptionalCommerceLootRoll.generated.h"
 

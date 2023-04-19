@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/SaveCatalogRequestBody.h"
+#include "BeamableCore/Public/AutoGen/SaveCatalogRequestBody.h"
 
 #include "SaveCatalogRequestBodyLibrary.generated.h"
 

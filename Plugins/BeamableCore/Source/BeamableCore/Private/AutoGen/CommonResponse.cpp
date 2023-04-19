@@ -1,5 +1,5 @@
 
-#include "AutoGen/CommonResponse.h"
+#include "BeamableCore/Public/AutoGen/CommonResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

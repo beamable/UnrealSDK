@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/Optionals/OptionalInt32.h"
-#include "AutoGen/LeaderboardDetails.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardDetails.h"
 
 #include "GetDetailsRequest.generated.h"
 

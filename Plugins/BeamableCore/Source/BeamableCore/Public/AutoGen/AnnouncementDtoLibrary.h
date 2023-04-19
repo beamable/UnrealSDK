@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/AnnouncementDto.h"
+#include "BeamableCore/Public/AutoGen/AnnouncementDto.h"
 
 #include "AnnouncementDtoLibrary.generated.h"
 

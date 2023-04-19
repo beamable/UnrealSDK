@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Announcements/K2BeamNode_ApiRequest_BasicAnnouncementsDeleteAnnouncements.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Announcements/K2BeamNode_ApiRequest_BasicAnnouncementsDeleteAnnouncements.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamAnnouncementsApi.h"
-#include "AutoGen/SubSystems/Announcements/BasicAnnouncementsDeleteAnnouncementsRequest.h"
-#include "AutoGen/EmptyResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamAnnouncementsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Announcements/BasicAnnouncementsDeleteAnnouncementsRequest.h"
+#include "BeamableCore/Public/AutoGen/EmptyResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_BasicAnnouncementsDeleteAnnouncements"
 

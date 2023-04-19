@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventPlayerGroupStateLibrary.h"
+#include "BeamableCore/Public/AutoGen/EventPlayerGroupStateLibrary.h"
 
 #include "CoreMinimal.h"
 

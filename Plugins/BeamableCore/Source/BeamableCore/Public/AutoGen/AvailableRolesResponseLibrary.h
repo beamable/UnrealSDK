@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/AvailableRolesResponse.h"
+#include "BeamableCore/Public/AutoGen/AvailableRolesResponse.h"
 
 #include "AvailableRolesResponseLibrary.generated.h"
 

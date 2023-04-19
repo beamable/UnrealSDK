@@ -1,5 +1,5 @@
 
-#include "AutoGen/FacebookUpdatedEntryLibrary.h"
+#include "BeamableCore/Public/AutoGen/FacebookUpdatedEntryLibrary.h"
 
 #include "CoreMinimal.h"
 

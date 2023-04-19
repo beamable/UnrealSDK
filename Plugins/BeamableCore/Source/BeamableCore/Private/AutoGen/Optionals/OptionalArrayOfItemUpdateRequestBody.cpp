@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfItemUpdateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfItemUpdateRequestBody.h"
 
 FOptionalArrayOfItemUpdateRequestBody::FOptionalArrayOfItemUpdateRequestBody()
 {

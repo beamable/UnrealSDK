@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/RoleChangeRequestBody.h"
+#include "BeamableCore/Public/AutoGen/RoleChangeRequestBody.h"
 
 #include "RoleChangeRequestBodyLibrary.generated.h"
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ClientPermission.h"
+#include "BeamableCore/Public/AutoGen/ClientPermission.h"
 
 #include "ClientPermissionLibrary.generated.h"
 

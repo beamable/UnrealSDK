@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalServiceLimits.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalServiceLimits.h"
 
 FOptionalServiceLimits::FOptionalServiceLimits()
 {

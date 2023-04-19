@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ItemUpdateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ItemUpdateRequestBody.h"
 
 #include "ItemUpdateRequestBodyLibrary.generated.h"
 

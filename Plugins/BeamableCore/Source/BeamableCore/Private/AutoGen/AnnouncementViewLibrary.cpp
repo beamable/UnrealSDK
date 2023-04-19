@@ -1,5 +1,5 @@
 
-#include "AutoGen/AnnouncementViewLibrary.h"
+#include "BeamableCore/Public/AutoGen/AnnouncementViewLibrary.h"
 
 #include "CoreMinimal.h"
 

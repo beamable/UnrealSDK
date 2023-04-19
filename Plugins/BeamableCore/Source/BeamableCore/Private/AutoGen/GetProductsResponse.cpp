@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetProductsResponse.h"
+#include "BeamableCore/Public/AutoGen/GetProductsResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

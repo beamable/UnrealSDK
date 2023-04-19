@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/AliasAvailableResponse.h"
+#include "BeamableCore/Public/AutoGen/AliasAvailableResponse.h"
 
 #include "AliasAvailableResponseLibrary.generated.h"
 

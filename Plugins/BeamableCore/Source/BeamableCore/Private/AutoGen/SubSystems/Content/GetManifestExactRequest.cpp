@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Content/GetManifestExactRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Content/GetManifestExactRequest.h"
 
 void UGetManifestExactRequest::BuildVerb(FString& VerbString) const
 {

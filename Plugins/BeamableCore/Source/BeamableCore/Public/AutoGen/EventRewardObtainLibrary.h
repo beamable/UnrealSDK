@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/EventRewardObtain.h"
+#include "BeamableCore/Public/AutoGen/EventRewardObtain.h"
 
 #include "EventRewardObtainLibrary.generated.h"
 

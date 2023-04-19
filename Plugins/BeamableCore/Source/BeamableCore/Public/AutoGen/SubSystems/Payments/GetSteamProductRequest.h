@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/GetProductResponse.h"
+#include "BeamableCore/Public/AutoGen/GetProductResponse.h"
 
 #include "GetSteamProductRequest.generated.h"
 

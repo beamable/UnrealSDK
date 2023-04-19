@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/ContentBasicManifestChecksum.h"
+#include "BeamableCore/Public/AutoGen/ContentBasicManifestChecksum.h"
 
 #include "ManifestSummary.generated.h"
 

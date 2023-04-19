@@ -1,5 +1,5 @@
 
-#include "AutoGen/MailSuccessResponse.h"
+#include "BeamableCore/Public/AutoGen/MailSuccessResponse.h"
 
 
 

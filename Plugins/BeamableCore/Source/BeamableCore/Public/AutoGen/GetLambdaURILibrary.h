@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetLambdaURI.h"
+#include "BeamableCore/Public/AutoGen/GetLambdaURI.h"
 
 #include "GetLambdaURILibrary.generated.h"
 

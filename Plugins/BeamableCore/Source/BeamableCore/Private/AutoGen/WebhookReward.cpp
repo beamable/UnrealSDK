@@ -1,5 +1,5 @@
 
-#include "AutoGen/WebhookReward.h"
+#include "BeamableCore/Public/AutoGen/WebhookReward.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

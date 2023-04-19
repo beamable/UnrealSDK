@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubscriberDetailsResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/SubscriberDetailsResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/LeaderboardAssignmentInfo.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardAssignmentInfo.h"
 
 #include "ObjectLeaderboardsGetAssignmentRequest.generated.h"
 

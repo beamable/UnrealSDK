@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/OrderRules.h"
+#include "BeamableCore/Public/AutoGen/OrderRules.h"
 
 #include "OrderRulesLibrary.generated.h"
 

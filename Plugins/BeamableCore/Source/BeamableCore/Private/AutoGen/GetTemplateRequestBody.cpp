@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetTemplateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GetTemplateRequestBody.h"
 
 #include "Misc/DefaultValueHelper.h"
 

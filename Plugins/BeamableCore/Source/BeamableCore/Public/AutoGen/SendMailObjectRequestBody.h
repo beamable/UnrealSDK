@@ -4,11 +4,11 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/Optionals/OptionalPlayerReward.h"
-#include "AutoGen/Optionals/OptionalMailRewards.h"
-#include "AutoGen/Optionals/OptionalInt64.h"
-#include "AutoGen/Optionals/OptionalArrayOfAttachmentRequestBody.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalPlayerReward.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMailRewards.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfAttachmentRequestBody.h"
 
 #include "SendMailObjectRequestBody.generated.h"
 

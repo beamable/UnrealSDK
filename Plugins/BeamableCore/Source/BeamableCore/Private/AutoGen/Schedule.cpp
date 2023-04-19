@@ -1,5 +1,5 @@
 
-#include "AutoGen/Schedule.h"
+#include "BeamableCore/Public/AutoGen/Schedule.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

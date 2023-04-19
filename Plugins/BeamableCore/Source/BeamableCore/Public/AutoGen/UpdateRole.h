@@ -4,9 +4,9 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalBeamCid.h"
-#include "AutoGen/Optionals/OptionalBeamPid.h"
-#include "AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamCid.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamPid.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "UpdateRole.generated.h"
 

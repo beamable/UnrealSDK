@@ -1,5 +1,5 @@
 
-#include "AutoGen/OrderRule.h"
+#include "BeamableCore/Public/AutoGen/OrderRule.h"
 
 #include "Misc/DefaultValueHelper.h"
 

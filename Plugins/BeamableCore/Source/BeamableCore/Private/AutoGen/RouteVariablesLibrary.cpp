@@ -1,5 +1,5 @@
 
-#include "AutoGen/RouteVariablesLibrary.h"
+#include "BeamableCore/Public/AutoGen/RouteVariablesLibrary.h"
 
 #include "CoreMinimal.h"
 

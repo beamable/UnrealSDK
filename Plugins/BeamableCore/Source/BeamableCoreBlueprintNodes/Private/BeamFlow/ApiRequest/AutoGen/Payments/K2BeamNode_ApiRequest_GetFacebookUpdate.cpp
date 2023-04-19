@@ -1,11 +1,11 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Payments/K2BeamNode_ApiRequest_GetFacebookUpdate.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Payments/K2BeamNode_ApiRequest_GetFacebookUpdate.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamPaymentsApi.h"
-#include "AutoGen/SubSystems/Payments/GetFacebookUpdateRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamPaymentsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Payments/GetFacebookUpdateRequest.h"
 #include "Serialization/BeamPlainTextResponseBody.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetFacebookUpdate"

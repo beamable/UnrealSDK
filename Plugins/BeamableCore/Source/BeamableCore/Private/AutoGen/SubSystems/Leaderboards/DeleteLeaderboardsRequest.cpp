@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Leaderboards/DeleteLeaderboardsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Leaderboards/DeleteLeaderboardsRequest.h"
 
 void UDeleteLeaderboardsRequest::BuildVerb(FString& VerbString) const
 {

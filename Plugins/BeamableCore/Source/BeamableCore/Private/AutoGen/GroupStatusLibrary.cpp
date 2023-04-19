@@ -1,5 +1,5 @@
 
-#include "AutoGen/GroupStatusLibrary.h"
+#include "BeamableCore/Public/AutoGen/GroupStatusLibrary.h"
 
 #include "CoreMinimal.h"
 

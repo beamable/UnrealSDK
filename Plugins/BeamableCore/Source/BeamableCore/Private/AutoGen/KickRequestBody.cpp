@@ -1,5 +1,5 @@
 
-#include "AutoGen/KickRequestBody.h"
+#include "BeamableCore/Public/AutoGen/KickRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Auth/PutTokenRevokeRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Auth/PutTokenRevokeRequest.h"
 
 void UPutTokenRevokeRequest::BuildVerb(FString& VerbString) const
 {

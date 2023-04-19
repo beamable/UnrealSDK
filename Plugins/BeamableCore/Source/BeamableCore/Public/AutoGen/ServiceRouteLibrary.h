@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ServiceRoute.h"
+#include "BeamableCore/Public/AutoGen/ServiceRoute.h"
 
 #include "ServiceRouteLibrary.generated.h"
 

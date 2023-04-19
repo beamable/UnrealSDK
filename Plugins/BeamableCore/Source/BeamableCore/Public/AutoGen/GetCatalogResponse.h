@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalCatalog.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalCatalog.h"
 
 #include "GetCatalogResponse.generated.h"
 

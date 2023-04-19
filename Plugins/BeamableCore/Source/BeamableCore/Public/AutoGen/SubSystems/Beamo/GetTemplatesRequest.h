@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/GetTemplatesResponse.h"
+#include "BeamableCore/Public/AutoGen/GetTemplatesResponse.h"
 
 #include "GetTemplatesRequest.generated.h"
 

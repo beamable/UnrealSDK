@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/ContentLimits.h"
+#include "BeamableCore/Public/AutoGen/ContentLimits.h"
 
 #include "OptionalContentLimits.generated.h"
 

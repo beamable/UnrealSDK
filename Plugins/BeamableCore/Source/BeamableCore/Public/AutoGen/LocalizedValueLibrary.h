@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/LocalizedValue.h"
+#include "BeamableCore/Public/AutoGen/LocalizedValue.h"
 
 #include "LocalizedValueLibrary.generated.h"
 

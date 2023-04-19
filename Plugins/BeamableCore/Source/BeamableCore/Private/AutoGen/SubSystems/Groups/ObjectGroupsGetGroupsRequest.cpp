@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Groups/ObjectGroupsGetGroupsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Groups/ObjectGroupsGetGroupsRequest.h"
 
 void UObjectGroupsGetGroupsRequest::BuildVerb(FString& VerbString) const
 {

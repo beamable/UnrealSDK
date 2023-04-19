@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/RedisShard.h"
+#include "BeamableCore/Public/AutoGen/RedisShard.h"
 
 #include "RedisShardLibrary.generated.h"
 

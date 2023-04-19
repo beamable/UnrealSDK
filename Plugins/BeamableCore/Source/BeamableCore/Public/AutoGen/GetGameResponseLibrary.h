@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetGameResponse.h"
+#include "BeamableCore/Public/AutoGen/GetGameResponse.h"
 
 #include "GetGameResponseLibrary.generated.h"
 

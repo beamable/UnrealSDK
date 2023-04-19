@@ -1,5 +1,5 @@
 
-#include "AutoGen/PromoteRealmRequestBody.h"
+#include "BeamableCore/Public/AutoGen/PromoteRealmRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

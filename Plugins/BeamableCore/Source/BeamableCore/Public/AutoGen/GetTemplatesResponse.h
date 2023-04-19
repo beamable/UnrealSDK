@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/ServiceTemplate.h"
+#include "BeamableCore/Public/AutoGen/ServiceTemplate.h"
 
 #include "GetTemplatesResponse.generated.h"
 

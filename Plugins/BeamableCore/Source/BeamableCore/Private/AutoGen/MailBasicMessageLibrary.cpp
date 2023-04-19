@@ -1,5 +1,5 @@
 
-#include "AutoGen/MailBasicMessageLibrary.h"
+#include "BeamableCore/Public/AutoGen/MailBasicMessageLibrary.h"
 
 #include "CoreMinimal.h"
 

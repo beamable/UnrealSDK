@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Payments/PostTestPurchaseFailRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Payments/PostTestPurchaseFailRequest.h"
 
 void UPostTestPurchaseFailRequest::BuildVerb(FString& VerbString) const
 {

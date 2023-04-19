@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfPlayerStatRequirement.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfPlayerStatRequirement.h"
 
 FOptionalArrayOfPlayerStatRequirement::FOptionalArrayOfPlayerStatRequirement()
 {

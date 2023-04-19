@@ -1,5 +1,5 @@
 
-#include "AutoGen/Social.h"
+#include "BeamableCore/Public/AutoGen/Social.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

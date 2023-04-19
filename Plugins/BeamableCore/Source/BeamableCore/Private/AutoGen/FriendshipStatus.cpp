@@ -1,5 +1,5 @@
 
-#include "AutoGen/FriendshipStatus.h"
+#include "BeamableCore/Public/AutoGen/FriendshipStatus.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ArchetypeProxy.h"
+#include "BeamableCore/Public/AutoGen/ArchetypeProxy.h"
 
 #include "ArchetypeProxyLibrary.generated.h"
 

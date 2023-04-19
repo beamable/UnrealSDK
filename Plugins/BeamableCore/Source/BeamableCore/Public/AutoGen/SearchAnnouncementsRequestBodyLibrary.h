@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/SearchAnnouncementsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/SearchAnnouncementsRequestBody.h"
 
 #include "SearchAnnouncementsRequestBodyLibrary.generated.h"
 

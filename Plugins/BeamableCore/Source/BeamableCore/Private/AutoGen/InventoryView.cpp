@@ -1,5 +1,5 @@
 
-#include "AutoGen/InventoryView.h"
+#include "BeamableCore/Public/AutoGen/InventoryView.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

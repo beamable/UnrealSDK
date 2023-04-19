@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/PlayerOfferView.h"
+#include "BeamableCore/Public/AutoGen/PlayerOfferView.h"
 
 #include "PlayerOfferViewLibrary.generated.h"
 

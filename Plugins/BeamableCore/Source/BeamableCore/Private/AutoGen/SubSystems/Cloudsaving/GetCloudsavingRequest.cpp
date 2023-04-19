@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Cloudsaving/GetCloudsavingRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Cloudsaving/GetCloudsavingRequest.h"
 
 void UGetCloudsavingRequest::BuildVerb(FString& VerbString) const
 {

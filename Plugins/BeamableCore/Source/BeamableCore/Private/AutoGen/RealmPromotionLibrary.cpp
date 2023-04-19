@@ -1,5 +1,5 @@
 
-#include "AutoGen/RealmPromotionLibrary.h"
+#include "BeamableCore/Public/AutoGen/RealmPromotionLibrary.h"
 
 #include "CoreMinimal.h"
 

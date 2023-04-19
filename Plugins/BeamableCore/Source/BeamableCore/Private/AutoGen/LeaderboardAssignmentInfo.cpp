@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderboardAssignmentInfo.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardAssignmentInfo.h"
 
 #include "Misc/DefaultValueHelper.h"
 

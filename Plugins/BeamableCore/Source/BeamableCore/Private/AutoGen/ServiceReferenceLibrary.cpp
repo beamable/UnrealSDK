@@ -1,5 +1,5 @@
 
-#include "AutoGen/ServiceReferenceLibrary.h"
+#include "BeamableCore/Public/AutoGen/ServiceReferenceLibrary.h"
 
 #include "CoreMinimal.h"
 
@@ -22,7 +22,7 @@ FString UServiceReferenceLibrary::ServiceReferenceToJsonString(const UServiceRef
 	return Result;
 }	
 
-UServiceReference* UServiceReferenceLibrary::Make(bool bArchived, bool bArm, bool bEnabled, FString ServiceName, FString Checksum, FString TemplateId, FString ImageId, FOptionalInt64 ContainerHealthCheckPort, FOptionalString ImageCpuArch, FOptionalString Comments, FOptionalArrayOfServiceDependencyReference Dependencies, UObject* Outer)
+UServiceReference* UServiceReferenceLibrary::Make(bool bArchived, bool bArm, bool bEnabled, FString ServiceName, FString Checksum, FString TemplateId, FString ImageId, FOptionalInt64 ContainerHealthCheckPort, FOptionalString ImageCpuArch, FOptionalString Comments, FOptionalArrayOfServiceComponent Components, FOptionalArrayOfServiceDependencyReference Dependencies, UObject* Outer)
 {
 	auto Serializable = NewObject<UServiceReference>(Outer);
 	Serializable->bArchived = bArchived;
@@ -35,12 +35,13 @@ UServiceReference* UServiceReferenceLibrary::Make(bool bArchived, bool bArm, boo
 	Serializable->ContainerHealthCheckPort = ContainerHealthCheckPort;
 	Serializable->ImageCpuArch = ImageCpuArch;
 	Serializable->Comments = Comments;
+	Serializable->Components = Components;
 	Serializable->Dependencies = Dependencies;
 	
 	return Serializable;
 }
 
-void UServiceReferenceLibrary::Break(const UServiceReference* Serializable, bool& bArchived, bool& bArm, bool& bEnabled, FString& ServiceName, FString& Checksum, FString& TemplateId, FString& ImageId, FOptionalInt64& ContainerHealthCheckPort, FOptionalString& ImageCpuArch, FOptionalString& Comments, FOptionalArrayOfServiceDependencyReference& Dependencies)
+void UServiceReferenceLibrary::Break(const UServiceReference* Serializable, bool& bArchived, bool& bArm, bool& bEnabled, FString& ServiceName, FString& Checksum, FString& TemplateId, FString& ImageId, FOptionalInt64& ContainerHealthCheckPort, FOptionalString& ImageCpuArch, FOptionalString& Comments, FOptionalArrayOfServiceComponent& Components, FOptionalArrayOfServiceDependencyReference& Dependencies)
 {
 	bArchived = Serializable->bArchived;
 	bArm = Serializable->bArm;
@@ -52,6 +53,7 @@ void UServiceReferenceLibrary::Break(const UServiceReference* Serializable, bool
 	ContainerHealthCheckPort = Serializable->ContainerHealthCheckPort;
 	ImageCpuArch = Serializable->ImageCpuArch;
 	Comments = Serializable->Comments;
+	Components = Serializable->Components;
 	Dependencies = Serializable->Dependencies;
 		
 }

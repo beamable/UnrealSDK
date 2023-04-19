@@ -1,5 +1,5 @@
 
-#include "AutoGen/EmailUpdateRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/EmailUpdateRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

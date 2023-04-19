@@ -1,5 +1,5 @@
 
-#include "AutoGen/AnnouncementDtoLibrary.h"
+#include "BeamableCore/Public/AutoGen/AnnouncementDtoLibrary.h"
 
 #include "CoreMinimal.h"
 

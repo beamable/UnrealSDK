@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetProductRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/GetProductRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

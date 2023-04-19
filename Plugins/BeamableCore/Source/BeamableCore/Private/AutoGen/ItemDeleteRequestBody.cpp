@@ -1,5 +1,5 @@
 
-#include "AutoGen/ItemDeleteRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ItemDeleteRequestBody.h"
 
 #include "Misc/DefaultValueHelper.h"
 

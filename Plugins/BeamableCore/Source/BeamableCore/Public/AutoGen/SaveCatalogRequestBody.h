@@ -4,8 +4,8 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Store.h"
-#include "AutoGen/OfferDefinition.h"
+#include "BeamableCore/Public/AutoGen/Store.h"
+#include "BeamableCore/Public/AutoGen/OfferDefinition.h"
 
 #include "SaveCatalogRequestBody.generated.h"
 

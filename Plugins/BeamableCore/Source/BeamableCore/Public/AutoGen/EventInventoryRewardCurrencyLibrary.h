@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/EventInventoryRewardCurrency.h"
+#include "BeamableCore/Public/AutoGen/EventInventoryRewardCurrency.h"
 
 #include "EventInventoryRewardCurrencyLibrary.generated.h"
 

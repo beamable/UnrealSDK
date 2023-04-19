@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/SaveManifestRequestBody.h"
-#include "AutoGen/ContentBasicManifest.h"
+#include "BeamableCore/Public/AutoGen/SaveManifestRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ContentBasicManifest.h"
 
 #include "BasicContentPostManifestRequest.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfItemCreateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfItemCreateRequestBody.h"
 
 FOptionalArrayOfItemCreateRequestBody::FOptionalArrayOfItemCreateRequestBody()
 {

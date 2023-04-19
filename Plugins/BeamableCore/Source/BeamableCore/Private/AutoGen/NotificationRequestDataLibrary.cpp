@@ -1,5 +1,5 @@
 
-#include "AutoGen/NotificationRequestDataLibrary.h"
+#include "BeamableCore/Public/AutoGen/NotificationRequestDataLibrary.h"
 
 #include "CoreMinimal.h"
 

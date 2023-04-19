@@ -1,5 +1,5 @@
 
-#include "AutoGen/RealmConfiguration.h"
+#include "BeamableCore/Public/AutoGen/RealmConfiguration.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

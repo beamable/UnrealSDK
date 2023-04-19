@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/URLResponse.h"
+#include "BeamableCore/Public/AutoGen/URLResponse.h"
 
 #include "URLSResponse.generated.h"
 

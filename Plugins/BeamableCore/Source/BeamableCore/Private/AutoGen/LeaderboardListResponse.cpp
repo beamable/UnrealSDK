@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderboardListResponse.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardListResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

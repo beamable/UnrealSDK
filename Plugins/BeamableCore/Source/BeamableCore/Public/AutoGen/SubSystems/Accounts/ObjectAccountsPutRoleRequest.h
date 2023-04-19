@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamBackend/SemanticTypes/BeamAccountId.h"
-#include "AutoGen/UpdateRole.h"
-#include "AutoGen/EmptyResponse.h"
+#include "BeamableCore/Public/AutoGen/UpdateRole.h"
+#include "BeamableCore/Public/AutoGen/EmptyResponse.h"
 
 #include "ObjectAccountsPutRoleRequest.generated.h"
 

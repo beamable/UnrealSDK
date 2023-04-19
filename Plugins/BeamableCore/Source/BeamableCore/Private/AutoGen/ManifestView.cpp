@@ -1,5 +1,5 @@
 
-#include "AutoGen/ManifestView.h"
+#include "BeamableCore/Public/AutoGen/ManifestView.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

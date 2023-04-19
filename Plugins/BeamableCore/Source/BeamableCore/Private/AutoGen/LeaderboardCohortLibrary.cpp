@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderboardCohortLibrary.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardCohortLibrary.h"
 
 #include "CoreMinimal.h"
 

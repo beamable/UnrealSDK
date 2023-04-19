@@ -1,5 +1,5 @@
 
-#include "AutoGen/ListMailCategoriesResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/ListMailCategoriesResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

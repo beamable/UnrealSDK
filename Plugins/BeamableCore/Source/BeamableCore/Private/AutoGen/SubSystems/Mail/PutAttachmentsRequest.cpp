@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Mail/PutAttachmentsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Mail/PutAttachmentsRequest.h"
 
 void UPutAttachmentsRequest::BuildVerb(FString& VerbString) const
 {

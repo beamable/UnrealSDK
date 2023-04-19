@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/RealmRolesReport.h"
+#include "BeamableCore/Public/AutoGen/RealmRolesReport.h"
 
 #include "RealmRolesReportLibrary.generated.h"
 

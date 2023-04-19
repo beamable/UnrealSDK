@@ -1,5 +1,5 @@
 
-#include "AutoGen/StatUpdateRequestStringListFormatLibrary.h"
+#include "BeamableCore/Public/AutoGen/StatUpdateRequestStringListFormatLibrary.h"
 
 #include "CoreMinimal.h"
 

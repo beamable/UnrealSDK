@@ -4,13 +4,13 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalMapOfInt64.h"
-#include "AutoGen/Optionals/OptionalMapOfArrayOfCurrencyProperty.h"
-#include "AutoGen/Optionals/OptionalBool.h"
-#include "AutoGen/Optionals/OptionalArrayOfItemUpdateRequestBody.h"
-#include "AutoGen/Optionals/OptionalArrayOfItemCreateRequestBody.h"
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/Optionals/OptionalArrayOfItemDeleteRequestBody.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfInt64.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfArrayOfCurrencyProperty.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfItemUpdateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfItemCreateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfItemDeleteRequestBody.h"
 
 #include "InventoryUpdateRequestBody.generated.h"
 

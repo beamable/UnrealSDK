@@ -1,5 +1,5 @@
 
-#include "AutoGen/MakeFriendshipRequestBody.h"
+#include "BeamableCore/Public/AutoGen/MakeFriendshipRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/AccountPlayerView.h"
+#include "BeamableCore/Public/AutoGen/AccountPlayerView.h"
 
 #include "BasicAccountsGetMeRequest.generated.h"
 

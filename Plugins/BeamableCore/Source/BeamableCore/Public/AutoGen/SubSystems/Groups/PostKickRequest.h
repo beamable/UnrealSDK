@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/KickRequestBody.h"
-#include "AutoGen/GroupMembershipResponse.h"
+#include "BeamableCore/Public/AutoGen/KickRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GroupMembershipResponse.h"
 
 #include "PostKickRequest.generated.h"
 

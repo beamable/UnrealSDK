@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Period.h"
+#include "BeamableCore/Public/AutoGen/Period.h"
 
 #include "PeriodLibrary.generated.h"
 

@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/GetManifestsResponse.h"
+#include "BeamableCore/Public/AutoGen/GetManifestsResponse.h"
 
 #include "BasicContentGetManifestsRequest.generated.h"
 

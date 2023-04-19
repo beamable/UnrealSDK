@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/PutAccountsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PutAccountsRequest.h"
 
 void UPutAccountsRequest::BuildVerb(FString& VerbString) const
 {

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfRedisShard.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfRedisShard.h"
 
 #include "OptionalArrayOfRedisShardLibrary.generated.h"
 

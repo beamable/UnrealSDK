@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Realms/PostLaunchMessageRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/PostLaunchMessageRequest.h"
 
 void UPostLaunchMessageRequest::BuildVerb(FString& VerbString) const
 {

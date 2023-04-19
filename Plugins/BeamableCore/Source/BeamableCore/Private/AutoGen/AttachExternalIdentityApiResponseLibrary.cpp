@@ -1,5 +1,5 @@
 
-#include "AutoGen/AttachExternalIdentityApiResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/AttachExternalIdentityApiResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

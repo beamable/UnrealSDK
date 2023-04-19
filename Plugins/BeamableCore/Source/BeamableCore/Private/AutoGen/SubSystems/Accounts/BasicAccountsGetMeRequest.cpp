@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/BasicAccountsGetMeRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/BasicAccountsGetMeRequest.h"
 
 void UBasicAccountsGetMeRequest::BuildVerb(FString& VerbString) const
 {

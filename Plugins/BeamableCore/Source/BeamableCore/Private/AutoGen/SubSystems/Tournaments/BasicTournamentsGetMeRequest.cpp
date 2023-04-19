@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Tournaments/BasicTournamentsGetMeRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Tournaments/BasicTournamentsGetMeRequest.h"
 
 void UBasicTournamentsGetMeRequest::BuildVerb(FString& VerbString) const
 {

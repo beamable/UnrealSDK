@@ -1,5 +1,5 @@
 
-#include "AutoGen/RoomInfoLibrary.h"
+#include "BeamableCore/Public/AutoGen/RoomInfoLibrary.h"
 
 #include "CoreMinimal.h"
 

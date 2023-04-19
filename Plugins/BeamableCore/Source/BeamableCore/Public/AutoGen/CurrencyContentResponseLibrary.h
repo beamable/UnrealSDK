@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/CurrencyContentResponse.h"
+#include "BeamableCore/Public/AutoGen/CurrencyContentResponse.h"
 
 #include "CurrencyContentResponseLibrary.generated.h"
 

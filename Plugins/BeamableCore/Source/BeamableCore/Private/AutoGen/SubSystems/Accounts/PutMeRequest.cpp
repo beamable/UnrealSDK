@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/PutMeRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PutMeRequest.h"
 
 void UPutMeRequest::BuildVerb(FString& VerbString) const
 {

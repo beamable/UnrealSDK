@@ -1,5 +1,5 @@
 
-#include "AutoGen/RepeatManifestRequestBody.h"
+#include "BeamableCore/Public/AutoGen/RepeatManifestRequestBody.h"
 
 
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/AttachmentRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/AttachmentRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

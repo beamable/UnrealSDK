@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Payments/GetTestProductRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Payments/GetTestProductRequest.h"
 
 void UGetTestProductRequest::BuildVerb(FString& VerbString) const
 {

@@ -1,5 +1,5 @@
 
-#include "AutoGen/PANamespace.h"
+#include "BeamableCore/Public/AutoGen/PANamespace.h"
 
 
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/BinaryReferenceLibrary.h"
+#include "BeamableCore/Public/AutoGen/BinaryReferenceLibrary.h"
 
 #include "CoreMinimal.h"
 

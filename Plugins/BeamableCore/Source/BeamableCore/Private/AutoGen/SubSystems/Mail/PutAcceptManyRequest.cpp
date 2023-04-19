@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Mail/PutAcceptManyRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Mail/PutAcceptManyRequest.h"
 
 void UPutAcceptManyRequest::BuildVerb(FString& VerbString) const
 {

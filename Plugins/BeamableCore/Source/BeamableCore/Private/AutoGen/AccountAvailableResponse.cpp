@@ -1,5 +1,5 @@
 
-#include "AutoGen/AccountAvailableResponse.h"
+#include "BeamableCore/Public/AutoGen/AccountAvailableResponse.h"
 
 
 

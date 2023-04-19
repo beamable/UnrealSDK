@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/AliasAvailableResponse.h"
+#include "BeamableCore/Public/AutoGen/AliasAvailableResponse.h"
 
 #include "GetCustomerAliasAvailableRequest.generated.h"
 

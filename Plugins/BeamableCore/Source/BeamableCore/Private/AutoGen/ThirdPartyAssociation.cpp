@@ -1,5 +1,5 @@
 
-#include "AutoGen/ThirdPartyAssociation.h"
+#include "BeamableCore/Public/AutoGen/ThirdPartyAssociation.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

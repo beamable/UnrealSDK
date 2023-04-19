@@ -1,5 +1,5 @@
 
-#include "AutoGen/AttachmentProperty.h"
+#include "BeamableCore/Public/AutoGen/AttachmentProperty.h"
 
 
 

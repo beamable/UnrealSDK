@@ -1,5 +1,5 @@
 
-#include "AutoGen/AccountRegistration.h"
+#include "BeamableCore/Public/AutoGen/AccountRegistration.h"
 
 
 

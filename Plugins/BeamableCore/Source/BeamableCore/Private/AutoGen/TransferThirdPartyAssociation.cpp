@@ -1,5 +1,5 @@
 
-#include "AutoGen/TransferThirdPartyAssociation.h"
+#include "BeamableCore/Public/AutoGen/TransferThirdPartyAssociation.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

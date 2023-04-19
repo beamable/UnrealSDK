@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetStoresReq.h"
+#include "BeamableCore/Public/AutoGen/GetStoresReq.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

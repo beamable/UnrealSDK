@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderboardRemoveCacheEntryRequestBody.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardRemoveCacheEntryRequestBody.h"
 
 #include "Misc/DefaultValueHelper.h"
 

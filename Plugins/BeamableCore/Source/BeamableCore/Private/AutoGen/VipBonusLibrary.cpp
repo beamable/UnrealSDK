@@ -1,5 +1,5 @@
 
-#include "AutoGen/VipBonusLibrary.h"
+#include "BeamableCore/Public/AutoGen/VipBonusLibrary.h"
 
 #include "CoreMinimal.h"
 

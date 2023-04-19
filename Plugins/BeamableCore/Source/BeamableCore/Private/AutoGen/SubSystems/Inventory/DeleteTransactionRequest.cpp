@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Inventory/DeleteTransactionRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Inventory/DeleteTransactionRequest.h"
 
 void UDeleteTransactionRequest::BuildVerb(FString& VerbString) const
 {

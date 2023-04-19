@@ -1,5 +1,5 @@
 
-#include "AutoGen/TokenResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/TokenResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

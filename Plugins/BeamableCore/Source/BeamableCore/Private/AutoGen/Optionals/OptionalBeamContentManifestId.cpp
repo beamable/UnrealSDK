@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalBeamContentManifestId.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamContentManifestId.h"
 
 FOptionalBeamContentManifestId::FOptionalBeamContentManifestId()
 {

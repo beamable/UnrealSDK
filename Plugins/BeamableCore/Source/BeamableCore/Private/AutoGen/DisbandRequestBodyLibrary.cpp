@@ -1,5 +1,5 @@
 
-#include "AutoGen/DisbandRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/DisbandRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

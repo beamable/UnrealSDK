@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalServiceLimits.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalServiceLimits.h"
 
 #include "OptionalServiceLimitsLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Payments/PostSteamAuthRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Payments/PostSteamAuthRequest.h"
 
 void UPostSteamAuthRequest::BuildVerb(FString& VerbString) const
 {

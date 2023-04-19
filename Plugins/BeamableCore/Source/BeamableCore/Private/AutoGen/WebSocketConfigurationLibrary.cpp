@@ -1,5 +1,5 @@
 
-#include "AutoGen/WebSocketConfigurationLibrary.h"
+#include "BeamableCore/Public/AutoGen/WebSocketConfigurationLibrary.h"
 
 #include "CoreMinimal.h"
 

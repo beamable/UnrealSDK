@@ -1,5 +1,5 @@
 
-#include "AutoGen/PlayerStatRequirementLibrary.h"
+#include "BeamableCore/Public/AutoGen/PlayerStatRequirementLibrary.h"
 
 #include "CoreMinimal.h"
 

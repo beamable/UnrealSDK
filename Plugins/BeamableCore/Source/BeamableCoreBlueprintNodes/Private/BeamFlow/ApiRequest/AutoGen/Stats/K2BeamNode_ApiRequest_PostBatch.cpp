@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Stats/K2BeamNode_ApiRequest_PostBatch.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Stats/K2BeamNode_ApiRequest_PostBatch.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamStatsApi.h"
-#include "AutoGen/SubSystems/Stats/PostBatchRequest.h"
-#include "AutoGen/EmptyResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamStatsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/PostBatchRequest.h"
+#include "BeamableCore/Public/AutoGen/EmptyResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PostBatch"
 

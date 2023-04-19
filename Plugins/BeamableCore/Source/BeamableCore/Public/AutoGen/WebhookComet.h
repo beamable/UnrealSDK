@@ -4,10 +4,10 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/RouteVariables.h"
-#include "AutoGen/ServiceRoute.h"
-#include "AutoGen/RouteParameters.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/RouteVariables.h"
+#include "BeamableCore/Public/AutoGen/ServiceRoute.h"
+#include "BeamableCore/Public/AutoGen/RouteParameters.h"
 
 #include "WebhookComet.generated.h"
 

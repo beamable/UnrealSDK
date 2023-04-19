@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GroupMembershipResponse.h"
+#include "BeamableCore/Public/AutoGen/GroupMembershipResponse.h"
 
 #include "GroupMembershipResponseLibrary.generated.h"
 

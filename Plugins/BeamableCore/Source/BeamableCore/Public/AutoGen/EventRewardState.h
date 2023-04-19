@@ -4,13 +4,13 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/EventInventoryPendingRewards.h"
-#include "AutoGen/Optionals/OptionalArrayOfEventInventoryRewardCurrency.h"
-#include "AutoGen/Optionals/OptionalMapOfString.h"
-#include "AutoGen/Optionals/OptionalArrayOfItemCreateRequestBody.h"
-#include "AutoGen/Optionals/OptionalArrayOfEventInventoryRewardItem.h"
-#include "AutoGen/Optionals/OptionalDouble.h"
-#include "AutoGen/Optionals/OptionalArrayOfEventRewardObtain.h"
+#include "BeamableCore/Public/AutoGen/EventInventoryPendingRewards.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfEventInventoryRewardCurrency.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfItemCreateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfEventInventoryRewardItem.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalDouble.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfEventRewardObtain.h"
 
 #include "EventRewardState.generated.h"
 

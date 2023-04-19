@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalEventPhaseRuntime.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalEventPhaseRuntime.h"
 
 FOptionalEventPhaseRuntime::FOptionalEventPhaseRuntime()
 {

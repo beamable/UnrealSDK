@@ -1,5 +1,5 @@
 
-#include "AutoGen/ResultResponse.h"
+#include "BeamableCore/Public/AutoGen/ResultResponse.h"
 
 
 

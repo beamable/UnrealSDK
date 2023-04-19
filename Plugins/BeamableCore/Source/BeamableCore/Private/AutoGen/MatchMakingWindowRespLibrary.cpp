@@ -1,5 +1,5 @@
 
-#include "AutoGen/MatchMakingWindowRespLibrary.h"
+#include "BeamableCore/Public/AutoGen/MatchMakingWindowRespLibrary.h"
 
 #include "CoreMinimal.h"
 

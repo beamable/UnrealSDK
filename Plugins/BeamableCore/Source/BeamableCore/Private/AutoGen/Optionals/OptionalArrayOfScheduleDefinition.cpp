@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfScheduleDefinition.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfScheduleDefinition.h"
 
 FOptionalArrayOfScheduleDefinition::FOptionalArrayOfScheduleDefinition()
 {

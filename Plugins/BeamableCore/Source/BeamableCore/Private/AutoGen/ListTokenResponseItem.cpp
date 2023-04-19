@@ -1,5 +1,5 @@
 
-#include "AutoGen/ListTokenResponseItem.h"
+#include "BeamableCore/Public/AutoGen/ListTokenResponseItem.h"
 
 
 

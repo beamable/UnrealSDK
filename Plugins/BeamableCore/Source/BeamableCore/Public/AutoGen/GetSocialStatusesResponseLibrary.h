@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetSocialStatusesResponse.h"
+#include "BeamableCore/Public/AutoGen/GetSocialStatusesResponse.h"
 
 #include "GetSocialStatusesResponseLibrary.generated.h"
 

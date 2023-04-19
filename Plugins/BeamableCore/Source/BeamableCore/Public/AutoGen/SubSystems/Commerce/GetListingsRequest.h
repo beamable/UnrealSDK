@@ -9,8 +9,8 @@
 
 
 
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/ActiveListingResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/ActiveListingResponse.h"
 
 #include "GetListingsRequest.generated.h"
 

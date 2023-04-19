@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Inventory/K2BeamNode_ApiRequest_GetInventory.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Inventory/K2BeamNode_ApiRequest_GetInventory.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamInventoryApi.h"
-#include "AutoGen/SubSystems/Inventory/GetInventoryRequest.h"
-#include "AutoGen/InventoryView.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamInventoryApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Inventory/GetInventoryRequest.h"
+#include "BeamableCore/Public/AutoGen/InventoryView.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetInventory"
 

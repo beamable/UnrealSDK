@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/EventPlayers/PutScoreRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/EventPlayers/PutScoreRequest.h"
 
 void UPutScoreRequest::BuildVerb(FString& VerbString) const
 {

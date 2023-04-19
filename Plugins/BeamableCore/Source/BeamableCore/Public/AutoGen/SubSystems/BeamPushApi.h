@@ -7,8 +7,8 @@
 #include "BeamBackend/ResponseCache/BeamResponseCache.h"
 #include "RequestTracker/BeamRequestTracker.h"
 
-#include "Push/BasicPushPostRegisterRequest.h"
-#include "Push/PostSendRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Push/BasicPushPostRegisterRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Push/PostSendRequest.h"
 
 #include "BeamPushApi.generated.h"
 

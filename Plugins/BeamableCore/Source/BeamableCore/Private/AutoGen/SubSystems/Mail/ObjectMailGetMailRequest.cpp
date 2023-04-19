@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Mail/ObjectMailGetMailRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Mail/ObjectMailGetMailRequest.h"
 
 void UObjectMailGetMailRequest::BuildVerb(FString& VerbString) const
 {

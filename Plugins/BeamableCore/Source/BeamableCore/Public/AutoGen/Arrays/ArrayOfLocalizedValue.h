@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamArray.h"
-#include "AutoGen/LocalizedValue.h"
+#include "BeamableCore/Public/AutoGen/LocalizedValue.h"
 
 #include "ArrayOfLocalizedValue.generated.h"
 		

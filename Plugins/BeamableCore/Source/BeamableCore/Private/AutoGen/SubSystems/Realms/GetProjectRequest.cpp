@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Realms/GetProjectRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetProjectRequest.h"
 
 void UGetProjectRequest::BuildVerb(FString& VerbString) const
 {

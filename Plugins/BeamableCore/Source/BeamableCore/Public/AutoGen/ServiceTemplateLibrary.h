@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ServiceTemplate.h"
+#include "BeamableCore/Public/AutoGen/ServiceTemplate.h"
 
 #include "ServiceTemplateLibrary.generated.h"
 

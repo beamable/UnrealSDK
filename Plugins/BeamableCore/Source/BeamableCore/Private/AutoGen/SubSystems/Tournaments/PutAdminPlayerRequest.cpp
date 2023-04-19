@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Tournaments/PutAdminPlayerRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Tournaments/PutAdminPlayerRequest.h"
 
 void UPutAdminPlayerRequest::BuildVerb(FString& VerbString) const
 {

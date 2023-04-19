@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetStandingsResponse.h"
+#include "BeamableCore/Public/AutoGen/GetStandingsResponse.h"
 
 #include "GetStandingsResponseLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Announcements/GetRawRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Announcements/GetRawRequest.h"
 
 void UGetRawRequest::BuildVerb(FString& VerbString) const
 {

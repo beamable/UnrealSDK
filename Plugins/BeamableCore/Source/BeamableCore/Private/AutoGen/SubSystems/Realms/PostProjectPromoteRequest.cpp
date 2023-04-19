@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Realms/PostProjectPromoteRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/PostProjectPromoteRequest.h"
 
 void UPostProjectPromoteRequest::BuildVerb(FString& VerbString) const
 {

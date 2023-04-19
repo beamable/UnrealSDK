@@ -1,5 +1,5 @@
 
-#include "AutoGen/ContentReferenceLibrary.h"
+#include "BeamableCore/Public/AutoGen/ContentReferenceLibrary.h"
 
 #include "CoreMinimal.h"
 

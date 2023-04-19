@@ -1,5 +1,5 @@
 
-#include "AutoGen/PlayerListingView.h"
+#include "BeamableCore/Public/AutoGen/PlayerListingView.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/SendMessageRequestBody.h"
-#include "AutoGen/SendMessageResponse.h"
+#include "BeamableCore/Public/AutoGen/SendMessageRequestBody.h"
+#include "BeamableCore/Public/AutoGen/SendMessageResponse.h"
 
 #include "PostMessagesRequest.generated.h"
 

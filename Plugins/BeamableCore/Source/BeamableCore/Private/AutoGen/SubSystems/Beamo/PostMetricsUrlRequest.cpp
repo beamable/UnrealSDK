@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Beamo/PostMetricsUrlRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Beamo/PostMetricsUrlRequest.h"
 
 void UPostMetricsUrlRequest::BuildVerb(FString& VerbString) const
 {

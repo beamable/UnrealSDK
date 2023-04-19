@@ -9,7 +9,7 @@
 
 
 
-#include "AutoGen/LeaderboardPartitionInfo.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardPartitionInfo.h"
 
 #include "GetPartitionRequest.generated.h"
 

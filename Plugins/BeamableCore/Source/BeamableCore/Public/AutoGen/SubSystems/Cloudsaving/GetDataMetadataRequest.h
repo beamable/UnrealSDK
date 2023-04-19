@@ -7,9 +7,9 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/Optionals/OptionalArrayOfObjectRequestBody.h"
-#include "AutoGen/Optionals/OptionalInt64.h"
-#include "AutoGen/ObjectsMetadataResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfObjectRequestBody.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
+#include "BeamableCore/Public/AutoGen/ObjectsMetadataResponse.h"
 
 #include "GetDataMetadataRequest.generated.h"
 

@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/ConnectionString.h"
+#include "BeamableCore/Public/AutoGen/ConnectionString.h"
 
 #include "GetStorageConnectionRequest.generated.h"
 

@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamBackend/SemanticTypes/BeamAccountId.h"
-#include "AutoGen/DeleteThirdPartyAssociation.h"
-#include "AutoGen/EmptyResponse.h"
+#include "BeamableCore/Public/AutoGen/DeleteThirdPartyAssociation.h"
+#include "BeamableCore/Public/AutoGen/EmptyResponse.h"
 
 #include "DeleteAdminThirdPartyRequest.generated.h"
 

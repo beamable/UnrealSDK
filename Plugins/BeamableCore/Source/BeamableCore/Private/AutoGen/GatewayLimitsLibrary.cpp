@@ -1,5 +1,5 @@
 
-#include "AutoGen/GatewayLimitsLibrary.h"
+#include "BeamableCore/Public/AutoGen/GatewayLimitsLibrary.h"
 
 #include "CoreMinimal.h"
 

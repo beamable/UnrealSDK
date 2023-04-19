@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Realms/GetConfigRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetConfigRequest.h"
 
 void UGetConfigRequest::BuildVerb(FString& VerbString) const
 {

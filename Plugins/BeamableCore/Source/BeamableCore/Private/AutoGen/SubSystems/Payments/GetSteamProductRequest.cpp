@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Payments/GetSteamProductRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Payments/GetSteamProductRequest.h"
 
 void UGetSteamProductRequest::BuildVerb(FString& VerbString) const
 {

@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/DatabaseMeasurement.h"
+#include "BeamableCore/Public/AutoGen/DatabaseMeasurement.h"
 
 #include "OptionalArrayOfDatabaseMeasurement.generated.h"
 

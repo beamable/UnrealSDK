@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Events/DeleteContentRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Events/DeleteContentRequest.h"
 
 void UDeleteContentRequest::BuildVerb(FString& VerbString) const
 {

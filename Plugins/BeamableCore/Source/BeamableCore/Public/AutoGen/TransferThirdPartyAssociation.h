@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/ThirdPartyAssociation.h"
+#include "BeamableCore/Public/AutoGen/ThirdPartyAssociation.h"
 
 #include "TransferThirdPartyAssociation.generated.h"
 

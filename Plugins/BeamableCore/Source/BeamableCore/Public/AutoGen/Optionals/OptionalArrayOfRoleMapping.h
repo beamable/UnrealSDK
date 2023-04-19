@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/RoleMapping.h"
+#include "BeamableCore/Public/AutoGen/RoleMapping.h"
 
 #include "OptionalArrayOfRoleMapping.generated.h"
 

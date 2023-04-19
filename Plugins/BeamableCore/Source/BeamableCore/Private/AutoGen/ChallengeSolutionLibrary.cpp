@@ -1,5 +1,5 @@
 
-#include "AutoGen/ChallengeSolutionLibrary.h"
+#include "BeamableCore/Public/AutoGen/ChallengeSolutionLibrary.h"
 
 #include "CoreMinimal.h"
 

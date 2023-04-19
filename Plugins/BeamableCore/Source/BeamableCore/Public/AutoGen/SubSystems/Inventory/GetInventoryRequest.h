@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamBackend/SemanticTypes/BeamGamerTag.h"
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/InventoryView.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/InventoryView.h"
 
 #include "GetInventoryRequest.generated.h"
 

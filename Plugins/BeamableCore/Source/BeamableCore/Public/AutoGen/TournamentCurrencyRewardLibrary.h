@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/TournamentCurrencyReward.h"
+#include "BeamableCore/Public/AutoGen/TournamentCurrencyReward.h"
 
 #include "TournamentCurrencyRewardLibrary.generated.h"
 

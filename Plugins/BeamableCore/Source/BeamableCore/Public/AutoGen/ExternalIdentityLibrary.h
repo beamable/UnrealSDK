@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ExternalIdentity.h"
+#include "BeamableCore/Public/AutoGen/ExternalIdentity.h"
 
 #include "ExternalIdentityLibrary.generated.h"
 

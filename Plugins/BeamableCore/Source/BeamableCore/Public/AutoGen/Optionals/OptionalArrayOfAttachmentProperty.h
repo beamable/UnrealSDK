@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/AttachmentProperty.h"
+#include "BeamableCore/Public/AutoGen/AttachmentProperty.h"
 
 #include "OptionalArrayOfAttachmentProperty.generated.h"
 

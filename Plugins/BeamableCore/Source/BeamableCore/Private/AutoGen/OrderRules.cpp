@@ -1,5 +1,5 @@
 
-#include "AutoGen/OrderRules.h"
+#include "BeamableCore/Public/AutoGen/OrderRules.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

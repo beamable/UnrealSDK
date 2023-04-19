@@ -1,5 +1,5 @@
 
-#include "AutoGen/CurrencyArchetype.h"
+#include "BeamableCore/Public/AutoGen/CurrencyArchetype.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

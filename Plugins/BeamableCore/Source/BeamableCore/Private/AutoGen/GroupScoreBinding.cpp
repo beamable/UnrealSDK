@@ -1,5 +1,5 @@
 
-#include "AutoGen/GroupScoreBinding.h"
+#include "BeamableCore/Public/AutoGen/GroupScoreBinding.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

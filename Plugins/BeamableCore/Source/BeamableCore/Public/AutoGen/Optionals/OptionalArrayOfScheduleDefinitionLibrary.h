@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfScheduleDefinition.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfScheduleDefinition.h"
 
 #include "OptionalArrayOfScheduleDefinitionLibrary.generated.h"
 

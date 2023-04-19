@@ -1,5 +1,5 @@
 
-#include "AutoGen/ListTagsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ListTagsRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

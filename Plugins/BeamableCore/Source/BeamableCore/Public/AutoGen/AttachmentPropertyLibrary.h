@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/AttachmentProperty.h"
+#include "BeamableCore/Public/AutoGen/AttachmentProperty.h"
 
 #include "AttachmentPropertyLibrary.generated.h"
 

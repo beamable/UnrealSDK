@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetSKUsResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/GetSKUsResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

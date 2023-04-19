@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Beamo/GetManifestCurrentRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Beamo/GetManifestCurrentRequest.h"
 
 void UGetManifestCurrentRequest::BuildVerb(FString& VerbString) const
 {

@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/EventRule.h"
+#include "BeamableCore/Public/AutoGen/EventRule.h"
 
 #include "OptionalArrayOfEventRule.generated.h"
 

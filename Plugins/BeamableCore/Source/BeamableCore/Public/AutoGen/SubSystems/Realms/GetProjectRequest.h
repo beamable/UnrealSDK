@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/ProjectView.h"
+#include "BeamableCore/Public/AutoGen/ProjectView.h"
 
 #include "GetProjectRequest.generated.h"
 

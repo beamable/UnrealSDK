@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/SendMailRequestBody.h"
+#include "BeamableCore/Public/AutoGen/SendMailRequestBody.h"
 
 #include "BulkSendMailRequestBody.generated.h"
 

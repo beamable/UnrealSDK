@@ -1,5 +1,5 @@
 
-#include "AutoGen/AvailabilityResponse.h"
+#include "BeamableCore/Public/AutoGen/AvailabilityResponse.h"
 
 
 

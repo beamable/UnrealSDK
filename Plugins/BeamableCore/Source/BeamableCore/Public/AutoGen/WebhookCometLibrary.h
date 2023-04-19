@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/WebhookComet.h"
+#include "BeamableCore/Public/AutoGen/WebhookComet.h"
 
 #include "WebhookCometLibrary.generated.h"
 

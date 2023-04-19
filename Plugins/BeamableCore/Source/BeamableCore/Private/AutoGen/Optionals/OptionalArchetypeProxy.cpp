@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArchetypeProxy.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArchetypeProxy.h"
 
 FOptionalArchetypeProxy::FOptionalArchetypeProxy()
 {

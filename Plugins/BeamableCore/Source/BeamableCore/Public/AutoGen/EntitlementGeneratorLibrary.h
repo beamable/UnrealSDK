@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/EntitlementGenerator.h"
+#include "BeamableCore/Public/AutoGen/EntitlementGenerator.h"
 
 #include "EntitlementGeneratorLibrary.generated.h"
 

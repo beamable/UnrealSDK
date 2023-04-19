@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Stats/PostBatchRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/PostBatchRequest.h"
 
 void UPostBatchRequest::BuildVerb(FString& VerbString) const
 {

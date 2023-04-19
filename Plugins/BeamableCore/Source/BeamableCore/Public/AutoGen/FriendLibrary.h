@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Friend.h"
+#include "BeamableCore/Public/AutoGen/Friend.h"
 
 #include "FriendLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/ChatV2/GetRoomsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/ChatV2/GetRoomsRequest.h"
 
 void UGetRoomsRequest::BuildVerb(FString& VerbString) const
 {

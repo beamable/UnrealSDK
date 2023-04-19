@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalContextInfo.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalContextInfo.h"
 
 #include "OptionalContextInfoLibrary.generated.h"
 

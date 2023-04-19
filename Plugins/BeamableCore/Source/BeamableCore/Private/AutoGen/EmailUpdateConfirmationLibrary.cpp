@@ -1,5 +1,5 @@
 
-#include "AutoGen/EmailUpdateConfirmationLibrary.h"
+#include "BeamableCore/Public/AutoGen/EmailUpdateConfirmationLibrary.h"
 
 #include "CoreMinimal.h"
 

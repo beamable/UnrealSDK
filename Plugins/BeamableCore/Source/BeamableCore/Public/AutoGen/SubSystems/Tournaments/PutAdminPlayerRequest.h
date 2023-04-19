@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/UpdatePlayerStatusRequestBody.h"
-#include "AutoGen/AdminPlayerStatus.h"
+#include "BeamableCore/Public/AutoGen/UpdatePlayerStatusRequestBody.h"
+#include "BeamableCore/Public/AutoGen/AdminPlayerStatus.h"
 
 #include "PutAdminPlayerRequest.generated.h"
 

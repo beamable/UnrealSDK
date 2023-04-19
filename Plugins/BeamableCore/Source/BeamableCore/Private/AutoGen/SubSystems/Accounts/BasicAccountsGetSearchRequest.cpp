@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/BasicAccountsGetSearchRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/BasicAccountsGetSearchRequest.h"
 
 void UBasicAccountsGetSearchRequest::BuildVerb(FString& VerbString) const
 {

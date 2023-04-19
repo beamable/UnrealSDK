@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Realms/DeleteProjectRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/DeleteProjectRequest.h"
 
 void UDeleteProjectRequest::BuildVerb(FString& VerbString) const
 {

@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/ItemDeleteRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ItemDeleteRequestBody.h"
 
 #include "OptionalArrayOfItemDeleteRequestBody.generated.h"
 

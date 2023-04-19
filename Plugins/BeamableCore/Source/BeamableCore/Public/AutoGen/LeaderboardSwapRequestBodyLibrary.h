@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/LeaderboardSwapRequestBody.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardSwapRequestBody.h"
 
 #include "LeaderboardSwapRequestBodyLibrary.generated.h"
 

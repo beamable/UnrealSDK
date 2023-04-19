@@ -1,5 +1,5 @@
 
-#include "AutoGen/ItemArchetype.h"
+#include "BeamableCore/Public/AutoGen/ItemArchetype.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

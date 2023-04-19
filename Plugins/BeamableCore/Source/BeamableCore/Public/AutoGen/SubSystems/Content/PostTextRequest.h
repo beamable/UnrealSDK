@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/SaveTextRequestBody.h"
-#include "AutoGen/SaveTextResponse.h"
+#include "BeamableCore/Public/AutoGen/SaveTextRequestBody.h"
+#include "BeamableCore/Public/AutoGen/SaveTextResponse.h"
 
 #include "PostTextRequest.generated.h"
 

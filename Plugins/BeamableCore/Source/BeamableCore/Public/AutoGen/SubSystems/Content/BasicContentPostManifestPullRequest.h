@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/PullManifestRequestBody.h"
-#include "AutoGen/ContentBasicManifest.h"
+#include "BeamableCore/Public/AutoGen/PullManifestRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ContentBasicManifest.h"
 
 #include "BasicContentPostManifestPullRequest.generated.h"
 

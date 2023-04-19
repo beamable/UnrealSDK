@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/BinaryDefinition.h"
+#include "BeamableCore/Public/AutoGen/BinaryDefinition.h"
 
 #include "SaveBinaryRequestBody.generated.h"
 

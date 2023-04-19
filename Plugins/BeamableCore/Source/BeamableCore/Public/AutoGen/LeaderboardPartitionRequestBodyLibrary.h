@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/LeaderboardPartitionRequestBody.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardPartitionRequestBody.h"
 
 #include "LeaderboardPartitionRequestBodyLibrary.generated.h"
 

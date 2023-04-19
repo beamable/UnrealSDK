@@ -1,5 +1,5 @@
 
-#include "AutoGen/StoreLibrary.h"
+#include "BeamableCore/Public/AutoGen/StoreLibrary.h"
 
 #include "CoreMinimal.h"
 

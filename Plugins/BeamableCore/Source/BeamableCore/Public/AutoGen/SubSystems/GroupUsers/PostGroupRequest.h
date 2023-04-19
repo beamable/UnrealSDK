@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/GroupCreate.h"
-#include "AutoGen/GroupCreateResponse.h"
+#include "BeamableCore/Public/AutoGen/GroupCreate.h"
+#include "BeamableCore/Public/AutoGen/GroupCreateResponse.h"
 
 #include "PostGroupRequest.generated.h"
 

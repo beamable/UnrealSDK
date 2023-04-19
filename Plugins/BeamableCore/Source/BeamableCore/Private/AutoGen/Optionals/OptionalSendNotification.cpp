@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalSendNotification.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalSendNotification.h"
 
 FOptionalSendNotification::FOptionalSendNotification()
 {

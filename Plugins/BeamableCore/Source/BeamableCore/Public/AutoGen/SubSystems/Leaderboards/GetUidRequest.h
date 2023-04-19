@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/LeaderboardUidResponse.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardUidResponse.h"
 
 #include "GetUidRequest.generated.h"
 

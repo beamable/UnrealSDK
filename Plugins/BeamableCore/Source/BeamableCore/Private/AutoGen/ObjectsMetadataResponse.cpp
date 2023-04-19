@@ -1,5 +1,5 @@
 
-#include "AutoGen/ObjectsMetadataResponse.h"
+#include "BeamableCore/Public/AutoGen/ObjectsMetadataResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

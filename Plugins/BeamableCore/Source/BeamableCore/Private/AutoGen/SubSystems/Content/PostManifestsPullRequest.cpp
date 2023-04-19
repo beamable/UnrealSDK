@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Content/PostManifestsPullRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Content/PostManifestsPullRequest.h"
 
 void UPostManifestsPullRequest::BuildVerb(FString& VerbString) const
 {

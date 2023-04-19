@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Leaderboards/DeleteAssignmentRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Leaderboards/DeleteAssignmentRequest.h"
 
 void UDeleteAssignmentRequest::BuildVerb(FString& VerbString) const
 {

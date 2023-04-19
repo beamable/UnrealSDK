@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Invite.h"
+#include "BeamableCore/Public/AutoGen/Invite.h"
 
 #include "InviteLibrary.generated.h"
 

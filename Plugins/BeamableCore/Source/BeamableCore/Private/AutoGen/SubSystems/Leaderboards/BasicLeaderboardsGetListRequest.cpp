@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Leaderboards/BasicLeaderboardsGetListRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Leaderboards/BasicLeaderboardsGetListRequest.h"
 
 void UBasicLeaderboardsGetListRequest::BuildVerb(FString& VerbString) const
 {

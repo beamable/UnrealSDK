@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Link.h"
+#include "BeamableCore/Public/AutoGen/Link.h"
 
 #include "LinkLibrary.generated.h"
 

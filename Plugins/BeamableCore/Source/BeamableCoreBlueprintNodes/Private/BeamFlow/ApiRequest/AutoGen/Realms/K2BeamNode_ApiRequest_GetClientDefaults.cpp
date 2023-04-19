@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Realms/K2BeamNode_ApiRequest_GetClientDefaults.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Realms/K2BeamNode_ApiRequest_GetClientDefaults.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamRealmsApi.h"
-#include "AutoGen/SubSystems/Realms/GetClientDefaultsRequest.h"
-#include "AutoGen/RealmConfiguration.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamRealmsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetClientDefaultsRequest.h"
+#include "BeamableCore/Public/AutoGen/RealmConfiguration.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetClientDefaults"
 

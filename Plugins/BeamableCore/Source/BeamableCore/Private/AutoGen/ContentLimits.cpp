@@ -1,5 +1,5 @@
 
-#include "AutoGen/ContentLimits.h"
+#include "BeamableCore/Public/AutoGen/ContentLimits.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

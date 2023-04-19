@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/RegisterReq.h"
+#include "BeamableCore/Public/AutoGen/RegisterReq.h"
 
 #include "RegisterReqLibrary.generated.h"
 

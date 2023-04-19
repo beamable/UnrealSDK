@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/PutAdminScopeRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PutAdminScopeRequest.h"
 
 void UPutAdminScopeRequest::BuildVerb(FString& VerbString) const
 {

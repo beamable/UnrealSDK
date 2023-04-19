@@ -1,5 +1,5 @@
 
-#include "AutoGen/RoleChangeRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/RoleChangeRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

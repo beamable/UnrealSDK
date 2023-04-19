@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfStatStringListEntry.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfStatStringListEntry.h"
 
 FOptionalArrayOfStatStringListEntry::FOptionalArrayOfStatStringListEntry()
 {

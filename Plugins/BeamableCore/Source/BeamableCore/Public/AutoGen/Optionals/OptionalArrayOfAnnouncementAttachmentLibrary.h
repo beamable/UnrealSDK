@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfAnnouncementAttachment.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfAnnouncementAttachment.h"
 
 #include "OptionalArrayOfAnnouncementAttachmentLibrary.generated.h"
 

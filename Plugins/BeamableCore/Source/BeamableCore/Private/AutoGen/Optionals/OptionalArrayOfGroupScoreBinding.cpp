@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfGroupScoreBinding.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfGroupScoreBinding.h"
 
 FOptionalArrayOfGroupScoreBinding::FOptionalArrayOfGroupScoreBinding()
 {

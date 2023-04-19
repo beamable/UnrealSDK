@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetGameRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/GetGameRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

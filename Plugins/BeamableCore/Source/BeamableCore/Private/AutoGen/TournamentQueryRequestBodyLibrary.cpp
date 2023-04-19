@@ -1,5 +1,5 @@
 
-#include "AutoGen/TournamentQueryRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/TournamentQueryRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

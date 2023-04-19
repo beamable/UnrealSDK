@@ -1,5 +1,5 @@
 
-#include "AutoGen/AnnouncementRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/AnnouncementRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

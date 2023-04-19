@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfAttachmentProperty.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfAttachmentProperty.h"
 
 #include "OptionalArrayOfAttachmentPropertyLibrary.generated.h"
 

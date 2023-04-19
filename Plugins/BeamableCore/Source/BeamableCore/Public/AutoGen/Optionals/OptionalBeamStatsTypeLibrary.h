@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalBeamStatsType.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamStatsType.h"
 
 #include "OptionalBeamStatsTypeLibrary.generated.h"
 

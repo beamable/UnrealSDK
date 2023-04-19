@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventPhaseEndRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/EventPhaseEndRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

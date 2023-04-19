@@ -1,5 +1,5 @@
 
-#include "AutoGen/LocalizedValue.h"
+#include "BeamableCore/Public/AutoGen/LocalizedValue.h"
 
 
 

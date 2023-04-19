@@ -1,5 +1,5 @@
 
-#include "AutoGen/ServicePlansResponse.h"
+#include "BeamableCore/Public/AutoGen/ServicePlansResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

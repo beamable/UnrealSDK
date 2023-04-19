@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Content/GetManifestChecksumRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Content/GetManifestChecksumRequest.h"
 
 void UGetManifestChecksumRequest::BuildVerb(FString& VerbString) const
 {

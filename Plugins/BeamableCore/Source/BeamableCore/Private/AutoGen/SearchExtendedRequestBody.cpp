@@ -1,5 +1,5 @@
 
-#include "AutoGen/SearchExtendedRequestBody.h"
+#include "BeamableCore/Public/AutoGen/SearchExtendedRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

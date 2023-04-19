@@ -1,5 +1,5 @@
 
-#include "AutoGen/ScheduleLibrary.h"
+#include "BeamableCore/Public/AutoGen/ScheduleLibrary.h"
 
 #include "CoreMinimal.h"
 

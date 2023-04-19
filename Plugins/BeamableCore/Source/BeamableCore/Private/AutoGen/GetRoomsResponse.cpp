@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetRoomsResponse.h"
+#include "BeamableCore/Public/AutoGen/GetRoomsResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

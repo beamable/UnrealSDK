@@ -1,5 +1,5 @@
 
-#include "AutoGen/RevokeTokenRequestBody.h"
+#include "BeamableCore/Public/AutoGen/RevokeTokenRequestBody.h"
 
 
 

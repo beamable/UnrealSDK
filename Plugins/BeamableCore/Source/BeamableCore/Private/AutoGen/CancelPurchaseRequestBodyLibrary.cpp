@@ -1,5 +1,5 @@
 
-#include "AutoGen/CancelPurchaseRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/CancelPurchaseRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

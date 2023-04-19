@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/EventObjectData.h"
+#include "BeamableCore/Public/AutoGen/EventObjectData.h"
 
 #include "EventObjectDataLibrary.generated.h"
 

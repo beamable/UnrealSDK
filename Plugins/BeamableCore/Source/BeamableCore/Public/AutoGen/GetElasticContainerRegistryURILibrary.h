@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetElasticContainerRegistryURI.h"
+#include "BeamableCore/Public/AutoGen/GetElasticContainerRegistryURI.h"
 
 #include "GetElasticContainerRegistryURILibrary.generated.h"
 

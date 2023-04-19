@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Payments/PostFacebookPurchaseCancelRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Payments/PostFacebookPurchaseCancelRequest.h"
 
 void UPostFacebookPurchaseCancelRequest::BuildVerb(FString& VerbString) const
 {

@@ -1,5 +1,5 @@
 
-#include "AutoGen/TransferRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/TransferRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

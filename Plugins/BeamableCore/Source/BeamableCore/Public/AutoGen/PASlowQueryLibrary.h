@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/PASlowQuery.h"
+#include "BeamableCore/Public/AutoGen/PASlowQuery.h"
 
 #include "PASlowQueryLibrary.generated.h"
 

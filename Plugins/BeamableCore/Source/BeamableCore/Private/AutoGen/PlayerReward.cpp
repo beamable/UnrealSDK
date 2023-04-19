@@ -1,5 +1,5 @@
 
-#include "AutoGen/PlayerReward.h"
+#include "BeamableCore/Public/AutoGen/PlayerReward.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

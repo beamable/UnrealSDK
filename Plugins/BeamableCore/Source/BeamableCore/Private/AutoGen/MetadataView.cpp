@@ -1,5 +1,5 @@
 
-#include "AutoGen/MetadataView.h"
+#include "BeamableCore/Public/AutoGen/MetadataView.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

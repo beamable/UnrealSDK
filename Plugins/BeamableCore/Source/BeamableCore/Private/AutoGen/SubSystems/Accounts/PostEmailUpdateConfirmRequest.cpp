@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/PostEmailUpdateConfirmRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PostEmailUpdateConfirmRequest.h"
 
 void UPostEmailUpdateConfirmRequest::BuildVerb(FString& VerbString) const
 {

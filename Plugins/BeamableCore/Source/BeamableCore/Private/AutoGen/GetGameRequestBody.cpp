@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetGameRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GetGameRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

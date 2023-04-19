@@ -8,10 +8,10 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/Enums/GroupType.h"
-#include "AutoGen/Optionals/OptionalBool.h"
-#include "AutoGen/AvailabilityResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Enums/GroupType.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
+#include "BeamableCore/Public/AutoGen/AvailabilityResponse.h"
 
 #include "GetAvailabilityRequest.generated.h"
 

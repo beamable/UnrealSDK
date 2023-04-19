@@ -4,12 +4,12 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/Optionals/OptionalArrayOfString.h"
-#include "AutoGen/ClientDataEntry.h"
-#include "AutoGen/Optionals/OptionalPlayerReward.h"
-#include "AutoGen/Optionals/OptionalInt64.h"
-#include "AutoGen/AnnouncementAttachment.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/ClientDataEntry.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalPlayerReward.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
+#include "BeamableCore/Public/AutoGen/AnnouncementAttachment.h"
 
 #include "AnnouncementView.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/TransferThirdPartyAssociationLibrary.h"
+#include "BeamableCore/Public/AutoGen/TransferThirdPartyAssociationLibrary.h"
 
 #include "CoreMinimal.h"
 

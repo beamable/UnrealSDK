@@ -1,5 +1,5 @@
 
-#include "AutoGen/GroupInvite.h"
+#include "BeamableCore/Public/AutoGen/GroupInvite.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

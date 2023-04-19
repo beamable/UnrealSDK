@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/BulkUpdateMailObjectRequestBody.h"
-#include "AutoGen/MailSuccessResponse.h"
+#include "BeamableCore/Public/AutoGen/BulkUpdateMailObjectRequestBody.h"
+#include "BeamableCore/Public/AutoGen/MailSuccessResponse.h"
 
 #include "PutBulkRequest.generated.h"
 

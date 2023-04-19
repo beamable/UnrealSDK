@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/EventPlayerGroupState.h"
+#include "BeamableCore/Public/AutoGen/EventPlayerGroupState.h"
 
 #include "OptionalEventPlayerGroupState.generated.h"
 

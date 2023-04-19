@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/CompletedStatus.h"
+#include "BeamableCore/Public/AutoGen/CompletedStatus.h"
 
 #include "OptionalArrayOfCompletedStatus.generated.h"
 

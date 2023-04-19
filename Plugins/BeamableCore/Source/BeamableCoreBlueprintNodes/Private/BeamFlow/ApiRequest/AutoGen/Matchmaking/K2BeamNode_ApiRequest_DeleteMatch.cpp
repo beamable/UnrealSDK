@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Matchmaking/K2BeamNode_ApiRequest_DeleteMatch.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Matchmaking/K2BeamNode_ApiRequest_DeleteMatch.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamMatchmakingApi.h"
-#include "AutoGen/SubSystems/Matchmaking/DeleteMatchRequest.h"
-#include "AutoGen/EmptyResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamMatchmakingApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Matchmaking/DeleteMatchRequest.h"
+#include "BeamableCore/Public/AutoGen/EmptyResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_DeleteMatch"
 

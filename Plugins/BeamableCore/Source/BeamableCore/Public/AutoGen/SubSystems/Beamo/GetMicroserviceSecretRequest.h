@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/MicroserviceSecretResponse.h"
+#include "BeamableCore/Public/AutoGen/MicroserviceSecretResponse.h"
 
 #include "GetMicroserviceSecretRequest.generated.h"
 

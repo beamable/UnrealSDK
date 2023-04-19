@@ -1,5 +1,5 @@
 
-#include "AutoGen/SendReqLibrary.h"
+#include "BeamableCore/Public/AutoGen/SendReqLibrary.h"
 
 #include "CoreMinimal.h"
 

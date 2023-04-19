@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/CalendarView.h"
+#include "BeamableCore/Public/AutoGen/CalendarView.h"
 
 #include "CalendarViewLibrary.generated.h"
 

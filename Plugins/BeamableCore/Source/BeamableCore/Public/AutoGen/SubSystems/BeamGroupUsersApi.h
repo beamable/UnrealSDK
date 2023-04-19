@@ -7,13 +7,13 @@
 #include "BeamBackend/ResponseCache/BeamResponseCache.h"
 #include "RequestTracker/BeamRequestTracker.h"
 
-#include "GroupUsers/GetAvailabilityRequest.h"
-#include "GroupUsers/GetRecommendedRequest.h"
-#include "GroupUsers/PostJoinRequest.h"
-#include "GroupUsers/DeleteJoinRequest.h"
-#include "GroupUsers/PostGroupRequest.h"
-#include "GroupUsers/ObjectGroupUsersGetSearchRequest.h"
-#include "GroupUsers/GetGroupUsersRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/GroupUsers/GetAvailabilityRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/GroupUsers/GetRecommendedRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/GroupUsers/PostJoinRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/GroupUsers/DeleteJoinRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/GroupUsers/PostGroupRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/GroupUsers/ObjectGroupUsersGetSearchRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/GroupUsers/GetGroupUsersRequest.h"
 
 #include "BeamGroupUsersApi.generated.h"
 

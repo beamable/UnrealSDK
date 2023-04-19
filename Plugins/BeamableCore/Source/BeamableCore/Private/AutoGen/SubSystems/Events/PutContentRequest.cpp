@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Events/PutContentRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Events/PutContentRequest.h"
 
 void UPutContentRequest::BuildVerb(FString& VerbString) const
 {

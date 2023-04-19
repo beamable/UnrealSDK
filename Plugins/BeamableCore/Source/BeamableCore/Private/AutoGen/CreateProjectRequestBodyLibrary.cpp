@@ -1,5 +1,5 @@
 
-#include "AutoGen/CreateProjectRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/CreateProjectRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

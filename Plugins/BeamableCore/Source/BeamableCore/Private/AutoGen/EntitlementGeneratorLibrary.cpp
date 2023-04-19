@@ -1,5 +1,5 @@
 
-#include "AutoGen/EntitlementGeneratorLibrary.h"
+#include "BeamableCore/Public/AutoGen/EntitlementGeneratorLibrary.h"
 
 #include "CoreMinimal.h"
 

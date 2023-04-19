@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetMailDetailsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GetMailDetailsRequestBody.h"
 
 #include "GetMailDetailsRequestBodyLibrary.generated.h"
 

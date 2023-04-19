@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfEventInventoryRewardItem.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfEventInventoryRewardItem.h"
 
 FOptionalArrayOfEventInventoryRewardItem::FOptionalArrayOfEventInventoryRewardItem()
 {

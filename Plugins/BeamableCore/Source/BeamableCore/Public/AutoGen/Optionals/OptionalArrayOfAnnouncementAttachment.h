@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/AnnouncementAttachment.h"
+#include "BeamableCore/Public/AutoGen/AnnouncementAttachment.h"
 
 #include "OptionalArrayOfAnnouncementAttachment.generated.h"
 

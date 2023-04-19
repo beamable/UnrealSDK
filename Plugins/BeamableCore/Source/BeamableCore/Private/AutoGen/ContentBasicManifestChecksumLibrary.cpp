@@ -1,5 +1,5 @@
 
-#include "AutoGen/ContentBasicManifestChecksumLibrary.h"
+#include "BeamableCore/Public/AutoGen/ContentBasicManifestChecksumLibrary.h"
 
 #include "CoreMinimal.h"
 

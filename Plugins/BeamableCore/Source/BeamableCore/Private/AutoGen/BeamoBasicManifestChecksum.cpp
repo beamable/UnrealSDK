@@ -1,5 +1,5 @@
 
-#include "AutoGen/BeamoBasicManifestChecksum.h"
+#include "BeamableCore/Public/AutoGen/BeamoBasicManifestChecksum.h"
 
 #include "Misc/DefaultValueHelper.h"
 

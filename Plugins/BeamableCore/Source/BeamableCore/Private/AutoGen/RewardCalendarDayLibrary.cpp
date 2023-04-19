@@ -1,5 +1,5 @@
 
-#include "AutoGen/RewardCalendarDayLibrary.h"
+#include "BeamableCore/Public/AutoGen/RewardCalendarDayLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/CreateRoomRequestBody.h"
-#include "AutoGen/CreateRoomResponse.h"
+#include "BeamableCore/Public/AutoGen/CreateRoomRequestBody.h"
+#include "BeamableCore/Public/AutoGen/CreateRoomResponse.h"
 
 #include "PostRoomsRequest.generated.h"
 

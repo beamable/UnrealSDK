@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Payments/PostGoogleplayPurchaseTrackRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Payments/PostGoogleplayPurchaseTrackRequest.h"
 
 void UPostGoogleplayPurchaseTrackRequest::BuildVerb(FString& VerbString) const
 {

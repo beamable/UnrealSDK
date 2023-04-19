@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfCurrencyChange.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfCurrencyChange.h"
 
 #include "OptionalArrayOfCurrencyChangeLibrary.generated.h"
 

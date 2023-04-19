@@ -7,11 +7,11 @@
 #include "BeamBackend/ResponseCache/BeamResponseCache.h"
 #include "RequestTracker/BeamRequestTracker.h"
 
-#include "ChatV2/GetRoomsRequest.h"
-#include "ChatV2/PostRoomsRequest.h"
-#include "ChatV2/DeleteRoomsRequest.h"
-#include "ChatV2/GetChatV2Request.h"
-#include "ChatV2/PostMessagesRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/ChatV2/GetRoomsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/ChatV2/PostRoomsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/ChatV2/DeleteRoomsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/ChatV2/GetChatV2Request.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/ChatV2/PostMessagesRequest.h"
 
 #include "BeamChatV2Api.generated.h"
 

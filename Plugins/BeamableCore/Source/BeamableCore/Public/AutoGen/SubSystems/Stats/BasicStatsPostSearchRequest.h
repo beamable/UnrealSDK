@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/StatsSearchRequestBody.h"
-#include "AutoGen/StatsSearchResponse.h"
+#include "BeamableCore/Public/AutoGen/StatsSearchRequestBody.h"
+#include "BeamableCore/Public/AutoGen/StatsSearchResponse.h"
 
 #include "BasicStatsPostSearchRequest.generated.h"
 

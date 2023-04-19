@@ -1,5 +1,5 @@
 
-#include "AutoGen/FriendshipStatusLibrary.h"
+#include "BeamableCore/Public/AutoGen/FriendshipStatusLibrary.h"
 
 #include "CoreMinimal.h"
 

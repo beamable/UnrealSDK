@@ -4,10 +4,10 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalArrayOfItemCreateRequestBody.h"
-#include "AutoGen/Optionals/OptionalCommerceLootRoll.h"
-#include "AutoGen/Optionals/OptionalArrayOfCurrencyChange.h"
-#include "AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfItemCreateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalCommerceLootRoll.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfCurrencyChange.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "OfferDefinition.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/RoomInfo.h"
+#include "BeamableCore/Public/AutoGen/RoomInfo.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

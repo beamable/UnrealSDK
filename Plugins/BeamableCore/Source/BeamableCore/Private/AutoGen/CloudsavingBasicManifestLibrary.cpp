@@ -1,5 +1,5 @@
 
-#include "AutoGen/CloudsavingBasicManifestLibrary.h"
+#include "BeamableCore/Public/AutoGen/CloudsavingBasicManifestLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Accounts/K2BeamNode_ApiRequest_DeleteAdminForget.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Accounts/K2BeamNode_ApiRequest_DeleteAdminForget.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamAccountsApi.h"
-#include "AutoGen/SubSystems/Accounts/DeleteAdminForgetRequest.h"
-#include "AutoGen/AccountsObjectAccount.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamAccountsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/DeleteAdminForgetRequest.h"
+#include "BeamableCore/Public/AutoGen/AccountsObjectAccount.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_DeleteAdminForget"
 

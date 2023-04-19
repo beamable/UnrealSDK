@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Commerce/GetCouponsCountRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Commerce/GetCouponsCountRequest.h"
 
 void UGetCouponsCountRequest::BuildVerb(FString& VerbString) const
 {

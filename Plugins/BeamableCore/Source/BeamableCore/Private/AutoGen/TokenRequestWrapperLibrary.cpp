@@ -1,5 +1,5 @@
 
-#include "AutoGen/TokenRequestWrapperLibrary.h"
+#include "BeamableCore/Public/AutoGen/TokenRequestWrapperLibrary.h"
 
 #include "CoreMinimal.h"
 

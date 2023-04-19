@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/EventPhaseTime.h"
+#include "BeamableCore/Public/AutoGen/EventPhaseTime.h"
 
 #include "EventPhaseTimeLibrary.generated.h"
 

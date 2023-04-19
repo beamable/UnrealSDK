@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventClaimRequestBody.h"
+#include "BeamableCore/Public/AutoGen/EventClaimRequestBody.h"
 
 
 

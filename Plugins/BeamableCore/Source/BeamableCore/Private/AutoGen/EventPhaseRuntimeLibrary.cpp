@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventPhaseRuntimeLibrary.h"
+#include "BeamableCore/Public/AutoGen/EventPhaseRuntimeLibrary.h"
 
 #include "CoreMinimal.h"
 

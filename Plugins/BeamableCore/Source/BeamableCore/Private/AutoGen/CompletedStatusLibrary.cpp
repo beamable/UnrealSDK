@@ -1,5 +1,5 @@
 
-#include "AutoGen/CompletedStatusLibrary.h"
+#include "BeamableCore/Public/AutoGen/CompletedStatusLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Events/K2BeamNode_ApiRequest_GetEvents.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Events/K2BeamNode_ApiRequest_GetEvents.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamEventsApi.h"
-#include "AutoGen/SubSystems/Events/GetEventsRequest.h"
-#include "AutoGen/EventObjectData.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamEventsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Events/GetEventsRequest.h"
+#include "BeamableCore/Public/AutoGen/EventObjectData.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetEvents"
 

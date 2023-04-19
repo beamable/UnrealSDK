@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetSocialStatusesRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GetSocialStatusesRequestBody.h"
 
 #include "GetSocialStatusesRequestBodyLibrary.generated.h"
 

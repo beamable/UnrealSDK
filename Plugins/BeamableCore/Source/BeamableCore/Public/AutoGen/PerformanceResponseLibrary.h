@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/PerformanceResponse.h"
+#include "BeamableCore/Public/AutoGen/PerformanceResponse.h"
 
 #include "PerformanceResponseLibrary.generated.h"
 

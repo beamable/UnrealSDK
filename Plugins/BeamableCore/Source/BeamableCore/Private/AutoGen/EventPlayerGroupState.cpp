@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventPlayerGroupState.h"
+#include "BeamableCore/Public/AutoGen/EventPlayerGroupState.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

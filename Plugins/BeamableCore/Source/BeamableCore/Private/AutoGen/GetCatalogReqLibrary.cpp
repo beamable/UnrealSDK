@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetCatalogReqLibrary.h"
+#include "BeamableCore/Public/AutoGen/GetCatalogReqLibrary.h"
 
 #include "CoreMinimal.h"
 

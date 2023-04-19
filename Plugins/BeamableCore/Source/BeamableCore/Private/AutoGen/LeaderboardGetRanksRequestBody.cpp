@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderboardGetRanksRequestBody.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardGetRanksRequestBody.h"
 
 
 

@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/Optionals/OptionalBeamContentManifestId.h"
-#include "AutoGen/ClientManifestCsvResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamContentManifestId.h"
+#include "BeamableCore/Public/AutoGen/ClientManifestCsvResponse.h"
 
 #include "GetManifestPublicRequest.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/MyMailUpdate.h"
+#include "BeamableCore/Public/AutoGen/MyMailUpdate.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

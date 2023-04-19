@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalGamerTagAssociation.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalGamerTagAssociation.h"
 
 FOptionalGamerTagAssociation::FOptionalGamerTagAssociation()
 {

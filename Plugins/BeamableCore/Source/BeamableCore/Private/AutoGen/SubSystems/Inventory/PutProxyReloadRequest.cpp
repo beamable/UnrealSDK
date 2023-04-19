@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Inventory/PutProxyReloadRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Inventory/PutProxyReloadRequest.h"
 
 void UPutProxyReloadRequest::BuildVerb(FString& VerbString) const
 {

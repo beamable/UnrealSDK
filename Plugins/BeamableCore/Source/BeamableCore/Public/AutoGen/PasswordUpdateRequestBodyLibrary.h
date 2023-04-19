@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/PasswordUpdateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/PasswordUpdateRequestBody.h"
 
 #include "PasswordUpdateRequestBodyLibrary.generated.h"
 

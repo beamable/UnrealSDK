@@ -1,5 +1,5 @@
 
-#include "AutoGen/DeleteLocalizationRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/DeleteLocalizationRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

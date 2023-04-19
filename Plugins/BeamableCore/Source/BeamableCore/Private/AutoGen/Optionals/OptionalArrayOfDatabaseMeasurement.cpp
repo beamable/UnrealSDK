@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfDatabaseMeasurement.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfDatabaseMeasurement.h"
 
 FOptionalArrayOfDatabaseMeasurement::FOptionalArrayOfDatabaseMeasurement()
 {

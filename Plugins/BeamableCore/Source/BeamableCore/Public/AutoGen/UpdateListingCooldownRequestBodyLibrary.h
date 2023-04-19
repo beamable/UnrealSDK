@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/UpdateListingCooldownRequestBody.h"
+#include "BeamableCore/Public/AutoGen/UpdateListingCooldownRequestBody.h"
 
 #include "UpdateListingCooldownRequestBodyLibrary.generated.h"
 

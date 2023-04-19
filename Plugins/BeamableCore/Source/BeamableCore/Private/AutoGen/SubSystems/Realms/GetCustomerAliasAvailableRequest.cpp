@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Realms/GetCustomerAliasAvailableRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetCustomerAliasAvailableRequest.h"
 
 void UGetCustomerAliasAvailableRequest::BuildVerb(FString& VerbString) const
 {

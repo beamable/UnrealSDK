@@ -1,5 +1,5 @@
 
-#include "AutoGen/DeleteRoleRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/DeleteRoleRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

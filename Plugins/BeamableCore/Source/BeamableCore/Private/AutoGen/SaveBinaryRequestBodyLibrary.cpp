@@ -1,5 +1,5 @@
 
-#include "AutoGen/SaveBinaryRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/SaveBinaryRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

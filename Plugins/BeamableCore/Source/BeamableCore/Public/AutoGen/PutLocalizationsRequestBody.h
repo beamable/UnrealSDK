@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Arrays/ArrayOfLocalizedValue.h"
+#include "BeamableCore/Public/AutoGen/Arrays/ArrayOfLocalizedValue.h"
 
 #include "PutLocalizationsRequestBody.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/PerformanceResponse.h"
+#include "BeamableCore/Public/AutoGen/PerformanceResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

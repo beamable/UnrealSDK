@@ -1,5 +1,5 @@
 
-#include "AutoGen/BeamoLimitsLibrary.h"
+#include "BeamableCore/Public/AutoGen/BeamoLimitsLibrary.h"
 
 #include "CoreMinimal.h"
 

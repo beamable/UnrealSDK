@@ -1,12 +1,12 @@
 
-#include "AutoGen/SubSystems/Accounts/GetAvailableExternal_identityRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetAvailableExternalIdentityRequest.h"
 
-void UGetAvailableExternal_identityRequest::BuildVerb(FString& VerbString) const
+void UGetAvailableExternalIdentityRequest::BuildVerb(FString& VerbString) const
 {
 	VerbString = TEXT("GET");
 }
 
-void UGetAvailableExternal_identityRequest::BuildRoute(FString& RouteString) const
+void UGetAvailableExternalIdentityRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/basic/accounts/available/external_identity");
 	
@@ -31,14 +31,14 @@ void UGetAvailableExternal_identityRequest::BuildRoute(FString& RouteString) con
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
 }
 
-void UGetAvailableExternal_identityRequest::BuildBody(FString& BodyString) const
+void UGetAvailableExternalIdentityRequest::BuildBody(FString& BodyString) const
 {
 	
 }
 
-UGetAvailableExternal_identityRequest* UGetAvailableExternal_identityRequest::Make(FString _ProviderService, FString _UserId, FOptionalString _ProviderNamespace, UObject* RequestOwner)
+UGetAvailableExternalIdentityRequest* UGetAvailableExternalIdentityRequest::Make(FString _ProviderService, FString _UserId, FOptionalString _ProviderNamespace, UObject* RequestOwner)
 {
-	UGetAvailableExternal_identityRequest* Req = NewObject<UGetAvailableExternal_identityRequest>(RequestOwner);
+	UGetAvailableExternalIdentityRequest* Req = NewObject<UGetAvailableExternalIdentityRequest>(RequestOwner);
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ProviderService = _ProviderService;

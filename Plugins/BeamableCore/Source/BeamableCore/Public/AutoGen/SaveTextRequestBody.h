@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/TextDefinition.h"
+#include "BeamableCore/Public/AutoGen/TextDefinition.h"
 
 #include "SaveTextRequestBody.generated.h"
 

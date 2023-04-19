@@ -1,5 +1,5 @@
 
-#include "AutoGen/Friend.h"
+#include "BeamableCore/Public/AutoGen/Friend.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

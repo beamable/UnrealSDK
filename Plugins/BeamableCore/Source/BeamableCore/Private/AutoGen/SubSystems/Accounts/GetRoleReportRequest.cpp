@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/GetRoleReportRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetRoleReportRequest.h"
 
 void UGetRoleReportRequest::BuildVerb(FString& VerbString) const
 {

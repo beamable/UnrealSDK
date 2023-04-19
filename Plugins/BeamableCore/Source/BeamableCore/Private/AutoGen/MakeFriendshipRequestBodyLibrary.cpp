@@ -1,5 +1,5 @@
 
-#include "AutoGen/MakeFriendshipRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/MakeFriendshipRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

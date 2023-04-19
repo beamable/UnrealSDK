@@ -1,5 +1,5 @@
 
-#include "AutoGen/RealmsBasicAccountLibrary.h"
+#include "BeamableCore/Public/AutoGen/RealmsBasicAccountLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SteamOrderInfoItem.h"
+#include "BeamableCore/Public/AutoGen/SteamOrderInfoItem.h"
 
 #include "Misc/DefaultValueHelper.h"
 

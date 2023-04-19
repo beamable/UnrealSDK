@@ -1,5 +1,5 @@
 
-#include "AutoGen/SendMailObjectRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/SendMailObjectRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

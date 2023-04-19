@@ -1,5 +1,5 @@
 
-#include "AutoGen/ThirdPartyAvailableRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ThirdPartyAvailableRequestBody.h"
 
 
 

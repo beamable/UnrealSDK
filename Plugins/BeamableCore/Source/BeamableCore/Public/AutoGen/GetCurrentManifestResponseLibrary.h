@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetCurrentManifestResponse.h"
+#include "BeamableCore/Public/AutoGen/GetCurrentManifestResponse.h"
 
 #include "GetCurrentManifestResponseLibrary.generated.h"
 

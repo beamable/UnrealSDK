@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfObjectRequestBody.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfObjectRequestBody.h"
 
 FOptionalArrayOfObjectRequestBody::FOptionalArrayOfObjectRequestBody()
 {

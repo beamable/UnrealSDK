@@ -1,5 +1,5 @@
 
-#include "AutoGen/ImportFriendsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ImportFriendsRequestBody.h"
 
 
 

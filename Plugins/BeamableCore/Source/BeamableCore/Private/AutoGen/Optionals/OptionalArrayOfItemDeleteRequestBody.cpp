@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfItemDeleteRequestBody.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfItemDeleteRequestBody.h"
 
 FOptionalArrayOfItemDeleteRequestBody::FOptionalArrayOfItemDeleteRequestBody()
 {

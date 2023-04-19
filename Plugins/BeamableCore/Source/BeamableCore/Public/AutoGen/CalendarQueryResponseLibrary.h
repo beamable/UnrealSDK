@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/CalendarQueryResponse.h"
+#include "BeamableCore/Public/AutoGen/CalendarQueryResponse.h"
 
 #include "CalendarQueryResponseLibrary.generated.h"
 

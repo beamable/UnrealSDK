@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/AccountsBasicAccount.h"
+#include "BeamableCore/Public/AutoGen/AccountsBasicAccount.h"
 
 #include "GetFindRequest.generated.h"
 

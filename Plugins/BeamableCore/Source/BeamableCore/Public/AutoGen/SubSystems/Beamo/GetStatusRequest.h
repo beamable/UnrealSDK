@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/GetStatusResponse.h"
+#include "BeamableCore/Public/AutoGen/GetStatusResponse.h"
 
 #include "GetStatusRequest.generated.h"
 

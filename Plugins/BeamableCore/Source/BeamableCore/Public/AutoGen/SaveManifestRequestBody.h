@@ -5,7 +5,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamBackend/SemanticTypes/BeamContentManifestId.h"
-#include "AutoGen/ReferenceSuperset.h"
+#include "BeamableCore/Public/AutoGen/ReferenceSuperset.h"
 
 #include "SaveManifestRequestBody.generated.h"
 

@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/AnnouncementDto.h"
-#include "AutoGen/EmptyResponse.h"
+#include "BeamableCore/Public/AutoGen/AnnouncementDto.h"
+#include "BeamableCore/Public/AutoGen/EmptyResponse.h"
 
 #include "PostAnnouncementsRequest.generated.h"
 

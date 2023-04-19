@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/ChatV2ObjectMessage.h"
+#include "BeamableCore/Public/AutoGen/ChatV2ObjectMessage.h"
 
 #include "SendMessageResponse.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Groups/PutGroupsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Groups/PutGroupsRequest.h"
 
 void UPutGroupsRequest::BuildVerb(FString& VerbString) const
 {

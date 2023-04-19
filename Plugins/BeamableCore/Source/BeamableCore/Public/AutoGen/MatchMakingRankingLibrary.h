@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/MatchMakingRanking.h"
+#include "BeamableCore/Public/AutoGen/MatchMakingRanking.h"
 
 #include "MatchMakingRankingLibrary.generated.h"
 

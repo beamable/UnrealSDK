@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventInventoryRewardCurrencyLibrary.h"
+#include "BeamableCore/Public/AutoGen/EventInventoryRewardCurrencyLibrary.h"
 
 #include "CoreMinimal.h"
 

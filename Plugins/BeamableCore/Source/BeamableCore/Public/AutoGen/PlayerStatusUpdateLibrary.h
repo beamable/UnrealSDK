@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/PlayerStatusUpdate.h"
+#include "BeamableCore/Public/AutoGen/PlayerStatusUpdate.h"
 
 #include "PlayerStatusUpdateLibrary.generated.h"
 

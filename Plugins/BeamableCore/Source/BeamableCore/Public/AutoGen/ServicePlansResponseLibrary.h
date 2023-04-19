@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ServicePlansResponse.h"
+#include "BeamableCore/Public/AutoGen/ServicePlansResponse.h"
 
 #include "ServicePlansResponseLibrary.generated.h"
 

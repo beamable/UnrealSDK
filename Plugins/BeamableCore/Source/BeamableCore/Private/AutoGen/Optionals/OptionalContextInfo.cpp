@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalContextInfo.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalContextInfo.h"
 
 FOptionalContextInfo::FOptionalContextInfo()
 {

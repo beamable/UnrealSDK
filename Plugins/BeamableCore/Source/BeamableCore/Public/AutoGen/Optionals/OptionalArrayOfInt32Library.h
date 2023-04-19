@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalArrayOfInt32.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfInt32.h"
 
 #include "OptionalArrayOfInt32Library.generated.h"
 

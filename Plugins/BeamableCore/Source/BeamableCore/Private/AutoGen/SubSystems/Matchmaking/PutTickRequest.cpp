@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Matchmaking/PutTickRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Matchmaking/PutTickRequest.h"
 
 void UPutTickRequest::BuildVerb(FString& VerbString) const
 {

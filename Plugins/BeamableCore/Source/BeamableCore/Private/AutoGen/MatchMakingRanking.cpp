@@ -1,5 +1,5 @@
 
-#include "AutoGen/MatchMakingRanking.h"
+#include "BeamableCore/Public/AutoGen/MatchMakingRanking.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

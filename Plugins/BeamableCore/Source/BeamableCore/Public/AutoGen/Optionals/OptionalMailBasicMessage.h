@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/MailBasicMessage.h"
+#include "BeamableCore/Public/AutoGen/MailBasicMessage.h"
 
 #include "OptionalMailBasicMessage.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/DatabaseMeasurementLibrary.h"
+#include "BeamableCore/Public/AutoGen/DatabaseMeasurementLibrary.h"
 
 #include "CoreMinimal.h"
 

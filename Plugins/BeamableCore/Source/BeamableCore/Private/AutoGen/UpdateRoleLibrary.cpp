@@ -1,5 +1,5 @@
 
-#include "AutoGen/UpdateRoleLibrary.h"
+#include "BeamableCore/Public/AutoGen/UpdateRoleLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/SaveCatalogRequestBody.h"
-#include "AutoGen/ResultResponse.h"
+#include "BeamableCore/Public/AutoGen/SaveCatalogRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ResultResponse.h"
 
 #include "PostCatalogLegacyRequest.generated.h"
 

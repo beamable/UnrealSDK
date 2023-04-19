@@ -1,5 +1,5 @@
 
-#include "AutoGen/BaseContentReference.h"
+#include "BeamableCore/Public/AutoGen/BaseContentReference.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

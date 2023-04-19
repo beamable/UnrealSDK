@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/SubscriptionVerificationResponse.h"
+#include "BeamableCore/Public/AutoGen/SubscriptionVerificationResponse.h"
 
 #include "SubscriptionVerificationResponseLibrary.generated.h"
 

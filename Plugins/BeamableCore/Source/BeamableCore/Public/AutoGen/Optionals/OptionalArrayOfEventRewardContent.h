@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/EventRewardContent.h"
+#include "BeamableCore/Public/AutoGen/EventRewardContent.h"
 
 #include "OptionalArrayOfEventRewardContent.generated.h"
 

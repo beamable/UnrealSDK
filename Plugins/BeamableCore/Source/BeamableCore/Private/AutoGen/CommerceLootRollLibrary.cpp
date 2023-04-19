@@ -1,5 +1,5 @@
 
-#include "AutoGen/CommerceLootRollLibrary.h"
+#include "BeamableCore/Public/AutoGen/CommerceLootRollLibrary.h"
 
 #include "CoreMinimal.h"
 

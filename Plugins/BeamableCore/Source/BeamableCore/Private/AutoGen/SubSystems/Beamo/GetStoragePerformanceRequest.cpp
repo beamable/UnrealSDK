@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Beamo/GetStoragePerformanceRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Beamo/GetStoragePerformanceRequest.h"
 
 void UGetStoragePerformanceRequest::BuildVerb(FString& VerbString) const
 {

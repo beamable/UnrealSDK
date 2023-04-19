@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Realms/GetGamesRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetGamesRequest.h"
 
 void UGetGamesRequest::BuildVerb(FString& VerbString) const
 {

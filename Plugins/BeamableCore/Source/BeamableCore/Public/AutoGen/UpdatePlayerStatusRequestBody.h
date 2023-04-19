@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/PlayerStatusUpdate.h"
+#include "BeamableCore/Public/AutoGen/PlayerStatusUpdate.h"
 
 #include "UpdatePlayerStatusRequestBody.generated.h"
 

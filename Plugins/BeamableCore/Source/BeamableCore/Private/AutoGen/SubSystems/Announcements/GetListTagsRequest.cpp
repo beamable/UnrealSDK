@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Announcements/GetListTagsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Announcements/GetListTagsRequest.h"
 
 void UGetListTagsRequest::BuildVerb(FString& VerbString) const
 {

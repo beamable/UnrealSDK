@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/LeaveRoomRequestBody.h"
-#include "AutoGen/LeaveRoomResponse.h"
+#include "BeamableCore/Public/AutoGen/LeaveRoomRequestBody.h"
+#include "BeamableCore/Public/AutoGen/LeaveRoomResponse.h"
 
 #include "DeleteRoomsRequest.generated.h"
 

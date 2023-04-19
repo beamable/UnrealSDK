@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Mail/PutBulkRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Mail/PutBulkRequest.h"
 
 void UPutBulkRequest::BuildVerb(FString& VerbString) const
 {

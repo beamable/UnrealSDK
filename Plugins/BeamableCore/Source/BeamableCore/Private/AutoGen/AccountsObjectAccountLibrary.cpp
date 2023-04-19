@@ -1,5 +1,5 @@
 
-#include "AutoGen/AccountsObjectAccountLibrary.h"
+#include "BeamableCore/Public/AutoGen/AccountsObjectAccountLibrary.h"
 
 #include "CoreMinimal.h"
 

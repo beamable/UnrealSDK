@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/TransferThirdPartyAssociation.h"
+#include "BeamableCore/Public/AutoGen/TransferThirdPartyAssociation.h"
 
 #include "TransferThirdPartyAssociationLibrary.generated.h"
 

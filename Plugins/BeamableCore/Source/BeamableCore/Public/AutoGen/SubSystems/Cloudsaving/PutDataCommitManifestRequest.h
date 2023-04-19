@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/UploadRequests.h"
-#include "AutoGen/CloudsavingBasicManifest.h"
+#include "BeamableCore/Public/AutoGen/UploadRequests.h"
+#include "BeamableCore/Public/AutoGen/CloudsavingBasicManifest.h"
 
 #include "PutDataCommitManifestRequest.generated.h"
 

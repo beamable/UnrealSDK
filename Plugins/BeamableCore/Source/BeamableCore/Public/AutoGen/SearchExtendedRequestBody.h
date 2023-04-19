@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/StatsSearchCriteria.h"
+#include "BeamableCore/Public/AutoGen/StatsSearchCriteria.h"
 
 #include "SearchExtendedRequestBody.generated.h"
 

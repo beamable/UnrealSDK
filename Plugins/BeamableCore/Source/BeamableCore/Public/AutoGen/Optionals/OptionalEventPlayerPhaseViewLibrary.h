@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalEventPlayerPhaseView.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalEventPlayerPhaseView.h"
 
 #include "OptionalEventPlayerPhaseViewLibrary.generated.h"
 

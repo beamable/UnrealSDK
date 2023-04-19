@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/DeleteDevicesRequestBody.h"
-#include "AutoGen/AccountPlayerView.h"
+#include "BeamableCore/Public/AutoGen/DeleteDevicesRequestBody.h"
+#include "BeamableCore/Public/AutoGen/AccountPlayerView.h"
 
 #include "DeleteMeDeviceRequest.generated.h"
 

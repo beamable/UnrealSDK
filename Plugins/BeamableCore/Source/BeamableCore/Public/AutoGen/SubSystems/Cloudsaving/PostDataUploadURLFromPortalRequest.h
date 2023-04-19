@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/UploadRequestsFromPortal.h"
-#include "AutoGen/URLSResponse.h"
+#include "BeamableCore/Public/AutoGen/UploadRequestsFromPortal.h"
+#include "BeamableCore/Public/AutoGen/URLSResponse.h"
 
 #include "PostDataUploadURLFromPortalRequest.generated.h"
 

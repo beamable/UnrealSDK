@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/EventPhase.h"
+#include "BeamableCore/Public/AutoGen/EventPhase.h"
 
 #include "EventPhaseLibrary.generated.h"
 

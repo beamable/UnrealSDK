@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/BeamoLimits.h"
+#include "BeamableCore/Public/AutoGen/BeamoLimits.h"
 
 #include "BeamoLimitsLibrary.generated.h"
 

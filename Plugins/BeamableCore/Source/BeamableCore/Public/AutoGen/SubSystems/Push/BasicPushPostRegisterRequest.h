@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/RegisterReq.h"
-#include "AutoGen/EmptyRsp.h"
+#include "BeamableCore/Public/AutoGen/RegisterReq.h"
+#include "BeamableCore/Public/AutoGen/EmptyRsp.h"
 
 #include "BasicPushPostRegisterRequest.generated.h"
 

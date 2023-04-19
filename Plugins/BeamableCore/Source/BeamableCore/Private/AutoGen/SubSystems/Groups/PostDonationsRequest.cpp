@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Groups/PostDonationsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Groups/PostDonationsRequest.h"
 
 void UPostDonationsRequest::BuildVerb(FString& VerbString) const
 {

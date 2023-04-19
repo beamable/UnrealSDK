@@ -1,5 +1,5 @@
 
-#include "AutoGen/ProjectViewLibrary.h"
+#include "BeamableCore/Public/AutoGen/ProjectViewLibrary.h"
 
 #include "CoreMinimal.h"
 

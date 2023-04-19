@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetManifestHistoryResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/GetManifestHistoryResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

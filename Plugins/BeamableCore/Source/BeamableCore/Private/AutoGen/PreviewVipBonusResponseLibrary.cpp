@@ -1,5 +1,5 @@
 
-#include "AutoGen/PreviewVipBonusResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/PreviewVipBonusResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

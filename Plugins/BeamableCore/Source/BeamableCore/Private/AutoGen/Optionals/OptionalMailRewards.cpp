@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalMailRewards.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMailRewards.h"
 
 FOptionalMailRewards::FOptionalMailRewards()
 {

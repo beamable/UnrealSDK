@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Social/PostBlockedRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Social/PostBlockedRequest.h"
 
 void UPostBlockedRequest::BuildVerb(FString& VerbString) const
 {

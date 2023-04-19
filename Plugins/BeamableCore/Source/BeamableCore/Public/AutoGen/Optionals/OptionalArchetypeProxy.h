@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/ArchetypeProxy.h"
+#include "BeamableCore/Public/AutoGen/ArchetypeProxy.h"
 
 #include "OptionalArchetypeProxy.generated.h"
 

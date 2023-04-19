@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ClientDataEntry.h"
+#include "BeamableCore/Public/AutoGen/ClientDataEntry.h"
 
 #include "ClientDataEntryLibrary.generated.h"
 

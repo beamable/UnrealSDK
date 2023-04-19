@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/ItemProperty.h"
+#include "BeamableCore/Public/AutoGen/ItemProperty.h"
 
 #include "ItemCreateRequestBody.generated.h"
 

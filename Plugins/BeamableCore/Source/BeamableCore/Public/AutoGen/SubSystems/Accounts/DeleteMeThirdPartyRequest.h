@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/ThirdPartyAvailableRequestBody.h"
-#include "AutoGen/AccountPlayerView.h"
+#include "BeamableCore/Public/AutoGen/ThirdPartyAvailableRequestBody.h"
+#include "BeamableCore/Public/AutoGen/AccountPlayerView.h"
 
 #include "DeleteMeThirdPartyRequest.generated.h"
 

@@ -4,8 +4,8 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Enums/WebhookInvocationType.h"
-#include "AutoGen/Enums/WebhookRetryType.h"
+#include "BeamableCore/Public/AutoGen/Enums/WebhookInvocationType.h"
+#include "BeamableCore/Public/AutoGen/Enums/WebhookRetryType.h"
 
 #include "WebhookInvocationStrategy.generated.h"
 

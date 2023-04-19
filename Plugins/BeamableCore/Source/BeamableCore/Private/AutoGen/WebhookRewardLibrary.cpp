@@ -1,5 +1,5 @@
 
-#include "AutoGen/WebhookRewardLibrary.h"
+#include "BeamableCore/Public/AutoGen/WebhookRewardLibrary.h"
 
 #include "CoreMinimal.h"
 

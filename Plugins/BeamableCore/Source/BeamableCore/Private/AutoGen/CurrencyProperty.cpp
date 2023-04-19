@@ -1,5 +1,5 @@
 
-#include "AutoGen/CurrencyProperty.h"
+#include "BeamableCore/Public/AutoGen/CurrencyProperty.h"
 
 
 

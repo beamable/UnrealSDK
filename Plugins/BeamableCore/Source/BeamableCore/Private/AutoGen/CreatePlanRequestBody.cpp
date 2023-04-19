@@ -1,5 +1,5 @@
 
-#include "AutoGen/CreatePlanRequestBody.h"
+#include "BeamableCore/Public/AutoGen/CreatePlanRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

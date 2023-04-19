@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Content/PutLocalizationsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Content/PutLocalizationsRequest.h"
 
 void UPutLocalizationsRequest::BuildVerb(FString& VerbString) const
 {

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Auth/GetTokenListRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Auth/GetTokenListRequest.h"
 
 void UGetTokenListRequest::BuildVerb(FString& VerbString) const
 {

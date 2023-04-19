@@ -1,5 +1,5 @@
 
-#include "AutoGen/ObjectRequests.h"
+#include "BeamableCore/Public/AutoGen/ObjectRequests.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

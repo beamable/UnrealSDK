@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetActiveOffersResponse.h"
+#include "BeamableCore/Public/AutoGen/GetActiveOffersResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

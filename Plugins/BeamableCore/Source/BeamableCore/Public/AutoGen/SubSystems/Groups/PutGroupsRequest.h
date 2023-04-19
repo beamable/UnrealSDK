@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/GroupUpdate.h"
-#include "AutoGen/CommonResponse.h"
+#include "BeamableCore/Public/AutoGen/GroupUpdate.h"
+#include "BeamableCore/Public/AutoGen/CommonResponse.h"
 
 #include "PutGroupsRequest.generated.h"
 

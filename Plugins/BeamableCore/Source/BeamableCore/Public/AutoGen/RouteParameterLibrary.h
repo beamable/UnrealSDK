@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/RouteParameter.h"
+#include "BeamableCore/Public/AutoGen/RouteParameter.h"
 
 #include "RouteParameterLibrary.generated.h"
 

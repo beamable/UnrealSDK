@@ -4,10 +4,10 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamBackend/SemanticTypes/BeamCid.h"
 #include "BeamBackend/SemanticTypes/BeamPid.h"
-#include "AutoGen/TokenResponse.h"
+#include "BeamableCore/Public/AutoGen/TokenResponse.h"
 
 #include "NewCustomerResponse.generated.h"
 

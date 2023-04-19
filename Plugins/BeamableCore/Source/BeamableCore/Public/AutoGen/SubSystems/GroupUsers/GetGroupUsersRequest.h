@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/GroupUser.h"
+#include "BeamableCore/Public/AutoGen/GroupUser.h"
 
 #include "GetGroupUsersRequest.generated.h"
 

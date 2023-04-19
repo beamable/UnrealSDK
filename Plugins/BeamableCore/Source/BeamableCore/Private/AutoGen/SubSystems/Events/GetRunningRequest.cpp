@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Events/GetRunningRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Events/GetRunningRequest.h"
 
 void UGetRunningRequest::BuildVerb(FString& VerbString) const
 {

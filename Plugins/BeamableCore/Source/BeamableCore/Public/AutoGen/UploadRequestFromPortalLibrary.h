@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/UploadRequestFromPortal.h"
+#include "BeamableCore/Public/AutoGen/UploadRequestFromPortal.h"
 
 #include "UploadRequestFromPortalLibrary.generated.h"
 

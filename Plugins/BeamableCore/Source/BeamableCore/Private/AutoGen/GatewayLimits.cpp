@@ -1,5 +1,5 @@
 
-#include "AutoGen/GatewayLimits.h"
+#include "BeamableCore/Public/AutoGen/GatewayLimits.h"
 
 #include "Misc/DefaultValueHelper.h"
 

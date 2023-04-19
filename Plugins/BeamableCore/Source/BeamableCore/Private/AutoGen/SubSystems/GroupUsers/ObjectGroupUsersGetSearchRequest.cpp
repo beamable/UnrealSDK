@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/GroupUsers/ObjectGroupUsersGetSearchRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/GroupUsers/ObjectGroupUsersGetSearchRequest.h"
 
 void UObjectGroupUsersGetSearchRequest::BuildVerb(FString& VerbString) const
 {

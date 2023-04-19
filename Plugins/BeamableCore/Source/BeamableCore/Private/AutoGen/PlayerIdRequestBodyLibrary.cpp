@@ -1,5 +1,5 @@
 
-#include "AutoGen/PlayerIdRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/PlayerIdRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

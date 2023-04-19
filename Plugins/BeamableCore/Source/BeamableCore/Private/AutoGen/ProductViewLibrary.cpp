@@ -1,5 +1,5 @@
 
-#include "AutoGen/ProductViewLibrary.h"
+#include "BeamableCore/Public/AutoGen/ProductViewLibrary.h"
 
 #include "CoreMinimal.h"
 

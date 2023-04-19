@@ -7,10 +7,10 @@
 #include "BeamBackend/ResponseCache/BeamResponseCache.h"
 #include "RequestTracker/BeamRequestTracker.h"
 
-#include "Auth/GetTokenRequest.h"
-#include "Auth/AuthenticateRequest.h"
-#include "Auth/GetTokenListRequest.h"
-#include "Auth/PutTokenRevokeRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Auth/GetTokenRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Auth/AuthenticateRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Auth/GetTokenListRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Auth/PutTokenRevokeRequest.h"
 
 #include "BeamAuthApi.generated.h"
 

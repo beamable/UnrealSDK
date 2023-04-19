@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Notification/PostGenericRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Notification/PostGenericRequest.h"
 
 void UPostGenericRequest::BuildVerb(FString& VerbString) const
 {

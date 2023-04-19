@@ -1,5 +1,5 @@
 
-#include "AutoGen/MetadataPairLibrary.h"
+#include "BeamableCore/Public/AutoGen/MetadataPairLibrary.h"
 
 #include "CoreMinimal.h"
 

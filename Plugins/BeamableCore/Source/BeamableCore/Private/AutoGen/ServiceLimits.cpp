@@ -1,5 +1,5 @@
 
-#include "AutoGen/ServiceLimits.h"
+#include "BeamableCore/Public/AutoGen/ServiceLimits.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

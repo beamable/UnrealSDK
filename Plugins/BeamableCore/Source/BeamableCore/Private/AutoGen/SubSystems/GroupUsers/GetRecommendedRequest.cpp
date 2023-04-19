@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/GroupUsers/GetRecommendedRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/GroupUsers/GetRecommendedRequest.h"
 
 void UGetRecommendedRequest::BuildVerb(FString& VerbString) const
 {

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Announcements/GetAnnouncementsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Announcements/GetAnnouncementsRequest.h"
 
 void UGetAnnouncementsRequest::BuildVerb(FString& VerbString) const
 {

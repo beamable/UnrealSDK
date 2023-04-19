@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalEventPlayerGroupState.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalEventPlayerGroupState.h"
 
 FOptionalEventPlayerGroupState::FOptionalEventPlayerGroupState()
 {

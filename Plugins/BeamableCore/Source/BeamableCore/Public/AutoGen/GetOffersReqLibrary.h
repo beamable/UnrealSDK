@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetOffersReq.h"
+#include "BeamableCore/Public/AutoGen/GetOffersReq.h"
 
 #include "GetOffersReqLibrary.generated.h"
 

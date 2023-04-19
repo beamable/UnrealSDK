@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalPlayerReward.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalPlayerReward.h"
 
 #include "OptionalPlayerRewardLibrary.generated.h"
 

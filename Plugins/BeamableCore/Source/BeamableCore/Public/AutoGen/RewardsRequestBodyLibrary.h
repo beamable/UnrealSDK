@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/RewardsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/RewardsRequestBody.h"
 
 #include "RewardsRequestBodyLibrary.generated.h"
 

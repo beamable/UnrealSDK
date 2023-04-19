@@ -1,5 +1,5 @@
 
-#include "AutoGen/JoinRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/JoinRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

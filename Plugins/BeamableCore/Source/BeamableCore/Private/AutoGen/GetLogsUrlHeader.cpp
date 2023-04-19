@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetLogsUrlHeader.h"
+#include "BeamableCore/Public/AutoGen/GetLogsUrlHeader.h"
 
 
 

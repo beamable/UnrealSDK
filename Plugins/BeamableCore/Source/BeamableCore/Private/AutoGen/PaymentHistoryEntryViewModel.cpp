@@ -1,5 +1,5 @@
 
-#include "AutoGen/PaymentHistoryEntryViewModel.h"
+#include "BeamableCore/Public/AutoGen/PaymentHistoryEntryViewModel.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

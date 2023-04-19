@@ -1,5 +1,5 @@
 
-#include "AutoGen/ChatV2ObjectMessage.h"
+#include "BeamableCore/Public/AutoGen/ChatV2ObjectMessage.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

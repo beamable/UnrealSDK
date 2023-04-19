@@ -1,5 +1,5 @@
 
-#include "AutoGen/ServiceStorageStatusLibrary.h"
+#include "BeamableCore/Public/AutoGen/ServiceStorageStatusLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/RealmRolesReportLibrary.h"
+#include "BeamableCore/Public/AutoGen/RealmRolesReportLibrary.h"
 
 #include "CoreMinimal.h"
 

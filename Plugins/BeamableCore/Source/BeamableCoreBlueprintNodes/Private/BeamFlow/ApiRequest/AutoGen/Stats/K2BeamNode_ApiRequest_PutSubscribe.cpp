@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Stats/K2BeamNode_ApiRequest_PutSubscribe.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Stats/K2BeamNode_ApiRequest_PutSubscribe.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamStatsApi.h"
-#include "AutoGen/SubSystems/Stats/PutSubscribeRequest.h"
-#include "AutoGen/CommonResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamStatsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/PutSubscribeRequest.h"
+#include "BeamableCore/Public/AutoGen/CommonResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PutSubscribe"
 

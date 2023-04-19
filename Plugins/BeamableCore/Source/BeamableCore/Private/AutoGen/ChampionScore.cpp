@@ -1,5 +1,5 @@
 
-#include "AutoGen/ChampionScore.h"
+#include "BeamableCore/Public/AutoGen/ChampionScore.h"
 
 #include "Misc/DefaultValueHelper.h"
 

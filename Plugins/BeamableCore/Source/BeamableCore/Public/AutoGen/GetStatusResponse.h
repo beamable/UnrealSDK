@@ -4,8 +4,8 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/ServiceStatus.h"
-#include "AutoGen/Optionals/OptionalArrayOfServiceStorageStatus.h"
+#include "BeamableCore/Public/AutoGen/ServiceStatus.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfServiceStorageStatus.h"
 
 #include "GetStatusResponse.generated.h"
 

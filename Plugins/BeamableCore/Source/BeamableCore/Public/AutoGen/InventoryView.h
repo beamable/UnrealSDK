@@ -4,9 +4,9 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/CurrencyView.h"
-#include "AutoGen/ItemGroup.h"
-#include "AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/CurrencyView.h"
+#include "BeamableCore/Public/AutoGen/ItemGroup.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "InventoryView.generated.h"
 

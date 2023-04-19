@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/RankEntryStat.h"
+#include "BeamableCore/Public/AutoGen/RankEntryStat.h"
 
 #include "RankEntryStatLibrary.generated.h"
 

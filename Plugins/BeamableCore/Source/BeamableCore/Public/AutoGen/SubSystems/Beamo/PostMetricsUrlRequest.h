@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/GetMetricsUrlRequestBody.h"
-#include "AutoGen/GetSignedUrlResponse.h"
+#include "BeamableCore/Public/AutoGen/GetMetricsUrlRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GetSignedUrlResponse.h"
 
 #include "PostMetricsUrlRequest.generated.h"
 

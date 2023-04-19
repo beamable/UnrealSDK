@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalMapOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
 
 FOptionalMapOfString::FOptionalMapOfString()
 {

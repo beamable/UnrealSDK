@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Token.h"
+#include "BeamableCore/Public/AutoGen/Token.h"
 
 #include "TokenLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/ClientPermissionLibrary.h"
+#include "BeamableCore/Public/AutoGen/ClientPermissionLibrary.h"
 
 #include "CoreMinimal.h"
 

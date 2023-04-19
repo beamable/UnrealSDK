@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventRewardObtain.h"
+#include "BeamableCore/Public/AutoGen/EventRewardObtain.h"
 
 #include "Misc/DefaultValueHelper.h"
 

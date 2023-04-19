@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/GroupScoreBinding.h"
+#include "BeamableCore/Public/AutoGen/GroupScoreBinding.h"
 
 #include "OptionalArrayOfGroupScoreBinding.generated.h"
 

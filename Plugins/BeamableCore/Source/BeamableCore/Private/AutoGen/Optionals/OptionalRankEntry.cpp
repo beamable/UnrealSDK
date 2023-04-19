@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalRankEntry.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalRankEntry.h"
 
 FOptionalRankEntry::FOptionalRankEntry()
 {

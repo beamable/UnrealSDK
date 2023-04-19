@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Member.h"
+#include "BeamableCore/Public/AutoGen/Member.h"
 
 #include "MemberLibrary.generated.h"
 

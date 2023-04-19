@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Groups/PostKickRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Groups/PostKickRequest.h"
 
 void UPostKickRequest::BuildVerb(FString& VerbString) const
 {

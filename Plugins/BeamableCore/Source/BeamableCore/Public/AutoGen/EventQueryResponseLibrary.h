@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/EventQueryResponse.h"
+#include "BeamableCore/Public/AutoGen/EventQueryResponse.h"
 
 #include "EventQueryResponseLibrary.generated.h"
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/PANamespace.h"
+#include "BeamableCore/Public/AutoGen/PANamespace.h"
 
 #include "PANamespaceLibrary.generated.h"
 

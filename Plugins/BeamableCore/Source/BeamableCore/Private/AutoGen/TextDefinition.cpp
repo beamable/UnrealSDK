@@ -1,5 +1,5 @@
 
-#include "AutoGen/TextDefinition.h"
+#include "BeamableCore/Public/AutoGen/TextDefinition.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

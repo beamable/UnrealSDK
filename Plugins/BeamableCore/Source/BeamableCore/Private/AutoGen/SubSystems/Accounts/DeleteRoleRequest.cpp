@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/DeleteRoleRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/DeleteRoleRequest.h"
 
 void UDeleteRoleRequest::BuildVerb(FString& VerbString) const
 {

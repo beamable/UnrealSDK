@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/AccountsBasicAccount.h"
+#include "BeamableCore/Public/AutoGen/AccountsBasicAccount.h"
 
 #include "AccountsBasicAccountLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/PostManifestResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/PostManifestResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

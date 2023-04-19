@@ -1,5 +1,5 @@
 
-#include "AutoGen/CurrencyChangeRewardLibrary.h"
+#include "BeamableCore/Public/AutoGen/CurrencyChangeRewardLibrary.h"
 
 #include "CoreMinimal.h"
 

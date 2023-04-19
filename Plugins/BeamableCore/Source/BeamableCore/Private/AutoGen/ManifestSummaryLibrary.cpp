@@ -1,5 +1,5 @@
 
-#include "AutoGen/ManifestSummaryLibrary.h"
+#include "BeamableCore/Public/AutoGen/ManifestSummaryLibrary.h"
 
 #include "CoreMinimal.h"
 

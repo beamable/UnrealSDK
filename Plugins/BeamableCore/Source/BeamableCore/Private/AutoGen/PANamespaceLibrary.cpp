@@ -1,5 +1,5 @@
 
-#include "AutoGen/PANamespaceLibrary.h"
+#include "BeamableCore/Public/AutoGen/PANamespaceLibrary.h"
 
 #include "CoreMinimal.h"
 

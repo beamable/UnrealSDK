@@ -4,11 +4,11 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamBackend/SemanticTypes/BeamCid.h"
-#include "AutoGen/Optionals/OptionalInt64.h"
-#include "AutoGen/Project.h"
-#include "AutoGen/RealmsBasicAccount.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
+#include "BeamableCore/Public/AutoGen/Project.h"
+#include "BeamableCore/Public/AutoGen/RealmsBasicAccount.h"
 
 #include "Customer.generated.h"
 

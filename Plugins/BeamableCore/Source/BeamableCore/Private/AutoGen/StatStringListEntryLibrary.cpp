@@ -1,5 +1,5 @@
 
-#include "AutoGen/StatStringListEntryLibrary.h"
+#include "BeamableCore/Public/AutoGen/StatStringListEntryLibrary.h"
 
 #include "CoreMinimal.h"
 

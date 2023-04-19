@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Realms/GetClientDefaultsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetClientDefaultsRequest.h"
 
 void UGetClientDefaultsRequest::BuildVerb(FString& VerbString) const
 {

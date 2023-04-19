@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/ExternalIdentity.h"
+#include "BeamableCore/Public/AutoGen/ExternalIdentity.h"
 
 #include "OptionalArrayOfExternalIdentity.generated.h"
 

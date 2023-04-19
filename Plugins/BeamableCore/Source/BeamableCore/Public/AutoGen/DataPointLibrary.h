@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/DataPoint.h"
+#include "BeamableCore/Public/AutoGen/DataPoint.h"
 
 #include "DataPointLibrary.generated.h"
 

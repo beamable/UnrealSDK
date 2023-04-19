@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Enums/WebhookServiceType.h"
+#include "BeamableCore/Public/AutoGen/Enums/WebhookServiceType.h"
 
 #include "ServiceRoute.generated.h"
 

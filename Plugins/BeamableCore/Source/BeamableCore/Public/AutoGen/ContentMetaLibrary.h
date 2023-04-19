@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ContentMeta.h"
+#include "BeamableCore/Public/AutoGen/ContentMeta.h"
 
 #include "ContentMetaLibrary.generated.h"
 

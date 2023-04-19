@@ -1,5 +1,5 @@
 
-#include "AutoGen/FailPurchaseRequestBody.h"
+#include "BeamableCore/Public/AutoGen/FailPurchaseRequestBody.h"
 
 #include "Misc/DefaultValueHelper.h"
 

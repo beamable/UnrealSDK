@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/Group.h"
+#include "BeamableCore/Public/AutoGen/Group.h"
 
 #include "ObjectGroupsGetGroupsRequest.generated.h"
 

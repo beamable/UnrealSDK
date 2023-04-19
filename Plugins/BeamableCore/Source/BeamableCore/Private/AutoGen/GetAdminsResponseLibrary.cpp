@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetAdminsResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/GetAdminsResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

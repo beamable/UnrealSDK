@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfExternalIdentity.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfExternalIdentity.h"
 
 FOptionalArrayOfExternalIdentity::FOptionalArrayOfExternalIdentity()
 {

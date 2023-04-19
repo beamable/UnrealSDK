@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalGatewayLimits.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalGatewayLimits.h"
 
 FOptionalGatewayLimits::FOptionalGatewayLimits()
 {

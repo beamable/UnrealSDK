@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetTemplatesResponse.h"
+#include "BeamableCore/Public/AutoGen/GetTemplatesResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

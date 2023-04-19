@@ -1,5 +1,5 @@
 
-#include "AutoGen/ObjectRequestBody.h"
+#include "BeamableCore/Public/AutoGen/ObjectRequestBody.h"
 
 
 

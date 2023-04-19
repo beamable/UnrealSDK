@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Promotable.h"
+#include "BeamableCore/Public/AutoGen/Promotable.h"
 
 #include "Promotion.generated.h"
 

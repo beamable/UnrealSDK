@@ -1,5 +1,5 @@
 
-#include "AutoGen/AccountsObjectAccount.h"
+#include "BeamableCore/Public/AutoGen/AccountsObjectAccount.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

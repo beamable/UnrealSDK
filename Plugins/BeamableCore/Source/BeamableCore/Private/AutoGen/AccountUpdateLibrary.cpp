@@ -1,5 +1,5 @@
 
-#include "AutoGen/AccountUpdateLibrary.h"
+#include "BeamableCore/Public/AutoGen/AccountUpdateLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/LeaderboardUidResponse.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardUidResponse.h"
 
 #include "Misc/DefaultValueHelper.h"
 

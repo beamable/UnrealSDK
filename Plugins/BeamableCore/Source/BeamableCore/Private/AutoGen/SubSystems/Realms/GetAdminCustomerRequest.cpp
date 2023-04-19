@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Realms/GetAdminCustomerRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetAdminCustomerRequest.h"
 
 void UGetAdminCustomerRequest::BuildVerb(FString& VerbString) const
 {

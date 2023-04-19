@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamBackend/SemanticTypes/BeamAccountId.h"
-#include "AutoGen/AccountsObjectAccount.h"
+#include "BeamableCore/Public/AutoGen/AccountsObjectAccount.h"
 
 #include "DeleteAdminForgetRequest.generated.h"
 

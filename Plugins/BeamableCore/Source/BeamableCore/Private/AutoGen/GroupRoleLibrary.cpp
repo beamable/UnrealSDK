@@ -1,5 +1,5 @@
 
-#include "AutoGen/GroupRoleLibrary.h"
+#include "BeamableCore/Public/AutoGen/GroupRoleLibrary.h"
 
 #include "CoreMinimal.h"
 

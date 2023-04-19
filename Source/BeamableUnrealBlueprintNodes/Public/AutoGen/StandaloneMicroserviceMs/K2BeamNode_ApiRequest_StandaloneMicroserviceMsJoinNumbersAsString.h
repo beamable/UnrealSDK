@@ -4,15 +4,15 @@
 #include "CoreMinimal.h"
 #include "BeamFlow/ApiRequest/K2BeamNode_ApiRequest.h"
 
-#include "K2BeamNode_ApiRequest_PostExternal_identity.generated.h"
+#include "K2BeamNode_ApiRequest_StandaloneMicroserviceMsJoinNumbersAsString.generated.h"
 
-#define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PostExternal_identity"
+#define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_StandaloneMicroserviceMsJoinNumbersAsString"
 
 /**
-* This is the code-gen'ed declaration for the Beam Flow's Endpoint: Post /basic/accounts/external_identity  of the Accounts Service. 
+* This is the code-gen'ed declaration for the Beam Flow's Endpoint: Post /JoinNumbersAsString  of the StandaloneMicroserviceMs Service. 
 */
 UCLASS(meta=(BeamFlow))
-class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_ApiRequest_PostExternal_identity : public UK2BeamNode_ApiRequest
+class BEAMABLEUNREALBLUEPRINTNODES_API UK2BeamNode_ApiRequest_StandaloneMicroserviceMsJoinNumbersAsString : public UK2BeamNode_ApiRequest
 {
 	GENERATED_BODY()
 

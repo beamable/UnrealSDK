@@ -4,13 +4,13 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/PaymentHistoryEntryViewModel.h"
-#include "AutoGen/Optionals/OptionalString.h"
-#include "AutoGen/Optionals/OptionalArrayOfItemCreateRequestBody.h"
-#include "AutoGen/Optionals/OptionalInt64.h"
-#include "AutoGen/Optionals/OptionalArrayOfCurrencyChange.h"
-#include "AutoGen/EntitlementGenerator.h"
-#include "AutoGen/PaymentDetailsEntryViewModel.h"
+#include "BeamableCore/Public/AutoGen/PaymentHistoryEntryViewModel.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfItemCreateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfCurrencyChange.h"
+#include "BeamableCore/Public/AutoGen/EntitlementGenerator.h"
+#include "BeamableCore/Public/AutoGen/PaymentDetailsEntryViewModel.h"
 
 #include "PaymentAuditEntryViewModel.generated.h"
 

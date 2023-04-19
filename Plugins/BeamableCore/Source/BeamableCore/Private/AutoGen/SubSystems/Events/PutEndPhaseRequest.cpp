@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Events/PutEndPhaseRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Events/PutEndPhaseRequest.h"
 
 void UPutEndPhaseRequest::BuildVerb(FString& VerbString) const
 {

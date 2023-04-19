@@ -1,5 +1,5 @@
 
-#include "AutoGen/Arrays/ArrayOfCurrencyProperty.h"
+#include "BeamableCore/Public/AutoGen/Arrays/ArrayOfCurrencyProperty.h"
 #include "Serialization/BeamJsonUtils.h"
 
 FArrayOfCurrencyProperty::FArrayOfCurrencyProperty() = default;

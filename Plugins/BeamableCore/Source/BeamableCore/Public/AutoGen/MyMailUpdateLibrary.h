@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/MyMailUpdate.h"
+#include "BeamableCore/Public/AutoGen/MyMailUpdate.h"
 
 #include "MyMailUpdateLibrary.generated.h"
 

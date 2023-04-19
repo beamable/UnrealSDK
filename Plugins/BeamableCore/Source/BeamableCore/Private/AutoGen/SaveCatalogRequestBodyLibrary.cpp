@@ -1,5 +1,5 @@
 
-#include "AutoGen/SaveCatalogRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/SaveCatalogRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

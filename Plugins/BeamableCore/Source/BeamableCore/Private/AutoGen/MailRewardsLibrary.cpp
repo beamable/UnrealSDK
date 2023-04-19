@@ -1,5 +1,5 @@
 
-#include "AutoGen/MailRewardsLibrary.h"
+#include "BeamableCore/Public/AutoGen/MailRewardsLibrary.h"
 
 #include "CoreMinimal.h"
 

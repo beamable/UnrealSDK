@@ -1,5 +1,5 @@
 
-#include "AutoGen/ReferenceSuperset.h"
+#include "BeamableCore/Public/AutoGen/ReferenceSuperset.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Inventory/PutInventoryRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Inventory/PutInventoryRequest.h"
 
 void UPutInventoryRequest::BuildVerb(FString& VerbString) const
 {

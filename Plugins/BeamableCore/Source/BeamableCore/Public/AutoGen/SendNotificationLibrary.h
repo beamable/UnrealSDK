@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/SendNotification.h"
+#include "BeamableCore/Public/AutoGen/SendNotification.h"
 
 #include "SendNotificationLibrary.generated.h"
 

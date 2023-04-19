@@ -1,5 +1,5 @@
 
-#include "AutoGen/SendNotificationLibrary.h"
+#include "BeamableCore/Public/AutoGen/SendNotificationLibrary.h"
 
 #include "CoreMinimal.h"
 

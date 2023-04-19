@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetProductsResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/GetProductsResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

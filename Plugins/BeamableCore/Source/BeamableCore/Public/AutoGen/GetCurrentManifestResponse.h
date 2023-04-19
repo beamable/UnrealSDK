@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/ManifestView.h"
+#include "BeamableCore/Public/AutoGen/ManifestView.h"
 
 #include "GetCurrentManifestResponse.generated.h"
 

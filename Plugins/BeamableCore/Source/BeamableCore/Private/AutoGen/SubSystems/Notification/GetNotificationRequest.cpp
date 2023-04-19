@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Notification/GetNotificationRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Notification/GetNotificationRequest.h"
 
 void UGetNotificationRequest::BuildVerb(FString& VerbString) const
 {

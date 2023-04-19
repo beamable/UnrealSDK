@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/FacebookPaymentUpdateRequestBody.h"
+#include "BeamableCore/Public/AutoGen/FacebookPaymentUpdateRequestBody.h"
 #include "Serialization/BeamPlainTextResponseBody.h"
 
 #include "PostFacebookUpdateRequest.generated.h"

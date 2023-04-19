@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/BeamPaymentsApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamPaymentsApi.h"
 #include "BeamCoreSettings.h"
 
 
@@ -73,7 +73,7 @@ void UBeamPaymentsApi::CPP_PostWindowsPurchaseTrackImpl(const FBeamRealmHandle& 
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -133,7 +133,7 @@ void UBeamPaymentsApi::CPP_GetAuditsImpl(const FBeamRealmHandle& TargetRealm, co
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -193,7 +193,7 @@ void UBeamPaymentsApi::CPP_PostWindowsPurchaseCompleteImpl(const FBeamRealmHandl
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -253,7 +253,7 @@ void UBeamPaymentsApi::CPP_GetFacebookUpdateImpl(const FBeamRealmHandle& TargetR
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -313,7 +313,7 @@ void UBeamPaymentsApi::CPP_PostFacebookUpdateImpl(const FBeamRealmHandle& Target
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -373,7 +373,7 @@ void UBeamPaymentsApi::CPP_PostFacebookPurchaseCompleteImpl(const FBeamRealmHand
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -433,7 +433,7 @@ void UBeamPaymentsApi::CPP_PostTestPurchaseCompleteImpl(const FBeamRealmHandle& 
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -493,7 +493,7 @@ void UBeamPaymentsApi::CPP_GetItunesProductImpl(const FBeamRealmHandle& TargetRe
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -553,7 +553,7 @@ void UBeamPaymentsApi::CPP_PostGoogleplayPurchaseCompleteImpl(const FBeamRealmHa
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -613,7 +613,7 @@ void UBeamPaymentsApi::CPP_PostTestPurchaseTrackImpl(const FBeamRealmHandle& Tar
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -673,7 +673,7 @@ void UBeamPaymentsApi::CPP_PostGoogleplayPurchaseVerifyImpl(const FBeamRealmHand
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -733,7 +733,7 @@ void UBeamPaymentsApi::CPP_PostCouponPurchaseTrackImpl(const FBeamRealmHandle& T
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -793,7 +793,7 @@ void UBeamPaymentsApi::CPP_PostSteamPurchaseCompleteImpl(const FBeamRealmHandle&
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -853,7 +853,7 @@ void UBeamPaymentsApi::CPP_PostFacebookPurchaseTrackImpl(const FBeamRealmHandle&
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -913,7 +913,7 @@ void UBeamPaymentsApi::CPP_PostTestPurchaseVerifyImpl(const FBeamRealmHandle& Ta
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -973,7 +973,7 @@ void UBeamPaymentsApi::CPP_PostGoogleplayPurchaseTrackImpl(const FBeamRealmHandl
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -1033,7 +1033,7 @@ void UBeamPaymentsApi::CPP_GetSteamPricesImpl(const FBeamRealmHandle& TargetReal
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -1093,7 +1093,7 @@ void UBeamPaymentsApi::CPP_PostWindowsPurchaseVerifyImpl(const FBeamRealmHandle&
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -1153,7 +1153,7 @@ void UBeamPaymentsApi::CPP_PostItunesPurchaseVerifyImpl(const FBeamRealmHandle& 
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -1213,7 +1213,7 @@ void UBeamPaymentsApi::CPP_PostItunesPurchaseCompleteImpl(const FBeamRealmHandle
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -1273,7 +1273,7 @@ void UBeamPaymentsApi::CPP_PostFacebookPurchaseVerifyImpl(const FBeamRealmHandle
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -1333,7 +1333,7 @@ void UBeamPaymentsApi::CPP_PostSteamPurchaseTrackImpl(const FBeamRealmHandle& Ta
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -1393,7 +1393,7 @@ void UBeamPaymentsApi::CPP_PostCouponPurchaseVerifyImpl(const FBeamRealmHandle& 
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -1453,7 +1453,7 @@ void UBeamPaymentsApi::CPP_GetWindowsProductImpl(const FBeamRealmHandle& TargetR
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -1513,7 +1513,7 @@ void UBeamPaymentsApi::CPP_GetFacebookProductImpl(const FBeamRealmHandle& Target
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -1573,7 +1573,7 @@ void UBeamPaymentsApi::CPP_GetCouponProductImpl(const FBeamRealmHandle& TargetRe
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -1633,7 +1633,7 @@ void UBeamPaymentsApi::CPP_GetSteamProductsImpl(const FBeamRealmHandle& TargetRe
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -1693,7 +1693,7 @@ void UBeamPaymentsApi::CPP_PostSteamAuthImpl(const FBeamRealmHandle& TargetRealm
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -1753,7 +1753,7 @@ void UBeamPaymentsApi::CPP_GetSteamProductImpl(const FBeamRealmHandle& TargetRea
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -1813,7 +1813,7 @@ void UBeamPaymentsApi::CPP_PostCouponPurchaseCompleteImpl(const FBeamRealmHandle
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -1873,7 +1873,7 @@ void UBeamPaymentsApi::CPP_GetGoogleplayProductImpl(const FBeamRealmHandle& Targ
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -1933,7 +1933,7 @@ void UBeamPaymentsApi::CPP_GetTestProductImpl(const FBeamRealmHandle& TargetReal
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -1993,7 +1993,7 @@ void UBeamPaymentsApi::CPP_PostSteamPurchaseVerifyImpl(const FBeamRealmHandle& T
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -2053,7 +2053,7 @@ void UBeamPaymentsApi::CPP_PostItunesPurchaseTrackImpl(const FBeamRealmHandle& T
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 		
@@ -2113,7 +2113,7 @@ void UBeamPaymentsApi::CPP_GetPaymentsImpl(const FBeamRealmHandle& TargetRealm, 
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
 		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}	
+	}
 }
 
 

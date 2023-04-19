@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalArrayOfRoleMapping.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfRoleMapping.h"
 
 FOptionalArrayOfRoleMapping::FOptionalArrayOfRoleMapping()
 {

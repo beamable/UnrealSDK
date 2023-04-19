@@ -9,7 +9,7 @@
 
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
 
-#include "AutoGen/ContentOrText.h"
+#include "BeamableCore/Public/AutoGen/ContentOrText.h"
 
 #include "BasicContentGetContentRequest.generated.h"
 

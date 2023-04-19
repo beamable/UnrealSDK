@@ -1,5 +1,5 @@
 
-#include "AutoGen/LocalizedPrice.h"
+#include "BeamableCore/Public/AutoGen/LocalizedPrice.h"
 
 #include "Misc/DefaultValueHelper.h"
 

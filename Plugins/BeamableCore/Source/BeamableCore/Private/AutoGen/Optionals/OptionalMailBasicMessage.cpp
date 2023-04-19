@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalMailBasicMessage.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMailBasicMessage.h"
 
 FOptionalMailBasicMessage::FOptionalMailBasicMessage()
 {

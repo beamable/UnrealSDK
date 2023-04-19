@@ -1,5 +1,5 @@
 
-#include "AutoGen/CreateProjectRequestBody.h"
+#include "BeamableCore/Public/AutoGen/CreateProjectRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

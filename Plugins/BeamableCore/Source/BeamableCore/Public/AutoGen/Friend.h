@@ -5,7 +5,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamBackend/SemanticTypes/BeamGamerTag.h"
-#include "AutoGen/Enums/FriendSource.h"
+#include "BeamableCore/Public/AutoGen/Enums/FriendSource.h"
 
 #include "Friend.generated.h"
 

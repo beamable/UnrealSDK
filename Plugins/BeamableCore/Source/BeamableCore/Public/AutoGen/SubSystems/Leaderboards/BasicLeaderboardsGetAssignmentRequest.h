@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/Optionals/OptionalBool.h"
-#include "AutoGen/LeaderboardAssignmentInfo.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
+#include "BeamableCore/Public/AutoGen/LeaderboardAssignmentInfo.h"
 
 #include "BasicLeaderboardsGetAssignmentRequest.generated.h"
 

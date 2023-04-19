@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Leaderboards/GetViewRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Leaderboards/GetViewRequest.h"
 
 void UGetViewRequest::BuildVerb(FString& VerbString) const
 {

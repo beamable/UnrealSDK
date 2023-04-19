@@ -4,10 +4,10 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/EventPlayerPhaseView.h"
-#include "AutoGen/Optionals/OptionalEventPlayerPhaseView.h"
-#include "AutoGen/EventRewardState.h"
-#include "AutoGen/Optionals/OptionalEventPlayerGroupState.h"
+#include "BeamableCore/Public/AutoGen/EventPlayerPhaseView.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalEventPlayerPhaseView.h"
+#include "BeamableCore/Public/AutoGen/EventRewardState.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalEventPlayerGroupState.h"
 
 #include "EventPlayerStateView.generated.h"
 

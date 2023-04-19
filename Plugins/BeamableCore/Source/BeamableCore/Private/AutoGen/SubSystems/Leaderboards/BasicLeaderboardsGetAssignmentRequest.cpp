@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Leaderboards/BasicLeaderboardsGetAssignmentRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Leaderboards/BasicLeaderboardsGetAssignmentRequest.h"
 
 void UBasicLeaderboardsGetAssignmentRequest::BuildVerb(FString& VerbString) const
 {

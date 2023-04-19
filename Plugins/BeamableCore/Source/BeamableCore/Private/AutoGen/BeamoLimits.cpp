@@ -1,5 +1,5 @@
 
-#include "AutoGen/BeamoLimits.h"
+#include "BeamableCore/Public/AutoGen/BeamoLimits.h"
 
 #include "Misc/DefaultValueHelper.h"
 

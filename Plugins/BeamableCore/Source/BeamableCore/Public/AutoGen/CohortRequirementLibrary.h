@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/CohortRequirement.h"
+#include "BeamableCore/Public/AutoGen/CohortRequirement.h"
 
 #include "CohortRequirementLibrary.generated.h"
 

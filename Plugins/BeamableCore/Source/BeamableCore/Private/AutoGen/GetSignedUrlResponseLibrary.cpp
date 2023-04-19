@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetSignedUrlResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/GetSignedUrlResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

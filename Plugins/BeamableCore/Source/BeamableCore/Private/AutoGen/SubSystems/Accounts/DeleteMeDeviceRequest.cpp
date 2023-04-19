@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/DeleteMeDeviceRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/DeleteMeDeviceRequest.h"
 
 void UDeleteMeDeviceRequest::BuildVerb(FString& VerbString) const
 {

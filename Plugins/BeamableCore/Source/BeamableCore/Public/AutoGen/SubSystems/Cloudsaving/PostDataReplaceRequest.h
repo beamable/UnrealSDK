@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/ReplaceObjectsRequestBody.h"
-#include "AutoGen/CloudsavingBasicManifest.h"
+#include "BeamableCore/Public/AutoGen/ReplaceObjectsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/CloudsavingBasicManifest.h"
 
 #include "PostDataReplaceRequest.generated.h"
 

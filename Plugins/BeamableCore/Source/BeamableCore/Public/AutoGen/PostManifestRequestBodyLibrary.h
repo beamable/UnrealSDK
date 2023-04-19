@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/PostManifestRequestBody.h"
+#include "BeamableCore/Public/AutoGen/PostManifestRequestBody.h"
 
 #include "PostManifestRequestBodyLibrary.generated.h"
 

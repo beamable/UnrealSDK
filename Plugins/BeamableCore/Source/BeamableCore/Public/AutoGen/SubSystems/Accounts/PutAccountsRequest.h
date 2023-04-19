@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamBackend/SemanticTypes/BeamAccountId.h"
-#include "AutoGen/AccountUpdate.h"
-#include "AutoGen/AccountsObjectAccount.h"
+#include "BeamableCore/Public/AutoGen/AccountUpdate.h"
+#include "BeamableCore/Public/AutoGen/AccountsObjectAccount.h"
 
 #include "PutAccountsRequest.generated.h"
 

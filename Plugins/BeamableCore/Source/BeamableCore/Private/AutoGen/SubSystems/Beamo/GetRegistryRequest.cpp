@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Beamo/GetRegistryRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Beamo/GetRegistryRequest.h"
 
 void UGetRegistryRequest::BuildVerb(FString& VerbString) const
 {

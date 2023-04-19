@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalArrayOfCompletedStatus.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfCompletedStatus.h"
 
 #include "GroupStatus.generated.h"
 

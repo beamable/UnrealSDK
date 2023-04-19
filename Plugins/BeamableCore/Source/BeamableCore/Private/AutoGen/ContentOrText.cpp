@@ -1,5 +1,5 @@
 
-#include "AutoGen/ContentOrText.h"
+#include "BeamableCore/Public/AutoGen/ContentOrText.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/AdminGetPlayerStatusResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/AdminGetPlayerStatusResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

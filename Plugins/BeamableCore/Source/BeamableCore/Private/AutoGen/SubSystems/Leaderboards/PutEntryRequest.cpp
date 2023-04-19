@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Leaderboards/PutEntryRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Leaderboards/PutEntryRequest.h"
 
 void UPutEntryRequest::BuildVerb(FString& VerbString) const
 {

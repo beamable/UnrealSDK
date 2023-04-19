@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/EventPlayerView.h"
+#include "BeamableCore/Public/AutoGen/EventPlayerView.h"
 
 #include "GetEventPlayersRequest.generated.h"
 

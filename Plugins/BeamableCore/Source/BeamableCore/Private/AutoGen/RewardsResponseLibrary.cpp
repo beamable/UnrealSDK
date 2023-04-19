@@ -1,5 +1,5 @@
 
-#include "AutoGen/RewardsResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/RewardsResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

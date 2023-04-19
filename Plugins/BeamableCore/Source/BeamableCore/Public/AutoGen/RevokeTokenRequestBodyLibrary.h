@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/RevokeTokenRequestBody.h"
+#include "BeamableCore/Public/AutoGen/RevokeTokenRequestBody.h"
 
 #include "RevokeTokenRequestBodyLibrary.generated.h"
 

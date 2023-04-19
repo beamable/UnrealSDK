@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GiveCouponReq.h"
+#include "BeamableCore/Public/AutoGen/GiveCouponReq.h"
 
 #include "GiveCouponReqLibrary.generated.h"
 

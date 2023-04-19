@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/GetStoresReq.h"
+#include "BeamableCore/Public/AutoGen/GetStoresReq.h"
 
 #include "GetStoresReqLibrary.generated.h"
 

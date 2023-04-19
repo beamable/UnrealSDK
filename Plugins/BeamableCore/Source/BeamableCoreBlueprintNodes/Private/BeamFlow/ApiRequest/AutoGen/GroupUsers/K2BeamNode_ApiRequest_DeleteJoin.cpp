@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/GroupUsers/K2BeamNode_ApiRequest_DeleteJoin.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/GroupUsers/K2BeamNode_ApiRequest_DeleteJoin.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamGroupUsersApi.h"
-#include "AutoGen/SubSystems/GroupUsers/DeleteJoinRequest.h"
-#include "AutoGen/GroupMembershipResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamGroupUsersApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/GroupUsers/DeleteJoinRequest.h"
+#include "BeamableCore/Public/AutoGen/GroupMembershipResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_DeleteJoin"
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/AdminGetPlayerStatusRequestBody.h"
+#include "BeamableCore/Public/AutoGen/AdminGetPlayerStatusRequestBody.h"
 
 #include "AdminGetPlayerStatusRequestBodyLibrary.generated.h"
 

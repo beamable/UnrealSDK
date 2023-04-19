@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ContentOrText.h"
+#include "BeamableCore/Public/AutoGen/ContentOrText.h"
 
 #include "ContentOrTextLibrary.generated.h"
 

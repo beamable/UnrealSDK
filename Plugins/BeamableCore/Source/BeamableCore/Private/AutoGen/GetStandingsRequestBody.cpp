@@ -1,5 +1,5 @@
 
-#include "AutoGen/GetStandingsRequestBody.h"
+#include "BeamableCore/Public/AutoGen/GetStandingsRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

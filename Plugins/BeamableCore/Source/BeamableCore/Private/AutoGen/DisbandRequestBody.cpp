@@ -1,5 +1,5 @@
 
-#include "AutoGen/DisbandRequestBody.h"
+#include "BeamableCore/Public/AutoGen/DisbandRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

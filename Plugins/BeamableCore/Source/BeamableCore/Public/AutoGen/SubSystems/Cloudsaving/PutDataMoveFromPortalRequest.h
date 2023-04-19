@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/PlayerBasicCloudDataRequestBody.h"
-#include "AutoGen/CloudsavingBasicManifest.h"
+#include "BeamableCore/Public/AutoGen/PlayerBasicCloudDataRequestBody.h"
+#include "BeamableCore/Public/AutoGen/CloudsavingBasicManifest.h"
 
 #include "PutDataMoveFromPortalRequest.generated.h"
 

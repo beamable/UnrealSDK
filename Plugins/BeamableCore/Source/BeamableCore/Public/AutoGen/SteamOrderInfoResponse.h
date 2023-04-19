@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/SteamOrderInfoItem.h"
+#include "BeamableCore/Public/AutoGen/SteamOrderInfoItem.h"
 
 #include "SteamOrderInfoResponse.generated.h"
 

@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Commerce/K2BeamNode_ApiRequest_PostSkus.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Commerce/K2BeamNode_ApiRequest_PostSkus.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamCommerceApi.h"
-#include "AutoGen/SubSystems/Commerce/PostSkusRequest.h"
-#include "AutoGen/ResultResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamCommerceApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Commerce/PostSkusRequest.h"
+#include "BeamableCore/Public/AutoGen/ResultResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PostSkus"
 

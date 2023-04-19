@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/MultipliersGetResponse.h"
+#include "BeamableCore/Public/AutoGen/MultipliersGetResponse.h"
 
 #include "MultipliersGetResponseLibrary.generated.h"
 

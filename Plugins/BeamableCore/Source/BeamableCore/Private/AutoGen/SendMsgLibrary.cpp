@@ -1,5 +1,5 @@
 
-#include "AutoGen/SendMsgLibrary.h"
+#include "BeamableCore/Public/AutoGen/SendMsgLibrary.h"
 
 #include "CoreMinimal.h"
 

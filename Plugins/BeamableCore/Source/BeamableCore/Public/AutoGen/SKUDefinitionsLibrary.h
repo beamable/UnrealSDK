@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/SKUDefinitions.h"
+#include "BeamableCore/Public/AutoGen/SKUDefinitions.h"
 
 #include "SKUDefinitionsLibrary.generated.h"
 

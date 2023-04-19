@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Announcements/BasicAnnouncementsGetSearchRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Announcements/BasicAnnouncementsGetSearchRequest.h"
 
 void UBasicAnnouncementsGetSearchRequest::BuildVerb(FString& VerbString) const
 {

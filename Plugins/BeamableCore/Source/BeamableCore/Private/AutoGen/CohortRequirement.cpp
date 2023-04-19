@@ -1,5 +1,5 @@
 
-#include "AutoGen/CohortRequirement.h"
+#include "BeamableCore/Public/AutoGen/CohortRequirement.h"
 
 
 

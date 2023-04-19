@@ -1,5 +1,5 @@
 
-#include "AutoGen/SteamAuthRequestBodyLibrary.h"
+#include "BeamableCore/Public/AutoGen/SteamAuthRequestBodyLibrary.h"
 
 #include "CoreMinimal.h"
 

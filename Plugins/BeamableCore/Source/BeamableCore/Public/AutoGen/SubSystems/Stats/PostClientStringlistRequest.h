@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamBackend/SemanticTypes/BeamStatsType.h"
-#include "AutoGen/StatUpdateRequestStringListFormat.h"
-#include "AutoGen/EmptyResponse.h"
+#include "BeamableCore/Public/AutoGen/StatUpdateRequestStringListFormat.h"
+#include "BeamableCore/Public/AutoGen/EmptyResponse.h"
 
 #include "PostClientStringlistRequest.generated.h"
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Listing.h"
+#include "BeamableCore/Public/AutoGen/Listing.h"
 
 #include "ListingLibrary.generated.h"
 

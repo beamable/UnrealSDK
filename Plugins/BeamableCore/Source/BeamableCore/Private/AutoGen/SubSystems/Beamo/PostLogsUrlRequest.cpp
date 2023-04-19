@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Beamo/PostLogsUrlRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Beamo/PostLogsUrlRequest.h"
 
 void UPostLogsUrlRequest::BuildVerb(FString& VerbString) const
 {

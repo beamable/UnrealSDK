@@ -1,5 +1,5 @@
 
-#include "AutoGen/EventQueryResponseLibrary.h"
+#include "BeamableCore/Public/AutoGen/EventQueryResponseLibrary.h"
 
 #include "CoreMinimal.h"
 

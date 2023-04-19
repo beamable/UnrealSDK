@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalBeamoLimits.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamoLimits.h"
 
 FOptionalBeamoLimits::FOptionalBeamoLimits()
 {

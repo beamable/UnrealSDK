@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/AccountAvailableResponse.h"
+#include "BeamableCore/Public/AutoGen/AccountAvailableResponse.h"
 
 #include "AccountAvailableResponseLibrary.generated.h"
 

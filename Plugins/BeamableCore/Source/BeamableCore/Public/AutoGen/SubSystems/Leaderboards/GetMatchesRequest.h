@@ -9,7 +9,7 @@
 
 
 
-#include "AutoGen/MatchMakingMatchesPvpResponse.h"
+#include "BeamableCore/Public/AutoGen/MatchMakingMatchesPvpResponse.h"
 
 #include "GetMatchesRequest.generated.h"
 

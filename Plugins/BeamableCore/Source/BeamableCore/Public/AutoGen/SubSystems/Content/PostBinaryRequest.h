@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/SaveBinaryRequestBody.h"
-#include "AutoGen/SaveBinaryResponse.h"
+#include "BeamableCore/Public/AutoGen/SaveBinaryRequestBody.h"
+#include "BeamableCore/Public/AutoGen/SaveBinaryResponse.h"
 
 #include "PostBinaryRequest.generated.h"
 

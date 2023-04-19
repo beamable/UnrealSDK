@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/LocalizedPriceMap.h"
+#include "BeamableCore/Public/AutoGen/LocalizedPriceMap.h"
 
 #include "GetSteamPricesRequest.generated.h"
 

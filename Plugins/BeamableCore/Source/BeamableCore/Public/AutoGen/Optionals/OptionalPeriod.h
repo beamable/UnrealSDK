@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/Period.h"
+#include "BeamableCore/Public/AutoGen/Period.h"
 
 #include "OptionalPeriod.generated.h"
 

@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/ChatV2/K2BeamNode_ApiRequest_DeleteRooms.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/ChatV2/K2BeamNode_ApiRequest_DeleteRooms.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamChatV2Api.h"
-#include "AutoGen/SubSystems/ChatV2/DeleteRoomsRequest.h"
-#include "AutoGen/LeaveRoomResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamChatV2Api.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/ChatV2/DeleteRoomsRequest.h"
+#include "BeamableCore/Public/AutoGen/LeaveRoomResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_DeleteRooms"
 

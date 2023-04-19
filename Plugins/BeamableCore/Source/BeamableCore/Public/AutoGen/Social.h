@@ -5,9 +5,9 @@
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamBackend/SemanticTypes/BeamGamerTag.h"
-#include "AutoGen/Friend.h"
-#include "AutoGen/PlayerId.h"
-#include "AutoGen/Invite.h"
+#include "BeamableCore/Public/AutoGen/Friend.h"
+#include "BeamableCore/Public/AutoGen/PlayerId.h"
+#include "BeamableCore/Public/AutoGen/Invite.h"
 
 #include "Social.generated.h"
 

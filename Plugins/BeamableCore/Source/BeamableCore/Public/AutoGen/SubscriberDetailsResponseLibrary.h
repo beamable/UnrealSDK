@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/SubscriberDetailsResponse.h"
+#include "BeamableCore/Public/AutoGen/SubscriberDetailsResponse.h"
 
 #include "SubscriberDetailsResponseLibrary.generated.h"
 

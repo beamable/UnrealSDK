@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/ObjectRequests.h"
-#include "AutoGen/EmptyResponse.h"
+#include "BeamableCore/Public/AutoGen/ObjectRequests.h"
+#include "BeamableCore/Public/AutoGen/EmptyResponse.h"
 
 #include "DeleteDataRequest.generated.h"
 

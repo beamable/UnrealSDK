@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/GetTotalCouponResponse.h"
+#include "BeamableCore/Public/AutoGen/GetTotalCouponResponse.h"
 
 #include "GetCouponsCountRequest.generated.h"
 

@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Auth/K2BeamNode_ApiRequest_GetTokenList.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Auth/K2BeamNode_ApiRequest_GetTokenList.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamAuthApi.h"
-#include "AutoGen/SubSystems/Auth/GetTokenListRequest.h"
-#include "AutoGen/ListTokenResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamAuthApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Auth/GetTokenListRequest.h"
+#include "BeamableCore/Public/AutoGen/ListTokenResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetTokenList"
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/NetworkSerializable.h"
+#include "BeamableCore/Public/AutoGen/NetworkSerializable.h"
 
 #include "NetworkSerializableLibrary.generated.h"
 

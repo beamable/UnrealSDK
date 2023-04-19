@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Social/DeleteBlockedRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Social/DeleteBlockedRequest.h"
 
 void UDeleteBlockedRequest::BuildVerb(FString& VerbString) const
 {

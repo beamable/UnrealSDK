@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Stats/DeleteStatsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/DeleteStatsRequest.h"
 
 void UDeleteStatsRequest::BuildVerb(FString& VerbString) const
 {

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Accounts/GetFindRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetFindRequest.h"
 
 void UGetFindRequest::BuildVerb(FString& VerbString) const
 {

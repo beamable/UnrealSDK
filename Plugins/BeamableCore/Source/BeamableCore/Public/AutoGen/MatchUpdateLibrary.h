@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/MatchUpdate.h"
+#include "BeamableCore/Public/AutoGen/MatchUpdate.h"
 
 #include "MatchUpdateLibrary.generated.h"
 

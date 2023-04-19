@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/PlayerBasicCloudDataRequestBody.h"
+#include "BeamableCore/Public/AutoGen/PlayerBasicCloudDataRequestBody.h"
 
 #include "PlayerBasicCloudDataRequestBodyLibrary.generated.h"
 

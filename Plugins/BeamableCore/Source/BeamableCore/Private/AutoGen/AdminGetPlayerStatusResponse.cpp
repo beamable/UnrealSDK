@@ -1,5 +1,5 @@
 
-#include "AutoGen/AdminGetPlayerStatusResponse.h"
+#include "BeamableCore/Public/AutoGen/AdminGetPlayerStatusResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

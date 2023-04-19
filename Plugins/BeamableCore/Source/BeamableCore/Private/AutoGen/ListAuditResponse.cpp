@@ -1,5 +1,5 @@
 
-#include "AutoGen/ListAuditResponse.h"
+#include "BeamableCore/Public/AutoGen/ListAuditResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

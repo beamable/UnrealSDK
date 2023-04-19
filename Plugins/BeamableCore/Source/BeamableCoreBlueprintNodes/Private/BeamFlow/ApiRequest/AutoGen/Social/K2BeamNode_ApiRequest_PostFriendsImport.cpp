@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Social/K2BeamNode_ApiRequest_PostFriendsImport.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Social/K2BeamNode_ApiRequest_PostFriendsImport.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamSocialApi.h"
-#include "AutoGen/SubSystems/Social/PostFriendsImportRequest.h"
-#include "AutoGen/EmptyResponse.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamSocialApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Social/PostFriendsImportRequest.h"
+#include "BeamableCore/Public/AutoGen/EmptyResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PostFriendsImport"
 

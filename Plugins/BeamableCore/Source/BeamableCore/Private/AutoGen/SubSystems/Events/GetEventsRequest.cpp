@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Events/GetEventsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Events/GetEventsRequest.h"
 
 void UGetEventsRequest::BuildVerb(FString& VerbString) const
 {

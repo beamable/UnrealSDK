@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Leaderboards/DeleteEntriesRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Leaderboards/DeleteEntriesRequest.h"
 
 void UDeleteEntriesRequest::BuildVerb(FString& VerbString) const
 {

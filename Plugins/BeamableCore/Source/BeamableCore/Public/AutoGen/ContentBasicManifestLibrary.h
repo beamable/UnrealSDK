@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/ContentBasicManifest.h"
+#include "BeamableCore/Public/AutoGen/ContentBasicManifest.h"
 
 #include "ContentBasicManifestLibrary.generated.h"
 

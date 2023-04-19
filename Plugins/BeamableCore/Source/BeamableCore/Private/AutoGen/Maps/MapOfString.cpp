@@ -1,5 +1,5 @@
 
-#include "AutoGen/Maps/MapOfString.h"
+#include "BeamableCore/Public/AutoGen/Maps/MapOfString.h"
 #include "Serialization/BeamJsonUtils.h"
 
 FMapOfString::FMapOfString() = default;

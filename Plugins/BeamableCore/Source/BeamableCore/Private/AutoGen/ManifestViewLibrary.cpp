@@ -1,5 +1,5 @@
 
-#include "AutoGen/ManifestViewLibrary.h"
+#include "BeamableCore/Public/AutoGen/ManifestViewLibrary.h"
 
 #include "CoreMinimal.h"
 

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/OptionalDouble.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalDouble.h"
 
 #include "OptionalDoubleLibrary.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/SubSystems/Social/PostFriendsMakeRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Social/PostFriendsMakeRequest.h"
 
 void UPostFriendsMakeRequest::BuildVerb(FString& VerbString) const
 {

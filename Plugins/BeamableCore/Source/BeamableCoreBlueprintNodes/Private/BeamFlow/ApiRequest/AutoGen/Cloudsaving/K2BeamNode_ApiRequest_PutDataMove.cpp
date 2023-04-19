@@ -1,12 +1,12 @@
 
 
-#include "BeamFlow/ApiRequest/AutoGen/Cloudsaving/K2BeamNode_ApiRequest_PutDataMove.h"
+#include "BeamableCoreBlueprintNodes/Public/BeamFlow/ApiRequest/AutoGen/Cloudsaving/K2BeamNode_ApiRequest_PutDataMove.h"
 
 #include "BeamK2.h"
 
-#include "AutoGen/SubSystems/BeamCloudsavingApi.h"
-#include "AutoGen/SubSystems/Cloudsaving/PutDataMoveRequest.h"
-#include "AutoGen/CloudsavingBasicManifest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/BeamCloudsavingApi.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Cloudsaving/PutDataMoveRequest.h"
+#include "BeamableCore/Public/AutoGen/CloudsavingBasicManifest.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PutDataMove"
 

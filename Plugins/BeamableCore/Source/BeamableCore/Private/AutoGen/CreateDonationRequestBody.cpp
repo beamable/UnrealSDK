@@ -1,5 +1,5 @@
 
-#include "AutoGen/CreateDonationRequestBody.h"
+#include "BeamableCore/Public/AutoGen/CreateDonationRequestBody.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 

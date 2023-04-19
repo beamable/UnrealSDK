@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/BeginPurchaseResponse.h"
+#include "BeamableCore/Public/AutoGen/BeginPurchaseResponse.h"
 
 #include "BeginPurchaseResponseLibrary.generated.h"
 

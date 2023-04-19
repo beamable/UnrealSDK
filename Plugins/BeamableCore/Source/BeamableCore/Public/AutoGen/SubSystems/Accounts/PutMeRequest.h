@@ -7,8 +7,8 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "AutoGen/AccountUpdate.h"
-#include "AutoGen/AccountPlayerView.h"
+#include "BeamableCore/Public/AutoGen/AccountUpdate.h"
+#include "BeamableCore/Public/AutoGen/AccountPlayerView.h"
 
 #include "PutMeRequest.generated.h"
 

@@ -1,5 +1,5 @@
 
-#include "AutoGen/CurrencyContentResponse.h"
+#include "BeamableCore/Public/AutoGen/CurrencyContentResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 

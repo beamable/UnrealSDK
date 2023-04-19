@@ -1,5 +1,5 @@
 
-#include "AutoGen/Optionals/OptionalMetadataView.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMetadataView.h"
 
 FOptionalMetadataView::FOptionalMetadataView()
 {

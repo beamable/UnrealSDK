@@ -4,8 +4,8 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "AutoGen/Optionals/OptionalArrayOfRankEntryStat.h"
-#include "AutoGen/Optionals/OptionalDouble.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfRankEntryStat.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalDouble.h"
 
 #include "RankEntry.generated.h"
 

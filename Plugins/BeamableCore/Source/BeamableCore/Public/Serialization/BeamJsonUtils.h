@@ -488,8 +488,8 @@ public:
 		ToDeserialize->OuterOwner = OuterOwner;
 		if (Identifier.IsEmpty())
 			ToDeserialize->BeamDeserializeProperties(OwnerBag);
-		// If the OwnerBag has the field, we deserialize it into the object.
-		// Most of the time, this affects polymorphic response types as means we won't deserialize it 
+			// If the OwnerBag has the field, we deserialize it into the object.
+			// Most of the time, this affects polymorphic response types as means we won't deserialize it 
 		else if (OwnerBag->HasField(Identifier))
 			ToDeserialize->BeamDeserializeProperties(OwnerBag->GetObjectField(Identifier));
 	}
@@ -968,6 +968,86 @@ public:
 			{
 				static_assert(false);
 			}
+		}
+	}
+
+	template <typename TPrimitiveType>
+	static void DeserializeRawPrimitive(const FString& JsonField, TPrimitiveType& ToDeserialize, UObject* OuterOwner = (UObject*)GetTransientPackage())
+	{
+		if (TIsDerivedFrom<TPrimitiveType, FBeamSemanticType>::Value)
+		{
+			checkf(false, TEXT("TSerializationType cannot be a FBeamSemanticType type. We don't support it for now."))
+		}
+		else if constexpr (TIsPointer<TPrimitiveType>::Value)
+		{
+			checkf(false, TEXT("TSerializationType cannot be a UObject type. We don't support it for now."))
+		}
+		else if constexpr (TIsSame<TPrimitiveType, FString>::Value)
+		{
+			// We do this as the primitive content that is returned is a string enclosed with quotes.
+			ToDeserialize = JsonField.RightChop(1).LeftChop(1);
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FBeamMap>::Value)
+		{
+			checkf(false, TEXT("TSerializationType cannot be a FBeamMap. We don't support it for now."))
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FBeamArray>::Value)
+		{
+			checkf(false, TEXT("TSerializationType cannot be a FBeamArray. We don't support it for now."))
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FBeamJsonSerializable>::Value)
+		{
+			checkf(false, TEXT("TSerializationType cannot be a FBeamJsonSerializable. We don't support it for now."))
+		}
+		else if constexpr (TIsSame<TPrimitiveType, int8>::Value)
+		{
+			const FString Val = JsonField;
+			int32 Parsed;
+			FDefaultValueHelper::ParseInt(Val, Parsed);
+			const int8 Cast = static_cast<int8>(Parsed);
+			ToDeserialize = Parsed;
+		}
+		else if constexpr (TIsSame<TPrimitiveType, int16>::Value)
+		{
+			const FString Val = JsonField;
+			int32 Parsed;
+			FDefaultValueHelper::ParseInt(Val, Parsed);
+			const int16 Cast = static_cast<int16>(Parsed);
+			ToDeserialize = Parsed;
+		}
+		else if constexpr (TIsSame<TPrimitiveType, int32>::Value)
+		{
+			const FString Val = JsonField;
+			int32 Parsed;
+			FDefaultValueHelper::ParseInt(Val, Parsed);
+			ToDeserialize = Parsed;
+		}
+		else if constexpr (TIsSame<TPrimitiveType, int64>::Value)
+		{
+			const FString Val = JsonField;
+			int64 Parsed;
+			FDefaultValueHelper::ParseInt64(Val, Parsed);
+			ToDeserialize = Parsed;
+		}
+		else if constexpr (TIsSame<TPrimitiveType, float>::Value)
+		{
+			const FString Val = JsonField;
+			float Parsed;
+			FDefaultValueHelper::ParseFloat(Val, Parsed);
+			ToDeserialize = Parsed;
+		}
+		else if constexpr (TIsSame<TPrimitiveType, double>::Value)
+		{
+			const FString Val = JsonField;
+			double Parsed;
+			FDefaultValueHelper::ParseDouble(Val, Parsed);
+			ToDeserialize = Parsed;
+		}
+		else if constexpr (TIsSame<TPrimitiveType, bool>::Value)
+		{
+			const FString Val = JsonField;
+			const bool Parsed = Val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
+			ToDeserialize = Parsed;
 		}
 	}
 };

@@ -8,8 +8,8 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 
-#include "AutoGen/Optionals/OptionalBool.h"
-#include "AutoGen/AnnouncementQueryResponse.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
+#include "BeamableCore/Public/AutoGen/AnnouncementQueryResponse.h"
 
 #include "GetAnnouncementsRequest.generated.h"
 

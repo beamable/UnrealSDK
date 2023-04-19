@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-#include "AutoGen/EntitlementClaimWindow.h"
+#include "BeamableCore/Public/AutoGen/EntitlementClaimWindow.h"
 
 #include "OptionalEntitlementClaimWindow.generated.h"
 
