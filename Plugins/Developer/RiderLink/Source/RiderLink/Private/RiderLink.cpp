@@ -3,6 +3,7 @@
 #include "ProtocolFactory.h"
 #include "UE4Library/UE4Library.Generated.h"
 
+#include "Async/Async.h"
 #include "Misc/App.h"
 #include "Misc/ScopeRWLock.h"
 #include "Modules/ModuleManager.h"
@@ -25,6 +26,7 @@ static FString GetProjectName()
 void FRiderLinkModule::ShutdownModule()
 {
 	UE_LOG(FLogRiderLinkModule, Verbose, TEXT("RiderLink SHUTDOWN START"));
+	
 	ModuleLifetimeDef.terminate();
 	ProtocolFactory.Reset();
 	UE_LOG(FLogRiderLinkModule, Verbose, TEXT("RiderLink SHUTDOWN FINISH"));
@@ -33,6 +35,7 @@ void FRiderLinkModule::ShutdownModule()
 void FRiderLinkModule::StartupModule()
 {
 	UE_LOG(FLogRiderLinkModule, Verbose, TEXT("RiderLink STARTUP START"));
+	
 	ProtocolFactory = MakeUnique<class ProtocolFactory>(GetProjectName());
 	Scheduler.queue([this]()
 	{
@@ -106,6 +109,16 @@ void FRiderLinkModule::ViewModel(rd::Lifetime Lifetime,
 		{
 			if (Cond) Handler(ModelLifetime, *EditorModel.Get());
 		});
+	});
+}
+
+void FRiderLinkModule::QueueModelAction(TFunction<void(JetBrains::EditorPlugin::RdEditorModel const&)> Handler)
+{	
+	Scheduler.invoke_or_queue([this, Handler]
+	{
+		if(!RdIsModelAlive.has_value() || !RdIsModelAlive.get()) return;
+		
+		Handler(*EditorModel.Get());
 	});
 }
 
