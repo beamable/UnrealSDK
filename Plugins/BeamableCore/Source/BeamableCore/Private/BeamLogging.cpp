@@ -12,3 +12,5 @@ DEFINE_LOG_CATEGORY(LogBeamRuntime);
 
 DEFINE_LOG_CATEGORY(LogBeamContent);
 DEFINE_LOG_CATEGORY(LogBeamMicroservices);
+
+DEFINE_LOG_CATEGORY(LogBeamCli);
