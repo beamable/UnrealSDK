@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -12,7 +11,7 @@
 #include "ClientContentInfoTableRow.generated.h"
 
 USTRUCT(BlueprintType)
-struct FClientContentInfoTableRow : public FTableRowBase
+struct BEAMABLECORE_API FClientContentInfoTableRow : public FTableRowBase
 {
 	GENERATED_BODY()
 

@@ -5,7 +5,7 @@
 
 
 USTRUCT(BlueprintType)
-struct FBeamArray : public FBeamJsonSerializable
+struct BEAMABLECORE_API FBeamArray : public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 

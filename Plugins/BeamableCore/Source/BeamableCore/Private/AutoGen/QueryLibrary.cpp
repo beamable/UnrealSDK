@@ -1,0 +1,38 @@
+
+#include "BeamableCore/Public/AutoGen/QueryLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UQueryLibrary::QueryToJsonString(const UQuery* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UQuery* UQueryLibrary::Make(FString QueryId, UObject* Outer)
+{
+	auto Serializable = NewObject<UQuery>(Outer);
+	Serializable->QueryId = QueryId;
+	
+	return Serializable;
+}
+
+void UQueryLibrary::Break(const UQuery* Serializable, FString& QueryId)
+{
+	QueryId = Serializable->QueryId;
+		
+}
+

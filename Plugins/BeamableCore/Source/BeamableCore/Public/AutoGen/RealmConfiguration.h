@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -20,6 +19,8 @@ public:
 	FString MicroserviceURI;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Portal URI", Category="Beam")
 	FString PortalURI;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Microservice Ecr URI", Category="Beam")
+	FString MicroserviceEcrURI;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Storage Browser URI", Category="Beam")
 	FString StorageBrowserURI;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Environment", Category="Beam")

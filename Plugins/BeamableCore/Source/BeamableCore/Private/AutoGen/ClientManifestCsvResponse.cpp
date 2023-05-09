@@ -1,3 +1,4 @@
+
 #include "AutoGen/ClientManifestCsvResponse.h"
 #include "AutoGen/Rows/ClientContentInfoTableRow.h"
 
@@ -61,3 +62,4 @@ void UClientManifestCsvResponse::DeserializeRequestResponse(UObject* RequestData
 
 	UBeamCsvUtils::StoreNameAsColumn<FClientContentInfoTableRow>(CsvData, FClientContentInfoTableRow::KeyField);
 }
+

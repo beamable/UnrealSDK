@@ -115,19 +115,15 @@ class UBeamJsonUtils final : public UBlueprintFunctionLibrary
 		else if constexpr (TIsDerivedFrom<TDataType, FBeamMap>::Value)
 		{
 			for (const auto& Value : Array)
-			{
-				Serializer->WriteObjectStart();
-				Value.BeamSerializeProperties(Serializer);
-				Serializer->WriteObjectEnd();
+			{				
+				Value.BeamSerializeProperties(Serializer);				
 			}
 		}
 		else if constexpr (TIsDerivedFrom<TDataType, FBeamArray>::Value)
 		{
 			for (const auto& Value : Array)
-			{
-				Serializer->WriteArrayStart();
-				Value.BeamSerializeProperties(Serializer);
-				Serializer->WriteArrayEnd();
+			{				
+				Value.BeamSerializeProperties(Serializer);				
 			}
 		}
 		else if constexpr (TIsDerivedFrom<TDataType, FBeamJsonSerializable>::Value)

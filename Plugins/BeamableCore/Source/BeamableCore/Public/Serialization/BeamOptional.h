@@ -3,7 +3,7 @@
 #include "BeamOptional.generated.h"
 
 USTRUCT(BlueprintType)
-struct FBeamOptional
+struct BEAMABLECORE_API FBeamOptional
 {
 	GENERATED_BODY()
 	virtual ~FBeamOptional();

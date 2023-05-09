@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -8,7 +7,7 @@
 #include "MapOfString.generated.h"
 
 USTRUCT(BlueprintType, Category="Beam|Wrappers|Maps")
-struct FMapOfString : public FBeamMap
+struct BEAMABLECORE_API FMapOfString : public FBeamMap
 {
 	GENERATED_BODY()
 
