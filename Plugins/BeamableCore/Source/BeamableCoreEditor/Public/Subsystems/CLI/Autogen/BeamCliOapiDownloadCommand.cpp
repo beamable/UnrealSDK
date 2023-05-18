@@ -34,9 +34,11 @@ inline TSharedPtr<FMonitoredProcess> UBeamCliOapiDownloadCommand::RunImpl(const 
 	{
 		if (OnCompleted)
 		{
-			OnCompleted(ResultCode, Op);
+			AsyncTask(ENamedThreads::GameThread, [this, ResultCode, Op]
+			{
+				OnCompleted(ResultCode, Op);
+			});
 		}
 	});
-	CliProcess->Launch();
 	return CliProcess;
 }

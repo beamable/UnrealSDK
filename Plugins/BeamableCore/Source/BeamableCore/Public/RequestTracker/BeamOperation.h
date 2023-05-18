@@ -32,12 +32,17 @@ BEAMABLECORE_API ENUM_CLASS_FLAGS(EBeamOperationEventType);
  * Just keep in mind that 0 is a reserved value that means the operation is over. Also, you must add the MetaData flags indicating which SubType values are available for each Type value:
  *  - OperationSuccessSubEvents="Final,OtherSuccessSubEvent" 
  *  - OperationErrorSubEvents="Final,OtherErrorSubEvent"
- *  - OperationCancelledSubEvents="Final,OtherCancelledSubEvent" *  
+ *  - OperationCancelledSubEvents="Final,OtherCancelledSubEvent" *
+ *
+ *  Unless you are making a very specific operation, you can use "EventA,EventB,EventC" declarations for sub-events and map them to their parsed structs.
  */
-UENUM(BlueprintType, meta=(OperationSuccessSubEvents="Final", OperationErrorSubEvents="Final", OperationCancelledSubEvents="Final"))
+UENUM(BlueprintType, meta=(OperationSuccessSubEvents="Final,EventA,EventB,EventC", OperationErrorSubEvents="Final,EventA,EventB,EventC", OperationCancelledSubEvents="Final,EventA,EventB,EventC"))
 enum EDefaultOperationEventSubType
 {
 	Final = 0 UMETA(Tooltip="It is the final event of the operation. No more events will be issued later."),
+	EventA = 1 UMETA(Tooltip="It is the final event of the operation. No more events will be issued later."),
+	EventB = 2 UMETA(Tooltip="It is the final event of the operation. No more events will be issued later."),
+	EventC = 3 UMETA(Tooltip="It is the final event of the operation. No more events will be issued later."),
 };
 
 

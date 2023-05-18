@@ -1,41 +1,44 @@
 #pragma once
 
 #include "Subsystems/CLI/BeamCliCommand.h"
-#include "BeamCliProjectPsCommand.generated.h"
+#include "BeamCliInitCommand.generated.h"
 
 class FMonitoredProcess;
 
 
 USTRUCT()
-struct FBeamCliProjectPsStreamData
+struct FBeamCliInitStreamData
 {
 	GENERATED_BODY()
 
 	inline static FString StreamTypeName = FString(TEXT("stream"));
 
 	UPROPERTY()
+	FString host;
+	UPROPERTY()
 	FString cid;
 	UPROPERTY()
-	FString pid;
-	UPROPERTY()
-	FString prefix;
-	UPROPERTY()
-	FString service;
-	UPROPERTY()
-	bool isRunning;
-	UPROPERTY()
-	bool isContainer;	
+	FString pid;	
 };
 
 
 /**
  Description:
-  List the running status of local services not running in docker
+  Initialize a new Beamable project in the current directory
 
 Usage:
-  Beamable.Tools project ps [options]
+  Beamable.Tools init [options]
 
 Options:
+  --username <username>            Specify user name
+  --password <password>            User password
+  --host <host>                    The host endpoint for beamable
+  --cid <cid>                      Cid to use; will default to whatever is in the file system
+  --pid <pid>                      Pid to use; will default to whatever is in the file system
+  --refresh-token <refresh-token>  Refresh token to use for the requests
+  --save-to-environment            Save login refresh token to environment variable
+  --save-to-file                   Save login refresh token to file
+  --customer-scoped                Make request customer scoped instead of product only
   --dryrun                         Should any networking happen?
   --cid <cid>                      Cid to use; will default to whatever is in the file system
   --pid <pid>                      Pid to use; will default to whatever is in the file system
@@ -49,14 +52,14 @@ Options:
 
  */
 UCLASS()
-class UBeamCliProjectPsCommand : public UBeamCliCommand
+class UBeamCliInitCommand : public UBeamCliCommand
 {
 	GENERATED_BODY()
 
 public:
-	TArray<FBeamCliProjectPsStreamData> Stream;
+	TArray<FBeamCliInitStreamData> Stream;
 	TArray<int64> Timestamps;
-	TFunction<void (const TArray<FBeamCliProjectPsStreamData>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (const TArray<FBeamCliInitStreamData>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual TSharedPtr<FMonitoredProcess> RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {}) override;

@@ -12,6 +12,7 @@
 #include "Misc/DefaultValueHelper.h"
 #include "BeamBackend/BeamCustomRequests.h"
 #include "BeamBackend/ResponseCache/BeamResponseCache.h"
+#include "Kismet/GameplayStatics.h"
 
 const FString UBeamBackend::HEADER_CONTENT_TYPE = FString(TEXT("Content-Type"));
 const FString UBeamBackend::HEADER_ACCEPT = FString(TEXT("Accept"));
@@ -134,6 +135,7 @@ TUnrealRequestPtr UBeamBackend::CreateUnpreparedRequest(int64& OutRequestId, con
 	// Creates a request with the specified timeout.
 	auto Req = FHttpModule::Get().CreateRequest();
 	Req->SetTimeout(RetryConfig.Timeout);
+	Req->SetHeader(TEXT("X-KS-USER-AGENT"), FString::Printf(TEXT("Unreal-%s"), *UGameplayStatics::GetPlatformName()));
 
 	// Prepares the Backend system to handle this request.
 	InFlightRequests.Add(OutRequestId, Req);

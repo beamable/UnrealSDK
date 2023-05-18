@@ -20,6 +20,12 @@ protected:
 	UPROPERTY()
 	FString Prefix;
 
+	/**
+	 * @brief Used to uniquely identify a Microservice. This is the name given to the C#MS via it's annotation. This is filled out  
+	 */
+	UPROPERTY()
+	FString BeamoId;
+	
 public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
@@ -29,6 +35,7 @@ inline void UBeamMicroserviceClientSubsystem::Initialize(FSubsystemCollectionBas
 {
 	Super::Initialize(Collection);
 	Prefix = TEXT("");
+	BeamoId = TEXT("");
 }
 
 inline void UBeamMicroserviceClientSubsystem::Deinitialize()

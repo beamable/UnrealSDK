@@ -95,6 +95,9 @@ TMap<uint8, UScriptStruct*> UK2BeamNode_Operation::GetOperationSubTypeUStructs()
 {
 	TMap<uint8, UScriptStruct*> SubEventToDataType;
 	SubEventToDataType.Add(static_cast<EDefaultOperationEventSubType>(0), nullptr);
+	SubEventToDataType.Add(static_cast<EDefaultOperationEventSubType>(1), nullptr);
+	SubEventToDataType.Add(static_cast<EDefaultOperationEventSubType>(2), nullptr);
+	SubEventToDataType.Add(static_cast<EDefaultOperationEventSubType>(3), nullptr);
 	return SubEventToDataType;
 }
 
@@ -102,6 +105,9 @@ TMap<uint8, UClass*> UK2BeamNode_Operation::GetOperationSubTypeConversionFunctio
 {
 	TMap<uint8, UClass*> SubEventToConversionClass;
 	SubEventToConversionClass.Add(static_cast<EDefaultOperationEventSubType>(0), nullptr);
+	SubEventToConversionClass.Add(static_cast<EDefaultOperationEventSubType>(1), nullptr);
+	SubEventToConversionClass.Add(static_cast<EDefaultOperationEventSubType>(2), nullptr);
+	SubEventToConversionClass.Add(static_cast<EDefaultOperationEventSubType>(3), nullptr);
 	return SubEventToConversionClass;
 }
 
@@ -111,6 +117,9 @@ TMap<uint8, FName> UK2BeamNode_Operation::GetOperationSubTypeConversionFunctionN
 	// GET_FUNCTION_NAME_CHECKED_OneParam(USubTypeConversionFunctionClass, ConversionFunction, FString))	
 	TMap<uint8, FName> SubEventToConversionClass;
 	SubEventToConversionClass.Add(static_cast<EDefaultOperationEventSubType>(0), TEXT(""));
+	SubEventToConversionClass.Add(static_cast<EDefaultOperationEventSubType>(1), TEXT(""));
+	SubEventToConversionClass.Add(static_cast<EDefaultOperationEventSubType>(2), TEXT(""));
+	SubEventToConversionClass.Add(static_cast<EDefaultOperationEventSubType>(3), TEXT(""));
 	return SubEventToConversionClass;
 }
 

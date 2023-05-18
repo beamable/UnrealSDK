@@ -1,0 +1,91 @@
+#include "BeamCliServicesDeployCommand.h"
+
+#include "BeamLogging.h"
+#include "Misc/MonitoredProcess.h"
+#include "JsonObjectConverter.h"
+#include "Serialization/JsonSerializerMacros.h"
+		
+inline TSharedPtr<FMonitoredProcess> UBeamCliServicesDeployCommand::RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op)
+{
+	FString Params = ("services deploy");
+	for (const auto& CommandParam : CommandParams)
+		Params.Appendf(TEXT(" %s"), *CommandParam);
+	Params = PrepareParams(Params);
+	UE_LOG(LogBeamCli, Verbose, TEXT("BeamCliServicesDeploy Command - Invocation: %s %s"), *PathToCli, *Params)
+
+	const auto CliProcess = MakeShared<FMonitoredProcess>(PathToCli, Params, FPaths::ProjectDir(), true, true);
+	CliProcess->OnOutput().BindLambda([this, Op](const FString& Out)
+	{
+		UE_LOG(LogBeamCli, Verbose, TEXT("BeamCliServicesDeploy Command - Std Out: %s"), *Out);
+		FString OutCopy = Out;
+		FString MessageJson;
+		while (ConsumeMessageFromOutput(OutCopy, MessageJson))
+		{
+			auto Bag = FJsonDataBag();
+			Bag.FromJson(MessageJson);
+			const auto StreamType = Bag.GetString("type");
+			const auto Timestamp = static_cast<int64>(Bag.GetField("ts")->AsNumber());
+			const auto DataJson = Bag.JsonObject->GetObjectField("data").ToSharedRef();
+
+			
+			if(StreamType.Equals(FBeamCliServicesDeployStreamData::StreamTypeName))
+			{
+				FBeamCliServicesDeployStreamData Data;
+				FJsonObjectConverter::JsonObjectToUStruct(DataJson, FBeamCliServicesDeployStreamData::StaticStruct(), &Data);
+
+				Stream.Add(Data);
+				Timestamps.Add(Timestamp);
+
+				UE_LOG(LogBeamCli, Verbose, TEXT("BeamCliServicesDeploy Command - Message Received: %s"), *MessageJson);
+				AsyncTask(ENamedThreads::GameThread, [this, Op]
+				{
+					OnStreamOutput(Stream, Timestamps, Op);
+				});				
+			}
+
+
+			if(StreamType.Equals(FBeamCliServicesDeployLocalProgressStreamData::StreamTypeName))
+			{
+				FBeamCliServicesDeployLocalProgressStreamData Data;
+				FJsonObjectConverter::JsonObjectToUStruct(DataJson, FBeamCliServicesDeployLocalProgressStreamData::StaticStruct(), &Data);
+
+				LocalProgressStream.Add(Data);
+				LocalProgressTimestamps.Add(Timestamp);
+
+				UE_LOG(LogBeamCli, Verbose, TEXT("BeamCliServicesDeploy Command - Message Received: %s"), *MessageJson);
+				AsyncTask(ENamedThreads::GameThread, [this, Op]
+				{
+					OnLocalProgressStreamOutput(LocalProgressStream, LocalProgressTimestamps, Op);
+				});				
+			}
+
+
+			if(StreamType.Equals(FBeamCliServicesDeployRemoteProgressStreamData::StreamTypeName))
+			{
+				FBeamCliServicesDeployRemoteProgressStreamData Data;
+				FJsonObjectConverter::JsonObjectToUStruct(DataJson, FBeamCliServicesDeployRemoteProgressStreamData::StaticStruct(), &Data);
+
+				RemoteProgressStream.Add(Data);
+				RemoteProgressTimestamps.Add(Timestamp);
+
+				UE_LOG(LogBeamCli, Verbose, TEXT("BeamCliServicesDeploy Command - Message Received: %s"), *MessageJson);
+				AsyncTask(ENamedThreads::GameThread, [this, Op]
+				{
+					OnRemoteProgressStreamOutput(RemoteProgressStream, RemoteProgressTimestamps, Op);
+				});				
+			}
+
+		}
+	});
+	CliProcess->OnCompleted().BindLambda([this, Op](int ResultCode)
+	{
+		if (OnCompleted)
+		{
+			AsyncTask(ENamedThreads::GameThread, [this, ResultCode, Op]
+			{
+				OnCompleted(ResultCode, Op);
+			});
+		}
+	});
+	return CliProcess;
+}

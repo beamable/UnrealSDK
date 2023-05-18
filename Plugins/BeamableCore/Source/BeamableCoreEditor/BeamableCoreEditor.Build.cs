@@ -29,7 +29,7 @@ public class BeamableCoreEditor : ModuleRules
 				"JsonUtilities",
 				"DataTableEditor",
 				"DeveloperToolSettings", 
-				"BeamableCoreRuntime",
+				"BeamableCoreRuntime", "RD",
 
 			}
 		);

@@ -1,41 +1,39 @@
 #pragma once
 
 #include "Subsystems/CLI/BeamCliCommand.h"
-#include "BeamCliProjectPsCommand.generated.h"
+#include "BeamCliServicesResetCommand.generated.h"
 
 class FMonitoredProcess;
 
 
 USTRUCT()
-struct FBeamCliProjectPsStreamData
+struct FBeamCliServicesResetStreamData
 {
 	GENERATED_BODY()
 
 	inline static FString StreamTypeName = FString(TEXT("stream"));
 
 	UPROPERTY()
-	FString cid;
+	FString Target;
 	UPROPERTY()
-	FString pid;
-	UPROPERTY()
-	FString prefix;
-	UPROPERTY()
-	FString service;
-	UPROPERTY()
-	bool isRunning;
-	UPROPERTY()
-	bool isContainer;	
+	TArray<FString> Ids;	
 };
 
 
 /**
  Description:
-  List the running status of local services not running in docker
+  Resets services to default settings and cleans up docker images (if any exist)
 
 Usage:
-  Beamable.Tools project ps [options]
+  Beamable.Tools services reset <target> [options]
+
+Arguments:
+  <target>  Either image|container|protocols.'image' will cleanup all your locally built images for the selected Beamo Services.
+            'container' will stop all your locally running containers for the selected Beamo Services.
+            'protocols' will reset all the protocol data for the selected Beamo Services back to default parameters
 
 Options:
+  --ids <ids>                      The ids for the services you wish to reset
   --dryrun                         Should any networking happen?
   --cid <cid>                      Cid to use; will default to whatever is in the file system
   --pid <pid>                      Pid to use; will default to whatever is in the file system
@@ -47,16 +45,17 @@ Options:
 
 
 
+
  */
 UCLASS()
-class UBeamCliProjectPsCommand : public UBeamCliCommand
+class UBeamCliServicesResetCommand : public UBeamCliCommand
 {
 	GENERATED_BODY()
 
 public:
-	TArray<FBeamCliProjectPsStreamData> Stream;
+	TArray<FBeamCliServicesResetStreamData> Stream;
 	TArray<int64> Timestamps;
-	TFunction<void (const TArray<FBeamCliProjectPsStreamData>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (const TArray<FBeamCliServicesResetStreamData>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual TSharedPtr<FMonitoredProcess> RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {}) override;

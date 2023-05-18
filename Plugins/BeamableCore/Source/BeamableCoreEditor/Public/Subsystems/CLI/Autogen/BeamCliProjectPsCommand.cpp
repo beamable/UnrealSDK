@@ -37,8 +37,10 @@ inline TSharedPtr<FMonitoredProcess> UBeamCliProjectPsCommand::RunImpl(const TAr
 				Timestamps.Add(Timestamp);
 
 				UE_LOG(LogBeamCli, Verbose, TEXT("BeamCliProjectPs Command - Message Received: %s"), *MessageJson);
-				OnStreamOutput.CheckCallable();
-				OnStreamOutput(Stream, Timestamps, Op);
+				AsyncTask(ENamedThreads::GameThread, [this, Op]
+				{
+					OnStreamOutput(Stream, Timestamps, Op);
+				});				
 			}
 
 		}
@@ -47,9 +49,11 @@ inline TSharedPtr<FMonitoredProcess> UBeamCliProjectPsCommand::RunImpl(const TAr
 	{
 		if (OnCompleted)
 		{
-			OnCompleted(ResultCode, Op);
+			AsyncTask(ENamedThreads::GameThread, [this, ResultCode, Op]
+			{
+				OnCompleted(ResultCode, Op);
+			});
 		}
 	});
-	CliProcess->Launch();
 	return CliProcess;
 }

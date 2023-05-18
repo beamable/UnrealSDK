@@ -1,8 +1,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamCli.h"
 #include "Misc/MonitoredProcess.h"
 #include "RequestTracker/BeamOperationHandle.h"
+#include "Async/Async.h"
 #include "BeamCliCommand.generated.h"
 
 class FMonitoredProcess;
@@ -26,8 +28,29 @@ public:
 		RequestTracker = GEngine->GetEngineSubsystem<UBeamRequestTracker>();
 		Editor = GEditor->GetEditorSubsystem<UBeamEditor>();
 		Cli = GEditor->GetEditorSubsystem<UBeamCli>();
+
+		checkf(Cli->IsInstalled(), TEXT("The Beamable CLI must be installed for any CLI commands to be run."))
+		
 		CmdProcess = RunImpl(CommandParams, Op);
+		CmdProcess->Launch();
 	};
+
+	virtual void RunSync(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {})
+	{
+		RequestTracker = GEngine->GetEngineSubsystem<UBeamRequestTracker>();
+		Editor = GEditor->GetEditorSubsystem<UBeamEditor>();
+		Cli = GEditor->GetEditorSubsystem<UBeamCli>();
+
+		checkf(Cli->IsInstalled(), TEXT("The Beamable CLI must be installed for any CLI commands to be run."))
+		
+		CmdProcess = RunImpl(CommandParams, Op);
+		CmdProcess->Launch();
+
+		// Busy wait until this finishes.
+		while (CmdProcess->Update())
+		{
+		}
+	}
 
 	virtual TSharedPtr<FMonitoredProcess> RunImpl(const TArray<FString>& CommandParams,
 	                                              const FBeamOperationHandle& Op = {})
@@ -67,8 +90,8 @@ public:
 		// If we are not receiving a message and we receive a full one in a single StdOut call, we parse it out and  
 		if (!bIsReceivingMessage && MessageStartIdx != INDEX_NONE && MessageEndIdx != INDEX_NONE)
 		{
-			OutMessageJson = StdOutCopy.Mid(PatternStart.Len(), StdOutCopy.Find(PatternEnd) - PatternStart.Len());
-			StdOutCopy = StdOutCopy.Mid(0, MessageEndIdx);
+			OutMessageJson = StdOutCopy.RightChop(StreamStartIdx + PatternStart.Len()).LeftChop(PatternEnd.Len());
+			StdOutCopy = StdOutCopy.RightChop(MessageEndIdx + PatternEnd.Len());			
 			// This means a message was completely received and is ready to be sent.
 			return true;
 		}

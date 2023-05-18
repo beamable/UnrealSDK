@@ -1,41 +1,53 @@
 #pragma once
 
 #include "Subsystems/CLI/BeamCliCommand.h"
-#include "BeamCliProjectPsCommand.generated.h"
+#include "BeamCliServicesPsCommand.generated.h"
 
 class FMonitoredProcess;
 
 
 USTRUCT()
-struct FBeamCliProjectPsStreamData
+struct FBeamCliServicesPsStreamData
 {
 	GENERATED_BODY()
 
 	inline static FString StreamTypeName = FString(TEXT("stream"));
 
 	UPROPERTY()
-	FString cid;
+	bool IsLocal;
 	UPROPERTY()
-	FString pid;
+	TArray<FString> BeamoIds;
 	UPROPERTY()
-	FString prefix;
+	TArray<bool> ShouldBeEnabledOnRemote;
 	UPROPERTY()
-	FString service;
+	TArray<bool> RunningState;
 	UPROPERTY()
-	bool isRunning;
+	TArray<FString> ProtocolTypes;
 	UPROPERTY()
-	bool isContainer;	
+	TArray<FString> ImageIds;
+	UPROPERTY()
+	TArray<FString> ContainerNames;
+	UPROPERTY()
+	TArray<FString> ContainerIds;
+	UPROPERTY()
+	TArray<FString> LocalHostPorts;
+	UPROPERTY()
+	TArray<FString> LocalContainerPorts;
+	UPROPERTY()
+	TArray<FString> Dependencies;	
 };
 
 
 /**
  Description:
-  List the running status of local services not running in docker
+  Lists the current local or remote service manifest and status (as summary table or json)
 
 Usage:
-  Beamable.Tools project ps [options]
+  Beamable.Tools services ps [options]
 
 Options:
+  --remote                         Makes it so that we output the current realm's remote manifest, instead of the local one
+  --json                           Outputs as json instead of summary table
   --dryrun                         Should any networking happen?
   --cid <cid>                      Cid to use; will default to whatever is in the file system
   --pid <pid>                      Pid to use; will default to whatever is in the file system
@@ -49,14 +61,14 @@ Options:
 
  */
 UCLASS()
-class UBeamCliProjectPsCommand : public UBeamCliCommand
+class UBeamCliServicesPsCommand : public UBeamCliCommand
 {
 	GENERATED_BODY()
 
 public:
-	TArray<FBeamCliProjectPsStreamData> Stream;
+	TArray<FBeamCliServicesPsStreamData> Stream;
 	TArray<int64> Timestamps;
-	TFunction<void (const TArray<FBeamCliProjectPsStreamData>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (const TArray<FBeamCliServicesPsStreamData>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual TSharedPtr<FMonitoredProcess> RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {}) override;
