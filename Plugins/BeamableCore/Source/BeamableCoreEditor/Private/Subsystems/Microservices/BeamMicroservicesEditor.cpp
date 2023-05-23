@@ -5,9 +5,13 @@
 
 #include "BeamLogging.h"
 #include "BeamBackend/BeamMicroserviceClientSubsystem.h"
+#include "Subsystems/BeamEditor.h"
 #include "Subsystems/CLI/BeamCli.h"
 #include "Subsystems/CLI/Autogen/BeamCliProjectPsCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliServicesPsCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliProjectOpenSwaggerCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliServicesDeployCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliServicesResetCommand.h"
 
 void UBeamMicroservicesEditor::Initialize(FSubsystemCollectionBase& Collection)
 {

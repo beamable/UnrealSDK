@@ -3,16 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "reactive/base/viewable_collections.h"
 #include "RequestTracker/BeamOperation.h"
 #include "RequestTracker/BeamRequestTracker.h"
-#include "Subsystems/BeamEditor.h"
 #include "Subsystems/BeamEditorSubsystem.h"
 #include "Subsystems/CLI/BeamCli.h"
-#include "Subsystems/CLI/Autogen/BeamCliProjectOpenSwaggerCommand.h"
-#include "Subsystems/CLI/Autogen/BeamCliServicesDeployCommand.h"
-#include "Subsystems/CLI/Autogen/BeamCliServicesPsCommand.h"
-#include "Subsystems/CLI/Autogen/BeamCliServicesResetCommand.h"
 #include "BeamMicroservicesEditor.generated.h"
 
 UENUM(BlueprintType)
