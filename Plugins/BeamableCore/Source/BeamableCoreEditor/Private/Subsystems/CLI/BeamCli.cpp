@@ -45,6 +45,7 @@ void UBeamCli::OnRealmInitialized()
 			               FString(TEXT("--cid ") + Realm.Cid.AsString),
 			               FString(TEXT("--pid ") + Realm.Pid.AsString),
 			               FString(TEXT("--refresh-token ") + EditorUserData.AuthToken.RefreshToken),
+			               FString(TEXT("--save-to-file")),
 		               });
 	}
 }
