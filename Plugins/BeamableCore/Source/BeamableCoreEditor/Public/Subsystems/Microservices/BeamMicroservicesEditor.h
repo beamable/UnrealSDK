@@ -99,13 +99,13 @@ public:
 	/**
 	 * @brief Builds and deploys the current Microservice project to the current realm. After this succeeds, calling the UpdateRemoteMicroserviceStateOperation will fetch the state of the deployed microservices.  
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Editor|Microservice")
-	FBeamOperationHandle DeployRemoteMicroservicesOperation(const FBeamOperationEventHandler& OnOperationEvent);
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Editor|Microservice", meta=(AutoCreateRefTerm="EnableBeamoIds,DisableBeamoIds"))
+	FBeamOperationHandle DeployRemoteMicroservicesOperation(const TArray<FString>& EnableBeamoIds, const TArray<FString>& DisableBeamoIds, const FBeamOperationEventHandler& OnOperationEvent);
 
 	/**
 	 * @brief Builds and deploys the current Microservice project to the current realm. After this succeeds, calling the UpdateRemoteMicroserviceStateOperation will fetch the state of the deployed microservices.  
 	 */
-	FBeamOperationHandle CPP_DeployRemoteMicroservicesOperation(const FBeamOperationEventHandlerCode& OnOperationEvent);
+	FBeamOperationHandle CPP_DeployRemoteMicroservicesOperation(const TArray<FString>& EnableBeamoIds, const TArray<FString>& DisableBeamoIds, const FBeamOperationEventHandlerCode& OnOperationEvent);
 
 	/**
 	 * @brief Builds and runs the current Microservice project(s) locally, in Docker.  
@@ -139,7 +139,7 @@ public:
 protected:
 	void UpdateRemoteMicroserviceState(const TFunction<void(const int& ResCode, const FBeamOperationHandle& Op)>& OnComplete, const FBeamOperationHandle& Op);
 	void EnsureExistingServices();
-	void DeployMicroservices(const FBeamOperationHandle& Op) const;
+	void DeployMicroservices(const TArray<FString>& EnableBeamoIds, const TArray<FString>& DisableBeamoIds, const FBeamOperationHandle& Op) const;
 	void RunDockerMicroservices(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op);
 	void StopDockerMicroservices(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op);
 

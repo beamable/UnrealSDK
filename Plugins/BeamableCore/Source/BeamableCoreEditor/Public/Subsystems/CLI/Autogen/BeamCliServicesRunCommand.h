@@ -1,55 +1,48 @@
 #pragma once
 
 #include "Subsystems/CLI/BeamCliCommand.h"
-#include "BeamCliServicesPsCommand.generated.h"
+#include "BeamCliServicesRunCommand.generated.h"
 
 class FMonitoredProcess;
 
 
 USTRUCT()
-struct FBeamCliServicesPsStreamData
+struct FBeamCliServicesRunStreamData
 {
 	GENERATED_BODY()
 
 	inline static FString StreamTypeName = FString(TEXT("stream"));
 
 	UPROPERTY()
-	bool IsLocal;
+	bool Success;
 	UPROPERTY()
-	bool IsDockerRunning;
+	FString FailureReason;	
+};
+
+
+USTRUCT()
+struct FBeamCliServicesRunLocalProgressStreamData
+{
+	GENERATED_BODY()
+
+	inline static FString StreamTypeName = FString(TEXT("local_progress"));
+
 	UPROPERTY()
-	TArray<FString> BeamoIds;
+	FString BeamoId;
 	UPROPERTY()
-	TArray<bool> ShouldBeEnabledOnRemote;
-	UPROPERTY()
-	TArray<bool> RunningState;
-	UPROPERTY()
-	TArray<FString> ProtocolTypes;
-	UPROPERTY()
-	TArray<FString> ImageIds;
-	UPROPERTY()
-	TArray<FString> ContainerNames;
-	UPROPERTY()
-	TArray<FString> ContainerIds;
-	UPROPERTY()
-	TArray<FString> LocalHostPorts;
-	UPROPERTY()
-	TArray<FString> LocalContainerPorts;
-	UPROPERTY()
-	TArray<FString> Dependencies;	
+	double LocalDeployProgress;	
 };
 
 
 /**
  Description:
-  Lists the current local or remote service manifest and status (as summary table or json)
+  Run services locally in Docker. Will fail if no docker instance is running in the local machine
 
 Usage:
-  Beamable.Tools services ps [options]
+  Beamable.Tools services run [options]
 
 Options:
-  --remote                         Makes it so that we output the current realm's remote manifest, instead of the local one
-  --json                           Outputs as json instead of summary table
+  --ids <ids>                      The ids for the services you wish to deploy. Ignoring this option deploys all services
   --dryrun                         Should any networking happen?
   --cid <cid>                      Cid to use; will default to whatever is in the file system
   --pid <pid>                      Pid to use; will default to whatever is in the file system
@@ -63,14 +56,18 @@ Options:
 
  */
 UCLASS()
-class UBeamCliServicesPsCommand : public UBeamCliCommand
+class UBeamCliServicesRunCommand : public UBeamCliCommand
 {
 	GENERATED_BODY()
 
 public:
-	TArray<FBeamCliServicesPsStreamData> Stream;
+	TArray<FBeamCliServicesRunStreamData> Stream;
 	TArray<int64> Timestamps;
-	TFunction<void (const TArray<FBeamCliServicesPsStreamData>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (const TArray<FBeamCliServicesRunStreamData>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
+
+	TArray<FBeamCliServicesRunLocalProgressStreamData> LocalProgressStream;
+	TArray<int64> LocalProgressTimestamps;
+	TFunction<void (const TArray<FBeamCliServicesRunLocalProgressStreamData>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnLocalProgressStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual TSharedPtr<FMonitoredProcess> RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {}) override;

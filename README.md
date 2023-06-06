@@ -26,23 +26,24 @@ Start by cloning this repo's `main` branch. At the moment, we are in early devel
 
 We know this does not provide the best of stability guarantees, but at the moment we value ease of development and speed of iteration more than that.
 
-Once this repo is cloned/pulled locally, simply copy/paste the BeamableCore Plugin folder into your own project's Plugin folder. After that, you'll need to add some modules to your `Target.cs`.
+Once this repo is cloned/pulled locally, simply copy/paste the folder `Plugins/BeamableCore` into your own project's `Plugins` folder.
+After that, you'll need to add some modules to your `Target.cs` files.
 
 ```csharp
-// Add to YourGameEditor.Target.cs
-ExtraModuleNames.AddRange(new string[] { "YourGame", "BeamableCore", "BeamableCoreEditor", "BeamableCoreBlueprintNodes" });
-
 // Add to YourGameGame.Target.cs
-ExtraModuleNames.AddRange(new string[] { "LyraGame", "BeamableCore", "BeamableCoreRuntime", "BeamableCoreBlueprintNodes" });
+ExtraModuleNames.AddRange(new string[] { "BeamableCore", "BeamableCoreRuntime", "BeamableCoreBlueprintNodes" });
 
-// [If you're game has a dedicated server build] Add to YourGameServer.Target.cs
-ExtraModuleNames.AddRange(new string[] { "LyraGame", "BeamableCore", "BeamableCoreRuntime", });
+// If you have an Editor Module, add this to YourGameEditor.Target.cs
+ExtraModuleNames.AddRange(new string[] { "BeamableCore", "BeamableCoreEditor", "BeamableCoreBlueprintNodes" });
 
-// [If you're game has a client-only build] Add to YourGameClient.Target.cs
-ExtraModuleNames.AddRange(new string[] { "LyraGame", "BeamableCore", "BeamableCoreRuntime", });
+// If you're game has a dedicated server build, add this to YourGameServer.Target.cs
+ExtraModuleNames.AddRange(new string[] { "BeamableCore", "BeamableCoreRuntime", });
+
+// If you're game has a client-only build, add this to YourGameClient.Target.cs
+ExtraModuleNames.AddRange(new string[] { "BeamableCore", "BeamableCoreRuntime", });
 ```
 
-To use beamable, you'll also need to add the modules to your  `Build.cs` files for the targets and modules using Beamable
+To use beamable, you'll also need to add the modules to your  `Build.cs` files for the targets and modules using Beamable.
 
 ```csharp
 // Add to YourGame.Build.cs
@@ -65,7 +66,20 @@ PublicDependencyModuleNames.AddRange(
 );
 ```
 
-Now just compile the editor build target and run it.
+Now you can compile and run the `Development Editor` target for your project from VS, Rider or any UE-supported IDE.
+
+### Optional - Setting Up the Beamable CLI
+Before continuing, we recommend you install the Beamable CLI via the `dotnet CLI`. For that, you'll need to install the CLI and project templates. 
+
+```shell
+dotnet tool install --global beamable.tools
+dotnet new --install beamable.templates
+```
+
+You can run ``
+ and that dotnet new --list --tag beamable
+
+
 
 ### Sign-In and Setting up a BeamRuntimeSubsystem
 

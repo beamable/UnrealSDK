@@ -24,7 +24,7 @@ protected:
 	 * @brief Used to uniquely identify a Microservice. This is the name given to the C#MS via it's annotation. This is filled out  
 	 */
 	UPROPERTY()
-	FString BeamoId;
+	FString MicroserviceName;
 	
 public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
@@ -35,7 +35,7 @@ inline void UBeamMicroserviceClientSubsystem::Initialize(FSubsystemCollectionBas
 {
 	Super::Initialize(Collection);
 	Prefix = TEXT("");
-	BeamoId = TEXT("");
+	MicroserviceName = TEXT("");
 }
 
 inline void UBeamMicroserviceClientSubsystem::Deinitialize()
