@@ -370,12 +370,27 @@ void UBeamMicroservicesEditor::RunDockerMicroservices(const TArray<FString>& Bea
 void UBeamMicroservicesEditor::StopDockerMicroservices(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op)
 {
 	const auto ServicesDeploy = NewObject<UBeamCliServicesResetCommand>();
-	ServicesDeploy->OnStreamOutput = [](const TArray<FBeamCliServicesResetStreamData>& Result,
-	                                    const TArray<long long>&, const FBeamOperationHandle&)
+	ServicesDeploy->OnStreamOutput = [this](const TArray<FBeamCliServicesResetStreamData>& Result,
+	                                        const TArray<long long>&, const FBeamOperationHandle&)
 	{
 		FString Json;
 		FJsonObjectConverter::UStructToJsonObjectString(Result.Last(), Json);
 		UE_LOG(LogBeamMicroservices, Display, TEXT("%s"), *Json);
+		for (const auto& BeamoId : Result.Last().Ids)
+		{
+			if (LocalMicroserviceData.Contains(BeamoId.ToLower()))
+			{
+				LocalMicroserviceData.Find(BeamoId)->RunningState = Stopped;
+			}
+			else
+			{
+				LocalMicroserviceData.Add(BeamoId.ToLower(), FLocalMicroserviceData{
+					                          BeamoId,
+					                          Stopped,
+					                          false
+				                          });
+			}
+		}
 	};
 
 	// Handle completing the operation
