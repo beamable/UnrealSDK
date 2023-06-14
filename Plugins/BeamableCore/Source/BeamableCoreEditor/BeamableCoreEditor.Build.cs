@@ -30,6 +30,7 @@ public class BeamableCoreEditor : ModuleRules
 				"DataTableEditor",
 				"DeveloperToolSettings",
 				"BeamableCoreRuntime",
+				"AssetTools"
 			}
 		);
 

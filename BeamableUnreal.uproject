@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "5.1",
+	"EngineAssociation": "5.2",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -8,11 +8,6 @@
 			"Name": "BeamableUnreal",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
-		},
-		{
-			"Name": "BeamableUnrealBlueprintNodes",
-			"Type": "UncookedOnly",
-			"LoadingPhase": "PreDefault"
 		}
 	],
 	"Plugins": [

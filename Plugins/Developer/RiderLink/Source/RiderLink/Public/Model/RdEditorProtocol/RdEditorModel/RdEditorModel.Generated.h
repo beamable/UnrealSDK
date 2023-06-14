@@ -48,7 +48,7 @@
 #include "UE4Library/UnrealLogEvent.Generated.h"
 #include "UE4Library/BlueprintReference.Generated.h"
 #include "UE4Library/UClass.Generated.h"
-#include "Containers/UnrealString.h"
+#include "Runtime/Core/Public/Containers/UnrealString.h"
 #include "UE4Library/PlayState.Generated.h"
 #include "UE4Library/RequestResultBase.Generated.h"
 

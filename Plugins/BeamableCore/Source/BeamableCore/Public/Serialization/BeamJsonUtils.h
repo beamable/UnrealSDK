@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <type_traits>
+
 #include "BeamSemanticType.h"
 #include "BeamTypeTraits.h"
 #include "Misc/DefaultValueHelper.h"
@@ -19,7 +21,7 @@ class UBeamJsonUtils final : public UBlueprintFunctionLibrary
 	template <typename TDataType, typename TSerializer>
 	static void _SerializeUObject(const TDataType ToSerialize, TSerializer Serializer)
 	{
-		static_assert(TIsSame<TSerializer, TUnrealPrettyJsonSerializer>::Value || TIsSame<TSerializer, TUnrealJsonSerializer>::Value, "Serializer must be one of these!");
+		static_assert(std::is_same_v<TSerializer, TUnrealPrettyJsonSerializer> || std::is_same_v<TSerializer, TUnrealJsonSerializer>, "Serializer must be one of these!");
 
 		if constexpr (TIsPointer<TDataType>::Value)
 		{
@@ -37,7 +39,7 @@ class UBeamJsonUtils final : public UBlueprintFunctionLibrary
 	template <typename TOptionalType, typename TDataType, typename TSemanticTypeRepresentation, typename TSerializer>
 	static void _SerializeOptional(const FString& Identifier, const FBeamOptional* ToSerialize, TSerializer Serializer)
 	{
-		static_assert(TIsSame<TSerializer, TUnrealPrettyJsonSerializer>::Value || TIsSame<TSerializer, TUnrealJsonSerializer>::Value, "Serializer must be one of these!");
+		static_assert(std::is_same_v<TSerializer, TUnrealPrettyJsonSerializer> || std::is_same_v<TSerializer, TUnrealJsonSerializer>, "Serializer must be one of these!");
 
 		if (ToSerialize->IsSet)
 		{
@@ -100,7 +102,7 @@ class UBeamJsonUtils final : public UBlueprintFunctionLibrary
 	template <typename TDataType, typename TSemanticTypeRepresentation, typename TSerializer>
 	static void _SerializeArrayElements(const TArray<TDataType>& Array, TSerializer& Serializer)
 	{
-		static_assert(TIsSame<TSerializer, TUnrealPrettyJsonSerializer>::Value || TIsSame<TSerializer, TUnrealJsonSerializer>::Value, "Serializer must be one of these!");
+		static_assert(std::is_same_v<TSerializer, TUnrealPrettyJsonSerializer> || std::is_same_v<TSerializer, TUnrealJsonSerializer>, "Serializer must be one of these!");
 
 		if constexpr (TIsPointer<TDataType>::Value)
 		{
@@ -163,7 +165,7 @@ class UBeamJsonUtils final : public UBlueprintFunctionLibrary
 	template <typename TMapType, typename TDataType, typename TSemanticTypeRepresentation, typename TSerializer>
 	static void _SerializeMapElements(const TMap<FString, TMapType>& Map, TSerializer& Serializer)
 	{
-		static_assert(TIsSame<TSerializer, TUnrealPrettyJsonSerializer>::Value || TIsSame<TSerializer, TUnrealJsonSerializer>::Value, "Serializer must be one of these!");
+		static_assert(std::is_same_v<TSerializer, TUnrealPrettyJsonSerializer> || std::is_same_v<TSerializer, TUnrealJsonSerializer>, "Serializer must be one of these!");
 
 		// Compile-time branch for array case
 		if constexpr (TIsTArray<TMapType>::Value)
@@ -236,7 +238,7 @@ class UBeamJsonUtils final : public UBlueprintFunctionLibrary
 	template <typename TSemanticTypeRepresentation, typename TSerializer>
 	static void _SerializeSemanticType(const FString& Identifier, const FBeamSemanticType* ToSerialize, TSerializer Serializer)
 	{
-		static_assert(TIsSame<TSerializer, TUnrealPrettyJsonSerializer>::Value || TIsSame<TSerializer, TUnrealJsonSerializer>::Value, "Serializer must be one of these!");
+		static_assert(std::is_same_v<TSerializer, TUnrealPrettyJsonSerializer> || std::is_same_v<TSerializer, TUnrealJsonSerializer>, "Serializer must be one of these!");
 
 		const auto& Value = FBeamSemanticType::GetValue<TSemanticTypeRepresentation>(ToSerialize);
 		Serializer->WriteValue(Identifier, Value);
@@ -245,7 +247,7 @@ class UBeamJsonUtils final : public UBlueprintFunctionLibrary
 	template <typename TSemanticTypeRepresentation, typename TSerializer>
 	static void _SerializeSemanticType(const FBeamSemanticType* ToSerialize, TSerializer Serializer)
 	{
-		static_assert(TIsSame<TSerializer, TUnrealPrettyJsonSerializer>::Value || TIsSame<TSerializer, TUnrealJsonSerializer>::Value, "Serializer must be one of these!");
+		static_assert(std::is_same_v<TSerializer, TUnrealPrettyJsonSerializer> || std::is_same_v<TSerializer, TUnrealJsonSerializer>, "Serializer must be one of these!");
 
 		const auto& Value = FBeamSemanticType::GetValue<TSemanticTypeRepresentation>(ToSerialize);
 		Serializer->WriteValue(Value);
@@ -291,6 +293,7 @@ public:
 	template <typename TDataType>
 	static void SerializeUObject(const TDataType& ToSerialize, TUnrealPrettyJsonSerializer& Serializer)
 	{
+		
 		static_assert(TIsPointer<TDataType>::Value);
 		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, FBeamJsonSerializable>::Value);
 		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, UObject>::Value);
@@ -401,7 +404,7 @@ public:
 		{
 			checkf(false, TEXT("TSerializationType cannot be a UObject type. We don't support it for now."))
 		}
-		else if constexpr (TIsSame<TSerializationType, FString>::Value)
+		else if constexpr (std::is_same_v<TSerializationType, FString>)
 		{
 			const FString Val = JsonField->AsString();
 			FBeamSemanticType::Set(&ToDeserialize, &Val, SemanticTypeName);
@@ -418,7 +421,7 @@ public:
 		{
 			checkf(false, TEXT("TSerializationType cannot be a FBeamJsonSerializable. We don't support it for now."))
 		}
-		else if constexpr (TIsSame<TSerializationType, int8>::Value)
+		else if constexpr (std::is_same_v<TSerializationType, int8>)
 		{
 			const FString Val = JsonField->AsString();
 			int32 Parsed;
@@ -426,7 +429,7 @@ public:
 			const int8 Cast = static_cast<int8>(Parsed);
 			FBeamSemanticType::Set(&ToDeserialize, &Cast, SemanticTypeName);
 		}
-		else if constexpr (TIsSame<TSerializationType, int16>::Value)
+		else if constexpr (std::is_same_v<TSerializationType, int16>)
 		{
 			const FString Val = JsonField->AsString();
 			int32 Parsed;
@@ -434,35 +437,35 @@ public:
 			const int16 Cast = static_cast<int16>(Parsed);
 			FBeamSemanticType::Set(&ToDeserialize, &Cast, SemanticTypeName);
 		}
-		else if constexpr (TIsSame<TSerializationType, int32>::Value)
+		else if constexpr (std::is_same_v<TSerializationType, int32>)
 		{
 			const FString Val = JsonField->AsString();
 			int32 Parsed;
 			FDefaultValueHelper::ParseInt(Val, Parsed);
 			FBeamSemanticType::Set(&ToDeserialize, &Parsed, SemanticTypeName);
 		}
-		else if constexpr (TIsSame<TSerializationType, int64>::Value)
+		else if constexpr (std::is_same_v<TSerializationType, int64>)
 		{
 			const FString Val = JsonField->AsString();
 			int64 Parsed;
 			FDefaultValueHelper::ParseInt64(Val, Parsed);
 			FBeamSemanticType::Set(&ToDeserialize, &Parsed, SemanticTypeName);
 		}
-		else if constexpr (TIsSame<TSerializationType, float>::Value)
+		else if constexpr (std::is_same_v<TSerializationType, float>)
 		{
 			const FString Val = JsonField->AsString();
 			float Parsed;
 			FDefaultValueHelper::ParseFloat(Val, Parsed);
 			FBeamSemanticType::Set(&ToDeserialize, &Parsed, SemanticTypeName);
 		}
-		else if constexpr (TIsSame<TSerializationType, double>::Value)
+		else if constexpr (std::is_same_v<TSerializationType, double>)
 		{
 			const FString Val = JsonField->AsString();
 			double Parsed;
 			FDefaultValueHelper::ParseDouble(Val, Parsed);
 			FBeamSemanticType::Set(&ToDeserialize, &Parsed, SemanticTypeName);
 		}
-		else if constexpr (TIsSame<TSerializationType, bool>::Value)
+		else if constexpr (std::is_same_v<TSerializationType, bool>)
 		{
 			const FString Val = JsonField->AsString();
 			const bool Parsed = Val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
@@ -522,7 +525,7 @@ public:
 						Parsed->BeamDeserializeProperties(Item->AsObject());
 						ParsedMap.Add(Key, Parsed);
 					}
-					else if constexpr (TIsSame<TDataType, FString>::Value)
+					else if constexpr (std::is_same_v<TDataType, FString>)
 					{
 						const FString Val = Item->AsString();
 						ParsedMap.Add(Key, Val);
@@ -551,49 +554,49 @@ public:
 						Parsed.BeamDeserializeProperties(Item->AsObject());
 						ParsedMap.Add(Key, Parsed);
 					}
-					else if constexpr (TIsSame<TDataType, int8>::Value)
+					else if constexpr (std::is_same_v<TDataType, int8>)
 					{
 						const FString Val = Item->AsString();
 						int32 Parsed;
 						FDefaultValueHelper::ParseInt(Val, Parsed);
 						ParsedMap.Add(Key, static_cast<int8>(Parsed));
 					}
-					else if constexpr (TIsSame<TDataType, int16>::Value)
+					else if constexpr (std::is_same_v<TDataType, int16>)
 					{
 						const FString Val = Item->AsString();
 						int32 Parsed;
 						FDefaultValueHelper::ParseInt(Val, Parsed);
 						ParsedMap.Add(Key, static_cast<int16>(Parsed));
 					}
-					else if constexpr (TIsSame<TDataType, int32>::Value)
+					else if constexpr (std::is_same_v<TDataType, int32>)
 					{
 						const FString Val = Item->AsString();
 						int32 Parsed;
 						FDefaultValueHelper::ParseInt(Val, Parsed);
 						ParsedMap.Add(Key, Parsed);
 					}
-					else if constexpr (TIsSame<TDataType, int64>::Value)
+					else if constexpr (std::is_same_v<TDataType, int64>)
 					{
 						const FString Val = Item->AsString();
 						int64 Parsed;
 						FDefaultValueHelper::ParseInt64(Val, Parsed);
 						ParsedMap.Add(Key, Parsed);
 					}
-					else if constexpr (TIsSame<TDataType, float>::Value)
+					else if constexpr (std::is_same_v<TDataType, float>)
 					{
 						const FString Val = Item->AsString();
 						float Parsed;
 						FDefaultValueHelper::ParseFloat(Val, Parsed);
 						ParsedMap.Add(Key, Parsed);
 					}
-					else if constexpr (TIsSame<TDataType, double>::Value)
+					else if constexpr (std::is_same_v<TDataType, double>)
 					{
 						const FString Val = Item->AsString();
 						double Parsed;
 						FDefaultValueHelper::ParseDouble(Val, Parsed);
 						ParsedMap.Add(Key, Parsed);
 					}
-					else if constexpr (TIsSame<TDataType, bool>::Value)
+					else if constexpr (std::is_same_v<TDataType, bool>)
 					{
 						const FString Val = Item->AsString();
 						bool Parsed = Val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
@@ -616,7 +619,7 @@ public:
 						Parsed->BeamDeserializeProperties(ArrayJsonItem->AsObject());
 						ParsedArray.Add(Parsed);
 					}
-					else if constexpr (TIsSame<TDataType, FString>::Value)
+					else if constexpr (std::is_same_v<TDataType, FString>)
 					{
 						const FString Val = ArrayJsonItem->AsString();
 						ParsedArray.Add(Val);
@@ -645,49 +648,49 @@ public:
 						Parsed.BeamDeserializeProperties(ArrayJsonItem->AsObject());
 						ParsedArray.Add(Parsed);
 					}
-					else if constexpr (TIsSame<TDataType, int8>::Value)
+					else if constexpr (std::is_same_v<TDataType, int8>)
 					{
 						const FString Val = ArrayJsonItem->AsString();
 						int32 Parsed;
 						FDefaultValueHelper::ParseInt(Val, Parsed);
 						ParsedArray.Add(static_cast<int8>(Parsed));
 					}
-					else if constexpr (TIsSame<TDataType, int16>::Value)
+					else if constexpr (std::is_same_v<TDataType, int16>)
 					{
 						const FString Val = ArrayJsonItem->AsString();
 						int32 Parsed;
 						FDefaultValueHelper::ParseInt(Val, Parsed);
 						ParsedArray.Add(static_cast<int16>(Parsed));
 					}
-					else if constexpr (TIsSame<TDataType, int32>::Value)
+					else if constexpr (std::is_same_v<TDataType, int32>)
 					{
 						const FString Val = ArrayJsonItem->AsString();
 						int32 Parsed;
 						FDefaultValueHelper::ParseInt(Val, Parsed);
 						ParsedArray.Add(Parsed);
 					}
-					else if constexpr (TIsSame<TDataType, int64>::Value)
+					else if constexpr (std::is_same_v<TDataType, int64>)
 					{
 						const FString Val = ArrayJsonItem->AsString();
 						int64 Parsed;
 						FDefaultValueHelper::ParseInt64(Val, Parsed);
 						ParsedArray.Add(Parsed);
 					}
-					else if constexpr (TIsSame<TDataType, float>::Value)
+					else if constexpr (std::is_same_v<TDataType, float>)
 					{
 						const FString Val = ArrayJsonItem->AsString();
 						float Parsed;
 						FDefaultValueHelper::ParseFloat(Val, Parsed);
 						ParsedArray.Add(Parsed);
 					}
-					else if constexpr (TIsSame<TDataType, double>::Value)
+					else if constexpr (std::is_same_v<TDataType, double>)
 					{
 						const FString Val = ArrayJsonItem->AsString();
 						double Parsed;
 						FDefaultValueHelper::ParseDouble(Val, Parsed);
 						ParsedArray.Add(Parsed);
 					}
-					else if constexpr (TIsSame<TDataType, bool>::Value)
+					else if constexpr (std::is_same_v<TDataType, bool>)
 					{
 						const FString Val = ArrayJsonItem->AsString();
 						bool Parsed = Val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
@@ -705,7 +708,7 @@ public:
 					Parsed->BeamDeserializeProperties(JsonField->AsObject());
 					FBeamOptional::Set(&ToDeserialize, &Parsed);
 				}
-				else if constexpr (TIsSame<TOptionalType, FString>::Value)
+				else if constexpr (std::is_same_v<TOptionalType, FString>)
 				{
 					const FString val = JsonField->AsString();
 					FBeamOptional::Set(&ToDeserialize, &val);
@@ -734,7 +737,7 @@ public:
 					Parsed.BeamDeserializeProperties(JsonField->AsObject());
 					FBeamOptional::Set(&ToDeserialize, &Parsed);
 				}
-				else if constexpr (TIsSame<TDataType, int8>::Value)
+				else if constexpr (std::is_same_v<TDataType, int8>)
 				{
 					const FString Val = JsonField->AsString();
 					int32 Parsed;
@@ -742,7 +745,7 @@ public:
 					int8 cast = static_cast<int8>(Parsed);
 					FBeamOptional::Set(&ToDeserialize, &cast);
 				}
-				else if constexpr (TIsSame<TDataType, int16>::Value)
+				else if constexpr (std::is_same_v<TDataType, int16>)
 				{
 					const FString Val = JsonField->AsString();
 					int32 Parsed;
@@ -750,35 +753,35 @@ public:
 					int16 cast = static_cast<int16>(Parsed);
 					FBeamOptional::Set(&ToDeserialize, &cast);
 				}
-				else if constexpr (TIsSame<TOptionalType, int32>::Value)
+				else if constexpr (std::is_same_v<TOptionalType, int32>)
 				{
 					const FString val = JsonField->AsString();
 					int32 Parsed;
 					FDefaultValueHelper::ParseInt(val, Parsed);
 					FBeamOptional::Set(&ToDeserialize, &Parsed);
 				}
-				else if constexpr (TIsSame<TOptionalType, int64>::Value)
+				else if constexpr (std::is_same_v<TOptionalType, int64>)
 				{
 					const FString val = JsonField->AsString();
 					int64 Parsed;
 					FDefaultValueHelper::ParseInt64(val, Parsed);
 					FBeamOptional::Set(&ToDeserialize, &Parsed);
 				}
-				else if constexpr (TIsSame<TOptionalType, float>::Value)
+				else if constexpr (std::is_same_v<TOptionalType, float>)
 				{
 					const FString val = JsonField->AsString();
 					float Parsed;
 					FDefaultValueHelper::ParseFloat(val, Parsed);
 					FBeamOptional::Set(&ToDeserialize, &Parsed);
 				}
-				else if constexpr (TIsSame<TOptionalType, double>::Value)
+				else if constexpr (std::is_same_v<TOptionalType, double>)
 				{
 					const FString val = JsonField->AsString();
 					double Parsed;
 					FDefaultValueHelper::ParseDouble(val, Parsed);
 					FBeamOptional::Set(&ToDeserialize, &Parsed);
 				}
-				else if constexpr (TIsSame<TOptionalType, bool>::Value)
+				else if constexpr (std::is_same_v<TOptionalType, bool>)
 				{
 					const FString val = JsonField->AsString();
 					bool Parsed = val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
@@ -793,7 +796,7 @@ public:
 	{
 		for (const TSharedPtr<FJsonValue>& JsonValue : JsonArray)
 		{
-			if constexpr (TIsSame<TDataType, FString>::Value)
+			if constexpr (std::is_same_v<TDataType, FString>)
 			{
 				const FString val = JsonValue->AsString();
 				Array.Add(val);
@@ -822,35 +825,35 @@ public:
 				Parsed.BeamDeserializeProperties(JsonValue->AsObject());
 				Array.Add(Parsed);
 			}
-			else if constexpr (TIsSame<TDataType, int>::Value)
+			else if constexpr (std::is_same_v<TDataType, int>)
 			{
 				const FString val = JsonValue->AsString();
 				int Parsed;
 				FDefaultValueHelper::ParseInt(val, Parsed);
 				Array.Add(Parsed);
 			}
-			else if constexpr (TIsSame<TDataType, int64>::Value)
+			else if constexpr (std::is_same_v<TDataType, int64>)
 			{
 				const FString val = JsonValue->AsString();
 				int64 Parsed;
 				FDefaultValueHelper::ParseInt64(val, Parsed);
 				Array.Add(Parsed);
 			}
-			else if constexpr (TIsSame<TDataType, float>::Value)
+			else if constexpr (std::is_same_v<TDataType, float>)
 			{
 				const FString val = JsonValue->AsString();
 				float Parsed;
 				FDefaultValueHelper::ParseFloat(val, Parsed);
 				Array.Add(Parsed);
 			}
-			else if constexpr (TIsSame<TDataType, double>::Value)
+			else if constexpr (std::is_same_v<TDataType, double>)
 			{
 				const FString val = JsonValue->AsString();
 				double Parsed;
 				FDefaultValueHelper::ParseDouble(val, Parsed);
 				Array.Add(Parsed);
 			}
-			else if constexpr (TIsSame<TDataType, bool>::Value)
+			else if constexpr (std::is_same_v<TDataType, bool>)
 			{
 				const FString val = JsonValue->AsString();
 				bool Parsed = val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
@@ -887,7 +890,7 @@ public:
 			const auto Key = Value.Key;
 			const auto JsonValue = Value.Value;
 
-			if constexpr (TIsSame<TMapType, FString>::Value)
+			if constexpr (std::is_same_v<TMapType, FString>)
 			{
 				const auto Val = Value.Value->AsString();
 				Map.Add(Key, Val);
@@ -916,35 +919,35 @@ public:
 				Parsed.BeamDeserializeProperties(JsonValue->AsObject());
 				Map.Add(Key, Parsed);
 			}
-			else if constexpr (TIsSame<TMapType, int>::Value)
+			else if constexpr (std::is_same_v<TMapType, int>)
 			{
 				const auto Val = Value.Value->AsString();
 				int Parsed;
 				FDefaultValueHelper::ParseInt(Val, Parsed);
 				Map.Add(Key, Parsed);
 			}
-			else if constexpr (TIsSame<TMapType, int64>::Value)
+			else if constexpr (std::is_same_v<TMapType, int64>)
 			{
 				const auto Val = Value.Value->AsString();
 				int64 Parsed;
 				FDefaultValueHelper::ParseInt64(Val, Parsed);
 				Map.Add(Key, Parsed);
 			}
-			else if constexpr (TIsSame<TMapType, float>::Value)
+			else if constexpr (std::is_same_v<TMapType, float>)
 			{
 				const auto Val = Value.Value->AsString();
 				float Parsed;
 				FDefaultValueHelper::ParseFloat(Val, Parsed);
 				Map.Add(Key, Parsed);
 			}
-			else if constexpr (TIsSame<TMapType, double>::Value)
+			else if constexpr (std::is_same_v<TMapType, double>)
 			{
 				const auto Val = Value.Value->AsString();
 				double Parsed;
 				FDefaultValueHelper::ParseDouble(Val, Parsed);
 				Map.Add(Key, Parsed);
 			}
-			else if constexpr (TIsSame<TMapType, bool>::Value)
+			else if constexpr (std::is_same_v<TMapType, bool>)
 			{
 				const auto Val = Value.Value->AsString();
 				bool Parsed = Val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
@@ -978,7 +981,7 @@ public:
 		{
 			checkf(false, TEXT("TSerializationType cannot be a UObject type. We don't support it for now."))
 		}
-		else if constexpr (TIsSame<TPrimitiveType, FString>::Value)
+		else if constexpr (std::is_same_v<TPrimitiveType, FString>)
 		{
 			// We do this as the primitive content that is returned is a string enclosed with quotes.
 			ToDeserialize = JsonField.RightChop(1).LeftChop(1);
@@ -995,7 +998,7 @@ public:
 		{
 			checkf(false, TEXT("TSerializationType cannot be a FBeamJsonSerializable. We don't support it for now."))
 		}
-		else if constexpr (TIsSame<TPrimitiveType, int8>::Value)
+		else if constexpr (std::is_same_v<TPrimitiveType, int8>)
 		{
 			const FString Val = JsonField;
 			int32 Parsed;
@@ -1003,7 +1006,7 @@ public:
 			const int8 Cast = static_cast<int8>(Parsed);
 			ToDeserialize = Parsed;
 		}
-		else if constexpr (TIsSame<TPrimitiveType, int16>::Value)
+		else if constexpr (std::is_same_v<TPrimitiveType, int16>)
 		{
 			const FString Val = JsonField;
 			int32 Parsed;
@@ -1011,35 +1014,35 @@ public:
 			const int16 Cast = static_cast<int16>(Parsed);
 			ToDeserialize = Parsed;
 		}
-		else if constexpr (TIsSame<TPrimitiveType, int32>::Value)
+		else if constexpr (std::is_same_v<TPrimitiveType, int32>)
 		{
 			const FString Val = JsonField;
 			int32 Parsed;
 			FDefaultValueHelper::ParseInt(Val, Parsed);
 			ToDeserialize = Parsed;
 		}
-		else if constexpr (TIsSame<TPrimitiveType, int64>::Value)
+		else if constexpr (std::is_same_v<TPrimitiveType, int64>)
 		{
 			const FString Val = JsonField;
 			int64 Parsed;
 			FDefaultValueHelper::ParseInt64(Val, Parsed);
 			ToDeserialize = Parsed;
 		}
-		else if constexpr (TIsSame<TPrimitiveType, float>::Value)
+		else if constexpr (std::is_same_v<TPrimitiveType, float>)
 		{
 			const FString Val = JsonField;
 			float Parsed;
 			FDefaultValueHelper::ParseFloat(Val, Parsed);
 			ToDeserialize = Parsed;
 		}
-		else if constexpr (TIsSame<TPrimitiveType, double>::Value)
+		else if constexpr (std::is_same_v<TPrimitiveType, double>)
 		{
 			const FString Val = JsonField;
 			double Parsed;
 			FDefaultValueHelper::ParseDouble(Val, Parsed);
 			ToDeserialize = Parsed;
 		}
-		else if constexpr (TIsSame<TPrimitiveType, bool>::Value)
+		else if constexpr (std::is_same_v<TPrimitiveType, bool>)
 		{
 			const FString Val = JsonField;
 			const bool Parsed = Val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
