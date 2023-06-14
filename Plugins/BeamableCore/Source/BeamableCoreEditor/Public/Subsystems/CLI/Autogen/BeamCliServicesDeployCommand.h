@@ -21,20 +21,6 @@ struct FBeamCliServicesDeployStreamData
 
 
 USTRUCT()
-struct FBeamCliServicesDeployLocalProgressStreamData
-{
-	GENERATED_BODY()
-
-	inline static FString StreamTypeName = FString(TEXT("local_progress"));
-
-	UPROPERTY()
-	FString BeamoId;
-	UPROPERTY()
-	double LocalDeployProgress;	
-};
-
-
-USTRUCT()
 struct FBeamCliServicesDeployRemoteProgressStreamData
 {
 	GENERATED_BODY()
@@ -52,17 +38,17 @@ struct FBeamCliServicesDeployRemoteProgressStreamData
 
 /**
  Description:
-  Deploys services, either locally or remotely (to the current realm)
+  Deploys services remotely to the current realm
 
 Usage:
   Beamable.Tools services deploy [options]
 
 Options:
-  --ids <ids>                            The ids for the services you wish to deploy. Ignoring this option deploys all services.If '--remote' option is set, these are the ids that'll become enabled by Beam-O once it receives the updated manifest
-  --remote                               If this option is set, we publish the manifest instead [default: False]
-  --from-file <from-file>                If this option is set to a valid path to a ServiceManifest JSON, deploys that instead. Only works if --remote flag is set []
-  --comment <comment>                    Requires --remote flag. Associates this comment along with the published Manifest. You'll be able to read it via the Beamable Portal []
-  --service-comments <service-comments>  Requires --remote flag. Any number of 'BeamoId::Comment' strings. 
+  --enable <enable>                      These are the ids for services you wish to be enabled once Beam-O receives the updated manifest
+  --disable <disable>                    These are the ids for services you wish to be disabled once Beam-O receives the updated manifest
+  --from-file <from-file>                If this option is set to a valid path to a ServiceManifest JSON, deploys that instead []
+  --comment <comment>                    Associates this comment along with the published Manifest. You'll be able to read it via the Beamable Portal []
+  --service-comments <service-comments>  Any number of strings in the format BeamoId::Comment
                                          Associates each comment to the given Beamo Id if it's among the published services. You'll be able to read it via the Beamable Portal []
   --dryrun                               Should any networking happen?
   --cid <cid>                            Cid to use; will default to whatever is in the file system
@@ -85,10 +71,6 @@ public:
 	TArray<FBeamCliServicesDeployStreamData> Stream;
 	TArray<int64> Timestamps;
 	TFunction<void (const TArray<FBeamCliServicesDeployStreamData>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
-
-	TArray<FBeamCliServicesDeployLocalProgressStreamData> LocalProgressStream;
-	TArray<int64> LocalProgressTimestamps;
-	TFunction<void (const TArray<FBeamCliServicesDeployLocalProgressStreamData>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnLocalProgressStreamOutput;
 
 	TArray<FBeamCliServicesDeployRemoteProgressStreamData> RemoteProgressStream;
 	TArray<int64> RemoteProgressTimestamps;

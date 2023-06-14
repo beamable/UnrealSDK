@@ -12,6 +12,7 @@
 #include "Subsystems/CLI/Autogen/BeamCliProjectOpenSwaggerCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliServicesDeployCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliServicesResetCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliServicesRunCommand.h"
 
 void UBeamMicroservicesEditor::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -36,8 +37,8 @@ void UBeamMicroservicesEditor::OnRealmInitialized()
 			const auto BeamMicroserviceClientSubsystems = GEngine->GetEngineSubsystemArray<UBeamMicroserviceClientSubsystem>();
 			for (UBeamMicroserviceClientSubsystem* ClientSubsystem : BeamMicroserviceClientSubsystems)
 			{
-				const auto IsLocal = LocalMicroserviceData.Contains(ClientSubsystem->BeamoId);
-				if (IsLocal && LocalMicroserviceData.FindRef(ClientSubsystem->BeamoId).RunningState != Stopped)
+				const auto IsLocal = LocalMicroserviceData.Contains(ClientSubsystem->MicroserviceName);
+				if (IsLocal && LocalMicroserviceData.FindRef(ClientSubsystem->MicroserviceName).RunningState != Stopped)
 				{
 					ClientSubsystem->Prefix = FPlatformProcess::ComputerName();
 					UE_LOG(LogBeamMicroservices, Display, TEXT("%s"), *ClientSubsystem->Prefix)
@@ -106,19 +107,19 @@ FBeamOperationHandle UBeamMicroservicesEditor::CPP_UpdateRemoteMicroserviceState
 	return Handle;
 }
 
-FBeamOperationHandle UBeamMicroservicesEditor::DeployRemoteMicroservicesOperation(const FBeamOperationEventHandler& OnOperationEvent)
+FBeamOperationHandle UBeamMicroservicesEditor::DeployRemoteMicroservicesOperation(const TArray<FString>& EnableBeamoIds, const TArray<FString>& DisableBeamoIds, const FBeamOperationEventHandler& OnOperationEvent)
 {
 	const auto Slot = Editor->GetMainEditorSlot();
 	const auto Handle = RequestTracker->BeginOperation({Slot}, GetName(), OnOperationEvent);
-	DeployMicroservices(Handle);
+	DeployMicroservices(EnableBeamoIds, DisableBeamoIds, Handle);
 	return Handle;
 }
 
-FBeamOperationHandle UBeamMicroservicesEditor::CPP_DeployRemoteMicroservicesOperation(const FBeamOperationEventHandlerCode& OnOperationEvent)
+FBeamOperationHandle UBeamMicroservicesEditor::CPP_DeployRemoteMicroservicesOperation(const TArray<FString>& EnableBeamoIds, const TArray<FString>& DisableBeamoIds, const FBeamOperationEventHandlerCode& OnOperationEvent)
 {
 	const auto Slot = Editor->GetMainEditorSlot();
 	const auto Handle = RequestTracker->CPP_BeginOperation({Slot}, GetName(), OnOperationEvent);
-	DeployMicroservices(Handle);
+	DeployMicroservices(EnableBeamoIds, DisableBeamoIds, Handle);
 	return Handle;
 }
 
@@ -261,7 +262,7 @@ void UBeamMicroservicesEditor::EnsureExistingServices()
 	Cli->RunCommandSync(ServicesPs, {});
 }
 
-void UBeamMicroservicesEditor::DeployMicroservices(const FBeamOperationHandle& Op) const
+void UBeamMicroservicesEditor::DeployMicroservices(const TArray<FString>& EnableBeamoIds, const TArray<FString>& DisableBeamoIds, const FBeamOperationHandle& Op) const
 {
 	const auto ServicesDeploy = NewObject<UBeamCliServicesDeployCommand>();
 	ServicesDeploy->OnStreamOutput = [](const TArray<FBeamCliServicesDeployStreamData>& Result,
@@ -292,16 +293,25 @@ void UBeamMicroservicesEditor::DeployMicroservices(const FBeamOperationHandle& O
 	};
 
 	// Prepare params to run the command with
-	const TArray<FString> Params{TEXT("--remote")};
-
+	TArray<FString> Params{};
+	if (!EnableBeamoIds.IsEmpty())
+	{
+		const auto Ids = FString::Printf(TEXT("--enable %s"), *FString::Join(EnableBeamoIds, TEXT(" ")));
+		Params.Add(Ids);
+	}
+	if (!DisableBeamoIds.IsEmpty())
+	{
+		const auto Ids = FString::Printf(TEXT("--disable %s"), *FString::Join(DisableBeamoIds, TEXT(" ")));
+		Params.Add(Ids);
+	}
 	// Kick of command.
 	Cli->RunCommand(ServicesDeploy, Params, Op);
 }
 
 void UBeamMicroservicesEditor::RunDockerMicroservices(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op)
 {
-	const auto ServicesDeploy = NewObject<UBeamCliServicesDeployCommand>();
-	ServicesDeploy->OnStreamOutput = [](const TArray<FBeamCliServicesDeployStreamData>& Result, const TArray<long long>&, const FBeamOperationHandle&)
+	const auto ServicesDeploy = NewObject<UBeamCliServicesRunCommand>();
+	ServicesDeploy->OnStreamOutput = [](const TArray<FBeamCliServicesRunStreamData>& Result, const TArray<long long>&, const FBeamOperationHandle&)
 	{
 		FString Json;
 		FJsonObjectConverter::UStructToJsonObjectString(Result.Last(), Json);
@@ -309,7 +319,7 @@ void UBeamMicroservicesEditor::RunDockerMicroservices(const TArray<FString>& Bea
 	};
 
 	ServicesDeploy->OnLocalProgressStreamOutput = [this](
-		const TArray<FBeamCliServicesDeployLocalProgressStreamData>& Progress, const TArray<long long>&,
+		const TArray<FBeamCliServicesRunLocalProgressStreamData>& Progress, const TArray<long long>&,
 		const FBeamOperationHandle&)
 		{
 			const auto ProgressData = Progress.Last();
@@ -360,12 +370,27 @@ void UBeamMicroservicesEditor::RunDockerMicroservices(const TArray<FString>& Bea
 void UBeamMicroservicesEditor::StopDockerMicroservices(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op)
 {
 	const auto ServicesDeploy = NewObject<UBeamCliServicesResetCommand>();
-	ServicesDeploy->OnStreamOutput = [](const TArray<FBeamCliServicesResetStreamData>& Result,
-	                                    const TArray<long long>&, const FBeamOperationHandle&)
+	ServicesDeploy->OnStreamOutput = [this](const TArray<FBeamCliServicesResetStreamData>& Result,
+	                                        const TArray<long long>&, const FBeamOperationHandle&)
 	{
 		FString Json;
 		FJsonObjectConverter::UStructToJsonObjectString(Result.Last(), Json);
 		UE_LOG(LogBeamMicroservices, Display, TEXT("%s"), *Json);
+		for (const auto& BeamoId : Result.Last().Ids)
+		{
+			if (LocalMicroserviceData.Contains(BeamoId.ToLower()))
+			{
+				LocalMicroserviceData.Find(BeamoId)->RunningState = Stopped;
+			}
+			else
+			{
+				LocalMicroserviceData.Add(BeamoId.ToLower(), FLocalMicroserviceData{
+					                          BeamoId,
+					                          Stopped,
+					                          false
+				                          });
+			}
+		}
 	};
 
 	// Handle completing the operation

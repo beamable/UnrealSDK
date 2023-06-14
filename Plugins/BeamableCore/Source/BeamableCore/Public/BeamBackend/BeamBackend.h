@@ -1021,7 +1021,7 @@ public:
 				const auto ResponseCode = Response->GetResponseCode();
 				const auto ContentAsString = Response->GetContentAsString();
 				const auto RequestStatus = Request->GetStatus();
-				const auto RequestType = RequestData->GetRequestType();
+				const auto RequestType = RequestData->GetRequestType();				
 
 				// If it was a success, we try to cache the response.
 				if (ResponseCode == 200)

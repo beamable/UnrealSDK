@@ -458,7 +458,7 @@ void ULocalContentManifestEditorState::EditContentButtonClicked()
 	// Show the editing window.
 	EditingObjectDetailsPanel->SetObject(EditingObject);
 	EditingWindow = SNew(SWindow)
-		.ClientSize({512, 768})
+		.ClientSize({512.0f, 768.0f})
 		.Content()
 	[
 		SNew(SVerticalBox)
@@ -558,7 +558,7 @@ void ULocalContentManifestEditorState::PublishButtonClicked()
 
 					                       PublishingWindow = SNew(SWindow)
 				.Title(Title)
-				.ClientSize({512, 128})
+				.ClientSize({512.0f, 128.0f})
 				.Content()
 					                       [
 						                       SNew(SHorizontalBox)
@@ -641,7 +641,7 @@ void ULocalContentManifestEditorState::DownloadButtonClicked()
 						})
 					];
 
-					DownloadingWindow = SNew(SWindow).ClientSize({512, 512}).HasCloseButton(false)
+					DownloadingWindow = SNew(SWindow).ClientSize({512.0f, 512.0f}).HasCloseButton(false)
 					                                 .Content()[Panel];
 
 					// Show it as a modal of the DataTable editor.

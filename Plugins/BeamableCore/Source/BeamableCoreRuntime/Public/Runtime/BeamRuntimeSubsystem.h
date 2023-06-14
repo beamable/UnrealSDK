@@ -11,8 +11,8 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRuntimeUserSlotDataChangedEvent, FUserSlot, UserSlot);
 
-UCLASS(Abstract, Blueprintable, meta=(IsBlueprintBase=true))
-class BEAMABLECORERUNTIME_API UBeamRuntimeSubsystem : public UGameInstanceSubsystem
+UCLASS(Abstract, Blueprintable, meta=(IsBlueprintBase=true, ShowWorldContextPin))
+class BEAMABLECORERUNTIME_API UBeamRuntimeSubsystem : public UGameInstanceSubsystem, public FTickableGameObject
 {
 	GENERATED_BODY()
 
@@ -24,6 +24,22 @@ protected:
 	virtual void Deinitialize() override;
 
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
+
+	virtual void Tick(float DeltaTime) override
+	{
+		
+	}
+
+	virtual bool IsAllowedToTick() const override
+	{
+		return true;
+	}
+
+	virtual TStatId GetStatId() const override
+	{
+		RETURN_QUICK_DECLARE_CYCLE_STAT(UBeamRuntimeSubsystem, STATGROUP_Tickables);
+	}
+
 
 public:
 	UPROPERTY()
@@ -85,7 +101,7 @@ public:
 	 */
 	UFUNCTION(BlueprintNativeEvent)
 	void OnBeamableStarted();
-	virtual void OnBeamableStarted_Implementation();
+	virtual void OnBeamableStarted_Implementation();	
 };
 
 
@@ -107,9 +123,9 @@ class BEAMABLECORERUNTIME_API UBeamRuntimeBlueprintSubsystems : public UGameInst
 		Super::Initialize(Collection);
 		const auto RuntimeSettings = GetDefault<UBeamRuntimeSettings>();
 		for (const auto SubsystemBlueprint : RuntimeSettings->RuntimeSubsystemBlueprints)
-		{
-			Collection.InitializeDependency(SubsystemBlueprint);
-		}
+		{						
+			Collection.InitializeDependency(SubsystemBlueprint);			
+		}		
 
 		if (IsRunningDedicatedServer())
 		{
