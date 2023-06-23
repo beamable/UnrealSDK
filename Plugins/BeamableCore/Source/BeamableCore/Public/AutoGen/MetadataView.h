@@ -6,7 +6,7 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalLeaderboardCohortSettings.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalClientPermission.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamClientPermission.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
 
 #include "MetadataView.generated.h"
@@ -30,7 +30,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cohort Settings", Category="Beam")
 	FOptionalLeaderboardCohortSettings CohortSettings;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Permissions", Category="Beam")
-	FOptionalClientPermission Permissions;
+	FOptionalBeamClientPermission Permissions;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Entries", Category="Beam")
 	FOptionalInt32 MaxEntries;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Expiration", Category="Beam")

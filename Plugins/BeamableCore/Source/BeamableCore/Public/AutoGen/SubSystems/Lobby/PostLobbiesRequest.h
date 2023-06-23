@@ -1,0 +1,53 @@
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
+#include "BeamBackend/BeamRequestContext.h"
+#include "BeamBackend/BeamErrorResponse.h"
+#include "BeamBackend/BeamFullResponse.h"
+
+#include "BeamableCore/Public/AutoGen/CreateLobby.h"
+#include "BeamableCore/Public/AutoGen/Lobby.h"
+
+#include "PostLobbiesRequest.generated.h"
+
+UCLASS(BlueprintType)
+class BEAMABLECORE_API UPostLobbiesRequest : public UObject, public IBeamBaseRequestInterface
+{
+	GENERATED_BODY()
+	
+public:
+
+	// Path Params
+	
+	
+	// Query Params
+	
+
+	// Body Params
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
+	UCreateLobby* Body;
+
+	// Beam Base Request Declaration
+	UPostLobbiesRequest() = default;
+
+	virtual void BuildVerb(FString& VerbString) const override;
+	virtual void BuildRoute(FString& RouteString) const override;
+	virtual void BuildBody(FString& BodyString) const override;
+
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Lobby", DisplayName="Beam - Make PostLobbies",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Name,_Description,_Restriction,_MatchType,_PasscodeLength,_MaxPlayers,_PlayerTags,RequestOwner"))
+	static UPostLobbiesRequest* Make(FOptionalString _Name, FOptionalString _Description, FOptionalString _Restriction, FOptionalBeamContentId _MatchType, FOptionalInt32 _PasscodeLength, FOptionalInt32 _MaxPlayers, FOptionalArrayOfTag _PlayerTags, UObject* RequestOwner);
+};
+
+UDELEGATE(BlueprintAuthorityOnly)
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostLobbiesSuccess, FBeamRequestContext, Context, UPostLobbiesRequest*, Request, ULobby*, Response);
+
+UDELEGATE(BlueprintAuthorityOnly)
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnPostLobbiesError, FBeamRequestContext, Context, UPostLobbiesRequest*, Request, FBeamErrorResponse, Error);
+
+UDELEGATE(BlueprintAuthorityOnly)
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnPostLobbiesComplete, FBeamRequestContext, Context, UPostLobbiesRequest*, Request);
+
+using FPostLobbiesFullResponse = FBeamFullResponse<UPostLobbiesRequest*, ULobby*>;
+DECLARE_DELEGATE_OneParam(FOnPostLobbiesFullResponse, FPostLobbiesFullResponse);

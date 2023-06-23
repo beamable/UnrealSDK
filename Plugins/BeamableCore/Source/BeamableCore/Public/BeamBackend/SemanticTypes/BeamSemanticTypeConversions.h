@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "BeamAccountId.h"
 #include "BeamCid.h"
+#include "BeamBackend/ReplacementTypes/BeamClientPermission.h"
 #include "BeamGamerTag.h"
 #include "BeamPid.h"
 #include "BeamStatsType.h"
@@ -70,7 +71,6 @@ public:
 	UFUNCTION(BlueprintPure, Category="Beam|Semantic Types", meta = (DisplayName = "Beam - Text To AccountId", CompactNodeTitle = "->", BlueprintAutocast))
 	static FBeamAccountId Conv_TextToAccountId(FText Value) { return Value.ToString(); }
 
-	
 
 	UFUNCTION(BlueprintPure, Category="Beam|Semantic Types", meta = (DisplayName = "Beam - PID To String", CompactNodeTitle = "->", BlueprintAutocast))
 	static FString Conv_PidToString(FBeamPid Value) { return Value.AsString; }
@@ -84,11 +84,17 @@ public:
 	UFUNCTION(BlueprintPure, Category="Beam|Semantic Types", meta = (DisplayName = "Beam - Text To PID", CompactNodeTitle = "->", BlueprintAutocast))
 	static FBeamPid Conv_TextToPid(FText Value) { return Value.ToString(); }
 
-	
 
 	UFUNCTION(BlueprintPure, Category="Beam|Semantic Types", meta = (DisplayName = "Beam - StatsType To String", CompactNodeTitle = "->", BlueprintAutocast))
 	static FString Conv_StatsTypeToString(FBeamStatsType Value) { return Value.AsString; }
 
+
 	UFUNCTION(BlueprintPure, Category="Beam|Semantic Types", meta = (DisplayName = "Beam - String To StatsType", CompactNodeTitle = "->", BlueprintAutocast))
 	static FBeamStatsType Conv_StringToStatsType(FString Value) { return Value; }
+
+	UFUNCTION(BlueprintPure, Category="Beam|Semantic Types", meta = (DisplayName = "Beam - ClientPermission To Bool", CompactNodeTitle = "->", BlueprintAutocast))
+	static bool Conv_ClientPermissionToBool(FBeamClientPermission Value) { return static_cast<bool>(Value); }
+
+	UFUNCTION(BlueprintPure, Category="Beam|Semantic Types", meta = (DisplayName = "Beam - Bool To ClientPermission", CompactNodeTitle = "->", BlueprintAutocast))
+	static FBeamClientPermission Conv_BoolToClientPermission(bool Value) { return Value; }
 };

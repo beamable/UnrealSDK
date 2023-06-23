@@ -14,7 +14,6 @@
 #include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetAvailableDeviceIdRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetAvailableRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PostPasswordUpdateConfirmRequest.h"
-#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetAvailableRolesRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Accounts/DeleteMeDeviceRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Accounts/BasicAccountsGetMeRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PutMeRequest.h"
@@ -30,6 +29,7 @@
 #include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PostExternalIdentityRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Accounts/DeleteExternalIdentityRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Accounts/PutAdminEmailRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetAvailableRolesRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Accounts/GetRoleReportRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Accounts/ObjectAccountsPutRoleRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Accounts/DeleteRoleRequest.h"
@@ -156,19 +156,6 @@ private:
 	 */
 	void CPP_PostPasswordUpdateConfirmImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UPostPasswordUpdateConfirmRequest* RequestData,
 	                                 const FOnPostPasswordUpdateConfirmFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
-
-		
-	/**
-	 * @brief Private implementation that all overloaded BP UFunctions call.	  
-	 */
-	void BP_GetAvailableRolesImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetAvailableRolesRequest* RequestData,
-	                                const FOnGetAvailableRolesSuccess& OnSuccess, const FOnGetAvailableRolesError& OnError, const FOnGetAvailableRolesComplete& OnComplete,
-	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
-	/**
-	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
-	 */
-	void CPP_GetAvailableRolesImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetAvailableRolesRequest* RequestData,
-	                                 const FOnGetAvailableRolesFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 
 	
@@ -351,6 +338,18 @@ private:
 	 */
 	void CPP_PutAdminEmailImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UPutAdminEmailRequest* RequestData,
 	                   const FOnPutAdminEmailFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+		
+	/**
+	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
+	 */
+	void BP_GetAvailableRolesImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UGetAvailableRolesRequest* RequestData,
+	                  const FOnGetAvailableRolesSuccess& OnSuccess, const FOnGetAvailableRolesError& OnError, const FOnGetAvailableRolesComplete& OnComplete, 
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	/**
+	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
+	 */
+	void CPP_GetAvailableRolesImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UGetAvailableRolesRequest* RequestData,
+	                   const FOnGetAvailableRolesFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 		
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
@@ -570,21 +569,6 @@ public:
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
 	void CPP_PostPasswordUpdateConfirm(UPostPasswordUpdateConfirmRequest* Request, const FOnPostPasswordUpdateConfirmFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
-
-		
-	/**
-	 * @brief Makes a request to the Get /object/accounts/{objectId}/available-roles endpoint of the Accounts Service.
-	 *
-	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
-	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster and for whenever you need to capture variables).
-	 * 
-	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param Handler A callback that defines how to handle success, error and completion.
-     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
-	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
-	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
-	 */
-	void CPP_GetAvailableRoles(UGetAvailableRolesRequest* Request, const FOnGetAvailableRolesFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 
 	
@@ -829,6 +813,22 @@ public:
 
 		
 	/**
+	 * @brief Makes an authenticated request to the Get /object/accounts/{objectId}/available-roles endpoint of the Accounts Service.
+	 *
+	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
+	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
+	 * 
+	 * @param UserSlot The Authenticated User Slot that is making this request.
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
+	 */
+	void CPP_GetAvailableRoles(const FUserSlot& UserSlot, UGetAvailableRolesRequest* Request, const FOnGetAvailableRolesFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+
+		
+	/**
 	 * @brief Makes an authenticated request to the Get /object/accounts/{objectId}/role/report endpoint of the Accounts Service.
 	 *
 	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
@@ -1070,20 +1070,6 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void PostPasswordUpdateConfirm(UPostPasswordUpdateConfirmRequest* Request, const FOnPostPasswordUpdateConfirmSuccess& OnSuccess, const FOnPostPasswordUpdateConfirmError& OnError, const FOnPostPasswordUpdateConfirmComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
-		
-	/**
-	 * @brief Makes a request to the Get /object/accounts/{objectId}/available-roles endpoint of the Accounts Service.
-	 *
-	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param OnSuccess What to do if the requests receives a successful response.
-	 * @param OnError What to do if the request receives an error response.
-	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
-	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void GetAvailableRoles(UGetAvailableRolesRequest* Request, const FOnGetAvailableRolesSuccess& OnSuccess, const FOnGetAvailableRolesError& OnError, const FOnGetAvailableRolesComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
-
 
 	
 	/**
@@ -1309,6 +1295,21 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void PutAdminEmail(FUserSlot UserSlot, UPutAdminEmailRequest* Request, const FOnPutAdminEmailSuccess& OnSuccess, const FOnPutAdminEmailError& OnError, const FOnPutAdminEmailComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /object/accounts/{objectId}/available-roles endpoint of the Accounts Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void GetAvailableRoles(FUserSlot UserSlot, UGetAvailableRolesRequest* Request, const FOnGetAvailableRolesSuccess& OnSuccess, const FOnGetAvailableRolesError& OnError, const FOnGetAvailableRolesComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**

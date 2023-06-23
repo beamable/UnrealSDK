@@ -18,8 +18,8 @@ void UProjectView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) co
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("sharded"), &bSharded, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("secret"), &Secret, Serializer);
 	UBeamJsonUtils::SerializeOptional<FBeamPid, FString>(TEXT("parent"), &Parent, Serializer);
+	UBeamJsonUtils::SerializeOptional<FBeamPid, FString>(TEXT("children"), &Children, Serializer);
 	UBeamJsonUtils::SerializeOptional<FBeamCid, int64>(TEXT("cid"), &Cid, Serializer);
-	UBeamJsonUtils::SerializeOptional<TArray<FBeamPid>, FBeamPid, FString>(TEXT("children"), &Children, Serializer);
 }
 
 void UProjectView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
@@ -30,8 +30,8 @@ void UProjectView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("sharded"), &bSharded, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("secret"), &Secret, Serializer);
 	UBeamJsonUtils::SerializeOptional<FBeamPid, FString>(TEXT("parent"), &Parent, Serializer);
-	UBeamJsonUtils::SerializeOptional<FBeamCid, int64>(TEXT("cid"), &Cid, Serializer);
-	UBeamJsonUtils::SerializeOptional<TArray<FBeamPid>, FBeamPid, FString>(TEXT("children"), &Children, Serializer);		
+	UBeamJsonUtils::SerializeOptional<FBeamPid, FString>(TEXT("children"), &Children, Serializer);
+	UBeamJsonUtils::SerializeOptional<FBeamCid, int64>(TEXT("cid"), &Cid, Serializer);		
 }
 
 void UProjectView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
@@ -42,8 +42,8 @@ void UProjectView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	UBeamJsonUtils::DeserializeOptional<bool>("sharded", Bag, bSharded, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("secret", Bag, Secret, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FBeamPid, FString>("parent", Bag, Parent, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FBeamPid, FString>("children", Bag, Children, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FBeamCid, int64>("cid", Bag, Cid, OuterOwner);
-	UBeamJsonUtils::DeserializeOptional<TArray<FBeamPid>, FBeamPid, FString>("children", Bag, Children, OuterOwner);
 }
 
 

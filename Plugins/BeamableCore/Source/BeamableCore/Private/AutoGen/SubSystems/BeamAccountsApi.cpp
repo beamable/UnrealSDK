@@ -9,6 +9,7 @@ void UBeamAccountsApi::Initialize(FSubsystemCollectionBase& Collection)
 	Backend = Cast<UBeamBackend>(Collection.InitializeDependency(UBeamBackend::StaticClass()));
 	RequestTracker = Cast<UBeamRequestTracker>(Collection.InitializeDependency(UBeamRequestTracker::StaticClass()));
 	ResponseCache = Cast<UBeamResponseCache>(Collection.InitializeDependency(UBeamResponseCache::StaticClass()));
+	
 }
 
 void UBeamAccountsApi::Deinitialize()
@@ -428,66 +429,6 @@ void UBeamAccountsApi::CPP_PostPasswordUpdateConfirmImpl(const FBeamRealmHandle&
 	{
 		// Binds the handler to the static response handler (pre-generated)	
 		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UPostPasswordUpdateConfirmRequest, UEmptyResponse>
-			(OutRequestId, RequestData, Handler);
-		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
-
-		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
-	}
-}
-
-		
-void UBeamAccountsApi::BP_GetAvailableRolesImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetAvailableRolesRequest* RequestData,
-                                                  const FOnGetAvailableRolesSuccess& OnSuccess, const FOnGetAvailableRolesError& OnError, const FOnGetAvailableRolesComplete& OnComplete,
-                                                  int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
-{
-	// AUTO-GENERATED...	
-	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
-
-	// If we are making this request as part of an operation, we add it to it.
-	if(OpHandle.OperationId >= 0)
-		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
-
-	// If cached...
-	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
-	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunBlueprintRequestProcessor<UGetAvailableRolesRequest, UAvailableRolesResponse, FOnGetAvailableRolesSuccess, FOnGetAvailableRolesError, FOnGetAvailableRolesComplete>
-			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, OnSuccess, OnError, OnComplete);		
-	}
-	// If not cached...
-	else
-	{			
-		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UGetAvailableRolesRequest, UAvailableRolesResponse, FOnGetAvailableRolesSuccess, FOnGetAvailableRolesError, FOnGetAvailableRolesComplete>
-			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
-		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);		
-	}	
-}
-
-void UBeamAccountsApi::CPP_GetAvailableRolesImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
-                                               UGetAvailableRolesRequest* RequestData, const FOnGetAvailableRolesFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
-{
-	// AUTO-GENERATED...	
-	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
-
-	// If we are making this request as part of an operation, we add it to it.
-	if(OpHandle.OperationId >= 0)
-		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
-
-	// If cached...
-	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
-	{
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunCodeRequestProcessor<UGetAvailableRolesRequest, UAvailableRolesResponse>
-			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, Handler);			
-	}
-	// If not cached...
-	else
-	{
-		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UGetAvailableRolesRequest, UAvailableRolesResponse>
 			(OutRequestId, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -1428,6 +1369,68 @@ void UBeamAccountsApi::CPP_PutAdminEmailImpl(const FBeamRealmHandle& TargetRealm
 }
 
 		
+void UBeamAccountsApi::BP_GetAvailableRolesImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                                UGetAvailableRolesRequest* RequestData, const FOnGetAvailableRolesSuccess& OnSuccess, const FOnGetAvailableRolesError& OnError, const FOnGetAvailableRolesComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...	
+	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
+
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
+
+	// If cached...
+	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UGetAvailableRolesRequest, UAvailableRolesResponse, FOnGetAvailableRolesSuccess, FOnGetAvailableRolesError, FOnGetAvailableRolesComplete>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
+	}
+	// If not cached...
+	else
+	{
+		// Binds the handler to the static response handler (pre-generated)
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetAvailableRolesRequest, UAvailableRolesResponse, FOnGetAvailableRolesSuccess, FOnGetAvailableRolesError, FOnGetAvailableRolesComplete>
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
+		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
+	    
+		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+	}
+}
+
+void UBeamAccountsApi::CPP_GetAvailableRolesImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                              UGetAvailableRolesRequest* RequestData, const FOnGetAvailableRolesFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...
+	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
+	
+	// If we are making this request as part of an operation, we add it to it.
+	if(OpHandle.OperationId >= 0)
+		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
+
+	// If cached...
+	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
+		Backend->RunAuthenticatedCodeRequestProcessor<UGetAvailableRolesRequest, UAvailableRolesResponse>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
+	}
+	// If not cached...
+	else
+	{
+		// Binds the handler to the static response handler (pre-generated)	
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetAvailableRolesRequest, UAvailableRolesResponse>
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
+		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
+
+		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+	}
+}
+
+		
 void UBeamAccountsApi::BP_GetRoleReportImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
                                 UGetRoleReportRequest* RequestData, const FOnGetRoleReportSuccess& OnSuccess, const FOnGetRoleReportError& OnError, const FOnGetRoleReportComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
@@ -2064,17 +2067,6 @@ void UBeamAccountsApi::CPP_PostPasswordUpdateConfirm(UPostPasswordUpdateConfirmR
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
 }
 
-		
-void UBeamAccountsApi::CPP_GetAvailableRoles(UGetAvailableRolesRequest* Request, const FOnGetAvailableRolesFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
-{
-	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForRequestType(UGetAvailableRolesRequest::StaticClass()->GetName(), RetryConfig);
-	
-    int64 OutRequestId;
-	CPP_GetAvailableRolesImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
-}
-
 
 
 void UBeamAccountsApi::CPP_DeleteMeDevice(const FUserSlot& UserSlot, UDeleteMeDeviceRequest* Request, const FOnDeleteMeDeviceFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
@@ -2302,6 +2294,21 @@ void UBeamAccountsApi::CPP_PutAdminEmail(const FUserSlot& UserSlot, UPutAdminEma
 }
 
 		
+void UBeamAccountsApi::CPP_GetAvailableRoles(const FUserSlot& UserSlot, UGetAvailableRolesRequest* Request, const FOnGetAvailableRolesFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+{
+	// AUTO-GENERATED...
+	FBeamRealmUser AuthenticatedUser;
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
+
+	FBeamRetryConfig RetryConfig;
+	Backend->GetRetryConfigForUserSlotAndRequestType(UGetAvailableRolesRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+
+    int64 OutRequestId;
+	CPP_GetAvailableRolesImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+}
+
+		
 void UBeamAccountsApi::CPP_GetRoleReport(const FUserSlot& UserSlot, UGetRoleReportRequest* Request, const FOnGetRoleReportFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
@@ -2519,18 +2526,6 @@ void UBeamAccountsApi::PostPasswordUpdateConfirm(UPostPasswordUpdateConfirmReque
 	
 	int64 OutRequestId = 0;
 	BP_PostPasswordUpdateConfirmImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
-}
-
-		
-void UBeamAccountsApi::GetAvailableRoles(UGetAvailableRolesRequest* Request, const FOnGetAvailableRolesSuccess& OnSuccess, const FOnGetAvailableRolesError& OnError, const FOnGetAvailableRolesComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
-{
-	// AUTO-GENERATED...	
-	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForRequestType(UGetAvailableRolesRequest::StaticClass()->GetName(), RetryConfig);	
-	
-	int64 OutRequestId = 0;
-	BP_GetAvailableRolesImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
 }
 
@@ -2757,6 +2752,21 @@ void UBeamAccountsApi::PutAdminEmail(FUserSlot UserSlot, UPutAdminEmailRequest* 
 
 	int64 OutRequestId;
 	BP_PutAdminEmailImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+}
+
+		
+void UBeamAccountsApi::GetAvailableRoles(FUserSlot UserSlot, UGetAvailableRolesRequest* Request, const FOnGetAvailableRolesSuccess& OnSuccess, const FOnGetAvailableRolesError& OnError, const FOnGetAvailableRolesComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+{
+	// AUTO-GENERATED...
+	FBeamRealmUser AuthenticatedUser;
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
+
+	FBeamRetryConfig RetryConfig;
+	Backend->GetRetryConfigForUserSlotAndRequestType(UGetAvailableRolesRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+
+	int64 OutRequestId;
+	BP_GetAvailableRolesImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 

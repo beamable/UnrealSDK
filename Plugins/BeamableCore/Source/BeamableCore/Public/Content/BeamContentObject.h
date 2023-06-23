@@ -16,7 +16,7 @@ struct FLocalContentManifestRow;
  * - BasicJson: Mostly used for printing out the contents of the object. Only serializes Id, Version and UPROPERTIES.
  * - ContentDefinitionJson: Used in the publish flow and makes use of a specific format required for publishing.
  */
-UCLASS(Blueprintable, BlueprintType)
+UCLASS(Blueprintable, BlueprintType, Abstract)
 class BEAMABLECORE_API UBeamContentObject : public UObject
 {
 	GENERATED_BODY()

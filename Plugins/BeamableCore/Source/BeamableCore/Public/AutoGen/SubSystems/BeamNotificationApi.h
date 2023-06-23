@@ -9,7 +9,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/Notification/PostPlayerRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Notification/PostCustomRequest.h"
-#include "BeamableCore/Public/AutoGen/SubSystems/Notification/PostServerRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Notification/BasicNotificationPostServerRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Notification/PostGenericRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Notification/GetNotificationRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Notification/BasicNotificationPostGameRequest.h"
@@ -70,14 +70,14 @@ private:
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
-	void BP_PostServerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UPostServerRequest* RequestData,
-	                  const FOnPostServerSuccess& OnSuccess, const FOnPostServerError& OnError, const FOnPostServerComplete& OnComplete, 
+	void BP_PostServerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UBasicNotificationPostServerRequest* RequestData,
+	                  const FOnBasicNotificationPostServerSuccess& OnSuccess, const FOnBasicNotificationPostServerError& OnError, const FOnBasicNotificationPostServerComplete& OnComplete, 
 					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
-	void CPP_PostServerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UPostServerRequest* RequestData,
-	                   const FOnPostServerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_PostServerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UBasicNotificationPostServerRequest* RequestData,
+	                   const FOnBasicNotificationPostServerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 		
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
@@ -169,7 +169,7 @@ public:
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_PostServer(const FUserSlot& UserSlot, UPostServerRequest* Request, const FOnPostServerFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_PostServer(const FUserSlot& UserSlot, UBasicNotificationPostServerRequest* Request, const FOnBasicNotificationPostServerFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -265,7 +265,7 @@ public:
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Notification", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void PostServer(FUserSlot UserSlot, UPostServerRequest* Request, const FOnPostServerSuccess& OnSuccess, const FOnPostServerError& OnError, const FOnPostServerComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+	void PostServer(FUserSlot UserSlot, UBasicNotificationPostServerRequest* Request, const FOnBasicNotificationPostServerSuccess& OnSuccess, const FOnBasicNotificationPostServerError& OnError, const FOnBasicNotificationPostServerComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**

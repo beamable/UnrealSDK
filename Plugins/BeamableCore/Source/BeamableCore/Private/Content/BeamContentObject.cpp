@@ -202,12 +202,6 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 						SerializeArrayProperty(CurrPropName, SubArray, InnerArrayProperty, BeamArray);
 						CurrProp.Set("data", SubArray);
 					}
-					else if (InnerOptionalStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
-					{
-						const FBeamSemanticType* BeamSemantic = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamSemanticType>(Data);
-						const FString* UnderlyingString = static_cast<const FString*>(BeamSemantic->GetAddr(0));
-						CurrProp.Set("data", *UnderlyingString);
-					}
 					else if (InnerOptionalStruct->IsChildOf(FBeamJsonSerializable::StaticStruct()))
 					{
 						const FBeamJsonSerializable* BeamJsonSerializable = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamJsonSerializable>(Data);
@@ -224,6 +218,12 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 
 						UE_LOG(LogBeamContent, Display, TEXT("FBeamOptional wrapping type %s Field %s=%s is a \n"), *InnerOptionalStruct->GetName(), *It->GetName(), *JsonBody);
 						CurrProp.Set("data", JsonObject);
+					}					
+					else if (InnerOptionalStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
+					{
+						const FBeamSemanticType* BeamSemantic = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamSemanticType>(Data);
+						const FString* UnderlyingString = static_cast<const FString*>(BeamSemantic->GetAddr(0));
+						CurrProp.Set("data", *UnderlyingString);
 					}
 					else
 					{

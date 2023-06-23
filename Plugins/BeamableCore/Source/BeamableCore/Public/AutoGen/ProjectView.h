@@ -5,7 +5,6 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamPid.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfBeamPid.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamCid.h"
 #include "BeamBackend/SemanticTypes/BeamPid.h"
@@ -30,10 +29,10 @@ public:
 	FOptionalString Secret;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Parent", Category="Beam")
 	FOptionalBeamPid Parent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Children", Category="Beam")
+	FOptionalBeamPid Children;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid", Category="Beam")
 	FOptionalBeamCid Cid;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Children", Category="Beam")
-	FOptionalArrayOfBeamPid Children;
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

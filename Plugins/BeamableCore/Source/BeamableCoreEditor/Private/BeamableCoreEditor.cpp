@@ -12,7 +12,9 @@
 #include "LevelEditor.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "AssetTypeActions/AssetTypeActions_DataAsset.h"
+#include "BeamBackend/ReplacementTypes/BeamClientPermission.h"
 #include "Kismet2/KismetEditorUtilities.h"
+#include "PropertyType/BeamClientPermissionCustomization.h"
 #include "PropertyType/RequestTypeCustomization.h"
 #include "Subsystems/BeamEditor.h"
 #include "Subsystems/Content/BeamEditorContent.h"
@@ -68,6 +70,12 @@ void FBeamableCoreEditorModule::StartupModule()
 			// this is where our MakeInstance() method is useful
 			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FRequestTypeCustomization::MakeInstance));
 
+		PropertyModule.RegisterCustomPropertyTypeLayout(
+			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
+			FBeamClientPermission::StaticStruct()->GetFName(),
+			// this is where our MakeInstance() method is useful
+			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamClientPermissionCustomization::MakeInstance));
+
 		PropertyModule.NotifyCustomizationModuleChanged();
 	}
 
@@ -113,7 +121,7 @@ void FBeamableCoreEditorModule::ShutdownModule()
 	}
 
 #if WITH_EDITOR
-	
+
 	if (FModuleManager::Get().IsModuleLoaded("AssetTools"))
 	{
 		IAssetTools& AssetTools = FModuleManager::GetModuleChecked<FAssetToolsModule>("AssetTools").Get();

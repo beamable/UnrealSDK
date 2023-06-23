@@ -39,7 +39,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make PostLeaderboards",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bPartitioned,_FreezeTime,_ScoreName,_CohortSettings,_Permissions,_MaxEntries,_Ttl,_Derivatives,RequestOwner"))
-	static UPostLeaderboardsRequest* Make(FString _ObjectId, bool _bSharded, FOptionalBool _bPartitioned, FOptionalInt64 _FreezeTime, FOptionalString _ScoreName, FOptionalLeaderboardCohortSettings _CohortSettings, FOptionalClientPermission _Permissions, FOptionalInt32 _MaxEntries, FOptionalInt64 _Ttl, FOptionalArrayOfString _Derivatives, UObject* RequestOwner);
+	static UPostLeaderboardsRequest* Make(FString _ObjectId, bool _bSharded, FOptionalBool _bPartitioned, FOptionalInt64 _FreezeTime, FOptionalString _ScoreName, FOptionalLeaderboardCohortSettings _CohortSettings, FOptionalBeamClientPermission _Permissions, FOptionalInt32 _MaxEntries, FOptionalInt64 _Ttl, FOptionalArrayOfString _Derivatives, UObject* RequestOwner);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

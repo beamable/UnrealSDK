@@ -22,7 +22,7 @@ FString UProjectViewLibrary::ProjectViewToJsonString(const UProjectView* Seriali
 	return Result;
 }	
 
-UProjectView* UProjectViewLibrary::Make(FString ProjectName, FBeamPid Pid, FOptionalBool bArchived, FOptionalBool bSharded, FOptionalString Secret, FOptionalBeamPid Parent, FOptionalBeamCid Cid, FOptionalArrayOfBeamPid Children, UObject* Outer)
+UProjectView* UProjectViewLibrary::Make(FString ProjectName, FBeamPid Pid, FOptionalBool bArchived, FOptionalBool bSharded, FOptionalString Secret, FOptionalBeamPid Parent, FOptionalBeamPid Children, FOptionalBeamCid Cid, UObject* Outer)
 {
 	auto Serializable = NewObject<UProjectView>(Outer);
 	Serializable->ProjectName = ProjectName;
@@ -31,13 +31,13 @@ UProjectView* UProjectViewLibrary::Make(FString ProjectName, FBeamPid Pid, FOpti
 	Serializable->bSharded = bSharded;
 	Serializable->Secret = Secret;
 	Serializable->Parent = Parent;
-	Serializable->Cid = Cid;
 	Serializable->Children = Children;
+	Serializable->Cid = Cid;
 	
 	return Serializable;
 }
 
-void UProjectViewLibrary::Break(const UProjectView* Serializable, FString& ProjectName, FBeamPid& Pid, FOptionalBool& bArchived, FOptionalBool& bSharded, FOptionalString& Secret, FOptionalBeamPid& Parent, FOptionalBeamCid& Cid, FOptionalArrayOfBeamPid& Children)
+void UProjectViewLibrary::Break(const UProjectView* Serializable, FString& ProjectName, FBeamPid& Pid, FOptionalBool& bArchived, FOptionalBool& bSharded, FOptionalString& Secret, FOptionalBeamPid& Parent, FOptionalBeamPid& Children, FOptionalBeamCid& Cid)
 {
 	ProjectName = Serializable->ProjectName;
 	Pid = Serializable->Pid;
@@ -45,8 +45,8 @@ void UProjectViewLibrary::Break(const UProjectView* Serializable, FString& Proje
 	bSharded = Serializable->bSharded;
 	Secret = Serializable->Secret;
 	Parent = Serializable->Parent;
-	Cid = Serializable->Cid;
 	Children = Serializable->Children;
+	Cid = Serializable->Cid;
 		
 }
 

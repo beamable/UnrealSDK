@@ -10,7 +10,6 @@
 #include "BeamableCore/Public/AutoGen/SubSystems/Tournaments/PostSearchGroupsRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Tournaments/BasicTournamentsGetTournamentsRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Tournaments/PostScoreRequest.h"
-#include "BeamableCore/Public/AutoGen/SubSystems/Tournaments/ObjectTournamentsGetTournamentsRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Tournaments/PostTournamentsRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Tournaments/GetMeGroupRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Tournaments/GetRewardsRequest.h"
@@ -23,6 +22,7 @@
 #include "BeamableCore/Public/AutoGen/SubSystems/Tournaments/BasicTournamentsGetMeRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Tournaments/GetChampionsRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Tournaments/BasicTournamentsGetGroupsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Tournaments/ObjectTournamentsGetTournamentsRequest.h"
 
 #include "BeamTournamentsApi.generated.h"
 
@@ -88,19 +88,6 @@ private:
 	 */
 	void CPP_PostScoreImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UPostScoreRequest* RequestData,
 	                                 const FOnPostScoreFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
-
-		
-	/**
-	 * @brief Private implementation that all overloaded BP UFunctions call.	  
-	 */
-	void BP_ObjectTournamentsGetTournamentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UObjectTournamentsGetTournamentsRequest* RequestData,
-	                                const FOnObjectTournamentsGetTournamentsSuccess& OnSuccess, const FOnObjectTournamentsGetTournamentsError& OnError, const FOnObjectTournamentsGetTournamentsComplete& OnComplete,
-	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
-	/**
-	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
-	 */
-	void CPP_ObjectTournamentsGetTournamentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UObjectTournamentsGetTournamentsRequest* RequestData,
-	                                 const FOnObjectTournamentsGetTournamentsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 
 	
@@ -247,6 +234,18 @@ private:
 	 */
 	void CPP_GetGroupsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UBasicTournamentsGetGroupsRequest* RequestData,
 	                   const FOnBasicTournamentsGetGroupsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+		
+	/**
+	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
+	 */
+	void BP_ObjectTournamentsGetTournamentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UObjectTournamentsGetTournamentsRequest* RequestData,
+	                  const FOnObjectTournamentsGetTournamentsSuccess& OnSuccess, const FOnObjectTournamentsGetTournamentsError& OnError, const FOnObjectTournamentsGetTournamentsComplete& OnComplete, 
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	/**
+	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
+	 */
+	void CPP_ObjectTournamentsGetTournamentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UObjectTournamentsGetTournamentsRequest* RequestData,
+	                   const FOnObjectTournamentsGetTournamentsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 public:
 	
@@ -298,21 +297,6 @@ public:
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
 	void CPP_PostScore(UPostScoreRequest* Request, const FOnPostScoreFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
-
-		
-	/**
-	 * @brief Makes a request to the Get /object/tournaments/{objectId}/ endpoint of the Tournaments Service.
-	 *
-	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
-	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster and for whenever you need to capture variables).
-	 * 
-	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param Handler A callback that defines how to handle success, error and completion.
-     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
-	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
-	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
-	 */
-	void CPP_ObjectTournamentsGetTournaments(UObjectTournamentsGetTournamentsRequest* Request, const FOnObjectTournamentsGetTournamentsFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 
 	
@@ -507,6 +491,22 @@ public:
 	 */
 	void CPP_GetGroups(const FUserSlot& UserSlot, UBasicTournamentsGetGroupsRequest* Request, const FOnBasicTournamentsGetGroupsFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /object/tournaments/{objectId}/ endpoint of the Tournaments Service.
+	 *
+	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
+	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
+	 * 
+	 * @param UserSlot The Authenticated User Slot that is making this request.
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
+	 */
+	void CPP_ObjectTournamentsGetTournaments(const FUserSlot& UserSlot, UObjectTournamentsGetTournamentsRequest* Request, const FOnObjectTournamentsGetTournamentsFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+
 
 	
 	/**
@@ -549,20 +549,6 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void PostScore(UPostScoreRequest* Request, const FOnPostScoreSuccess& OnSuccess, const FOnPostScoreError& OnError, const FOnPostScoreComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
-
-		
-	/**
-	 * @brief Makes a request to the Get /object/tournaments/{objectId}/ endpoint of the Tournaments Service.
-	 *
-	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param OnSuccess What to do if the requests receives a successful response.
-	 * @param OnError What to do if the request receives an error response.
-	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
-	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void ObjectTournamentsGetTournaments(UObjectTournamentsGetTournamentsRequest* Request, const FOnObjectTournamentsGetTournamentsSuccess& OnSuccess, const FOnObjectTournamentsGetTournamentsError& OnError, const FOnObjectTournamentsGetTournamentsComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 
 	
@@ -744,5 +730,20 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void GetGroups(FUserSlot UserSlot, UBasicTournamentsGetGroupsRequest* Request, const FOnBasicTournamentsGetGroupsSuccess& OnSuccess, const FOnBasicTournamentsGetGroupsError& OnError, const FOnBasicTournamentsGetGroupsComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /object/tournaments/{objectId}/ endpoint of the Tournaments Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void ObjectTournamentsGetTournaments(FUserSlot UserSlot, UObjectTournamentsGetTournamentsRequest* Request, const FOnObjectTournamentsGetTournamentsSuccess& OnSuccess, const FOnObjectTournamentsGetTournamentsError& OnError, const FOnObjectTournamentsGetTournamentsComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 };
