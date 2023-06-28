@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
+#include "GameplayTagsManager.h"
 #include "AutoGen/Arrays/ArrayOfString.h"
 #include "AutoGen/Maps/MapOfString.h"
 #include "AutoGen/Optionals/OptionalArrayOfBeamPid.h"
@@ -29,6 +31,18 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FBeamCid BeamCid;
+
+	/**
+	 * @brief Gameplay Tags are serialized as a regular string in content objects.  
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayTag UnrealGameplayTag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FGameplayTag> GameplayTagsArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FString, FGameplayTag> GameplayTagsMap;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FBeamCid> ArrayOfBeamCid;

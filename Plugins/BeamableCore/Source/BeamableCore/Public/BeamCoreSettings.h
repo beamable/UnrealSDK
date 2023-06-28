@@ -119,6 +119,14 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="User Slots")
 	bool bPersistRuntimeSlotDataWhenInPIE = true;
 
+	/**
+	 * @brief When deserializing content that stores FGameplayTag, should we error out if we fail to convert that tag?
+	 * If this is true, you must guarantee all tags in all content are always valid in your project/build.
+	 * If this is false, non-existent tags will be deserialized as invalid.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
+	bool bErrorIfGameplayTagNotFound = false;
+	
 	UFUNCTION(BlueprintCallable)
 	FUserSlot GetOwnerPlayerSlot() const { return FUserSlot{RuntimeUserSlots[0]}; }
 };

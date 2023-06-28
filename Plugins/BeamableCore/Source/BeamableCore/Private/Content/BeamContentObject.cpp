@@ -3,8 +3,10 @@
 
 #include "Content/BeamContentObject.h"
 
+#include "BeamCoreSettings.h"
 #include "Misc/DefaultValueHelper.h"
 #include "BeamLogging.h"
+#include "GameplayTagContainer.h"
 #include "AutoGen/ContentDefinition.h"
 #include "AutoGen/Optionals/OptionalArrayOfString.h"
 #include "Content/LocalContentManifestRow.h"
@@ -145,6 +147,7 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 		FJsonDomBuilder::FObject CurrProp;
 		FString CurrPropName = It->GetName();
 
+		
 		auto ShouldAddToJson = true;
 		if (const auto SoftObjectProperty = CastField<FSoftObjectProperty>(*It))
 		{
@@ -313,6 +316,12 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 				FJsonDomBuilder::FArray ArrayJson;
 				SerializeArrayProperty(CurrPropName, ArrayJson, ArrayProperty, Data);
 				CurrProp.Set("data", ArrayJson);
+			}
+			else if(ScriptStruct && ScriptStruct->IsChildOf(FGameplayTag::StaticStruct()))
+			{
+				const FGameplayTag* UnrealGameplayTag = StructProperty->ContainerPtrToValuePtr<FGameplayTag>(this);
+				const FString UnderlyingString = UnrealGameplayTag->ToString();
+				CurrProp.Set("data", UnderlyingString);
 			}
 			else if (ScriptStruct && ScriptStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
 			{
@@ -582,6 +591,13 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 				}
 				ParseArrayProperty(PropName, BeamArrayJson, InnerArrayProperty, BeamArray);
 			}
+			else if (ScriptStruct && ScriptStruct->IsChildOf(FGameplayTag::StaticStruct()))
+			{
+				const auto SubJsonSemantic = JsonProperties->GetObjectField(PropName)->GetStringField("data");
+				FGameplayTag* ValData = StructProperty->ContainerPtrToValuePtr<FGameplayTag>(this);
+				const auto bShouldError = GetDefault<UBeamCoreSettings>()->bErrorIfGameplayTagNotFound;
+				*ValData = FGameplayTag::RequestGameplayTag(FName(SubJsonSemantic), bShouldError);				
+			}
 			else if (ScriptStruct && ScriptStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
 			{
 				const auto SubJsonSemantic = JsonProperties->GetObjectField(PropName)->GetStringField("data");
@@ -721,6 +737,19 @@ void UBeamContentObject::SerializeArrayProperty(FString PropName, FJsonDomBuilde
 				}
 			}
 		}
+		else if (InnerArrayStruct->IsChildOf(FGameplayTag::StaticStruct()))
+		{
+			const auto ArrayNum = ArrayHelper.Num();
+			for (auto i = 0; i < ArrayNum; i++)
+			{
+				if (ArrayHelper.IsValidIndex(i))
+				{
+					const FGameplayTag* Data = reinterpret_cast<const FGameplayTag*>(ArrayHelper.GetRawPtr(i));
+					const FString UnderlyingString = Data->ToString();
+					JsonArray.Add(UnderlyingString);
+				}
+			}
+		}
 		else if (InnerArrayStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
 		{
 			const auto ArrayNum = ArrayHelper.Num();
@@ -844,6 +873,16 @@ void UBeamContentObject::ParseArrayProperty(const FString& PropName, const TArra
 			{
 				const auto SubArray = JsonArray[i]->AsArray();
 				ParseArrayProperty(PropName, SubArray, InnerArrayProperty, ArrayHelper.GetRawPtr(i));
+			}
+		}
+		else if (InnerArrayStruct->IsChildOf(FGameplayTag::StaticStruct()))
+		{
+			for (int i = 0; i < JsonArray.Num(); ++i)
+			{
+				FGameplayTag* ValData = reinterpret_cast<FGameplayTag*>(ArrayHelper.GetRawPtr(i));
+				const FString JsonStr = JsonArray[i]->AsString();
+				const auto bShouldError = GetDefault<UBeamCoreSettings>()->bErrorIfGameplayTagNotFound;
+				*ValData = FGameplayTag::RequestGameplayTag(FName(JsonStr), bShouldError);
 			}
 		}
 		else if (InnerArrayStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
@@ -1003,6 +1042,20 @@ void UBeamContentObject::SerializeMapProperty(FString PropName, FJsonDomBuilder:
 					}
 				}
 			}
+			else if (InnerMapStruct->IsChildOf(FGameplayTag::StaticStruct()))
+			{
+				const auto MapNum = MapHelper.Num();
+				for (auto i = 0; i < MapNum; i++)
+				{
+					if (MapHelper.IsValidIndex(i))
+					{
+						const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+						const FGameplayTag* UnrealGameplayTag = reinterpret_cast<const FGameplayTag*>(MapHelper.GetValuePtr(i));
+						const FString UnderlyingString = UnrealGameplayTag->ToString();
+						JsonMap.Set(Key, UnderlyingString);
+					}
+				}
+			}
 			else if (InnerMapStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
 			{
 				const auto MapNum = MapHelper.Num();
@@ -1147,6 +1200,23 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 					*KeyData = Key;
 
 					ParseArrayProperty(Key, SubMap, InnerArrayProperty, MapHelper.GetValuePtr(LastEntryIdx));
+				}
+			}
+			else if (InnerMapStruct->IsChildOf(FGameplayTag::StaticStruct()))
+			{
+				for (const auto& Value : JsonMap->Values)
+				{
+					const auto Key = Value.Key;
+
+					const auto LastEntryIdx = MapHelper.AddDefaultValue_Invalid_NeedsRehash();
+
+					auto KeyData = reinterpret_cast<FString*>(MapHelper.GetKeyPtr(LastEntryIdx));
+					*KeyData = Key;
+
+					FGameplayTag* ValData = reinterpret_cast<FGameplayTag*>(MapHelper.GetValuePtr(LastEntryIdx));
+					const FString JsonStr = Value.Value->AsString();
+					const auto bShouldError = GetDefault<UBeamCoreSettings>()->bErrorIfGameplayTagNotFound;
+					*ValData = FGameplayTag::RequestGameplayTag(FName(JsonStr), bShouldError);
 				}
 			}
 			else if (InnerMapStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
