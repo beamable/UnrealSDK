@@ -59,7 +59,7 @@ public:
  * 
  */
 UCLASS(Blueprintable, BlueprintType)
-class BEAMABLECOREEDITOR_API UBeamEditorContent : public UBeamEditorSubsystem
+class BEAMABLECOREEDITOR_API UBeamEditorContent : public UBeamEditorSubsystem, public FDataTableEditorUtils::FDataTableEditorManager::ListenerType
 {
 	GENERATED_BODY()
 
@@ -87,7 +87,6 @@ class BEAMABLECOREEDITOR_API UBeamEditorContent : public UBeamEditorSubsystem
 	TMap<FBeamContentId, UBeamContentObject*> LoadedContentObjects;
 
 	TArray<TSharedPtr<FName>> AllContentTypeNames;
-	TArray<UClass*> AllContentTypes;
 
 	UPROPERTY()
 	UEditorAssetSubsystem* EditorAssetSubsystem;
@@ -113,6 +112,10 @@ public:
 	inline static const FString Global_Manifest_Name = TEXT("global");
 	inline static const FBeamContentManifestId Global_Manifest = FBeamContentManifestId(Global_Manifest_Name);
 
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	TArray<UClass*> AllContentTypes;
+
+
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 
@@ -128,17 +131,47 @@ public:
 
 	UClass** FindContentTypeByName(FString TypeName);
 
-	bool TryLoadContentObject(const FBeamContentManifestId& OwnerManifest, const FBeamContentId& ContentId, FString TypeName, UBeamContentObject*& OutLoadedContentObject);
+	bool TryLoadContentObject(const FBeamContentManifestId& OwnerManifest, FBeamContentId ContentId, FString TypeName, UBeamContentObject*& OutLoadedContentObject);
 
 	bool InstantiateContentObject(const UDataTable* Manifest, const FBeamContentId& ContentId, UBeamContentObject*& OutNewContentObject, UObject* Outer);
 
-	static FString GetJsonBlobPath(FString RowName, FBeamContentManifestId ManifestId);
+	void GetContentTypeToIdMaps(TMap<FName, TArray<TSharedPtr<FName>>>& Map);
+	bool GetContentTypeFromId(FBeamContentId Id, FString& TypeName);
+
+
+	
 	void SynchronizeRemoteManifestWithLocalManifest(const FBeamContentManifestId Id, const UContentBasicManifest* RemoteManifest, UDataTable* LocalManifest, FEditorStateChangedHandlerCode OnSuccess,
 	                                                FEditorStateChangedHandlerCode OnError);
 
+
+	/** Implementation of FDataTableEditorManager::ListenerType --- needed to respond to selection and table data modifications */
+	virtual void PreChange(const UDataTable* Changed, FDataTableEditorUtils::EDataTableChangeInfo ChangedType) override;
+
+	virtual void PostChange(const UDataTable* Changed, FDataTableEditorUtils::EDataTableChangeInfo ChangedType) override;
+
+
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool GetOrCreateContent(const FBeamContentManifestId& ManifestId, const FString& ContentName, TSubclassOf<UBeamContentObject> ContentObjectSubType, UBeamContentObject*& ContentObject, FString& ErrMsg);
+
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool CreateNewContent(const FBeamContentManifestId& ManifestId, const FString& ContentName, TSubclassOf<UBeamContentObject> ContentObjectSubType, UBeamContentObject*& ContentObject, FString& ErrMsg);
+
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool GetContentForEditing(const FBeamContentManifestId& ManifestId, FBeamContentId EditObjectId, UBeamContentObject*& ContentObject, FString& ErrMsg);
+
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool SaveContentObject(const FBeamContentManifestId& ManifestId, UBeamContentObject* EditingObject, FString& ErrMsg);
+
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool CreateNewContentInManifest(const FBeamContentManifestId& ManifestId, const FString& ContentName, const int& ContentTypeIndex, UBeamContentObject*& ContentObject, FString& ErrMsg);
+
+	static FString GetJsonBlobPath(FString RowName, FBeamContentManifestId ManifestId);
+	static FString GetManifestDataTableName(FBeamContentManifestId Id);
+	static FBeamContentManifestId GetManifestIdFromDataTable(const UDataTable* Table);
+	
 private:
 	FBeamOperationHandle EnsureGlobalManifest();
-	void EnsureGlobalManifest_OnGetManifests(FBasicContentGetManifestsFullResponse Response, const FBeamOperationHandle Op);
+	void EnsureGlobalManifest_OnGetManifests(FBasicContentGetManifestsFullResponse Response, const FBeamOperationHandle Op);	
 	void EnsureGlobalManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response, const FBeamOperationHandle Op);
 
 	FBeamOperationHandle PublishManifest(FBeamContentManifestId ContentManifestId, FBeamOperationEventHandler Handler);
@@ -156,6 +189,11 @@ private:
 
 
 	void HandleAssetOpenedInEditor(UObject* Object, IAssetEditorInstance* AssetEditor);
+
+	/**
+	 * @brief Compares and finds the manifest ID for the data table instance that is being modified --- if it cannot find it among the loaded manifests, we return false.
+	 */
+	bool GetChangingManifest(const UDataTable* Changed, FBeamContentManifestId& ManifestId, UDataTable*& EditingTable) const;
 };
 
 #undef LOCTEXT_NAMESPACE

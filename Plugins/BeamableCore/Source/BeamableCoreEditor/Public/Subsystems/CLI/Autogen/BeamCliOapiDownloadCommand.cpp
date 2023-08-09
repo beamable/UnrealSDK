@@ -5,7 +5,7 @@
 #include "JsonObjectConverter.h"
 #include "Serialization/JsonSerializerMacros.h"
 		
-inline TSharedPtr<FMonitoredProcess> UBeamCliOapiDownloadCommand::RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op)
+TSharedPtr<FMonitoredProcess> UBeamCliOapiDownloadCommand::RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op)
 {
 	FString Params = ("oapi download");
 	for (const auto& CommandParam : CommandParams)

@@ -5,7 +5,7 @@
 #include "JsonObjectConverter.h"
 #include "Serialization/JsonSerializerMacros.h"
 		
-inline TSharedPtr<FMonitoredProcess> UBeamCliProjectPsCommand::RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op)
+TSharedPtr<FMonitoredProcess> UBeamCliProjectPsCommand::RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op)
 {
 	FString Params = ("project ps");
 	for (const auto& CommandParam : CommandParams)

@@ -222,7 +222,7 @@ private:
 	static void StaticCheckForRequestType()
 	{
 		static_assert(TIsDerivedFrom<TRequestData, IBeamBaseRequestInterface>::Value,
-					  "TRequestData must be a IBeamBaseRequestInterface type.");
+		              "TRequestData must be a IBeamBaseRequestInterface type.");
 		static_assert(TIsDerivedFrom<TRequestData, UObject>::Value, "TRequestData must be a UObject type.");
 	}
 
@@ -230,7 +230,7 @@ private:
 	static void StaticCheckForResponseType()
 	{
 		static_assert(TIsDerivedFrom<TResponseData, IBeamBaseResponseBodyInterface>::Value,
-					  "TResponseData must be a IBeamBaseResponseBodyInterface type.");
+		              "TResponseData must be a IBeamBaseResponseBodyInterface type.");
 		static_assert(TIsDerivedFrom<TResponseData, UObject>::Value, "TResponseData must be a UObject type.");
 	}
 
@@ -885,10 +885,11 @@ public:
 			// We only log the response if no callsite is given or if we are configured to always run it.
 			if (AlwaysLogSuccessResponses || !ExecutedCallsiteHandler)
 			{
+				const auto RequestType = FRequestType{TRequestData::StaticClass()->GetName()};
 				UE_LOG(LogBeamBackend, Display,
 				       TEXT(
-					       "Beamable Request Successfull | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
-				       ), RequestId, ResponseCode, CurrFailedCount,
+					       "Beamable Request Successfull | REQUEST_ID=%lld, REQUEST_TYPE=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
+				       ), RequestId, *RequestType.Name, ResponseCode, CurrFailedCount,
 				       *ContentAsString);
 			}
 		}
@@ -1021,7 +1022,7 @@ public:
 				const auto ResponseCode = Response->GetResponseCode();
 				const auto ContentAsString = Response->GetContentAsString();
 				const auto RequestStatus = Request->GetStatus();
-				const auto RequestType = RequestData->GetRequestType();				
+				const auto RequestType = RequestData->GetRequestType();
 
 				// If it was a success, we try to cache the response.
 				if (ResponseCode == 200)
@@ -1150,11 +1151,12 @@ public:
 			// We only log the response if no callsite is given or if we are configured to always run it.
 			if (AlwaysLogSuccessResponses || !ExecutedCallsiteHandler)
 			{
+				const auto RequestType = FRequestType{TRequestData::StaticClass()->GetName()};
 				UE_LOG(LogBeamBackend, Display,
 				       TEXT(
-					       "Beamable Request Successfull | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
+					       "Beamable Request Successfull | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
 				       ),
-				       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : TEXT("Made Without UserSlot"), ResponseCode,
+				       RequestId, *RequestType.Name, bWasMadeWithUserSlot ? *UserSlot.Name : TEXT("Made Without UserSlot"), ResponseCode,
 				       CurrFailedCount, *ContentAsString);
 			}
 		}
@@ -1445,7 +1447,8 @@ public:
 		else
 		{
 			// Update Connectivity Status
-			UpdateConnectivity(FullResponse.Context, RequestStatus, FRequestType{TRequestData::StaticClass()->GetName()});
+			const auto RequestType = FRequestType{TRequestData::StaticClass()->GetName()};
+			UpdateConnectivity(FullResponse.Context, RequestStatus, FRequestType{RequestType});
 
 			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 			{
@@ -1454,9 +1457,9 @@ public:
 				{
 					UE_LOG(LogBeamBackend, Display,
 					       TEXT(
-						       "Beamable Request Successfull | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
+						       "Beamable Request Successfull | REQUEST_ID=%lld, REQUEST_TYPE=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
 					       ),
-					       RequestId, ResponseCode, CurrFailedCount, *ContentAsString);
+					       RequestId, *RequestType.Name, ResponseCode, CurrFailedCount, *ContentAsString);
 				}
 
 				// We log the error only if neither callback was set OR if we are configured to do so.
@@ -1717,7 +1720,8 @@ public:
 		else
 		{
 			// Update Connectivity Status
-			UpdateConnectivity(FullResponse.Context, RequestStatus, FRequestType{TRequestData::StaticClass()->GetName()});
+			const auto RequestType = FRequestType{TRequestData::StaticClass()->GetName()};
+			UpdateConnectivity(FullResponse.Context, RequestStatus, FRequestType{RequestType});
 
 			const auto bExecutedCallsiteHandler = ResponseHandler.ExecuteIfBound(FullResponse);
 			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
@@ -1727,9 +1731,9 @@ public:
 				{
 					UE_LOG(LogBeamBackend, Display,
 					       TEXT(
-						       "Beamable Request Successfull | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
+						       "Beamable Request Successfull | REQUEST_ID=%lld, REQUEST_TYPE=%s USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
 					       ),
-					       RequestId, *UserSlotLog, ResponseCode, CurrFailedCount, *ContentAsString);
+					       RequestId, *RequestType.Name, *UserSlotLog, ResponseCode, CurrFailedCount, *ContentAsString);
 				}
 
 				// We log the error only if neither callback was set OR if we are configured to do so.

@@ -13,6 +13,7 @@
 
 #include "UserSlots/UserSlot.h"
 #include "BeamBackend/RequestType.h"
+#include "Pins/BeamContentIdPin.h"
 #include "Pins/OptionalTypePin.h"
 
 struct BEAMABLECOREEDITOR_API FBeamableCoreGraphNodeFactory : public FGraphPanelNodeFactory
@@ -48,24 +49,34 @@ struct BEAMABLECOREEDITOR_API FBeamableCorePinFactory : public FGraphPanelPinFac
 		 * Check if pin is struct, and then check if that pin is of struct type we want to customize
 		 */
 		if (InPin->PinType.PinCategory == K2Schema->PC_Struct &&
+			InPin->PinType.PinSubCategoryObject == FBeamContentId::StaticStruct())
+		{
+			// and return our customized pin widget ;).
+			return SNew(SBeamContentIdPin, InPin);
+		}
+
+		/*
+		 * Check if pin is struct, and then check if that pin is of struct type we want to customize
+		 */
+		if (InPin->PinType.PinCategory == K2Schema->PC_Struct &&
 			InPin->PinType.PinSubCategoryObject == FRequestType::StaticStruct())
 		{
 			// and return our customized pin widget ;).
 			return SNew(SRequestTypePin, InPin);
 		}
-		
+
 		/*
 		 * Check if pin is struct, and then check if that pin is of struct type we want to customize
 		 */
 		if (InPin->PinType.PinCategory == K2Schema->PC_Struct)
 		{
-			if(const auto S = Cast<UScriptStruct>(InPin->PinType.PinSubCategoryObject))
+			if (const auto S = Cast<UScriptStruct>(InPin->PinType.PinSubCategoryObject))
 			{
-				if(S->HasMetaData(BeamK2::MD_BeamOptionalType))
+				if (S->HasMetaData(BeamK2::MD_BeamOptionalType))
 				{
 					return SNew(SOptionalTypePin, InPin);
-				}				
-			}			
+				}
+			}
 		}
 
 		return nullptr;

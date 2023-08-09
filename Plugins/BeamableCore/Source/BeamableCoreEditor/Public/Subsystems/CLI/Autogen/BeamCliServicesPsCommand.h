@@ -14,9 +14,9 @@ struct FBeamCliServicesPsStreamData
 	inline static FString StreamTypeName = FString(TEXT("stream"));
 
 	UPROPERTY()
-	bool IsLocal;
+	bool IsLocal = {};
 	UPROPERTY()
-	bool IsDockerRunning;
+	bool IsDockerRunning = {};
 	UPROPERTY()
 	TArray<FString> BeamoIds;
 	UPROPERTY()

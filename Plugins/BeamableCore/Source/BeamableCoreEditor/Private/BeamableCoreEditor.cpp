@@ -15,6 +15,7 @@
 #include "BeamBackend/ReplacementTypes/BeamClientPermission.h"
 #include "Kismet2/KismetEditorUtilities.h"
 #include "PropertyType/BeamClientPermissionCustomization.h"
+#include "PropertyType/BeamContentIdCustomization.h"
 #include "PropertyType/RequestTypeCustomization.h"
 #include "Subsystems/BeamEditor.h"
 #include "Subsystems/Content/BeamEditorContent.h"
@@ -76,6 +77,13 @@ void FBeamableCoreEditorModule::StartupModule()
 			// this is where our MakeInstance() method is useful
 			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamClientPermissionCustomization::MakeInstance));
 
+		// to register our custom property
+		PropertyModule.RegisterCustomPropertyTypeLayout(
+			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
+			FBeamContentId::StaticStruct()->GetFName(),
+			// this is where our MakeInstance() method is useful
+			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamContentIdCustomization::MakeInstance));
+
 		PropertyModule.NotifyCustomizationModuleChanged();
 	}
 
@@ -110,6 +118,8 @@ void FBeamableCoreEditorModule::ShutdownModule()
 		// unregister properties when the module is shutdown
 		FPropertyEditorModule& PropertyModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FRequestType::StaticStruct()->GetFName());
+		PropertyModule.UnregisterCustomPropertyTypeLayout(FBeamClientPermission::StaticStruct()->GetFName());
+		PropertyModule.UnregisterCustomPropertyTypeLayout(FBeamContentId::StaticStruct()->GetFName());
 
 
 		PropertyModule.NotifyCustomizationModuleChanged();

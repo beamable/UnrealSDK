@@ -16,14 +16,16 @@ struct BEAMABLECORE_API FLocalContentManifestRow : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FString> Tags;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	FString JsonBlobPath;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Checksum;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	FBeamContentManifestId OwnerManifestId;
+
+	/**
+	 * @brief We use this to detect renames.
+	 */
+	FString RowName;
 };
 
 USTRUCT(BlueprintType)

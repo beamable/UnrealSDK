@@ -40,9 +40,9 @@ UENUM(BlueprintType, meta=(OperationSuccessSubEvents="Final,EventA,EventB,EventC
 enum EDefaultOperationEventSubType
 {
 	Final = 0 UMETA(Tooltip="It is the final event of the operation. No more events will be issued later."),
-	EventA = 1 UMETA(Tooltip="It is the final event of the operation. No more events will be issued later."),
-	EventB = 2 UMETA(Tooltip="It is the final event of the operation. No more events will be issued later."),
-	EventC = 3 UMETA(Tooltip="It is the final event of the operation. No more events will be issued later."),
+	EventA = 1 UMETA(Tooltip="It is an event in the operation. More events can be issued later Here to make it unnecessary to create enums for operations that want to send unnamed events.."),
+	EventB = 2 UMETA(Tooltip="It is another event in the operation. More events can be issued later. Here to make it unnecessary to create enums for operations that want to send unnamed events."),
+	EventC = 3 UMETA(Tooltip="It is another event in the operation. More events can be issued later. Here to make it unnecessary to create enums for operations that want to send unnamed events."),
 };
 
 

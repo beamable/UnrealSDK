@@ -22,9 +22,9 @@ struct FBeamCliProjectPsStreamData
 	UPROPERTY()
 	FString service;
 	UPROPERTY()
-	bool isRunning;
+	bool isRunning = {};
 	UPROPERTY()
-	bool isContainer;	
+	bool isContainer = {};
 };
 
 
@@ -56,7 +56,7 @@ class UBeamCliProjectPsCommand : public UBeamCliCommand
 public:
 	TArray<FBeamCliProjectPsStreamData> Stream;
 	TArray<int64> Timestamps;
-	TFunction<void (const TArray<FBeamCliProjectPsStreamData>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (const TArray<FBeamCliProjectPsStreamData>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual TSharedPtr<FMonitoredProcess> RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {}) override;

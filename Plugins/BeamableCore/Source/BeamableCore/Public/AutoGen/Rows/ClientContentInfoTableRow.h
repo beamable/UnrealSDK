@@ -19,7 +19,7 @@ struct BEAMABLECORE_API FClientContentInfoTableRow : public FTableRowBase
 	const static TArray<FString> HeaderFields;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
-	EContentType Type;
+	EContentType Type = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="ContentId", Category="Beam")
 	FString ContentId;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Version", Category="Beam")

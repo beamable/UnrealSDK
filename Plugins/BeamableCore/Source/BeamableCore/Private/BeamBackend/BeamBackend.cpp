@@ -410,8 +410,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 									UserSlot, NewToken.AccessToken, NewToken.RefreshToken, NewToken.ExpiresIn,
 									RealmUserData.RealmHandle.Cid, RealmUserData.RealmHandle.Pid, this);
 								BeamUserSlots->SetGamerTagAtSlot(UserSlot, RealmUserData.GamerTag, this);
-								BeamUserSlots->SetEmailAtSlot(UserSlot, RealmUserData.Email, this);
-								BeamUserSlots->TriggerUserAuthenticatedIntoSlot(UserSlot, this);
+								BeamUserSlots->SetEmailAtSlot(UserSlot, RealmUserData.Email, this);								
 							}
 							// Then, we just fix the request up and send it along.						
 							PrepareBeamableRequestToRealmWithAuthToken(FailedReq, ReqRealmHandle, NewToken);

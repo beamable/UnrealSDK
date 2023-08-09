@@ -91,12 +91,19 @@ void UBeamRuntimeSubsystem::OnPostUserSignedOut_Implementation(const FUserSlot& 
 	UE_LOG(LogBeamRuntime, Verbose, TEXT("Runtime Subsystem %s - On Post User Signed Out"), *GetName())
 }
 
-void UBeamRuntimeSubsystem::OnBeamableReady_Implementation()
+FBeamOperationHandle UBeamRuntimeSubsystem::OnBeamableReady_Implementation()
 {
 	UE_LOG(LogBeamRuntime, Display, TEXT("Runtime Subsystem %s - OnBeamableReady"), *GetName())
-	bIsInitialized = true;
+	// By default, just return an empty completed operation
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({}, GetName(), {});
+	Runtime->RequestTrackerSystem->TriggerOperationSuccess(Handle, {});	
+	return Handle;
 }
 
-void UBeamRuntimeSubsystem::OnBeamableStarted_Implementation()
+FBeamOperationHandle UBeamRuntimeSubsystem::OnBeamableStarted_Implementation()
 {
+	// By default, just return an empty completed operation
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({}, GetName(), {});
+	Runtime->RequestTrackerSystem->TriggerOperationSuccess(Handle, {});	
+	return Handle;
 }

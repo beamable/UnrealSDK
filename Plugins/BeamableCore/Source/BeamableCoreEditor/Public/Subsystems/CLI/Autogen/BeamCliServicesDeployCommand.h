@@ -14,7 +14,7 @@ struct FBeamCliServicesDeployStreamData
 	inline static FString StreamTypeName = FString(TEXT("stream"));
 
 	UPROPERTY()
-	bool Success;
+	bool Success = {};
 	UPROPERTY()
 	FString FailureReason;	
 };
@@ -30,9 +30,9 @@ struct FBeamCliServicesDeployRemoteProgressStreamData
 	UPROPERTY()
 	FString BeamoId;
 	UPROPERTY()
-	double BuildAndTestProgress;
+	double BuildAndTestProgress = {};
 	UPROPERTY()
-	double ContainerUploadProgress;	
+	double ContainerUploadProgress = {};	
 };
 
 

@@ -97,6 +97,16 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSoftObjectPtr<UTexture2D> UnrealSoftObjRef;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UClass* UnrealClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<UClass*> UnrealClassArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FString, UClass*> UnrealClassMap;
+	
 };
 
 DEFINE_CONTENT_TYPE_NAME(UMockBeamContentObject, "mock")

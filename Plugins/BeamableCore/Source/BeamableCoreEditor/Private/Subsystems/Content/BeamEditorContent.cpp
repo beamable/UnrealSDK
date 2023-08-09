@@ -61,7 +61,7 @@ void UBeamEditorContent::Initialize(FSubsystemCollectionBase& Collection)
 		RuntimeSettings->SaveConfig(CPF_Config, *RuntimeSettings->GetDefaultConfigFilename());
 		RuntimeSettings->SaveConfig();
 	});
-	
+
 	// This delegate ensures that, when you cook content, all existing 'BCC_' files in your cooked directory are correctly mapped to the current "BCM" files.
 	// This cooked content is saved as binary data so that we don't need to parse JSON at runtime when we load this up.
 	// This runs on a separate process than the editor process so we can't really attach a debugger to it (don't freak out if you try and it doesn't work).
@@ -367,6 +367,7 @@ void UBeamEditorContent::EnsureGlobalManifest_OnGetManifests(FBasicContentGetMan
 	RequestTracker->TriggerOperationCancelled(Op, TEXT(""), Response.Context.RequestId);
 }
 
+
 void UBeamEditorContent::EnsureGlobalManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response,
                                                              const FBeamOperationHandle Op)
 {
@@ -382,7 +383,7 @@ void UBeamEditorContent::EnsureGlobalManifest_OnPostManifest(FBasicContentPostMa
 		UE_LOG(LogBeamContent, Warning, TEXT("Found no content manifests so creating a default = %s - %lld"), *Response.SuccessData->Id.AsString, Response.SuccessData->Created)
 
 		const auto Id = Response.SuccessData->Id;
-		const auto ManifestAssetName = TEXT("BCM_") + Id.AsString.Mid(0, 1).ToUpper() + Id.AsString.Mid(1, Id.AsString.Len() - 1);
+		const auto ManifestAssetName = GetManifestDataTableName(Id);
 
 		const auto UncookedAssetPath = DefaultBeamableUncookedContentManifestsPath / ManifestAssetName;
 		const auto CookedAssetPath = DefaultBeamableCookedContentManifestsPath / ManifestAssetName;
@@ -908,7 +909,7 @@ UClass** UBeamEditorContent::FindContentTypeByName(FString TypeName)
 	return AllContentTypes.FindByPredicate([TypeName](const UClass* Class) { return Class->GetFName().ToString().Equals(TypeName); });
 }
 
-bool UBeamEditorContent::TryLoadContentObject(const FBeamContentManifestId& OwnerManifest, const FBeamContentId& ContentId, FString TypeName, UBeamContentObject*& OutLoadedContentObject)
+bool UBeamEditorContent::TryLoadContentObject(const FBeamContentManifestId& OwnerManifest, FBeamContentId ContentId, FString TypeName, UBeamContentObject*& OutLoadedContentObject)
 {
 	// Hit the cache first.
 	if (LoadedContentObjects.Contains(ContentId))
@@ -920,10 +921,11 @@ bool UBeamEditorContent::TryLoadContentObject(const FBeamContentManifestId& Owne
 	// Otherwise, find the UClass for the content type. Load the JSON and deserialize it into the UBeamContentObject.
 	if (const auto Type = AllContentTypes.FindByPredicate([TypeName](const UClass* Class) { return Class->GetFName().ToString().Equals(TypeName); }))
 	{
-		const auto ManifestRow = LocalManifests[OwnerManifest]->FindRow<FLocalContentManifestRow>(FName(ContentId.AsString), TEXT("Saving Object"));
+		const auto RowName = FName(ContentId.AsString);
+		const auto ManifestRow = LocalManifests[OwnerManifest]->FindRow<FLocalContentManifestRow>(RowName, TEXT("Saving Object"));
 		if (ManifestRow)
 		{
-			const auto FilePath = ManifestRow->JsonBlobPath;
+			const auto FilePath = GetJsonBlobPath(ContentId.AsString, OwnerManifest);
 			FString FileContents;
 			if (FFileHelper::LoadFileToString(FileContents, *FilePath))
 			{
@@ -953,7 +955,7 @@ bool UBeamEditorContent::InstantiateContentObject(const UDataTable* Manifest, co
 		// Otherwise, find the UClass for the content type. Load the JSON and deserialize it into the UBeamContentObject.
 		if (const auto Type = AllContentTypes.FindByPredicate([TypeName](const UClass* Class) { return Class->GetFName().ToString().Equals(TypeName); }))
 		{
-			const auto FilePath = ManifestRow->JsonBlobPath;
+			const auto FilePath = GetJsonBlobPath(ContentId.AsString, GetManifestIdFromDataTable(Manifest));
 			FString FileContents;
 			if (FFileHelper::LoadFileToString(FileContents, *FilePath))
 			{
@@ -967,11 +969,47 @@ bool UBeamEditorContent::InstantiateContentObject(const UDataTable* Manifest, co
 	return false;
 }
 
-struct FDownloadContentState
+void UBeamEditorContent::GetContentTypeToIdMaps(TMap<FName, TArray<TSharedPtr<FName>>>& Map)
 {
-	UContentReference* ContentReference;
-	TUnrealRequestPtr Request;
-};
+	for (const auto& LocalManifest : LocalManifests)
+	{
+		const auto Ids = LocalManifest.Value->GetRowNames();
+		for (const auto& Id : Ids)
+		{
+			const auto Row = LocalManifest.Value->FindRow<FLocalContentManifestRow>(Id, TEXT(""));
+			const auto TypeTag = Row->Tags.FindByPredicate([](FString Tag) { return Tag.StartsWith(UBeamContentObject::Beam_Tag_Type); });
+			const auto TypeName = FName(UBeamContentObject::GetTypeClassNameFromTypeTag(*TypeTag));
+
+			if (!Map.Contains(TypeName))
+				Map.Add(TypeName, {});
+
+			if (!Map[TypeName].ContainsByPredicate([Id](TSharedPtr<FName> N)
+			{
+				return N->ToString().Equals(Id.ToString());
+			}))
+			{
+				Map[TypeName].Add(MakeShareable(new FName(Id)));
+			}
+		}
+	}
+}
+
+bool UBeamEditorContent::GetContentTypeFromId(FBeamContentId Id, FString& TypeName)
+{
+	const auto IdStr = Id.AsString;
+	for (const auto& LocalManifest : LocalManifests)
+	{
+		const auto Row = LocalManifest.Value->FindRow<FLocalContentManifestRow>(FName(IdStr), TEXT("Context"));
+		if (Row)
+		{
+			const auto TypeTag = Row->Tags.FindByPredicate([](FString Tag) { return Tag.StartsWith(UBeamContentObject::Beam_Tag_Type); });
+			TypeName = UBeamContentObject::GetTypeClassNameFromTypeTag(*TypeTag);
+			return true;
+		}
+	}
+	TypeName = TEXT("");
+	return false;
+}
 
 void UBeamEditorContent::SynchronizeRemoteManifestWithLocalManifest(const FBeamContentManifestId Id,
                                                                     const UContentBasicManifest* RemoteManifest,
@@ -1005,7 +1043,7 @@ void UBeamEditorContent::SynchronizeRemoteManifestWithLocalManifest(const FBeamC
 					ptr->SetVerb("GET");
 					ptr->SetURL(ContentRef->Uri);
 					ptr->SetHeader(UBeamBackend::HEADER_ACCEPT, UBeamBackend::HEADER_VALUE_ACCEPT_CONTENT_TYPE);
-					DownloadContentOperations.Add(FDownloadContentState{ContentRef, ptr});
+					DownloadContentOperations.Add(FDownloadContentState{Id, ContentRef->Id, ContentRef->Tags, ContentRef->Checksum, ptr});
 				}
 			}
 		}
@@ -1024,7 +1062,7 @@ void UBeamEditorContent::SynchronizeRemoteManifestWithLocalManifest(const FBeamC
 			{
 				if (HttpResponse->GetResponseCode() == 200)
 				{
-					const auto ContentId = DownloadContentOperation.ContentReference->Id.AsString;
+					const auto ContentId = DownloadContentOperation.Id.AsString;
 
 					const auto ContentFileContents = HttpResponse->GetContentAsString();
 					const auto FilePath = GetJsonBlobPath(ContentId, Id);
@@ -1040,17 +1078,17 @@ void UBeamEditorContent::SynchronizeRemoteManifestWithLocalManifest(const FBeamC
 					if (const auto ExistingRow = LocalManifest->FindRow<FLocalContentManifestRow>(RowName, TEXT("")))
 					{
 						ExistingRow->OwnerManifestId = Id;
-						ExistingRow->JsonBlobPath = FilePath;
-						ExistingRow->Checksum = DownloadContentOperation.ContentReference->Checksum.Val;
-						ExistingRow->Tags = DownloadContentOperation.ContentReference->Tags;
+						ExistingRow->RowName = ContentId;
+						ExistingRow->Checksum = DownloadContentOperation.Checksum.Val;
+						ExistingRow->Tags = DownloadContentOperation.Tags;
 					}
 					else
 					{
 						FLocalContentManifestRow Row;
 						Row.OwnerManifestId = Id;
-						Row.JsonBlobPath = FilePath;
-						Row.Checksum = DownloadContentOperation.ContentReference->Checksum.Val;
-						Row.Tags = DownloadContentOperation.ContentReference->Tags;
+						Row.RowName = ContentId;
+						Row.Checksum = DownloadContentOperation.Checksum.Val;
+						Row.Tags = DownloadContentOperation.Tags;
 						LocalManifest->AddRow(RowName, Row);
 					}
 
@@ -1065,7 +1103,7 @@ void UBeamEditorContent::SynchronizeRemoteManifestWithLocalManifest(const FBeamC
 				for (const auto& Download : DownloadContentOperations)
 				{
 					const auto DidSave = IFileManager::Get().FileExists(
-						*GetJsonBlobPath(Download.ContentReference->Id.AsString, Id));
+						*GetJsonBlobPath(Download.Id.AsString, Id));
 
 					const auto bIsSuccess = Download.Request->GetStatus() ==
 						EHttpRequestStatus::Succeeded;
@@ -1095,7 +1133,385 @@ void UBeamEditorContent::SynchronizeRemoteManifestWithLocalManifest(const FBeamC
 	}
 }
 
+void UBeamEditorContent::PreChange(const UDataTable* Changed, FDataTableEditorUtils::EDataTableChangeInfo ChangedType)
+{
+	// We early out if the selection was changed in a data table that is not the one being managed by this editor.
+	FBeamContentManifestId ManifestId;
+	UDataTable* EditingTable;
+
+	if (!GetChangingManifest(Changed, ManifestId, EditingTable)) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("CAlled pre-change from BEAM EDITOR CONTENT!!!"))
+}
+
+void UBeamEditorContent::PostChange(const UDataTable* Changed, FDataTableEditorUtils::EDataTableChangeInfo ChangedType)
+{
+	FBeamContentManifestId ManifestId;
+	UDataTable* EditingTable;
+
+	if (!GetChangingManifest(Changed, ManifestId, EditingTable)) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("CAlled post-change from BEAM EDITOR CONTENT!!!"))
+
+	TArray<FString> JsonBlobFileNames;
+	IFileManager::Get().FindFiles(JsonBlobFileNames, *(DefaultBeamableProjectContentObjects / ManifestId.AsString));
+
+	auto Rows = Changed->GetRowNames();
+	Rows.Sort([](FName n1, FName n2) { return n1.FastLess(n2); });
+	JsonBlobFileNames.Sort();
+
+	// Handle deletion case
+	TArray<FString> RemovedRows;
+	if (Rows.Num() < JsonBlobFileNames.Num())
+	{
+		for (int i = JsonBlobFileNames.Num() - 1; i >= 0; --i)
+		{
+			const auto JsonBlobFileName = JsonBlobFileNames[i];
+			FString JsonRowName, Extension;
+			JsonBlobFileName.Split(".", &JsonRowName, &Extension, ESearchCase::CaseSensitive, ESearchDir::FromEnd);
+			// If we are not in sync, it means we deleted this row so let's delete the file for it.
+			if (!Rows.Contains(FName(JsonRowName)))
+			{
+				const auto FullPath = DefaultBeamableProjectContentObjects / ManifestId.AsString / JsonBlobFileName;
+				IFileManager::Get().Delete(*FullPath);
+				Rows.Remove(FName(JsonRowName));
+			}
+		}
+	}
+
+	TArray<FString> MissingTypeTags;
+	for (int i = 0; i < Rows.Num(); i++)
+	{
+		FString Row = Rows[i].ToString();
+		auto EntryInManifest = EditingTable->FindRow<FLocalContentManifestRow>(FName(Row),
+		                                                                       TEXT("Validating Manifest"));
+
+		// Handle case where we are missing the type tag value (which is what tells us what type to deserialize into)
+		auto TypeTag = EntryInManifest->Tags.FindByPredicate([](FString Tag)
+		{
+			return Tag.StartsWith(UBeamContentObject::Beam_Tag_Type);
+		});
+		if (!TypeTag)
+		{
+			MissingTypeTags.Add(Row);
+		}
+		else
+		{
+			// Handle rename case (if the row name no longer matches the json file name)
+			const auto PrevName = EntryInManifest->RowName;
+			bool bWasRenamed = !PrevName.Equals(Row);
+			if (bWasRenamed)
+			{
+				FString OldName = PrevName, Discard;
+				OldName.Split(".", &OldName, &Discard, ESearchCase::CaseSensitive, ESearchDir::FromEnd);
+
+				const auto TypeName = UBeamContentObject::GetTypeClassNameFromTypeTag(*TypeTag);
+				UBeamContentObject* Obj;
+				if (TryLoadContentObject(ManifestId, OldName, TypeName, Obj) ||
+					TryLoadContentObject(ManifestId, Row, TypeName, Obj))
+				{
+					const auto TypePrefix = Obj->BuildContentTypeString();
+					if (!Row.StartsWith(TypePrefix))
+					{
+						if (Row.Contains("."))
+						{
+							const auto ErrMsg = FString::Format(TEXT("Content Ids (Row Names) must be in the format <ContentType>.<Name>. If you just type in the Name, we guarantee the prefix is added correctly."), {Row});
+							UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
+
+							// We need to delay as we can't use FDataTableEditorUtils functions without triggering another PostChange call.
+							// This does not loop infinitely, but it causes a problem that gets the DataTable UI in a bad state and requires closing/opening again to fix.
+							// Basically, because the call to PostChange inside RenameRow runs before the rest of this first chain of PostChange invocations, the UI's PostChange
+							// callback for the RenameRow chain gets run before the one for the original change here. This causes all sorts of problems.
+							FTimerDelegate DelayedRename;
+							DelayedRename.BindLambda([this, Row, OldName, EditingTable]()
+							{
+								FDataTableEditorUtils::RenameRow(EditingTable, FName(OldName), FName(Row));
+								EditorAssetSubsystem->SaveLoadedAsset(EditingTable);
+							});
+							GEditor->GetEditorWorldContext().World()->GetTimerManager().SetTimerForNextTick(DelayedRename);
+
+							bWasRenamed = false;
+							//EditorContentSystem->EditorAssetSubsystem->SaveLoadedAsset(EditingTable);
+						}
+						else
+						{
+							FName FixedName = FName(Obj->BuildContentTypeString() + TEXT(".") + Row);
+							if (EditingTable->FindRow<FLocalContentManifestRow>(FixedName, ""))
+							{
+								const auto ErrMsg = FString::Format(TEXT("Content Id {0} already exists."), {FixedName.ToString()});
+								UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
+
+								// We need to delay as we can't use FDataTableEditorUtils functions without triggering another PostChange call.
+								// This does not loop infinitely, but it causes a problem that gets the DataTable UI in a bad state and requires closing/opening again to fix.
+								// Basically, because the call to PostChange inside RenameRow runs before the rest of this first chain of PostChange invocations, the UI's PostChange
+								// callback for the RenameRow chain gets run before the one for the original change here. This causes all sorts of problems.
+								FTimerDelegate DelayedRename;
+								DelayedRename.BindLambda([this, Row, OldName, EditingTable]()
+								{
+									FDataTableEditorUtils::RenameRow(EditingTable, FName(OldName), FName(Row));
+									EditorAssetSubsystem->SaveLoadedAsset(EditingTable);
+								});
+								GEditor->GetEditorWorldContext().World()->GetTimerManager().SetTimerForNextTick(DelayedRename);
+								bWasRenamed = false;
+							}
+							else
+							{
+								const auto UserInputNewNameRow = EditingTable->FindRow<FLocalContentManifestRow>(FName(Row), "");
+								EditingTable->AddRow(FixedName, *UserInputNewNameRow);
+								EditingTable->RemoveRow(FName(Row));
+								Row = FixedName.ToString();
+								EntryInManifest = EditingTable->FindRow<FLocalContentManifestRow>(FixedName, "");
+								TypeTag = EntryInManifest->Tags.FindByPredicate([](FString Tag) { return Tag.StartsWith(UBeamContentObject::Beam_Tag_Type); });
+								EditorAssetSubsystem->SaveLoadedAsset(EditingTable);
+								bWasRenamed = true;
+							}
+						}
+					}
+				}
+
+
+				if (bWasRenamed)
+				{
+					const auto OldRow = EntryInManifest->RowName;
+					const auto OldPath = GetJsonBlobPath(OldRow, ManifestId);
+					const auto NewPath = GetJsonBlobPath(Row, ManifestId);
+
+					// If the old file doesn't exist, we can just use the new one. 
+					if (!IFileManager::Get().FileExists(*OldPath))
+					{						
+						EntryInManifest->RowName = Row;
+						UE_LOG(LogBeamContent, Display, TEXT("Content Renamed. Moving JsonBlob from %s to %s."),
+							   *OldPath,
+							   *EntryInManifest->RowName);
+												
+					}
+					else if (IFileManager::Get().Move(*NewPath, *OldPath))
+					{
+						EntryInManifest->RowName = Row;
+						UE_LOG(LogBeamContent, Display, TEXT("Content Renamed. Moving JsonBlob from %s to %s."),
+						       *OldPath,
+						       *EntryInManifest->RowName);
+					}
+				}
+			}
+
+			// Handle custom validation case
+			const auto TypeName = UBeamContentObject::GetTypeClassNameFromTypeTag(*TypeTag);
+			UBeamContentObject* Obj;
+			if (!TryLoadContentObject(ManifestId, Row, TypeName, Obj))
+			{
+				const auto ErrMsg = FString::Format(TEXT("Trying to load a content object that doesn't exist {0}"), {Row});
+				UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
+			}
+			else
+			{
+				// If the object was renamed, let's make sure it's in memory representation is also updated with the new Id
+				if (bWasRenamed)
+				{
+					Obj->Id = Row;
+					FString JsonContent;
+					Obj->ToBasicJson(JsonContent);
+					if (FFileHelper::SaveStringToFile(JsonContent, *GetJsonBlobPath(EntryInManifest->RowName, ManifestId)))
+					{
+						EntryInManifest->Checksum = Obj->CreatePropertiesMD5Hash();
+						EditorAssetSubsystem->SaveLoadedAsset(EditingTable);
+					}
+				}
+
+				if (const auto ValidationErrorCode = Obj->IsValidRowForType(*TypeTag, *EntryInManifest);
+					ValidationErrorCode)
+				{
+					Obj->FixManifestRowForType(ValidationErrorCode, *EntryInManifest);
+				}
+			}
+		}
+	}
+
+	if (MissingTypeTags.Num() > 0)
+	{
+		const auto ErrMsg = FString::Format(TEXT("Found a content object that doesn't have a type tag. Please add a type tag in the format of \"{0}ConcreteContentTypeName\" to the manifest row: {1}."),
+		                                    {UBeamContentObject::Beam_Tag_Type, FString::Join(MissingTypeTags, TEXT(", "))});
+		UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
+	}
+}
+
+bool UBeamEditorContent::GetOrCreateContent(const FBeamContentManifestId& ManifestId, const FString& ContentName, TSubclassOf<UBeamContentObject> ContentObjectSubType, UBeamContentObject*& ContentObject, FString& ErrMsg)
+{
+	ensure(!ContentName.IsEmpty());
+	const auto ContentTypeString = GetMutableDefault<UBeamContentObject>(ContentObjectSubType)->BuildContentTypeString();
+	const auto ContentId = FString::Format(TEXT("{0}.{1}"), {ContentTypeString, ContentName});
+
+	if (!GetContentForEditing(ManifestId, ContentId, ContentObject, ErrMsg))
+		return CreateNewContent(ManifestId, ContentName, ContentObjectSubType, ContentObject, ErrMsg);
+
+	return true;
+}
+
+bool UBeamEditorContent::CreateNewContent(const FBeamContentManifestId& ManifestId, const FString& ContentName, TSubclassOf<UBeamContentObject> ContentObjectSubType, UBeamContentObject*& ContentObject, FString& ErrMsg)
+{
+	ContentObject = NewObject<UBeamContentObject>(this, ContentObjectSubType.Get());
+
+	// We add it to the object and to the local manifest.
+	const auto TypeName = ContentObject->GetClass()->GetFName().ToString();
+	const auto TypeTagVal = FString::Format(*UBeamContentObject::Beam_Tag_TypeFmt, {TypeName});
+
+	auto RepeatedNameCount = 0;
+	auto RowName = ContentName.IsEmpty() ? FString::Format(TEXT("{0}.New_{1}_{2}"), {ContentObject->BuildContentTypeString(), TypeName, RepeatedNameCount}) : FString::Format(TEXT("{0}.{1}"), {ContentObject->BuildContentTypeString(), ContentName});
+
+	const auto EditingTable = LocalManifests.FindRef(ManifestId);
+	while (EditingTable->FindRow<FLocalContentManifestRow>(FName(RowName), TEXT("Ensure Name is Unique")))
+	{
+		RepeatedNameCount += 1;
+		RowName = ContentName.IsEmpty() ? FString::Format(TEXT("{0}.New_{1}_{2}"), {ContentObject->BuildContentTypeString(), TypeName, RepeatedNameCount}) : FString::Format(TEXT("{0}.{1}_{2}"), {ContentObject->BuildContentTypeString(), ContentName, RepeatedNameCount});
+	}
+
+	// Initialize the editing Object
+	FLocalContentManifestRow EntryInManifest;
+	EntryInManifest.OwnerManifestId = ManifestId;
+	EntryInManifest.Tags.Add(TypeTagVal);
+
+	// Sets the ID and Tags based on the manifest row.
+	ContentObject->Id = RowName;
+	ContentObject->Tags.Append(EntryInManifest.Tags);
+
+	FString JsonContent;
+	ContentObject->ToBasicJson(JsonContent);
+
+	const auto FilePath = GetJsonBlobPath(RowName, ManifestId);
+
+	if (FFileHelper::SaveStringToFile(JsonContent, *FilePath))
+	{
+		EntryInManifest.Checksum = ContentObject->CreatePropertiesMD5Hash();
+		EditorAssetSubsystem->SaveLoadedAsset(EditingTable);
+
+		// Stores the created row struct into the data table
+		// We do it this way, instead of FDataTableEditorUtils::AddRow(), so that the change callback is aware of the Row data when we create a new one.
+		FDataTableEditorUtils::BroadcastPreChange(EditingTable, FDataTableEditorUtils::EDataTableChangeInfo::RowList);
+		EditingTable->AddRow(FName(RowName), EntryInManifest);
+		FDataTableEditorUtils::BroadcastPostChange(EditingTable, FDataTableEditorUtils::EDataTableChangeInfo::RowList);
+
+
+		// Adds the editing object to the list of cached content objects (so that we don't need to keep deserializing it all the time).
+		LoadedContentObjects.Add(ContentObject->Id, ContentObject);
+
+		// Saves the data-table with the new content object in it.
+		EditorAssetSubsystem->SaveLoadedAsset(EditingTable);
+	}
+	else
+	{
+		ErrMsg = FString::Format(TEXT("Failed to save the content object {0}"), {RowName});
+		UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
+		return false;
+	}
+	ErrMsg.Empty();
+	return true;
+}
+
+bool UBeamEditorContent::GetContentForEditing(const FBeamContentManifestId& ManifestId, FBeamContentId EditObjectId, UBeamContentObject*& ContentObject, FString& ErrMsg)
+{
+	const auto EditingTable = LocalManifests.FindRef(ManifestId);
+	const auto Entry = EditingTable->FindRow<FLocalContentManifestRow>(FName(EditObjectId.AsString), TEXT("Edit Content Start"));
+	if (!Entry)
+	{
+		ErrMsg = FString::Format(TEXT("Trying to load a content object that doesn't exist in this manifest."), {UBeamContentObject::Beam_Tag_Type, EditObjectId.AsString});
+		UE_LOG(LogBeamContent, Warning, TEXT("%s"), *ErrMsg);
+		return false;
+	}
+
+	const auto& EntryInManifest = *Entry;
+
+	const auto TypeTag = EntryInManifest.Tags.FindByPredicate([](FString Tag)
+	{
+		return Tag.StartsWith(UBeamContentObject::Beam_Tag_Type);
+	});
+	if (!TypeTag)
+	{
+		ErrMsg = FString::Format(TEXT("Trying to load a content object that doesn't have a type tag. Please add a type tag in the format of \"{0}ConcreteContentTypeName\" to the manifest row: {1}."), {UBeamContentObject::Beam_Tag_Type, EditObjectId.AsString});
+		UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
+		return false;
+	}
+
+	const auto TypeName = UBeamContentObject::GetTypeClassNameFromTypeTag(*TypeTag);
+	if (!TryLoadContentObject(ManifestId, EditObjectId, TypeName, ContentObject))
+	{
+		ErrMsg = FString::Format(TEXT("Trying to load a content object that doesn't exist {0}"), {EditObjectId.AsString});
+		UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
+		return false;
+	}
+
+	ErrMsg.Empty();
+	return true;
+}
+
+bool UBeamEditorContent::SaveContentObject(const FBeamContentManifestId& ManifestId, UBeamContentObject* EditingObject, FString& ErrMsg)
+{
+	const auto EditingTable = LocalManifests.FindRef(ManifestId);
+	auto& EntryInManifest = *EditingTable->FindRow<FLocalContentManifestRow>(FName(EditingObject->Id), TEXT("Edit Content Start"));
+
+	FString JsonContent;
+	EditingObject->ToBasicJson(JsonContent);
+
+	const auto FilePath = GetJsonBlobPath(EditingObject->Id, ManifestId);
+	if (FFileHelper::SaveStringToFile(JsonContent, *FilePath))
+	{
+		EntryInManifest.Checksum = EditingObject->CreatePropertiesMD5Hash();
+		EditorAssetSubsystem->SaveLoadedAsset(EditingTable);
+		FDataTableEditorUtils::BroadcastPostChange(EditingTable, FDataTableEditorUtils::EDataTableChangeInfo::RowData);
+		ErrMsg.Empty();
+		return true;
+	}
+
+	ErrMsg = FString::Format(TEXT("Failed to save the content object {0}"), {EditingObject->Id});
+	UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
+	return false;
+}
+
+bool UBeamEditorContent::CreateNewContentInManifest(const FBeamContentManifestId& ManifestId, const FString& ContentName, const int& ContentTypeIndex, UBeamContentObject*& ContentObject, FString& ErrMsg)
+{
+	const TSubclassOf<UBeamContentObject> ContentObjectSubType = AllContentTypes[ContentTypeIndex];
+	return CreateNewContent(ManifestId, ContentName, ContentObjectSubType, ContentObject, ErrMsg);
+}
+
+
+bool UBeamEditorContent::GetChangingManifest(const UDataTable* Changed, FBeamContentManifestId& ManifestId, UDataTable*& EditingTable) const
+{
+	// We early out if the selection was changed in a data table that is not the one being managed by this editor.
+	TArray<FBeamContentManifestId> LoadedManifestsIds;
+	TArray<UDataTable*> LoadedManifests;
+	this->LocalManifests.GenerateKeyArray(LoadedManifestsIds);
+	this->LocalManifests.GenerateValueArray(LoadedManifests);
+
+	ManifestId = FBeamContentManifestId{"BEAM_INVALID!!!!"};
+	for (int i = 0; i < LoadedManifests.Num(); ++i)
+	{
+		if (LoadedManifests[i] == Changed)
+		{
+			ManifestId = LoadedManifestsIds[i];
+			EditingTable = LoadedManifests[i];
+		}
+	}
+	if (ManifestId.AsString.Equals(TEXT("BEAM_INVALID!!!!")) || !EditingTable) return false;
+	return true;
+}
+
+
 FString UBeamEditorContent::GetJsonBlobPath(FString RowName, FBeamContentManifestId ManifestId)
 {
 	return DefaultBeamableProjectContentObjects / ManifestId.AsString / RowName + TEXT(".json");
+}
+
+FString UBeamEditorContent::GetManifestDataTableName(const FBeamContentManifestId Id)
+{
+	return TEXT("BCM_") + Id.AsString.Mid(0, 1).ToUpper() + Id.AsString.Mid(1, Id.AsString.Len() - 1);
+}
+
+FBeamContentManifestId UBeamEditorContent::GetManifestIdFromDataTable(const UDataTable* Table)
+{
+	FString Discard;
+	FString Name;
+	if (Table->GetName().Split("_", &Discard, &Name))
+	{
+		return FBeamContentManifestId{Name.Mid(0, 1).ToLower() + Name.Mid(1, Name.Len() - 1)};
+	}
+	return {};
 }

@@ -6,7 +6,18 @@
 #include "RequestTracker/BeamOperation.h"
 #include "RequestTracker/BeamRequestTracker.h"
 #include "Subsystems/BeamEditorSubsystem.h"
+
+#include "BeamLogging.h"
+#include "BeamBackend/BeamMicroserviceClientSubsystem.h"
+#include "Subsystems/BeamEditor.h"
 #include "Subsystems/CLI/BeamCli.h"
+#include "Subsystems/CLI/Autogen/BeamCliProjectPsCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliServicesPsCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliProjectOpenSwaggerCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliServicesDeployCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliServicesResetCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliServicesRunCommand.h"
+
 #include "BeamMicroservicesEditor.generated.h"
 
 UENUM(BlueprintType)
@@ -21,10 +32,10 @@ struct FLocalMicroserviceData
 	FString BeamoId;
 
 	UPROPERTY(BlueprintReadOnly)
-	TEnumAsByte<ELocalMicroserviceRunningMethod> RunningState;
+	TEnumAsByte<ELocalMicroserviceRunningMethod> RunningState = {};
 
 	UPROPERTY(BlueprintReadOnly)
-	bool bShouldEnableRemoteOnPublish;
+	bool bShouldEnableRemoteOnPublish = {};
 };
 
 USTRUCT(BlueprintType)
@@ -36,7 +47,7 @@ struct FRemoteMicroserviceData
 	FString BeamoId;
 
 	UPROPERTY(BlueprintReadOnly)
-	bool bIsEnabled;
+	bool bIsEnabled = {};
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMicroserviceStateChange);

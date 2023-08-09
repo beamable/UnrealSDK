@@ -63,7 +63,7 @@ void UBeamEditor::Deinitialize()
 
 void UBeamEditorBootstrapper::Run()
 {
-	GEditor->GetEditorWorldContext().World()->GetTimerManager().SetTimerForNextTick(this, &UBeamEditorBootstrapper::Run_DelayedInitialize);
+	Run_DelayedInitialize();
 }
 
 void UBeamEditorBootstrapper::Run_DelayedInitialize()
