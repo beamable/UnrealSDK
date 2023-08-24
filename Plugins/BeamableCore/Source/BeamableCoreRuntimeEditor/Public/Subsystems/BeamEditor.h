@@ -27,7 +27,7 @@ DECLARE_DYNAMIC_DELEGATE(FEditorStateChangedHandler);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEditorStateChangedEvent);
 
 UCLASS(NotBlueprintable, NotBlueprintType)
-class BEAMABLECOREEDITOR_API UBeamEditorBootstrapper : public UObject
+class BEAMABLECORERUNTIMEEDITOR_API UBeamEditorBootstrapper : public UObject
 {
 	GENERATED_BODY()
 
@@ -73,7 +73,7 @@ class BEAMABLECOREEDITOR_API UBeamEditorBootstrapper : public UObject
  * 
  */
 UCLASS(BlueprintType)
-class BEAMABLECOREEDITOR_API UBeamEditor : public UEditorSubsystem
+class BEAMABLECORERUNTIMEEDITOR_API UBeamEditor : public UEditorSubsystem
 {
 	GENERATED_BODY()
 

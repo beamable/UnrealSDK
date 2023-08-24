@@ -6,9 +6,7 @@
 #include "AssetToolsModule.h"
 #include "ContentBrowserModule.h"
 #include "DataTableEditorUtils.h"
-#include "GameDelegates.h"
 #include "LocalContentManifestEditor.h"
-#include "SNameComboBox.h"
 #include "BeamBackend/SemanticTypes/BeamContentManifestId.h"
 #include "AutoGen/SubSystems/BeamContentApi.h"
 #include "Content/BeamContentObject.h"
@@ -16,8 +14,9 @@
 #include "Subsystems/BeamEditor.h"
 #include "Subsystems/BeamEditorSubsystem.h"
 #include "Subsystems/EditorAssetSubsystem.h"
-#include "UObject/ObjectSaveContext.h"
 #include "UObject/SavePackage.h"
+#include "Factories/DataTableFactory.h"
+#include "GameDelegates.h"
 #include "BeamEditorContent.generated.h"
 
 #define LOCTEXT_NAMESPACE "FBeamEditorContent"
@@ -59,7 +58,7 @@ public:
  * 
  */
 UCLASS(Blueprintable, BlueprintType)
-class BEAMABLECOREEDITOR_API UBeamEditorContent : public UBeamEditorSubsystem, public FDataTableEditorUtils::FDataTableEditorManager::ListenerType
+class BEAMABLECORERUNTIMEEDITOR_API UBeamEditorContent : public UBeamEditorSubsystem, public FDataTableEditorUtils::FDataTableEditorManager::ListenerType
 {
 	GENERATED_BODY()
 
@@ -139,7 +138,6 @@ public:
 	bool GetContentTypeFromId(FBeamContentId Id, FString& TypeName);
 
 
-	
 	void SynchronizeRemoteManifestWithLocalManifest(const FBeamContentManifestId Id, const UContentBasicManifest* RemoteManifest, UDataTable* LocalManifest, FEditorStateChangedHandlerCode OnSuccess,
 	                                                FEditorStateChangedHandlerCode OnError);
 
@@ -157,6 +155,9 @@ public:
 	bool CreateNewContent(const FBeamContentManifestId& ManifestId, const FString& ContentName, TSubclassOf<UBeamContentObject> ContentObjectSubType, UBeamContentObject*& ContentObject, FString& ErrMsg);
 
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool GetContent(const FBeamContentManifestId& ManifestId, FBeamContentId ContentId, UBeamContentObject*& ContentObject);
+
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool GetContentForEditing(const FBeamContentManifestId& ManifestId, FBeamContentId EditObjectId, UBeamContentObject*& ContentObject, FString& ErrMsg);
 
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
@@ -168,10 +169,10 @@ public:
 	static FString GetJsonBlobPath(FString RowName, FBeamContentManifestId ManifestId);
 	static FString GetManifestDataTableName(FBeamContentManifestId Id);
 	static FBeamContentManifestId GetManifestIdFromDataTable(const UDataTable* Table);
-	
+
 private:
 	FBeamOperationHandle EnsureGlobalManifest();
-	void EnsureGlobalManifest_OnGetManifests(FBasicContentGetManifestsFullResponse Response, const FBeamOperationHandle Op);	
+	void EnsureGlobalManifest_OnGetManifests(FBasicContentGetManifestsFullResponse Response, const FBeamOperationHandle Op);
 	void EnsureGlobalManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response, const FBeamOperationHandle Op);
 
 	FBeamOperationHandle PublishManifest(FBeamContentManifestId ContentManifestId, FBeamOperationEventHandler Handler);

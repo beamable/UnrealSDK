@@ -54,7 +54,7 @@ struct FBeamCustomerProjectData
  * 
  */
 UCLASS(Config=Editor, defaultconfig, meta=(DisplayName="Beamable Editor"))
-class BEAMABLECOREEDITOR_API UBeamEditorSettings : public UDeveloperSettings
+class BEAMABLECORERUNTIMEEDITOR_API UBeamEditorSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
 public:
@@ -68,9 +68,7 @@ public:
 	 * @brief User-defined path to where LocalContentManifests (UDataTables) that are NOT supposed to be included in the build are stored.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
-	TArray<FDirectoryPath> UncookedManifestsPath;
-
-	
+	TArray<FDirectoryPath> UncookedManifestsPath;	
 	
 
 	/**

@@ -99,7 +99,6 @@ void FBeamableCoreEditorModule::StartupModule()
 	// 
 	{
 #if WITH_EDITOR
-
 		IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
 		//AssetTools.RegisterAdvancedAssetCategory(FName(TEXT("Beamable")), LOCTEXT("BeamableCategory", "Beamable"));
 		RegisterAssetTypeAction(AssetTools, MakeShareable(new FAssetTypeActions_BeamRuntimeSubsystem()));

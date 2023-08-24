@@ -2,12 +2,11 @@
 
 #include "BeamableCoreEditorCommands.h"
 #include "BeamEditorSettings.h"
-#include "IDataTableEditor.h"
+#include "SNameComboBox.h"
 #include "SSimpleButton.h"
 #include "Dialog/SCustomDialog.h"
 #include "Subsystems/Content/BeamEditorContent.h"
 #include "EditorScriptingUtilities/Public/EditorDialogLibrary.h"
-#include "Slate/Private/Widgets/Views/SListPanel.h"
 #include "Subsystems/BeamEditor.h"
 
 #define LOCTEXT_NAMESPACE "ULocalContentManifestEditorState"
@@ -282,7 +281,9 @@ void ULocalContentManifestEditorState::PublishButtonClicked()
 				];
 
 				// Show it as a modal of the DataTable editor.
-				FSlateApplication::Get().AddModalWindow(PublishingWindow.ToSharedRef(), FSlateApplication::Get().FindBestParentWindowForDialogs(SelectedContentComboBox), true);
+				FSlateApplication::Get().AddModalWindow(PublishingWindow.ToSharedRef(),
+					FSlateApplication::Get().FindBestParentWindowForDialogs(SelectedContentComboBox),
+					true);
 				PublishingWindow->ShowWindow();
 			}))
 		});

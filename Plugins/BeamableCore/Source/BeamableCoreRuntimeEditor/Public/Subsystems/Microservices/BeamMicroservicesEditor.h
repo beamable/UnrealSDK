@@ -56,7 +56,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMicroserviceStateChange);
  * 
  */
 UCLASS(BlueprintType)
-class BEAMABLECOREEDITOR_API UBeamMicroservicesEditor : public UBeamEditorSubsystem
+class BEAMABLECORERUNTIMEEDITOR_API UBeamMicroservicesEditor : public UBeamEditorSubsystem
 {
 	GENERATED_BODY()
 

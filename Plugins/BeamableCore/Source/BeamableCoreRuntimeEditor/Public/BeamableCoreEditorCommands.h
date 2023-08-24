@@ -5,7 +5,7 @@
 #include "EditorStyleSet.h"
 
 
-class FBeamableCoreEditorCommands : public TCommands<FBeamableCoreEditorCommands>
+class BEAMABLECORERUNTIMEEDITOR_API FBeamableCoreEditorCommands : public TCommands<FBeamableCoreEditorCommands>
 {
 public:
 

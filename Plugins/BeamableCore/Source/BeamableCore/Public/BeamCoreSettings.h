@@ -8,6 +8,7 @@
 #include "BeamBackend/BeamRealmHandle.h"
 #include "BeamBackend/BeamRetryConfig.h"
 #include "BeamBackend/ResponseCache/BeamCacheConfig.h"
+#include "Content/BeamContentCache.h"
 #include "BeamCoreSettings.generated.h"
 
 /**
@@ -126,7 +127,13 @@ public:
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
 	bool bErrorIfGameplayTagNotFound = false;
-	
+
+	/**
+	 * @brief References to all baked content files. This is automatically filled up whenever you cook a build and can be ignored by the end user.
+	 */
+	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="Content")
+	TArray<TSoftObjectPtr<UBeamContentCache>> BakedContentManifests;
+
 	UFUNCTION(BlueprintCallable)
 	FUserSlot GetOwnerPlayerSlot() const { return FUserSlot{RuntimeUserSlots[0]}; }
 };

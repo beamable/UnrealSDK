@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "Subsystems/Content/BeamRuntimeContentCacheFactory.h"
+#include "AssetFactories/Content/BeamRuntimeContentCacheFactory.h"
 
 #include "BeamableCoreEditor.generated.h"
 

@@ -12,7 +12,7 @@ public class BeamableCoreRuntime : ModuleRules
 				"BeamableCore",
 				"Core",
 				"CoreUObject", "Engine", "InputCore",
-				"HeadMountedDisplay", "Json", 
+				"HeadMountedDisplay", "Json",
 				"JsonUtilities",
 				"DeveloperSettings",
 				"HTTP"
@@ -28,5 +28,60 @@ public class BeamableCoreRuntime : ModuleRules
 				"SlateCore"
 			}
 		);
+
+		// Is UBT building for Editor ?
+		if (Target.Type == TargetType.Editor)
+		{
+			PublicDependencyModuleNames.AddRange(
+				new string[]
+				{
+					"Core",
+					"Engine",
+					"CoreUObject",
+					"UnrealEd",
+					"SlateCore",
+					"Slate",
+					"EditorStyle",
+					"Kismet",
+					"KismetCompiler",
+					"Projects", // Required to use IPluginManager in order to configure new Slate styles
+					"ToolMenus",
+					"ToolMenusEditor",
+					"UMGEditor",
+					"DeveloperSettings",
+					"EditorSubsystem",
+					"Json",
+					"JsonUtilities",
+					"DataTableEditor",
+					"DeveloperToolSettings",
+					"AssetTools"
+				}
+			);
+
+			PrivateDependencyModuleNames.AddRange(
+				new string[]
+				{
+					"CoreUObject",
+					"Engine",
+					"Slate",
+					"SlateCore",
+					"BlueprintGraph",
+					"GraphEditor",
+					"LevelEditor",
+					"PropertyEditor",
+					"UMGEditor",
+					"Blutility",
+					"DeveloperToolSettings",
+					"UnrealEd",
+					"ToolWidgets",
+					"EditorScriptingUtilities",
+					"HTTP",
+				}
+			);
+			PublicDependencyModuleNames.AddRange(new[]
+			{
+				"BeamableCoreRuntimeEditor",
+			});
+		}
 	}
 }

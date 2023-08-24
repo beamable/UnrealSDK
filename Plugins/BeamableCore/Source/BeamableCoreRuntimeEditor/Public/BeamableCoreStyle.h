@@ -19,7 +19,7 @@ public:
 /**
  * 
  */
-class BEAMABLECOREEDITOR_API FBeamableCoreStyle : public FPluginStyleSet
+class BEAMABLECORERUNTIMEEDITOR_API FBeamableCoreStyle : public FPluginStyleSet
 {
 public:
 	/** Access the singleton instance for this style set */

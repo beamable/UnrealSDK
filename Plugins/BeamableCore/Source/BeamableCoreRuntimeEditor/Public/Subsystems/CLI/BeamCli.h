@@ -13,7 +13,7 @@ class UBeamCliCommand;
  * 
  */
 UCLASS()
-class BEAMABLECOREEDITOR_API UBeamCli : public UBeamEditorSubsystem
+class BEAMABLECORERUNTIMEEDITOR_API UBeamCli : public UBeamEditorSubsystem
 {
 	GENERATED_BODY()
 

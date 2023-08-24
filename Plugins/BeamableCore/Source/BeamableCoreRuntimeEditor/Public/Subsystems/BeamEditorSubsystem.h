@@ -15,7 +15,7 @@ class UBeamRequestTracker;
  * 
  */
 UCLASS(Abstract, NotBlueprintType, Blueprintable)
-class BEAMABLECOREEDITOR_API UBeamEditorSubsystem : public UEditorSubsystem
+class BEAMABLECORERUNTIMEEDITOR_API UBeamEditorSubsystem : public UEditorSubsystem
 {
 	GENERATED_BODY()
 

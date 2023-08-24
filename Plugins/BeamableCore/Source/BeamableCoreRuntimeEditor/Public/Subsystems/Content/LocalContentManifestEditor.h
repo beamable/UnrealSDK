@@ -18,7 +18,7 @@ class SNameComboBox;
 class UBeamEditorContent;
 
 UCLASS()
-class ULocalContentManifestEditorState : public UObject, public FDataTableEditorUtils::FDataTableEditorManager::ListenerType
+class BEAMABLECORERUNTIMEEDITOR_API ULocalContentManifestEditorState : public UObject, public FDataTableEditorUtils::FDataTableEditorManager::ListenerType
 {
 	GENERATED_BODY()
 

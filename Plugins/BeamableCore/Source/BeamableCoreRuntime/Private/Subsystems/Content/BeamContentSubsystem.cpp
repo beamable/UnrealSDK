@@ -3,10 +3,13 @@
 
 #include "Subsystems/Content/BeamContentSubsystem.h"
 
-#include "IDetailTreeNode.h"
-#include "Factories/DataTableFactory.h"
+#include "HttpModule.h"
 #include "Interfaces/IHttpResponse.h"
-#include "Kismet/GameplayStatics.h"
+#include "Content/DownloadContentState.h"
+
+#if WITH_EDITOR
+#include "BeamableCoreRuntimeEditor/Public/Subsystems/Content/BeamEditorContent.h"
+#endif
 
 void UBeamContentSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -29,16 +32,17 @@ FBeamOperationHandle UBeamContentSubsystem::InitializeWhenUnrealReady()
 	}
 
 	// Go through list of baked content manifests and load up the baked BeamRuntimeContentCache the baked		
+	auto CoreSettings = GetMutableDefault<UBeamCoreSettings>();
 	auto RuntimeSettings = GetMutableDefault<UBeamRuntimeSettings>();
 	TArray<FSoftObjectPath> BakedContentPaths;
-	for (const auto& BeamRuntimeContentCache : RuntimeSettings->BakedContentManifests)
+	for (const auto& BeamRuntimeContentCache : CoreSettings->BakedContentManifests)
 		BakedContentPaths.Add(BeamRuntimeContentCache.ToSoftObjectPath());
 
-	const auto Handle = RuntimeSettings->ContentStreamingManager.RequestAsyncLoad(BakedContentPaths, FStreamableDelegate::CreateLambda([this, Op, BakedContentPaths, RuntimeSettings]()
+	const auto Handle = RuntimeSettings->ContentStreamingManager.RequestAsyncLoad(BakedContentPaths, FStreamableDelegate::CreateLambda([this, Op, BakedContentPaths, RuntimeSettings, CoreSettings]()
 	{
-		for (int i = 0; i < RuntimeSettings->BakedContentManifests.Num(); ++i)
+		for (int i = 0; i < CoreSettings->BakedContentManifests.Num(); ++i)
 		{
-			const auto LoadedObject = RuntimeSettings->BakedContentManifests[i];
+			const auto LoadedObject = CoreSettings->BakedContentManifests[i];
 			checkf(LoadedObject, TEXT("Failed to find the content manifest at path %s. Cook content again so that we can correctly set up the baked content objects."),
 			       *BakedContentPaths[i].ToString())
 
@@ -296,7 +300,7 @@ void UBeamContentSubsystem::FetchContentManifest(FBeamContentManifestId Manifest
 	{
 		if (Resp.State == Success)
 		{
-			UBeamRuntimeContentCache* Cache = NewObject<UBeamRuntimeContentCache>();
+			UBeamContentCache* Cache = NewObject<UBeamContentCache>();
 			Cache->ManifestId = ManifestId;
 
 			UDataTable* ManifestCopy = NewObject<UDataTable>(Resp.SuccessData->CsvData);

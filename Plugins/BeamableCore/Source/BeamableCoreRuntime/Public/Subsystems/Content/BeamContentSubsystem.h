@@ -3,40 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "HttpModule.h"
+#include "..\..\..\..\BeamableCore\Public\Content\BeamContentCache.h"
 #include "AutoGen/SubSystems/BeamContentApi.h"
 #include "Content/BeamContentObject.h"
-#include "Engine/StreamableManager.h"
 #include "GameFramework/SaveGame.h"
 #include "Runtime/BeamRuntimeSubsystem.h"
 #include "UObject/Object.h"
 #include "AutoGen/Rows/ClientContentInfoTableRow.h"
-#include "UObject/ObjectSaveContext.h"
+#include "Content/DownloadContentState.h"
+
 #include "BeamContentSubsystem.generated.h"
 
 class UBeamContentObject;
 class UBeamContentApi;
-
-UCLASS(BlueprintType)
-class BEAMABLECORERUNTIME_API UBeamRuntimeContentCache : public UObject
-{
-	GENERATED_BODY()
-
-	friend class UBeamContentSubsystem;
-
-public:
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	FBeamContentManifestId ManifestId;
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	TMap<FBeamContentId, UBeamContentObject*> Cache;
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	TMap<FBeamContentId, FString> Hashes;
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	UDataTable* LatestRemoteManifest;
-};
 
 UCLASS()
 class BEAMABLECORERUNTIME_API ULocalCachedContentSave : public USaveGame
@@ -45,16 +24,7 @@ class BEAMABLECORERUNTIME_API ULocalCachedContentSave : public USaveGame
 
 public:
 	UPROPERTY(BlueprintReadOnly, SaveGame)
-	UBeamRuntimeContentCache* SavedCache;
-};
-
-struct FDownloadContentState
-{
-	FBeamContentManifestId ManifestId;
-	FBeamContentId Id;
-	TArray<FString> Tags;
-	FOptionalString Checksum;
-	TUnrealRequestPtr Request;
+	UBeamContentCache* SavedCache;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnContentManifestsUpdated, TArray<FBeamContentManifestId>, UpdatedManifests);
@@ -68,10 +38,10 @@ class BEAMABLECORERUNTIME_API UBeamContentSubsystem : public UBeamRuntimeSubsyst
 	UBeamContentApi* ContentApi;
 
 	UPROPERTY()
-	TMap<FBeamContentManifestId, UBeamRuntimeContentCache*> LiveContent;
+	TMap<FBeamContentManifestId, UBeamContentCache*> LiveContent;
 
 	UPROPERTY()
-	TMap<FBeamContentManifestId, UBeamRuntimeContentCache*> BakedContent;
+	TMap<FBeamContentManifestId, UBeamContentCache*> BakedContent;
 
 	UPROPERTY()
 	TArray<UClass*> AllContentTypes;

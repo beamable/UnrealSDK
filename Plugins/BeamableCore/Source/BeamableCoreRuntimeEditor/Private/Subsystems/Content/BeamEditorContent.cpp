@@ -7,13 +7,12 @@
 #include "IContentBrowserSingleton.h"
 #include "AssetRegistry/IAssetRegistry.h"
 #include "AutoGen/BaseContentReference.h"
-#include "Factories/DataTableFactory.h"
+#include "Content/BeamContentCache.h"
+#include "Content/DownloadContentState.h"
 #include "Interfaces/IHttpResponse.h"
 #include "Misc/FileHelper.h"
 #include "Settings/ProjectPackagingSettings.h"
 #include "Subsystems/BeamEditor.h"
-#include "Subsystems/Content/BeamContentSubsystem.h"
-#include "Subsystems/Content/BeamRuntimeContentCacheFactory.h"
 
 void UBeamEditorContent::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -49,17 +48,17 @@ void UBeamEditorContent::Initialize(FSubsystemCollectionBase& Collection)
 	// This means that, even though the asset change will be visible by the editor process the RuntimeSettings ones won't until the editor is restarted. 
 	OnWillEnterPIE = FEditorDelegates::PreBeginPIE.AddLambda([this](bool Cond)
 	{
-		UBeamRuntimeSettings* RuntimeSettings = GetMutableDefault<UBeamRuntimeSettings>();
-		for (int i = RuntimeSettings->BakedContentManifests.Num() - 1; i >= 0; --i)
+		UBeamCoreSettings* EditorSettings = GetMutableDefault<UBeamCoreSettings>();
+		for (int i = EditorSettings->BakedContentManifests.Num() - 1; i >= 0; --i)
 		{
-			const auto BeamRuntimeContentCache = RuntimeSettings->BakedContentManifests[i];
+			const auto BeamRuntimeContentCache = EditorSettings->BakedContentManifests[i];
 			if (!EditorAssetSubsystem->DoesAssetExist(BeamRuntimeContentCache.ToSoftObjectPath().GetAssetPathString()))
 			{
-				RuntimeSettings->BakedContentManifests.RemoveAt(i);
+				EditorSettings->BakedContentManifests.RemoveAt(i);
 			}
 		}
-		RuntimeSettings->SaveConfig(CPF_Config, *RuntimeSettings->GetDefaultConfigFilename());
-		RuntimeSettings->SaveConfig();
+		EditorSettings->SaveConfig(CPF_Config, *EditorSettings->GetDefaultConfigFilename());
+		EditorSettings->SaveConfig();
 	});
 
 	// This delegate ensures that, when you cook content, all existing 'BCC_' files in your cooked directory are correctly mapped to the current "BCM" files.
@@ -71,7 +70,7 @@ void UBeamEditorContent::Initialize(FSubsystemCollectionBase& Collection)
 	{
 		const auto DeclaredManifestsToCook = EditorAssetSubsystem->ListAssets(DefaultBeamableCookedContentManifestsPath);
 
-		UBeamRuntimeSettings* RuntimeSettings = GetMutableDefault<UBeamRuntimeSettings>();
+		UBeamCoreSettings* RuntimeSettings = GetMutableDefault<UBeamCoreSettings>();
 		for (FString BakedContentFilePath : DeclaredManifestsToCook)
 		{
 			FString FileName, CookedManifestPath;
@@ -84,7 +83,7 @@ void UBeamEditorContent::Initialize(FSubsystemCollectionBase& Collection)
 			const auto UncookedAssetPath = DefaultBeamableUncookedContentManifestsPath / FileName;
 			const auto UncookedAssetPathAlt = DefaultBeamableUncookedContentManifestsPath / FileName.ToLower();
 
-			UBeamRuntimeContentCache* Cache = Cast<UBeamRuntimeContentCache>(EditorAssetSubsystem->LoadAsset(BakedContentFilePath));
+			UBeamContentCache* Cache = Cast<UBeamContentCache>(EditorAssetSubsystem->LoadAsset(BakedContentFilePath));
 			checkf(EditorAssetSubsystem->DoesAssetExist(UncookedAssetPath) ||
 			       EditorAssetSubsystem->DoesAssetExist(UncookedAssetPathAlt),
 			       TEXT("Trying to bake content for a non-existent manifest. ManifestId=%s, UncookedPath=%s, UncookedPath_Alternative=%s, CookedPath=%s"),
@@ -117,7 +116,7 @@ void UBeamEditorContent::Initialize(FSubsystemCollectionBase& Collection)
 				                          }));
 
 			EditorAssetSubsystem->SaveLoadedAsset(Cache, false);
-			RuntimeSettings->BakedContentManifests.Add(TSoftObjectPtr<UBeamRuntimeContentCache>(FSoftObjectPath(FObjectPtr(Cache))));
+			RuntimeSettings->BakedContentManifests.Add(TSoftObjectPtr<UBeamContentCache>(FSoftObjectPath(FObjectPtr(Cache))));
 			UE_LOG(LogBeamContent, Warning, TEXT("Created  cooked content for manifest = %s"), *ManifestId.AsString)
 			InOutPackagesToCook.Add(FName(EditorAssetSubsystem->GetPathNameForLoadedAsset(Cache)));
 		}
@@ -1278,12 +1277,11 @@ void UBeamEditorContent::PostChange(const UDataTable* Changed, FDataTableEditorU
 
 					// If the old file doesn't exist, we can just use the new one. 
 					if (!IFileManager::Get().FileExists(*OldPath))
-					{						
+					{
 						EntryInManifest->RowName = Row;
 						UE_LOG(LogBeamContent, Display, TEXT("Content Renamed. Moving JsonBlob from %s to %s."),
-							   *OldPath,
-							   *EntryInManifest->RowName);
-												
+						       *OldPath,
+						       *EntryInManifest->RowName);
 					}
 					else if (IFileManager::Get().Move(*NewPath, *OldPath))
 					{
@@ -1407,9 +1405,24 @@ bool UBeamEditorContent::CreateNewContent(const FBeamContentManifestId& Manifest
 	return true;
 }
 
+bool UBeamEditorContent::GetContent(const FBeamContentManifestId& ManifestId, FBeamContentId ContentId, UBeamContentObject*& ContentObject)
+{
+	FString Err;
+	const auto bRes = GetContentForEditing(ManifestId, ContentId, ContentObject, Err);
+	if (!bRes) UE_LOG(LogTemp, Warning, TEXT("Fallback Content Getter: Failed to find content with ID=%s from Manifest=%s."), *ContentId.AsString, *ManifestId.AsString)
+	return bRes;
+}
+
 bool UBeamEditorContent::GetContentForEditing(const FBeamContentManifestId& ManifestId, FBeamContentId EditObjectId, UBeamContentObject*& ContentObject, FString& ErrMsg)
 {
-	const auto EditingTable = LocalManifests.FindRef(ManifestId);
+	const auto EditingTable = LocalManifests.FindRef(ManifestId);	
+	if(!EditingTable)
+	{
+		ErrMsg = FString::Format(TEXT("Trying to load a content object from a Manifest={0} that is not loaded. Ignore this during packaging."), {ManifestId.AsString});
+		UE_LOG(LogBeamContent, Warning, TEXT("%s"), *ErrMsg);
+		return false;
+	}
+	
 	const auto Entry = EditingTable->FindRow<FLocalContentManifestRow>(FName(EditObjectId.AsString), TEXT("Edit Content Start"));
 	if (!Entry)
 	{
