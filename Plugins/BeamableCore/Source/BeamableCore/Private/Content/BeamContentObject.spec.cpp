@@ -4,6 +4,36 @@
 #include "Misc/AutomationTest.h"
 
 
+// We register these tags here to ensure they always exists so that we can Unit-Test our serialization/deserialization code against them.
+struct FMockBeamContentObjectGameplayTags final : FGameplayTagNativeAdder
+{
+	FMockBeamContentObjectGameplayTags() = default;
+
+	virtual ~FMockBeamContentObjectGameplayTags()
+	{
+	}
+
+	FGameplayTag TestTag1;
+	FGameplayTag TestTag2;
+
+	virtual void AddTags() override
+	{
+		UGameplayTagsManager& Manager = UGameplayTagsManager::Get();
+		TestTag1 = Manager.AddNativeGameplayTag(TEXT("BeamableCore.Test.MockGameplayTag"));
+		TestTag2 = Manager.AddNativeGameplayTag(TEXT("BeamableCore.Test.MockGameplayTag2"));
+	}
+
+
+	FORCEINLINE static const FGameplayTagNativeAdder& Get()
+	{
+		return StaticInstance;
+	}
+
+	static FMockBeamContentObjectGameplayTags StaticInstance;
+};
+
+FMockBeamContentObjectGameplayTags FMockBeamContentObjectGameplayTags::StaticInstance;
+
 void FBeamContentObjectSpec::Define()
 {
 	FString TestId = TEXT("mockcontentobject.content1");
@@ -14,6 +44,11 @@ void FBeamContentObjectSpec::Define()
 	FString TestSoftObjPath = TEXT("/BeamableCore/Editor/Icons/BeamLogo.BeamLogo");
 	int32 TestValueAInt = 1;
 	int32 TestValueBInt = 2;
+	FString TestGameplayTagA = TEXT("BeamableCore.Test.MockGameplayTag");
+	FString TestGameplayTagB = TEXT("BeamableCore.Test.MockGameplayTag2");
+
+	FString TestUnrealClassA = TEXT("/Script/AlembicLibrary.AbcImportSettings");
+	FString TestUnrealClassB = TEXT("/Script/AlembicLibrary.AbcAssetImportData");
 
 	FString FullObject = TEXT(R"({
   "id": "₢Id₢",
@@ -24,6 +59,21 @@ void FBeamContentObjectSpec::Define()
     },
     "BeamCid": {
       "data": "₢BeamCid₢"
+    },
+	"UnrealGameplayTag": {
+	  "data": "₢UnrealGameplayTagA₢"	
+	},
+	"GameplayTagsArray": {
+      "data": [
+        "₢UnrealGameplayTagA₢",
+		"₢UnrealGameplayTagB₢"
+      ]
+    },
+	"GameplayTagsMap": {
+      "data": {
+        "a": "₢UnrealGameplayTagA₢",
+		"b": "₢UnrealGameplayTagB₢"
+      }
     },
 	"ArrayOfU8": {
       "data": [
@@ -122,7 +172,22 @@ void FBeamContentObjectSpec::Define()
     },
 	"UnrealSoftObjRef":{ 
 		"data": "₢SoftObjPath₢"
-	}
+	},
+	"UnrealClass": {
+      "data": "₢UnrealClassA₢"
+    },
+    "UnrealClassArray": {
+      "data": [
+        "₢UnrealClassA₢",
+        "₢UnrealClassB₢"
+      ]
+    },
+    "UnrealClassMap": {
+      "data": {
+        "a": "₢UnrealClassA₢",
+        "b": "₢UnrealClassB₢"
+      }
+    }
   }
 })");
 
@@ -135,6 +200,21 @@ void FBeamContentObjectSpec::Define()
     },
     "BeamCid": {
       "data": "₢BeamCid₢"
+    },
+	"UnrealGameplayTag": {
+	  "data": "₢UnrealGameplayTagA₢"	
+	},
+	"GameplayTagsArray": {
+      "data": [
+        "₢UnrealGameplayTagA₢",
+		"₢UnrealGameplayTagB₢"
+      ]
+    },
+	"GameplayTagsMap": {
+      "data": {
+        "a": "₢UnrealGameplayTagA₢",
+		"b": "₢UnrealGameplayTagB₢"
+      }
     },
 	"ArrayOfU8": {
       "data": [
@@ -211,7 +291,22 @@ void FBeamContentObjectSpec::Define()
     },
 	"UnrealSoftObjRef":{ 
 		"data": "₢SoftObjPath₢"
-	}
+	},
+	"UnrealClass": {
+      "data": "₢UnrealClassA₢"
+    },
+    "UnrealClassArray": {
+      "data": [
+        "₢UnrealClassA₢",
+        "₢UnrealClassB₢"
+      ]
+    },
+    "UnrealClassMap": {
+      "data": {
+        "a": "₢UnrealClassA₢",
+        "b": "₢UnrealClassB₢"
+      }
+    }
   }
 })");
 
@@ -221,6 +316,10 @@ void FBeamContentObjectSpec::Define()
 	FullObject = FullObject.Replace(TEXT("₢ValueA₢"), *TestValueA);
 	FullObject = FullObject.Replace(TEXT("₢ValueB₢"), *TestValueB);
 	FullObject = FullObject.Replace(TEXT("₢SoftObjPath₢"), *TestSoftObjPath);
+	FullObject = FullObject.Replace(TEXT("₢UnrealGameplayTagA₢"), *TestGameplayTagA);
+	FullObject = FullObject.Replace(TEXT("₢UnrealGameplayTagB₢"), *TestGameplayTagB);
+	FullObject = FullObject.Replace(TEXT("₢UnrealClassA₢"), *TestUnrealClassA);
+	FullObject = FullObject.Replace(TEXT("₢UnrealClassB₢"), *TestUnrealClassB);
 
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢Id₢"), *TestId);
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢Version₢"), *TestVersion);
@@ -228,6 +327,10 @@ void FBeamContentObjectSpec::Define()
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢ValueA₢"), *TestValueA);
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢ValueB₢"), *TestValueB);
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢SoftObjPath₢"), *TestSoftObjPath);
+	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢UnrealGameplayTagA₢"), *TestGameplayTagA);
+	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢UnrealGameplayTagB₢"), *TestGameplayTagB);
+	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢UnrealClassA₢"), *TestUnrealClassA);
+	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢UnrealClassB₢"), *TestUnrealClassB);
 
 
 	Describe("Content Serialization", [=]()
@@ -239,6 +342,11 @@ void FBeamContentObjectSpec::Define()
 			ContentObject->Version = TestVersion;
 			ContentObject->Value = TestValueAInt;
 			ContentObject->BeamCid = TestBeamCid;
+
+			ContentObject->UnrealGameplayTag = FGameplayTag::RequestGameplayTag(FName(TestGameplayTagA), false);
+			ContentObject->GameplayTagsArray = {FGameplayTag::RequestGameplayTag(FName(TestGameplayTagA), false), FGameplayTag::RequestGameplayTag(FName(TestGameplayTagB), false)};
+			ContentObject->GameplayTagsMap.Add(TEXT("a"), FGameplayTag::RequestGameplayTag(FName(TestGameplayTagA), false));
+			ContentObject->GameplayTagsMap.Add(TEXT("b"), FGameplayTag::RequestGameplayTag(FName(TestGameplayTagB), false));
 
 			ContentObject->ArrayOfU8 = TArray{static_cast<uint8>(TestValueAInt), static_cast<uint8>(TestValueBInt)};
 			ContentObject->ArrayOfString = TArray{TestValueA, TestValueB};
@@ -260,6 +368,10 @@ void FBeamContentObjectSpec::Define()
 			ContentObject->MapOfMapOfString = TMap<FString, FMapOfString>{{TEXT("a"), FMapOfString(TMap<FString, FString>{{TEXT("a"), TestValueA}})}};
 
 			ContentObject->UnrealSoftObjRef = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TestSoftObjPath));
+
+			ContentObject->UnrealClass = FSoftClassPath{TestUnrealClassA}.ResolveClass();
+			ContentObject->UnrealClassArray = TArray{FSoftClassPath{TestUnrealClassA}.ResolveClass(), FSoftClassPath{TestUnrealClassB}.ResolveClass()};
+			ContentObject->UnrealClassMap = TMap<FString, UClass*>{{TEXT("a"), FSoftClassPath{TestUnrealClassA}.ResolveClass()}, {TEXT("b"), FSoftClassPath{TestUnrealClassB}.ResolveClass()}};
 		});
 
 		AfterEach([=, this]()
@@ -301,6 +413,46 @@ void FBeamContentObjectSpec::Define()
 			NewObj->FromBasicJson(Json);
 
 			TestEqual("BeamCid serialized correctly", NewObj->BeamCid.AsString, TestBeamCid);
+			NewObj = nullptr;
+		});
+
+		It("should serialize gameplay tags properly", [=, this]()
+		{
+			FString Json = FString{};
+			ContentObject->ToBasicJson(Json);
+
+			auto NewObj = NewObject<UMockBeamContentObject>();
+			NewObj->FromBasicJson(Json);
+
+			// If this errors out, make sure you have the expected GameplayTags created here your available ones.
+			TestEqual("GameplayTag serialized correctly", NewObj->UnrealGameplayTag.ToString(), TestGameplayTagA);
+
+			TestEqual("GameplayTag serialized correctly", NewObj->GameplayTagsArray[0].ToString(), TestGameplayTagA);
+			TestEqual("GameplayTag serialized correctly", NewObj->GameplayTagsArray[1].ToString(), TestGameplayTagB);
+
+			TestEqual("GameplayTag serialized correctly", NewObj->GameplayTagsMap.FindRef(TEXT("a")).ToString(), TestGameplayTagA);
+			TestEqual("GameplayTag serialized correctly", NewObj->GameplayTagsMap.FindRef(TEXT("b")).ToString(), TestGameplayTagB);
+
+			NewObj = nullptr;
+		});
+
+		It("should serialize UClass* properly", [=, this]()
+		{
+			FString Json = FString{};
+			ContentObject->ToBasicJson(Json);
+
+			auto NewObj = NewObject<UMockBeamContentObject>();
+			NewObj->FromBasicJson(Json);
+
+			// If this errors out, make sure you have the expected GameplayTags created here your available ones.
+			TestEqual("Unreal UClass serialized correctly", FSoftClassPath{NewObj->UnrealClass}.ToString(), TestUnrealClassA);
+
+			TestEqual("Unreal UClass serialized correctly", FSoftClassPath{NewObj->UnrealClassArray[0]}.ToString(), TestUnrealClassA);
+			TestEqual("Unreal UClass serialized correctly", FSoftClassPath{NewObj->UnrealClassArray[1]}.ToString(), TestUnrealClassB);
+
+			TestEqual("Unreal UClass serialized correctly", FSoftClassPath{NewObj->UnrealClassMap.FindRef(TEXT("a"))}.ToString(), TestUnrealClassA);
+			TestEqual("Unreal UClass serialized correctly", FSoftClassPath{NewObj->UnrealClassMap.FindRef(TEXT("b"))}.ToString(), TestUnrealClassB);
+
 			NewObj = nullptr;
 		});
 
@@ -445,6 +597,30 @@ void FBeamContentObjectSpec::Define()
 		{
 			ContentObject->FromBasicJson(FullObject);
 			TestEqual("BeamCid deserialized correctly", ContentObject->BeamCid, FBeamCid{TestBeamCid});
+		});
+
+		It("should deserialize gameplay tags types properly", [=, this]()
+		{
+			ContentObject->FromBasicJson(FullObject);
+			TestEqual("GameplayTag deserialized correctly", ContentObject->UnrealGameplayTag.ToString(), TestGameplayTagA);
+
+			TestEqual("GameplayTag deserialized correctly", ContentObject->GameplayTagsArray[0].ToString(), TestGameplayTagA);
+			TestEqual("GameplayTag deserialized correctly", ContentObject->GameplayTagsArray[1].ToString(), TestGameplayTagB);
+
+			TestEqual("GameplayTag deserialized correctly", ContentObject->GameplayTagsMap.FindRef(TEXT("a")).ToString(), TestGameplayTagA);
+			TestEqual("GameplayTag deserialized correctly", ContentObject->GameplayTagsMap.FindRef(TEXT("b")).ToString(), TestGameplayTagB);
+		});
+
+		It("should deserialize UClass tags types properly", [=, this]()
+		{
+			ContentObject->FromBasicJson(FullObject);
+			TestEqual("GameplayTag deserialized correctly", ContentObject->UnrealClass, FSoftClassPath{TestUnrealClassA}.ResolveClass());
+
+			TestEqual("GameplayTag deserialized correctly", ContentObject->UnrealClassArray[0], FSoftClassPath{TestUnrealClassA}.ResolveClass());
+			TestEqual("GameplayTag deserialized correctly", ContentObject->UnrealClassArray[1], FSoftClassPath{TestUnrealClassB}.ResolveClass());
+
+			TestEqual("GameplayTag deserialized correctly", ContentObject->UnrealClassMap.FindRef(TEXT("a")), FSoftClassPath{TestUnrealClassA}.ResolveClass());
+			TestEqual("GameplayTag deserialized correctly", ContentObject->UnrealClassMap.FindRef(TEXT("b")), FSoftClassPath{TestUnrealClassB}.ResolveClass());
 		});
 
 		It("should deserialize SoftObjectPtr correctly types properly", [=, this]()

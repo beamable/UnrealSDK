@@ -87,6 +87,7 @@ void UBeamRequestTracker::GatherRequestIdsFromWaitHandle(const FBeamWaitHandle H
 
 void UBeamRequestTracker::CheckAndCompleteWaitHandles(int64)
 {
+	bool bDidCompleteAtLeastOneWait = false;
 	// Go through all active wait handles and figure out which of them have been completed.
 	// If they have, we run their register FOnWaitCompleted callback.
 	for (int i = ActiveWaitHandles.Num() - 1; i >= 0; --i)
@@ -126,6 +127,9 @@ void UBeamRequestTracker::CheckAndCompleteWaitHandles(int64)
 				bAreAllDepsDone &= DependedOnCtx.BeamStatus == Completed;
 			}
 
+			// Track if we completed at least one wait dependency.
+			bDidCompleteAtLeastOneWait |= bAreAllDepsDone;
+
 			// If all dependencies are done, let's call the WaitCompleted callback with all the dependencies correctly set up!
 			if (bAreAllDepsDone)
 			{
@@ -162,6 +166,9 @@ void UBeamRequestTracker::CheckAndCompleteWaitHandles(int64)
 			}
 		}
 	}
+
+	// We re-run the check if at least one wait handle was completed.
+	if (bDidCompleteAtLeastOneWait) CheckAndCompleteWaitHandles(-1);
 }
 
 
@@ -480,25 +487,26 @@ void UBeamRequestTracker::TriggerOperationEventFull(const FBeamOperationHandle& 
 		       *CallingSystem,
 		       *EventData);
 	}
+
+	if (SubEvent == Final)
+	{
+		auto& OperationState = ActiveOperationState.FindChecked(Op);
+		OperationState.Status = FBeamOperationState::COMPLETE;
+		CheckAndCompleteWaitHandles(-1);
+	}
 }
 
 void UBeamRequestTracker::TriggerOperationSuccess(const FBeamOperationHandle& Op, const FString& EventData, const int64& RequestId)
 {
 	TriggerOperationEvent(Op, EBeamOperationEventType::SUCCESS, Final, EventData, RequestId);
-	auto& OperationState = ActiveOperationState.FindChecked(Op);
-	OperationState.Status = FBeamOperationState::COMPLETE;
 }
 
 void UBeamRequestTracker::TriggerOperationError(const FBeamOperationHandle& Op, const FString& EventData, const int64& RequestId)
 {
 	TriggerOperationEvent(Op, EBeamOperationEventType::ERROR, Final, EventData, RequestId);
-	auto& OperationState = ActiveOperationState.FindChecked(Op);
-	OperationState.Status = FBeamOperationState::COMPLETE;
 }
 
 void UBeamRequestTracker::TriggerOperationCancelled(const FBeamOperationHandle& Op, const FString& EventData, const int64& RequestId)
 {
 	TriggerOperationEvent(Op, EBeamOperationEventType::CANCELLED, Final, EventData, RequestId);
-	auto& OperationState = ActiveOperationState.FindChecked(Op);
-	OperationState.Status = FBeamOperationState::CANCELED;
 }

@@ -51,7 +51,15 @@ public:
 	 * on OnBeamableReady in order to get ready for use.
 	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	bool bIsInitialized = false;
+	bool bIsStarted = false;
+	
+	/**
+	 * @brief This is just a flag that informs the caller on whether or not this specific subsystem has finished it's initialization flow.
+	 * This should never be set before OnBeamableReady has been called. This may be called at some later point if this subsystem's initialization flow needs to kick-off Operations
+	 * on OnBeamableReady in order to get ready for use.
+	 */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bIsReady = false;
 
 	UFUNCTION(Category="Beam")
 	virtual FBeamOperationHandle InitializeWhenUnrealReady();
@@ -91,8 +99,8 @@ public:
 	 * @brief Called whenever UBeamRuntime is fully initialized. You can think of this as OnBeginPlay, but for use with Beamable.
 	 */
 	UFUNCTION(BlueprintNativeEvent)
-	void OnBeamableReady();
-	virtual void OnBeamableReady_Implementation();
+	FBeamOperationHandle OnBeamableReady();
+	virtual FBeamOperationHandle OnBeamableReady_Implementation();
 
 	/**
 	 * @brief Called whenever UBeamRuntime is ready for users to be authenticated into Beamable. This is only called if you disable automatic frictionless authentication in order to control
@@ -100,8 +108,8 @@ public:
 	 * ready to make requests to Beamable.
 	 */
 	UFUNCTION(BlueprintNativeEvent)
-	void OnBeamableStarted();
-	virtual void OnBeamableStarted_Implementation();	
+	FBeamOperationHandle OnBeamableStarted();
+	virtual FBeamOperationHandle OnBeamableStarted_Implementation();	
 };
 
 

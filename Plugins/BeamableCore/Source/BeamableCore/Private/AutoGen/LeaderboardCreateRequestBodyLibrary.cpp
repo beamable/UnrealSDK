@@ -22,7 +22,7 @@ FString ULeaderboardCreateRequestBodyLibrary::LeaderboardCreateRequestBodyToJson
 	return Result;
 }	
 
-ULeaderboardCreateRequestBody* ULeaderboardCreateRequestBodyLibrary::Make(bool bSharded, FOptionalBool bPartitioned, FOptionalInt64 FreezeTime, FOptionalString ScoreName, FOptionalLeaderboardCohortSettings CohortSettings, FOptionalClientPermission Permissions, FOptionalInt32 MaxEntries, FOptionalInt64 Ttl, FOptionalArrayOfString Derivatives, UObject* Outer)
+ULeaderboardCreateRequestBody* ULeaderboardCreateRequestBodyLibrary::Make(bool bSharded, FOptionalBool bPartitioned, FOptionalInt64 FreezeTime, FOptionalString ScoreName, FOptionalLeaderboardCohortSettings CohortSettings, FOptionalBeamClientPermission Permissions, FOptionalInt32 MaxEntries, FOptionalInt64 Ttl, FOptionalArrayOfString Derivatives, UObject* Outer)
 {
 	auto Serializable = NewObject<ULeaderboardCreateRequestBody>(Outer);
 	Serializable->bSharded = bSharded;
@@ -38,7 +38,7 @@ ULeaderboardCreateRequestBody* ULeaderboardCreateRequestBodyLibrary::Make(bool b
 	return Serializable;
 }
 
-void ULeaderboardCreateRequestBodyLibrary::Break(const ULeaderboardCreateRequestBody* Serializable, bool& bSharded, FOptionalBool& bPartitioned, FOptionalInt64& FreezeTime, FOptionalString& ScoreName, FOptionalLeaderboardCohortSettings& CohortSettings, FOptionalClientPermission& Permissions, FOptionalInt32& MaxEntries, FOptionalInt64& Ttl, FOptionalArrayOfString& Derivatives)
+void ULeaderboardCreateRequestBodyLibrary::Break(const ULeaderboardCreateRequestBody* Serializable, bool& bSharded, FOptionalBool& bPartitioned, FOptionalInt64& FreezeTime, FOptionalString& ScoreName, FOptionalLeaderboardCohortSettings& CohortSettings, FOptionalBeamClientPermission& Permissions, FOptionalInt32& MaxEntries, FOptionalInt64& Ttl, FOptionalArrayOfString& Derivatives)
 {
 	bSharded = Serializable->bSharded;
 	bPartitioned = Serializable->bPartitioned;

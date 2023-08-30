@@ -3,8 +3,10 @@
 
 #include "Content/BeamContentObject.h"
 
+#include "BeamCoreSettings.h"
 #include "Misc/DefaultValueHelper.h"
 #include "BeamLogging.h"
+#include "GameplayTagContainer.h"
 #include "AutoGen/ContentDefinition.h"
 #include "AutoGen/Optionals/OptionalArrayOfString.h"
 #include "Content/LocalContentManifestRow.h"
@@ -61,7 +63,7 @@ FString UBeamContentObject::CreatePropertiesMD5Hash()
 struct FGetContentTypeParams
 {
 	FString Result;
-}; 
+};
 
 FString UBeamContentObject::BuildContentTypeString()
 {
@@ -145,6 +147,7 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 		FJsonDomBuilder::FObject CurrProp;
 		FString CurrPropName = It->GetName();
 
+
 		auto ShouldAddToJson = true;
 		if (const auto SoftObjectProperty = CastField<FSoftObjectProperty>(*It))
 		{
@@ -202,12 +205,6 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 						SerializeArrayProperty(CurrPropName, SubArray, InnerArrayProperty, BeamArray);
 						CurrProp.Set("data", SubArray);
 					}
-					else if (InnerOptionalStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
-					{
-						const FBeamSemanticType* BeamSemantic = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamSemanticType>(Data);
-						const FString* UnderlyingString = static_cast<const FString*>(BeamSemantic->GetAddr(0));
-						CurrProp.Set("data", *UnderlyingString);
-					}
 					else if (InnerOptionalStruct->IsChildOf(FBeamJsonSerializable::StaticStruct()))
 					{
 						const FBeamJsonSerializable* BeamJsonSerializable = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamJsonSerializable>(Data);
@@ -224,6 +221,12 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 
 						UE_LOG(LogBeamContent, Display, TEXT("FBeamOptional wrapping type %s Field %s=%s is a \n"), *InnerOptionalStruct->GetName(), *It->GetName(), *JsonBody);
 						CurrProp.Set("data", JsonObject);
+					}
+					else if (InnerOptionalStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
+					{
+						const FBeamSemanticType* BeamSemantic = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamSemanticType>(Data);
+						const FString* UnderlyingString = static_cast<const FString*>(BeamSemantic->GetAddr(0));
+						CurrProp.Set("data", *UnderlyingString);
 					}
 					else
 					{
@@ -242,6 +245,21 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 					FJsonDomBuilder::FArray ArrayJson;
 					SerializeArrayProperty(CurrPropName, ArrayJson, ArrayProperty, Data);
 					CurrProp.Set("data", ArrayJson);
+				}
+				else if (const auto ClassProperty = CastField<FClassProperty>(ValueProp))
+				{
+					const auto Val = ClassProperty->ContainerPtrToValuePtr<UClass>(Data);
+					CurrProp.Set("data", FSoftClassPath(static_cast<UClass*>(ClassProperty->GetPropertyValue(Val))).ToString());
+				}
+				else if (const auto TextProperty = CastField<FTextProperty>(ValueProp))
+				{
+					const auto Val = TextProperty->ContainerPtrToValuePtr<FText>(Data);
+					CurrProp.Set("data", TextProperty->GetPropertyValue(Val).ToString());
+				}
+				else if (const auto NameProperty = CastField<FNameProperty>(ValueProp))
+				{
+					const auto Val = NameProperty->ContainerPtrToValuePtr<FName>(Data);
+					CurrProp.Set("data", NameProperty->GetPropertyValue(Val).ToString());
 				}
 				else if (const auto StrProperty = CastField<FStrProperty>(ValueProp))
 				{
@@ -314,6 +332,18 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 				SerializeArrayProperty(CurrPropName, ArrayJson, ArrayProperty, Data);
 				CurrProp.Set("data", ArrayJson);
 			}
+			else if (ScriptStruct && ScriptStruct->IsChildOf(FGameplayTag::StaticStruct()))
+			{
+				const FGameplayTag* UnrealGameplayTag = StructProperty->ContainerPtrToValuePtr<FGameplayTag>(this);
+				const FString UnderlyingString = UnrealGameplayTag->ToString();
+				CurrProp.Set("data", UnderlyingString);
+			}
+			else if (ScriptStruct && ScriptStruct->IsChildOf(FGameplayTagContainer::StaticStruct()))
+			{
+				const FGameplayTagContainer* UnrealGameplayTag = StructProperty->ContainerPtrToValuePtr<FGameplayTagContainer>(this);
+				const FString UnderlyingString = UnrealGameplayTag->ToString();
+				CurrProp.Set("data", UnderlyingString);
+			}
 			else if (ScriptStruct && ScriptStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
 			{
 				const FBeamSemanticType* BeamSemantic = StructProperty->ContainerPtrToValuePtr<FBeamSemanticType>(this);
@@ -353,6 +383,21 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 			FJsonDomBuilder::FArray ArrayJson;
 			SerializeArrayProperty(CurrPropName, ArrayJson, ArrayProperty, this);
 			CurrProp.Set("data", ArrayJson);
+		}
+		else if (const auto ClassProperty = CastField<FClassProperty>(*It))
+		{
+			const auto Val = ClassProperty->ContainerPtrToValuePtr<UClass>(this);
+			CurrProp.Set("data", FSoftClassPath(static_cast<UClass*>(ClassProperty->GetPropertyValue(Val))).ToString());
+		}
+		else if (const auto TextProperty = CastField<FTextProperty>(*It))
+		{
+			const auto Val = TextProperty->ContainerPtrToValuePtr<FText>(this);
+			CurrProp.Set("data", TextProperty->GetPropertyValue(Val).ToString());
+		}
+		else if (const auto NameProperty = CastField<FNameProperty>(*It))
+		{
+			const auto Val = NameProperty->ContainerPtrToValuePtr<FName>(this);
+			CurrProp.Set("data", NameProperty->GetPropertyValue(Val).ToString());
 		}
 		else if (const auto StrProperty = CastField<FStrProperty>(*It))
 		{
@@ -510,12 +555,32 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 					ParseArrayProperty(PropName, MapJson, ArrayProperty, OptionalVal);
 					OptionalVal->Set(OptionalVal->GetAddr());
 				}
+				else if (const auto ClassProperty = CastField<FClassProperty>(OptionalValueProp))
+				{
+					const auto StrVal = JsonProperties->GetObjectField(PropName)->GetStringField("data");
+					const auto Val = ClassProperty->ContainerPtrToValuePtr<UClass>(OptionalVal);
+					ClassProperty->SetPropertyValue(Val, FSoftClassPath{StrVal}.ResolveClass());
+					OptionalVal->Set(OptionalVal->GetAddr());
+				}
+				else if (const auto TextProperty = CastField<FTextProperty>(OptionalValueProp))
+				{
+					const auto Val = TextProperty->ContainerPtrToValuePtr<FText>(OptionalVal);
+					const auto StrVal = JsonProperties->GetObjectField(PropName)->GetStringField("data");
+					TextProperty->SetPropertyValue(Val, FText::FromString(StrVal));
+					OptionalVal->Set(OptionalVal->GetAddr());
+				}
+				else if (const auto NameProperty = CastField<FNameProperty>(OptionalValueProp))
+				{
+					const auto Val = NameProperty->ContainerPtrToValuePtr<FName>(OptionalVal);
+					NameProperty->SetPropertyValue(Val, FName(JsonProperties->GetObjectField(PropName)->GetStringField("data")));
+					OptionalVal->Set(OptionalVal->GetAddr());
+				}
 				else if (const auto StrProperty = CastField<FStrProperty>(OptionalValueProp))
 				{
 					const auto Val = StrProperty->ContainerPtrToValuePtr<FString>(OptionalVal);
 					StrProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetStringField("data"));
 					OptionalVal->Set(OptionalVal->GetAddr());
-				}
+				}				
 				else if (const auto BoolProperty = CastField<FBoolProperty>(OptionalValueProp))
 				{
 					const auto Val = BoolProperty->ContainerPtrToValuePtr<bool>(OptionalVal);
@@ -582,6 +647,19 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 				}
 				ParseArrayProperty(PropName, BeamArrayJson, InnerArrayProperty, BeamArray);
 			}
+			else if (ScriptStruct && ScriptStruct->IsChildOf(FGameplayTag::StaticStruct()))
+			{
+				const auto SubJsonSemantic = JsonProperties->GetObjectField(PropName)->GetStringField("data");
+				FGameplayTag* ValData = StructProperty->ContainerPtrToValuePtr<FGameplayTag>(this);
+				const auto bShouldError = GetDefault<UBeamCoreSettings>()->bErrorIfGameplayTagNotFound;
+				*ValData = FGameplayTag::RequestGameplayTag(FName(SubJsonSemantic), !SubJsonSemantic.Equals(TEXT("None")) && bShouldError);
+			}
+			else if (ScriptStruct && ScriptStruct->IsChildOf(FGameplayTagContainer::StaticStruct()))
+			{
+				const auto SubJsonSemantic = JsonProperties->GetObjectField(PropName)->GetStringField("data");
+				FGameplayTagContainer* ValData = StructProperty->ContainerPtrToValuePtr<FGameplayTagContainer>(this);
+				ValData->FromExportString(SubJsonSemantic);
+			}
 			else if (ScriptStruct && ScriptStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
 			{
 				const auto SubJsonSemantic = JsonProperties->GetObjectField(PropName)->GetStringField("data");
@@ -609,11 +687,27 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 			const auto Array = JsonProperties->GetObjectField(PropName)->GetArrayField("data");
 			ParseArrayProperty(PropName, Array, ArrayProperty, this);
 		}
+		else if (const auto ClassProperty = CastField<FClassProperty>(*It))
+		{
+			const auto Val = ClassProperty->ContainerPtrToValuePtr<UClass>(this);
+			const auto StrVal = JsonProperties->GetObjectField(PropName)->GetStringField("data");
+			ClassProperty->SetPropertyValue(Val, FSoftClassPath{StrVal}.ResolveClass());
+		}
+		else if (const auto TextProperty = CastField<FTextProperty>(*It))
+		{
+			const auto Val = TextProperty->ContainerPtrToValuePtr<FText>(this);
+			TextProperty->SetPropertyValue(Val, FText::FromString(JsonProperties->GetObjectField(PropName)->GetStringField("data")));
+		}
+		else if (const auto NameProperty = CastField<FNameProperty>(*It))
+		{
+			const auto Val = NameProperty->ContainerPtrToValuePtr<FName>(this);
+			NameProperty->SetPropertyValue(Val, FName(JsonProperties->GetObjectField(PropName)->GetStringField("data")));
+		}
 		else if (const auto StrProperty = CastField<FStrProperty>(*It))
 		{
 			const auto Val = StrProperty->ContainerPtrToValuePtr<FString>(this);
 			StrProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetStringField("data"));
-		}
+		}		
 		else if (const auto BoolProperty = CastField<FBoolProperty>(*It))
 		{
 			const auto Val = BoolProperty->ContainerPtrToValuePtr<bool>(this);
@@ -721,6 +815,32 @@ void UBeamContentObject::SerializeArrayProperty(FString PropName, FJsonDomBuilde
 				}
 			}
 		}
+		else if (InnerArrayStruct->IsChildOf(FGameplayTag::StaticStruct()))
+		{
+			const auto ArrayNum = ArrayHelper.Num();
+			for (auto i = 0; i < ArrayNum; i++)
+			{
+				if (ArrayHelper.IsValidIndex(i))
+				{
+					const FGameplayTag* Data = reinterpret_cast<const FGameplayTag*>(ArrayHelper.GetRawPtr(i));
+					const FString UnderlyingString = Data->ToString();
+					JsonArray.Add(UnderlyingString);
+				}
+			}
+		}
+		else if (InnerArrayStruct->IsChildOf(FGameplayTagContainer::StaticStruct()))
+		{
+			const auto ArrayNum = ArrayHelper.Num();
+			for (auto i = 0; i < ArrayNum; i++)
+			{
+				if (ArrayHelper.IsValidIndex(i))
+				{
+					const FGameplayTagContainer* Data = reinterpret_cast<const FGameplayTagContainer*>(ArrayHelper.GetRawPtr(i));
+					const FString UnderlyingString = Data->ToString();
+					JsonArray.Add(UnderlyingString);
+				}
+			}
+		}
 		else if (InnerArrayStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
 		{
 			const auto ArrayNum = ArrayHelper.Num();
@@ -761,6 +881,38 @@ void UBeamContentObject::SerializeArrayProperty(FString PropName, FJsonDomBuilde
 		else
 		{
 			UE_LOG(LogBeamContent, Error, TEXT("Field %s's Type is a struct and does not implement FBeamJsonSerializable. It cannot be in a content object unless it does.\n"), *PropName)
+		}
+	}
+	else if (CastField<FClassProperty>(ArrayProperty->Inner))
+	{
+		const FScriptArray* Val = ArrayProperty->GetPropertyValuePtr(ArrayProperty->ContainerPtrToValuePtr<void>(ArrayOwner));
+		const auto ArrayNum = Val->Num();
+		for (auto i = 0; i < ArrayNum; i++)
+		{
+			UClass** Data = (UClass**)(Val->GetData());
+			JsonArray.Add(FSoftClassPath{*(Data + i)}.ToString());
+		}
+	}
+	else if (CastField<FTextProperty>(ArrayProperty->Inner))
+	{
+		const FScriptArray* Val = ArrayProperty->GetPropertyValuePtr(ArrayProperty->ContainerPtrToValuePtr<void>(ArrayOwner));
+		const auto ArrayNum = Val->Num();
+		for (auto i = 0; i < ArrayNum; i++)
+		{
+			const FText* Data = static_cast<const FText*>(Val->GetData());
+			const FString DataStr = (Data + i)->ToString();
+			JsonArray.Add(DataStr);
+		}
+	}
+	else if (CastField<FNameProperty>(ArrayProperty->Inner))
+	{
+		const FScriptArray* Val = ArrayProperty->GetPropertyValuePtr(ArrayProperty->ContainerPtrToValuePtr<void>(ArrayOwner));
+		const auto ArrayNum = Val->Num();
+		for (auto i = 0; i < ArrayNum; i++)
+		{
+			const FName* Data = static_cast<const FName*>(Val->GetData());
+			const FString DataStr = (Data + i)->ToString();
+			JsonArray.Add(DataStr);
 		}
 	}
 	else if (CastField<FStrProperty>(ArrayProperty->Inner))
@@ -846,6 +998,25 @@ void UBeamContentObject::ParseArrayProperty(const FString& PropName, const TArra
 				ParseArrayProperty(PropName, SubArray, InnerArrayProperty, ArrayHelper.GetRawPtr(i));
 			}
 		}
+		else if (InnerArrayStruct->IsChildOf(FGameplayTag::StaticStruct()))
+		{
+			for (int i = 0; i < JsonArray.Num(); ++i)
+			{
+				FGameplayTag* ValData = reinterpret_cast<FGameplayTag*>(ArrayHelper.GetRawPtr(i));
+				const FString JsonStr = JsonArray[i]->AsString();
+				const auto bShouldError = GetDefault<UBeamCoreSettings>()->bErrorIfGameplayTagNotFound;
+				*ValData = FGameplayTag::RequestGameplayTag(FName(JsonStr), !JsonStr.Equals(TEXT("None")) && bShouldError);
+			}
+		}
+		else if (InnerArrayStruct->IsChildOf(FGameplayTagContainer::StaticStruct()))
+		{
+			for (int i = 0; i < JsonArray.Num(); ++i)
+			{
+				FGameplayTagContainer* ValData = reinterpret_cast<FGameplayTagContainer*>(ArrayHelper.GetRawPtr(i));
+				const FString JsonStr = JsonArray[i]->AsString();
+				ValData->FromExportString(JsonStr);
+			}
+		}
 		else if (InnerArrayStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
 		{
 			for (int i = 0; i < JsonArray.Num(); ++i)
@@ -866,6 +1037,30 @@ void UBeamContentObject::ParseArrayProperty(const FString& PropName, const TArra
 		else
 		{
 			UE_LOG(LogBeamContent, Error, TEXT("Field %s's Type is a struct and does not implement FBeamJsonSerializable. It cannot be in a content object unless it does.\n"), *PropName)
+		}
+	}
+	else if (CastField<FClassProperty>(ArrayProperty->Inner))
+	{
+		for (int i = 0; i < JsonArray.Num(); ++i)
+		{
+			const auto ValData = reinterpret_cast<UClass**>(ArrayHelper.GetRawPtr(i));
+			*ValData = FSoftClassPath{JsonArray[i]->AsString()}.ResolveClass();
+		}
+	}
+	else if (CastField<FTextProperty>(ArrayProperty->Inner))
+	{
+		for (int i = 0; i < JsonArray.Num(); ++i)
+		{
+			const auto ValData = reinterpret_cast<FText*>(ArrayHelper.GetRawPtr(i));
+			*ValData = FText::FromString(JsonArray[i]->AsString());
+		}
+	}
+	else if (CastField<FNameProperty>(ArrayProperty->Inner))
+	{
+		for (int i = 0; i < JsonArray.Num(); ++i)
+		{
+			const auto ValData = reinterpret_cast<FName*>(ArrayHelper.GetRawPtr(i));
+			*ValData = FName(JsonArray[i]->AsString());
 		}
 	}
 	else if (CastField<FStrProperty>(ArrayProperty->Inner))
@@ -1003,6 +1198,34 @@ void UBeamContentObject::SerializeMapProperty(FString PropName, FJsonDomBuilder:
 					}
 				}
 			}
+			else if (InnerMapStruct->IsChildOf(FGameplayTag::StaticStruct()))
+			{
+				const auto MapNum = MapHelper.Num();
+				for (auto i = 0; i < MapNum; i++)
+				{
+					if (MapHelper.IsValidIndex(i))
+					{
+						const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+						const FGameplayTag* UnrealGameplayTag = reinterpret_cast<const FGameplayTag*>(MapHelper.GetValuePtr(i));
+						const FString UnderlyingString = UnrealGameplayTag->ToString();
+						JsonMap.Set(Key, UnderlyingString);
+					}
+				}
+			}
+			else if (InnerMapStruct->IsChildOf(FGameplayTagContainer::StaticStruct()))
+			{
+				const auto MapNum = MapHelper.Num();
+				for (auto i = 0; i < MapNum; i++)
+				{
+					if (MapHelper.IsValidIndex(i))
+					{
+						const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+						const FGameplayTagContainer* UnrealGameplayTag = reinterpret_cast<const FGameplayTagContainer*>(MapHelper.GetValuePtr(i));
+						const FString UnderlyingString = UnrealGameplayTag->ToString();
+						JsonMap.Set(Key, UnderlyingString);
+					}
+				}
+			}
 			else if (InnerMapStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
 			{
 				const auto MapNum = MapHelper.Num();
@@ -1040,6 +1263,48 @@ void UBeamContentObject::SerializeMapProperty(FString PropName, FJsonDomBuilder:
 			else
 			{
 				UE_LOG(LogBeamContent, Error, TEXT("Field %s's Type is a struct and does not implement FBeamJsonSerializable. It cannot be in a content object unless it does.\n"), *PropName)
+			}
+		}
+		else if (CastField<FClassProperty>(MapProperty->ValueProp))
+		{
+			const auto MapNum = MapHelper.Num();
+			for (auto i = 0; i < MapNum; i++)
+			{
+				if (MapHelper.IsValidIndex(i))
+				{
+					const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+					const UClass** Data = reinterpret_cast<const UClass**>(MapHelper.GetValuePtr(i));
+
+					JsonMap.Set(Key, FSoftClassPath(*Data).ToString());
+				}
+			}
+		}
+		else if (CastField<FTextProperty>(MapProperty->ValueProp))
+		{
+			const auto MapNum = MapHelper.Num();
+			for (auto i = 0; i < MapNum; i++)
+			{
+				if (MapHelper.IsValidIndex(i))
+				{
+					const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+					const FText* Data = reinterpret_cast<const FText*>(MapHelper.GetValuePtr(i));
+
+					JsonMap.Set(Key, (*Data).ToString());
+				}
+			}
+		}
+		else if (CastField<FNameProperty>(MapProperty->ValueProp))
+		{
+			const auto MapNum = MapHelper.Num();
+			for (auto i = 0; i < MapNum; i++)
+			{
+				if (MapHelper.IsValidIndex(i))
+				{
+					const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+					const FName* Data = reinterpret_cast<const FName*>(MapHelper.GetValuePtr(i));
+
+					JsonMap.Set(Key, (*Data).ToString());
+				}
 			}
 		}
 		else if (CastField<FStrProperty>(MapProperty->ValueProp))
@@ -1149,6 +1414,39 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 					ParseArrayProperty(Key, SubMap, InnerArrayProperty, MapHelper.GetValuePtr(LastEntryIdx));
 				}
 			}
+			else if (InnerMapStruct->IsChildOf(FGameplayTag::StaticStruct()))
+			{
+				for (const auto& Value : JsonMap->Values)
+				{
+					const auto Key = Value.Key;
+
+					const auto LastEntryIdx = MapHelper.AddDefaultValue_Invalid_NeedsRehash();
+
+					auto KeyData = reinterpret_cast<FString*>(MapHelper.GetKeyPtr(LastEntryIdx));
+					*KeyData = Key;
+
+					FGameplayTag* ValData = reinterpret_cast<FGameplayTag*>(MapHelper.GetValuePtr(LastEntryIdx));
+					const FString JsonStr = Value.Value->AsString();
+					const auto bShouldError = GetDefault<UBeamCoreSettings>()->bErrorIfGameplayTagNotFound;
+					*ValData = FGameplayTag::RequestGameplayTag(FName(JsonStr), !JsonStr.Equals(TEXT("None")) && bShouldError);
+				}
+			}
+			else if (InnerMapStruct->IsChildOf(FGameplayTagContainer::StaticStruct()))
+			{
+				for (const auto& Value : JsonMap->Values)
+				{
+					const auto Key = Value.Key;
+
+					const auto LastEntryIdx = MapHelper.AddDefaultValue_Invalid_NeedsRehash();
+
+					auto KeyData = reinterpret_cast<FString*>(MapHelper.GetKeyPtr(LastEntryIdx));
+					*KeyData = Key;
+
+					FGameplayTagContainer* ValData = reinterpret_cast<FGameplayTagContainer*>(MapHelper.GetValuePtr(LastEntryIdx));
+					const FString JsonStr = Value.Value->AsString();
+					ValData->FromExportString(JsonStr);
+				}
+			}
 			else if (InnerMapStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
 			{
 				for (const auto& Value : JsonMap->Values)
@@ -1182,6 +1480,45 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 			else
 			{
 				UE_LOG(LogBeamContent, Error, TEXT("Field %s's Type is a struct and does not implement FBeamJsonSerializable. It cannot be in a content object unless it does.\n"), *PropName)
+			}
+		}
+		else if (CastField<FClassProperty>(MapProperty->ValueProp))
+		{
+			for (const auto& Value : JsonMap->Values)
+			{
+				const auto LastEntryIdx = MapHelper.AddDefaultValue_Invalid_NeedsRehash();
+
+				auto KeyData = reinterpret_cast<FString*>(MapHelper.GetKeyPtr(LastEntryIdx));
+				*KeyData = Value.Key;
+
+				auto ValData = reinterpret_cast<UClass**>(MapHelper.GetValuePtr(LastEntryIdx));
+				*ValData = FSoftClassPath{Value.Value->AsString()}.ResolveClass();
+			}
+		}
+		else if (CastField<FTextProperty>(MapProperty->ValueProp))
+		{
+			for (const auto& Value : JsonMap->Values)
+			{
+				const auto LastEntryIdx = MapHelper.AddDefaultValue_Invalid_NeedsRehash();
+
+				auto KeyData = reinterpret_cast<FString*>(MapHelper.GetKeyPtr(LastEntryIdx));
+				*KeyData = Value.Key;
+
+				auto ValData = reinterpret_cast<FText*>(MapHelper.GetValuePtr(LastEntryIdx));
+				*ValData = FText::FromString(Value.Value->AsString());
+			}
+		}
+		else if (CastField<FNameProperty>(MapProperty->ValueProp))
+		{
+			for (const auto& Value : JsonMap->Values)
+			{
+				const auto LastEntryIdx = MapHelper.AddDefaultValue_Invalid_NeedsRehash();
+
+				auto KeyData = reinterpret_cast<FString*>(MapHelper.GetKeyPtr(LastEntryIdx));
+				*KeyData = Value.Key;
+
+				auto ValData = reinterpret_cast<FName*>(MapHelper.GetValuePtr(LastEntryIdx));
+				*ValData = FName(Value.Value->AsString());
 			}
 		}
 		else if (CastField<FStrProperty>(MapProperty->ValueProp))

@@ -124,10 +124,6 @@ private:
 	 */
 	static FString GetNamespacedSlotId(FUserSlot SlotId, const UObject* CallingContext = nullptr);
 
-	/**
-	 * @brief Gets a FUserSlot from a NamespacedSlotId.
-	 */
-	static bool GetSlotIdFromNamespacedSlotId(FString NamespacedSlotId, FUserSlot& OutUserSlot);
 
 	/**
 	 * @brief Gets the file path for the serialized auth data of the given user slot.
@@ -145,7 +141,10 @@ public:
 
 	/** Cleans up the system.  */
 	virtual void Deinitialize() override;
-
+	/**
+		 * @brief Gets a FUserSlot from a NamespacedSlotId.
+		 */
+	static bool GetSlotIdFromNamespacedSlotId(FString NamespacedSlotId, FUserSlot& OutUserSlot);
 	/**
 	 * @brief Gets the file path for the serialized account data of the given user slot.
 	 * To be used by other systems when saving data related to a slot.
@@ -180,6 +179,13 @@ public:
 	 */
 	UFUNCTION(BlueprintPure, Category="Beam")
 	bool GetUserDataWithRefreshTokenAndPid(const FString& RefreshToken, const FBeamPid& Pid, FBeamRealmUser& OutUserData, FUserSlot& OutUserSlot) const;
+
+	/**
+	 * @brief Sets the authentication data directly at a namespaced slot.
+	 * Assumes the caller guarantees the given slot is already the correctly namespaced slot name.
+	 */
+	UFUNCTION()
+	void SetAuthenticationDataAtNamespacedSlot(const FString& NamespacedSlotId, const FString& AccessToken, const FString& RefreshToken, const int64& ExpiresIn, const FBeamCid& Cid, const FBeamPid& Pid);
 
 	/**
 	 * @brief Sets, without saving, the given authentication token + realm data into the given user slot.

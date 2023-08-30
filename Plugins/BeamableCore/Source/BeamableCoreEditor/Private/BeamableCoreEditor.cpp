@@ -12,7 +12,10 @@
 #include "LevelEditor.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "AssetTypeActions/AssetTypeActions_DataAsset.h"
+#include "BeamBackend/ReplacementTypes/BeamClientPermission.h"
 #include "Kismet2/KismetEditorUtilities.h"
+#include "PropertyType/BeamClientPermissionCustomization.h"
+#include "PropertyType/BeamContentIdCustomization.h"
 #include "PropertyType/RequestTypeCustomization.h"
 #include "Subsystems/BeamEditor.h"
 #include "Subsystems/Content/BeamEditorContent.h"
@@ -68,6 +71,19 @@ void FBeamableCoreEditorModule::StartupModule()
 			// this is where our MakeInstance() method is useful
 			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FRequestTypeCustomization::MakeInstance));
 
+		PropertyModule.RegisterCustomPropertyTypeLayout(
+			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
+			FBeamClientPermission::StaticStruct()->GetFName(),
+			// this is where our MakeInstance() method is useful
+			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamClientPermissionCustomization::MakeInstance));
+
+		// to register our custom property
+		PropertyModule.RegisterCustomPropertyTypeLayout(
+			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
+			FBeamContentId::StaticStruct()->GetFName(),
+			// this is where our MakeInstance() method is useful
+			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamContentIdCustomization::MakeInstance));
+
 		PropertyModule.NotifyCustomizationModuleChanged();
 	}
 
@@ -83,7 +99,6 @@ void FBeamableCoreEditorModule::StartupModule()
 	// 
 	{
 #if WITH_EDITOR
-
 		IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
 		//AssetTools.RegisterAdvancedAssetCategory(FName(TEXT("Beamable")), LOCTEXT("BeamableCategory", "Beamable"));
 		RegisterAssetTypeAction(AssetTools, MakeShareable(new FAssetTypeActions_BeamRuntimeSubsystem()));
@@ -102,6 +117,8 @@ void FBeamableCoreEditorModule::ShutdownModule()
 		// unregister properties when the module is shutdown
 		FPropertyEditorModule& PropertyModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
 		PropertyModule.UnregisterCustomPropertyTypeLayout(FRequestType::StaticStruct()->GetFName());
+		PropertyModule.UnregisterCustomPropertyTypeLayout(FBeamClientPermission::StaticStruct()->GetFName());
+		PropertyModule.UnregisterCustomPropertyTypeLayout(FBeamContentId::StaticStruct()->GetFName());
 
 
 		PropertyModule.NotifyCustomizationModuleChanged();
@@ -113,7 +130,7 @@ void FBeamableCoreEditorModule::ShutdownModule()
 	}
 
 #if WITH_EDITOR
-	
+
 	if (FModuleManager::Get().IsModuleLoaded("AssetTools"))
 	{
 		IAssetTools& AssetTools = FModuleManager::GetModuleChecked<FAssetToolsModule>("AssetTools").Get();

@@ -41,7 +41,6 @@
 #include "BeamableCore/Public/AutoGen/SubSystems/Payments/GetTestProductRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Payments/PostSteamPurchaseVerifyRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Payments/PostItunesPurchaseTrackRequest.h"
-#include "BeamableCore/Public/AutoGen/SubSystems/Payments/GetPaymentsRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Payments/PostTestPurchaseBeginRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Payments/PostSteamPurchaseFailRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Payments/PostFacebookPurchaseFailRequest.h"
@@ -64,6 +63,7 @@
 #include "BeamableCore/Public/AutoGen/SubSystems/Payments/PostWindowsPurchaseCancelRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Payments/PostWindowsPurchaseFailRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Payments/PostItunesPurchaseCancelRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Payments/GetPaymentsRequest.h"
 
 #include "BeamPaymentsApi.generated.h"
 
@@ -533,19 +533,6 @@ private:
 	void CPP_PostItunesPurchaseTrackImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UPostItunesPurchaseTrackRequest* RequestData,
 	                                 const FOnPostItunesPurchaseTrackFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
-		
-	/**
-	 * @brief Private implementation that all overloaded BP UFunctions call.	  
-	 */
-	void BP_GetPaymentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetPaymentsRequest* RequestData,
-	                                const FOnGetPaymentsSuccess& OnSuccess, const FOnGetPaymentsError& OnError, const FOnGetPaymentsComplete& OnComplete,
-	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
-	/**
-	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
-	 */
-	void CPP_GetPaymentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetPaymentsRequest* RequestData,
-	                                 const FOnGetPaymentsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
-
 
 	
 	/**
@@ -811,6 +798,18 @@ private:
 	 */
 	void CPP_PostItunesPurchaseCancelImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UPostItunesPurchaseCancelRequest* RequestData,
 	                   const FOnPostItunesPurchaseCancelFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+		
+	/**
+	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
+	 */
+	void BP_GetPaymentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UGetPaymentsRequest* RequestData,
+	                  const FOnGetPaymentsSuccess& OnSuccess, const FOnGetPaymentsError& OnError, const FOnGetPaymentsComplete& OnComplete, 
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	/**
+	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
+	 */
+	void CPP_GetPaymentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UGetPaymentsRequest* RequestData,
+	                   const FOnGetPaymentsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 public:
 	
@@ -1328,21 +1327,6 @@ public:
 	 */
 	void CPP_PostItunesPurchaseTrack(UPostItunesPurchaseTrackRequest* Request, const FOnPostItunesPurchaseTrackFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
-		
-	/**
-	 * @brief Makes a request to the Get /object/payments/{objectId}/ endpoint of the Payments Service.
-	 *
-	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
-	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster and for whenever you need to capture variables).
-	 * 
-	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param Handler A callback that defines how to handle success, error and completion.
-     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
-	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
-	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
-	 */
-	void CPP_GetPayments(UGetPaymentsRequest* Request, const FOnGetPaymentsFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
-
 
 	
 	/**
@@ -1695,6 +1679,22 @@ public:
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
 	void CPP_PostItunesPurchaseCancel(const FUserSlot& UserSlot, UPostItunesPurchaseCancelRequest* Request, const FOnPostItunesPurchaseCancelFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /object/payments/{objectId}/ endpoint of the Payments Service.
+	 *
+	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
+	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
+	 * 
+	 * @param UserSlot The Authenticated User Slot that is making this request.
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
+	 */
+	void CPP_GetPayments(const FUserSlot& UserSlot, UGetPaymentsRequest* Request, const FOnGetPaymentsFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 
 	
@@ -2173,20 +2173,6 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Payments", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void PostItunesPurchaseTrack(UPostItunesPurchaseTrackRequest* Request, const FOnPostItunesPurchaseTrackSuccess& OnSuccess, const FOnPostItunesPurchaseTrackError& OnError, const FOnPostItunesPurchaseTrackComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
-		
-	/**
-	 * @brief Makes a request to the Get /object/payments/{objectId}/ endpoint of the Payments Service.
-	 *
-	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
-	 * @param OnSuccess What to do if the requests receives a successful response.
-	 * @param OnError What to do if the request receives an error response.
-	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
-	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
-	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
-	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Payments", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void GetPayments(UGetPaymentsRequest* Request, const FOnGetPaymentsSuccess& OnSuccess, const FOnGetPaymentsError& OnError, const FOnGetPaymentsComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
-
 
 	
 	/**
@@ -2517,5 +2503,20 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Payments", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void PostItunesPurchaseCancel(FUserSlot UserSlot, UPostItunesPurchaseCancelRequest* Request, const FOnPostItunesPurchaseCancelSuccess& OnSuccess, const FOnPostItunesPurchaseCancelError& OnError, const FOnPostItunesPurchaseCancelComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /object/payments/{objectId}/ endpoint of the Payments Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Payments", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void GetPayments(FUserSlot UserSlot, UGetPaymentsRequest* Request, const FOnGetPaymentsSuccess& OnSuccess, const FOnGetPaymentsError& OnError, const FOnGetPaymentsComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 };

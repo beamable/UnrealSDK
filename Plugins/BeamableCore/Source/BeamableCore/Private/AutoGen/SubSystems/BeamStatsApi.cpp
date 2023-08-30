@@ -9,6 +9,7 @@ void UBeamStatsApi::Initialize(FSubsystemCollectionBase& Collection)
 	Backend = Cast<UBeamBackend>(Collection.InitializeDependency(UBeamBackend::StaticClass()));
 	RequestTracker = Cast<UBeamRequestTracker>(Collection.InitializeDependency(UBeamRequestTracker::StaticClass()));
 	ResponseCache = Cast<UBeamResponseCache>(Collection.InitializeDependency(UBeamResponseCache::StaticClass()));
+	
 }
 
 void UBeamStatsApi::Deinitialize()

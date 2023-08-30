@@ -235,6 +235,23 @@ void UBeamBackend::PrepareBeamableRequestToRealmWithAuthToken(const TUnrealReque
 	}
 }
 
+void UBeamBackend::HandlePIESessionRequestGuard(TUnrealRequestPtr Request, int64 RequestId)
+{
+	if (!bIsInPIE && InFlightPIERequests.Contains(Request))
+	{
+		InFlightPIERequests.Remove(Request);
+
+		// Flag the request as completed so that it gets cleaned up on the next tick
+		if (RequestId != -1)
+		{
+			FBeamRequestContext& RequestContext = *InFlightRequestContexts.Find(RequestId);
+			RequestContext.BeamStatus = Completed;
+		}
+
+		UE_LOG(LogBeamBackend, Warning, TEXT("Ignoring Beamable Request made during terminated PIE Session | REQUEST_ID=%lld"), RequestId);
+	}
+}
+
 void UBeamBackend::DefaultExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity)
 {
 	UE_LOG(LogBeamBackend, Display, TEXT("Sending Request via Unreal HttpRequest's ProcessRequest. REQUEST_ID=%llu"),
@@ -402,16 +419,14 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 							// The reason that we simply assume there'll always be a UserSlot is to make integration tests
 							if (WasMadeWithUserSlot)
 							{
-								UE_LOG(LogBeamBackend, Verbose,
-								       TEXT("Identified User Slot and Re-authing it. REQUEST_ID=%lld, USER_SLOT=%s"),
-								       ReqId, *UserSlot.Name);
+								FUserSlot NonNamespacedSlot;
+								UBeamUserSlots::GetSlotIdFromNamespacedSlotId(UserSlot.Name, NonNamespacedSlot);
+								UE_LOG(LogBeamBackend, Verbose, TEXT("Identified User Slot and Re-authing it. REQUEST_ID=%lld, USER_SLOT=%s"), ReqId, *NonNamespacedSlot.Name);
 								// Re-auth the user at the found slot so that subsequent requests use the new token rather than this one.
-								BeamUserSlots->SetAuthenticationDataAtSlot(
-									UserSlot, NewToken.AccessToken, NewToken.RefreshToken, NewToken.ExpiresIn,
-									RealmUserData.RealmHandle.Cid, RealmUserData.RealmHandle.Pid, this);
+								BeamUserSlots->SetAuthenticationDataAtNamespacedSlot(UserSlot, NewToken.AccessToken, NewToken.RefreshToken, NewToken.ExpiresIn,
+								                                                     RealmUserData.RealmHandle.Cid, RealmUserData.RealmHandle.Pid);
 								BeamUserSlots->SetGamerTagAtSlot(UserSlot, RealmUserData.GamerTag, this);
 								BeamUserSlots->SetEmailAtSlot(UserSlot, RealmUserData.Email, this);
-								BeamUserSlots->TriggerUserAuthenticatedIntoSlot(UserSlot, this);
 							}
 							// Then, we just fix the request up and send it along.						
 							PrepareBeamableRequestToRealmWithAuthToken(FailedReq, ReqRealmHandle, NewToken);

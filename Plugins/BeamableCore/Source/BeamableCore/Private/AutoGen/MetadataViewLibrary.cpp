@@ -22,7 +22,7 @@ FString UMetadataViewLibrary::MetadataViewToJsonString(const UMetadataView* Seri
 	return Result;
 }	
 
-UMetadataView* UMetadataViewLibrary::Make(bool bCohorted, bool bFrozen, bool bPartitioned, FString ParentLeaderboard, FOptionalInt64 FreezeTime, FOptionalLeaderboardCohortSettings CohortSettings, FOptionalClientPermission Permissions, FOptionalInt32 MaxEntries, FOptionalInt64 Expiration, FOptionalArrayOfString Derivatives, UObject* Outer)
+UMetadataView* UMetadataViewLibrary::Make(bool bCohorted, bool bFrozen, bool bPartitioned, FString ParentLeaderboard, FOptionalInt64 FreezeTime, FOptionalLeaderboardCohortSettings CohortSettings, FOptionalBeamClientPermission Permissions, FOptionalInt32 MaxEntries, FOptionalInt64 Expiration, FOptionalArrayOfString Derivatives, UObject* Outer)
 {
 	auto Serializable = NewObject<UMetadataView>(Outer);
 	Serializable->bCohorted = bCohorted;
@@ -39,7 +39,7 @@ UMetadataView* UMetadataViewLibrary::Make(bool bCohorted, bool bFrozen, bool bPa
 	return Serializable;
 }
 
-void UMetadataViewLibrary::Break(const UMetadataView* Serializable, bool& bCohorted, bool& bFrozen, bool& bPartitioned, FString& ParentLeaderboard, FOptionalInt64& FreezeTime, FOptionalLeaderboardCohortSettings& CohortSettings, FOptionalClientPermission& Permissions, FOptionalInt32& MaxEntries, FOptionalInt64& Expiration, FOptionalArrayOfString& Derivatives)
+void UMetadataViewLibrary::Break(const UMetadataView* Serializable, bool& bCohorted, bool& bFrozen, bool& bPartitioned, FString& ParentLeaderboard, FOptionalInt64& FreezeTime, FOptionalLeaderboardCohortSettings& CohortSettings, FOptionalBeamClientPermission& Permissions, FOptionalInt32& MaxEntries, FOptionalInt64& Expiration, FOptionalArrayOfString& Derivatives)
 {
 	bCohorted = Serializable->bCohorted;
 	bFrozen = Serializable->bFrozen;

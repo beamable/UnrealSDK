@@ -1,0 +1,40 @@
+
+#include "BeamableCore/Public/AutoGen/UpdatePartyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UUpdatePartyLibrary::UpdatePartyToJsonString(const UUpdateParty* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UUpdateParty* UUpdatePartyLibrary::Make(FOptionalString Restriction, FOptionalInt32 MaxSize, UObject* Outer)
+{
+	auto Serializable = NewObject<UUpdateParty>(Outer);
+	Serializable->Restriction = Restriction;
+	Serializable->MaxSize = MaxSize;
+	
+	return Serializable;
+}
+
+void UUpdatePartyLibrary::Break(const UUpdateParty* Serializable, FOptionalString& Restriction, FOptionalInt32& MaxSize)
+{
+	Restriction = Serializable->Restriction;
+	MaxSize = Serializable->MaxSize;
+		
+}
+

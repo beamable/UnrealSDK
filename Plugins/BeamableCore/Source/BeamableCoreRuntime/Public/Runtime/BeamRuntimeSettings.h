@@ -7,7 +7,7 @@
 
 
 #include "BeamRuntimeSettings.generated.h"
-class UBeamRuntimeContentCache;
+class UBeamContentCache;
 class UDataTable;
 /**
  * 
@@ -45,10 +45,11 @@ public:
 	FStreamableManager ContentStreamingManager = {};
 
 	/**
-	 * @brief References to all baked content files. This is automatically filled up whenever you cook a build and can be ignored by the end user.
+	 * @brief Whether or not we should download each individual content JSON when beamable is ready for use.
 	 */
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="Content")
-	TArray<TSoftObjectPtr<UBeamRuntimeContentCache>> BakedContentManifests;
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Content")
+	bool bDownloadIndividualContentOnStart = false;	
+
 
 	FStreamableManager& GetStreamableManager() { return ContentStreamingManager; }
 };

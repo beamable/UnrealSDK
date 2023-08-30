@@ -9,6 +9,7 @@ void UBeamCalendarsApi::Initialize(FSubsystemCollectionBase& Collection)
 	Backend = Cast<UBeamBackend>(Collection.InitializeDependency(UBeamBackend::StaticClass()));
 	RequestTracker = Cast<UBeamRequestTracker>(Collection.InitializeDependency(UBeamRequestTracker::StaticClass()));
 	ResponseCache = Cast<UBeamResponseCache>(Collection.InitializeDependency(UBeamResponseCache::StaticClass()));
+	
 }
 
 void UBeamCalendarsApi::Deinitialize()
@@ -17,12 +18,14 @@ void UBeamCalendarsApi::Deinitialize()
 }
 
 
-void UBeamCalendarsApi::BP_PostClaimImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UObjectCalendarsPostClaimRequest* RequestData,
-                                                  const FOnObjectCalendarsPostClaimSuccess& OnSuccess, const FOnObjectCalendarsPostClaimError& OnError, const FOnObjectCalendarsPostClaimComplete& OnComplete,
-                                                  int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+
+
+void UBeamCalendarsApi::BP_PostClaimImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                                UObjectCalendarsPostClaimRequest* RequestData, const FOnObjectCalendarsPostClaimSuccess& OnSuccess, const FOnObjectCalendarsPostClaimError& OnError, const FOnObjectCalendarsPostClaimComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
-	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
+	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
 
 	// If we are making this request as part of an operation, we add it to it.
 	if(OpHandle.OperationId >= 0)
@@ -32,26 +35,28 @@ void UBeamCalendarsApi::BP_PostClaimImpl(const FBeamRealmHandle& TargetRealm, co
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunBlueprintRequestProcessor<UObjectCalendarsPostClaimRequest, UCommonResponse, FOnObjectCalendarsPostClaimSuccess, FOnObjectCalendarsPostClaimError, FOnObjectCalendarsPostClaimComplete>
-			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, OnSuccess, OnError, OnComplete);		
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UObjectCalendarsPostClaimRequest, UCommonResponse, FOnObjectCalendarsPostClaimSuccess, FOnObjectCalendarsPostClaimError, FOnObjectCalendarsPostClaimComplete>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
-	{			
+	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UObjectCalendarsPostClaimRequest, UCommonResponse, FOnObjectCalendarsPostClaimSuccess, FOnObjectCalendarsPostClaimError, FOnObjectCalendarsPostClaimComplete>
-			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UObjectCalendarsPostClaimRequest, UCommonResponse, FOnObjectCalendarsPostClaimSuccess, FOnObjectCalendarsPostClaimError, FOnObjectCalendarsPostClaimComplete>
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);		
-	}	
+	    
+		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+	}
 }
 
-void UBeamCalendarsApi::CPP_PostClaimImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
-                                               UObjectCalendarsPostClaimRequest* RequestData, const FOnObjectCalendarsPostClaimFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamCalendarsApi::CPP_PostClaimImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                              UObjectCalendarsPostClaimRequest* RequestData, const FOnObjectCalendarsPostClaimFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
-	// AUTO-GENERATED...	
-	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
-
+	// AUTO-GENERATED...
+	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
+	
 	// If we are making this request as part of an operation, we add it to it.
 	if(OpHandle.OperationId >= 0)
 		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
@@ -60,15 +65,15 @@ void UBeamCalendarsApi::CPP_PostClaimImpl(const FBeamRealmHandle& TargetRealm, c
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunCodeRequestProcessor<UObjectCalendarsPostClaimRequest, UCommonResponse>
-			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, Handler);			
+		Backend->RunAuthenticatedCodeRequestProcessor<UObjectCalendarsPostClaimRequest, UCommonResponse>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UObjectCalendarsPostClaimRequest, UCommonResponse>
-			(OutRequestId, RequestData, Handler);
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UObjectCalendarsPostClaimRequest, UCommonResponse>
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -77,12 +82,12 @@ void UBeamCalendarsApi::CPP_PostClaimImpl(const FBeamRealmHandle& TargetRealm, c
 }
 
 		
-void UBeamCalendarsApi::BP_GetCalendarsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetCalendarsRequest* RequestData,
-                                                  const FOnGetCalendarsSuccess& OnSuccess, const FOnGetCalendarsError& OnError, const FOnGetCalendarsComplete& OnComplete,
-                                                  int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamCalendarsApi::BP_GetCalendarsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                                UGetCalendarsRequest* RequestData, const FOnGetCalendarsSuccess& OnSuccess, const FOnGetCalendarsError& OnError, const FOnGetCalendarsComplete& OnComplete, 
+								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
-	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
+	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
 
 	// If we are making this request as part of an operation, we add it to it.
 	if(OpHandle.OperationId >= 0)
@@ -92,26 +97,28 @@ void UBeamCalendarsApi::BP_GetCalendarsImpl(const FBeamRealmHandle& TargetRealm,
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunBlueprintRequestProcessor<UGetCalendarsRequest, UCalendarQueryResponse, FOnGetCalendarsSuccess, FOnGetCalendarsError, FOnGetCalendarsComplete>
-			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, OnSuccess, OnError, OnComplete);		
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UGetCalendarsRequest, UCalendarQueryResponse, FOnGetCalendarsSuccess, FOnGetCalendarsError, FOnGetCalendarsComplete>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
-	{			
+	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UGetCalendarsRequest, UCalendarQueryResponse, FOnGetCalendarsSuccess, FOnGetCalendarsError, FOnGetCalendarsComplete>
-			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetCalendarsRequest, UCalendarQueryResponse, FOnGetCalendarsSuccess, FOnGetCalendarsError, FOnGetCalendarsComplete>
+			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);		
-	}	
+	    
+		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+	}
 }
 
-void UBeamCalendarsApi::CPP_GetCalendarsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
-                                               UGetCalendarsRequest* RequestData, const FOnGetCalendarsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamCalendarsApi::CPP_GetCalendarsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                              UGetCalendarsRequest* RequestData, const FOnGetCalendarsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
-	// AUTO-GENERATED...	
-	const auto Request = Backend->CreateRequest(OutRequestId, TargetRealm, RetryConfig, RequestData);
-
+	// AUTO-GENERATED...
+	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
+	
 	// If we are making this request as part of an operation, we add it to it.
 	if(OpHandle.OperationId >= 0)
 		RequestTracker->AddRequestToOperation(OpHandle, OutRequestId);
@@ -120,15 +127,15 @@ void UBeamCalendarsApi::CPP_GetCalendarsImpl(const FBeamRealmHandle& TargetRealm
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunCodeRequestProcessor<UGetCalendarsRequest, UCalendarQueryResponse>
-			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, RequestData, Handler);			
+		Backend->RunAuthenticatedCodeRequestProcessor<UGetCalendarsRequest, UCalendarQueryResponse>
+			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeCodeRequestProcessor<UGetCalendarsRequest, UCalendarQueryResponse>
-			(OutRequestId, RequestData, Handler);
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetCalendarsRequest, UCalendarQueryResponse>
+			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
@@ -141,25 +148,33 @@ void UBeamCalendarsApi::CPP_GetCalendarsImpl(const FBeamRealmHandle& TargetRealm
 
 
 
-void UBeamCalendarsApi::CPP_PostClaim(UObjectCalendarsPostClaimRequest* Request, const FOnObjectCalendarsPostClaimFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamCalendarsApi::CPP_PostClaim(const FUserSlot& UserSlot, UObjectCalendarsPostClaimRequest* Request, const FOnObjectCalendarsPostClaimFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
+	// AUTO-GENERATED...
+	FBeamRealmUser AuthenticatedUser;
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
+
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForRequestType(UObjectCalendarsPostClaimRequest::StaticClass()->GetName(), RetryConfig);
-	
+	Backend->GetRetryConfigForUserSlotAndRequestType(UObjectCalendarsPostClaimRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+
     int64 OutRequestId;
-	CPP_PostClaimImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	CPP_PostClaimImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamCalendarsApi::CPP_GetCalendars(UGetCalendarsRequest* Request, const FOnGetCalendarsFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamCalendarsApi::CPP_GetCalendars(const FUserSlot& UserSlot, UGetCalendarsRequest* Request, const FOnGetCalendarsFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
+	// AUTO-GENERATED...
+	FBeamRealmUser AuthenticatedUser;
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
+
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForRequestType(UGetCalendarsRequest::StaticClass()->GetName(), RetryConfig);
-	
+	Backend->GetRetryConfigForUserSlotAndRequestType(UGetCalendarsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+
     int64 OutRequestId;
-	CPP_GetCalendarsImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	CPP_GetCalendarsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 
@@ -167,28 +182,32 @@ void UBeamCalendarsApi::CPP_GetCalendars(UGetCalendarsRequest* Request, const FO
 
 
 
-void UBeamCalendarsApi::PostClaim(UObjectCalendarsPostClaimRequest* Request, const FOnObjectCalendarsPostClaimSuccess& OnSuccess, const FOnObjectCalendarsPostClaimError& OnError, const FOnObjectCalendarsPostClaimComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+void UBeamCalendarsApi::PostClaim(FUserSlot UserSlot, UObjectCalendarsPostClaimRequest* Request, const FOnObjectCalendarsPostClaimSuccess& OnSuccess, const FOnObjectCalendarsPostClaimError& OnError, const FOnObjectCalendarsPostClaimComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
-	// AUTO-GENERATED...	
+	// AUTO-GENERATED...
+	FBeamRealmUser AuthenticatedUser;
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
+
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForRequestType(UObjectCalendarsPostClaimRequest::StaticClass()->GetName(), RetryConfig);	
-	
-	int64 OutRequestId = 0;
-	BP_PostClaimImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	Backend->GetRetryConfigForUserSlotAndRequestType(UObjectCalendarsPostClaimRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+
+	int64 OutRequestId;
+	BP_PostClaimImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamCalendarsApi::GetCalendars(UGetCalendarsRequest* Request, const FOnGetCalendarsSuccess& OnSuccess, const FOnGetCalendarsError& OnError, const FOnGetCalendarsComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+void UBeamCalendarsApi::GetCalendars(FUserSlot UserSlot, UGetCalendarsRequest* Request, const FOnGetCalendarsSuccess& OnSuccess, const FOnGetCalendarsError& OnError, const FOnGetCalendarsComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
-	// AUTO-GENERATED...	
+	// AUTO-GENERATED...
+	FBeamRealmUser AuthenticatedUser;
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
+
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForRequestType(UGetCalendarsRequest::StaticClass()->GetName(), RetryConfig);	
-	
-	int64 OutRequestId = 0;
-	BP_GetCalendarsImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	Backend->GetRetryConfigForUserSlotAndRequestType(UGetCalendarsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+
+	int64 OutRequestId;
+	BP_GetCalendarsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
-
-
 

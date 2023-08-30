@@ -9,7 +9,6 @@
 #include "BeamBackend/BeamBackend.h"
 #include "BeamBackendTestCallbacks.h"
 
-
 void FBeamBackendSpec::Define()
 {
 	Describe("Request/Response", [this]()
@@ -30,7 +29,10 @@ void FBeamBackendSpec::Define()
 			Callbacks->Spec = this;
 
 			RequestFuncUObject = BeamBackendSystem->ExecuteRequestDelegate.GetUObject();
+
+#if USE_DELEGATE_TRYGETBOUNDFUNCTIONNAME
 			RequestFuncName = BeamBackendSystem->ExecuteRequestDelegate.TryGetBoundFunctionName();
+#endif			
 
 			FHttpModule::Get().ToggleNullHttp(true);
 		});
@@ -40,8 +42,10 @@ void FBeamBackendSpec::Define()
 			// Clear callbacks object			
 			Callbacks = nullptr;
 
-			// Make sure that the execute request delegate is properly set up. 
+			// Make sure that the execute request delegate is properly set up.
+#if USE_DELEGATE_TRYGETBOUNDFUNCTIONNAME
 			BeamBackendSystem->ExecuteRequestDelegate.BindUFunction(RequestFuncUObject, RequestFuncName);
+#endif			
 			FHttpModule::Get().ToggleNullHttp(false);
 
 			// Reset the request id counter to 0 and all the state related to InFlight Requests back to initial state
@@ -965,7 +969,7 @@ void FBeamBackendSpec::Define()
 			// Because it's an external dependency, we should keep it in memory
 			TestTrue("Second Request was not cleaned up", BeamBackendSystem->InFlightRequests.Contains(ReqId2));
 			TestTrue("Second Request Context was not cleaned up", BeamBackendSystem->InFlightRequestContexts.Contains(ReqId2));
-			TestTrue("Second Failure Count Data was not cleaned up", BeamBackendSystem->InFlightFailureCount.Contains(ReqId2));			
+			TestTrue("Second Failure Count Data was not cleaned up", BeamBackendSystem->InFlightFailureCount.Contains(ReqId2));
 			TestTrue("Second Request Data was not cleaned up", BeamBackendSystem->InFlightRequestData.Contains(*BeamRequestContext2));
 			TestTrue("Second Response Data was not cleaned up", BeamBackendSystem->InFlightResponseBodyData.Contains(*BeamRequestContext2));
 			TestTrue("Second Error Data was not cleaned up", BeamBackendSystem->InFlightResponseErrorData.Contains(*BeamRequestContext2));

@@ -1,0 +1,15 @@
+{
+  "unityProjectsPaths": [],
+  "unrealProjectsPaths": [
+    {
+      "CoreProjectName": "BeamableUnreal",
+      "BlueprintNodesProjectName": "BeamableUnrealBlueprintNodes",
+      "Path": ".\\..\\BeamableUnreal",
+      "SourceFilesPath": ".\\..\\..\\..\\..\\BeamableUnreal\\Source\\",
+      "MsCoreHeaderPath": "BeamableUnreal",
+      "MsCoreCppPath": "BeamableUnreal",
+      "MsBlueprintNodesHeaderPath": "BeamableUnrealBlueprintNodes",
+      "MsBlueprintNodesCppPath": "BeamableUnrealBlueprintNodes"
+    }
+  ]
+}

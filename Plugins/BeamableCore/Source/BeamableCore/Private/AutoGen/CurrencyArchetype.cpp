@@ -9,7 +9,7 @@ void UCurrencyArchetype::BeamSerializeProperties(TUnrealJsonSerializer& Serializ
 {
 	Serializer->WriteValue(TEXT("symbol"), Symbol);
 	UBeamJsonUtils::SerializeOptional<UArchetypeProxy*>(TEXT("external"), &External, Serializer);
-	UBeamJsonUtils::SerializeOptional<UClientPermission*>(TEXT("clientPermission"), &ClientPermission, Serializer);
+	UBeamJsonUtils::SerializeOptional<FBeamClientPermission>(TEXT("clientPermission"), &ClientPermission, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("startingAmount"), &StartingAmount, Serializer);
 }
 
@@ -17,7 +17,7 @@ void UCurrencyArchetype::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 {
 	Serializer->WriteValue(TEXT("symbol"), Symbol);
 	UBeamJsonUtils::SerializeOptional<UArchetypeProxy*>(TEXT("external"), &External, Serializer);
-	UBeamJsonUtils::SerializeOptional<UClientPermission*>(TEXT("clientPermission"), &ClientPermission, Serializer);
+	UBeamJsonUtils::SerializeOptional<FBeamClientPermission>(TEXT("clientPermission"), &ClientPermission, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("startingAmount"), &StartingAmount, Serializer);		
 }
 
@@ -25,7 +25,7 @@ void UCurrencyArchetype::BeamDeserializeProperties(const TSharedPtr<FJsonObject>
 {
 	Symbol = Bag->GetStringField(TEXT("symbol"));
 	UBeamJsonUtils::DeserializeOptional<UArchetypeProxy*>("external", Bag, External, OuterOwner);
-	UBeamJsonUtils::DeserializeOptional<UClientPermission*>("clientPermission", Bag, ClientPermission, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FBeamClientPermission>("clientPermission", Bag, ClientPermission, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("startingAmount", Bag, StartingAmount, OuterOwner);
 }
 

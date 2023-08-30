@@ -31,12 +31,60 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UBeamRuntime::Initialize_DelayedInit);
 	UE_LOG(LogBeamRuntime, Verbose, TEXT("Initializing UBeamRuntime Subsystem!"));
 
+	if (GetGameInstance()->GetWorld()->IsPlayInEditor())
+	{
+		// When running as a dedicated server instance, swap out the execute request delegate
+		const auto ExecuteRequestImpl = GET_FUNCTION_NAME_CHECKED(UBeamRuntime, PIEExecuteRequestImpl);
+		const auto EngineSubsystem = GEngine->GetEngineSubsystem<UBeamBackend>();
+		EngineSubsystem->ExecuteRequestDelegate.BindUFunction(this, ExecuteRequestImpl);
+		EngineSubsystem->bIsInPIE = true;
+		UE_LOG(LogBeamRuntime, Verbose, TEXT("Initializing UBeamRuntime Subsystem - FROM PIE!"));
+	}
+	else
+	{
+		// When running as a dedicated server instance, swap out the execute request delegate
+		const auto ExecuteRequestImpl = GetGameInstance()->IsDedicatedServerInstance()
+			                                ? GET_FUNCTION_NAME_CHECKED(UBeamBackend, DedicatedServerExecuteRequestImpl)
+			                                : GET_FUNCTION_NAME_CHECKED(UBeamBackend, DefaultExecuteRequestImpl);
+		const auto EngineSubsystem = GEngine->GetEngineSubsystem<UBeamBackend>();
+		EngineSubsystem->ExecuteRequestDelegate.BindUFunction(EngineSubsystem, ExecuteRequestImpl);
+
+		UE_LOG(LogBeamRuntime, Verbose, TEXT("Initializing UBeamRuntime Subsystem!"));
+	}
+}
+
+
+void UBeamRuntime::Deinitialize()
+{
+	Super::Deinitialize();
+	UserSlotSystem->GlobalUserSlotAuthenticatedCodeHandler.Remove(UserSlotAuthenticatedHandler);
+	UserSlotSystem->GlobalUserSlotClearedCodeHandler.Remove(UserSlotClearedHandler);
+
+	for (const auto& SlotName : GetDefault<UBeamCoreSettings>()->RuntimeUserSlots)
+	{
+		UserSlotSystem->ClearUserAtSlot(SlotName, ExitPIE, false, this);
+	}
+
 	// When running as a dedicated server instance, swap out the execute request delegate
-	const auto ExecuteRequestImpl = GetGameInstance()->IsDedicatedServerInstance()
-		                                ? GET_FUNCTION_NAME_CHECKED(UBeamBackend, DedicatedServerExecuteRequestImpl)
-		                                : GET_FUNCTION_NAME_CHECKED(UBeamBackend, DefaultExecuteRequestImpl);
+	const auto ExecuteRequestImpl = GET_FUNCTION_NAME_CHECKED(UBeamBackend, DefaultExecuteRequestImpl);
 	const auto EngineSubsystem = GEngine->GetEngineSubsystem<UBeamBackend>();
 	EngineSubsystem->ExecuteRequestDelegate.BindUFunction(EngineSubsystem, ExecuteRequestImpl);
+	EngineSubsystem->bIsInPIE = false;
+}
+
+void UBeamRuntime::PIEExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity)
+{
+	const auto BeamBackend = GEngine->GetEngineSubsystem<UBeamBackend>();
+	const auto Req = BeamBackend->InFlightRequests.FindRef(ActiveRequestId);
+
+	// TODO: We'll need to change the code-gen to be able to detect whether or not the request is actually coming from the PIE session.
+	// TODO: Basically, we need to have one delegate for build and another for editor. And the Beam___API classes need to not care about this other than forwarding the calling context to a function of BeamBackend.
+	// TODO: That function should decide which to use based on who is making the request ('Runtime' source PIE/Build or 'Editor' source).  
+	BeamBackend->InFlightPIERequests.Add(Req);
+	
+	GetGameInstance()->IsDedicatedServerInstance()
+		? BeamBackend->DedicatedServerExecuteRequestImpl(ActiveRequestId, Connectivity)
+		: BeamBackend->DefaultExecuteRequestImpl(ActiveRequestId, Connectivity);
 }
 
 void UBeamRuntime::Initialize_DelayedInit()
@@ -93,6 +141,7 @@ void UBeamRuntime::Initialize_OnRuntimeSubsystemsInitialized(const TArray<FBeamR
                                                              const TArray<FBeamErrorResponse>&)
 {
 	const auto bIsDedicatedServer = GetGameInstance()->IsDedicatedServerInstance();
+	const auto RequestTracker = RequestTrackerSystem;
 	if (bIsDedicatedServer)
 	{
 		// We don't ever automatically sign in for dedicated server builds (the flow for authentication is different when in the server).
@@ -119,56 +168,53 @@ void UBeamRuntime::Initialize_OnRuntimeSubsystemsInitialized(const TArray<FBeamR
 			       ))
 		}
 		GEngine->GetEngineSubsystem<UBeamBackend>()->RealmSecret = RealmSecret;
+	}
 
-		// In dedicated servers, after we have set up the RealmSecret --- the UBeamRuntimeSubsystem's OnBeamableStarted gets called.
-		// OnBeamableReady is never called in the server, as the server never authenticates via the UserSlot system.
-		// This is not great semantics, but necessary while we don't have server tokens for authentication. 
-		if (const UWorld* World = GetWorld())
+	// After we have set up the RealmSecret (for dedicated servers only) --- the UBeamRuntimeSubsystem's OnBeamableStarted gets called.
+	// OnBeamableReady is never called in the server, as the server never authenticates via the UserSlot system.
+	// This is not great semantics, but necessary while we don't have server tokens for authentication.
+	// OnBeamableStarted basically means we are ready for authentication, but nothing else. And... that until you authenticate into the OwnerPlayer slot, OnBeamableReady functions will not run
+	// on BeamableRuntimeSubsystems.
+	if (const UWorld* World = GetWorld())
+	{
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
-			if (const UGameInstance* GameInstance = World->GetGameInstance())
+			const auto Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
+
+			OnBeamableStartedOps.Reset(Subsystems.Num());
+			for (auto& Subsystem : Subsystems)
 			{
-				const auto Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
-				for (auto& Subsystem : Subsystems)
-				{
-					Subsystem->OnBeamableStarted();
-				}
+				const auto Handle = Subsystem->OnBeamableStarted();
+				OnBeamableStartedOps.Add(Handle);
 			}
+
+			OnBeamableStartedHandler = FOnWaitCompleteCode::CreateUObject(
+				this, &UBeamRuntime::Initialize_OnBeamableStartedFinished);
+			OnBeamableStartedWait = RequestTracker->CPP_WaitAll(
+				{}, OnBeamableStartedOps, {}, OnBeamableStartedHandler);
 		}
 	}
-	else
+}
+
+void UBeamRuntime::Initialize_OnBeamableStartedFinished(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&, const TArray<FBeamErrorResponse>&)
+{
+	OnStarted.Broadcast();
+	bIsBeamableStarted = true;
+
+	// Sign in automatically to the owner player slot (if configured to do so).
+	if (GetDefault<UBeamCoreSettings>()->bAutomaticFrictionlessAuthForOwnerPlayer)
 	{
-		// Sign in automatically to the owner player slot.
-		if (GetDefault<UBeamCoreSettings>()->bAutomaticFrictionlessAuthForOwnerPlayer)
+		const auto OwnerPlayerUserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+		if (UserSlotSystem->TryLoadSavedUserAtSlot(OwnerPlayerUserSlot, this))
 		{
-			const auto OwnerPlayerUserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
-			if (UserSlotSystem->TryLoadSavedUserAtSlot(OwnerPlayerUserSlot, this))
-			{
-				UE_LOG(LogBeamRuntime, Verbose, TEXT("Authenticated User at Slot! SLOT=%s"), *OwnerPlayerUserSlot.Name);
-			}
-			else
-			{
-				// If we are not already signed-into the first user slot and we are configured to automatically run auth, we run it. Otherwise, we call OnBeamableStarted on every runtime subsystem.
-				// OnBeamableStarted basically means we are ready for authentication, but nothing else. And... that until you authenticate into the OwnerPlayer slot, OnBeamableReady functions will not run
-				// on BeamableRuntimeSubsystems.
-				if (!bDidBeamableRuntimeBoot)
-				{
-					CPP_AuthenticateFrictionlessOperation(OwnerPlayerUserSlot, {}, this);
-				}
-			}
+			UE_LOG(LogBeamRuntime, Verbose, TEXT("Authenticated User at Slot! SLOT=%s"), *OwnerPlayerUserSlot.Name);
 		}
 		else
 		{
-			// By default, only UserSlot at index 0 of RuntimeUserSlots always gets loaded. This actually only be called ONCE during the entire lifecycle of your program.
-			if (const UWorld* World = GetWorld())
+			// If we are not already signed-into the first user slot and we are configured to automatically run auth, we run it. 			
+			if (!bIsOwnerPlayerAuthenticated)
 			{
-				if (const UGameInstance* GameInstance = World->GetGameInstance())
-				{
-					const auto Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
-					for (auto& Subsystem : Subsystems)
-					{
-						Subsystem->OnBeamableStarted();
-					}
-				}
+				CPP_AuthenticateFrictionlessOperation(OwnerPlayerUserSlot, {}, this);
 			}
 		}
 	}
@@ -202,7 +248,7 @@ void UBeamRuntime::OnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBea
 			SignedInOps.Reset(Subsystems.Num());
 			for (auto& Subsystem : Subsystems)
 			{
-				const auto Handle = Subsystem->OnUserSignedIn(UserSlot, BeamRealmUser, !bDidBeamableRuntimeBoot);
+				const auto Handle = Subsystem->OnUserSignedIn(UserSlot, BeamRealmUser, !bIsOwnerPlayerAuthenticated);
 				SignedInOps.Add(Handle);
 			}
 
@@ -231,21 +277,42 @@ void UBeamRuntime::OnUserSlotAuthenticated_PostUserSignedIn(const TArray<FBeamRe
 	}
 
 	// By default, only UserSlot at index 0 of RuntimeUserSlots always gets loaded. This actually only be called ONCE during the entire lifecycle of your program.
-	if (!bDidBeamableRuntimeBoot && UserSlot.Name.Equals(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot()))
+	if (!bIsOwnerPlayerAuthenticated && UserSlot.Name.Equals(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot()))
 	{
+		const auto RequestTracker = RequestTrackerSystem;
 		if (const UWorld* World = GetWorld())
 		{
 			if (const UGameInstance* GameInstance = World->GetGameInstance())
 			{
 				const auto Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
+
+				OnBeamableReadyOps.Reset(Subsystems.Num());
 				for (auto& Subsystem : Subsystems)
 				{
-					Subsystem->OnBeamableReady();
+					const auto Handle = Subsystem->OnBeamableReady();
+					OnBeamableReadyOps.Add(Handle);
 				}
+
+				OnBeamableReadyWaitHandler = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::OnUserSlotAuthenticated_OnBeamableReady);
+				OnBeamableReadyWait = RequestTracker->CPP_WaitAll({}, OnBeamableReadyOps, {}, OnBeamableReadyWaitHandler);
 			}
 		}
-		bDidBeamableRuntimeBoot = true;
+		bIsOwnerPlayerAuthenticated = true;
 	}
+}
+
+void UBeamRuntime::OnUserSlotAuthenticated_OnBeamableReady(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&, const TArray<FBeamErrorResponse>&)
+{
+	if (const UWorld* World = GetWorld())
+	{
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
+		{
+			const auto Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
+			for (auto& Subsystem : Subsystems)
+				Subsystem->bIsReady = true;
+		}
+	}
+	OnReady.Broadcast();
 }
 
 void UBeamRuntime::OnUserSlotCleared(const EUserSlotClearedReason& Reason, const FUserSlot& UserSlot,
@@ -305,23 +372,6 @@ void UBeamRuntime::OnUserSlotCleared_PostUserSignedOut(const TArray<FBeamRequest
 	}
 }
 
-
-void UBeamRuntime::Deinitialize()
-{
-	Super::Deinitialize();
-	UserSlotSystem->GlobalUserSlotAuthenticatedCodeHandler.Remove(UserSlotAuthenticatedHandler);
-	UserSlotSystem->GlobalUserSlotClearedCodeHandler.Remove(UserSlotClearedHandler);
-
-	for (const auto& SlotName : GetDefault<UBeamCoreSettings>()->RuntimeUserSlots)
-	{
-		UserSlotSystem->ClearUserAtSlot(SlotName, ExitPIE, false, this);
-	}
-
-	// When running as a dedicated server instance, swap out the execute request delegate
-	const auto ExecuteRequestImpl = GET_FUNCTION_NAME_CHECKED(UBeamBackend, DefaultExecuteRequestImpl);
-	const auto EngineSubsystem = GEngine->GetEngineSubsystem<UBeamBackend>();
-	EngineSubsystem->ExecuteRequestDelegate.BindUFunction(EngineSubsystem, ExecuteRequestImpl);
-}
 
 FBeamOperationHandle UBeamRuntime::AuthenticateFrictionlessOperation(FUserSlot UserSlot,
                                                                      FBeamOperationEventHandler OnOperationEvent,

@@ -143,6 +143,27 @@ void FBeamJsonUtilsSpec::Define()
 
 	Describe("FBeamJsonUtils - Serialization", [this]()
 	{
+		It("should output a JSON Object representing the struct implementing BeamJsonSerializable", [this]()
+		{
+			int Val = 5;
+			FTestInt Int{};
+			Int.a = Val;
+
+			FString OutJson;
+			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+			UBeamJsonUtils::SerializeUObject<FTestInt>(Int, JsonSerializer);
+			JsonSerializer->Close();
+
+			// Get a condensed string so we can easily compare with the condensed string we generate.
+			const FString ExpectedTemp =
+				TEXT(R"({ "a" : 5 })");
+			FJsonDataBag ExpectedBag;
+			ExpectedBag.FromJson(ExpectedTemp);
+			const FString Expected = ExpectedBag.ToJson(false);
+
+			TestEqual("Serialization output is not correct", OutJson, Expected);
+		});
+
 		It("should output a blank JSON Object (Optional Primitive without Set Value)", [this]()
 		{
 			struct FTestOptionalInt : FBeamOptional
@@ -1031,6 +1052,20 @@ void FBeamJsonUtilsSpec::Define()
 
 	Describe("FBeamJsonUtils - Deserialization", [this]()
 	{
+		It("should deserialize a JSON Object as a struct implementing BeamJsonSerializable", [this]()
+		{
+			// Get a condensed string so we can easily compare with the condensed string we generate.
+			const FString JsonInput =
+				TEXT(R"({
+						"a": 5
+					})");
+
+			FTestInt Test{};
+			Test.BeamDeserialize(JsonInput);
+
+			TestTrue("Struct Properties were deserialized correctly", Test.a == 5);
+		});
+
 		It("should deserialize a JSON Object as a UObject with nested properties", [this]()
 		{
 			// Get a condensed string so we can easily compare with the condensed string we generate.
@@ -1826,8 +1861,7 @@ void FBeamJsonUtilsSpec::Define()
 				TestTrue("Optional was deserialized with correct value at idx 2", Test.Values.FindChecked("a3").Values.FindChecked("a") == TEXT("-1"));
 			}
 
-			{			
-
+			{
 				struct FBeamMapOfMapOfBeamCid : public FBeamMap
 				{
 					TMap<FString, FBeamMapOfBeamCid> Values;
@@ -2314,7 +2348,7 @@ void FBeamJsonUtilsSpec::Define()
 				TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.a.FindRef("a2").Values[0].AsLong == -1);
 				TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.a.FindRef("a3").Values[0].AsLong == 1);
 			}
-			
+
 			// Test with non-primitives
 			{
 				struct FBeamArrayOfTestData : public FBeamArray

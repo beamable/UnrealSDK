@@ -22,7 +22,7 @@ FString UCurrencyArchetypeLibrary::CurrencyArchetypeToJsonString(const UCurrency
 	return Result;
 }	
 
-UCurrencyArchetype* UCurrencyArchetypeLibrary::Make(FString Symbol, FOptionalArchetypeProxy External, FOptionalClientPermission ClientPermission, FOptionalInt64 StartingAmount, UObject* Outer)
+UCurrencyArchetype* UCurrencyArchetypeLibrary::Make(FString Symbol, FOptionalArchetypeProxy External, FOptionalBeamClientPermission ClientPermission, FOptionalInt64 StartingAmount, UObject* Outer)
 {
 	auto Serializable = NewObject<UCurrencyArchetype>(Outer);
 	Serializable->Symbol = Symbol;
@@ -33,7 +33,7 @@ UCurrencyArchetype* UCurrencyArchetypeLibrary::Make(FString Symbol, FOptionalArc
 	return Serializable;
 }
 
-void UCurrencyArchetypeLibrary::Break(const UCurrencyArchetype* Serializable, FString& Symbol, FOptionalArchetypeProxy& External, FOptionalClientPermission& ClientPermission, FOptionalInt64& StartingAmount)
+void UCurrencyArchetypeLibrary::Break(const UCurrencyArchetype* Serializable, FString& Symbol, FOptionalArchetypeProxy& External, FOptionalBeamClientPermission& ClientPermission, FOptionalInt64& StartingAmount)
 {
 	Symbol = Serializable->Symbol;
 	External = Serializable->External;

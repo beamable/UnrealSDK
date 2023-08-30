@@ -4,7 +4,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArchetypeProxy.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalClientPermission.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamClientPermission.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 
 #include "CurrencyArchetype.generated.h"
@@ -20,7 +20,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="External", Category="Beam")
 	FOptionalArchetypeProxy External;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Client Permission", Category="Beam")
-	FOptionalClientPermission ClientPermission;
+	FOptionalBeamClientPermission ClientPermission;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Starting Amount", Category="Beam")
 	FOptionalInt64 StartingAmount;
 

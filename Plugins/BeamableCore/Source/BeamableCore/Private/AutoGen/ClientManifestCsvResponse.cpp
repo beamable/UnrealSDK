@@ -8,7 +8,9 @@ void UClientManifestCsvResponse::DeserializeRequestResponse(UObject* RequestData
 	CsvData = NewObject<UDataTable>(RequestData);
 
 	
-	// Change the response content to add a key, This should be a utility function and only be code-gen'ed if the OApi spec does not specify a key column. 
+	// Change the response content to add a key, This should be a utility function and only be code-gen'ed if the OApi spec does not specify a key column.
+	// TODO: This is a hard-code change to handle the fact that the Array representation inside the CSV that we get from the back-end is not compatible with the Unreal CSV parser.
+	// TODO: we need this fixed at the backend.
 	auto IntCursor = 0;
 	do
 	{

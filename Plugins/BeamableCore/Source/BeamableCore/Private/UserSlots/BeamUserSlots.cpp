@@ -15,7 +15,7 @@ void UBeamUserSlots::Initialize(FSubsystemCollectionBase& Collection)
 
 	// Prepare data structures to hold all authenticated user data. 
 	AuthenticatedUsers.Reserve(128);
-	AuthenticatedUserMapping.Reserve(128);	
+	AuthenticatedUserMapping.Reserve(128);
 }
 
 void UBeamUserSlots::Deinitialize()
@@ -47,7 +47,7 @@ bool UBeamUserSlots::IsPIEContext(const UObject* CallingContext)
 	if (!CallingContext) return false;
 
 	const auto WorldContext = GEngine->GetWorldContextFromWorld(CallingContext->GetWorld());
-	return WorldContext && WorldContext->WorldType == EWorldType::PIE;		
+	return WorldContext && WorldContext->WorldType == EWorldType::PIE;
 #else
 	return false;
 #endif
@@ -56,11 +56,18 @@ bool UBeamUserSlots::IsPIEContext(const UObject* CallingContext)
 FString UBeamUserSlots::GetNamespacedSlotId(FUserSlot SlotId, const UObject* CallingContext)
 {
 #if WITH_EDITOR
+	// If we are already a namespaced name, we just return it.
+	if(SlotId.Name.StartsWith("PIE_"))
+		return SlotId;
+	
 	if (CallingContext)
 	{
 		const auto WorldContext = GEngine->GetWorldContextFromWorld(CallingContext->GetWorld());
 		if (WorldContext && WorldContext->WorldType == EWorldType::PIE)
+		{
+			// Format the namespace  
 			return FString::Printf(TEXT("PIE_%d_%s"), WorldContext->PIEInstance, *SlotId.Name);
+		}
 	}
 #endif
 
@@ -117,7 +124,7 @@ bool UBeamUserSlots::GetUserDataWithRefreshTokenAndPid(const FString& RefreshTok
 		if (OutUserData.AuthToken.RefreshToken == RefreshToken && OutUserData.RealmHandle.Pid == Pid)
 		{
 			const FString NamespacedSlotId = UserMapping.Key;
-			GetSlotIdFromNamespacedSlotId(NamespacedSlotId, OutUserSlot);
+			OutUserSlot = NamespacedSlotId;
 			UE_LOG(LogBeamUserSlots, Verbose, TEXT("Found User Data with PID and RefreshToken At Slot!\nUSER_SLOT=%s"), *OutUserSlot.Name);
 			return true;
 		}
@@ -133,11 +140,8 @@ bool UBeamUserSlots::GetUserDataWithRefreshTokenAndPid(const FString& RefreshTok
 	return false;
 }
 
-void UBeamUserSlots::SetAuthenticationDataAtSlot(FUserSlot SlotId, const FString& AccessToken, const FString& RefreshToken, const int64& ExpiresIn, const FBeamCid& Cid, const FBeamPid& Pid,
-                                                 const UObject* CallingContext)
+void UBeamUserSlots::SetAuthenticationDataAtNamespacedSlot(const FString& NamespacedSlotId, const FString& AccessToken, const FString& RefreshToken, const int64& ExpiresIn, const FBeamCid& Cid, const FBeamPid& Pid)
 {
-	const auto NamespacedSlotId = GetNamespacedSlotId(SlotId, CallingContext);
-
 	const auto AuthenticatedUser = FBeamAuthToken{AccessToken, RefreshToken, ExpiresIn};
 	const auto UserRealmData = FBeamRealmHandle{Cid, Pid};
 	const auto RealmUser = FBeamRealmUser{-1, -1, TEXT(""), UserRealmData, AuthenticatedUser};
@@ -158,6 +162,13 @@ void UBeamUserSlots::SetAuthenticationDataAtSlot(FUserSlot SlotId, const FString
 
 		UE_LOG(LogBeamUserSlots, Verbose, TEXT("Updated User Data at slot!\nUSER_SLOT=%s"), *NamespacedSlotId);
 	}
+}
+
+void UBeamUserSlots::SetAuthenticationDataAtSlot(FUserSlot SlotId, const FString& AccessToken, const FString& RefreshToken, const int64& ExpiresIn, const FBeamCid& Cid, const FBeamPid& Pid,
+                                                 const UObject* CallingContext)
+{
+	const auto NamespacedSlotId = GetNamespacedSlotId(SlotId, CallingContext);
+	SetAuthenticationDataAtNamespacedSlot(NamespacedSlotId, AccessToken, RefreshToken, ExpiresIn, Cid, Pid);
 }
 
 void UBeamUserSlots::SetGamerTagAtSlot(FUserSlot SlotId, const FBeamGamerTag& GamerTag, const UObject* CallingContext)
@@ -233,15 +244,15 @@ bool UBeamUserSlots::SaveSlot(FUserSlot SlotId, const UObject* CallingContext)
 {
 	// When we are running in PIE, we only save if we are configured to do so. Otherwise, we just act like we did. 
 #if WITH_EDITOR
-	if(IsPIEContext(CallingContext) && !GetDefault<UBeamCoreSettings>()->bPersistRuntimeSlotDataWhenInPIE)
+	if (IsPIEContext(CallingContext) && !GetDefault<UBeamCoreSettings>()->bPersistRuntimeSlotDataWhenInPIE)
 		return true;
 #endif
-	
+
 	const auto NamespacedSlotId = GetNamespacedSlotId(SlotId, CallingContext);
 
 	FBeamRealmUser User;
 	const auto bWasAuthenticated = GetUserDataAtSlot(SlotId, User, CallingContext);
-	
+
 #if !WITH_EDITOR
 		ensureAlwaysMsgf(!User.RealmHandle.Pid.AsString.IsEmpty(), TEXT("Customer-Scoped Tokens are not allowed in builds! If should never be seeing this!"));
 #endif
@@ -391,12 +402,12 @@ bool UBeamUserSlots::TryLoadSavedUserAtSlot(FUserSlot SlotId, UObject* CallingCo
 			const auto ExpiresIn = SlotSerializedAuthData.ExpiresIn;
 			const auto Cid = SlotSerializedAuthData.Cid;
 			const auto Pid = SlotSerializedAuthData.Pid;
-			
+
 			// We only consider ourselves authenticated if the realm is the same as it was saved.
 			// TODO: we might want to consider saving the auth data as a JSON Array of FUserSlotAuthData per slot and keeping auth data for each CID/PID... for now,
 			// TODO: we'll just overwrite whenever a realm change happens.			
 			const auto TargetRealm = GetDefault<UBeamCoreSettings>()->TargetRealm;
-			if(SlotSerializedAuthData.Cid == TargetRealm.Cid && SlotSerializedAuthData.Pid == TargetRealm.Pid)
+			if (SlotSerializedAuthData.Cid == TargetRealm.Cid && SlotSerializedAuthData.Pid == TargetRealm.Pid)
 			{
 				// We try to deserialize the user slot data
 				FUserSlotAccountData SlotSerializedAccountData;
@@ -414,7 +425,7 @@ bool UBeamUserSlots::TryLoadSavedUserAtSlot(FUserSlot SlotId, UObject* CallingCo
 			}
 
 			UE_LOG(LogBeamUserSlots, Warning, TEXT("Failed to load user saved at slot!\nUSER_SLOT=%s, CID=%s, PID=%s, TARGET_CID=%s, TARGET_PID=%s"), *NamespacedSlotId, *Cid.AsString, *Pid.AsString,
-				*TargetRealm.Cid.AsString, *TargetRealm.Pid.AsString);
+			       *TargetRealm.Cid.AsString, *TargetRealm.Pid.AsString);
 		}
 
 
@@ -422,7 +433,7 @@ bool UBeamUserSlots::TryLoadSavedUserAtSlot(FUserSlot SlotId, UObject* CallingCo
 		UE_LOG(LogBeamUserSlots, Verbose, TEXT("Invalid user saved at slot!\nUSER_SLOT=%s."), *NamespacedSlotId);
 		return false;
 	}
-	
+
 	UE_LOG(LogBeamUserSlots, Verbose, TEXT("No user saved at slot!\nUSER_SLOT=%s."), *NamespacedSlotId);
 	return false;
 }
@@ -449,7 +460,7 @@ bool UBeamUserSlots::SaveSlotData(FString SlotDataTypeName, FUserSlot SlotId, T 
 
 	FBeamRealmUser User;
 	const auto bWasAuthenticated = GetUserDataAtSlot(SlotId, User, CallingContext);
-	
+
 #if !WITH_EDITOR
 		ensureAlwaysMsgf(!User.RealmHandle.Pid.AsString.IsEmpty(), TEXT("Customer-Scoped Tokens are not allowed in builds! If should never be seeing this!"))
 #endif

@@ -8,6 +8,7 @@
 #include "BeamBackend/BeamRealmHandle.h"
 #include "BeamBackend/BeamRetryConfig.h"
 #include "BeamBackend/ResponseCache/BeamCacheConfig.h"
+#include "Content/BeamContentCache.h"
 #include "BeamCoreSettings.generated.h"
 
 /**
@@ -118,6 +119,20 @@ public:
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="User Slots")
 	bool bPersistRuntimeSlotDataWhenInPIE = true;
+
+	/**
+	 * @brief When deserializing content that stores FGameplayTag, should we error out if we fail to convert that tag?
+	 * If this is true, you must guarantee all tags in all content are always valid in your project/build.
+	 * If this is false, non-existent tags will be deserialized as invalid.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
+	bool bErrorIfGameplayTagNotFound = false;
+
+	/**
+	 * @brief References to all baked content files. This is automatically filled up whenever you cook a build and can be ignored by the end user.
+	 */
+	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="Content")
+	TArray<TSoftObjectPtr<UBeamContentCache>> BakedContentManifests;
 
 	UFUNCTION(BlueprintCallable)
 	FUserSlot GetOwnerPlayerSlot() const { return FUserSlot{RuntimeUserSlots[0]}; }

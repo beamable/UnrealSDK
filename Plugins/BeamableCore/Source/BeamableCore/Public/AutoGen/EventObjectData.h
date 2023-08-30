@@ -8,7 +8,7 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Enums/EventState.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalEventPhaseRuntime.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalClientPermission.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamClientPermission.h"
 #include "BeamableCore/Public/AutoGen/Event.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfEventPhaseTime.h"
 
@@ -43,7 +43,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Phase", Category="Beam")
 	FOptionalEventPhaseRuntime Phase;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Permissions", Category="Beam")
-	FOptionalClientPermission Permissions;
+	FOptionalBeamClientPermission Permissions;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="End Time", Category="Beam")
 	FOptionalInt64 EndTime;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Origin", Category="Beam")

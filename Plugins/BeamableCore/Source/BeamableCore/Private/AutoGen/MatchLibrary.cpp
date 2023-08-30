@@ -1,0 +1,48 @@
+
+#include "BeamableCore/Public/AutoGen/MatchLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UMatchLibrary::MatchToJsonString(const UMatch* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UMatch* UMatchLibrary::Make(FOptionalString MatchId, FOptionalString Status, FOptionalString Created, FOptionalMatchType MatchType, FOptionalArrayOfTeam Teams, FOptionalArrayOfTicket Tickets, UObject* Outer)
+{
+	auto Serializable = NewObject<UMatch>(Outer);
+	Serializable->MatchId = MatchId;
+	Serializable->Status = Status;
+	Serializable->Created = Created;
+	Serializable->MatchType = MatchType;
+	Serializable->Teams = Teams;
+	Serializable->Tickets = Tickets;
+	
+	return Serializable;
+}
+
+void UMatchLibrary::Break(const UMatch* Serializable, FOptionalString& MatchId, FOptionalString& Status, FOptionalString& Created, FOptionalMatchType& MatchType, FOptionalArrayOfTeam& Teams, FOptionalArrayOfTicket& Tickets)
+{
+	MatchId = Serializable->MatchId;
+	Status = Serializable->Status;
+	Created = Serializable->Created;
+	MatchType = Serializable->MatchType;
+	Teams = Serializable->Teams;
+	Tickets = Serializable->Tickets;
+		
+}
+

@@ -9,6 +9,7 @@ void UBeamNotificationApi::Initialize(FSubsystemCollectionBase& Collection)
 	Backend = Cast<UBeamBackend>(Collection.InitializeDependency(UBeamBackend::StaticClass()));
 	RequestTracker = Cast<UBeamRequestTracker>(Collection.InitializeDependency(UBeamRequestTracker::StaticClass()));
 	ResponseCache = Cast<UBeamResponseCache>(Collection.InitializeDependency(UBeamResponseCache::StaticClass()));
+	
 }
 
 void UBeamNotificationApi::Deinitialize()
@@ -144,7 +145,7 @@ void UBeamNotificationApi::CPP_PostCustomImpl(const FBeamRealmHandle& TargetReal
 
 		
 void UBeamNotificationApi::BP_PostServerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UPostServerRequest* RequestData, const FOnPostServerSuccess& OnSuccess, const FOnPostServerError& OnError, const FOnPostServerComplete& OnComplete, 
+                                UBasicNotificationPostServerRequest* RequestData, const FOnBasicNotificationPostServerSuccess& OnSuccess, const FOnBasicNotificationPostServerError& OnError, const FOnBasicNotificationPostServerComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
@@ -158,14 +159,14 @@ void UBeamNotificationApi::BP_PostServerImpl(const FBeamRealmHandle& TargetRealm
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UPostServerRequest, UCommonResponse, FOnPostServerSuccess, FOnPostServerError, FOnPostServerComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UBasicNotificationPostServerRequest, UCommonResponse, FOnBasicNotificationPostServerSuccess, FOnBasicNotificationPostServerError, FOnBasicNotificationPostServerComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostServerRequest, UCommonResponse, FOnPostServerSuccess, FOnPostServerError, FOnPostServerComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UBasicNotificationPostServerRequest, UCommonResponse, FOnBasicNotificationPostServerSuccess, FOnBasicNotificationPostServerError, FOnBasicNotificationPostServerComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -175,7 +176,7 @@ void UBeamNotificationApi::BP_PostServerImpl(const FBeamRealmHandle& TargetRealm
 }
 
 void UBeamNotificationApi::CPP_PostServerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UPostServerRequest* RequestData, const FOnPostServerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+                              UBasicNotificationPostServerRequest* RequestData, const FOnBasicNotificationPostServerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -188,14 +189,14 @@ void UBeamNotificationApi::CPP_PostServerImpl(const FBeamRealmHandle& TargetReal
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UPostServerRequest, UCommonResponse>
+		Backend->RunAuthenticatedCodeRequestProcessor<UBasicNotificationPostServerRequest, UCommonResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostServerRequest, UCommonResponse>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UBasicNotificationPostServerRequest, UCommonResponse>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -425,14 +426,14 @@ void UBeamNotificationApi::CPP_PostCustom(const FUserSlot& UserSlot, UPostCustom
 }
 
 		
-void UBeamNotificationApi::CPP_PostServer(const FUserSlot& UserSlot, UPostServerRequest* Request, const FOnPostServerFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamNotificationApi::CPP_PostServer(const FUserSlot& UserSlot, UBasicNotificationPostServerRequest* Request, const FOnBasicNotificationPostServerFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UPostServerRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UBasicNotificationPostServerRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
 	CPP_PostServerImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
@@ -519,14 +520,14 @@ void UBeamNotificationApi::PostCustom(FUserSlot UserSlot, UPostCustomRequest* Re
 }
 
 		
-void UBeamNotificationApi::PostServer(FUserSlot UserSlot, UPostServerRequest* Request, const FOnPostServerSuccess& OnSuccess, const FOnPostServerError& OnError, const FOnPostServerComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+void UBeamNotificationApi::PostServer(FUserSlot UserSlot, UBasicNotificationPostServerRequest* Request, const FOnBasicNotificationPostServerSuccess& OnSuccess, const FOnBasicNotificationPostServerError& OnError, const FOnBasicNotificationPostServerComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UPostServerRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UBasicNotificationPostServerRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
 	BP_PostServerImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	

@@ -7,7 +7,7 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalEventGroupRewards.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalLeaderboardCohortSettings.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalClientPermission.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamClientPermission.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfEventRewardContent.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalSchedule.h"
@@ -35,7 +35,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cohort Settings", Category="Beam")
 	FOptionalLeaderboardCohortSettings CohortSettings;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Permissions", Category="Beam")
-	FOptionalClientPermission Permissions;
+	FOptionalBeamClientPermission Permissions;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Schedule", Category="Beam")
 	FOptionalSchedule Schedule;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stores", Category="Beam")

@@ -23,7 +23,7 @@ void UEventObjectData::BeamSerializeProperties(TUnrealJsonSerializer& Serializer
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("rootEventId"), &RootEventId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("originType"), &OriginType, Serializer);
 	UBeamJsonUtils::SerializeOptional<UEventPhaseRuntime*>(TEXT("phase"), &Phase, Serializer);
-	UBeamJsonUtils::SerializeOptional<UClientPermission*>(TEXT("permissions"), &Permissions, Serializer);
+	UBeamJsonUtils::SerializeOptional<FBeamClientPermission>(TEXT("permissions"), &Permissions, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("endTime"), &EndTime, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("origin"), &Origin, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("createdAt"), &CreatedAt, Serializer);
@@ -44,7 +44,7 @@ void UEventObjectData::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("rootEventId"), &RootEventId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("originType"), &OriginType, Serializer);
 	UBeamJsonUtils::SerializeOptional<UEventPhaseRuntime*>(TEXT("phase"), &Phase, Serializer);
-	UBeamJsonUtils::SerializeOptional<UClientPermission*>(TEXT("permissions"), &Permissions, Serializer);
+	UBeamJsonUtils::SerializeOptional<FBeamClientPermission>(TEXT("permissions"), &Permissions, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("endTime"), &EndTime, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("origin"), &Origin, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("createdAt"), &CreatedAt, Serializer);
@@ -65,7 +65,7 @@ void UEventObjectData::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& 
 	UBeamJsonUtils::DeserializeOptional<FString>("rootEventId", Bag, RootEventId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("originType", Bag, OriginType, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UEventPhaseRuntime*>("phase", Bag, Phase, OuterOwner);
-	UBeamJsonUtils::DeserializeOptional<UClientPermission*>("permissions", Bag, Permissions, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FBeamClientPermission>("permissions", Bag, Permissions, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("endTime", Bag, EndTime, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("origin", Bag, Origin, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("createdAt", Bag, CreatedAt, OuterOwner);

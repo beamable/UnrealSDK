@@ -13,6 +13,8 @@
 #include "BeamRuntime.generated.h"
 
 
+DECLARE_DYNAMIC_DELEGATE(FRuntimeStateChangedHandler);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRuntimeStateChangedEvent);
 
 /**
@@ -24,7 +26,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	GENERATED_BODY()
 
 	/** @brief Initializes the subsystem.  */
-	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;	
 
 	/**
 	 * @brief This gets called the frame after all the subsystem initializations have happened.
@@ -39,6 +41,11 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	void Initialize_OnRuntimeSubsystemsInitialized(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&,
 	                                               const TArray<FBeamErrorResponse>&);
 
+	/**
+	 * @brief This gets called after all runtime subsystems have been intialized, but before the Owner Player's auth has been made.
+	 */
+	void Initialize_OnBeamableStartedFinished(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&, const TArray<FBeamErrorResponse>&);
+
 
 	/**
 	 * @brief Callback added to the UserSlot global callback so that we can respond to users signing in. 
@@ -50,6 +57,11 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 */
 	void OnUserSlotAuthenticated_PostUserSignedIn(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&,
 	                                              const TArray<FBeamErrorResponse>&, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser);
+
+	/**
+	 * @brief After all subsystems have finished their respective OnBeamableReady callbacks, we trigger a project wide event.
+	 */
+	void OnUserSlotAuthenticated_OnBeamableReady(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&, const TArray<FBeamErrorResponse>&);
 
 	/**
 	 * @brief Callback added to the UserSlot global callback so that we can respond to users signing out. 
@@ -102,25 +114,101 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	TMap<FUserSlot, FOnWaitCompleteCode> OnOnUserSignedOut;
 
 	/**
-	 * @brief This flag is used for beamable's automatic initialization. It ensures that the OnBeamableReady event is only ever called once in one of two moments after the game boots up:
-	 *  - If UserSlot at index 0 is signed in already, we wait for it's authentication flow to finish and then call it.
-	 *  - If UserSlot at index 0 is NOT signed in already, we call it during DelayedInitialize (for now, we assume this is the "owner" player of the game -- player 1).
-	 *
-	 *  BeamRuntimeSubsystems can implement their OnBeamableReady event to: either set up UIs or kick-off operations to fetch data (and let the UIs poll whatever subsystems
-	 *  they need to be ready).
-	 *	  
+	 * @brief After beamable has finished it's initialization but has yet to attempt its frictionless auth	 
 	 */
-	bool bDidBeamableRuntimeBoot = false;
+	TArray<FBeamOperationHandle> OnBeamableStartedOps = {};
+	FBeamWaitHandle OnBeamableStartedWait;
+	FOnWaitCompleteCode OnBeamableStartedHandler;
+
+	/**
+	 * @brief After beamable has finished it's frictionless auth
+	 */
+	TArray<FBeamOperationHandle> OnBeamableReadyOps = {};
+	FBeamWaitHandle OnBeamableReadyWait;
+	FOnWaitCompleteCode OnBeamableReadyWaitHandler;
 
 public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
 	static UBeamRuntime* GetSelf(const UObject* CallingContext) { return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamRuntime>(); }
 
+	/**
+	 * @brief Function that replaces UBeamBackend::DefaultExecuteRequestImpl when running in PIE mode.
+	 * 
+	 */
+	UFUNCTION()
+	void PIEExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity);
+	
 	UPROPERTY()
 	UBeamUserSlots* UserSlotSystem;
 
 	UPROPERTY()
 	UBeamRequestTracker* RequestTrackerSystem;
+
+	/**
+	 * @brief This flag is used for beamable's automatic initialization.
+	 * It ensures that the OnBeamableReady event is only ever called once in one of two moments after the game boots up:
+	 *  - If UserSlot at index 0 is signed in already, we wait for it's authentication flow to finish and then call it.
+	 *  - If UserSlot at index 0 is NOT signed in already, we call it during DelayedInitialize (for now, we assume this is the "owner" player of the game -- player 1).
+	 *
+	 *  BeamRuntimeSubsystems implement their OnBeamableReady function event to: either set up local data by kicking-off operations to fetch data.
+	 *
+	 *  The OnReady event exposed here is what game makers should use when registering their actors, components, etc... if they wish to depend on beamable's runtime systems.	  
+	 */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="IsOwnerUserAuthenticated")
+	bool bIsOwnerPlayerAuthenticated = false;
+
+	/**
+	 * @brief This flag is used to verify that beamable has been properly initialized and is ready for authentication.
+	 */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="IsBeamableStarted")
+	bool bIsBeamableStarted = false;
+
+
+	/**
+	 * @brief So that actors and components can react to beamable's initialization flow being finished (before the Owner Player's auth has happened).	 	  
+	 */
+	UPROPERTY()
+	FRuntimeStateChangedEvent OnStarted;
+
+	/**
+	 * @brief In BP, use this function to bind initialization functions to OnReady. This will execute the delegate if you're already ready before it binds it. 
+	 */
+	UFUNCTION(BlueprintCallable)
+	void RegisterOnStarted(FRuntimeStateChangedHandler Handler)
+	{
+		if (bIsBeamableStarted) const auto _ = Handler.ExecuteIfBound();
+		OnStarted.Add(Handler);
+	}
+
+	/**
+	 * @brief In BP, use this function to bind initialization functions to OnReady. This will NOT execute the delegate if you're already ready. 
+	 */
+	UFUNCTION(BlueprintCallable)
+	void RegisterOnStarted_NoExecute(FRuntimeStateChangedHandler Handler) { OnStarted.Add(Handler); }
+
+	/**
+	 * @brief So that actors and components can react to beamable's initialization flow being finished.
+	 *  The OnReady event is what game makers should use when registering their actors, systems, etc... if they wish to depend on beamable's runtime systems.	  
+	 */
+	UPROPERTY()
+	FRuntimeStateChangedEvent OnReady;
+
+	/**
+	 * @brief In BP, use this function to bind initialization functions to OnReady. This will execute the delegate if you're already ready before it binds it. 
+	 */
+	UFUNCTION(BlueprintCallable)
+	void RegisterOnReady(FRuntimeStateChangedHandler Handler)
+	{
+		if (bIsOwnerPlayerAuthenticated) const auto _ = Handler.ExecuteIfBound();
+		OnReady.Add(Handler);
+	}
+
+	/**
+	 * @brief In BP, use this function to bind initialization functions to OnReady. This will NOT execute the delegate if you're already ready. 
+	 */
+	UFUNCTION(BlueprintCallable)
+	void RegisterOnReady_NoExecute(FRuntimeStateChangedHandler Handler) { OnReady.Add(Handler); }
+
 
 	/**
 	 * @brief An operation that will authenticate a user with the beamable and persist that authentication locally.

@@ -22,7 +22,7 @@ FString UEventLibrary::EventToJsonString(const UEvent* Serializable, const bool 
 	return Result;
 }	
 
-UEvent* UEventLibrary::Make(FString Name, FString StartDate, FString Symbol, TArray<UEventPhase*> Phases, FOptionalInt32 PartitionSize, FOptionalEventGroupRewards GroupRewards, FOptionalLeaderboardCohortSettings CohortSettings, FOptionalClientPermission Permissions, FOptionalSchedule Schedule, FOptionalArrayOfString Stores, FOptionalArrayOfEventRewardContent ScoreRewards, FOptionalArrayOfEventRewardContent RankRewards, UObject* Outer)
+UEvent* UEventLibrary::Make(FString Name, FString StartDate, FString Symbol, TArray<UEventPhase*> Phases, FOptionalInt32 PartitionSize, FOptionalEventGroupRewards GroupRewards, FOptionalLeaderboardCohortSettings CohortSettings, FOptionalBeamClientPermission Permissions, FOptionalSchedule Schedule, FOptionalArrayOfString Stores, FOptionalArrayOfEventRewardContent ScoreRewards, FOptionalArrayOfEventRewardContent RankRewards, UObject* Outer)
 {
 	auto Serializable = NewObject<UEvent>(Outer);
 	Serializable->Name = Name;
@@ -41,7 +41,7 @@ UEvent* UEventLibrary::Make(FString Name, FString StartDate, FString Symbol, TAr
 	return Serializable;
 }
 
-void UEventLibrary::Break(const UEvent* Serializable, FString& Name, FString& StartDate, FString& Symbol, TArray<UEventPhase*>& Phases, FOptionalInt32& PartitionSize, FOptionalEventGroupRewards& GroupRewards, FOptionalLeaderboardCohortSettings& CohortSettings, FOptionalClientPermission& Permissions, FOptionalSchedule& Schedule, FOptionalArrayOfString& Stores, FOptionalArrayOfEventRewardContent& ScoreRewards, FOptionalArrayOfEventRewardContent& RankRewards)
+void UEventLibrary::Break(const UEvent* Serializable, FString& Name, FString& StartDate, FString& Symbol, TArray<UEventPhase*>& Phases, FOptionalInt32& PartitionSize, FOptionalEventGroupRewards& GroupRewards, FOptionalLeaderboardCohortSettings& CohortSettings, FOptionalBeamClientPermission& Permissions, FOptionalSchedule& Schedule, FOptionalArrayOfString& Stores, FOptionalArrayOfEventRewardContent& ScoreRewards, FOptionalArrayOfEventRewardContent& RankRewards)
 {
 	Name = Serializable->Name;
 	StartDate = Serializable->StartDate;
