@@ -26,7 +26,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	GENERATED_BODY()
 
 	/** @brief Initializes the subsystem.  */
-	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;	
 
 	/**
 	 * @brief This gets called the frame after all the subsystem initializations have happened.
@@ -131,6 +131,13 @@ public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
 	static UBeamRuntime* GetSelf(const UObject* CallingContext) { return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamRuntime>(); }
 
+	/**
+	 * @brief Function that replaces UBeamBackend::DefaultExecuteRequestImpl when running in PIE mode.
+	 * 
+	 */
+	UFUNCTION()
+	void PIEExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity);
+	
 	UPROPERTY()
 	UBeamUserSlots* UserSlotSystem;
 

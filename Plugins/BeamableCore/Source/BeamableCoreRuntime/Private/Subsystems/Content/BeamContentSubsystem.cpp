@@ -132,6 +132,10 @@ void UBeamContentSubsystem::DownloadLiveContentObjectsData(const FBeamContentMan
 		DownloadContentOperation.Request->OnProcessRequestComplete().BindLambda([this, DownloadContentOperations, DownloadContentOperation, Id, OnSuccess, OnError]
 		(TSharedPtr<IHttpRequest, ESPMode::ThreadSafe>, TSharedPtr<IHttpResponse, ESPMode::ThreadSafe> HttpResponse, bool)
 			{
+#if WITH_EDITOR
+				if (!GEditor->IsPlayingSessionInEditor())
+					return;
+#endif
 				if (HttpResponse->GetResponseCode() == 200)
 				{
 					UpdateDownloadedContent(HttpResponse->GetContentAsString(), DownloadContentOperation);

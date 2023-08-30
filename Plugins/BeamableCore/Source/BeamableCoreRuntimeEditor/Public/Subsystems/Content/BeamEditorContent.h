@@ -93,7 +93,7 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamEditorContent : public UBeamEditorSubsy
 	UAssetEditorSubsystem* AssetEditorSubsystem;
 	FAssetToolsModule* AssetToolsModule;
 	FContentBrowserModule* ContentBrowserModule;
-	FDelegateHandle ModifyCookDelegate;
+	
 	FDelegateHandle OnWillEnterPIE;
 
 public:
@@ -169,6 +169,9 @@ public:
 	static FString GetJsonBlobPath(FString RowName, FBeamContentManifestId ManifestId);
 	static FString GetManifestDataTableName(FBeamContentManifestId Id);
 	static FBeamContentManifestId GetManifestIdFromDataTable(const UDataTable* Table);
+
+	UFUNCTION(BlueprintCallable)
+	void BakeManifest(UDataTable* LocalManifest, UBeamContentCache* Cache);
 
 private:
 	FBeamOperationHandle EnsureGlobalManifest();
