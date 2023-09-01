@@ -124,7 +124,7 @@ bool UBeamUserSlots::GetUserDataWithRefreshTokenAndPid(const FString& RefreshTok
 		if (OutUserData.AuthToken.RefreshToken == RefreshToken && OutUserData.RealmHandle.Pid == Pid)
 		{
 			const FString NamespacedSlotId = UserMapping.Key;
-			OutUserSlot = NamespacedSlotId;
+			GetSlotIdFromNamespacedSlotId(NamespacedSlotId, OutUserSlot);
 			UE_LOG(LogBeamUserSlots, Verbose, TEXT("Found User Data with PID and RefreshToken At Slot!\nUSER_SLOT=%s"), *OutUserSlot.Name);
 			return true;
 		}
