@@ -25,7 +25,7 @@ struct FBeamPlayerCurrency
 	FBeamContentId ContentId;
 
 	UPROPERTY(BlueprintReadWrite)
-	int64 Amount;
+	int64 Amount = 0;
 
 	UPROPERTY(BlueprintReadWrite)
 	TMap<FString, FString> Properties;
@@ -40,7 +40,7 @@ struct FBeamItemState
 	FBeamContentId ContentId;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int64 InstanceId;
+	int64 InstanceId = 0;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FString FederatedId;

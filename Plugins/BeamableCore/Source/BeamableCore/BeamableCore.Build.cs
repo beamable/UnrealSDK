@@ -29,7 +29,7 @@ public class BeamableCore : ModuleRules
 			{
 				"Core", "CoreUObject", "Engine", "InputCore",
 				"HeadMountedDisplay", "Json", "JsonUtilities", "HTTP",
-				"DeveloperSettings", "GameplayTags"
+				"DeveloperSettings", "GameplayTags", "WebSockets"
 				// ... add other public dependencies that you statically link with here ...
 			}
 		);
