@@ -5,12 +5,16 @@
 #include "CoreMinimal.h"
 #include "AutoGen/SubSystems/BeamAccountsApi.h"
 #include "AutoGen/SubSystems/BeamAuthApi.h"
+#include "AutoGen/SubSystems/Realms/GetClientDefaultsRequest.h"
+#include "BeamNotifications/BeamNotifications.h"
 
 #include "RequestTracker/BeamOperation.h"
 #include "RequestTracker/BeamOperationHandle.h"
 #include "RequestTracker/BeamRequestTracker.h"
 #include "UserSlots/BeamUserSlots.h"
 #include "BeamRuntime.generated.h"
+
+class UBeamNotifications;
 
 
 DECLARE_DYNAMIC_DELEGATE(FRuntimeStateChangedHandler);
@@ -26,7 +30,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	GENERATED_BODY()
 
 	/** @brief Initializes the subsystem.  */
-	virtual void Initialize(FSubsystemCollectionBase& Collection) override;	
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 	/**
 	 * @brief This gets called the frame after all the subsystem initializations have happened.
@@ -53,10 +57,15 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	void OnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const UObject* Context);
 
 	/**
-	 * @brief After all subsystems have finished their respective handling of UserSlot sign-in, we give them all a chance to respond to that. 
+	 * @brief After we have  subsystems have finished their respective handling of UserSlot sign-in, we give them all a chance to respond to that. 
 	 */
-	void OnUserSlotAuthenticated_PostUserSignedIn(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&,
-	                                              const TArray<FBeamErrorResponse>&, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser);
+	void OnUserSlotAuthenticated_TriggerSubsystemOnUserSlotAuthenticated(FUserSlot UserSlot, FBeamRealmUser BeamRealmUser);
+
+	/**
+	 * @brief After all
+	 */
+	void OnUserSlotAuthenticated_PrepareNotificationService(FGetClientDefaultsFullResponse Resp, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser);
+	void OnUserSlotAuthenticated_PostUserSignIn(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&, const TArray<FBeamErrorResponse>&, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser);
 
 	/**
 	 * @brief After all subsystems have finished their respective OnBeamableReady callbacks, we trigger a project wide event.
@@ -93,8 +102,8 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 * They return operation handles that we wait on. When done, these subsystems are be ready to make unauthenticated requests to the Beamable backend.
 	 */
 	TArray<FBeamOperationHandle> InitializeAfterGameInstanceOps = {};
-	FBeamWaitHandle OnInitializeAfterGameInstanceWait;
-	FOnWaitCompleteCode OnInitializeAfterGameInstance;
+	FBeamWaitHandle              OnInitializeAfterGameInstanceWait;
+	FOnWaitCompleteCode          OnInitializeAfterGameInstance;
 
 
 	/**
@@ -102,47 +111,58 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 * We also give them the list of currently authenticated UserSlots (so that they can tell if the user that just signed in is the last one for example).
 	 */
 	TMap<FUserSlot, TArray<FBeamOperationHandle>> OnUserSignedInOps = {};
-	TMap<FUserSlot, FBeamWaitHandle> OnUserSignedInWaits;
-	TMap<FUserSlot, FOnWaitCompleteCode> OnOnUserSignedIn;
+	TMap<FUserSlot, FBeamWaitHandle>              OnUserSignedInWaits;
+	TMap<FUserSlot, FOnWaitCompleteCode>          OnOnUserSignedIn;
 
 	/**
 	 * @brief Every time a user signs out of beamable we give each subsystem the ability to run an operation for that user.
 	 * We also give them the list of currently authenticated User Slots and the reason for the sign out so that they can correctly decide what to do in each instance.
 	 */
 	TMap<FUserSlot, TArray<FBeamOperationHandle>> OnUserSignedOutOps = {};
-	TMap<FUserSlot, FBeamWaitHandle> OnUserSignedOutWaits;
-	TMap<FUserSlot, FOnWaitCompleteCode> OnOnUserSignedOut;
+	TMap<FUserSlot, FBeamWaitHandle>              OnUserSignedOutWaits;
+	TMap<FUserSlot, FOnWaitCompleteCode>          OnOnUserSignedOut;
 
 	/**
 	 * @brief After beamable has finished it's initialization but has yet to attempt its frictionless auth	 
 	 */
 	TArray<FBeamOperationHandle> OnBeamableStartedOps = {};
-	FBeamWaitHandle OnBeamableStartedWait;
-	FOnWaitCompleteCode OnBeamableStartedHandler;
+	FBeamWaitHandle              OnBeamableStartedWait;
+	FOnWaitCompleteCode          OnBeamableStartedHandler;
 
 	/**
 	 * @brief After beamable has finished it's frictionless auth
 	 */
 	TArray<FBeamOperationHandle> OnBeamableReadyOps = {};
-	FBeamWaitHandle OnBeamableReadyWait;
-	FOnWaitCompleteCode OnBeamableReadyWaitHandler;
+	FBeamWaitHandle              OnBeamableReadyWait;
+	FOnWaitCompleteCode          OnBeamableReadyWaitHandler;
+
+	/**
+	 * @brief For each user slot, we automatically open and connect to the beamable notification service
+	 * (web-socket protocol through which we receive).
+	 */
+	TMap<FUserSlot, FBeamWebSocketHandle> DefaultNotificationChannels;
 
 public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
 	static UBeamRuntime* GetSelf(const UObject* CallingContext) { return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamRuntime>(); }
 
+	static const inline FName DefaultNotificationChannel = FName(TEXT("Default"));
+	
 	/**
 	 * @brief Function that replaces UBeamBackend::DefaultExecuteRequestImpl when running in PIE mode.
 	 * 
 	 */
 	UFUNCTION()
 	void PIEExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity);
-	
+
 	UPROPERTY()
 	UBeamUserSlots* UserSlotSystem;
 
 	UPROPERTY()
 	UBeamRequestTracker* RequestTrackerSystem;
+
+	UPROPERTY()
+	UBeamNotifications* NotificationSystem;
 
 	/**
 	 * @brief This flag is used for beamable's automatic initialization.
@@ -231,10 +251,15 @@ public:
 	 * Use this if you wish to authenticate by manually making an Authenticate Request to the Auth Service (pass in the Token you get as a response here).
 	 */
 	FBeamOperationHandle CPP_AuthenticateWithTokenOperation(FUserSlot UserSlot, const UTokenResponse* TokenResponse, FBeamOperationEventHandlerCode OnOperationEvent,
-	                                                        UObject* CallingContext = nullptr);
+	                                                        UObject*  CallingContext = nullptr);
 
-	// Operation Implementations
+	/**
+	 * Tries to get the default notification channel for the given user slot. 
+	 */
+	bool GetDefaultNotificationChannel(const FUserSlot& UserSlot, FBeamWebSocketHandle& OutHandle) const;
+
 private:
+	// Operation Implementations
 	void AuthenticateFrictionless(FUserSlot UserSlot, FBeamOperationHandle Op, UObject* CallingContext);
 	void AuthenticateFrictionless_OnAuthenticated(FAuthenticateFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op);
 

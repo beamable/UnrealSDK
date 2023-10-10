@@ -32,7 +32,7 @@ void UBeamContentObject::BuildContentDefinitionJsonObject(FJsonDomBuilder::FObje
 {
 	OutContentDefinition.Set("id", Id);
 
-	const auto Hash = CreatePropertiesMD5Hash();
+	const auto Hash = CreatePropertiesHash();
 	OutContentDefinition.Set("checksum", Hash);
 
 	auto TagsArray = FJsonDomBuilder::FArray{};
@@ -44,14 +44,18 @@ void UBeamContentObject::BuildContentDefinitionJsonObject(FJsonDomBuilder::FObje
 	OutContentDefinition.Set("properties", PropertiesJson);
 }
 
-FString UBeamContentObject::CreatePropertiesMD5Hash()
+FString UBeamContentObject::CreatePropertiesHash()
 {
 	FJsonDomBuilder::FObject Json;
 	BuildPropertiesJsonObject(Json);
 
 	const FString PropertiesJson = Json.ToString<TCondensedJsonPrintPolicy>();
 
-	FString Hash = FMD5::HashAnsiString(*PropertiesJson);
+	// UTF-8 Byte Array of the String
+	const FTCHARToUTF8 StringConversion(*PropertiesJson);
+	const FSHAHash     Sha1Hash = FSHA1::HashBuffer(StringConversion.Get(), StringConversion.Length());
+	
+	FString Hash = Sha1Hash.ToString();
 
 	// We are doing this for legacy reasons (in our Unity SDK, we do the same) 
 	Hash.ReplaceInline(TEXT("-"), TEXT(""));
@@ -141,7 +145,7 @@ void UBeamContentObject::BuildBasicJsonObject(FJsonDomBuilder::FObject& Output)
 
 void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Properties)
 {
-	const auto SelfClass = GetClass();
+	const auto SelfClass = GetClass();	
 	for (TFieldIterator<FProperty> It(SelfClass); It; ++It)
 	{
 		FJsonDomBuilder::FObject CurrProp;

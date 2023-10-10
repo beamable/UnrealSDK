@@ -433,7 +433,7 @@ void UBeamEditorContent::PublishManifest_OnGetManifest(FBasicContentGetManifestF
 				Reference->Content->Id = ContentId;
 				Reference->Content->Tags = EntryInManifest.Tags;
 				Reference->Content->Type = TEXT("content"); // Always content as we don't support other content types via Editor.
-				Reference->Content->Checksum = FOptionalString(Obj->CreatePropertiesMD5Hash());
+				Reference->Content->Checksum = FOptionalString(Obj->CreatePropertiesHash());
 				Reference->Content->Uri = TEXT("");
 				Reference->Content->Version = TEXT("");
 				Reference->Content->Visibility = EContentVisibility::BEAM_public;
@@ -1240,7 +1240,7 @@ void UBeamEditorContent::PostChange(const UDataTable* Changed, FDataTableEditorU
 					Obj->ToBasicJson(JsonContent);
 					if (FFileHelper::SaveStringToFile(JsonContent, *GetJsonBlobPath(EntryInManifest->RowName, ManifestId)))
 					{
-						EntryInManifest->Checksum = Obj->CreatePropertiesMD5Hash();
+						EntryInManifest->Checksum = Obj->CreatePropertiesHash();
 						EditorAssetSubsystem->SaveLoadedAsset(EditingTable);
 					}
 				}
@@ -1308,7 +1308,7 @@ bool UBeamEditorContent::CreateNewContent(const FBeamContentManifestId& Manifest
 
 	if (FFileHelper::SaveStringToFile(JsonContent, *FilePath))
 	{
-		EntryInManifest.Checksum = ContentObject->CreatePropertiesMD5Hash();
+		EntryInManifest.Checksum = ContentObject->CreatePropertiesHash();
 		EditorAssetSubsystem->SaveLoadedAsset(EditingTable);
 
 		// Stores the created row struct into the data table
@@ -1396,7 +1396,7 @@ bool UBeamEditorContent::SaveContentObject(const FBeamContentManifestId& Manifes
 	const auto FilePath = GetJsonBlobPath(EditingObject->Id, ManifestId);
 	if (FFileHelper::SaveStringToFile(JsonContent, *FilePath))
 	{
-		EntryInManifest.Checksum = EditingObject->CreatePropertiesMD5Hash();
+		EntryInManifest.Checksum = EditingObject->CreatePropertiesHash();
 		EditorAssetSubsystem->SaveLoadedAsset(EditingTable);
 		FDataTableEditorUtils::BroadcastPostChange(EditingTable, FDataTableEditorUtils::EDataTableChangeInfo::RowData);
 		ErrMsg.Empty();
@@ -1483,7 +1483,7 @@ void UBeamEditorContent::BakeManifest(UDataTable* LocalManifest, UBeamContentCac
 
 				                          // Add it to the BCC_ BeamRuntimeContentCache.
 				                          Cache->Cache.Add(RowName, Content);
-				                          Cache->Hashes.Add(RowName, RowData.Checksum);
+				                          Cache->Hashes.Add(RowName, RowData.Checksum);			                          	
 			                          }
 		                          }));
 

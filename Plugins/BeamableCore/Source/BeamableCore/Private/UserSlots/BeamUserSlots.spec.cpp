@@ -53,7 +53,7 @@ void FBeamUserSlotsSpec::Define()
 
 		It("should set and get the user data at the Test Slot", [=, this]()
 		{
-			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, FakeAccessToken, FakeRefreshToken, FakeExpiresIn, FakeCid, FakePid);
+			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, FakeAccessToken, FakeRefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), FakeExpiresIn, FakeCid, FakePid);
 			FBeamRealmUser RealmUser;
 			auto bFound = BeamUserSlots->GetUserDataAtSlot(TestSlot, RealmUser);
 
@@ -66,7 +66,7 @@ void FBeamUserSlotsSpec::Define()
 			TestTrue("added correct user data to slot", RealmUser.RealmHandle.Pid == FakePid);
 
 			const auto ReplacementAccessToken = TEXT("OVERRIDEN_ACCESS_TOKEN");
-			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, ReplacementAccessToken, FakeRefreshToken, FakeExpiresIn, FakeCid, FakePid);
+			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, ReplacementAccessToken, FakeRefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), FakeExpiresIn, FakeCid, FakePid);
 			bFound = BeamUserSlots->GetUserDataAtSlot(TestSlot, RealmUser);
 
 			TestTrue("successfully overwritten user data into slot", bFound);
@@ -80,11 +80,12 @@ void FBeamUserSlotsSpec::Define()
 
 		It("should find the user slot with the given refresh token and pid", [=, this]()
 		{
-			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, FakeAccessToken, FakeRefreshToken, FakeExpiresIn, FakeCid, FakePid);
+			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, FakeAccessToken, FakeRefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), FakeExpiresIn, FakeCid, FakePid);
 
 			FBeamRealmUser RealmUser;
 			FUserSlot UserSlot;
-			auto bFound = BeamUserSlots->GetUserDataWithRefreshTokenAndPid(FakeRefreshToken, FakePid, RealmUser, UserSlot);
+			FString NamespacedSlotId;
+			auto bFound = BeamUserSlots->GetUserDataWithRefreshTokenAndPid(FakeRefreshToken, FakePid, RealmUser, UserSlot, NamespacedSlotId);
 
 			TestTrue("found user based on refresh token and pid", bFound);
 			TestTrue("user was in expected slot", UserSlot.Name == TestSlot.Name);
@@ -96,8 +97,8 @@ void FBeamUserSlotsSpec::Define()
 			TestTrue("found correct user based on refresh token and pid", RealmUser.RealmHandle.Pid == FakePid);
 
 			const auto ReplacementRefreshToken = TEXT("OVERRIDEN_REFRESH_TOKEN");
-			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, FakeAccessToken, ReplacementRefreshToken, FakeExpiresIn, FakeCid, FakePid);
-			bFound = BeamUserSlots->GetUserDataWithRefreshTokenAndPid(ReplacementRefreshToken, FakePid, RealmUser, UserSlot);
+			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, FakeAccessToken, ReplacementRefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), FakeExpiresIn, FakeCid, FakePid);
+			bFound = BeamUserSlots->GetUserDataWithRefreshTokenAndPid(ReplacementRefreshToken, FakePid, RealmUser, UserSlot, NamespacedSlotId);
 
 			TestTrue("successfully overwritten user data into slot", bFound);
 			TestTrue("user was in expected slot", UserSlot.Name == TestSlot.Name);
@@ -110,7 +111,7 @@ void FBeamUserSlotsSpec::Define()
 
 		It("should set the user slot AND save its file to disk then reload the saved user at that slot", [=, this]()
 		{
-			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, FakeAccessToken, FakeRefreshToken, FakeExpiresIn, FakeCid, FakePid);
+			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, FakeAccessToken, FakeRefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), FakeExpiresIn, FakeCid, FakePid);
 			BeamUserSlots->SetGamerTagAtSlot(TestSlot, FakeGamerTag);
 			BeamUserSlots->TriggerUserAuthenticatedIntoSlot(TestSlot);
 			BeamUserSlots->SaveSlot(TestSlot);
@@ -123,15 +124,15 @@ void FBeamUserSlotsSpec::Define()
 			FileManager.FileExists(*BeamUserSlots->GetSavedSlotAuthFilePath(UBeamUserSlots::GetNamespacedSlotId(TestSlot)));
 
 			// Clear the slot so we can verify the loading function actually works
-			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, TEXT(""), TEXT(""), 0, FBeamCid(TEXT("")),FBeamPid(TEXT("")));
+			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, TEXT(""), TEXT(""), FDateTime::UtcNow().ToUnixTimestamp(), 0,FBeamCid(TEXT("")), FBeamPid(TEXT("")));
 			BeamUserSlots->SetGamerTagAtSlot(TestSlot, -1);
 
 			// Load the user from the serialized file and see if it was loaded correctly.
 			const auto bLoaded = BeamUserSlots->TryLoadSavedUserAtSlot(TestSlot);
-			bFound = BeamUserSlots->GetUserDataAtSlot(TestSlot, RealmUser);
+			bFound             = BeamUserSlots->GetUserDataAtSlot(TestSlot, RealmUser);
 
 			TestTrue("successfully added user to slot", bFound);
-			TestTrue("successfully added user to slot from serialized user file", bLoaded);
+			TestTrue("successfully added user to slot from serialized user file", bLoaded == UBeamUserSlots::LoadSavedUserResult_Success);
 			TestTrue("added correct user data to slot", RealmUser.GamerTag == FakeGamerTag);
 			TestTrue("added correct user data to slot", RealmUser.AuthToken.AccessToken == FakeAccessToken);
 			TestTrue("added correct user data to slot", RealmUser.AuthToken.RefreshToken == FakeRefreshToken);
@@ -150,7 +151,7 @@ void FBeamUserSlotsSpec::Define()
 
 		It("should save a user and then clear them BUT don't clear the saved user", [=, this]()
 		{
-			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, FakeAccessToken, FakeRefreshToken, FakeExpiresIn, FakeCid, FakePid);
+			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, FakeAccessToken, FakeRefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), FakeExpiresIn, FakeCid, FakePid);
 			BeamUserSlots->SetGamerTagAtSlot(TestSlot, FakeGamerTag);
 			BeamUserSlots->TriggerUserAuthenticatedIntoSlot(TestSlot);
 			BeamUserSlots->SaveSlot(TestSlot);
@@ -186,12 +187,12 @@ void FBeamUserSlotsSpec::Define()
 
 			// Load the user from the serialized file and see if it was loaded correctly.
 			FBeamRealmUser RealmUserAfterReload;
-			const auto bLoaded = BeamUserSlots->TryLoadSavedUserAtSlot(TestSlot);
-			const auto bFoundAfterReload = BeamUserSlots->GetUserDataAtSlot(TestSlot, RealmUserAfterReload);
+			const auto     bLoaded           = BeamUserSlots->TryLoadSavedUserAtSlot(TestSlot);
+			const auto     bFoundAfterReload = BeamUserSlots->GetUserDataAtSlot(TestSlot, RealmUserAfterReload);
 
 			// Test that the serialized file was not cleared.
 			TestTrue("successfully added user to slot", bFoundAfterReload);
-			TestTrue("successfully added user to slot from serialized user file", bLoaded);
+			TestTrue("successfully added user to slot from serialized user file", bLoaded == UBeamUserSlots::LoadSavedUserResult_Success);
 			TestTrue("added correct user data to slot", RealmUser.AuthToken.AccessToken == FakeAccessToken);
 			TestTrue("added correct user data to slot", RealmUser.AuthToken.RefreshToken == FakeRefreshToken);
 			TestTrue("added correct user data to slot", RealmUser.AuthToken.ExpiresIn == FakeExpiresIn);
@@ -202,7 +203,7 @@ void FBeamUserSlotsSpec::Define()
 
 		It("should save a user and then clear them AND clear the saved used", [=, this]()
 		{
-			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, FakeAccessToken, FakeRefreshToken, FakeExpiresIn, FakeCid, FakePid);
+			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, FakeAccessToken, FakeRefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), FakeExpiresIn, FakeCid, FakePid);
 			BeamUserSlots->SetGamerTagAtSlot(TestSlot, FakeGamerTag);
 			BeamUserSlots->TriggerUserAuthenticatedIntoSlot(TestSlot);
 			BeamUserSlots->SaveSlot(TestSlot);

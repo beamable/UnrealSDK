@@ -502,7 +502,7 @@ void UBeamEditor::ApplyCurrentSettingsToBuild()
 void UBeamEditor::UpdateSignedInUserData(const FBeamOperationHandle Op, const FBeamCid Cid, const FString AccessToken, const FString RefreshToken, const int64 ExpiresIn)
 {
 	const FBeamPid Pid{};
-	UserSlots->SetAuthenticationDataAtSlot(GetMainEditorSlot(), AccessToken, RefreshToken, ExpiresIn, Cid, Pid, this);
+	UserSlots->SetAuthenticationDataAtSlot(GetMainEditorSlot(), AccessToken, RefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), ExpiresIn, Cid, Pid, this);
 
 	const auto RealmsApi = GEngine->GetEngineSubsystem<UBeamRealmsApi>();
 	const auto Req = UGetGamesRequest::Make(GetTransientPackage());

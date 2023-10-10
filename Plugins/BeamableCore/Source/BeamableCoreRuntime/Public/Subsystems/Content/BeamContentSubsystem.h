@@ -64,8 +64,8 @@ private:
 	 * Given a Client CSV (contains public content only) and its id, we make requests to the URLs where the actual content JSON is stored.
 	 * Run OnSuccess if all downloads succeed. OnError, otherwise.
 	 */
-	void DownloadLiveContentObjectsData(const FBeamContentManifestId Id, const UClientManifestCsvResponse* PublicRemoteManifest, FSimpleDelegate OnSuccess, FSimpleDelegate OnError);
-	void DownloadLiveContentObjectsData(const FBeamContentManifestId Id, const TArray<FClientContentInfoTableRow*> Rows, FSimpleDelegate OnSuccess, FSimpleDelegate OnError);
+	void DownloadLiveContentObjectsData(const FBeamContentManifestId Id, FSimpleDelegate OnSuccess, FSimpleDelegate OnError);
+	void DownloadLiveContentObjectsData(const FBeamContentManifestId Id, const TArray<FClientContentInfoTableRow*> Rows, const TMap<FBeamContentId, FString> Checksums, FSimpleDelegate OnSuccess, FSimpleDelegate OnError);
 
 	static void PrepareContentDownloadRequest(FBeamContentManifestId ManifestId, FClientContentInfoTableRow* ContentEntry, FDownloadContentState& Item);
 

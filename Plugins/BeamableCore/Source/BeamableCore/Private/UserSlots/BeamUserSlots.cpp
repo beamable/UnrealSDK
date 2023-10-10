@@ -116,14 +116,14 @@ bool UBeamUserSlots::GetUserDataAtSlot(FUserSlot SlotId, FBeamRealmUser& OutUser
 	return false;
 }
 
-bool UBeamUserSlots::GetUserDataWithRefreshTokenAndPid(const FString& RefreshToken, const FBeamPid& Pid, FBeamRealmUser& OutUserData, FUserSlot& OutUserSlot) const
+bool UBeamUserSlots::GetUserDataWithRefreshTokenAndPid(const FString& RefreshToken, const FBeamPid& Pid, FBeamRealmUser& OutUserData, FUserSlot& OutUserSlot, FString& NamespacedSlotId) const
 {
 	for (const auto& UserMapping : AuthenticatedUserMapping)
 	{
 		OutUserData = AuthenticatedUsers[UserMapping.Value];
 		if (OutUserData.AuthToken.RefreshToken == RefreshToken && OutUserData.RealmHandle.Pid == Pid)
 		{
-			const FString NamespacedSlotId = UserMapping.Key;
+			NamespacedSlotId = UserMapping.Key;
 			GetSlotIdFromNamespacedSlotId(NamespacedSlotId, OutUserSlot);
 			UE_LOG(LogBeamUserSlots, Verbose, TEXT("Found User Data with PID and RefreshToken At Slot!\nUSER_SLOT=%s"), *OutUserSlot.Name);
 			return true;
@@ -140,9 +140,9 @@ bool UBeamUserSlots::GetUserDataWithRefreshTokenAndPid(const FString& RefreshTok
 	return false;
 }
 
-void UBeamUserSlots::SetAuthenticationDataAtNamespacedSlot(const FString& NamespacedSlotId, const FString& AccessToken, const FString& RefreshToken, const int64& ExpiresIn, const FBeamCid& Cid, const FBeamPid& Pid)
+void UBeamUserSlots::SetAuthenticationDataAtNamespacedSlot(const FString& NamespacedSlotId, const FString& AccessToken, const FString& RefreshToken, const int64& IssuedAt, const int64& ExpiresIn, const FBeamCid& Cid, const FBeamPid& Pid)
 {
-	const auto AuthenticatedUser = FBeamAuthToken{AccessToken, RefreshToken, ExpiresIn};
+	const auto AuthenticatedUser = FBeamAuthToken{AccessToken, RefreshToken, ExpiresIn, IssuedAt};
 	const auto UserRealmData = FBeamRealmHandle{Cid, Pid};
 	const auto RealmUser = FBeamRealmUser{-1, -1, TEXT(""), UserRealmData, AuthenticatedUser};
 
@@ -164,11 +164,10 @@ void UBeamUserSlots::SetAuthenticationDataAtNamespacedSlot(const FString& Namesp
 	}
 }
 
-void UBeamUserSlots::SetAuthenticationDataAtSlot(FUserSlot SlotId, const FString& AccessToken, const FString& RefreshToken, const int64& ExpiresIn, const FBeamCid& Cid, const FBeamPid& Pid,
-                                                 const UObject* CallingContext)
+void UBeamUserSlots::SetAuthenticationDataAtSlot(FUserSlot SlotId, const FString& AccessToken, const FString& RefreshToken, const int64& IssuedAt, const int64& ExpiresIn, const FBeamCid& Cid, const FBeamPid& Pid,const UObject* CallingContext)
 {
 	const auto NamespacedSlotId = GetNamespacedSlotId(SlotId, CallingContext);
-	SetAuthenticationDataAtNamespacedSlot(NamespacedSlotId, AccessToken, RefreshToken, ExpiresIn, Cid, Pid);
+	SetAuthenticationDataAtNamespacedSlot(NamespacedSlotId, AccessToken, RefreshToken, IssuedAt, ExpiresIn, Cid, Pid);
 }
 
 void UBeamUserSlots::SetGamerTagAtSlot(FUserSlot SlotId, const FBeamGamerTag& GamerTag, const UObject* CallingContext)
@@ -263,6 +262,7 @@ bool UBeamUserSlots::SaveSlot(FUserSlot SlotId, const UObject* CallingContext)
 		User.AuthToken.AccessToken,
 		User.AuthToken.RefreshToken,
 		User.AuthToken.ExpiresIn,
+		User.AuthToken.IssuedAt,
 		User.RealmHandle.Cid,
 		User.RealmHandle.Pid
 	};
@@ -314,7 +314,7 @@ void UBeamUserSlots::ClearUserAtSlot(FUserSlot SlotId, const EUserSlotClearedRea
 		{
 			// Save the User's Auth data to the slot.
 			const auto SavedUserAuthDataPath = GetSavedSlotAuthFilePath(NamespacedSlotId);
-			const auto AuthDataForSlot = FUserSlotAuthData{TEXT(""), TEXT(""), 0, TEXT(""),TEXT("")};
+			const auto AuthDataForSlot = FUserSlotAuthData{TEXT(""), TEXT(""), 0, 0,TEXT(""),TEXT("")};
 			FString JsonSerializedAuthData;
 			ensureAlways(FJsonObjectConverter::UStructToJsonObjectString(AuthDataForSlot, JsonSerializedAuthData));
 
@@ -373,7 +373,7 @@ bool UBeamUserSlots::IsUserSlotAuthenticated(FUserSlot SlotId, const UObject* Ca
 }
 
 
-bool UBeamUserSlots::TryLoadSavedUserAtSlot(FUserSlot SlotId, UObject* CallingContext)
+int32 UBeamUserSlots::TryLoadSavedUserAtSlot(FUserSlot SlotId, UObject* CallingContext)
 {
 	FString NamespacedSlotId = GetNamespacedSlotId(SlotId, CallingContext);
 
@@ -414,24 +414,25 @@ bool UBeamUserSlots::TryLoadSavedUserAtSlot(FUserSlot SlotId, UObject* CallingCo
 				const auto DidDeserializeAccountData = FJsonObjectConverter::JsonObjectStringToUStruct(SlotAccountFile, &SlotSerializedAccountData);
 				ensureAlwaysMsgf(DidDeserializeAccountData, TEXT("Failed deserialization of %s_Account.json file.\nPath=%s"), *NamespacedSlotId, *SavedAccountDataPath);
 
-				SetAuthenticationDataAtSlot(SlotId, AccessToken, RefreshToken, ExpiresIn, Cid, Pid, CallingContext);
+				SetAuthenticationDataAtSlot(SlotId, AccessToken, RefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), ExpiresIn, Cid, Pid, CallingContext);
 				SetAccountIdAtSlot(SlotId, SlotSerializedAccountData.AccountId, CallingContext);
 				SetGamerTagAtSlot(SlotId, SlotSerializedAccountData.GamerTag, CallingContext);
-				SetEmailAtSlot(SlotId, SlotSerializedAccountData.Email, CallingContext);
-				TriggerUserAuthenticatedIntoSlot(SlotId, CallingContext);
+				SetEmailAtSlot(SlotId, SlotSerializedAccountData.Email, CallingContext);				
 
 				UE_LOG(LogBeamUserSlots, Verbose, TEXT("Loaded user saved at slot!\nUSER_SLOT=%s, CID=%s, PID=%s"), *NamespacedSlotId, *Cid.AsString, *Pid.AsString);
-				return true;
+				return SlotSerializedAuthData.IsExpired() ? LoadSavedUserResult_ExpiredToken : LoadSavedUserResult_Success;
 			}
 
 			UE_LOG(LogBeamUserSlots, Warning, TEXT("Failed to load user saved at slot!\nUSER_SLOT=%s, CID=%s, PID=%s, TARGET_CID=%s, TARGET_PID=%s"), *NamespacedSlotId, *Cid.AsString, *Pid.AsString,
 			       *TargetRealm.Cid.AsString, *TargetRealm.Pid.AsString);
+			
+			return LoadSavedUserResult_Failed;
 		}
 
 
 		// If the refresh token ISN'T there OR if we are now attempting sign-in into a different realm, we fail the fast path for authentication of the user slot. 
 		UE_LOG(LogBeamUserSlots, Verbose, TEXT("Invalid user saved at slot!\nUSER_SLOT=%s."), *NamespacedSlotId);
-		return false;
+		return 0;
 	}
 
 	UE_LOG(LogBeamUserSlots, Verbose, TEXT("No user saved at slot!\nUSER_SLOT=%s."), *NamespacedSlotId);

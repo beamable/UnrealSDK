@@ -224,7 +224,7 @@ void ULocalContentManifestEditorState::EditContentButtonClicked()
 		]
 
 	];
-	FSlateApplication::Get().AddModalWindow(EditingWindow.ToSharedRef(), FSlateApplication::Get().FindBestParentWindowForDialogs(SelectedContentComboBox));
+	FSlateApplication::Get().AddModalWindow(EditingWindow.ToSharedRef(), FSlateApplication::Get().GetActiveTopLevelWindow());
 }
 
 void ULocalContentManifestEditorState::PublishButtonClicked()
@@ -282,7 +282,7 @@ void ULocalContentManifestEditorState::PublishButtonClicked()
 
 				// Show it as a modal of the DataTable editor.
 				FSlateApplication::Get().AddModalWindow(PublishingWindow.ToSharedRef(),
-					FSlateApplication::Get().FindBestParentWindowForDialogs(SelectedContentComboBox),
+					FSlateApplication::Get().GetActiveTopLevelWindow(),
 					true);
 				PublishingWindow->ShowWindow();
 			}))
@@ -356,7 +356,7 @@ void ULocalContentManifestEditorState::DownloadButtonClicked()
 					                                 .Content()[Panel];
 
 					// Show it as a modal of the DataTable editor.
-					FSlateApplication::Get().AddModalWindow(DownloadingWindow.ToSharedRef(), FSlateApplication::Get().FindBestParentWindowForDialogs(SelectedContentComboBox), true);
+					FSlateApplication::Get().AddModalWindow(DownloadingWindow.ToSharedRef(), FSlateApplication::Get().GetActiveTopLevelWindow(), true);
 					DownloadingWindow->ShowWindow();
 				}
 			}

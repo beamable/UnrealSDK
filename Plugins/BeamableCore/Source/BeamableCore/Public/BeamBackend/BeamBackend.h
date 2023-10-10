@@ -530,7 +530,8 @@ public:
 		// Add to the InFlight request list
 		FUserSlot OutUserSlot;
 		FBeamRealmUser OutUserData;
-		BeamUserSlots->GetUserDataWithRefreshTokenAndPid(AuthToken.RefreshToken, TargetRealm.Pid, OutUserData, OutUserSlot);
+		FString NamespacedSlotId;
+		BeamUserSlots->GetUserDataWithRefreshTokenAndPid(AuthToken.RefreshToken, TargetRealm.Pid, OutUserData, OutUserSlot, NamespacedSlotId);
 
 		const auto RequestContext = FBeamRequestContext{ReqId, RetryConfig, TargetRealm, -1, OutUserSlot, None};
 
@@ -580,7 +581,8 @@ public:
 		// Add to the InFlight request list
 		FUserSlot OutUserSlot;
 		FBeamRealmUser OutUserData;
-		BeamUserSlots->GetUserDataWithRefreshTokenAndPid(AuthToken.RefreshToken, TargetRealm.Pid, OutUserData, OutUserSlot);
+		FString NamespacedSlotId;
+		BeamUserSlots->GetUserDataWithRefreshTokenAndPid(AuthToken.RefreshToken, TargetRealm.Pid, OutUserData, OutUserSlot, NamespacedSlotId);
 
 		const auto RequestContext = FBeamRequestContext{ReqId, RetryConfig, TargetRealm, -1, OutUserSlot, None};
 
@@ -1107,8 +1109,9 @@ public:
 		// Get any UserSlot that matches this Pid/Auth Token, if any		
 		FBeamRealmUser User;
 		FUserSlot UserSlot;
+		FString NamespacedSlotId;		
 		const auto bWasMadeWithUserSlot = BeamUserSlots->GetUserDataWithRefreshTokenAndPid(
-			AuthToken.RefreshToken, RealmHandle.Pid, User, UserSlot);
+			AuthToken.RefreshToken, RealmHandle.Pid, User, UserSlot, NamespacedSlotId);
 
 		// Create the context to pass into the callbacks	
 		auto Context = InFlightRequestContexts.Find(RequestId);
@@ -1618,8 +1621,9 @@ public:
 		// Get any UserSlot that matches this Pid/Auth Token, if any
 		FBeamRealmUser User;
 		FUserSlot UserSlot;
+		FString NamespacedSlotId;
 		const auto bWasMadeWithUserSlot = BeamUserSlots->GetUserDataWithRefreshTokenAndPid(
-			AuthToken.RefreshToken, RealmHandle.Pid, User, UserSlot);
+			AuthToken.RefreshToken, RealmHandle.Pid, User, UserSlot, NamespacedSlotId);
 		const auto UserSlotLog = bWasMadeWithUserSlot ? UserSlot.Name : TEXT("Made Without UserSlot");
 
 		// Get retry stuff	
@@ -1929,8 +1933,7 @@ private:
 	/**
 	* @brief Called whenever a request is completed in order to update our connectivity status in accordance with UE's output codes.
 	*/
-	void UpdateConnectivity(const FBeamRequestContext& RequestContext, const TUnrealRequestStatus RequestStatus,
-	                        const FRequestType RequestType);
+	void UpdateConnectivity(const FBeamRequestContext& RequestContext, const TUnrealRequestStatus RequestStatus, const FRequestType RequestType);
 
 
 	/**
