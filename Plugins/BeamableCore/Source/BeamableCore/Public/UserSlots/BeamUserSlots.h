@@ -33,10 +33,16 @@ struct FUserSlotAuthData
 	FString RefreshToken;
 
 	/**
-	 * @brief The DateTime in which the AccessToken will no longer be valid.
+	 * @brief The DateTime offset from IssuedAt in which the AccessToken will no longer be valid.
 	 */
 	UPROPERTY(BlueprintReadWrite)
 	int64 ExpiresIn = -1;
+
+	/**
+	 * @brief The DateTime in which the AccessToken will no longer be valid.
+	 */
+	UPROPERTY(BlueprintReadWrite)
+	int64 IssuedAt = -1;
 
 	/**
 	 * @brief The CustomerId whose scope this user exists in.
@@ -49,6 +55,16 @@ struct FUserSlotAuthData
 	 */
 	UPROPERTY(BlueprintReadWrite)
 	FBeamPid Pid;
+
+	/**
+	 * @returns Whether or not this auth data is expired.
+	 */
+	bool IsExpired() const
+	{
+		const FDateTime Now        = FDateTime::UtcNow();
+		const FDateTime Expiration = FDateTime::FromUnixTimestamp(IssuedAt) + FTimespan::FromMilliseconds(ExpiresIn);
+		return Now >= Expiration;
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -178,22 +194,22 @@ public:
 	 * @return True, if there is a user mapped. False, if no user mapped was found. 
 	 */
 	UFUNCTION(BlueprintPure, Category="Beam")
-	bool GetUserDataWithRefreshTokenAndPid(const FString& RefreshToken, const FBeamPid& Pid, FBeamRealmUser& OutUserData, FUserSlot& OutUserSlot) const;
+	bool GetUserDataWithRefreshTokenAndPid(const FString& RefreshToken, const FBeamPid& Pid, FBeamRealmUser& OutUserData, FUserSlot& OutUserSlot, FString& NamespacedSlotId) const;
 
 	/**
 	 * @brief Sets the authentication data directly at a namespaced slot.
 	 * Assumes the caller guarantees the given slot is already the correctly namespaced slot name.
 	 */
 	UFUNCTION()
-	void SetAuthenticationDataAtNamespacedSlot(const FString& NamespacedSlotId, const FString& AccessToken, const FString& RefreshToken, const int64& ExpiresIn, const FBeamCid& Cid, const FBeamPid& Pid);
+	void SetAuthenticationDataAtNamespacedSlot(const FString& NamespacedSlotId, const FString& AccessToken, const FString& RefreshToken, const int64& IssuedAt, const int64& ExpiresIn, const FBeamCid& Cid, const FBeamPid& Pid);
 
 	/**
 	 * @brief Sets, without saving, the given authentication token + realm data into the given user slot.
 	 * THIS DOES NOT SERIALIZE THE USER INTO THAT SLOT --- IT'LL BE VALID ONLY FOR THE CURRENT SESSION'S DURATION.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AutoCreateRefTerm="Cid,Pid", AdvancedDisplay="CallingContext"))
-	void SetAuthenticationDataAtSlot(FUserSlot SlotId, const FString& AccessToken, const FString& RefreshToken, const int64& ExpiresIn, const FBeamCid& Cid, const FBeamPid& Pid,
-	                                 const UObject* CallingContext = nullptr);
+	void SetAuthenticationDataAtSlot(FUserSlot       SlotId, const FString& AccessToken, const FString& RefreshToken, const int64& IssuedAt, const int64& ExpiresIn, const FBeamCid& Cid,
+	                                 const FBeamPid& Pid, const UObject*    CallingContext = nullptr);
 
 	/**
 	 * @brief Sets, without saving, the given GamerTag of the user into this slot. Must always be called on a user slot that has authentication data.
@@ -252,13 +268,6 @@ public:
 	bool IsUserSlotAuthenticated(FUserSlot SlotId, const UObject* CallingContext = nullptr);
 
 	/**
-	 * @brief Attempts to quickly authenticate a user with locally stored, serialized data.	  
-	 * @return True, if there was a user authenticated at that slot. False, if no serialized user slot file was found or if the file does not contain a refresh token.  
-	 */
-	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
-	bool TryLoadSavedUserAtSlot(FUserSlot SlotId, UObject* CallingContext = nullptr);
-
-	/**
 	 * @brief Attempts to load data locally stored in association to a given slot by another subsystem. T must be a UStruct	  
 	 * @return True, if there was a user authenticated at that slot. False, if no serialized user slot file was found or if the file does not contain a refresh token.  
 	 */
@@ -271,6 +280,28 @@ public:
 	 */
 	template <class T>
 	bool SaveSlotData(FString SlotDataTypeName, FUserSlot SlotId, T SlotData, const UObject* CallingContext);
+
+	/**
+	 * Returned by TryLoadSavedUserAtSlot when no slot was found.
+	 */
+	static inline int32 LoadSavedUserResult_Failed = 0;
+
+	/**
+	 * Returned by TryLoadSavedUserAtSlot when a slot was found and successfully signed in.
+	 */
+	static inline int32 LoadSavedUserResult_Success = 1;
+
+	/**
+	 * Returned by TryLoadSavedUserAtSlot when no slot was found, successfully signed in but the token was expired.
+	 */
+	static inline int32 LoadSavedUserResult_ExpiredToken = 2;
+
+	/**
+	 * @brief Attempts to quickly authenticate a user with locally stored, serialized data.	  
+	 * @return True, if there was a user authenticated at that slot. False, if no serialized user slot file was found or if the file does not contain a refresh token.  
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	int32 TryLoadSavedUserAtSlot(FUserSlot SlotId, UObject* CallingContext = nullptr);
 
 
 	/**

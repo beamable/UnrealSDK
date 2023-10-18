@@ -57,7 +57,7 @@ public:
 	 * @brief Generates an MD5 Hash of the ContentObject's properties.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam")
-	FString CreatePropertiesMD5Hash();
+	FString CreatePropertiesHash();
 
 	/**
 	 * @brief Generates a serialized string (in basic format) for this content object.	 

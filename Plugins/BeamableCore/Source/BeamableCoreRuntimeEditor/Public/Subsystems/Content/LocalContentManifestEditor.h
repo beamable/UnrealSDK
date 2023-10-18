@@ -14,6 +14,7 @@
 #define LOCTEXT_NAMESPACE "ULocalContentManifestEditorState"
 
 
+struct FUserSlot;
 class SNameComboBox;
 class UBeamEditorContent;
 

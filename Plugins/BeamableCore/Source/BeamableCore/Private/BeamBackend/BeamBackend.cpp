@@ -91,8 +91,7 @@ void UBeamBackend::TryTriggerRequestCompleteDelegates(const int64& RequestId)
 	}
 }
 
-void UBeamBackend::UpdateConnectivity(const FBeamRequestContext& RequestContext,
-                                      const TUnrealRequestStatus RequestStatus, const FRequestType RequestType)
+void UBeamBackend::UpdateConnectivity(const FBeamRequestContext& RequestContext, const TUnrealRequestStatus RequestStatus, const FRequestType RequestType)
 {
 	if (RequestStatus == EHttpRequestStatus::Succeeded || RequestStatus == EHttpRequestStatus::Failed)
 	{
@@ -374,8 +373,9 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 						// Checks if the request was made using a user-slot or if people manually passed in the realm handle and refresh tokens.
 						FBeamRealmUser RealmUserData;
 						FUserSlot UserSlot;
+						FString NamespacedSlotId;
 						const auto WasMadeWithUserSlot = BeamUserSlots->GetUserDataWithRefreshTokenAndPid(
-							ReqAuthToken.RefreshToken, ReqRealmHandle.Pid, RealmUserData, UserSlot);
+							ReqAuthToken.RefreshToken, ReqRealmHandle.Pid, RealmUserData, UserSlot, NamespacedSlotId);
 
 						const auto RequestStatus = Request->GetStatus();
 						// Update Connectivity Status
@@ -423,10 +423,11 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 								UBeamUserSlots::GetSlotIdFromNamespacedSlotId(UserSlot.Name, NonNamespacedSlot);
 								UE_LOG(LogBeamBackend, Verbose, TEXT("Identified User Slot and Re-authing it. REQUEST_ID=%lld, USER_SLOT=%s"), ReqId, *NonNamespacedSlot.Name);
 								// Re-auth the user at the found slot so that subsequent requests use the new token rather than this one.
-								BeamUserSlots->SetAuthenticationDataAtNamespacedSlot(UserSlot, NewToken.AccessToken, NewToken.RefreshToken, NewToken.ExpiresIn,
-								                                                     RealmUserData.RealmHandle.Cid, RealmUserData.RealmHandle.Pid);
-								BeamUserSlots->SetGamerTagAtSlot(UserSlot, RealmUserData.GamerTag, this);
-								BeamUserSlots->SetEmailAtSlot(UserSlot, RealmUserData.Email, this);
+								BeamUserSlots->SetAuthenticationDataAtNamespacedSlot(NamespacedSlotId, NewToken.AccessToken, NewToken.RefreshToken, FDateTime::UtcNow().ToUnixTimestamp(),
+								                                                     NewToken.ExpiresIn, RealmUserData.RealmHandle.Cid, RealmUserData.RealmHandle.Pid);
+								BeamUserSlots->SetGamerTagAtSlot(NamespacedSlotId, RealmUserData.GamerTag, this);
+								BeamUserSlots->SetEmailAtSlot(NamespacedSlotId, RealmUserData.Email, this);								
+								BeamUserSlots->SaveSlot(NamespacedSlotId, this);
 							}
 							// Then, we just fix the request up and send it along.						
 							PrepareBeamableRequestToRealmWithAuthToken(FailedReq, ReqRealmHandle, NewToken);
