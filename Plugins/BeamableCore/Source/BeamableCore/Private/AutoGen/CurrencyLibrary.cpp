@@ -22,20 +22,22 @@ FString UCurrencyLibrary::CurrencyToJsonString(const UCurrency* Serializable, co
 	return Result;
 }	
 
-UCurrency* UCurrencyLibrary::Make(FString Id, int64 Amount, FOptionalArrayOfCurrencyProperty Properties, UObject* Outer)
+UCurrency* UCurrencyLibrary::Make(FString Id, int64 Amount, FOptionalArchetypeProxy Proxy, FOptionalArrayOfCurrencyProperty Properties, UObject* Outer)
 {
 	auto Serializable = NewObject<UCurrency>(Outer);
 	Serializable->Id = Id;
 	Serializable->Amount = Amount;
+	Serializable->Proxy = Proxy;
 	Serializable->Properties = Properties;
 	
 	return Serializable;
 }
 
-void UCurrencyLibrary::Break(const UCurrency* Serializable, FString& Id, int64& Amount, FOptionalArrayOfCurrencyProperty& Properties)
+void UCurrencyLibrary::Break(const UCurrency* Serializable, FString& Id, int64& Amount, FOptionalArchetypeProxy& Proxy, FOptionalArrayOfCurrencyProperty& Properties)
 {
 	Id = Serializable->Id;
 	Amount = Serializable->Amount;
+	Proxy = Serializable->Proxy;
 	Properties = Serializable->Properties;
 		
 }

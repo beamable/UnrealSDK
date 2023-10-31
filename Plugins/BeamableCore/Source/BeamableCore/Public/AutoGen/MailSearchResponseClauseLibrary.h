@@ -17,8 +17,8 @@ public:
 	static FString MailSearchResponseClauseToJsonString(const UMailSearchResponseClause* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make MailSearchResponseClause", meta=(DefaultToSelf="Outer", AdvancedDisplay="Content, Outer", NativeMakeFunc))
-	static UMailSearchResponseClause* Make(FString Name, int64 Count, FOptionalArrayOfMailObjectMessage Content, UObject* Outer);
+	static UMailSearchResponseClause* Make(FString Name, int64 Count, FOptionalArrayOfMessage Content, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break MailSearchResponseClause", meta=(NativeBreakFunc))
-	static void Break(const UMailSearchResponseClause* Serializable, FString& Name, int64& Count, FOptionalArrayOfMailObjectMessage& Content);
+	static void Break(const UMailSearchResponseClause* Serializable, FString& Name, int64& Count, FOptionalArrayOfMessage& Content);
 };

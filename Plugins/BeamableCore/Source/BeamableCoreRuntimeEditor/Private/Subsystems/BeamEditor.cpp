@@ -433,6 +433,29 @@ void UBeamEditor::SelectRealm_OnSystemsReady(const TArray<FBeamRequestContext>&,
 	RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 }
 
+void UBeamEditor::OpenPortalOnCurrentRealm()
+{		
+	FUserSlot      MainEditorSlot;
+	FBeamRealmUser Data;
+	if(TryGetMainEditorSlot(MainEditorSlot, Data))
+	{
+		FBeamCustomerProjectData Proj;
+		FBeamProjectRealmData    RealmData;
+		GetActiveProjectAndRealmData(Proj, RealmData);
+			
+		const auto PortalUrl = GetDefault<UBeamCoreSettings>()->BeamableEnvironment->PortalUrl;
+		const auto Cid = Data.RealmHandle.Cid.AsString;
+		const auto ProductionPid = Proj.AllRealms.FindByPredicate([](FBeamProjectRealmData d) { return !d.ParentPID.IsSet; })->PID.AsString; 
+		const auto CurrentPid = Data.RealmHandle.Pid.AsString;
+		const auto RefreshToken = Data.AuthToken.RefreshToken;
+			
+		const auto URL = FString::Format(TEXT("{0}/{1}/games/{2}/realms/{3}/dashboard?refresh_token={4}"),
+		                                 { PortalUrl, Cid, ProductionPid, CurrentPid, RefreshToken });
+
+		FPlatformProcess::LaunchURL(*URL, nullptr, nullptr);
+	}
+}
+
 
 void UBeamEditor::CacheProjectDataForUserSlot(FUserSlot UserSlot, UCustomerViewResponse* CustomerViewResponse) const
 {

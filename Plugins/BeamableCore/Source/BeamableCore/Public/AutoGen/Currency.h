@@ -4,6 +4,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfCurrencyProperty.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArchetypeProxy.h"
 
 #include "Currency.generated.h"
 
@@ -17,6 +18,8 @@ public:
 	FString Id;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Amount", Category="Beam")
 	int64 Amount;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Proxy", Category="Beam")
+	FOptionalArchetypeProxy Proxy;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Properties", Category="Beam")
 	FOptionalArrayOfCurrencyProperty Properties;
 

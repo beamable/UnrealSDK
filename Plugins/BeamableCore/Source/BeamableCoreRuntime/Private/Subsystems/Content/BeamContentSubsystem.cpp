@@ -18,7 +18,7 @@ void UBeamContentSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	ContentApi = GEngine->GetEngineSubsystem<UBeamContentApi>();
 }
 
-FBeamOperationHandle UBeamContentSubsystem::InitializeWhenUnrealReady()
+void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperationHandle& ResultOp)
 {
 	FBeamOperationHandle Op = GEngine->GetEngineSubsystem<UBeamRequestTracker>()->CPP_BeginOperation({}, GetName(), {});
 
@@ -59,11 +59,31 @@ FBeamOperationHandle UBeamContentSubsystem::InitializeWhenUnrealReady()
 	if (BakedContentPaths.Num() == 0)
 		GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
 
-	return Op;
+	ResultOp = Op;
 }
 
-FBeamOperationHandle UBeamContentSubsystem::OnBeamableReady_Implementation()
+void UBeamContentSubsystem::OnBeamableStarted_Implementation(FBeamOperationHandle& ResultOp)
 {
+	if(const bool bIsDedicatedServer = GetGameInstance()->IsDedicatedServerInstance())
+	{
+		const auto ManifestId = FBeamContentManifestId{TEXT("global")};
+		const auto Handler = FBeamOperationEventHandlerCode::CreateLambda([](const TArray<FUserSlot>&, FBeamOperationEvent) {  });
+		ResultOp = CPP_FetchContentManifestOperation(ManifestId, true, Handler, this);
+	}
+	else
+	{
+		Super::OnBeamableStarted_Implementation(ResultOp);
+	}
+}
+
+void UBeamContentSubsystem::OnPostUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserFirstAuth, FBeamOperationHandle& ResultOp)
+{
+	if(!bIsOwnerUserFirstAuth)
+	{
+		Super::OnPostUserSignedIn_Implementation(UserSlot, BeamRealmUser, bIsOwnerUserFirstAuth, ResultOp);
+		return;
+	}
+
 	// If this is the first time we are authenticated with beamable, we'll go fetch the content from our backend
 	FBeamOperationEventHandlerCode OpHandler;
 	OpHandler.BindLambda([](const TArray<FUserSlot>&, FBeamOperationEvent OpEvent)
@@ -80,13 +100,7 @@ FBeamOperationHandle UBeamContentSubsystem::OnBeamableReady_Implementation()
 	FetchContentManifest(ManifestId, bShouldDownloadIndividuals, Op, this);
 	
 	// We also set up the content refresh notification here.
-	FOnContentRefreshNotificationCode Handler;
-	
-	FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
-	FBeamRealmUser BeamRealmUser;
-	Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, BeamRealmUser);
-	
-	Handler.BindLambda([this, UserSlot, BeamRealmUser](const FContentRefreshNotificationMessage& InventoryRefreshNotificationMessage)
+	const auto NotificationHandler = FOnContentRefreshNotificationCode::CreateLambda([this](const FContentRefreshNotificationMessage& InventoryRefreshNotificationMessage)
 	{
 		// Our legacy solution here is that we delay grabbing the content so as to not make every single logged in client bombard the content service with
 		// requests at the same time. We delay by a random amount in seconds as defined by the refresh message.
@@ -96,8 +110,7 @@ FBeamOperationHandle UBeamContentSubsystem::OnBeamableReady_Implementation()
 		FTimerHandle H;
 		GetWorld()->GetTimerManager().SetTimer(H, FTimerDelegate().CreateLambda([this, InventoryRefreshNotificationMessage]
 		{
-			FBeamOperationEventHandlerCode DelayedFetchAllOpHandler;			
-			DelayedFetchAllOpHandler.BindLambda([](const TArray<FUserSlot>&, FBeamOperationEvent OpEvent)
+			const auto DelayedFetchAllOpHandler = FBeamOperationEventHandlerCode::CreateLambda([](const TArray<FUserSlot>&, FBeamOperationEvent OpEvent)
 			{
 				if (OpEvent.EventType == ERROR)
 				{
@@ -111,11 +124,11 @@ FBeamOperationHandle UBeamContentSubsystem::OnBeamableReady_Implementation()
 		}), DelayCount,false, DelayCount);
 		
 		UE_LOG(LogBeamContent, Warning, TEXT("Received ContentRefresh notification. Fetching content in %d seconds."), DelayCount);		
-	});
+	});	
 	
-	GEngine->GetEngineSubsystem<UBeamContentNotifications>()->CPP_SubscribeToContentRefresh(UserSlot, Runtime->DefaultNotificationChannel, Handler);
+	GEngine->GetEngineSubsystem<UBeamContentNotifications>()->CPP_SubscribeToContentRefresh(UserSlot, Runtime->DefaultNotificationChannel, NotificationHandler);
 	
-	return Op;
+	ResultOp = Op;
 }
 
 void UBeamContentSubsystem::PrepareContentDownloadRequest(FBeamContentManifestId ManifestId, FClientContentInfoTableRow* ContentEntry, FDownloadContentState& Item)
@@ -186,7 +199,7 @@ void UBeamContentSubsystem::DownloadLiveContentObjectsData(const FBeamContentMan
 		(TSharedPtr<IHttpRequest, ESPMode::ThreadSafe>, TSharedPtr<IHttpResponse, ESPMode::ThreadSafe> HttpResponse, bool)
 			{
 #if WITH_EDITOR
-				if (!GEditor->IsPlayingSessionInEditor())
+				if (GEditor && !GEditor->IsPlayingSessionInEditor())
 					return;
 #endif
 				if (HttpResponse->GetResponseCode() == 200)

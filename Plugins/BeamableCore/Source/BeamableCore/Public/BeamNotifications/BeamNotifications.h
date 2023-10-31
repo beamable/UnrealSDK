@@ -144,13 +144,13 @@ struct BEAMABLECORE_API FNotificationClosed
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
-	int32 StatusCode;
+	int32 StatusCode = 0;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FString Reason;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
-	bool bWasClean;
+	bool bWasClean = false;
 };
 
 /**
@@ -163,7 +163,7 @@ struct BEAMABLECORE_API FNotificationEvent
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
-	TEnumAsByte<ENotificationMessageType> EventType;
+	TEnumAsByte<ENotificationMessageType> EventType = Connected;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FNotificationConnected ConnectedData;
@@ -180,9 +180,36 @@ struct BEAMABLECORE_API FNotificationEvent
 
 DECLARE_DELEGATE_OneParam(FOnNotificationEvent, const FNotificationEvent&);
 
+USTRUCT()
+struct FNotificationMessageEventHandler
+{
+	GENERATED_BODY()
+
+	FNotificationMessageEventHandler() = default;	
+
+	friend bool operator==(const FNotificationMessageEventHandler& Lhs, const FNotificationMessageEventHandler& RHS)
+	{
+		return Lhs.ContextKey == RHS.ContextKey;
+	}
+
+	friend bool operator!=(const FNotificationMessageEventHandler& Lhs, const FNotificationMessageEventHandler& RHS)
+	{
+		return !(Lhs == RHS);
+	}
+
+	
+	FString              ContextKey;
+	FOnNotificationEvent Handler;
+};
+
+FORCEINLINE uint32 GetTypeHash(const FNotificationMessageEventHandler& MessageEventHandler) { return GetTypeHash(MessageEventHandler.ContextKey); }
+
+
 /**
  * Notification engine system. This system keeps track of all Open Websocket connections in association with a UserSlot and a connection name.
- * It also handles disposing of PIE connections 
+ * It also handles disposing of PIE connections.
+ *
+ * This is integral for Runtime connectivity management. See BeamRuntime class for details.
  */
 UCLASS(BlueprintType, NotBlueprintable)
 class BEAMABLECORE_API UBeamNotifications : public UEngineSubsystem
@@ -193,8 +220,8 @@ class BEAMABLECORE_API UBeamNotifications : public UEngineSubsystem
 
 	TArray<FBeamWebSocketHandle> PlayModeHandles;
 
-	TMap<FBeamWebSocketHandle, FOnNotificationEvent>      ConnectionEventHandlers;
-	TMultiMap<FBeamWebSocketHandle, FOnNotificationEvent> MessageEventHandlers;
+	TMap<FBeamWebSocketHandle, FOnNotificationEvent>                  ConnectionEventHandlers;
+	TMultiMap<FBeamWebSocketHandle, FNotificationMessageEventHandler> MessageEventHandlers;
 
 	UPROPERTY()
 	UBeamUserSlots* UserSlots;
@@ -206,13 +233,13 @@ class BEAMABLECORE_API UBeamNotifications : public UEngineSubsystem
 	virtual void Deinitialize() override;
 
 public:
-	bool TryConnect(const FUserSlot&              Slot, const FName&                        SocketName, const FString&                    Uri,
-	                const TMap<FString, FString>& ExtraHeaders, const FOnNotificationEvent& ConnectionEventHandler, FBeamWebSocketHandle& OutHandle, UObject* ContextObject = nullptr);
-	
-	void Connect(const FUserSlot&              Slot, const FBeamRealmUser&               UserData, const FName&                        SocketName, const FString& Uri,
-	                const TMap<FString, FString>& ExtraHeaders, const FOnNotificationEvent& ConnectionEventHandler, FBeamWebSocketHandle& OutHandle, UObject*        ContextObject = nullptr);
+	bool TryConnect(const FUserSlot& Slot, const FName& SocketName, const FString& Uri, const TMap<FString, FString>& ExtraHeaders, const FOnNotificationEvent& ConnectionEventHandler, FBeamWebSocketHandle& OutHandle, UObject* ContextObject = nullptr);
+
+	void Connect(const FUserSlot& Slot, const FBeamRealmUser& UserData, const FName& SocketName, const FString& Uri, const TMap<FString, FString>& ExtraHeaders, const FOnNotificationEvent& ConnectionEventHandler, FBeamWebSocketHandle& OutHandle, UObject* ContextObject = nullptr);
 
 	bool TryGetHandle(const FUserSlot& Slot, const FName& SocketName, FBeamWebSocketHandle& OutHandle);
+
+	void ClearPIESockets();
 
 	template <typename THandler, typename TMessage>
 	bool TrySubscribeForMessage(const FUserSlot& Slot, const FName& SocketName, const FString& ContextKey, THandler Handler)
@@ -228,26 +255,42 @@ public:
 				// Make sure the Message type is a FBeamJsonSerializable
 				static_assert(TIsDerivedFrom<TMessage, FBeamJsonSerializable>::Value);
 
-				FOnNotificationEvent                                                               EventHandler;
-				EventHandler.BindLambda([Slot, SocketName, ContextKey, Handler](FNotificationEvent Evt)
+				const FOnNotificationEvent EventHandler = FOnNotificationEvent::CreateLambda([Slot, SocketName, ContextKey, Handler](FNotificationEvent Evt)
 				{
 					ensureAlways(Evt.EventType == Message);
+					ensureAlways(Evt.MessageData.Context.Equals(ContextKey));
 
-					if (Evt.MessageData.Context.Equals(ContextKey))
-					{
-						TMessage MsgData;
-						MsgData.BeamDeserialize(Evt.MessageData.MessageFull);
+					TMessage MsgData;
+					MsgData.BeamDeserialize(Evt.MessageData.MessageFull);
 
-						const bool bDidRun = Handler.ExecuteIfBound(MsgData);
-						ensureAlwaysMsgf(bDidRun, TEXT("The notification message handler was not bound. SLOT=%s, ID=%s, CONTEXT=%s"), *Slot.Name, *SocketName.ToString(), *ContextKey);
-					}
-					else
-					{
-						UE_LOG(LogBeamNotifications, Verbose, TEXT("Skipping handler for this message: Handler doesn't care about this context. SLOT=%s, ID=%s, CONTEXT=%s"), *Slot.Name, *SocketName.ToString(), *ContextKey)
-					}
+					const bool bDidRun = Handler.ExecuteIfBound(MsgData);
+					ensureAlwaysMsgf(bDidRun, TEXT("The notification message handler was not bound. SLOT=%s, ID=%s, CONTEXT=%s"), *Slot.Name, *SocketName.ToString(), *ContextKey);
 				});
 
-				MessageEventHandlers.Add(FBeamWebSocketHandle(Slot, SocketName, this), EventHandler);
+				MessageEventHandlers.Add(FBeamWebSocketHandle(Slot, SocketName, this), {ContextKey, EventHandler});
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	bool TryUnsubscribeAllFromMessage(const FUserSlot& Slot, const FName& SocketName, const FString& ContextKey)
+	{
+		if (OpenSockets.Contains(Slot))
+		{
+			if (const auto& UserSockets = OpenSockets.FindChecked(Slot); UserSockets.Contains(SocketName))
+			{
+				const FBeamWebSocketHandle Key(Slot, SocketName, this);
+
+				TArray<FNotificationMessageEventHandler> Handlers;
+				MessageEventHandlers.MultiFind(Key, Handlers);
+				for (const auto& NotificationMessageEventHandler : Handlers)
+				{
+					if (NotificationMessageEventHandler.ContextKey.Equals(ContextKey))
+						MessageEventHandlers.RemoveSingle(Key, NotificationMessageEventHandler);
+				}
+
 				return true;
 			}
 		}

@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Reference.h"
+#include "BeamableCore/Public/AutoGen/CloudsavingBasicReference.h"
 
 #include "CloudsavingBasicManifest.generated.h"
 
@@ -20,7 +20,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
 	int64 Created;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Manifest", Category="Beam")
-	TArray<UReference*> Manifest;
+	TArray<UCloudsavingBasicReference*> Manifest;
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

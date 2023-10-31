@@ -1,0 +1,40 @@
+
+#include "BeamableCore/Public/AutoGen/StartSessionResponseLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UStartSessionResponseLibrary::StartSessionResponseToJsonString(const UStartSessionResponse* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UStartSessionResponse* UStartSessionResponseLibrary::Make(FString Result, FOptionalGamerTag Gamer, UObject* Outer)
+{
+	auto Serializable = NewObject<UStartSessionResponse>(Outer);
+	Serializable->Result = Result;
+	Serializable->Gamer = Gamer;
+	
+	return Serializable;
+}
+
+void UStartSessionResponseLibrary::Break(const UStartSessionResponse* Serializable, FString& Result, FOptionalGamerTag& Gamer)
+{
+	Result = Serializable->Result;
+	Gamer = Serializable->Gamer;
+		
+}
+

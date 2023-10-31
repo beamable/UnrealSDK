@@ -20,7 +20,7 @@ struct BEAMABLECORE_API FContentRefreshManifest : public FBeamJsonSerializable
 	FString Checksum;
 	
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
-	int64 Created;	
+	int64 Created = -1;	
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;
@@ -36,7 +36,7 @@ struct BEAMABLECORE_API FContentRefreshNotificationMessage : public FBeamJsonSer
 	TArray<FString> Scopes;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
-	int32 Delay;
+	int32 Delay = -1;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FContentRefreshManifest Manifest;

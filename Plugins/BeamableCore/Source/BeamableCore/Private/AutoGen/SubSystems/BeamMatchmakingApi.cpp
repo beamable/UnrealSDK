@@ -20,8 +20,8 @@ void UBeamMatchmakingApi::Deinitialize()
 
 
 
-void UBeamMatchmakingApi::BP_PutTickImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UPutTickRequest* RequestData, const FOnPutTickSuccess& OnSuccess, const FOnPutTickError& OnError, const FOnPutTickComplete& OnComplete, 
+void UBeamMatchmakingApi::BP_GetMatchesImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                                UApiMatchmakingGetMatchesRequest* RequestData, const FOnApiMatchmakingGetMatchesSuccess& OnSuccess, const FOnApiMatchmakingGetMatchesError& OnError, const FOnApiMatchmakingGetMatchesComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
@@ -35,14 +35,14 @@ void UBeamMatchmakingApi::BP_PutTickImpl(const FBeamRealmHandle& TargetRealm, co
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UPutTickRequest, UEmptyResponse, FOnPutTickSuccess, FOnPutTickError, FOnPutTickComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UApiMatchmakingGetMatchesRequest, UMatch, FOnApiMatchmakingGetMatchesSuccess, FOnApiMatchmakingGetMatchesError, FOnApiMatchmakingGetMatchesComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPutTickRequest, UEmptyResponse, FOnPutTickSuccess, FOnPutTickError, FOnPutTickComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UApiMatchmakingGetMatchesRequest, UMatch, FOnApiMatchmakingGetMatchesSuccess, FOnApiMatchmakingGetMatchesError, FOnApiMatchmakingGetMatchesComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -51,8 +51,8 @@ void UBeamMatchmakingApi::BP_PutTickImpl(const FBeamRealmHandle& TargetRealm, co
 	}
 }
 
-void UBeamMatchmakingApi::CPP_PutTickImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UPutTickRequest* RequestData, const FOnPutTickFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamMatchmakingApi::CPP_GetMatchesImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                              UApiMatchmakingGetMatchesRequest* RequestData, const FOnApiMatchmakingGetMatchesFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -65,14 +65,14 @@ void UBeamMatchmakingApi::CPP_PutTickImpl(const FBeamRealmHandle& TargetRealm, c
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UPutTickRequest, UEmptyResponse>
+		Backend->RunAuthenticatedCodeRequestProcessor<UApiMatchmakingGetMatchesRequest, UMatch>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPutTickRequest, UEmptyResponse>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UApiMatchmakingGetMatchesRequest, UMatch>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -82,8 +82,8 @@ void UBeamMatchmakingApi::CPP_PutTickImpl(const FBeamRealmHandle& TargetRealm, c
 }
 
 		
-void UBeamMatchmakingApi::BP_GetMatchImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UGetMatchRequest* RequestData, const FOnGetMatchSuccess& OnSuccess, const FOnGetMatchError& OnError, const FOnGetMatchComplete& OnComplete, 
+void UBeamMatchmakingApi::BP_PostTicketsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                                UPostTicketsRequest* RequestData, const FOnPostTicketsSuccess& OnSuccess, const FOnPostTicketsError& OnError, const FOnPostTicketsComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
@@ -97,14 +97,14 @@ void UBeamMatchmakingApi::BP_GetMatchImpl(const FBeamRealmHandle& TargetRealm, c
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UGetMatchRequest, UMatchUpdate, FOnGetMatchSuccess, FOnGetMatchError, FOnGetMatchComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UPostTicketsRequest, UTicketReservationResponse, FOnPostTicketsSuccess, FOnPostTicketsError, FOnPostTicketsComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetMatchRequest, UMatchUpdate, FOnGetMatchSuccess, FOnGetMatchError, FOnGetMatchComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostTicketsRequest, UTicketReservationResponse, FOnPostTicketsSuccess, FOnPostTicketsError, FOnPostTicketsComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -113,8 +113,8 @@ void UBeamMatchmakingApi::BP_GetMatchImpl(const FBeamRealmHandle& TargetRealm, c
 	}
 }
 
-void UBeamMatchmakingApi::CPP_GetMatchImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UGetMatchRequest* RequestData, const FOnGetMatchFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamMatchmakingApi::CPP_PostTicketsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                              UPostTicketsRequest* RequestData, const FOnPostTicketsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -127,14 +127,14 @@ void UBeamMatchmakingApi::CPP_GetMatchImpl(const FBeamRealmHandle& TargetRealm, 
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UGetMatchRequest, UMatchUpdate>
+		Backend->RunAuthenticatedCodeRequestProcessor<UPostTicketsRequest, UTicketReservationResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetMatchRequest, UMatchUpdate>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostTicketsRequest, UTicketReservationResponse>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -144,8 +144,8 @@ void UBeamMatchmakingApi::CPP_GetMatchImpl(const FBeamRealmHandle& TargetRealm, 
 }
 
 		
-void UBeamMatchmakingApi::BP_PostMatchImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UPostMatchRequest* RequestData, const FOnPostMatchSuccess& OnSuccess, const FOnPostMatchError& OnError, const FOnPostMatchComplete& OnComplete, 
+void UBeamMatchmakingApi::BP_GetTicketsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                                UGetTicketsRequest* RequestData, const FOnGetTicketsSuccess& OnSuccess, const FOnGetTicketsError& OnError, const FOnGetTicketsComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
@@ -159,14 +159,14 @@ void UBeamMatchmakingApi::BP_PostMatchImpl(const FBeamRealmHandle& TargetRealm, 
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UPostMatchRequest, UMatchUpdate, FOnPostMatchSuccess, FOnPostMatchError, FOnPostMatchComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UGetTicketsRequest, UTicket, FOnGetTicketsSuccess, FOnGetTicketsError, FOnGetTicketsComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UPostMatchRequest, UMatchUpdate, FOnPostMatchSuccess, FOnPostMatchError, FOnPostMatchComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UGetTicketsRequest, UTicket, FOnGetTicketsSuccess, FOnGetTicketsError, FOnGetTicketsComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -175,8 +175,8 @@ void UBeamMatchmakingApi::BP_PostMatchImpl(const FBeamRealmHandle& TargetRealm, 
 	}
 }
 
-void UBeamMatchmakingApi::CPP_PostMatchImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UPostMatchRequest* RequestData, const FOnPostMatchFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamMatchmakingApi::CPP_GetTicketsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                              UGetTicketsRequest* RequestData, const FOnGetTicketsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -189,14 +189,14 @@ void UBeamMatchmakingApi::CPP_PostMatchImpl(const FBeamRealmHandle& TargetRealm,
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UPostMatchRequest, UMatchUpdate>
+		Backend->RunAuthenticatedCodeRequestProcessor<UGetTicketsRequest, UTicket>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UPostMatchRequest, UMatchUpdate>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UGetTicketsRequest, UTicket>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -206,8 +206,8 @@ void UBeamMatchmakingApi::CPP_PostMatchImpl(const FBeamRealmHandle& TargetRealm,
 }
 
 		
-void UBeamMatchmakingApi::BP_DeleteMatchImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UDeleteMatchRequest* RequestData, const FOnDeleteMatchSuccess& OnSuccess, const FOnDeleteMatchError& OnError, const FOnDeleteMatchComplete& OnComplete, 
+void UBeamMatchmakingApi::BP_DeleteTicketsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                                UDeleteTicketsRequest* RequestData, const FOnDeleteTicketsSuccess& OnSuccess, const FOnDeleteTicketsError& OnError, const FOnDeleteTicketsComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
@@ -221,14 +221,14 @@ void UBeamMatchmakingApi::BP_DeleteMatchImpl(const FBeamRealmHandle& TargetRealm
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UDeleteMatchRequest, UEmptyResponse, FOnDeleteMatchSuccess, FOnDeleteMatchError, FOnDeleteMatchComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UDeleteTicketsRequest, UApiMatchmakingTicketsDeleteTicketResponse, FOnDeleteTicketsSuccess, FOnDeleteTicketsError, FOnDeleteTicketsComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UDeleteMatchRequest, UEmptyResponse, FOnDeleteMatchSuccess, FOnDeleteMatchError, FOnDeleteMatchComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UDeleteTicketsRequest, UApiMatchmakingTicketsDeleteTicketResponse, FOnDeleteTicketsSuccess, FOnDeleteTicketsError, FOnDeleteTicketsComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -237,8 +237,8 @@ void UBeamMatchmakingApi::BP_DeleteMatchImpl(const FBeamRealmHandle& TargetRealm
 	}
 }
 
-void UBeamMatchmakingApi::CPP_DeleteMatchImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UDeleteMatchRequest* RequestData, const FOnDeleteMatchFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamMatchmakingApi::CPP_DeleteTicketsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                              UDeleteTicketsRequest* RequestData, const FOnDeleteTicketsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -251,14 +251,14 @@ void UBeamMatchmakingApi::CPP_DeleteMatchImpl(const FBeamRealmHandle& TargetReal
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UDeleteMatchRequest, UEmptyResponse>
+		Backend->RunAuthenticatedCodeRequestProcessor<UDeleteTicketsRequest, UApiMatchmakingTicketsDeleteTicketResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UDeleteMatchRequest, UEmptyResponse>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UDeleteTicketsRequest, UApiMatchmakingTicketsDeleteTicketResponse>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -272,62 +272,62 @@ void UBeamMatchmakingApi::CPP_DeleteMatchImpl(const FBeamRealmHandle& TargetReal
 
 
 
-void UBeamMatchmakingApi::CPP_PutTick(const FUserSlot& UserSlot, UPutTickRequest* Request, const FOnPutTickFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamMatchmakingApi::CPP_GetMatches(const FUserSlot& UserSlot, UApiMatchmakingGetMatchesRequest* Request, const FOnApiMatchmakingGetMatchesFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UPutTickRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UApiMatchmakingGetMatchesRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_PutTickImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_GetMatchesImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamMatchmakingApi::CPP_GetMatch(const FUserSlot& UserSlot, UGetMatchRequest* Request, const FOnGetMatchFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamMatchmakingApi::CPP_PostTickets(const FUserSlot& UserSlot, UPostTicketsRequest* Request, const FOnPostTicketsFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UGetMatchRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UPostTicketsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_GetMatchImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_PostTicketsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamMatchmakingApi::CPP_PostMatch(const FUserSlot& UserSlot, UPostMatchRequest* Request, const FOnPostMatchFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamMatchmakingApi::CPP_GetTickets(const FUserSlot& UserSlot, UGetTicketsRequest* Request, const FOnGetTicketsFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UPostMatchRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UGetTicketsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_PostMatchImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_GetTicketsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamMatchmakingApi::CPP_DeleteMatch(const FUserSlot& UserSlot, UDeleteMatchRequest* Request, const FOnDeleteMatchFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamMatchmakingApi::CPP_DeleteTickets(const FUserSlot& UserSlot, UDeleteTicketsRequest* Request, const FOnDeleteTicketsFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UDeleteMatchRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UDeleteTicketsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_DeleteMatchImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_DeleteTicketsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
@@ -336,62 +336,62 @@ void UBeamMatchmakingApi::CPP_DeleteMatch(const FUserSlot& UserSlot, UDeleteMatc
 
 
 
-void UBeamMatchmakingApi::PutTick(FUserSlot UserSlot, UPutTickRequest* Request, const FOnPutTickSuccess& OnSuccess, const FOnPutTickError& OnError, const FOnPutTickComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+void UBeamMatchmakingApi::GetMatches(FUserSlot UserSlot, UApiMatchmakingGetMatchesRequest* Request, const FOnApiMatchmakingGetMatchesSuccess& OnSuccess, const FOnApiMatchmakingGetMatchesError& OnError, const FOnApiMatchmakingGetMatchesComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UPutTickRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UApiMatchmakingGetMatchesRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PutTickImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
-}
-
-		
-void UBeamMatchmakingApi::GetMatch(FUserSlot UserSlot, UGetMatchRequest* Request, const FOnGetMatchSuccess& OnSuccess, const FOnGetMatchError& OnError, const FOnGetMatchComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
-{
-	// AUTO-GENERATED...
-	FBeamRealmUser AuthenticatedUser;
-	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
-
-	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UGetMatchRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
-
-	int64 OutRequestId;
-	BP_GetMatchImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	BP_GetMatchesImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamMatchmakingApi::PostMatch(FUserSlot UserSlot, UPostMatchRequest* Request, const FOnPostMatchSuccess& OnSuccess, const FOnPostMatchError& OnError, const FOnPostMatchComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+void UBeamMatchmakingApi::PostTickets(FUserSlot UserSlot, UPostTicketsRequest* Request, const FOnPostTicketsSuccess& OnSuccess, const FOnPostTicketsError& OnError, const FOnPostTicketsComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UPostMatchRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UPostTicketsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PostMatchImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	BP_PostTicketsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 
 		
-void UBeamMatchmakingApi::DeleteMatch(FUserSlot UserSlot, UDeleteMatchRequest* Request, const FOnDeleteMatchSuccess& OnSuccess, const FOnDeleteMatchError& OnError, const FOnDeleteMatchComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+void UBeamMatchmakingApi::GetTickets(FUserSlot UserSlot, UGetTicketsRequest* Request, const FOnGetTicketsSuccess& OnSuccess, const FOnGetTicketsError& OnError, const FOnGetTicketsComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UDeleteMatchRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UGetTicketsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_DeleteMatchImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	BP_GetTicketsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+}
+
+		
+void UBeamMatchmakingApi::DeleteTickets(FUserSlot UserSlot, UDeleteTicketsRequest* Request, const FOnDeleteTicketsSuccess& OnSuccess, const FOnDeleteTicketsError& OnError, const FOnDeleteTicketsComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+{
+	// AUTO-GENERATED...
+	FBeamRealmUser AuthenticatedUser;
+	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
+
+	FBeamRetryConfig RetryConfig;
+	Backend->GetRetryConfigForUserSlotAndRequestType(UDeleteTicketsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+
+	int64 OutRequestId;
+	BP_DeleteTicketsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
 }
 

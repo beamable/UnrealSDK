@@ -22,24 +22,26 @@ FString UItemLibrary::ItemToJsonString(const UItem* Serializable, const bool Pre
 	return Result;
 }	
 
-UItem* UItemLibrary::Make(int64 Id, TArray<UItemProperty*> Properties, FOptionalInt64 UpdatedAt, FOptionalString ProxyId, FOptionalInt64 CreatedAt, UObject* Outer)
+UItem* UItemLibrary::Make(int64 Id, TArray<UItemProperty*> Properties, FOptionalInt64 UpdatedAt, FOptionalString ProxyId, FOptionalArchetypeProxy Proxy, FOptionalInt64 CreatedAt, UObject* Outer)
 {
 	auto Serializable = NewObject<UItem>(Outer);
 	Serializable->Id = Id;
 	Serializable->Properties = Properties;
 	Serializable->UpdatedAt = UpdatedAt;
 	Serializable->ProxyId = ProxyId;
+	Serializable->Proxy = Proxy;
 	Serializable->CreatedAt = CreatedAt;
 	
 	return Serializable;
 }
 
-void UItemLibrary::Break(const UItem* Serializable, int64& Id, TArray<UItemProperty*>& Properties, FOptionalInt64& UpdatedAt, FOptionalString& ProxyId, FOptionalInt64& CreatedAt)
+void UItemLibrary::Break(const UItem* Serializable, int64& Id, TArray<UItemProperty*>& Properties, FOptionalInt64& UpdatedAt, FOptionalString& ProxyId, FOptionalArchetypeProxy& Proxy, FOptionalInt64& CreatedAt)
 {
 	Id = Serializable->Id;
 	Properties = Serializable->Properties;
 	UpdatedAt = Serializable->UpdatedAt;
 	ProxyId = Serializable->ProxyId;
+	Proxy = Serializable->Proxy;
 	CreatedAt = Serializable->CreatedAt;
 		
 }

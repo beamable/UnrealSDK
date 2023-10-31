@@ -4,6 +4,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/RedisShardRequestBody.h"
 
 #include "CreatePlanRequestBody.generated.h"
@@ -28,6 +29,8 @@ public:
 	FString MongoHosts;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Redis Shards", Category="Beam")
 	TArray<URedisShardRequestBody*> RedisShards;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Mongo Srv Address", Category="Beam")
+	FOptionalString MongoSrvAddress;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Message Bus Analytics", Category="Beam")
 	FOptionalArrayOfString MessageBusAnalytics;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Message Bus Common", Category="Beam")

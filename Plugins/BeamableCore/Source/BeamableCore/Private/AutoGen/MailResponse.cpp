@@ -12,17 +12,17 @@ void UMailResponse::DeserializeRequestResponse(UObject* RequestData, FString Res
 
 void UMailResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeOptional<UMailBasicMessage*>(TEXT("result"), &Result, Serializer);
+	UBeamJsonUtils::SerializeOptional<UMessage*>(TEXT("result"), &Result, Serializer);
 }
 
 void UMailResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeOptional<UMailBasicMessage*>(TEXT("result"), &Result, Serializer);		
+	UBeamJsonUtils::SerializeOptional<UMessage*>(TEXT("result"), &Result, Serializer);		
 }
 
 void UMailResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeOptional<UMailBasicMessage*>("result", Bag, Result, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<UMessage*>("result", Bag, Result, OuterOwner);
 }
 
 

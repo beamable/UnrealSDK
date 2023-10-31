@@ -4,6 +4,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfRedisShard.h"
 
@@ -25,6 +26,8 @@ public:
 	TArray<FString> MongoHosts;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Mongo SSL", Category="Beam")
 	FOptionalBool bMongoSSL;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Mongo Srv Address", Category="Beam")
+	FOptionalString MongoSrvAddress;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Message Bus Analytics", Category="Beam")
 	FOptionalArrayOfString MessageBusAnalytics;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Message Bus Common", Category="Beam")

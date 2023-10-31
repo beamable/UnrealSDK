@@ -5,7 +5,7 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfInFlightMessage.h"
 #include "BeamableCore/Public/AutoGen/GroupUserMember.h"
-#include "BeamableCore/Public/AutoGen/Arrays/ArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/GroupMemberInfo.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfGroupScoreBinding.h"
 
 #include "GroupUser.generated.h"
@@ -20,10 +20,10 @@ public:
 	int64 GamerTag;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Updated", Category="Beam")
 	int64 Updated;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Member", Category="Beam")
+	UGroupMemberInfo* Member;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="All Groups", Category="Beam")
 	TArray<UGroupUserMember*> AllGroups;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Member", Category="Beam")
-	TMap<FString, FArrayOfString> Member;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="In Flight", Category="Beam")
 	FOptionalArrayOfInFlightMessage InFlight;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scores", Category="Beam")

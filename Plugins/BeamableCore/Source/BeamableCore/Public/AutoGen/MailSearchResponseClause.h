@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfMailObjectMessage.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfMessage.h"
 
 #include "MailSearchResponseClause.generated.h"
 
@@ -18,7 +18,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Count", Category="Beam")
 	int64 Count;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content", Category="Beam")
-	FOptionalArrayOfMailObjectMessage Content;
+	FOptionalArrayOfMessage Content;
 
 	
 

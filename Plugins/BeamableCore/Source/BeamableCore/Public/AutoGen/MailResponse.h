@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalMailBasicMessage.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMessage.h"
 
 #include "MailResponse.generated.h"
 
@@ -14,7 +14,7 @@ class BEAMABLECORE_API UMailResponse : public UObject, public FBeamJsonSerializa
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Result", Category="Beam")
-	FOptionalMailBasicMessage Result;
+	FOptionalMessage Result;
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

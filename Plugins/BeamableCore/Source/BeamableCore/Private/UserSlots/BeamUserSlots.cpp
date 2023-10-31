@@ -6,6 +6,7 @@
 #include "BeamCoreSettings.h"
 #include "BeamLogging.h"
 #include "JsonObjectConverter.h"
+#include "HAL/FileManagerGeneric.h"
 
 void UBeamUserSlots::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -24,21 +25,25 @@ void UBeamUserSlots::Deinitialize()
 	AuthenticatedUserMapping.Empty();
 }
 
+FString UBeamUserSlots::GetSavedSlotsDirectory()
+{
+	return FPaths::ProjectSavedDir() / TEXT("Beamable") / TEXT("UserSlots");
+}
 
 FString UBeamUserSlots::GetSavedSlotAuthFilePath(FString NamespacedSlotId)
 {
-	return FPaths::ProjectSavedDir() / TEXT("Beamable") / TEXT("UserSlots") / NamespacedSlotId + TEXT("_Auth.json");
+	return GetSavedSlotsDirectory() / NamespacedSlotId + TEXT("_Auth.json");
 }
 
 FString UBeamUserSlots::GetSavedSlotAccountFilePath(FString NamespacedSlotId)
 {
-	return FPaths::ProjectSavedDir() / TEXT("Beamable") / TEXT("UserSlots") / NamespacedSlotId + TEXT("_Account.json");
+	return GetSavedSlotsDirectory() / NamespacedSlotId + TEXT("_Account.json");
 }
 
 FString UBeamUserSlots::GetSlotDataSavedFilePath(FString SlotDataType, FUserSlot SlotId, const UObject* CallingContext)
 {
 	const auto NamespacedSlotId = GetNamespacedSlotId(SlotId, CallingContext);
-	return FPaths::ProjectSavedDir() / TEXT("Beamable") / TEXT("UserSlots") / NamespacedSlotId + TEXT("_") + SlotDataType + TEXT(".json");
+	return GetSavedSlotsDirectory() / NamespacedSlotId + TEXT("_") + SlotDataType + TEXT(".json");
 }
 
 bool UBeamUserSlots::IsPIEContext(const UObject* CallingContext)
@@ -365,6 +370,60 @@ void UBeamUserSlots::ClearUserAtSlot(FUserSlot SlotId, const EUserSlotClearedRea
 	{
 		UE_LOG(LogBeamUserSlots, Verbose, TEXT("No Authenticated User is loaded at Slot!\nUSER_SLOT=%s"), *NamespacedSlotId);
 	}
+}
+
+void UBeamUserSlots::ClearAllCachedUserDataAtSlot(FUserSlot SlotId)
+{
+	TArray<FString> AllCachedUserSlots;
+	FFileManagerGeneric::Get().FindFiles(AllCachedUserSlots, *GetSavedSlotsDirectory(),TEXT(".json"));
+
+	for (const auto& CachedUserSlotDataFile : AllCachedUserSlots)
+	{		
+		if(!CachedUserSlotDataFile.Contains(SlotId.Name)) continue;
+
+		if(CachedUserSlotDataFile.Contains(TEXT("_Auth.json")))
+		{
+			// Save the User's Auth data to the slot.
+			const auto SavedUserAuthDataPath = GetSavedSlotsDirectory() / CachedUserSlotDataFile;
+			const auto AuthDataForSlot = FUserSlotAuthData{TEXT(""), TEXT(""), 0, 0,TEXT(""),TEXT("")};
+			FString JsonSerializedAuthData;
+			ensureAlways(FJsonObjectConverter::UStructToJsonObjectString(AuthDataForSlot, JsonSerializedAuthData));
+
+			if (FFileHelper::SaveStringToFile(*JsonSerializedAuthData, *SavedUserAuthDataPath))
+			{
+				UE_LOG(LogBeamUserSlots, Verbose, TEXT("Cleared User Slot - Auth File!\nUSER_SLOT=%s\nFILE_PATH=%s\nFILE_CONTENTS=%s"), *SlotId.Name, *SavedUserAuthDataPath,
+					   *JsonSerializedAuthData);
+			}
+			else
+			{
+				UE_LOG(LogBeamUserSlots, Error, TEXT("Failed to clear User Slot - Auth File!\nUSER_SLOT=%s\nFILE_PATH=%s\nFILE_CONTENTS=%s"), *SlotId.Name, *SavedUserAuthDataPath,
+					   *JsonSerializedAuthData);
+			}	
+		}
+
+		if(CachedUserSlotDataFile.Contains("_Account.json"))
+		{
+			// Save the User Account data to the slot.
+			const auto SavedUserAccountDataPath = GetSavedSlotsDirectory() / CachedUserSlotDataFile;
+
+			const auto AccountDataForSlot = FUserSlotAccountData{-1, -1, TEXT("")};
+			FString JsonSerializedAccountData;
+			ensureAlways(FJsonObjectConverter::UStructToJsonObjectString(AccountDataForSlot, JsonSerializedAccountData));
+
+			if (FFileHelper::SaveStringToFile(*JsonSerializedAccountData, *SavedUserAccountDataPath))
+			{
+				UE_LOG(LogBeamUserSlots, Verbose, TEXT("Cleared User Slot - Account File!\nUSER_SLOT=%s\nFILE_PATH=%s\nFILE_CONTENTS=%s"), *SlotId.Name, *SavedUserAccountDataPath,
+					   *JsonSerializedAccountData);
+			}
+			else
+			{
+				UE_LOG(LogBeamUserSlots, Error, TEXT("Failed to clear User Slot - Account File!\nUSER_SLOT=%s\nFILE_PATH=%s\nFILE_CONTENTS=%s"), *SlotId.Name, *SavedUserAccountDataPath,
+					   *JsonSerializedAccountData);
+			}
+		}
+		
+		UE_LOG(LogBeamUserSlots, Verbose, TEXT("Cleared Saved User Slot!\nUSER_SLOT=%s"), *SlotId.Name);
+	}	
 }
 
 bool UBeamUserSlots::IsUserSlotAuthenticated(FUserSlot SlotId, const UObject* CallingContext)

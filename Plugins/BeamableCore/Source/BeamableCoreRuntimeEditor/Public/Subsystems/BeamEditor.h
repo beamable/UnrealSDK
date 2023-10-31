@@ -311,6 +311,11 @@ private:
 	void SelectRealm_OnSystemsReady(const TArray<FBeamRequestContext>& Contexts, const TArray<TScriptInterface<IBeamBaseRequestInterface>>& Requests, const TArray<UObject*>& Responses,
 	                                const TArray<FBeamErrorResponse>& Errors, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op) const;
 
+	/**
+	 * @brief Opens the Beamable Portal, signed into the MainEditorUser's account, at the dashboard page. 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	void OpenPortalOnCurrentRealm();
 
 	// Utility Functions
 private:

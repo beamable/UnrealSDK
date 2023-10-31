@@ -157,6 +157,8 @@ public:
 
 	/** Cleans up the system.  */
 	virtual void Deinitialize() override;
+
+	static FString      GetSavedSlotsDirectory();
 	/**
 		 * @brief Gets a FUserSlot from a NamespacedSlotId.
 		 */
@@ -259,6 +261,9 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	void ClearUserAtSlot(FUserSlot SlotId, const EUserSlotClearedReason& Reason = Manual, const bool& bShouldRemoveSavedData = false, const UObject* CallingContext = nullptr);
+
+	UFUNCTION(BlueprintCallable, Category="Beam")	
+	void ClearAllCachedUserDataAtSlot(FUserSlot SlotId);
 
 	/**
 		 * @brief Attempts to quickly authenticate a user with locally stored, serialized data.	  

@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/URLResponse.h"
+#include "BeamableCore/Public/AutoGen/CloudsavingBasicURLResponse.h"
 
 #include "URLSResponse.generated.h"
 
@@ -14,7 +14,7 @@ class BEAMABLECORE_API UURLSResponse : public UObject, public FBeamJsonSerializa
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Response", Category="Beam")
-	TArray<UURLResponse*> Response;
+	TArray<UCloudsavingBasicURLResponse*> Response;
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

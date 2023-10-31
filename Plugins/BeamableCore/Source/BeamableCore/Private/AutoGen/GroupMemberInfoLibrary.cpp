@@ -1,0 +1,40 @@
+
+#include "BeamableCore/Public/AutoGen/GroupMemberInfoLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UGroupMemberInfoLibrary::GroupMemberInfoToJsonString(const UGroupMemberInfo* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UGroupMemberInfo* UGroupMemberInfoLibrary::Make(FOptionalArrayOfGroupUserMember Guild, FOptionalArrayOfGroupUserMember Subgroup, UObject* Outer)
+{
+	auto Serializable = NewObject<UGroupMemberInfo>(Outer);
+	Serializable->Guild = Guild;
+	Serializable->Subgroup = Subgroup;
+	
+	return Serializable;
+}
+
+void UGroupMemberInfoLibrary::Break(const UGroupMemberInfo* Serializable, FOptionalArrayOfGroupUserMember& Guild, FOptionalArrayOfGroupUserMember& Subgroup)
+{
+	Guild = Serializable->Guild;
+	Subgroup = Serializable->Subgroup;
+		
+}
+

@@ -22,7 +22,7 @@ FString UDataDomainLibrary::DataDomainToJsonString(const UDataDomain* Serializab
 	return Result;
 }	
 
-UDataDomain* UDataDomainLibrary::Make(bool bMongoSSLEnabled, bool bMongoSharded, TArray<FString> MemcachedHosts, TArray<FString> MongoHosts, FOptionalBool bMongoSSL, FOptionalArrayOfString MessageBusAnalytics, FOptionalArrayOfString MessageBusCommon, FOptionalArrayOfRedisShard RedisShards, UObject* Outer)
+UDataDomain* UDataDomainLibrary::Make(bool bMongoSSLEnabled, bool bMongoSharded, TArray<FString> MemcachedHosts, TArray<FString> MongoHosts, FOptionalBool bMongoSSL, FOptionalString MongoSrvAddress, FOptionalArrayOfString MessageBusAnalytics, FOptionalArrayOfString MessageBusCommon, FOptionalArrayOfRedisShard RedisShards, UObject* Outer)
 {
 	auto Serializable = NewObject<UDataDomain>(Outer);
 	Serializable->bMongoSSLEnabled = bMongoSSLEnabled;
@@ -30,6 +30,7 @@ UDataDomain* UDataDomainLibrary::Make(bool bMongoSSLEnabled, bool bMongoSharded,
 	Serializable->MemcachedHosts = MemcachedHosts;
 	Serializable->MongoHosts = MongoHosts;
 	Serializable->bMongoSSL = bMongoSSL;
+	Serializable->MongoSrvAddress = MongoSrvAddress;
 	Serializable->MessageBusAnalytics = MessageBusAnalytics;
 	Serializable->MessageBusCommon = MessageBusCommon;
 	Serializable->RedisShards = RedisShards;
@@ -37,13 +38,14 @@ UDataDomain* UDataDomainLibrary::Make(bool bMongoSSLEnabled, bool bMongoSharded,
 	return Serializable;
 }
 
-void UDataDomainLibrary::Break(const UDataDomain* Serializable, bool& bMongoSSLEnabled, bool& bMongoSharded, TArray<FString>& MemcachedHosts, TArray<FString>& MongoHosts, FOptionalBool& bMongoSSL, FOptionalArrayOfString& MessageBusAnalytics, FOptionalArrayOfString& MessageBusCommon, FOptionalArrayOfRedisShard& RedisShards)
+void UDataDomainLibrary::Break(const UDataDomain* Serializable, bool& bMongoSSLEnabled, bool& bMongoSharded, TArray<FString>& MemcachedHosts, TArray<FString>& MongoHosts, FOptionalBool& bMongoSSL, FOptionalString& MongoSrvAddress, FOptionalArrayOfString& MessageBusAnalytics, FOptionalArrayOfString& MessageBusCommon, FOptionalArrayOfRedisShard& RedisShards)
 {
 	bMongoSSLEnabled = Serializable->bMongoSSLEnabled;
 	bMongoSharded = Serializable->bMongoSharded;
 	MemcachedHosts = Serializable->MemcachedHosts;
 	MongoHosts = Serializable->MongoHosts;
 	bMongoSSL = Serializable->bMongoSSL;
+	MongoSrvAddress = Serializable->MongoSrvAddress;
 	MessageBusAnalytics = Serializable->MessageBusAnalytics;
 	MessageBusCommon = Serializable->MessageBusCommon;
 	RedisShards = Serializable->RedisShards;
