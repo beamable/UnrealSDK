@@ -777,7 +777,9 @@ public:
 			// This just passes the captured data along to the Process function (we do this so we can unit test the process function in isolation).
 		(const FHttpRequestPtr Request, const FHttpResponsePtr Response, const bool)
 			{
-				HandlePIESessionRequestGuard(Request, RequestId);
+				if(HandlePIESessionRequestGuard(Request, RequestId))
+					return;
+				
 				if (!Response.IsValid())
 				{
 					UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"), RequestId);
@@ -1025,7 +1027,9 @@ public:
 			// This just passes the captured data along to the Process function (we do this so we can unit test the process function in isolation).
 		(const FHttpRequestPtr Request, const FHttpResponsePtr Response, bool)
 			{
-				HandlePIESessionRequestGuard(Request, RequestId);
+				if(HandlePIESessionRequestGuard(Request, RequestId))
+					return;
+				
 				if (!Response.IsValid())
 				{
 					UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"),
@@ -1296,7 +1300,9 @@ public:
 			// This just passes the captured data along to the Process function (we do this so we can unit test the process function in isolation).
 		(const FHttpRequestPtr Request, const FHttpResponsePtr Response, bool)
 			{
-				HandlePIESessionRequestGuard(Request, RequestId);
+				if(HandlePIESessionRequestGuard(Request, RequestId))
+					return;
+				
 				if (!Response.IsValid())
 				{
 					UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"),
@@ -1547,8 +1553,8 @@ public:
 			// This just passes the captured data along to the Process function (we do this so we can unit test the process function in isolation).
 		(const FHttpRequestPtr Request, const FHttpResponsePtr Response, bool)
 			{
-				HandlePIESessionRequestGuard(Request, RequestId);
-
+				if(HandlePIESessionRequestGuard(Request, RequestId))
+					return;
 				if (!Response.IsValid())
 				{
 					UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"),
@@ -1940,7 +1946,7 @@ private:
 	 * This is called in each of the Make______RequestProcess lambda to ensure that, after we leave PIE, every inflight request's response is automatically ignored when it arrives.
 	 * Invoking the callbacks are likely to result in crashes since PIE is now closed and its memory is deallocated. 
 	 */
-	void HandlePIESessionRequestGuard(TUnrealRequestPtr Request, int64 RequestId = -1);
+	bool HandlePIESessionRequestGuard(TUnrealRequestPtr Request, int64 RequestId = -1);
 
 public:
 	/**

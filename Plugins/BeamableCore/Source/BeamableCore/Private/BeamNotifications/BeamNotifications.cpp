@@ -138,6 +138,7 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 				OpenSockets[OutHandle.Slot].Remove(OutHandle.Id);
 				ConnectionEventHandlers.Remove(OutHandle);
 				MessageEventHandlers.Remove(OutHandle);
+				PlayModeHandles.Remove(OutHandle);
 			}
 		}
 	});
@@ -221,6 +222,4 @@ void UBeamNotifications::ClearPIESockets()
 			}
 		}
 	}
-
-	PlayModeHandles.Reset();
 }

@@ -234,7 +234,7 @@ void UBeamBackend::PrepareBeamableRequestToRealmWithAuthToken(const TUnrealReque
 	}
 }
 
-void UBeamBackend::HandlePIESessionRequestGuard(TUnrealRequestPtr Request, int64 RequestId)
+bool UBeamBackend::HandlePIESessionRequestGuard(TUnrealRequestPtr Request, int64 RequestId)
 {
 	if (!bIsInPIE && InFlightPIERequests.Contains(Request))
 	{
@@ -248,7 +248,9 @@ void UBeamBackend::HandlePIESessionRequestGuard(TUnrealRequestPtr Request, int64
 		}
 
 		UE_LOG(LogBeamBackend, Warning, TEXT("Ignoring Beamable Request made during terminated PIE Session | REQUEST_ID=%lld"), RequestId);
+		return true;
 	}
+	return false;
 }
 
 void UBeamBackend::DefaultExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity)
