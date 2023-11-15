@@ -48,7 +48,7 @@ public:
 };
 
 UCLASS(BlueprintType)
-class ULoginRefreshTokenResponse : public UObject, public FBeamJsonSerializable
+class ULoginRefreshTokenResponse : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 

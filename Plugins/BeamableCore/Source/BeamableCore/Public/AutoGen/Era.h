@@ -8,13 +8,13 @@
 #include "Era.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEra : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UEra : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Value", Category="Beam")
-	int32 Value;
+	int32 Value = {};
 
 	
 

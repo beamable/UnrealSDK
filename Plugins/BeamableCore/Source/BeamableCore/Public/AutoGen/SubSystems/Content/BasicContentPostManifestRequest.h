@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	USaveManifestRequestBody* Body;
+	USaveManifestRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UBasicContentPostManifestRequest() = default;
@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Content", DisplayName="Beam - Make BasicContentPostManifest",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
-	static UBasicContentPostManifestRequest* Make(FBeamContentManifestId _Id, TArray<UReferenceSuperset*> _References, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Content", DisplayName="Beam - Make BasicContentPostManifest",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UBasicContentPostManifestRequest* Make(FBeamContentManifestId _Id, TArray<UReferenceSuperset*> _References, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

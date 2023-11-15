@@ -23,9 +23,10 @@ void UGetAdminCustomerRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAdminCustomerRequest* UGetAdminCustomerRequest::Make(UObject* RequestOwner)
+UGetAdminCustomerRequest* UGetAdminCustomerRequest::Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetAdminCustomerRequest* Req = NewObject<UGetAdminCustomerRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

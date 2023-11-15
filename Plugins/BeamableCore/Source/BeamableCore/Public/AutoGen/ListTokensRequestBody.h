@@ -9,21 +9,21 @@
 #include "ListTokensRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UListTokensRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UListTokensRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Page Size", Category="Beam")
-	int32 PageSize;
+	int32 PageSize = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Page", Category="Beam")
-	int32 Page;
+	int32 Page = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag Or Account Id", Category="Beam")
-	int64 GamerTagOrAccountId;
+	int64 GamerTagOrAccountId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid", Category="Beam")
-	FOptionalBeamCid Cid;
+	FOptionalBeamCid Cid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pid", Category="Beam")
-	FOptionalBeamPid Pid;
+	FOptionalBeamPid Pid = {};
 
 	
 

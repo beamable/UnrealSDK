@@ -27,9 +27,10 @@ void UDeleteDataRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteDataRequest* UDeleteDataRequest::Make(FOptionalInt64 _PlayerId, FOptionalArrayOfObjectRequestBody _Request, UObject* RequestOwner)
+UDeleteDataRequest* UDeleteDataRequest::Make(FOptionalInt64 _PlayerId, FOptionalArrayOfObjectRequestBody _Request, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UDeleteDataRequest* Req = NewObject<UDeleteDataRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

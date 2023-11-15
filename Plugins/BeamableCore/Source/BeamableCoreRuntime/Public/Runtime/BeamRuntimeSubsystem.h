@@ -59,19 +59,56 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsReady = false;
 
+	/**
+	 * This is called after unreal is fully initialized but Beamable is not. Basically, this runs after all Engine and GameInstance Subsystems have
+	 * completed running their Initialize function. This callback is useful for reading cached local state and local configuration files.  
+	 */
 	UFUNCTION(BlueprintNativeEvent, Category="Beam")
 	void InitializeWhenUnrealReady(FBeamOperationHandle& ResultOp);
 	virtual void InitializeWhenUnrealReady_Implementation(FBeamOperationHandle& ResultOp);
 
 	/**
-	 * @brief Called whenever UBeamRuntime is ready for users to be authenticated into Beamable. This is only called if you disable automatic frictionless authentication in order to control
-	 * when the owner player signs into Beamable in your game. By default, sign in is automatic and you can expect OnBeamableReady to be called when the current local user is signed in and
-	 * ready to make requests to Beamable.
+	 * @brief UBeamRuntime::OnStarted runs after all these callbacks have completed. At this point, you can make any non-authenticated request to beamable.
+	 * For example, downloading content at the start of a player session (see UBeamContentSubsystem for an example).
+	 * This is guaranteed to run only once per game-client/server session. Also, for UBeamRuntimeSubsystems running in dedicated servers, this is the last of the callbacks here that will actually run.
+	 * After this runs, UBeamRuntime::OnStarted is invoked and user-level code can run to make non-authenticated requests to beamable (ie: game-specific signup/login flows). 
 	 */
 	UFUNCTION(BlueprintNativeEvent, Category="Beam")
-	void         OnBeamableStarted(FBeamOperationHandle& ResultOp);
-	virtual void OnBeamableStarted_Implementation(FBeamOperationHandle& ResultOp);
+	void         OnBeamableStarting(FBeamOperationHandle& ResultOp);
+	virtual void OnBeamableStarting_Implementation(FBeamOperationHandle& ResultOp);
 
+	/**
+	 * @brief Called whenever a user authenticates into a user slot.
+	 * The returned operation is added to a list of operations containing all other subsystem's OnUserSignedIn operation.
+	 * We wait for this list of operations to finish and then call OnPostUserSignedIn.
+	 */
+	UFUNCTION(BlueprintNativeEvent, Category="Beam")
+	void OnUserSignedIn(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp);
+	virtual void OnUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp);
+	/**
+	 * @brief Called whenever a user signs out of a user slot.
+	 * The returned operation is added to a list of operations containing all other subsystem's OnUserSignedOut operation.
+	 * We wait for this list of operations to finish and then call OnPostUserSignedOut.
+	 */
+	UFUNCTION(BlueprintNativeEvent, Category="Beam")
+	void OnUserSignedOut(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp);
+	virtual void OnUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp);
+
+	/**
+	 * @brief Called on each BeamRuntimeSubsystem after the OnUserSignedIn operations of ALL BeamRuntimeSubsystems have run to completion (success or otherwise).	 
+	 */
+	UFUNCTION(BlueprintNativeEvent, Category="Beam")
+	void OnPostUserSignedIn(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp);
+	virtual void OnPostUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp);
+
+	/**
+	 * @brief Called on each BeamRuntimeSubsystem after the OnUserSignedOut operations of ALL BeamRuntimeSubsystems have run to completion (success or otherwise). 
+	 */
+	UFUNCTION(BlueprintNativeEvent, Category="Beam")
+	void OnPostUserSignedOut(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle&   ResultOp);
+	virtual void OnPostUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp);
+
+	
 	/**
 	 * @brief Called whenever UBeamRuntime fails its frictionless authentication flow. This is only called if you have automatic frictionless authentication set up.
 	 * By default, this is called after the OnBeamableStarted step ONLY IF we fail to authenticate.
@@ -87,37 +124,6 @@ public:
 	UFUNCTION(BlueprintNativeEvent, Category="Beam")
 	void         OnUserConnectionLost(const FUserSlot& UserSlot);
 	virtual void OnUserConnectionLost_Implementation(const FUserSlot& UserSlot);
-
-	/**
-	 * @brief Called whenever a user authenticates into a user slot.
-	 * The returned operation is added to a list of operations containing all other subsystem's OnUserSignedIn operation.
-	 * We wait for this list of operations to finish and then call OnPostUserSignedIn.
-	 */
-	UFUNCTION(BlueprintNativeEvent, Category="Beam")
-	void OnUserSignedIn(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserFirstAuth, FBeamOperationHandle& ResultOp);
-	virtual void OnUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserFirstAuth, FBeamOperationHandle& ResultOp);
-	/**
-	 * @brief Called whenever a user signs out of a user slot.
-	 * The returned operation is added to a list of operations containing all other subsystem's OnUserSignedOut operation.
-	 * We wait for this list of operations to finish and then call OnPostUserSignedOut.
-	 */
-	UFUNCTION(BlueprintNativeEvent, Category="Beam")
-	void OnUserSignedOut(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp);
-	virtual void OnUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp);
-
-	/**
-	 * @brief Called on each BeamRuntimeSubsystem after the OnUserSignedIn operations of ALL BeamRuntimeSubsystems have run to completion (success or otherwise). 
-	 */
-	UFUNCTION(BlueprintNativeEvent, Category="Beam")
-	void OnPostUserSignedIn(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserFirstAuth, FBeamOperationHandle& ResultOp);
-	virtual void OnPostUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserFirstAuth, FBeamOperationHandle& ResultOp);
-
-	/**
-	 * @brief Called on each BeamRuntimeSubsystem after the OnUserSignedOut operations of ALL BeamRuntimeSubsystems have run to completion (success or otherwise). 
-	 */
-	UFUNCTION(BlueprintNativeEvent, Category="Beam")
-	void OnPostUserSignedOut(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle&   ResultOp);
-	virtual void OnPostUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp);
 };
 
 

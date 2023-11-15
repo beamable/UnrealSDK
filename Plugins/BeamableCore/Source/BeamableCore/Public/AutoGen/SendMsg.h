@@ -9,17 +9,17 @@
 #include "SendMsg.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API USendMsg : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API USendMsg : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="To", Category="Beam")
-	TArray<int64> To;
+	TArray<int64> To = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Notification", Category="Beam")
-	FOptionalSendNotification Notification;
+	FOptionalSendNotification Notification = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Data", Category="Beam")
-	FOptionalMapOfString Data;
+	FOptionalMapOfString Data = {};
 
 	
 

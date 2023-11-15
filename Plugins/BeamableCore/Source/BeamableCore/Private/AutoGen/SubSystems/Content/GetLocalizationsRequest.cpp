@@ -23,9 +23,10 @@ void UGetLocalizationsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetLocalizationsRequest* UGetLocalizationsRequest::Make(UObject* RequestOwner)
+UGetLocalizationsRequest* UGetLocalizationsRequest::Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetLocalizationsRequest* Req = NewObject<UGetLocalizationsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

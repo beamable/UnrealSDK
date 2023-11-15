@@ -8,12 +8,12 @@
 
 // Has Native Make/Break require static blueprint pure functions to present as nodes that
 // don't require an execution pin connection. This is super relevant for Blueprint UX. 
-USTRUCT(BlueprintType, meta=(HasNativeMake="BeamableCore.OptionalEntitlementClaimWindowLibrary.MakeOptional", BeamOptionalType="UEntitlementClaimWindow*"))
+USTRUCT(BlueprintType, meta=(HasNativeMake="/Script/BeamableCore.OptionalEntitlementClaimWindowLibrary.MakeOptional", BeamOptionalType="UEntitlementClaimWindow*"))
 struct BEAMABLECORE_API FOptionalEntitlementClaimWindow : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	UEntitlementClaimWindow* Val;
 
 	FOptionalEntitlementClaimWindow();

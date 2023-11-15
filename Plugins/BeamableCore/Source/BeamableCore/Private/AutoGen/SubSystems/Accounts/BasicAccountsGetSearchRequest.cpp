@@ -34,9 +34,10 @@ void UBasicAccountsGetSearchRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UBasicAccountsGetSearchRequest* UBasicAccountsGetSearchRequest::Make(FString _Query, int32 _Page, int32 _Pagesize, UObject* RequestOwner)
+UBasicAccountsGetSearchRequest* UBasicAccountsGetSearchRequest::Make(FString _Query, int32 _Page, int32 _Pagesize, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicAccountsGetSearchRequest* Req = NewObject<UBasicAccountsGetSearchRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Query = _Query;

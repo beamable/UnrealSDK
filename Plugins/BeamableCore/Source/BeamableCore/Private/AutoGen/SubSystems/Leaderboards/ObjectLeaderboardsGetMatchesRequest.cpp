@@ -34,9 +34,10 @@ void UObjectLeaderboardsGetMatchesRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UObjectLeaderboardsGetMatchesRequest* UObjectLeaderboardsGetMatchesRequest::Make(FString _ObjectId, int32 _PoolSize, int32 _Windows, int32 _WindowSize, UObject* RequestOwner)
+UObjectLeaderboardsGetMatchesRequest* UObjectLeaderboardsGetMatchesRequest::Make(FString _ObjectId, int32 _PoolSize, int32 _Windows, int32 _WindowSize, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UObjectLeaderboardsGetMatchesRequest* Req = NewObject<UObjectLeaderboardsGetMatchesRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

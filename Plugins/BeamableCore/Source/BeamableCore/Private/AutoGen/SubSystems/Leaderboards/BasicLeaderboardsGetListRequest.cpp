@@ -34,9 +34,10 @@ void UBasicLeaderboardsGetListRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UBasicLeaderboardsGetListRequest* UBasicLeaderboardsGetListRequest::Make(FOptionalInt32 _Skip, FOptionalInt32 _Limit, UObject* RequestOwner)
+UBasicLeaderboardsGetListRequest* UBasicLeaderboardsGetListRequest::Make(FOptionalInt32 _Skip, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicLeaderboardsGetListRequest* Req = NewObject<UBasicLeaderboardsGetListRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Skip = _Skip;

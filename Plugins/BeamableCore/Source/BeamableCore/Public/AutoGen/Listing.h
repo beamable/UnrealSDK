@@ -16,43 +16,43 @@
 #include "Listing.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UListing : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UListing : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Offer Symbol", Category="Beam")
-	FString OfferSymbol;
+	FString OfferSymbol = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Price", Category="Beam")
-	UPrice* Price;
+	UPrice* Price = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
-	FString Symbol;
+	FString Symbol = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cohort Requirements", Category="Beam")
-	TArray<UCohortRequirement*> CohortRequirements;
+	TArray<UCohortRequirement*> CohortRequirements = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Stat Requirements", Category="Beam")
-	TArray<UPlayerStatRequirement*> PlayerStatRequirements;
+	TArray<UPlayerStatRequirement*> PlayerStatRequirements = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Entitlement Requirements", Category="Beam")
-	TArray<UEntitlementRequirement*> EntitlementRequirements;
+	TArray<UEntitlementRequirement*> EntitlementRequirements = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Offer Requirements", Category="Beam")
-	TArray<UOfferRequirement*> OfferRequirements;
+	TArray<UOfferRequirement*> OfferRequirements = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Client Data", Category="Beam")
-	TMap<FString, FString> ClientData;
+	TMap<FString, FString> ClientData = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Purchase Limit", Category="Beam")
-	FOptionalInt32 PurchaseLimit;
+	FOptionalInt32 PurchaseLimit = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Schedule Instance Purchase Limit", Category="Beam")
-	FOptionalInt32 ScheduleInstancePurchaseLimit;
+	FOptionalInt32 ScheduleInstancePurchaseLimit = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Schedule", Category="Beam")
-	FOptionalSchedule Schedule;
+	FOptionalSchedule Schedule = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Active Duration Cool Down Seconds", Category="Beam")
-	FOptionalInt32 ActiveDurationCoolDownSeconds;
+	FOptionalInt32 ActiveDurationCoolDownSeconds = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Active Duration Seconds", Category="Beam")
-	FOptionalInt32 ActiveDurationSeconds;
+	FOptionalInt32 ActiveDurationSeconds = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Active Duration Purchase Limit", Category="Beam")
-	FOptionalInt32 ActiveDurationPurchaseLimit;
+	FOptionalInt32 ActiveDurationPurchaseLimit = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Active Period", Category="Beam")
-	FOptionalPeriod ActivePeriod;
+	FOptionalPeriod ActivePeriod = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Button Text", Category="Beam")
-	FOptionalMapOfString ButtonText;
+	FOptionalMapOfString ButtonText = {};
 
 	
 

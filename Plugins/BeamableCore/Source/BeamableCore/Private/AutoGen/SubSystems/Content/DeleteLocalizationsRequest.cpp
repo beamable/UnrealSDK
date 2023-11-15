@@ -27,9 +27,10 @@ void UDeleteLocalizationsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteLocalizationsRequest* UDeleteLocalizationsRequest::Make(TArray<ULocalizationQuery*> _Localizations, UObject* RequestOwner)
+UDeleteLocalizationsRequest* UDeleteLocalizationsRequest::Make(TArray<ULocalizationQuery*> _Localizations, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UDeleteLocalizationsRequest* Req = NewObject<UDeleteLocalizationsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -23,9 +23,10 @@ void UGetTicketsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetTicketsRequest* UGetTicketsRequest::Make(FGuid _Id, UObject* RequestOwner)
+UGetTicketsRequest* UGetTicketsRequest::Make(FGuid _Id, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetTicketsRequest* Req = NewObject<UGetTicketsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Id = _Id;

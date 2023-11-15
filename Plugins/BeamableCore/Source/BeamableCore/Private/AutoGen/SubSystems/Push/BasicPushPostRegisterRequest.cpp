@@ -27,9 +27,10 @@ void UBasicPushPostRegisterRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UBasicPushPostRegisterRequest* UBasicPushPostRegisterRequest::Make(FString _Provider, FString _Token, UObject* RequestOwner)
+UBasicPushPostRegisterRequest* UBasicPushPostRegisterRequest::Make(FString _Provider, FString _Token, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicPushPostRegisterRequest* Req = NewObject<UBasicPushPostRegisterRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

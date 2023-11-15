@@ -9,17 +9,17 @@
 #include "GetManifestsRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGetManifestsRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGetManifestsRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Archived", Category="Beam")
-	FOptionalBool bArchived;
+	FOptionalBool bArchived = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit", Category="Beam")
-	FOptionalInt32 Limit;
+	FOptionalInt32 Limit = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Offset", Category="Beam")
-	FOptionalInt32 Offset;
+	FOptionalInt32 Offset = {};
 
 	
 

@@ -8,21 +8,21 @@
 #include "PlayerStatRequirement.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPlayerStatRequirement : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UPlayerStatRequirement : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stat", Category="Beam")
-	FString Stat;
+	FString Stat = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Constraint", Category="Beam")
-	FString Constraint;
+	FString Constraint = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Value", Category="Beam")
-	FString Value;
+	FString Value = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Domain", Category="Beam")
-	FOptionalString Domain;
+	FOptionalString Domain = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Access", Category="Beam")
-	FOptionalString Access;
+	FOptionalString Access = {};
 
 	
 

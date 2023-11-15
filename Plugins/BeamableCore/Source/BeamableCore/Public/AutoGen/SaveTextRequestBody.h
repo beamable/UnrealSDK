@@ -8,13 +8,13 @@
 #include "SaveTextRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API USaveTextRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API USaveTextRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Text", Category="Beam")
-	TArray<UTextDefinition*> Text;
+	TArray<UTextDefinition*> Text = {};
 
 	
 

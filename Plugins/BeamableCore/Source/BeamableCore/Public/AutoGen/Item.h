@@ -11,23 +11,23 @@
 #include "Item.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UItem : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UItem : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	int64 Id;
+	int64 Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Properties", Category="Beam")
-	TArray<UItemProperty*> Properties;
+	TArray<UItemProperty*> Properties = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Updated At", Category="Beam")
-	FOptionalInt64 UpdatedAt;
+	FOptionalInt64 UpdatedAt = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Proxy Id", Category="Beam")
-	FOptionalString ProxyId;
+	FOptionalString ProxyId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Proxy", Category="Beam")
-	FOptionalArchetypeProxy Proxy;
+	FOptionalArchetypeProxy Proxy = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created At", Category="Beam")
-	FOptionalInt64 CreatedAt;
+	FOptionalInt64 CreatedAt = {};
 
 	
 

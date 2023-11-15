@@ -4,35 +4,35 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfExternalIdentity.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfBeamExternalIdentity.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalGamerTagAssociation.h"
 
 #include "AccountUpdate.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UAccountUpdate : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UAccountUpdate : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Has Third Party Token", Category="Beam")
-	bool bHasThirdPartyToken;
+	bool bHasThirdPartyToken = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Third Party", Category="Beam")
-	FOptionalString ThirdParty;
+	FOptionalString ThirdParty = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Country", Category="Beam")
-	FOptionalString Country;
+	FOptionalString Country = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Language", Category="Beam")
-	FOptionalString Language;
+	FOptionalString Language = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag Assoc", Category="Beam")
-	FOptionalGamerTagAssociation GamerTagAssoc;
+	FOptionalGamerTagAssociation GamerTagAssoc = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Token", Category="Beam")
-	FOptionalString Token;
+	FOptionalString Token = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Device Id", Category="Beam")
-	FOptionalString DeviceId;
+	FOptionalString DeviceId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="User Name", Category="Beam")
-	FOptionalString UserName;
+	FOptionalString UserName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="External", Category="Beam")
-	FOptionalArrayOfExternalIdentity External;
+	FOptionalArrayOfBeamExternalIdentity External = {};
 
 	
 

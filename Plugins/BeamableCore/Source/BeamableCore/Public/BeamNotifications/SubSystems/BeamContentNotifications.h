@@ -1,15 +1,14 @@
 ﻿#pragma once
 
 #include "BeamBackend/SemanticTypes/BeamContentManifestId.h"
+#include "BeamNotifications/BeamNotifications.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "UserSlots/UserSlot.h"
 #include "BeamContentNotifications.generated.h"
 
 
-class UBeamNotifications;
-
 USTRUCT(BlueprintType)
-struct BEAMABLECORE_API FContentRefreshManifest : public FBeamJsonSerializable
+struct BEAMABLECORE_API FContentRefreshManifest : public FBeamBaseNotificationMessage
 {
 	GENERATED_BODY()
 
@@ -28,7 +27,7 @@ struct BEAMABLECORE_API FContentRefreshManifest : public FBeamJsonSerializable
 };
 
 USTRUCT(BlueprintType)
-struct BEAMABLECORE_API FContentRefreshNotificationMessage : public FBeamJsonSerializable
+struct BEAMABLECORE_API FContentRefreshNotificationMessage : public FBeamBaseNotificationMessage
 {
 	GENERATED_BODY()
 

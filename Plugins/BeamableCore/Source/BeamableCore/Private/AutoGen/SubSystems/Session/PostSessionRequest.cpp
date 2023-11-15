@@ -27,9 +27,10 @@ void UPostSessionRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostSessionRequest* UPostSessionRequest::Make(FOptionalString _Source, FOptionalString _Shard, FOptionalString _Locale, FOptionalSessionLanguageContext _Language, FOptionalInt64 _Time, FOptionalString _Platform, FOptionalInt64 _Gamer, FOptionalString _Device, FOptionalMapOfString _CustomParams, FOptionalMapOfString _DeviceParams, UObject* RequestOwner)
+UPostSessionRequest* UPostSessionRequest::Make(FOptionalString _Source, FOptionalString _Shard, FOptionalString _Locale, FOptionalSessionLanguageContext _Language, FOptionalInt64 _Time, FOptionalString _Platform, FOptionalInt64 _Gamer, FOptionalString _Device, FOptionalMapOfString _CustomParams, FOptionalMapOfString _DeviceParams, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostSessionRequest* Req = NewObject<UPostSessionRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

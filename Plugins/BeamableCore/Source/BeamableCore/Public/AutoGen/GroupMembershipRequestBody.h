@@ -9,21 +9,21 @@
 #include "GroupMembershipRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGroupMembershipRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGroupMembershipRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
-	EGroupType Type;
+	EGroupType Type = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Group", Category="Beam")
-	int64 Group;
+	int64 Group = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Successor", Category="Beam")
-	FOptionalInt64 Successor;
+	FOptionalInt64 Successor = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Score", Category="Beam")
-	FOptionalInt64 Score;
+	FOptionalInt64 Score = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sub Group", Category="Beam")
-	FOptionalInt64 SubGroup;
+	FOptionalInt64 SubGroup = {};
 
 	
 

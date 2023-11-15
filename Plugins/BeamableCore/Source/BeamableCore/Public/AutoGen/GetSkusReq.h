@@ -8,13 +8,13 @@
 #include "GetSkusReq.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGetSkusReq : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGetSkusReq : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Version", Category="Beam")
-	FOptionalInt64 Version;
+	FOptionalInt64 Version = {};
 
 	
 

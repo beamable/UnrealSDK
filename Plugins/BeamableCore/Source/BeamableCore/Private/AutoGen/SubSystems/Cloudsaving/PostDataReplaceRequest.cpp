@@ -27,9 +27,10 @@ void UPostDataReplaceRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostDataReplaceRequest* UPostDataReplaceRequest::Make(int64 _SourcePlayerId, int64 _TargetPlayerId, UObject* RequestOwner)
+UPostDataReplaceRequest* UPostDataReplaceRequest::Make(int64 _SourcePlayerId, int64 _TargetPlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostDataReplaceRequest* Req = NewObject<UPostDataReplaceRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -8,13 +8,13 @@
 #include "ResultResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UResultResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UResultResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Result", Category="Beam")
-	bool bResult;
+	bool bResult = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

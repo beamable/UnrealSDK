@@ -23,9 +23,10 @@ void UApiMatchmakingGetMatchesRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UApiMatchmakingGetMatchesRequest* UApiMatchmakingGetMatchesRequest::Make(FGuid _Id, UObject* RequestOwner)
+UApiMatchmakingGetMatchesRequest* UApiMatchmakingGetMatchesRequest::Make(FGuid _Id, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UApiMatchmakingGetMatchesRequest* Req = NewObject<UApiMatchmakingGetMatchesRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Id = _Id;

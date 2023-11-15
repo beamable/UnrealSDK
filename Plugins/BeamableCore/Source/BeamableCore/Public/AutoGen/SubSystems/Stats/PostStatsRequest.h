@@ -22,14 +22,14 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	FBeamStatsType ObjectId;
+	FBeamStatsType ObjectId = {};
 	
 	// Query Params
 	
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UStatUpdateRequestBody* Body;
+	UStatUpdateRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPostStatsRequest() = default;
@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", DisplayName="Beam - Make PostStats",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bEmitAnalytics,Body_ObjectId,_Set,_Add,RequestOwner"))
-	static UPostStatsRequest* Make(FBeamStatsType _ObjectId, FOptionalBool _bEmitAnalytics, FOptionalBeamStatsType Body_ObjectId, FOptionalMapOfString _Set, FOptionalMapOfString _Add, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", DisplayName="Beam - Make PostStats",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bEmitAnalytics,Body_ObjectId,_Set,_Add,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPostStatsRequest* Make(FBeamStatsType _ObjectId, FOptionalBool _bEmitAnalytics, FOptionalBeamStatsType Body_ObjectId, FOptionalMapOfString _Set, FOptionalMapOfString _Add, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

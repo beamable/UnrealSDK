@@ -10,25 +10,25 @@
 #include "ReferenceSuperset.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UReferenceSuperset : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UReferenceSuperset : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Uri", Category="Beam")
-	FString Uri;
+	FString Uri = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Version", Category="Beam")
-	FString Version;
+	FString Version = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FBeamContentId Id;
+	FBeamContentId Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
-	FString Type;
+	FString Type = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Checksum", Category="Beam")
-	FOptionalString Checksum;
+	FOptionalString Checksum = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Visibility", Category="Beam")
-	FOptionalString Visibility;
+	FOptionalString Visibility = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
-	FOptionalArrayOfString Tags;
+	FOptionalArrayOfString Tags = {};
 
 	
 

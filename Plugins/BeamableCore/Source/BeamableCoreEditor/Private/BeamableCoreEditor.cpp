@@ -16,6 +16,7 @@
 #include "Kismet2/KismetEditorUtilities.h"
 #include "PropertyType/BeamClientPermissionCustomization.h"
 #include "PropertyType/BeamContentIdCustomization.h"
+#include "PropertyType/FBeamOptionalCustomization.h"
 #include "PropertyType/RequestTypeCustomization.h"
 #include "Subsystems/BeamEditor.h"
 #include "Subsystems/Content/BeamEditorContent.h"
@@ -83,7 +84,25 @@ void FBeamableCoreEditorModule::StartupModule()
 			FBeamContentId::StaticStruct()->GetFName(),
 			// this is where our MakeInstance() method is useful
 			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamContentIdCustomization::MakeInstance));
+		
+		PropertyModule.RegisterCustomPropertyTypeLayout(
+			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
+			FOptionalString::StaticStruct()->GetFName(),
+			// this is where our MakeInstance() method is useful
+			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamOptionalCustomization<FOptionalString>::MakeInstance));
+		
+		PropertyModule.RegisterCustomPropertyTypeLayout(
+			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
+			FOptionalInt32::StaticStruct()->GetFName(),
+			// this is where our MakeInstance() method is useful
+			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamOptionalCustomization<FOptionalInt32>::MakeInstance));
 
+		PropertyModule.RegisterCustomPropertyTypeLayout(
+			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
+			FOptionalInt32::StaticStruct()->GetFName(),
+			// this is where our MakeInstance() method is useful
+			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamOptionalCustomization<FOptionalInt32>::MakeInstance));
+		
 		PropertyModule.NotifyCustomizationModuleChanged();
 	}
 

@@ -40,9 +40,10 @@ void UGetOffersAdminRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetOffersAdminRequest* UGetOffersAdminRequest::Make(int64 _ObjectId, FOptionalString _Language, FOptionalString _Time, FOptionalString _Stores, UObject* RequestOwner)
+UGetOffersAdminRequest* UGetOffersAdminRequest::Make(int64 _ObjectId, FOptionalString _Language, FOptionalString _Time, FOptionalString _Stores, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetOffersAdminRequest* Req = NewObject<UGetOffersAdminRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

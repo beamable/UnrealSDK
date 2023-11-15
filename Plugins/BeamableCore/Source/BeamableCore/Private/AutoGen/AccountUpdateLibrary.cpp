@@ -22,7 +22,7 @@ FString UAccountUpdateLibrary::AccountUpdateToJsonString(const UAccountUpdate* S
 	return Result;
 }	
 
-UAccountUpdate* UAccountUpdateLibrary::Make(bool bHasThirdPartyToken, FOptionalString ThirdParty, FOptionalString Country, FOptionalString Language, FOptionalGamerTagAssociation GamerTagAssoc, FOptionalString Token, FOptionalString DeviceId, FOptionalString UserName, FOptionalArrayOfExternalIdentity External, UObject* Outer)
+UAccountUpdate* UAccountUpdateLibrary::Make(bool bHasThirdPartyToken, FOptionalString ThirdParty, FOptionalString Country, FOptionalString Language, FOptionalGamerTagAssociation GamerTagAssoc, FOptionalString Token, FOptionalString DeviceId, FOptionalString UserName, FOptionalArrayOfBeamExternalIdentity External, UObject* Outer)
 {
 	auto Serializable = NewObject<UAccountUpdate>(Outer);
 	Serializable->bHasThirdPartyToken = bHasThirdPartyToken;
@@ -38,7 +38,7 @@ UAccountUpdate* UAccountUpdateLibrary::Make(bool bHasThirdPartyToken, FOptionalS
 	return Serializable;
 }
 
-void UAccountUpdateLibrary::Break(const UAccountUpdate* Serializable, bool& bHasThirdPartyToken, FOptionalString& ThirdParty, FOptionalString& Country, FOptionalString& Language, FOptionalGamerTagAssociation& GamerTagAssoc, FOptionalString& Token, FOptionalString& DeviceId, FOptionalString& UserName, FOptionalArrayOfExternalIdentity& External)
+void UAccountUpdateLibrary::Break(const UAccountUpdate* Serializable, bool& bHasThirdPartyToken, FOptionalString& ThirdParty, FOptionalString& Country, FOptionalString& Language, FOptionalGamerTagAssociation& GamerTagAssoc, FOptionalString& Token, FOptionalString& DeviceId, FOptionalString& UserName, FOptionalArrayOfBeamExternalIdentity& External)
 {
 	bHasThirdPartyToken = Serializable->bHasThirdPartyToken;
 	ThirdParty = Serializable->ThirdParty;

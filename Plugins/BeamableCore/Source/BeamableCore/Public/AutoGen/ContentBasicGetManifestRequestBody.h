@@ -8,13 +8,13 @@
 #include "ContentBasicGetManifestRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UContentBasicGetManifestRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UContentBasicGetManifestRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FOptionalBeamContentManifestId Id;
+	FOptionalBeamContentManifestId Id = {};
 
 	
 

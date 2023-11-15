@@ -9,25 +9,25 @@
 #include "UpdateMailRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UUpdateMailRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UUpdateMailRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Mail Id", Category="Beam")
-	int64 MailId;
+	int64 MailId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Accept Attachments", Category="Beam")
-	FOptionalBool bAcceptAttachments;
+	FOptionalBool bAcceptAttachments = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Body", Category="Beam")
-	FOptionalString Body;
+	FOptionalString Body = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Expires", Category="Beam")
-	FOptionalString Expires;
+	FOptionalString Expires = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Subject", Category="Beam")
-	FOptionalString Subject;
+	FOptionalString Subject = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="State", Category="Beam")
-	FOptionalString State;
+	FOptionalString State = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Category", Category="Beam")
-	FOptionalString Category;
+	FOptionalString Category = {};
 
 	
 

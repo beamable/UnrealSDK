@@ -24,9 +24,9 @@ public:
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Skip", Category="Beam")
-	FOptionalInt32 Skip;
+	FOptionalInt32 Skip = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit", Category="Beam")
-	FOptionalInt32 Limit;
+	FOptionalInt32 Limit = {};
 
 	// Body Params
 	
@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make BasicLeaderboardsGetList",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Skip,_Limit,RequestOwner"))
-	static UBasicLeaderboardsGetListRequest* Make(FOptionalInt32 _Skip, FOptionalInt32 _Limit, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make BasicLeaderboardsGetList",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Skip,_Limit,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UBasicLeaderboardsGetListRequest* Make(FOptionalInt32 _Skip, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -9,17 +9,17 @@
 #include "PlayerStatusUpdate.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPlayerStatusUpdate : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UPlayerStatusUpdate : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tier", Category="Beam")
-	FOptionalInt32 Tier;
+	FOptionalInt32 Tier = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stage", Category="Beam")
-	FOptionalInt32 Stage;
+	FOptionalInt32 Stage = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Score", Category="Beam")
-	FOptionalDouble Score;
+	FOptionalDouble Score = {};
 
 	
 

@@ -22,8 +22,9 @@ class BEAMABLECORE_API IBeamBaseRequestInterface
 {
 	GENERATED_BODY()
 
-public:
-
+public:	
+	TMap<FString, FString> CustomHeaders;
+	
 	virtual FRequestType GetRequestType() const
 	{
 		return FRequestType{this->_getUObject()->GetClass()->GetAuthoredName()};

@@ -9,21 +9,21 @@
 #include "ProblemDetails.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UProblemDetails : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UProblemDetails : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
-	FOptionalString Type;
+	FOptionalString Type = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Title", Category="Beam")
-	FOptionalString Title;
+	FOptionalString Title = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Status", Category="Beam")
-	FOptionalInt32 Status;
+	FOptionalInt32 Status = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Detail", Category="Beam")
-	FOptionalString Detail;
+	FOptionalString Detail = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Instance", Category="Beam")
-	FOptionalString Instance;
+	FOptionalString Instance = {};
 
 	
 

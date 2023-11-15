@@ -23,9 +23,10 @@ void UGetManifestChecksumsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetManifestChecksumsRequest* UGetManifestChecksumsRequest::Make(UObject* RequestOwner)
+UGetManifestChecksumsRequest* UGetManifestChecksumsRequest::Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetManifestChecksumsRequest* Req = NewObject<UGetManifestChecksumsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -8,17 +8,17 @@
 #include "EventPlayerPhaseView.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEventPlayerPhaseView : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UEventPlayerPhaseView : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Duration Seconds", Category="Beam")
-	int64 DurationSeconds;
+	int64 DurationSeconds = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rules", Category="Beam")
-	TArray<UEventRule*> Rules;
+	TArray<UEventRule*> Rules = {};
 
 	
 

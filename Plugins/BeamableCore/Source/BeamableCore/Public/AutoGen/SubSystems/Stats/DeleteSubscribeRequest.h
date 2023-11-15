@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UStatsUnsubscribeRequestBody* Body;
+	UStatsUnsubscribeRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UDeleteSubscribeRequest() = default;
@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", DisplayName="Beam - Make DeleteSubscribe",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Subscriptions,RequestOwner"))
-	static UDeleteSubscribeRequest* Make(FString _Service, FOptionalArrayOfString _Subscriptions, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", DisplayName="Beam - Make DeleteSubscribe",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Subscriptions,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UDeleteSubscribeRequest* Make(FString _Service, FOptionalArrayOfString _Subscriptions, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

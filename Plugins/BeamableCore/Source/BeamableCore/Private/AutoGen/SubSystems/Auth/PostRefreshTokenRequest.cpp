@@ -27,9 +27,10 @@ void UPostRefreshTokenRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostRefreshTokenRequest* UPostRefreshTokenRequest::Make(FOptionalString _RefreshToken, FOptionalBeamCid _CustomerId, FOptionalBeamPid _RealmId, UObject* RequestOwner)
+UPostRefreshTokenRequest* UPostRefreshTokenRequest::Make(FOptionalString _RefreshToken, FOptionalBeamCid _CustomerId, FOptionalBeamPid _RealmId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostRefreshTokenRequest* Req = NewObject<UPostRefreshTokenRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

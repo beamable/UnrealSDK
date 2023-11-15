@@ -315,7 +315,13 @@ void UBeamInventorySubsystem::InitializeWhenUnrealReady_Implementation(FBeamOper
 void UBeamInventorySubsystem::OnPostUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp)
 {
 	if (Inventories.Contains(UserSlot))
-		Inventories.Remove(UserSlot);
+	{
+		FBeamInventoryState&  Inventory     = *Inventories.Find(UserSlot);
+		Inventory.Currencies.Reset();
+		Inventory.Items.Reset();
+		Inventory.CachedScopes.Reset();
+		Inventory.CurrencyProperties.Reset();		
+	}
 
 	Super::OnPostUserSignedOut_Implementation(UserSlot, Reason, BeamRealmUser, ResultOp);
 }
@@ -329,7 +335,7 @@ void UBeamInventorySubsystem::OnUserSignedIn_Implementation(const FUserSlot& Use
 	// We also set up the inventory refresh notification here.
 	const FOnInventoryRefreshNotificationCode NotificationHandler = FOnInventoryRefreshNotificationCode::CreateLambda([this, UserSlot, BeamRealmUser](const FInventoryRefreshNotificationMessage& InventoryRefreshNotificationMessage)
 	{
-		UPostInventoryRequest* Req = UPostInventoryRequest::Make(BeamRealmUser.GamerTag, FOptionalArrayOfString{InventoryRefreshNotificationMessage.Scopes}, GetTransientPackage());
+		UPostInventoryRequest* Req = UPostInventoryRequest::Make(BeamRealmUser.GamerTag, FOptionalArrayOfString{InventoryRefreshNotificationMessage.Scopes}, GetTransientPackage(), {});
 
 		const FOnPostInventoryFullResponse PostInventoryHandler = FOnPostInventoryFullResponse::CreateLambda([this](const FBeamFullResponse<UPostInventoryRequest*, UInventoryView*>& Resp)
 		{
@@ -539,7 +545,7 @@ bool UBeamInventorySubsystem::FetchAllInventory(FUserSlot Player, FBeamOperation
 
 	FOnGetInventoryFullResponse GetInventoryHandler = FOnGetInventoryFullResponse::CreateLambda([this, Op](FBeamFullResponse<UGetInventoryRequest*, UInventoryView*> Response)
 	{
-		if (Response.State == Success)
+		if (Response.State == RS_Success)
 		{
 			FBeamInventoryState& Inventory = *Inventories.Find(Response.Context.UserSlot);
 
@@ -587,7 +593,7 @@ bool UBeamInventorySubsystem::FetchAllInventory(FUserSlot Player, FBeamOperation
 
 	// Make the request
 	FBeamRequestContext         Ctx;
-	UGetInventoryRequest* const GetInventoryReq = UGetInventoryRequest::Make(UserData.GamerTag, {}, GetTransientPackage());
+	UGetInventoryRequest* const GetInventoryReq = UGetInventoryRequest::Make(UserData.GamerTag, {}, GetTransientPackage(), {});
 	InventoryApi->CPP_GetInventory(Player, GetInventoryReq, GetInventoryHandler, Ctx, Op, CallingContext);
 	return true;
 }
@@ -626,7 +632,7 @@ bool UBeamInventorySubsystem::CommitInventoryUpdate(FUserSlot Player, FBeamOpera
 		UpdateCommands.RemoveAndCopyValue(Player, Cmd);
 
 		// Handle success/error/cancellation
-		if (Resp.State == Success)
+		if (Resp.State == RS_Success)
 		{
 			FBeamInventoryState& State = *Inventories.Find(Player);
 			ensureAlwaysMsgf(Cmd.ApplyToState(State), TEXT("Should never see this. If you do see it, file a bug report."));
@@ -634,13 +640,13 @@ bool UBeamInventorySubsystem::CommitInventoryUpdate(FUserSlot Player, FBeamOpera
 			return;
 		}
 
-		if (Resp.State == Error)
+		if (Resp.State == RS_Error)
 		{
 			Runtime->RequestTrackerSystem->TriggerOperationError(Op, Resp.ErrorData.message);
 			return;
 		}
 
-		if (Resp.State == Cancelled)
+		if (Resp.State == RS_Cancelled)
 		{
 			Runtime->RequestTrackerSystem->TriggerOperationCancelled(Op, Resp.ErrorData.message);
 			return;
@@ -651,7 +657,7 @@ bool UBeamInventorySubsystem::CommitInventoryUpdate(FUserSlot Player, FBeamOpera
 	                                                                 {}, {},
 	                                                                 UpdatedItems, CreatedItems, DeletedItems,
 	                                                                 CurrencyChanges, {},
-	                                                                 GetTransientPackage());
+	                                                                 GetTransientPackage(), {});
 
 	FBeamRequestContext Ctx;
 	InventoryApi->CPP_PutInventory(Player, Request, Handler, Ctx, Op, CallingContext);

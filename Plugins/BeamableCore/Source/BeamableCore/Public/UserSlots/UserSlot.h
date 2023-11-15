@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "BeamBackend/BeamAuthToken.h"
 #include "BeamBackend/BeamRealmHandle.h"
+#include "BeamBackend/ReplacementTypes/BeamExternalIdentity.h"
 #include "BeamBackend/SemanticTypes/BeamAccountId.h"
 #include "BeamBackend/SemanticTypes/BeamGamerTag.h"
 
@@ -54,7 +55,7 @@ struct FBeamRealmUser
 	 */
 	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	FBeamAccountId AccountId;
-	
+
 	/**
 	 * @brief The user's GamerTag. Used by a number of APIs to uniquely identify the user. 
 	 */
@@ -78,5 +79,11 @@ struct FBeamRealmUser
 	 */
 	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	FBeamAuthToken AuthToken;
+
+	/**
+	 * @brief The list of all External Identities attached to this user.
+	 */
+	UPROPERTY(BlueprintReadOnly, Category="Beam")
+	TArray<FBeamExternalIdentity> ExternalIdentities;
 	
 };

@@ -26,9 +26,10 @@ void UGetGetPersonallyIdentifiableInformationRequest::BuildBody(FString& BodyStr
 	
 }
 
-UGetGetPersonallyIdentifiableInformationRequest* UGetGetPersonallyIdentifiableInformationRequest::Make(FString _Query, UObject* RequestOwner)
+UGetGetPersonallyIdentifiableInformationRequest* UGetGetPersonallyIdentifiableInformationRequest::Make(FString _Query, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetGetPersonallyIdentifiableInformationRequest* Req = NewObject<UGetGetPersonallyIdentifiableInformationRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Query = _Query;

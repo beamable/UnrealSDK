@@ -8,17 +8,17 @@
 #include "ServiceRoute.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UServiceRoute : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UServiceRoute : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Service", Category="Beam")
-	FString Service;
+	FString Service = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Endpoint", Category="Beam")
-	FString Endpoint;
+	FString Endpoint = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Service Type Str", Category="Beam")
-	EWebhookServiceType ServiceTypeStr;
+	EWebhookServiceType ServiceTypeStr = {};
 
 	
 

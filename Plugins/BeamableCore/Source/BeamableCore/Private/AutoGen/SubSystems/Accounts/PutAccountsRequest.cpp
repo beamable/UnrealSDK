@@ -27,9 +27,10 @@ void UPutAccountsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutAccountsRequest* UPutAccountsRequest::Make(FBeamAccountId _ObjectId, bool _bHasThirdPartyToken, FOptionalString _ThirdParty, FOptionalString _Country, FOptionalString _Language, FOptionalGamerTagAssociation _GamerTagAssoc, FOptionalString _Token, FOptionalString _DeviceId, FOptionalString _UserName, FOptionalArrayOfExternalIdentity _External, UObject* RequestOwner)
+UPutAccountsRequest* UPutAccountsRequest::Make(FBeamAccountId _ObjectId, bool _bHasThirdPartyToken, FOptionalString _ThirdParty, FOptionalString _Country, FOptionalString _Language, FOptionalGamerTagAssociation _GamerTagAssoc, FOptionalString _Token, FOptionalString _DeviceId, FOptionalString _UserName, FOptionalArrayOfBeamExternalIdentity _External, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutAccountsRequest* Req = NewObject<UPutAccountsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

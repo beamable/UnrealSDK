@@ -11,19 +11,19 @@
 #include "PerformanceResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPerformanceResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UPerformanceResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Database Measurements", Category="Beam")
-	UDatabaseMeasurements* DatabaseMeasurements;
+	UDatabaseMeasurements* DatabaseMeasurements = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Namespaces", Category="Beam")
-	TArray<UPANamespace*> Namespaces;
+	TArray<UPANamespace*> Namespaces = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Indexes", Category="Beam")
-	TArray<UPASuggestedIndex*> Indexes;
+	TArray<UPASuggestedIndex*> Indexes = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Queries", Category="Beam")
-	TArray<UPASlowQuery*> Queries;
+	TArray<UPASlowQuery*> Queries = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

@@ -8,13 +8,13 @@
 #include "GetManifestResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGetManifestResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UGetManifestResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Manifest", Category="Beam")
-	UManifestView* Manifest;
+	UManifestView* Manifest = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

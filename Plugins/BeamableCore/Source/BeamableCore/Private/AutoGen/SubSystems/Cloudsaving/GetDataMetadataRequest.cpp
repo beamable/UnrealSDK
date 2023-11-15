@@ -33,9 +33,10 @@ void UGetDataMetadataRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetDataMetadataRequest* UGetDataMetadataRequest::Make(FOptionalArrayOfObjectRequestBody _Request, FOptionalInt64 _PlayerId, UObject* RequestOwner)
+UGetDataMetadataRequest* UGetDataMetadataRequest::Make(FOptionalArrayOfObjectRequestBody _Request, FOptionalInt64 _PlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetDataMetadataRequest* Req = NewObject<UGetDataMetadataRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Request = _Request;

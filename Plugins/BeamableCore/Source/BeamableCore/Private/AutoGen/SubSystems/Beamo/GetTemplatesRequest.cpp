@@ -23,9 +23,10 @@ void UGetTemplatesRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetTemplatesRequest* UGetTemplatesRequest::Make(UObject* RequestOwner)
+UGetTemplatesRequest* UGetTemplatesRequest::Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetTemplatesRequest* Req = NewObject<UGetTemplatesRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

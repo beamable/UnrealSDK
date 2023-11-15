@@ -25,11 +25,11 @@ public:
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Dbid", Category="Beam")
-	int64 Dbid;
+	int64 Dbid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Month", Category="Beam")
-	FOptionalInt32 Month;
+	FOptionalInt32 Month = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Year", Category="Beam")
-	FOptionalInt32 Year;
+	FOptionalInt32 Year = {};
 
 	// Body Params
 	
@@ -41,8 +41,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Session", DisplayName="Beam - Make GetHistory",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Month,_Year,RequestOwner"))
-	static UGetHistoryRequest* Make(int64 _Dbid, FOptionalInt32 _Month, FOptionalInt32 _Year, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Session", DisplayName="Beam - Make GetHistory",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Month,_Year,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UGetHistoryRequest* Make(int64 _Dbid, FOptionalInt32 _Month, FOptionalInt32 _Year, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

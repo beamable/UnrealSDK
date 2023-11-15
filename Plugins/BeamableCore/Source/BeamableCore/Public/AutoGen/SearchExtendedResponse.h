@@ -8,13 +8,13 @@
 #include "SearchExtendedResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API USearchExtendedResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API USearchExtendedResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Stats", Category="Beam")
-	TMap<FString, FMapOfString> GamerStats;
+	TMap<FString, FMapOfString> GamerStats = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

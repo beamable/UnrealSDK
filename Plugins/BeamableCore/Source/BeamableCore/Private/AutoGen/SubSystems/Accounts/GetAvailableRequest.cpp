@@ -26,9 +26,10 @@ void UGetAvailableRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAvailableRequest* UGetAvailableRequest::Make(FString _Email, UObject* RequestOwner)
+UGetAvailableRequest* UGetAvailableRequest::Make(FString _Email, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetAvailableRequest* Req = NewObject<UGetAvailableRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Email = _Email;

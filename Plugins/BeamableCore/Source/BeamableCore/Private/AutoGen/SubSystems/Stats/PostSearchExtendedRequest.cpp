@@ -27,9 +27,10 @@ void UPostSearchExtendedRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostSearchExtendedRequest* UPostSearchExtendedRequest::Make(FString _Domain, FString _ObjectType, FString _Access, TArray<UStatsSearchCriteria*> _Criteria, TArray<FString> _StatKeys, UObject* RequestOwner)
+UPostSearchExtendedRequest* UPostSearchExtendedRequest::Make(FString _Domain, FString _ObjectType, FString _Access, TArray<UStatsSearchCriteria*> _Criteria, TArray<FString> _StatKeys, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostSearchExtendedRequest* Req = NewObject<UPostSearchExtendedRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

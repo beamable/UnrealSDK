@@ -25,9 +25,9 @@ public:
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Ids", Category="Beam")
-	FString PlayerIds;
+	FString PlayerIds = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Interval Secs", Category="Beam")
-	int64 IntervalSecs;
+	int64 IntervalSecs = {};
 
 	// Body Params
 	
@@ -39,8 +39,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Session", DisplayName="Beam - Make BasicSessionGetStatus",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
-	static UBasicSessionGetStatusRequest* Make(FString _PlayerIds, int64 _IntervalSecs, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Session", DisplayName="Beam - Make BasicSessionGetStatus",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UBasicSessionGetStatusRequest* Make(FString _PlayerIds, int64 _IntervalSecs, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

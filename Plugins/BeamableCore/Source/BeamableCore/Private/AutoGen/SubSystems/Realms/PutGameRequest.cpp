@@ -27,9 +27,10 @@ void UPutGameRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutGameRequest* UPutGameRequest::Make(FBeamPid _RootPID, TArray<UProjectView*> _Projects, UObject* RequestOwner)
+UPutGameRequest* UPutGameRequest::Make(FBeamPid _RootPID, TArray<UProjectView*> _Projects, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutGameRequest* Req = NewObject<UPutGameRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

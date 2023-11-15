@@ -8,13 +8,13 @@
 #include "LeaderboardCohortSettings.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API ULeaderboardCohortSettings : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API ULeaderboardCohortSettings : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cohorts", Category="Beam")
-	TArray<ULeaderboardCohort*> Cohorts;
+	TArray<ULeaderboardCohort*> Cohorts = {};
 
 	
 

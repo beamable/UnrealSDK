@@ -27,9 +27,10 @@ void UPutGroupsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutGroupsRequest* UPutGroupsRequest::Make(int64 _ObjectId, FOptionalString _Name, FOptionalString _EnrollmentType, FOptionalString _Tag, FOptionalString _Slogan, FOptionalInt64 _Requirement, FOptionalString _Motd, FOptionalString _ClientData, FOptionalInt64 _SubGroup, UObject* RequestOwner)
+UPutGroupsRequest* UPutGroupsRequest::Make(int64 _ObjectId, FOptionalString _Name, FOptionalString _EnrollmentType, FOptionalString _Tag, FOptionalString _Slogan, FOptionalInt64 _Requirement, FOptionalString _Motd, FOptionalString _ClientData, FOptionalInt64 _SubGroup, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutGroupsRequest* Req = NewObject<UPutGroupsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

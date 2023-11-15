@@ -8,15 +8,15 @@
 #include "LambdaResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API ULambdaResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API ULambdaResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Status Code", Category="Beam")
-	int32 StatusCode;
+	int32 StatusCode = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Body", Category="Beam")
-	FOptionalString Body;
+	FOptionalString Body = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

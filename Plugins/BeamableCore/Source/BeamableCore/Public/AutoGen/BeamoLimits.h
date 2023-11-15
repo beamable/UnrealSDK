@@ -8,15 +8,15 @@
 #include "BeamoLimits.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UBeamoLimits : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UBeamoLimits : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Container Size", Category="Beam")
-	FString MaxContainerSize;
+	FString MaxContainerSize = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Running Containers Per Service", Category="Beam")
-	int32 MaxRunningContainersPerService;
+	int32 MaxRunningContainersPerService = {};
 
 	
 

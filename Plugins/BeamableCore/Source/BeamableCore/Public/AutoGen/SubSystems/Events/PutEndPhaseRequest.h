@@ -22,14 +22,14 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	FString ObjectId;
+	FString ObjectId = {};
 	
 	// Query Params
 	
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UEventPhaseEndRequestBody* Body;
+	UEventPhaseEndRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPutEndPhaseRequest() = default;
@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Events", DisplayName="Beam - Make PutEndPhase",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Time,RequestOwner"))
-	static UPutEndPhaseRequest* Make(FString _ObjectId, FOptionalString _Time, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Events", DisplayName="Beam - Make PutEndPhase",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Time,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPutEndPhaseRequest* Make(FString _ObjectId, FOptionalString _Time, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

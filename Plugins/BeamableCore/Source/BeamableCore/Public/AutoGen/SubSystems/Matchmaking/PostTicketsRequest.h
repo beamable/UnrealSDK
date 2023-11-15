@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UTicketReservationRequestBody* Body;
+	UTicketReservationRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPostTicketsRequest() = default;
@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Matchmaking", DisplayName="Beam - Make PostTickets",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bWatchOnlineStatus,_MatchTypes,_MaxWaitDurationSecs,_Team,_Players,RequestOwner"))
-	static UPostTicketsRequest* Make(FOptionalBool _bWatchOnlineStatus, FOptionalBeamContentId _MatchTypes, FOptionalInt32 _MaxWaitDurationSecs, FOptionalString _Team, FOptionalArrayOfString _Players, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Matchmaking", DisplayName="Beam - Make PostTickets",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bWatchOnlineStatus,_MaxWaitDurationSecs,_Team,_Players,_MatchTypes,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPostTicketsRequest* Make(FOptionalBool _bWatchOnlineStatus, FOptionalInt32 _MaxWaitDurationSecs, FOptionalString _Team, FOptionalArrayOfString _Players, FOptionalArrayOfBeamContentId _MatchTypes, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

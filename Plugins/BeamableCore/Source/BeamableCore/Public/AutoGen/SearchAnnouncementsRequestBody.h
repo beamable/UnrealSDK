@@ -8,13 +8,13 @@
 #include "SearchAnnouncementsRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API USearchAnnouncementsRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API USearchAnnouncementsRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Date", Category="Beam")
-	FOptionalString Date;
+	FOptionalString Date = {};
 
 	
 

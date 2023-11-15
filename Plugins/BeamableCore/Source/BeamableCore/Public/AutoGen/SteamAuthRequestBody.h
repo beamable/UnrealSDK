@@ -8,13 +8,13 @@
 #include "SteamAuthRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API USteamAuthRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API USteamAuthRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Ticket", Category="Beam")
-	FString Ticket;
+	FString Ticket = {};
 
 	
 

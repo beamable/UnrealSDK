@@ -10,17 +10,17 @@
 #include "WebhookReward.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UWebhookReward : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UWebhookReward : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Strategy", Category="Beam")
-	UWebhookInvocationStrategy* Strategy;
+	UWebhookInvocationStrategy* Strategy = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Webhook Symbol", Category="Beam")
-	FOptionalString WebhookSymbol;
+	FOptionalString WebhookSymbol = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Web Hook Comet", Category="Beam")
-	FOptionalWebhookComet WebHookComet;
+	FOptionalWebhookComet WebHookComet = {};
 
 	
 

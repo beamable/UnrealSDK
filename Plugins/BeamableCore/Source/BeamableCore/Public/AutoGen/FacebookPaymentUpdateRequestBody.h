@@ -8,15 +8,15 @@
 #include "FacebookPaymentUpdateRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UFacebookPaymentUpdateRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UFacebookPaymentUpdateRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object", Category="Beam")
-	FString Object;
+	FString Object = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Entry", Category="Beam")
-	TArray<UFacebookUpdatedEntry*> Entry;
+	TArray<UFacebookUpdatedEntry*> Entry = {};
 
 	
 

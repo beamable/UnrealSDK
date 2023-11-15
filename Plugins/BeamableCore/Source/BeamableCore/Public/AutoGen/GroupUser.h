@@ -11,23 +11,23 @@
 #include "GroupUser.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGroupUser : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UGroupUser : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag", Category="Beam")
-	int64 GamerTag;
+	int64 GamerTag = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Updated", Category="Beam")
-	int64 Updated;
+	int64 Updated = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Member", Category="Beam")
-	UGroupMemberInfo* Member;
+	UGroupMemberInfo* Member = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="All Groups", Category="Beam")
-	TArray<UGroupUserMember*> AllGroups;
+	TArray<UGroupUserMember*> AllGroups = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="In Flight", Category="Beam")
-	FOptionalArrayOfInFlightMessage InFlight;
+	FOptionalArrayOfInFlightMessage InFlight = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scores", Category="Beam")
-	FOptionalArrayOfGroupScoreBinding Scores;
+	FOptionalArrayOfGroupScoreBinding Scores = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

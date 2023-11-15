@@ -36,9 +36,10 @@ void UGetAvailableExternalIdentityRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAvailableExternalIdentityRequest* UGetAvailableExternalIdentityRequest::Make(FString _ProviderService, FString _UserId, FOptionalString _ProviderNamespace, UObject* RequestOwner)
+UGetAvailableExternalIdentityRequest* UGetAvailableExternalIdentityRequest::Make(FString _ProviderService, FString _UserId, FOptionalString _ProviderNamespace, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetAvailableExternalIdentityRequest* Req = NewObject<UGetAvailableExternalIdentityRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ProviderService = _ProviderService;

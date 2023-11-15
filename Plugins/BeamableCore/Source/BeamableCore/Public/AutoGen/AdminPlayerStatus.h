@@ -8,29 +8,29 @@
 #include "AdminPlayerStatus.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UAdminPlayerStatus : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UAdminPlayerStatus : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id", Category="Beam")
-	FString TournamentId;
+	FString TournamentId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stage", Category="Beam")
-	int32 Stage;
+	int32 Stage = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tier", Category="Beam")
-	int32 Tier;
+	int32 Tier = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rank", Category="Beam")
-	int32 Rank;
+	int32 Rank = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Score", Category="Beam")
-	double Score;
+	double Score = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
-	int64 PlayerId;
+	int64 PlayerId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id", Category="Beam")
-	FString ContentId;
+	FString ContentId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Next Cycle Start Ms", Category="Beam")
-	int64 NextCycleStartMs;
+	int64 NextCycleStartMs = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Unclaimed Rewards", Category="Beam")
-	TArray<UTournamentCurrencyReward*> UnclaimedRewards;
+	TArray<UTournamentCurrencyReward*> UnclaimedRewards = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

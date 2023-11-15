@@ -27,9 +27,10 @@ void UDeleteQueryLogsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteQueryLogsRequest* UDeleteQueryLogsRequest::Make(FString _QueryId, UObject* RequestOwner)
+UDeleteQueryLogsRequest* UDeleteQueryLogsRequest::Make(FString _QueryId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UDeleteQueryLogsRequest* Req = NewObject<UDeleteQueryLogsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

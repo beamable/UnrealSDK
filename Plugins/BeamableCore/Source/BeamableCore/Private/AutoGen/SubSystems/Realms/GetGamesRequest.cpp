@@ -23,9 +23,10 @@ void UGetGamesRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetGamesRequest* UGetGamesRequest::Make(UObject* RequestOwner)
+UGetGamesRequest* UGetGamesRequest::Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetGamesRequest* Req = NewObject<UGetGamesRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

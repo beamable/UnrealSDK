@@ -8,15 +8,15 @@
 #include "SendNotification.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API USendNotification : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API USendNotification : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Title", Category="Beam")
-	FOptionalString Title;
+	FOptionalString Title = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Body", Category="Beam")
-	FOptionalString Body;
+	FOptionalString Body = {};
 
 	
 

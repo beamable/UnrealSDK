@@ -11,35 +11,35 @@
 #include "ServiceReference.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UServiceReference : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UServiceReference : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Archived", Category="Beam")
-	bool bArchived;
+	bool bArchived = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Arm", Category="Beam")
-	bool bArm;
+	bool bArm = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Enabled", Category="Beam")
-	bool bEnabled;
+	bool bEnabled = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Service Name", Category="Beam")
-	FString ServiceName;
+	FString ServiceName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Checksum", Category="Beam")
-	FString Checksum;
+	FString Checksum = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Template Id", Category="Beam")
-	FString TemplateId;
+	FString TemplateId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Image Id", Category="Beam")
-	FString ImageId;
+	FString ImageId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Container Health Check Port", Category="Beam")
-	FOptionalInt64 ContainerHealthCheckPort;
+	FOptionalInt64 ContainerHealthCheckPort = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Image Cpu Arch", Category="Beam")
-	FOptionalString ImageCpuArch;
+	FOptionalString ImageCpuArch = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Comments", Category="Beam")
-	FOptionalString Comments;
+	FOptionalString Comments = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Components", Category="Beam")
-	FOptionalArrayOfServiceComponent Components;
+	FOptionalArrayOfServiceComponent Components = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Dependencies", Category="Beam")
-	FOptionalArrayOfServiceDependencyReference Dependencies;
+	FOptionalArrayOfServiceDependencyReference Dependencies = {};
 
 	
 

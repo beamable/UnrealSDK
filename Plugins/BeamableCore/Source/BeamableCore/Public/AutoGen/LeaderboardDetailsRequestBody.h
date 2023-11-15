@@ -8,15 +8,15 @@
 #include "LeaderboardDetailsRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API ULeaderboardDetailsRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API ULeaderboardDetailsRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From", Category="Beam")
-	FOptionalInt32 From;
+	FOptionalInt32 From = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max", Category="Beam")
-	FOptionalInt32 Max;
+	FOptionalInt32 Max = {};
 
 	
 

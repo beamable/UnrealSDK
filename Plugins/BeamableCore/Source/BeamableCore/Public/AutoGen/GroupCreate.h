@@ -12,31 +12,31 @@
 #include "GroupCreate.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGroupCreate : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGroupCreate : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Enrollment Type", Category="Beam")
-	FString EnrollmentType;
+	FString EnrollmentType = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Requirement", Category="Beam")
-	int64 Requirement;
+	int64 Requirement = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
-	EGroupType Type;
+	EGroupType Type = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Size", Category="Beam")
-	int32 MaxSize;
+	int32 MaxSize = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tag", Category="Beam")
-	FOptionalString Tag;
+	FOptionalString Tag = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Client Data", Category="Beam")
-	FOptionalString ClientData;
+	FOptionalString ClientData = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Time", Category="Beam")
-	FOptionalInt32 Time;
+	FOptionalInt32 Time = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Group", Category="Beam")
-	FOptionalInt64 Group;
+	FOptionalInt64 Group = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scores", Category="Beam")
-	FOptionalArrayOfGroupScoreBinding Scores;
+	FOptionalArrayOfGroupScoreBinding Scores = {};
 
 	
 

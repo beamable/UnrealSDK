@@ -10,23 +10,23 @@
 #include "SessionHistoryResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API USessionHistoryResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API USessionHistoryResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Date", Category="Beam")
-	ULocalDate* Date;
+	ULocalDate* Date = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Days Played", Category="Beam")
-	int32 DaysPlayed;
+	int32 DaysPlayed = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Payments", Category="Beam")
-	TArray<FString> Payments;
+	TArray<FString> Payments = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Total Paid", Category="Beam")
-	TArray<UPaymentTotal*> TotalPaid;
+	TArray<UPaymentTotal*> TotalPaid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sessions", Category="Beam")
-	TArray<FString> Sessions;
+	TArray<FString> Sessions = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Install Date", Category="Beam")
-	FOptionalString InstallDate;
+	FOptionalString InstallDate = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

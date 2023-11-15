@@ -3494,7 +3494,7 @@ void UBeamPaymentsApi::CPP_PostWindowsPurchaseTrack(UPostWindowsPurchaseTrackReq
 	
     int64 OutRequestId;
 	CPP_PostWindowsPurchaseTrackImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3505,7 +3505,7 @@ void UBeamPaymentsApi::CPP_GetAudits(UGetAuditsRequest* Request, const FOnGetAud
 	
     int64 OutRequestId;
 	CPP_GetAuditsImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3516,7 +3516,7 @@ void UBeamPaymentsApi::CPP_PostWindowsPurchaseComplete(UPostWindowsPurchaseCompl
 	
     int64 OutRequestId;
 	CPP_PostWindowsPurchaseCompleteImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3527,7 +3527,7 @@ void UBeamPaymentsApi::CPP_GetFacebookUpdate(UGetFacebookUpdateRequest* Request,
 	
     int64 OutRequestId;
 	CPP_GetFacebookUpdateImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3538,7 +3538,7 @@ void UBeamPaymentsApi::CPP_PostFacebookUpdate(UPostFacebookUpdateRequest* Reques
 	
     int64 OutRequestId;
 	CPP_PostFacebookUpdateImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3549,7 +3549,7 @@ void UBeamPaymentsApi::CPP_PostFacebookPurchaseComplete(UPostFacebookPurchaseCom
 	
     int64 OutRequestId;
 	CPP_PostFacebookPurchaseCompleteImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3560,7 +3560,7 @@ void UBeamPaymentsApi::CPP_PostTestPurchaseComplete(UPostTestPurchaseCompleteReq
 	
     int64 OutRequestId;
 	CPP_PostTestPurchaseCompleteImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3571,7 +3571,7 @@ void UBeamPaymentsApi::CPP_GetItunesProduct(UGetItunesProductRequest* Request, c
 	
     int64 OutRequestId;
 	CPP_GetItunesProductImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3582,7 +3582,7 @@ void UBeamPaymentsApi::CPP_PostGoogleplayPurchaseComplete(UPostGoogleplayPurchas
 	
     int64 OutRequestId;
 	CPP_PostGoogleplayPurchaseCompleteImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3593,7 +3593,7 @@ void UBeamPaymentsApi::CPP_PostTestPurchaseTrack(UPostTestPurchaseTrackRequest* 
 	
     int64 OutRequestId;
 	CPP_PostTestPurchaseTrackImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3604,7 +3604,7 @@ void UBeamPaymentsApi::CPP_PostGoogleplayPurchaseVerify(UPostGoogleplayPurchaseV
 	
     int64 OutRequestId;
 	CPP_PostGoogleplayPurchaseVerifyImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3615,7 +3615,7 @@ void UBeamPaymentsApi::CPP_PostCouponPurchaseTrack(UPostCouponPurchaseTrackReque
 	
     int64 OutRequestId;
 	CPP_PostCouponPurchaseTrackImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3626,7 +3626,7 @@ void UBeamPaymentsApi::CPP_PostSteamPurchaseComplete(UPostSteamPurchaseCompleteR
 	
     int64 OutRequestId;
 	CPP_PostSteamPurchaseCompleteImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3637,7 +3637,7 @@ void UBeamPaymentsApi::CPP_PostFacebookPurchaseTrack(UPostFacebookPurchaseTrackR
 	
     int64 OutRequestId;
 	CPP_PostFacebookPurchaseTrackImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3648,7 +3648,7 @@ void UBeamPaymentsApi::CPP_PostTestPurchaseVerify(UPostTestPurchaseVerifyRequest
 	
     int64 OutRequestId;
 	CPP_PostTestPurchaseVerifyImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3659,7 +3659,7 @@ void UBeamPaymentsApi::CPP_PostGoogleplayPurchaseTrack(UPostGoogleplayPurchaseTr
 	
     int64 OutRequestId;
 	CPP_PostGoogleplayPurchaseTrackImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3670,7 +3670,7 @@ void UBeamPaymentsApi::CPP_GetSteamPrices(UGetSteamPricesRequest* Request, const
 	
     int64 OutRequestId;
 	CPP_GetSteamPricesImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3681,7 +3681,7 @@ void UBeamPaymentsApi::CPP_PostWindowsPurchaseVerify(UPostWindowsPurchaseVerifyR
 	
     int64 OutRequestId;
 	CPP_PostWindowsPurchaseVerifyImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3692,7 +3692,7 @@ void UBeamPaymentsApi::CPP_PostItunesPurchaseVerify(UPostItunesPurchaseVerifyReq
 	
     int64 OutRequestId;
 	CPP_PostItunesPurchaseVerifyImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3703,7 +3703,7 @@ void UBeamPaymentsApi::CPP_PostItunesPurchaseComplete(UPostItunesPurchaseComplet
 	
     int64 OutRequestId;
 	CPP_PostItunesPurchaseCompleteImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3714,7 +3714,7 @@ void UBeamPaymentsApi::CPP_PostFacebookPurchaseVerify(UPostFacebookPurchaseVerif
 	
     int64 OutRequestId;
 	CPP_PostFacebookPurchaseVerifyImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3725,7 +3725,7 @@ void UBeamPaymentsApi::CPP_PostSteamPurchaseTrack(UPostSteamPurchaseTrackRequest
 	
     int64 OutRequestId;
 	CPP_PostSteamPurchaseTrackImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3736,7 +3736,7 @@ void UBeamPaymentsApi::CPP_PostCouponPurchaseVerify(UPostCouponPurchaseVerifyReq
 	
     int64 OutRequestId;
 	CPP_PostCouponPurchaseVerifyImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3747,7 +3747,7 @@ void UBeamPaymentsApi::CPP_GetWindowsProduct(UGetWindowsProductRequest* Request,
 	
     int64 OutRequestId;
 	CPP_GetWindowsProductImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3758,7 +3758,7 @@ void UBeamPaymentsApi::CPP_GetFacebookProduct(UGetFacebookProductRequest* Reques
 	
     int64 OutRequestId;
 	CPP_GetFacebookProductImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3769,7 +3769,7 @@ void UBeamPaymentsApi::CPP_GetCouponProduct(UGetCouponProductRequest* Request, c
 	
     int64 OutRequestId;
 	CPP_GetCouponProductImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3780,7 +3780,7 @@ void UBeamPaymentsApi::CPP_GetSteamProducts(UGetSteamProductsRequest* Request, c
 	
     int64 OutRequestId;
 	CPP_GetSteamProductsImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3791,7 +3791,7 @@ void UBeamPaymentsApi::CPP_PostSteamAuth(UPostSteamAuthRequest* Request, const F
 	
     int64 OutRequestId;
 	CPP_PostSteamAuthImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3802,7 +3802,7 @@ void UBeamPaymentsApi::CPP_GetSteamProduct(UGetSteamProductRequest* Request, con
 	
     int64 OutRequestId;
 	CPP_GetSteamProductImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3813,7 +3813,7 @@ void UBeamPaymentsApi::CPP_PostCouponPurchaseComplete(UPostCouponPurchaseComplet
 	
     int64 OutRequestId;
 	CPP_PostCouponPurchaseCompleteImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3824,7 +3824,7 @@ void UBeamPaymentsApi::CPP_GetGoogleplayProduct(UGetGoogleplayProductRequest* Re
 	
     int64 OutRequestId;
 	CPP_GetGoogleplayProductImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3835,7 +3835,7 @@ void UBeamPaymentsApi::CPP_GetTestProduct(UGetTestProductRequest* Request, const
 	
     int64 OutRequestId;
 	CPP_GetTestProductImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3846,7 +3846,7 @@ void UBeamPaymentsApi::CPP_PostSteamPurchaseVerify(UPostSteamPurchaseVerifyReque
 	
     int64 OutRequestId;
 	CPP_PostSteamPurchaseVerifyImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -3857,7 +3857,7 @@ void UBeamPaymentsApi::CPP_PostItunesPurchaseTrack(UPostItunesPurchaseTrackReque
 	
     int64 OutRequestId;
 	CPP_PostItunesPurchaseTrackImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 
@@ -3873,7 +3873,7 @@ void UBeamPaymentsApi::CPP_PostTestPurchaseBegin(const FUserSlot& UserSlot, UPos
 
     int64 OutRequestId;
 	CPP_PostTestPurchaseBeginImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -3888,7 +3888,7 @@ void UBeamPaymentsApi::CPP_PostSteamPurchaseFail(const FUserSlot& UserSlot, UPos
 
     int64 OutRequestId;
 	CPP_PostSteamPurchaseFailImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -3903,7 +3903,7 @@ void UBeamPaymentsApi::CPP_PostFacebookPurchaseFail(const FUserSlot& UserSlot, U
 
     int64 OutRequestId;
 	CPP_PostFacebookPurchaseFailImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -3918,7 +3918,7 @@ void UBeamPaymentsApi::CPP_PostGoogleplayPurchaseBegin(const FUserSlot& UserSlot
 
     int64 OutRequestId;
 	CPP_PostGoogleplayPurchaseBeginImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -3933,7 +3933,7 @@ void UBeamPaymentsApi::CPP_PostItunesPurchaseBegin(const FUserSlot& UserSlot, UP
 
     int64 OutRequestId;
 	CPP_PostItunesPurchaseBeginImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -3948,7 +3948,7 @@ void UBeamPaymentsApi::CPP_PostFacebookPurchaseCancel(const FUserSlot& UserSlot,
 
     int64 OutRequestId;
 	CPP_PostFacebookPurchaseCancelImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -3963,7 +3963,7 @@ void UBeamPaymentsApi::CPP_PostItunesPurchaseFail(const FUserSlot& UserSlot, UPo
 
     int64 OutRequestId;
 	CPP_PostItunesPurchaseFailImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -3978,7 +3978,7 @@ void UBeamPaymentsApi::CPP_PostTestPurchaseCancel(const FUserSlot& UserSlot, UPo
 
     int64 OutRequestId;
 	CPP_PostTestPurchaseCancelImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -3993,7 +3993,7 @@ void UBeamPaymentsApi::CPP_PostTestPurchaseFail(const FUserSlot& UserSlot, UPost
 
     int64 OutRequestId;
 	CPP_PostTestPurchaseFailImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4008,7 +4008,7 @@ void UBeamPaymentsApi::CPP_PostCouponPurchaseCancel(const FUserSlot& UserSlot, U
 
     int64 OutRequestId;
 	CPP_PostCouponPurchaseCancelImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4023,7 +4023,7 @@ void UBeamPaymentsApi::CPP_PostCouponPurchaseBegin(const FUserSlot& UserSlot, UP
 
     int64 OutRequestId;
 	CPP_PostCouponPurchaseBeginImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4038,7 +4038,7 @@ void UBeamPaymentsApi::CPP_PostFacebookPurchaseBegin(const FUserSlot& UserSlot, 
 
     int64 OutRequestId;
 	CPP_PostFacebookPurchaseBeginImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4053,7 +4053,7 @@ void UBeamPaymentsApi::CPP_GetSteamOrder(const FUserSlot& UserSlot, UGetSteamOrd
 
     int64 OutRequestId;
 	CPP_GetSteamOrderImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4068,7 +4068,7 @@ void UBeamPaymentsApi::CPP_PostWindowsPurchaseBegin(const FUserSlot& UserSlot, U
 
     int64 OutRequestId;
 	CPP_PostWindowsPurchaseBeginImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4083,7 +4083,7 @@ void UBeamPaymentsApi::CPP_PostGoogleplayPurchaseFail(const FUserSlot& UserSlot,
 
     int64 OutRequestId;
 	CPP_PostGoogleplayPurchaseFailImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4098,7 +4098,7 @@ void UBeamPaymentsApi::CPP_PostGoogleplayPurchaseCancel(const FUserSlot& UserSlo
 
     int64 OutRequestId;
 	CPP_PostGoogleplayPurchaseCancelImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4113,7 +4113,7 @@ void UBeamPaymentsApi::CPP_PostCouponPurchaseFail(const FUserSlot& UserSlot, UPo
 
     int64 OutRequestId;
 	CPP_PostCouponPurchaseFailImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4128,7 +4128,7 @@ void UBeamPaymentsApi::CPP_PostSteamPurchaseBegin(const FUserSlot& UserSlot, UPo
 
     int64 OutRequestId;
 	CPP_PostSteamPurchaseBeginImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4143,7 +4143,7 @@ void UBeamPaymentsApi::CPP_PostSteamPurchaseCancel(const FUserSlot& UserSlot, UP
 
     int64 OutRequestId;
 	CPP_PostSteamPurchaseCancelImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4158,7 +4158,7 @@ void UBeamPaymentsApi::CPP_PostWindowsPurchaseCancel(const FUserSlot& UserSlot, 
 
     int64 OutRequestId;
 	CPP_PostWindowsPurchaseCancelImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4173,7 +4173,7 @@ void UBeamPaymentsApi::CPP_PostWindowsPurchaseFail(const FUserSlot& UserSlot, UP
 
     int64 OutRequestId;
 	CPP_PostWindowsPurchaseFailImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4188,7 +4188,7 @@ void UBeamPaymentsApi::CPP_PostItunesPurchaseCancel(const FUserSlot& UserSlot, U
 
     int64 OutRequestId;
 	CPP_PostItunesPurchaseCancelImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4203,7 +4203,7 @@ void UBeamPaymentsApi::CPP_GetPayments(const FUserSlot& UserSlot, UGetPaymentsRe
 
     int64 OutRequestId;
 	CPP_GetPaymentsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 
@@ -4217,7 +4217,7 @@ void UBeamPaymentsApi::PostWindowsPurchaseTrack(UPostWindowsPurchaseTrackRequest
 	
 	int64 OutRequestId = 0;
 	BP_PostWindowsPurchaseTrackImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4229,7 +4229,7 @@ void UBeamPaymentsApi::GetAudits(UGetAuditsRequest* Request, const FOnGetAuditsS
 	
 	int64 OutRequestId = 0;
 	BP_GetAuditsImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4241,7 +4241,7 @@ void UBeamPaymentsApi::PostWindowsPurchaseComplete(UPostWindowsPurchaseCompleteR
 	
 	int64 OutRequestId = 0;
 	BP_PostWindowsPurchaseCompleteImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4253,7 +4253,7 @@ void UBeamPaymentsApi::GetFacebookUpdate(UGetFacebookUpdateRequest* Request, con
 	
 	int64 OutRequestId = 0;
 	BP_GetFacebookUpdateImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4265,7 +4265,7 @@ void UBeamPaymentsApi::PostFacebookUpdate(UPostFacebookUpdateRequest* Request, c
 	
 	int64 OutRequestId = 0;
 	BP_PostFacebookUpdateImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4277,7 +4277,7 @@ void UBeamPaymentsApi::PostFacebookPurchaseComplete(UPostFacebookPurchaseComplet
 	
 	int64 OutRequestId = 0;
 	BP_PostFacebookPurchaseCompleteImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4289,7 +4289,7 @@ void UBeamPaymentsApi::PostTestPurchaseComplete(UPostTestPurchaseCompleteRequest
 	
 	int64 OutRequestId = 0;
 	BP_PostTestPurchaseCompleteImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4301,7 +4301,7 @@ void UBeamPaymentsApi::GetItunesProduct(UGetItunesProductRequest* Request, const
 	
 	int64 OutRequestId = 0;
 	BP_GetItunesProductImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4313,7 +4313,7 @@ void UBeamPaymentsApi::PostGoogleplayPurchaseComplete(UPostGoogleplayPurchaseCom
 	
 	int64 OutRequestId = 0;
 	BP_PostGoogleplayPurchaseCompleteImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4325,7 +4325,7 @@ void UBeamPaymentsApi::PostTestPurchaseTrack(UPostTestPurchaseTrackRequest* Requ
 	
 	int64 OutRequestId = 0;
 	BP_PostTestPurchaseTrackImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4337,7 +4337,7 @@ void UBeamPaymentsApi::PostGoogleplayPurchaseVerify(UPostGoogleplayPurchaseVerif
 	
 	int64 OutRequestId = 0;
 	BP_PostGoogleplayPurchaseVerifyImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4349,7 +4349,7 @@ void UBeamPaymentsApi::PostCouponPurchaseTrack(UPostCouponPurchaseTrackRequest* 
 	
 	int64 OutRequestId = 0;
 	BP_PostCouponPurchaseTrackImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4361,7 +4361,7 @@ void UBeamPaymentsApi::PostSteamPurchaseComplete(UPostSteamPurchaseCompleteReque
 	
 	int64 OutRequestId = 0;
 	BP_PostSteamPurchaseCompleteImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4373,7 +4373,7 @@ void UBeamPaymentsApi::PostFacebookPurchaseTrack(UPostFacebookPurchaseTrackReque
 	
 	int64 OutRequestId = 0;
 	BP_PostFacebookPurchaseTrackImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4385,7 +4385,7 @@ void UBeamPaymentsApi::PostTestPurchaseVerify(UPostTestPurchaseVerifyRequest* Re
 	
 	int64 OutRequestId = 0;
 	BP_PostTestPurchaseVerifyImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4397,7 +4397,7 @@ void UBeamPaymentsApi::PostGoogleplayPurchaseTrack(UPostGoogleplayPurchaseTrackR
 	
 	int64 OutRequestId = 0;
 	BP_PostGoogleplayPurchaseTrackImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4409,7 +4409,7 @@ void UBeamPaymentsApi::GetSteamPrices(UGetSteamPricesRequest* Request, const FOn
 	
 	int64 OutRequestId = 0;
 	BP_GetSteamPricesImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4421,7 +4421,7 @@ void UBeamPaymentsApi::PostWindowsPurchaseVerify(UPostWindowsPurchaseVerifyReque
 	
 	int64 OutRequestId = 0;
 	BP_PostWindowsPurchaseVerifyImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4433,7 +4433,7 @@ void UBeamPaymentsApi::PostItunesPurchaseVerify(UPostItunesPurchaseVerifyRequest
 	
 	int64 OutRequestId = 0;
 	BP_PostItunesPurchaseVerifyImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4445,7 +4445,7 @@ void UBeamPaymentsApi::PostItunesPurchaseComplete(UPostItunesPurchaseCompleteReq
 	
 	int64 OutRequestId = 0;
 	BP_PostItunesPurchaseCompleteImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4457,7 +4457,7 @@ void UBeamPaymentsApi::PostFacebookPurchaseVerify(UPostFacebookPurchaseVerifyReq
 	
 	int64 OutRequestId = 0;
 	BP_PostFacebookPurchaseVerifyImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4469,7 +4469,7 @@ void UBeamPaymentsApi::PostSteamPurchaseTrack(UPostSteamPurchaseTrackRequest* Re
 	
 	int64 OutRequestId = 0;
 	BP_PostSteamPurchaseTrackImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4481,7 +4481,7 @@ void UBeamPaymentsApi::PostCouponPurchaseVerify(UPostCouponPurchaseVerifyRequest
 	
 	int64 OutRequestId = 0;
 	BP_PostCouponPurchaseVerifyImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4493,7 +4493,7 @@ void UBeamPaymentsApi::GetWindowsProduct(UGetWindowsProductRequest* Request, con
 	
 	int64 OutRequestId = 0;
 	BP_GetWindowsProductImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4505,7 +4505,7 @@ void UBeamPaymentsApi::GetFacebookProduct(UGetFacebookProductRequest* Request, c
 	
 	int64 OutRequestId = 0;
 	BP_GetFacebookProductImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4517,7 +4517,7 @@ void UBeamPaymentsApi::GetCouponProduct(UGetCouponProductRequest* Request, const
 	
 	int64 OutRequestId = 0;
 	BP_GetCouponProductImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4529,7 +4529,7 @@ void UBeamPaymentsApi::GetSteamProducts(UGetSteamProductsRequest* Request, const
 	
 	int64 OutRequestId = 0;
 	BP_GetSteamProductsImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4541,7 +4541,7 @@ void UBeamPaymentsApi::PostSteamAuth(UPostSteamAuthRequest* Request, const FOnPo
 	
 	int64 OutRequestId = 0;
 	BP_PostSteamAuthImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4553,7 +4553,7 @@ void UBeamPaymentsApi::GetSteamProduct(UGetSteamProductRequest* Request, const F
 	
 	int64 OutRequestId = 0;
 	BP_GetSteamProductImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4565,7 +4565,7 @@ void UBeamPaymentsApi::PostCouponPurchaseComplete(UPostCouponPurchaseCompleteReq
 	
 	int64 OutRequestId = 0;
 	BP_PostCouponPurchaseCompleteImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4577,7 +4577,7 @@ void UBeamPaymentsApi::GetGoogleplayProduct(UGetGoogleplayProductRequest* Reques
 	
 	int64 OutRequestId = 0;
 	BP_GetGoogleplayProductImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4589,7 +4589,7 @@ void UBeamPaymentsApi::GetTestProduct(UGetTestProductRequest* Request, const FOn
 	
 	int64 OutRequestId = 0;
 	BP_GetTestProductImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4601,7 +4601,7 @@ void UBeamPaymentsApi::PostSteamPurchaseVerify(UPostSteamPurchaseVerifyRequest* 
 	
 	int64 OutRequestId = 0;
 	BP_PostSteamPurchaseVerifyImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 		
@@ -4613,7 +4613,7 @@ void UBeamPaymentsApi::PostItunesPurchaseTrack(UPostItunesPurchaseTrackRequest* 
 	
 	int64 OutRequestId = 0;
 	BP_PostItunesPurchaseTrackImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
 
@@ -4629,7 +4629,7 @@ void UBeamPaymentsApi::PostTestPurchaseBegin(FUserSlot UserSlot, UPostTestPurcha
 
 	int64 OutRequestId;
 	BP_PostTestPurchaseBeginImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4644,7 +4644,7 @@ void UBeamPaymentsApi::PostSteamPurchaseFail(FUserSlot UserSlot, UPostSteamPurch
 
 	int64 OutRequestId;
 	BP_PostSteamPurchaseFailImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4659,7 +4659,7 @@ void UBeamPaymentsApi::PostFacebookPurchaseFail(FUserSlot UserSlot, UPostFaceboo
 
 	int64 OutRequestId;
 	BP_PostFacebookPurchaseFailImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4674,7 +4674,7 @@ void UBeamPaymentsApi::PostGoogleplayPurchaseBegin(FUserSlot UserSlot, UPostGoog
 
 	int64 OutRequestId;
 	BP_PostGoogleplayPurchaseBeginImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4689,7 +4689,7 @@ void UBeamPaymentsApi::PostItunesPurchaseBegin(FUserSlot UserSlot, UPostItunesPu
 
 	int64 OutRequestId;
 	BP_PostItunesPurchaseBeginImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4704,7 +4704,7 @@ void UBeamPaymentsApi::PostFacebookPurchaseCancel(FUserSlot UserSlot, UPostFaceb
 
 	int64 OutRequestId;
 	BP_PostFacebookPurchaseCancelImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4719,7 +4719,7 @@ void UBeamPaymentsApi::PostItunesPurchaseFail(FUserSlot UserSlot, UPostItunesPur
 
 	int64 OutRequestId;
 	BP_PostItunesPurchaseFailImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4734,7 +4734,7 @@ void UBeamPaymentsApi::PostTestPurchaseCancel(FUserSlot UserSlot, UPostTestPurch
 
 	int64 OutRequestId;
 	BP_PostTestPurchaseCancelImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4749,7 +4749,7 @@ void UBeamPaymentsApi::PostTestPurchaseFail(FUserSlot UserSlot, UPostTestPurchas
 
 	int64 OutRequestId;
 	BP_PostTestPurchaseFailImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4764,7 +4764,7 @@ void UBeamPaymentsApi::PostCouponPurchaseCancel(FUserSlot UserSlot, UPostCouponP
 
 	int64 OutRequestId;
 	BP_PostCouponPurchaseCancelImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4779,7 +4779,7 @@ void UBeamPaymentsApi::PostCouponPurchaseBegin(FUserSlot UserSlot, UPostCouponPu
 
 	int64 OutRequestId;
 	BP_PostCouponPurchaseBeginImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4794,7 +4794,7 @@ void UBeamPaymentsApi::PostFacebookPurchaseBegin(FUserSlot UserSlot, UPostFacebo
 
 	int64 OutRequestId;
 	BP_PostFacebookPurchaseBeginImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4809,7 +4809,7 @@ void UBeamPaymentsApi::GetSteamOrder(FUserSlot UserSlot, UGetSteamOrderRequest* 
 
 	int64 OutRequestId;
 	BP_GetSteamOrderImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4824,7 +4824,7 @@ void UBeamPaymentsApi::PostWindowsPurchaseBegin(FUserSlot UserSlot, UPostWindows
 
 	int64 OutRequestId;
 	BP_PostWindowsPurchaseBeginImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4839,7 +4839,7 @@ void UBeamPaymentsApi::PostGoogleplayPurchaseFail(FUserSlot UserSlot, UPostGoogl
 
 	int64 OutRequestId;
 	BP_PostGoogleplayPurchaseFailImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4854,7 +4854,7 @@ void UBeamPaymentsApi::PostGoogleplayPurchaseCancel(FUserSlot UserSlot, UPostGoo
 
 	int64 OutRequestId;
 	BP_PostGoogleplayPurchaseCancelImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4869,7 +4869,7 @@ void UBeamPaymentsApi::PostCouponPurchaseFail(FUserSlot UserSlot, UPostCouponPur
 
 	int64 OutRequestId;
 	BP_PostCouponPurchaseFailImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4884,7 +4884,7 @@ void UBeamPaymentsApi::PostSteamPurchaseBegin(FUserSlot UserSlot, UPostSteamPurc
 
 	int64 OutRequestId;
 	BP_PostSteamPurchaseBeginImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4899,7 +4899,7 @@ void UBeamPaymentsApi::PostSteamPurchaseCancel(FUserSlot UserSlot, UPostSteamPur
 
 	int64 OutRequestId;
 	BP_PostSteamPurchaseCancelImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4914,7 +4914,7 @@ void UBeamPaymentsApi::PostWindowsPurchaseCancel(FUserSlot UserSlot, UPostWindow
 
 	int64 OutRequestId;
 	BP_PostWindowsPurchaseCancelImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4929,7 +4929,7 @@ void UBeamPaymentsApi::PostWindowsPurchaseFail(FUserSlot UserSlot, UPostWindowsP
 
 	int64 OutRequestId;
 	BP_PostWindowsPurchaseFailImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4944,7 +4944,7 @@ void UBeamPaymentsApi::PostItunesPurchaseCancel(FUserSlot UserSlot, UPostItunesP
 
 	int64 OutRequestId;
 	BP_PostItunesPurchaseCancelImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -4959,6 +4959,6 @@ void UBeamPaymentsApi::GetPayments(FUserSlot UserSlot, UGetPaymentsRequest* Requ
 
 	int64 OutRequestId;
 	BP_GetPaymentsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 

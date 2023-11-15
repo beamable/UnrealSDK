@@ -8,21 +8,21 @@
 #include "DatabasePerformanceRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UDatabasePerformanceRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UDatabasePerformanceRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Storage Object Name", Category="Beam")
-	FString StorageObjectName;
+	FString StorageObjectName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Granularity", Category="Beam")
-	FString Granularity;
+	FString Granularity = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="End Date", Category="Beam")
-	FOptionalString EndDate;
+	FOptionalString EndDate = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Start Date", Category="Beam")
-	FOptionalString StartDate;
+	FOptionalString StartDate = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Period", Category="Beam")
-	FOptionalString Period;
+	FOptionalString Period = {};
 
 	
 

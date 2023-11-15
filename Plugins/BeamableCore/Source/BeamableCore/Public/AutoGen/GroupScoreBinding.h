@@ -8,17 +8,17 @@
 #include "GroupScoreBinding.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGroupScoreBinding : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGroupScoreBinding : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Board", Category="Beam")
-	FString Board;
+	FString Board = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Score", Category="Beam")
-	int64 Score;
+	int64 Score = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Derivatives", Category="Beam")
-	TArray<FString> Derivatives;
+	TArray<FString> Derivatives = {};
 
 	
 

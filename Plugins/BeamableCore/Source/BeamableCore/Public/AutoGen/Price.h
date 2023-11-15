@@ -9,19 +9,19 @@
 #include "Price.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPrice : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UPrice : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
-	FString Type;
+	FString Type = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
-	FString Symbol;
+	FString Symbol = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Amount", Category="Beam")
-	FOptionalInt32 Amount;
+	FOptionalInt32 Amount = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Schedule", Category="Beam")
-	FOptionalArrayOfInt32 Schedule;
+	FOptionalArrayOfInt32 Schedule = {};
 
 	
 

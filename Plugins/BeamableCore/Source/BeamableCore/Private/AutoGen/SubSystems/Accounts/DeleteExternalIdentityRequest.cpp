@@ -27,9 +27,10 @@ void UDeleteExternalIdentityRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteExternalIdentityRequest* UDeleteExternalIdentityRequest::Make(FString _ProviderService, FString _UserId, FOptionalString _ProviderNamespace, UObject* RequestOwner)
+UDeleteExternalIdentityRequest* UDeleteExternalIdentityRequest::Make(FString _ProviderService, FString _UserId, FOptionalString _ProviderNamespace, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UDeleteExternalIdentityRequest* Req = NewObject<UDeleteExternalIdentityRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

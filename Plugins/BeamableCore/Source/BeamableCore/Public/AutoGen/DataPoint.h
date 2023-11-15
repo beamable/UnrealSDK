@@ -8,15 +8,15 @@
 #include "DataPoint.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UDataPoint : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UDataPoint : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Timestamp", Category="Beam")
-	FString Timestamp;
+	FString Timestamp = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Value", Category="Beam")
-	FString Value;
+	FString Value = {};
 
 	
 

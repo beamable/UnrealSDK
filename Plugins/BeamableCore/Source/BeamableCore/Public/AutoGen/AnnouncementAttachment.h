@@ -9,19 +9,19 @@
 #include "AnnouncementAttachment.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UAnnouncementAttachment : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UAnnouncementAttachment : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
-	FString Symbol;
+	FString Symbol = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Count", Category="Beam")
-	int32 Count;
+	int32 Count = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
-	FOptionalString Type;
+	FOptionalString Type = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Properties", Category="Beam")
-	FOptionalArrayOfAttachmentProperty Properties;
+	FOptionalArrayOfAttachmentProperty Properties = {};
 
 	
 

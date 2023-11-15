@@ -27,9 +27,10 @@ void UPostTestPurchaseFailRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostTestPurchaseFailRequest* UPostTestPurchaseFailRequest::Make(int64 _Txid, FString _Reason, UObject* RequestOwner)
+UPostTestPurchaseFailRequest* UPostTestPurchaseFailRequest::Make(int64 _Txid, FString _Reason, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostTestPurchaseFailRequest* Req = NewObject<UPostTestPurchaseFailRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

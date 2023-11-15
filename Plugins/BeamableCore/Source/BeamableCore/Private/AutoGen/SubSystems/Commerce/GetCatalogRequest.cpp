@@ -28,9 +28,10 @@ void UGetCatalogRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetCatalogRequest* UGetCatalogRequest::Make(FOptionalInt64 _Version, UObject* RequestOwner)
+UGetCatalogRequest* UGetCatalogRequest::Make(FOptionalInt64 _Version, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetCatalogRequest* Req = NewObject<UGetCatalogRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Version = _Version;

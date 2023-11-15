@@ -23,9 +23,10 @@ void UPutDonationsClaimRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UPutDonationsClaimRequest* UPutDonationsClaimRequest::Make(int64 _ObjectId, UObject* RequestOwner)
+UPutDonationsClaimRequest* UPutDonationsClaimRequest::Make(int64 _ObjectId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutDonationsClaimRequest* Req = NewObject<UPutDonationsClaimRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

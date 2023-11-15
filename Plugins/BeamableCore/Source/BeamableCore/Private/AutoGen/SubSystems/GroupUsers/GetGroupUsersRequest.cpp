@@ -23,9 +23,10 @@ void UGetGroupUsersRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetGroupUsersRequest* UGetGroupUsersRequest::Make(int64 _ObjectId, UObject* RequestOwner)
+UGetGroupUsersRequest* UGetGroupUsersRequest::Make(int64 _ObjectId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetGroupUsersRequest* Req = NewObject<UGetGroupUsersRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

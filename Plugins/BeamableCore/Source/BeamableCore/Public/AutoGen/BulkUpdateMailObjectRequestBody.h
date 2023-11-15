@@ -8,13 +8,13 @@
 #include "BulkUpdateMailObjectRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UBulkUpdateMailObjectRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UBulkUpdateMailObjectRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Update Mail Requests", Category="Beam")
-	TArray<UMyMailUpdate*> UpdateMailRequests;
+	TArray<UMyMailUpdate*> UpdateMailRequests = {};
 
 	
 

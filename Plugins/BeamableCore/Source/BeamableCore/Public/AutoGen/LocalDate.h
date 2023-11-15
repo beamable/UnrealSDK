@@ -9,29 +9,29 @@
 #include "LocalDate.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API ULocalDate : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API ULocalDate : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Leap Year", Category="Beam")
-	bool bLeapYear;
+	bool bLeapYear = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Day Of Year", Category="Beam")
-	int32 DayOfYear;
+	int32 DayOfYear = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Chronology", Category="Beam")
-	UIsoChronology* Chronology;
+	UIsoChronology* Chronology = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Day Of Week", Category="Beam")
-	FString DayOfWeek;
+	FString DayOfWeek = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Month Value", Category="Beam")
-	int32 MonthValue;
+	int32 MonthValue = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Day Of Month", Category="Beam")
-	int32 DayOfMonth;
+	int32 DayOfMonth = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Year", Category="Beam")
-	int32 Year;
+	int32 Year = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Era", Category="Beam")
-	UEra* Era;
+	UEra* Era = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Month", Category="Beam")
-	FString Month;
+	FString Month = {};
 
 	
 

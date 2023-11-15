@@ -26,9 +26,10 @@ void UGetMembershipRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetMembershipRequest* UGetMembershipRequest::Make(FString _ObjectId, int64 _PlayerId, UObject* RequestOwner)
+UGetMembershipRequest* UGetMembershipRequest::Make(FString _ObjectId, int64 _PlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetMembershipRequest* Req = NewObject<UGetMembershipRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

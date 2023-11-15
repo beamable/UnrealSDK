@@ -36,9 +36,10 @@ void UGetProjectPromoteRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetProjectPromoteRequest* UGetProjectPromoteRequest::Make(FBeamPid _SourcePid, FOptionalArrayOfString _Promotions, FOptionalArrayOfString _ContentManifestIds, UObject* RequestOwner)
+UGetProjectPromoteRequest* UGetProjectPromoteRequest::Make(FBeamPid _SourcePid, FOptionalArrayOfString _Promotions, FOptionalArrayOfString _ContentManifestIds, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetProjectPromoteRequest* Req = NewObject<UGetProjectPromoteRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->SourcePid = _SourcePid;

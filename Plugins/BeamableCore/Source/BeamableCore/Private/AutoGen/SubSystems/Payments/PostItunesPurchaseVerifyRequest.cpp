@@ -27,9 +27,10 @@ void UPostItunesPurchaseVerifyRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostItunesPurchaseVerifyRequest* UPostItunesPurchaseVerifyRequest::Make(FString _Receipt, UObject* RequestOwner)
+UPostItunesPurchaseVerifyRequest* UPostItunesPurchaseVerifyRequest::Make(FString _Receipt, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostItunesPurchaseVerifyRequest* Req = NewObject<UPostItunesPurchaseVerifyRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

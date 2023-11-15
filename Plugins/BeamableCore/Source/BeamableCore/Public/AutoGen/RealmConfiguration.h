@@ -8,23 +8,23 @@
 #include "RealmConfiguration.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API URealmConfiguration : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API URealmConfiguration : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Websocket Config", Category="Beam")
-	UWebSocketConfiguration* WebsocketConfig;
+	UWebSocketConfiguration* WebsocketConfig = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Microservice URI", Category="Beam")
-	FString MicroserviceURI;
+	FString MicroserviceURI = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Portal URI", Category="Beam")
-	FString PortalURI;
+	FString PortalURI = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Microservice Ecr URI", Category="Beam")
-	FString MicroserviceEcrURI;
+	FString MicroserviceEcrURI = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Storage Browser URI", Category="Beam")
-	FString StorageBrowserURI;
+	FString StorageBrowserURI = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Environment", Category="Beam")
-	FString Environment;
+	FString Environment = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

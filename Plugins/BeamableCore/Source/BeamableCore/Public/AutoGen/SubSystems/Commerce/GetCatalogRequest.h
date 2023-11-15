@@ -24,7 +24,7 @@ public:
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Version", Category="Beam")
-	FOptionalInt64 Version;
+	FOptionalInt64 Version = {};
 
 	// Body Params
 	
@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Commerce", DisplayName="Beam - Make GetCatalog",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Version,RequestOwner"))
-	static UGetCatalogRequest* Make(FOptionalInt64 _Version, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Commerce", DisplayName="Beam - Make GetCatalog",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Version,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UGetCatalogRequest* Make(FOptionalInt64 _Version, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -27,9 +27,10 @@ void UPostFacebookPurchaseFailRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostFacebookPurchaseFailRequest* UPostFacebookPurchaseFailRequest::Make(int64 _Txid, FString _Reason, UObject* RequestOwner)
+UPostFacebookPurchaseFailRequest* UPostFacebookPurchaseFailRequest::Make(int64 _Txid, FString _Reason, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostFacebookPurchaseFailRequest* Req = NewObject<UPostFacebookPurchaseFailRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

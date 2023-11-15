@@ -22,14 +22,14 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FGuid Id;
+	FGuid Id = {};
 	
 	// Query Params
 	
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UUpdateParty* Body;
+	UUpdateParty* Body = {};
 
 	// Beam Base Request Declaration
 	UApiPartyPutMetadataRequest() = default;
@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Party", DisplayName="Beam - Make ApiPartyPutMetadata",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Restriction,_MaxSize,RequestOwner"))
-	static UApiPartyPutMetadataRequest* Make(FGuid _Id, FOptionalString _Restriction, FOptionalInt32 _MaxSize, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Party", DisplayName="Beam - Make ApiPartyPutMetadata",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Restriction,_MaxSize,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UApiPartyPutMetadataRequest* Make(FGuid _Id, FOptionalString _Restriction, FOptionalInt32 _MaxSize, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -28,9 +28,10 @@ void UBasicAnnouncementsGetSearchRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UBasicAnnouncementsGetSearchRequest* UBasicAnnouncementsGetSearchRequest::Make(FOptionalString _Date, UObject* RequestOwner)
+UBasicAnnouncementsGetSearchRequest* UBasicAnnouncementsGetSearchRequest::Make(FOptionalString _Date, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicAnnouncementsGetSearchRequest* Req = NewObject<UBasicAnnouncementsGetSearchRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Date = _Date;

@@ -27,15 +27,17 @@ void UPostLobbiesRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostLobbiesRequest* UPostLobbiesRequest::Make(FOptionalString _Name, FOptionalString _Description, FOptionalString _Restriction, FOptionalBeamContentId _MatchType, FOptionalInt32 _PasscodeLength, FOptionalInt32 _MaxPlayers, FOptionalArrayOfTag _PlayerTags, UObject* RequestOwner)
+UPostLobbiesRequest* UPostLobbiesRequest::Make(FOptionalBool _bHasRestriction, FOptionalString _Name, FOptionalString _Description, FOptionalLobbyRestriction _Restriction, FOptionalBeamContentId _MatchType, FOptionalInt32 _PasscodeLength, FOptionalInt32 _MaxPlayers, FOptionalArrayOfTag _PlayerTags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostLobbiesRequest* Req = NewObject<UPostLobbiesRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
 	Req->Body = NewObject<UCreateLobby>(Req);
+	Req->Body->bHasRestriction = _bHasRestriction;
 	Req->Body->Name = _Name;
 	Req->Body->Description = _Description;
 	Req->Body->Restriction = _Restriction;

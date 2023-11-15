@@ -27,9 +27,10 @@ void UPostFacebookPurchaseTrackRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostFacebookPurchaseTrackRequest* UPostFacebookPurchaseTrackRequest::Make(double _PriceInLocalCurrency, FString _SkuName, FString _SkuProductId, FString _Store, FString _PurchaseId, FString _IsoCurrencySymbol, TArray<UItemCreateRequestBody*> _ObtainItems, TArray<UCurrencyChange*> _ObtainCurrency, UObject* RequestOwner)
+UPostFacebookPurchaseTrackRequest* UPostFacebookPurchaseTrackRequest::Make(double _PriceInLocalCurrency, FString _SkuName, FString _SkuProductId, FString _Store, FString _PurchaseId, FString _IsoCurrencySymbol, TArray<UItemCreateRequestBody*> _ObtainItems, TArray<UCurrencyChange*> _ObtainCurrency, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostFacebookPurchaseTrackRequest* Req = NewObject<UPostFacebookPurchaseTrackRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

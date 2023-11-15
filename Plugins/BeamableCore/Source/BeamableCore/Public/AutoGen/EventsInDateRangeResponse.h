@@ -8,13 +8,13 @@
 #include "EventsInDateRangeResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEventsInDateRangeResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UEventsInDateRangeResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Event In Date Range", Category="Beam")
-	TArray<UEventDateRanges*> EventInDateRange;
+	TArray<UEventDateRanges*> EventInDateRange = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

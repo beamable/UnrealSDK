@@ -14,10 +14,10 @@
 UENUM(BlueprintType)
 enum EBeamOperationEventType
 {
-	NONE = 0 UMETA(Hidden),
-	SUCCESS = 1 << 0,
-	ERROR = 1 << 1,
-	CANCELLED = 1 << 2,
+	OET_NONE = 0 UMETA(Hidden),
+	OET_SUCCESS = 1 << 0,
+	OET_ERROR = 1 << 1,
+	OET_CANCELLED = 1 << 2,
 };
 
 BEAMABLECORE_API ENUM_CLASS_FLAGS(EBeamOperationEventType);
@@ -40,7 +40,7 @@ UENUM(BlueprintType, meta=(OperationSuccessSubEvents="Final,EventA,EventB,EventC
 enum EDefaultOperationEventSubType
 {
 	Final = 0 UMETA(Tooltip="It is the final event of the operation. No more events will be issued later."),
-	EventA = 1 UMETA(Tooltip="It is an event in the operation. More events can be issued later Here to make it unnecessary to create enums for operations that want to send unnamed events.."),
+	EventA = 1 UMETA(Tooltip="It is another event in the operation. More events can be issued later. Here to make it unnecessary to create enums for operations that want to send unnamed events."),
 	EventB = 2 UMETA(Tooltip="It is another event in the operation. More events can be issued later. Here to make it unnecessary to create enums for operations that want to send unnamed events."),
 	EventC = 3 UMETA(Tooltip="It is another event in the operation. More events can be issued later. Here to make it unnecessary to create enums for operations that want to send unnamed events."),
 };
@@ -64,7 +64,7 @@ struct BEAMABLECORE_API FBeamOperationEvent
 	 * @brief The event type of this event.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
-	TEnumAsByte<EBeamOperationEventType> EventType = EBeamOperationEventType::SUCCESS;
+	TEnumAsByte<EBeamOperationEventType> EventType = EBeamOperationEventType::OET_SUCCESS;
 
 	/**
 	 * @brief If this event is being called from inside a Request's response handler, we pass in that Request's Id so users can check for number of attempts among other things.

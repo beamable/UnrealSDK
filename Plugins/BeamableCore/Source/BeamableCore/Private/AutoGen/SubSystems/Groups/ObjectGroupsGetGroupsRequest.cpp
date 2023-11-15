@@ -23,9 +23,10 @@ void UObjectGroupsGetGroupsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UObjectGroupsGetGroupsRequest* UObjectGroupsGetGroupsRequest::Make(int64 _ObjectId, UObject* RequestOwner)
+UObjectGroupsGetGroupsRequest* UObjectGroupsGetGroupsRequest::Make(int64 _ObjectId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UObjectGroupsGetGroupsRequest* Req = NewObject<UObjectGroupsGetGroupsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

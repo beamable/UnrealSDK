@@ -22,11 +22,11 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	FBeamStatsType ObjectId;
+	FBeamStatsType ObjectId = {};
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stats", Category="Beam")
-	FOptionalString Stats;
+	FOptionalString Stats = {};
 
 	// Body Params
 	
@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", DisplayName="Beam - Make GetClient",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Stats,RequestOwner"))
-	static UGetClientRequest* Make(FBeamStatsType _ObjectId, FOptionalString _Stats, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", DisplayName="Beam - Make GetClient",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Stats,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UGetClientRequest* Make(FBeamStatsType _ObjectId, FOptionalString _Stats, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

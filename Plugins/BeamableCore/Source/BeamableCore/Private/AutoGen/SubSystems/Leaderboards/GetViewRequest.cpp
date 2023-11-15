@@ -58,9 +58,10 @@ void UGetViewRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetViewRequest* UGetViewRequest::Make(FString _ObjectId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalBool _bFriends, FOptionalInt32 _From, FOptionalInt64 _Outlier, FOptionalBool _bGuild, UObject* RequestOwner)
+UGetViewRequest* UGetViewRequest::Make(FString _ObjectId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalBool _bFriends, FOptionalInt32 _From, FOptionalInt64 _Outlier, FOptionalBool _bGuild, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetViewRequest* Req = NewObject<UGetViewRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

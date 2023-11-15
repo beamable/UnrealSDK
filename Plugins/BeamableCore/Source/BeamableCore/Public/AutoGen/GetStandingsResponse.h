@@ -9,15 +9,15 @@
 #include "GetStandingsResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGetStandingsResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UGetStandingsResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Entries", Category="Beam")
-	TArray<UTournamentEntry*> Entries;
+	TArray<UTournamentEntry*> Entries = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Me", Category="Beam")
-	FOptionalTournamentEntry Me;
+	FOptionalTournamentEntry Me = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

@@ -8,25 +8,25 @@
 #include "ScheduleDefinition.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UScheduleDefinition : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UScheduleDefinition : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Day Of Week", Category="Beam")
-	TArray<FString> DayOfWeek;
+	TArray<FString> DayOfWeek = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Minute", Category="Beam")
-	TArray<FString> Minute;
+	TArray<FString> Minute = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Day Of Month", Category="Beam")
-	TArray<FString> DayOfMonth;
+	TArray<FString> DayOfMonth = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Year", Category="Beam")
-	TArray<FString> Year;
+	TArray<FString> Year = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Hour", Category="Beam")
-	TArray<FString> Hour;
+	TArray<FString> Hour = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Second", Category="Beam")
-	TArray<FString> Second;
+	TArray<FString> Second = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Month", Category="Beam")
-	TArray<FString> Month;
+	TArray<FString> Month = {};
 
 	
 

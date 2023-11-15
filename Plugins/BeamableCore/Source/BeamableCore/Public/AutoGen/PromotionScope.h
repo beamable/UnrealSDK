@@ -8,15 +8,15 @@
 #include "PromotionScope.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPromotionScope : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UPromotionScope : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Promotions", Category="Beam")
-	TArray<UPromotion*> Promotions;
+	TArray<UPromotion*> Promotions = {};
 
 	
 

@@ -65,6 +65,8 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 		const FOnNotificationEvent& EvtHandler = ConnectionEventHandlers.FindChecked(OutHandle);
 		const bool                  bDidRun    = EvtHandler.ExecuteIfBound(Evt);
 		ensureAlwaysMsgf(bDidRun, TEXT("Notification connection handler was not bound correctly! SLOT=%s, ID=%s"), *OutHandle.Slot.Name, *OutHandle.Id.ToString());
+
+		UE_LOG(LogBeamNotifications, Verbose, TEXT("Connection Success. SLOT=%s, ID=%s"), *OutHandle.Slot.Name, *OutHandle.Id.ToString());
 	});
 
 	OpenSocket->OnConnectionError().AddLambda([OutHandle, this](const FString& Error)
@@ -102,6 +104,8 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 				MessageEventHandlers.Remove(OutHandle);
 			}
 		}
+
+		UE_LOG(LogBeamNotifications, Error, TEXT("Connection Error. SLOT=%s, ID=%s"), *OutHandle.Slot.Name, *OutHandle.Id.ToString());
 	});
 
 	OpenSocket->OnClosed().AddLambda([OutHandle, this](int32 StatusCode, const FString& Reason, bool bWasClean)
@@ -141,6 +145,8 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 				PlayModeHandles.Remove(OutHandle);
 			}
 		}
+
+		UE_LOG(LogBeamNotifications, Verbose, TEXT("Connection Closed. SLOT=%s, ID=%s"), *OutHandle.Slot.Name, *OutHandle.Id.ToString());
 	});
 
 	OpenSocket->OnMessage().AddLambda([OutHandle, this](const FString& Message)
@@ -174,7 +180,7 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 			}
 		}
 
-		UE_LOG(LogBeamNotifications, Warning, TEXT("Notification message received. SLOT=%s, ID=%s Message=%s"), *OutHandle.Slot.Name, *OutHandle.Id.ToString(), *Message);
+		UE_LOG(LogBeamNotifications, Verbose, TEXT("Notification message received. SLOT=%s, ID=%s Message=%s"), *OutHandle.Slot.Name, *OutHandle.Id.ToString(), *Message);
 	});
 
 	// Add the socket to the list of open sockets
@@ -208,6 +214,18 @@ bool UBeamNotifications::TryGetHandle(const FUserSlot& Slot, const FName& Socket
 
 	OutHandle = FBeamWebSocketHandle(FUserSlot{}, {}, this);
 	return false;
+}
+
+void UBeamNotifications::CloseSocketsForSlot(const FUserSlot& Slot)
+{
+	if (const auto Slots = OpenSockets.Find(Slot))
+	{
+		for (const auto WebSocket : *Slots)
+		{
+			WebSocket.Value->Close(1000, TEXT("User signed out"));
+		}
+		Slots->Reset();
+	}
 }
 
 void UBeamNotifications::ClearPIESockets()

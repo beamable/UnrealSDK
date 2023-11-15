@@ -27,9 +27,10 @@ void UPostImageUrlsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostImageUrlsRequest* UPostImageUrlsRequest::Make(TArray<UServiceImageLayers*> _Requests, UObject* RequestOwner)
+UPostImageUrlsRequest* UPostImageUrlsRequest::Make(TArray<UServiceImageLayers*> _Requests, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostImageUrlsRequest* Req = NewObject<UPostImageUrlsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

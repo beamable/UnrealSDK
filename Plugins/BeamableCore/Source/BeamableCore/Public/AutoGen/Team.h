@@ -9,15 +9,15 @@
 #include "Team.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UTeam : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UTeam : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FOptionalString Name;
+	FOptionalString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Players", Category="Beam")
-	FOptionalArrayOfString Players;
+	FOptionalArrayOfString Players = {};
 
 	
 

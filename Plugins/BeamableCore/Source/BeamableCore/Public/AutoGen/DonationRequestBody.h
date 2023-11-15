@@ -9,21 +9,21 @@
 #include "DonationRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UDonationRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UDonationRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Satisfied", Category="Beam")
-	bool bSatisfied;
+	bool bSatisfied = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Time Requested", Category="Beam")
-	int64 TimeRequested;
+	int64 TimeRequested = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
-	int64 PlayerId;
+	int64 PlayerId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currency", Category="Beam")
-	UCurrency* Currency;
+	UCurrency* Currency = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Progress", Category="Beam")
-	TArray<UDonationEntry*> Progress;
+	TArray<UDonationEntry*> Progress = {};
 
 	
 

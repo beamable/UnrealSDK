@@ -8,15 +8,15 @@
 #include "EntitlementClaimWindow.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEntitlementClaimWindow : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UEntitlementClaimWindow : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Open", Category="Beam")
-	int64 Open;
+	int64 Open = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Close", Category="Beam")
-	int64 Close;
+	int64 Close = {};
 
 	
 

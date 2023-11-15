@@ -8,15 +8,15 @@
 #include "BeamoBasicURLResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UBeamoBasicURLResponse : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UBeamoBasicURLResponse : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Service Name", Category="Beam")
-	FString ServiceName;
+	FString ServiceName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="S3UR Ls", Category="Beam")
-	TArray<UUploadURL*> S3URLs;
+	TArray<UUploadURL*> S3URLs = {};
 
 	
 

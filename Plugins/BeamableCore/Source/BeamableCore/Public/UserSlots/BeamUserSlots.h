@@ -7,6 +7,7 @@
 #include "UserSlot.h"
 #include "BeamBackend/SemanticTypes/BeamAccountId.h"
 #include "BeamBackend/SemanticTypes/BeamGamerTag.h"
+#include "BeamBackend/ReplacementTypes/BeamExternalIdentity.h"
 #include "BeamUserSlots.generated.h"
 
 /**
@@ -80,13 +81,16 @@ struct FUserSlotAccountData
 
 	UPROPERTY(BlueprintReadWrite)
 	FString Email;
+
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FBeamExternalIdentity> ExternalIdentities;
 };
 
 UENUM(BlueprintType)
 enum EUserSlotClearedReason
 {
 	Manual,
-	FailedAutomaticAuthentication,
+	FailedAuthentication,
 	ExitPIE,
 };
 
@@ -157,6 +161,7 @@ public:
 
 	/** Cleans up the system.  */
 	virtual void Deinitialize() override;
+	
 
 	static FString      GetSavedSlotsDirectory();
 	/**
@@ -189,6 +194,12 @@ public:
 	 */
 	UFUNCTION(BlueprintPure, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	bool GetUserDataAtSlot(FUserSlot SlotId, FBeamRealmUser& OutUserData, const UObject* CallingContext = nullptr) const;
+
+	/**
+	 * @brief Tries to find the a FUserSlot, and its data, that contains the user with the given FBeamGamerTag.	  
+	 * @return True, if there is a user mapped. False, if no user mapped was found. 
+	 */
+	bool GetUserDataWithGamerTag(const FBeamGamerTag& GamerTag, FBeamRealmUser& OutUserData, FUserSlot& OutUserSlot, FString& NamespacedSlotId) const;
 
 
 	/**
@@ -240,6 +251,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="Pid", DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	void SetPIDAtSlot(FUserSlot SlotId, const FBeamPid& Pid, const UObject* CallingContext = nullptr);
 
+	/**
+	 * @brief Sets the email to the account data of an authenticated user slot. If it's not authenticated, the email information isn't stored.	  
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="Pid", DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	void SetExternalIdsAtSlot(const FUserSlot& SlotId, const TArray<FBeamExternalIdentity> ExternalIdentities, const UObject* CallingContext = nullptr);
+	
 	/**
 	 * @brief Invokes the global callback for when a user is authenticated. Used by BPs SignIn/Up/Out Flows in both editor and runtime.
 	 * This means that it is ready to make authenticated requests as well as any request that requires a user's gamer tag.

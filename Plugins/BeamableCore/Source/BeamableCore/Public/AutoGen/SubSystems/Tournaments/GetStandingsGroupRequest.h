@@ -26,15 +26,15 @@ public:
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id", Category="Beam")
-	FString TournamentId;
+	FString TournamentId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max", Category="Beam")
-	FOptionalInt32 Max;
+	FOptionalInt32 Max = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Focus", Category="Beam")
-	FOptionalInt64 Focus;
+	FOptionalInt64 Focus = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cycle", Category="Beam")
-	FOptionalInt32 Cycle;
+	FOptionalInt32 Cycle = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From", Category="Beam")
-	FOptionalInt32 From;
+	FOptionalInt32 From = {};
 
 	// Body Params
 	
@@ -46,8 +46,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", DisplayName="Beam - Make GetStandingsGroup",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Max,_Focus,_Cycle,_From,RequestOwner"))
-	static UGetStandingsGroupRequest* Make(FString _TournamentId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalInt32 _Cycle, FOptionalInt32 _From, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", DisplayName="Beam - Make GetStandingsGroup",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Max,_Focus,_Cycle,_From,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UGetStandingsGroupRequest* Make(FString _TournamentId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalInt32 _Cycle, FOptionalInt32 _From, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -22,15 +22,15 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	FString ObjectId;
+	FString ObjectId = {};
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pool Size", Category="Beam")
-	int32 PoolSize;
+	int32 PoolSize = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Windows", Category="Beam")
-	int32 Windows;
+	int32 Windows = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Window Size", Category="Beam")
-	int32 WindowSize;
+	int32 WindowSize = {};
 
 	// Body Params
 	
@@ -42,8 +42,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make ObjectLeaderboardsGetMatches",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
-	static UObjectLeaderboardsGetMatchesRequest* Make(FString _ObjectId, int32 _PoolSize, int32 _Windows, int32 _WindowSize, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make ObjectLeaderboardsGetMatches",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UObjectLeaderboardsGetMatchesRequest* Make(FString _ObjectId, int32 _PoolSize, int32 _Windows, int32 _WindowSize, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

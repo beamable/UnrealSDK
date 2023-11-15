@@ -27,9 +27,10 @@ void UPostTicketsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostTicketsRequest* UPostTicketsRequest::Make(FOptionalBool _bWatchOnlineStatus, FOptionalBeamContentId _MatchTypes, FOptionalInt32 _MaxWaitDurationSecs, FOptionalString _Team, FOptionalArrayOfString _Players, UObject* RequestOwner)
+UPostTicketsRequest* UPostTicketsRequest::Make(FOptionalBool _bWatchOnlineStatus, FOptionalInt32 _MaxWaitDurationSecs, FOptionalString _Team, FOptionalArrayOfString _Players, FOptionalArrayOfBeamContentId _MatchTypes, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostTicketsRequest* Req = NewObject<UPostTicketsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	
@@ -37,10 +38,10 @@ UPostTicketsRequest* UPostTicketsRequest::Make(FOptionalBool _bWatchOnlineStatus
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
 	Req->Body = NewObject<UTicketReservationRequestBody>(Req);
 	Req->Body->bWatchOnlineStatus = _bWatchOnlineStatus;
-	Req->Body->MatchTypes = _MatchTypes;
 	Req->Body->MaxWaitDurationSecs = _MaxWaitDurationSecs;
 	Req->Body->Team = _Team;
 	Req->Body->Players = _Players;
+	Req->Body->MatchTypes = _MatchTypes;
 	
 
 	return Req;

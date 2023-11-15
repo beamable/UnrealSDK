@@ -27,9 +27,10 @@ void UPutConfigRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutConfigRequest* UPutConfigRequest::Make(TMap<FString, FString> _Config, UObject* RequestOwner)
+UPutConfigRequest* UPutConfigRequest::Make(TMap<FString, FString> _Config, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutConfigRequest* Req = NewObject<UPutConfigRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

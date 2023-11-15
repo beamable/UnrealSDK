@@ -27,9 +27,10 @@ void UPutSwapRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutSwapRequest* UPutSwapRequest::Make(FString _ObjectId, int64 _SwapBase, int64 _Delta, FOptionalInt64 _WinnerId, FOptionalInt64 _LoserId, UObject* RequestOwner)
+UPutSwapRequest* UPutSwapRequest::Make(FString _ObjectId, int64 _SwapBase, int64 _Delta, FOptionalInt64 _WinnerId, FOptionalInt64 _LoserId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutSwapRequest* Req = NewObject<UPutSwapRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

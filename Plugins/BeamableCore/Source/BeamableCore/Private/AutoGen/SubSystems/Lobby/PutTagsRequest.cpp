@@ -27,9 +27,10 @@ void UPutTagsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutTagsRequest* UPutTagsRequest::Make(FGuid _Id, FOptionalString _PlayerId, FOptionalBool _bReplace, FOptionalArrayOfTag _Tags, UObject* RequestOwner)
+UPutTagsRequest* UPutTagsRequest::Make(FGuid _Id, FOptionalString _PlayerId, FOptionalBool _bReplace, FOptionalArrayOfTag _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutTagsRequest* Req = NewObject<UPutTagsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Id = _Id;

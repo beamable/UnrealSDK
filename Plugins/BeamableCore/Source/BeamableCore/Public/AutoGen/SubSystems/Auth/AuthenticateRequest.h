@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UTokenRequestWrapper* Body;
+	UTokenRequestWrapper* Body = {};
 
 	// Beam Base Request Declaration
 	UAuthenticateRequest() = default;
@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", DisplayName="Beam - Make Authenticate",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bCustomerScoped,_DeviceId,_ProviderService,_Token,_Code,_ExternalToken,_ChallengeSolution,_ProviderNamespace,_RedirectUri,_ThirdParty,_Context,_RefreshToken,_Username,_ClientId,_Password,_Scope,RequestOwner"))
-	static UAuthenticateRequest* Make(FString _GrantType, FOptionalBool _bCustomerScoped, FOptionalString _DeviceId, FOptionalString _ProviderService, FOptionalString _Token, FOptionalString _Code, FOptionalString _ExternalToken, FOptionalChallengeSolution _ChallengeSolution, FOptionalString _ProviderNamespace, FOptionalString _RedirectUri, FOptionalString _ThirdParty, FOptionalContextInfo _Context, FOptionalString _RefreshToken, FOptionalString _Username, FOptionalString _ClientId, FOptionalString _Password, FOptionalArrayOfString _Scope, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", DisplayName="Beam - Make Authenticate",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bCustomerScoped,_DeviceId,_ProviderService,_Token,_Code,_ExternalToken,_ChallengeSolution,_ProviderNamespace,_RedirectUri,_ThirdParty,_Context,_RefreshToken,_Username,_ClientId,_Password,_Scope,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UAuthenticateRequest* Make(FString _GrantType, FOptionalBool _bCustomerScoped, FOptionalString _DeviceId, FOptionalString _ProviderService, FOptionalString _Token, FOptionalString _Code, FOptionalString _ExternalToken, FOptionalChallengeSolution _ChallengeSolution, FOptionalString _ProviderNamespace, FOptionalString _RedirectUri, FOptionalString _ThirdParty, FOptionalContextInfo _Context, FOptionalString _RefreshToken, FOptionalString _Username, FOptionalString _ClientId, FOptionalString _Password, FOptionalArrayOfString _Scope, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

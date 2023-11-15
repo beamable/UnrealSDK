@@ -8,17 +8,17 @@
 #include "GetOffersReq.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGetOffersReq : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGetOffersReq : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Language", Category="Beam")
-	FOptionalString Language;
+	FOptionalString Language = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Time", Category="Beam")
-	FOptionalString Time;
+	FOptionalString Time = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stores", Category="Beam")
-	FOptionalString Stores;
+	FOptionalString Stores = {};
 
 	
 

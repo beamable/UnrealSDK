@@ -28,9 +28,10 @@ void UGetSkusRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetSkusRequest* UGetSkusRequest::Make(FOptionalInt64 _Version, UObject* RequestOwner)
+UGetSkusRequest* UGetSkusRequest::Make(FOptionalInt64 _Version, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetSkusRequest* Req = NewObject<UGetSkusRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Version = _Version;

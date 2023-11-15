@@ -8,13 +8,13 @@
 #include "AcceptMultipleAttachments.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UAcceptMultipleAttachments : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UAcceptMultipleAttachments : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Mail Ids", Category="Beam")
-	TArray<int64> MailIds;
+	TArray<int64> MailIds = {};
 
 	
 

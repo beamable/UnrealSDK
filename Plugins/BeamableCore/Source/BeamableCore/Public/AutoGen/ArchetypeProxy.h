@@ -8,15 +8,15 @@
 #include "ArchetypeProxy.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UArchetypeProxy : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UArchetypeProxy : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Service", Category="Beam")
-	FString Service;
+	FString Service = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Namespace", Category="Beam")
-	FString Namespace;
+	FString Namespace = {};
 
 	
 

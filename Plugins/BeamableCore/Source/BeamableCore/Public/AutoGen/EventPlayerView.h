@@ -8,15 +8,15 @@
 #include "EventPlayerView.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEventPlayerView : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UEventPlayerView : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Running", Category="Beam")
-	TArray<UEventPlayerStateView*> Running;
+	TArray<UEventPlayerStateView*> Running = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Done", Category="Beam")
-	TArray<UEventPlayerStateView*> Done;
+	TArray<UEventPlayerStateView*> Done = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

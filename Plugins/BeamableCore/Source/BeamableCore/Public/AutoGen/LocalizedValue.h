@@ -8,15 +8,15 @@
 #include "LocalizedValue.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API ULocalizedValue : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API ULocalizedValue : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Language", Category="Beam")
-	FString Language;
+	FString Language = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Value", Category="Beam")
-	FString Value;
+	FString Value = {};
 
 	
 

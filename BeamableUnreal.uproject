@@ -8,6 +8,11 @@
 			"Name": "BeamableUnreal",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "BeamableUnrealBlueprintNodes",
+			"Type": "UncookedOnly",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [

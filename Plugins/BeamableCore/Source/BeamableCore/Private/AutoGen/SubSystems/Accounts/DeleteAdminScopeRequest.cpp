@@ -27,9 +27,10 @@ void UDeleteAdminScopeRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteAdminScopeRequest* UDeleteAdminScopeRequest::Make(FBeamAccountId _ObjectId, FOptionalBeamPid _Realm, FOptionalString _Role, UObject* RequestOwner)
+UDeleteAdminScopeRequest* UDeleteAdminScopeRequest::Make(FBeamAccountId _ObjectId, FOptionalBeamPid _Realm, FOptionalString _Role, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UDeleteAdminScopeRequest* Req = NewObject<UDeleteAdminScopeRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

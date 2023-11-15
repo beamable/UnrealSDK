@@ -8,13 +8,13 @@
 #include "EventPhaseEndRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEventPhaseEndRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UEventPhaseEndRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Time", Category="Beam")
-	FOptionalString Time;
+	FOptionalString Time = {};
 
 	
 

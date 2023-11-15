@@ -27,9 +27,10 @@ void UPostProjectPromoteRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostProjectPromoteRequest* UPostProjectPromoteRequest::Make(FBeamPid _SourcePid, FOptionalArrayOfString _Promotions, FOptionalArrayOfString _ContentManifestIds, UObject* RequestOwner)
+UPostProjectPromoteRequest* UPostProjectPromoteRequest::Make(FBeamPid _SourcePid, FOptionalArrayOfString _Promotions, FOptionalArrayOfString _ContentManifestIds, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostProjectPromoteRequest* Req = NewObject<UPostProjectPromoteRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

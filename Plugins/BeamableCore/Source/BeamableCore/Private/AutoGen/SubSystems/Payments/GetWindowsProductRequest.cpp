@@ -26,9 +26,10 @@ void UGetWindowsProductRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetWindowsProductRequest* UGetWindowsProductRequest::Make(FString _Sku, UObject* RequestOwner)
+UGetWindowsProductRequest* UGetWindowsProductRequest::Make(FString _Sku, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetWindowsProductRequest* Req = NewObject<UGetWindowsProductRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Sku = _Sku;

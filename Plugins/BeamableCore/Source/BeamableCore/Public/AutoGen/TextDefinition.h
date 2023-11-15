@@ -9,19 +9,19 @@
 #include "TextDefinition.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UTextDefinition : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UTextDefinition : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FBeamContentId Id;
+	FBeamContentId Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Checksum", Category="Beam")
-	FString Checksum;
+	FString Checksum = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Properties", Category="Beam")
-	TMap<FString, FString> Properties;
+	TMap<FString, FString> Properties = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
-	FOptionalArrayOfString Tags;
+	FOptionalArrayOfString Tags = {};
 
 	
 

@@ -28,9 +28,10 @@ void UGetMeGroupRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetMeGroupRequest* UGetMeGroupRequest::Make(FOptionalString _ContentId, UObject* RequestOwner)
+UGetMeGroupRequest* UGetMeGroupRequest::Make(FOptionalString _ContentId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetMeGroupRequest* Req = NewObject<UGetMeGroupRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ContentId = _ContentId;

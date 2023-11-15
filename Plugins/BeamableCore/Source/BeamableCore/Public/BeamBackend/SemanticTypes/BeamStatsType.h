@@ -12,7 +12,7 @@ UENUM(BlueprintType)
 enum EBeamStatsVisibility { Public, Private };
 
 
-USTRUCT(BlueprintType, meta=(HasNativeMake="BeamableCore.BeamStatsTypeLibrary.MakeStatsType", HasNativeBreak="BeamableCore.BeamStatsTypeLibrary.BreakStatsType"))
+USTRUCT(BlueprintType, meta=(HasNativeMake="/Script/BeamableCore.BeamStatsTypeLibrary.MakeStatsType", HasNativeBreak="/Script/BeamableCore.BeamStatsTypeLibrary.BreakStatsType"))
 struct BEAMABLECORE_API FBeamStatsType : public FBeamSemanticType
 {
 	GENERATED_BODY()

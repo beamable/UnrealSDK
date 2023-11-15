@@ -8,19 +8,19 @@
 #include "CloudsavingBasicManifest.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UCloudsavingBasicManifest : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UCloudsavingBasicManifest : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Replacement", Category="Beam")
-	bool bReplacement;
+	bool bReplacement = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FString Id;
+	FString Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
-	int64 Created;
+	int64 Created = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Manifest", Category="Beam")
-	TArray<UCloudsavingBasicReference*> Manifest;
+	TArray<UCloudsavingBasicReference*> Manifest = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

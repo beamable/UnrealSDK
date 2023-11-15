@@ -15,35 +15,35 @@
 #include "Token.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UToken : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UToken : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid", Category="Beam")
-	FBeamCid Cid;
+	FBeamCid Cid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Token", Category="Beam")
-	FString Token;
+	FString Token = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
-	FString Type;
+	FString Type = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
-	int64 Created;
+	int64 Created = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag", Category="Beam")
-	FOptionalBeamGamerTag GamerTag;
+	FOptionalBeamGamerTag GamerTag = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Account Id", Category="Beam")
-	FOptionalBeamAccountId AccountId;
+	FOptionalBeamAccountId AccountId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pid", Category="Beam")
-	FOptionalBeamPid Pid;
+	FOptionalBeamPid Pid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Expires Ms", Category="Beam")
-	FOptionalInt64 ExpiresMs;
+	FOptionalInt64 ExpiresMs = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Platform", Category="Beam")
-	FOptionalString Platform;
+	FOptionalString Platform = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Device", Category="Beam")
-	FOptionalString Device;
+	FOptionalString Device = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Revoked", Category="Beam")
-	FOptionalBool bRevoked;
+	FOptionalBool bRevoked = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scopes", Category="Beam")
-	FOptionalArrayOfString Scopes;
+	FOptionalArrayOfString Scopes = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

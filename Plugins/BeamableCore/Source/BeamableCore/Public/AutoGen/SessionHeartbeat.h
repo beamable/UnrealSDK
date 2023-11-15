@@ -8,15 +8,15 @@
 #include "SessionHeartbeat.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API USessionHeartbeat : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API USessionHeartbeat : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gt", Category="Beam")
-	int64 Gt;
+	int64 Gt = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Heartbeat", Category="Beam")
-	FOptionalInt64 Heartbeat;
+	FOptionalInt64 Heartbeat = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

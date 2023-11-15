@@ -34,9 +34,10 @@ void UGetClientHistoryRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetClientHistoryRequest* UGetClientHistoryRequest::Make(FOptionalInt32 _Month, FOptionalInt32 _Year, UObject* RequestOwner)
+UGetClientHistoryRequest* UGetClientHistoryRequest::Make(FOptionalInt32 _Month, FOptionalInt32 _Year, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetClientHistoryRequest* Req = NewObject<UGetClientHistoryRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Month = _Month;

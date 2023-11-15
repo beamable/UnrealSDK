@@ -8,15 +8,15 @@
 #include "UploadURL.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UUploadURL : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UUploadURL : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Key", Category="Beam")
-	FString Key;
+	FString Key = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Url", Category="Beam")
-	FString Url;
+	FString Url = {};
 
 	
 

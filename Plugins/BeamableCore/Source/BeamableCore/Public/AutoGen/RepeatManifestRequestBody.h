@@ -8,13 +8,13 @@
 #include "RepeatManifestRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API URepeatManifestRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API URepeatManifestRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Uid", Category="Beam")
-	FString Uid;
+	FString Uid = {};
 
 	
 

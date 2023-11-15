@@ -27,9 +27,10 @@ void UObjectAccountsPutRoleRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UObjectAccountsPutRoleRequest* UObjectAccountsPutRoleRequest::Make(FBeamAccountId _ObjectId, FOptionalBeamCid _Cid, FOptionalBeamPid _Realm, FOptionalString _Role, UObject* RequestOwner)
+UObjectAccountsPutRoleRequest* UObjectAccountsPutRoleRequest::Make(FBeamAccountId _ObjectId, FOptionalBeamCid _Cid, FOptionalBeamPid _Realm, FOptionalString _Role, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UObjectAccountsPutRoleRequest* Req = NewObject<UObjectAccountsPutRoleRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

@@ -27,9 +27,10 @@ void UPostPlansRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostPlansRequest* UPostPlansRequest::Make(bool _bMongoSSL, bool _bSharded, FString _Name, FString _MemcachedHosts, FString _PlatformJBDC, FString _MongoHosts, TArray<URedisShardRequestBody*> _RedisShards, FOptionalString _MongoSrvAddress, FOptionalArrayOfString _MessageBusAnalytics, FOptionalArrayOfString _MessageBusCommon, UObject* RequestOwner)
+UPostPlansRequest* UPostPlansRequest::Make(bool _bMongoSSL, bool _bSharded, FString _Name, FString _MemcachedHosts, FString _PlatformJBDC, FString _MongoHosts, TArray<URedisShardRequestBody*> _RedisShards, FOptionalString _MongoSrvAddress, FOptionalArrayOfString _MessageBusAnalytics, FOptionalArrayOfString _MessageBusCommon, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostPlansRequest* Req = NewObject<UPostPlansRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -10,17 +10,17 @@
 #include "ServiceLimits.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UServiceLimits : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UServiceLimits : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Beamo", Category="Beam")
-	FOptionalBeamoLimits Beamo;
+	FOptionalBeamoLimits Beamo = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content", Category="Beam")
-	FOptionalContentLimits Content;
+	FOptionalContentLimits Content = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gateway", Category="Beam")
-	FOptionalGatewayLimits Gateway;
+	FOptionalGatewayLimits Gateway = {};
 
 	
 

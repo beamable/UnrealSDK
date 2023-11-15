@@ -27,9 +27,10 @@ void UPostAdminAdminUserRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostAdminAdminUserRequest* UPostAdminAdminUserRequest::Make(FString _Email, FOptionalString _Role, UObject* RequestOwner)
+UPostAdminAdminUserRequest* UPostAdminAdminUserRequest::Make(FString _Email, FOptionalString _Role, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostAdminAdminUserRequest* Req = NewObject<UPostAdminAdminUserRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

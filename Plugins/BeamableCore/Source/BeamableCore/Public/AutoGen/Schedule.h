@@ -10,21 +10,21 @@
 #include "Schedule.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API USchedule : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API USchedule : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Active From", Category="Beam")
-	FString ActiveFrom;
+	FString ActiveFrom = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Description", Category="Beam")
-	FOptionalString Description;
+	FOptionalString Description = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Active To", Category="Beam")
-	FOptionalString ActiveTo;
+	FOptionalString ActiveTo = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Crons", Category="Beam")
-	FOptionalArrayOfString Crons;
+	FOptionalArrayOfString Crons = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Definitions", Category="Beam")
-	FOptionalArrayOfScheduleDefinition Definitions;
+	FOptionalArrayOfScheduleDefinition Definitions = {};
 
 	
 

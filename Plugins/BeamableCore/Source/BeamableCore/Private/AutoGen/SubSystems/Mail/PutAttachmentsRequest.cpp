@@ -27,9 +27,10 @@ void UPutAttachmentsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutAttachmentsRequest* UPutAttachmentsRequest::Make(TArray<int64> _MailIds, UObject* RequestOwner)
+UPutAttachmentsRequest* UPutAttachmentsRequest::Make(TArray<int64> _MailIds, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutAttachmentsRequest* Req = NewObject<UPutAttachmentsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

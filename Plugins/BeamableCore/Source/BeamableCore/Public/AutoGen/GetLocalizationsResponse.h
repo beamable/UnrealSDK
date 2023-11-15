@@ -8,13 +8,13 @@
 #include "GetLocalizationsResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGetLocalizationsResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UGetLocalizationsResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Localizations", Category="Beam")
-	TMap<FString, FArrayOfLocalizedValue> Localizations;
+	TMap<FString, FArrayOfLocalizedValue> Localizations = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

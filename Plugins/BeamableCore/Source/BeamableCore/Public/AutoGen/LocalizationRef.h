@@ -8,17 +8,17 @@
 #include "LocalizationRef.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API ULocalizationRef : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API ULocalizationRef : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Empty", Category="Beam")
-	bool bEmpty;
+	bool bEmpty = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Localization Id", Category="Beam")
-	FString LocalizationId;
+	FString LocalizationId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Default Value", Category="Beam")
-	FOptionalString DefaultValue;
+	FOptionalString DefaultValue = {};
 
 	
 

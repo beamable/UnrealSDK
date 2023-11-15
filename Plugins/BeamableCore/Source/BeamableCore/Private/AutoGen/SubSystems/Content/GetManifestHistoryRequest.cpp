@@ -34,9 +34,10 @@ void UGetManifestHistoryRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetManifestHistoryRequest* UGetManifestHistoryRequest::Make(FOptionalBeamContentManifestId _Id, FOptionalInt32 _Limit, UObject* RequestOwner)
+UGetManifestHistoryRequest* UGetManifestHistoryRequest::Make(FOptionalBeamContentManifestId _Id, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetManifestHistoryRequest* Req = NewObject<UGetManifestHistoryRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Id = _Id;

@@ -9,19 +9,19 @@
 #include "Catalog.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UCatalog : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UCatalog : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Version", Category="Beam")
-	int64 Version;
+	int64 Version = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
-	int64 Created;
+	int64 Created = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stores", Category="Beam")
-	TArray<UStore*> Stores;
+	TArray<UStore*> Stores = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Offer Definitions", Category="Beam")
-	TArray<UOfferDefinition*> OfferDefinitions;
+	TArray<UOfferDefinition*> OfferDefinitions = {};
 
 	
 

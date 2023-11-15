@@ -30,9 +30,10 @@ void UGetAvailableThirdPartyRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAvailableThirdPartyRequest* UGetAvailableThirdPartyRequest::Make(FString _ThirdParty, FString _Token, UObject* RequestOwner)
+UGetAvailableThirdPartyRequest* UGetAvailableThirdPartyRequest::Make(FString _ThirdParty, FString _Token, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetAvailableThirdPartyRequest* Req = NewObject<UGetAvailableThirdPartyRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ThirdParty = _ThirdParty;

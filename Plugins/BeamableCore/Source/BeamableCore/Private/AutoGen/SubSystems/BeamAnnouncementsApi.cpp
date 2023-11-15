@@ -779,7 +779,7 @@ void UBeamAnnouncementsApi::CPP_GetListTags(const FUserSlot& UserSlot, UGetListT
 
     int64 OutRequestId;
 	CPP_GetListTagsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -794,7 +794,7 @@ void UBeamAnnouncementsApi::CPP_GetList(const FUserSlot& UserSlot, UBasicAnnounc
 
     int64 OutRequestId;
 	CPP_GetListImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -809,7 +809,7 @@ void UBeamAnnouncementsApi::CPP_GetSearch(const FUserSlot& UserSlot, UBasicAnnou
 
     int64 OutRequestId;
 	CPP_GetSearchImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -824,7 +824,7 @@ void UBeamAnnouncementsApi::CPP_GetListDefinitions(const FUserSlot& UserSlot, UG
 
     int64 OutRequestId;
 	CPP_GetListDefinitionsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -839,7 +839,7 @@ void UBeamAnnouncementsApi::CPP_PostAnnouncements(const FUserSlot& UserSlot, UPo
 
     int64 OutRequestId;
 	CPP_PostAnnouncementsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -854,7 +854,7 @@ void UBeamAnnouncementsApi::CPP_BasicAnnouncementsDeleteAnnouncements(const FUse
 
     int64 OutRequestId;
 	CPP_BasicAnnouncementsDeleteAnnouncementsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -869,7 +869,7 @@ void UBeamAnnouncementsApi::CPP_GetContent(const FUserSlot& UserSlot, UBasicAnno
 
     int64 OutRequestId;
 	CPP_GetContentImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -884,7 +884,7 @@ void UBeamAnnouncementsApi::CPP_PutRead(const FUserSlot& UserSlot, UPutReadReque
 
     int64 OutRequestId;
 	CPP_PutReadImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -899,7 +899,7 @@ void UBeamAnnouncementsApi::CPP_PostClaim(const FUserSlot& UserSlot, UObjectAnno
 
     int64 OutRequestId;
 	CPP_PostClaimImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -914,7 +914,7 @@ void UBeamAnnouncementsApi::CPP_GetRaw(const FUserSlot& UserSlot, UGetRawRequest
 
     int64 OutRequestId;
 	CPP_GetRawImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -929,7 +929,7 @@ void UBeamAnnouncementsApi::CPP_GetAnnouncements(const FUserSlot& UserSlot, UGet
 
     int64 OutRequestId;
 	CPP_GetAnnouncementsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -944,7 +944,7 @@ void UBeamAnnouncementsApi::CPP_ObjectAnnouncementsDeleteAnnouncements(const FUs
 
     int64 OutRequestId;
 	CPP_ObjectAnnouncementsDeleteAnnouncementsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 
@@ -963,7 +963,7 @@ void UBeamAnnouncementsApi::GetListTags(FUserSlot UserSlot, UGetListTagsRequest*
 
 	int64 OutRequestId;
 	BP_GetListTagsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -978,7 +978,7 @@ void UBeamAnnouncementsApi::GetList(FUserSlot UserSlot, UBasicAnnouncementsGetLi
 
 	int64 OutRequestId;
 	BP_GetListImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -993,7 +993,7 @@ void UBeamAnnouncementsApi::GetSearch(FUserSlot UserSlot, UBasicAnnouncementsGet
 
 	int64 OutRequestId;
 	BP_GetSearchImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -1008,7 +1008,7 @@ void UBeamAnnouncementsApi::GetListDefinitions(FUserSlot UserSlot, UGetListDefin
 
 	int64 OutRequestId;
 	BP_GetListDefinitionsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -1023,7 +1023,7 @@ void UBeamAnnouncementsApi::PostAnnouncements(FUserSlot UserSlot, UPostAnnouncem
 
 	int64 OutRequestId;
 	BP_PostAnnouncementsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -1038,7 +1038,7 @@ void UBeamAnnouncementsApi::BasicAnnouncementsDeleteAnnouncements(FUserSlot User
 
 	int64 OutRequestId;
 	BP_BasicAnnouncementsDeleteAnnouncementsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -1053,7 +1053,7 @@ void UBeamAnnouncementsApi::GetContent(FUserSlot UserSlot, UBasicAnnouncementsGe
 
 	int64 OutRequestId;
 	BP_GetContentImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -1068,7 +1068,7 @@ void UBeamAnnouncementsApi::PutRead(FUserSlot UserSlot, UPutReadRequest* Request
 
 	int64 OutRequestId;
 	BP_PutReadImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -1083,7 +1083,7 @@ void UBeamAnnouncementsApi::PostClaim(FUserSlot UserSlot, UObjectAnnouncementsPo
 
 	int64 OutRequestId;
 	BP_PostClaimImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -1098,7 +1098,7 @@ void UBeamAnnouncementsApi::GetRaw(FUserSlot UserSlot, UGetRawRequest* Request, 
 
 	int64 OutRequestId;
 	BP_GetRawImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -1113,7 +1113,7 @@ void UBeamAnnouncementsApi::GetAnnouncements(FUserSlot UserSlot, UGetAnnouncemen
 
 	int64 OutRequestId;
 	BP_GetAnnouncementsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
@@ -1128,6 +1128,6 @@ void UBeamAnnouncementsApi::ObjectAnnouncementsDeleteAnnouncements(FUserSlot Use
 
 	int64 OutRequestId;
 	BP_ObjectAnnouncementsDeleteAnnouncementsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
-	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, None};
+	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 

@@ -8,13 +8,13 @@
 #include "GetServiceURLsRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGetServiceURLsRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGetServiceURLsRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Requests", Category="Beam")
-	TArray<UServiceImageLayers*> Requests;
+	TArray<UServiceImageLayers*> Requests = {};
 
 	
 

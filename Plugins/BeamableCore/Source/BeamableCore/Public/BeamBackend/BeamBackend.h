@@ -435,14 +435,15 @@ public:
 	                                const FBeamRetryConfig& RetryConfig, const TRequestData* RequestData)
 	{
 		StaticCheckForRequestType<TRequestData>();
-
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Preparing Request of Type: REQUEST_TYPE=%s"), *RequestData->GetRequestType().Name);
+		
 		// Ensures we get a valid Next Id even if requests get made from multiple threads.
 		int64 ReqId;
 		auto Req = CreateUnpreparedRequest(ReqId, RetryConfig);
 		PrepareBeamableRequestToRealm(Req, TargetRealm);
 		PrepareBeamableRequestVerbRouteBody<TRequestData>(Req, RequestData, BeamEnvironment->GetAPIUrl());
 
-		const auto RequestContext = FBeamRequestContext{ReqId, RetryConfig, TargetRealm, -1, FUserSlot(""), None};
+		const auto RequestContext = FBeamRequestContext{ReqId, RetryConfig, TargetRealm, -1, FUserSlot(""), AS_None};
 
 		// Keep track of this request and it's data. 
 		InFlightRequestContexts.Add(ReqId, RequestContext);
@@ -453,7 +454,8 @@ public:
 		InFlightResponseBodyData.Add(RequestContext, nullptr);
 		InFlightResponseErrorData.Add(RequestContext, FBeamErrorResponse{});
 
-
+		
+		
 		INC_DWORD_STAT(STATID_RequestStarted)
 		OutRequestId = ReqId;
 		return Req;
@@ -477,14 +479,15 @@ public:
 	                                            const FBeamRetryConfig& RetryConfig, const TRequestData* RequestData, const FString& Prefix)
 	{
 		StaticCheckForRequestType<TRequestData>();
-
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Preparing Request of Type: REQUEST_TYPE=%s"), *RequestData->GetRequestType().Name);
+		
 		// Ensures we get a valid Next Id even if requests get made from multiple threads.
 		int64 ReqId;
 		auto Req = CreateUnpreparedRequest(ReqId, RetryConfig);
 		PrepareBeamableRequestToRealm(Req, TargetRealm);
 		PrepareBeamableRequestVerbRouteBody<TRequestData>(Req, RequestData, BeamEnvironment->GetAPIUrl(), TargetRealm, Prefix);
 
-		const auto RequestContext = FBeamRequestContext{ReqId, RetryConfig, TargetRealm, -1, FUserSlot(""), None};
+		const auto RequestContext = FBeamRequestContext{ReqId, RetryConfig, TargetRealm, -1, FUserSlot(""), AS_None};
 
 		// Keep track of this request and it's data. 
 		InFlightRequestContexts.Add(ReqId, RequestContext);
@@ -494,7 +497,6 @@ public:
 		// Store make sure we have a slot waiting for the response/error value to be added
 		InFlightResponseBodyData.Add(RequestContext, nullptr);
 		InFlightResponseErrorData.Add(RequestContext, FBeamErrorResponse{});
-
 
 		INC_DWORD_STAT(STATID_RequestStarted)
 		OutRequestId = ReqId;
@@ -520,7 +522,8 @@ public:
 	                                             const TRequestData* RequestData)
 	{
 		StaticCheckForRequestType<TRequestData>();
-
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Preparing Request of Type: REQUEST_TYPE=%s"), *RequestData->GetRequestType().Name);
+		
 		// Ensures we get a valid Next Id even if requests get made from multiple threads.
 		int64 ReqId;
 		auto Req = CreateUnpreparedRequest(ReqId, RetryConfig);
@@ -533,12 +536,11 @@ public:
 		FString NamespacedSlotId;
 		BeamUserSlots->GetUserDataWithRefreshTokenAndPid(AuthToken.RefreshToken, TargetRealm.Pid, OutUserData, OutUserSlot, NamespacedSlotId);
 
-		const auto RequestContext = FBeamRequestContext{ReqId, RetryConfig, TargetRealm, -1, OutUserSlot, None};
+		const auto RequestContext = FBeamRequestContext{ReqId, RetryConfig, TargetRealm, -1, OutUserSlot, AS_None};
 
 		// Keep track of this request and it's data. 
 		InFlightRequestContexts.Add(ReqId, RequestContext);
-		InFlightRequestData.Add(RequestContext,
-		                        TScriptInterface<IBeamBaseRequestInterface>(const_cast<TRequestData*>(RequestData)));
+		InFlightRequestData.Add(RequestContext, TScriptInterface<IBeamBaseRequestInterface>(const_cast<TRequestData*>(RequestData)));
 
 		// Store make sure we have a slot waiting for the response/error value to be added
 		InFlightResponseBodyData.Add(RequestContext, nullptr);
@@ -571,7 +573,8 @@ public:
 	                                                         const FString& Prefix)
 	{
 		StaticCheckForRequestType<TRequestData>();
-
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Preparing Request of Type: REQUEST_TYPE=%s"), *RequestData->GetRequestType().Name);
+		
 		// Ensures we get a valid Next Id even if requests get made from multiple threads.
 		int64 ReqId;
 		auto Req = CreateUnpreparedRequest(ReqId, RetryConfig);
@@ -584,7 +587,7 @@ public:
 		FString NamespacedSlotId;
 		BeamUserSlots->GetUserDataWithRefreshTokenAndPid(AuthToken.RefreshToken, TargetRealm.Pid, OutUserData, OutUserSlot, NamespacedSlotId);
 
-		const auto RequestContext = FBeamRequestContext{ReqId, RetryConfig, TargetRealm, -1, OutUserSlot, None};
+		const auto RequestContext = FBeamRequestContext{ReqId, RetryConfig, TargetRealm, -1, OutUserSlot, AS_None};
 
 		// Keep track of this request and it's data. 
 		InFlightRequestContexts.Add(ReqId, RequestContext);
@@ -697,6 +700,16 @@ public:
 
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Verb, Route and Body: VERB=%s ROUTE=%s, BODY=%s"),
 		       *Verb, *Route, *Body);
+
+		// Add any custom headers
+		for(const auto CustomHeader : RequestData->CustomHeaders)
+		{
+			const auto Header = CustomHeader.Key;
+			const auto Value = CustomHeader.Value;
+			Request->SetHeader(Header, Value);			
+			UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Custom Header: HEADER=%s VALUE=%s"),
+			   *Header, *Value);			
+		}
 	}
 
 
@@ -736,7 +749,17 @@ public:
 		Request->SetContentAsString(Body);
 
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Verb, Route and Body: VERB=%s ROUTE=%s, BODY=%s"),
-		       *Verb, *Route, *Body);
+			   *Verb, *Route, *Body);
+		
+		// Add any custom headers
+		for(const auto CustomHeader : RequestData->CustomHeaders)
+		{
+			const auto Header = CustomHeader.Key;
+			const auto Value = CustomHeader.Value;
+			Request->SetHeader(Header, Value);			
+			UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Custom Header: HEADER=%s VALUE=%s"),
+			   *Header, *Value);			
+		}
 	}
 
 
@@ -870,13 +893,13 @@ public:
 			}
 
 			// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
-			Context->BeamStatus = Completed;
+			Context->BeamStatus = AS_Completed;
 
 			return;
 		}
 
 		// Stores whether or not the request was successful
-		const auto bWasSuccess = ResponseCode == 200;
+		const auto bWasSuccess = IsSuccessfulResponse(ResponseCode);
 
 
 		// Get retry stuff
@@ -982,7 +1005,7 @@ public:
 			}
 
 			// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
-			Context->BeamStatus = Completed;
+			Context->BeamStatus = AS_Completed;
 		}
 	}
 
@@ -1045,7 +1068,7 @@ public:
 				const auto RequestType = RequestData->GetRequestType();
 
 				// If it was a success, we try to cache the response.
-				if (ResponseCode == 200)
+				if (IsSuccessfulResponse(ResponseCode))
 					UpdateResponseCache(RequestType, CallingContext, Request, ContentAsString);
 
 
@@ -1139,7 +1162,7 @@ public:
 			}
 
 			// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
-			Context->BeamStatus = Completed;
+			Context->BeamStatus = AS_Completed;
 
 			return;
 		}
@@ -1151,7 +1174,7 @@ public:
 		const auto bShouldRetryIfFail = RetryConfig.RetryMaxAttempt == -1 || CurrFailedCount < RetryConfig.RetryMaxAttempt;
 
 		// Stores whether or not the request was successful
-		const auto bWasSuccess = ResponseCode == 200;
+		const auto bWasSuccess = IsSuccessfulResponse(ResponseCode);
 
 		// If it was an error, we'll compute if we should re-auth/retry based on the error data.
 		bool bWillRetry = !bWasSuccess && bShouldRetryIfFail;
@@ -1265,7 +1288,7 @@ public:
 			}
 
 			// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
-			Context->BeamStatus = Completed;
+			Context->BeamStatus = AS_Completed;
 		}
 	}
 
@@ -1317,7 +1340,7 @@ public:
 				const auto RequestType = RequestData->GetRequestType();
 
 				// If it was a success, we try to cache the response.
-				if (ResponseCode == 200)
+				if (IsSuccessfulResponse(ResponseCode))
 					UpdateResponseCache(RequestType, CallingContext, Request, ContentAsString);
 
 				RunCodeRequestProcessor<TRequestData, TResponseData>(ResponseCode, ContentAsString, RequestStatus,
@@ -1385,9 +1408,9 @@ public:
 		const bool bIsCancelled = InFlightRequestsCancelled.Contains(RequestId);
 		// Stores whether or not the request was successful, error or cancelled
 		if (bIsCancelled)
-			FullResponse.State = Cancelled;
+			FullResponse.State = RS_Cancelled;
 		else
-			FullResponse.State = ResponseCode == 200 ? Success : Error;
+			FullResponse.State = IsSuccessfulResponse(ResponseCode) ? RS_Success : RS_Error;
 
 		// Get retry stuff
 		const auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
@@ -1400,9 +1423,9 @@ public:
 		FullResponse.AttemptNumber = CurrFailedCount;
 
 		// If it was an error, we'll compute this based on the error data.
-		bool bWillRetry = ResponseCode != 200 && bShouldRetryIfFail;
+		bool bWillRetry = !IsSuccessfulResponse(ResponseCode) && bShouldRetryIfFail;
 		// Parse the appropriate response body...
-		if (FullResponse.State == Success)
+		if (FullResponse.State == RS_Success)
 		{
 			// Parse the response body and store it in the full response data.				
 			FullResponse.SuccessData = NewObject<TResponseData>(RequestData);
@@ -1411,7 +1434,7 @@ public:
 			// Store it so wait handles can grab at it later
 			InFlightResponseBodyData[*Context] = FullResponse.SuccessData;
 		}
-		else if (FullResponse.State == Error)
+		else if (FullResponse.State == RS_Error)
 		{
 			// Otherwise, parse the body as an error response callback and store it in the full response data.				
 			FJsonObjectConverter::JsonObjectStringToUStruct(*ContentAsString, &FullResponse.ErrorData);
@@ -1437,7 +1460,7 @@ public:
 				Retry.ErrorCode = FullResponse.ErrorData.error;
 				EnqueuedRetries.Enqueue(Retry);
 
-				FullResponse.State = Retrying;
+				FullResponse.State = RS_Retrying;
 			}
 		}
 
@@ -1477,7 +1500,7 @@ public:
 			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 			{
 				// We only log the response for code if we are configured to always run it.
-				if (AlwaysLogSuccessResponses && FullResponse.State == Success)
+				if (AlwaysLogSuccessResponses && FullResponse.State == RS_Success)
 				{
 					UE_LOG(LogBeamBackend, Display,
 					       TEXT(
@@ -1487,7 +1510,7 @@ public:
 				}
 
 				// We log the error only if neither callback was set OR if we are configured to do so.
-				if (AlwaysLogErrorResponses && FullResponse.State == Error)
+				if (AlwaysLogErrorResponses && FullResponse.State == RS_Error)
 				{
 					UE_LOG(LogBeamBackend, Error,
 					       TEXT(
@@ -1496,8 +1519,8 @@ public:
 					       RequestId, ResponseCode, CurrFailedCount, *ContentAsString);
 				}
 
-				const auto bWasSuccess = FullResponse.State == Success;
-				if (FullResponse.State == Cancelled)
+				const auto bWasSuccess = FullResponse.State == RS_Success;
+				if (FullResponse.State == RS_Cancelled)
 				{
 					UE_LOG(LogBeamBackend, Display,
 					       TEXT("Beamable Request Canceled | REQUEST_ID=%lld, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
@@ -1512,7 +1535,7 @@ public:
 			}
 
 			// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
-			Context->BeamStatus = Completed;
+			Context->BeamStatus = AS_Completed;
 		}
 	}
 
@@ -1569,7 +1592,7 @@ public:
 				const auto RequestType = RequestData->GetRequestType();
 
 				// If it was a success, we try to cache the response.
-				if (ResponseCode == 200)
+				if (IsSuccessfulResponse(ResponseCode))
 					UpdateResponseCache(RequestType, CallingContext, Request, ContentAsString);
 
 				RunAuthenticatedCodeRequestProcessor<TRequestData, TResponseData>(
@@ -1647,9 +1670,9 @@ public:
 		bool bIsCancelled = InFlightRequestsCancelled.Contains(RequestId);
 		// Stores whether or not the request was successful, error or cancelled
 		if (bIsCancelled)
-			FullResponse.State = Cancelled;
+			FullResponse.State = RS_Cancelled;
 		else
-			FullResponse.State = ResponseCode == 200 ? Success : Error;
+			FullResponse.State = IsSuccessfulResponse(ResponseCode) ? RS_Success : RS_Error;
 
 		const auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
 		const auto RetryConfig = Context->RetryConfiguration;
@@ -1661,10 +1684,10 @@ public:
 		FullResponse.AttemptNumber = CurrFailedCount;
 
 		// If it was an error, we'll compute whether we should re-auth/retry based on the error data.
-		bool bWillRetry = ResponseCode != 200 && bShouldRetryIfFail;
-		bool bWillReAuth = ResponseCode != 200;
+		bool bWillRetry = !IsSuccessfulResponse(ResponseCode) && bShouldRetryIfFail;
+		bool bWillReAuth = !IsSuccessfulResponse(ResponseCode);
 		// Parse the appropriate response body...
-		if (FullResponse.State == Success)
+		if (FullResponse.State == RS_Success)
 		{
 			// Parse the response body and store it in the full response data.						
 			FullResponse.SuccessData = NewObject<TResponseData>(RequestData);
@@ -1673,7 +1696,7 @@ public:
 			// Store it so wait handles can grab at it later
 			InFlightResponseBodyData[*Context] = FullResponse.SuccessData;
 		}
-		else if (FullResponse.State == Error)
+		else if (FullResponse.State == RS_Error)
 		{
 			// Otherwise, parse the body as an error response callback and store it in the full response data.				
 			FJsonObjectConverter::JsonObjectStringToUStruct(*ContentAsString, &FullResponse.ErrorData);
@@ -1705,7 +1728,7 @@ public:
 				EnqueuedRetries.Enqueue(Retry);
 
 				// Set the state to retrying instead of error.
-				FullResponse.State = Retrying;
+				FullResponse.State = RS_Retrying;
 			}
 		}
 
@@ -1754,7 +1777,7 @@ public:
 			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 			{
 				// We only log the response for code if we are configured to always run it.
-				if (AlwaysLogSuccessResponses && FullResponse.State == Success)
+				if (AlwaysLogSuccessResponses && FullResponse.State == RS_Success)
 				{
 					UE_LOG(LogBeamBackend, Display,
 					       TEXT(
@@ -1764,7 +1787,7 @@ public:
 				}
 
 				// We log the error only if neither callback was set OR if we are configured to do so.
-				if (AlwaysLogErrorResponses && FullResponse.State == Error)
+				if (AlwaysLogErrorResponses && FullResponse.State == RS_Error)
 				{
 					UE_LOG(LogBeamBackend, Error,
 					       TEXT(
@@ -1774,8 +1797,8 @@ public:
 					       bWillRetry ? TEXT("true") : TEXT("false"), *ContentAsString);
 				}
 
-				const auto bWasSuccess = FullResponse.State == Success;
-				if (FullResponse.State == Cancelled)
+				const auto bWasSuccess = FullResponse.State == RS_Success;
+				if (FullResponse.State == RS_Cancelled)
 				{
 					UE_LOG(LogBeamBackend, Display,
 					       TEXT("Beamable Request Canceled | REQUEST_ID=%lld, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"
@@ -1795,12 +1818,14 @@ public:
 			}
 
 			// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
-			Context->BeamStatus = Completed;
+			Context->BeamStatus = AS_Completed;
 		}
 	}
 
 private:
 	void UpdateResponseCache(const FRequestType& RequestType, const UObject* CallingContext, const FHttpRequestPtr& Request, const FString& Content);
+
+	static bool IsSuccessfulResponse(int32 ResponseCode);
 
 public:
 	/*

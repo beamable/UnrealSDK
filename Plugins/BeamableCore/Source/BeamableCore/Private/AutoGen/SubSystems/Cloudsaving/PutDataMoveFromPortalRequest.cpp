@@ -27,9 +27,10 @@ void UPutDataMoveFromPortalRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutDataMoveFromPortalRequest* UPutDataMoveFromPortalRequest::Make(FOptionalInt64 _PlayerId, UObject* RequestOwner)
+UPutDataMoveFromPortalRequest* UPutDataMoveFromPortalRequest::Make(FOptionalInt64 _PlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutDataMoveFromPortalRequest* Req = NewObject<UPutDataMoveFromPortalRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

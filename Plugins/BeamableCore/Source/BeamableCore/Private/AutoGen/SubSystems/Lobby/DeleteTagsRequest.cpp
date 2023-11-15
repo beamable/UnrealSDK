@@ -27,9 +27,10 @@ void UDeleteTagsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteTagsRequest* UDeleteTagsRequest::Make(FGuid _Id, FOptionalString _PlayerId, FOptionalArrayOfString _Tags, UObject* RequestOwner)
+UDeleteTagsRequest* UDeleteTagsRequest::Make(FGuid _Id, FOptionalString _PlayerId, FOptionalArrayOfString _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UDeleteTagsRequest* Req = NewObject<UDeleteTagsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Id = _Id;

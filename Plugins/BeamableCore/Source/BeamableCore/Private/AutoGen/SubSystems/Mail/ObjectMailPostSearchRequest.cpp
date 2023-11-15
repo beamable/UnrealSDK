@@ -27,9 +27,10 @@ void UObjectMailPostSearchRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UObjectMailPostSearchRequest* UObjectMailPostSearchRequest::Make(int64 _ObjectId, TArray<UMailSearchClause*> _Clauses, UObject* RequestOwner)
+UObjectMailPostSearchRequest* UObjectMailPostSearchRequest::Make(int64 _ObjectId, TArray<UMailSearchClause*> _Clauses, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UObjectMailPostSearchRequest* Req = NewObject<UObjectMailPostSearchRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

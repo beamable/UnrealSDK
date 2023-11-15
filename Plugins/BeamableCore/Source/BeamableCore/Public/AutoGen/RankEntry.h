@@ -9,21 +9,21 @@
 #include "RankEntry.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API URankEntry : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API URankEntry : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rank", Category="Beam")
-	int64 Rank;
+	int64 Rank = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gt", Category="Beam")
-	int64 Gt;
+	int64 Gt = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Columns", Category="Beam")
-	TMap<FString, int64> Columns;
+	TMap<FString, int64> Columns = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Score", Category="Beam")
-	FOptionalDouble Score;
+	FOptionalDouble Score = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stats", Category="Beam")
-	FOptionalArrayOfRankEntryStat Stats;
+	FOptionalArrayOfRankEntryStat Stats = {};
 
 	
 

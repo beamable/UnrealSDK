@@ -23,9 +23,10 @@ void UBasicBeamoGetStatusRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UBasicBeamoGetStatusRequest* UBasicBeamoGetStatusRequest::Make(UObject* RequestOwner)
+UBasicBeamoGetStatusRequest* UBasicBeamoGetStatusRequest::Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicBeamoGetStatusRequest* Req = NewObject<UBasicBeamoGetStatusRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

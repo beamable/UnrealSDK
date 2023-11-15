@@ -34,9 +34,10 @@ void UGetRewardsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetRewardsRequest* UGetRewardsRequest::Make(FOptionalString _TournamentId, FOptionalString _ContentId, UObject* RequestOwner)
+UGetRewardsRequest* UGetRewardsRequest::Make(FOptionalString _TournamentId, FOptionalString _ContentId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetRewardsRequest* Req = NewObject<UGetRewardsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->TournamentId = _TournamentId;

@@ -9,19 +9,19 @@
 #include "CreateProjectRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UCreateProjectRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UCreateProjectRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sharded", Category="Beam")
-	FOptionalBool bSharded;
+	FOptionalBool bSharded = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Plan", Category="Beam")
-	FOptionalString Plan;
+	FOptionalString Plan = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Parent", Category="Beam")
-	FOptionalString Parent;
+	FOptionalString Parent = {};
 
 	
 

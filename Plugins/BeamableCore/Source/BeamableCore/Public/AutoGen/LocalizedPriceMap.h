@@ -8,15 +8,15 @@
 #include "LocalizedPriceMap.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API ULocalizedPriceMap : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API ULocalizedPriceMap : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currency", Category="Beam")
-	FString Currency;
+	FString Currency = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Prices", Category="Beam")
-	TArray<ULocalizedPrice*> Prices;
+	TArray<ULocalizedPrice*> Prices = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

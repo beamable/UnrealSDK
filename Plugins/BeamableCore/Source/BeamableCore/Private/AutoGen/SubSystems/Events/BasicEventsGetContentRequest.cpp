@@ -23,9 +23,10 @@ void UBasicEventsGetContentRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UBasicEventsGetContentRequest* UBasicEventsGetContentRequest::Make(UObject* RequestOwner)
+UBasicEventsGetContentRequest* UBasicEventsGetContentRequest::Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicEventsGetContentRequest* Req = NewObject<UBasicEventsGetContentRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

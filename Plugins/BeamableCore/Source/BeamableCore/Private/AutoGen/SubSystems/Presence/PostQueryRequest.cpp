@@ -27,9 +27,10 @@ void UPostQueryRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostQueryRequest* UPostQueryRequest::Make(FOptionalBool _bToManyRequests, FOptionalArrayOfString _PlayerIds, UObject* RequestOwner)
+UPostQueryRequest* UPostQueryRequest::Make(FOptionalBool _bToManyRequests, FOptionalArrayOfString _PlayerIds, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostQueryRequest* Req = NewObject<UPostQueryRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

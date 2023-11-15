@@ -46,9 +46,10 @@ void UGetCalendarRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetCalendarRequest* UGetCalendarRequest::Make(FOptionalString _From, FOptionalString _To, FOptionalString _Query, FOptionalInt32 _Limit, UObject* RequestOwner)
+UGetCalendarRequest* UGetCalendarRequest::Make(FOptionalString _From, FOptionalString _To, FOptionalString _Query, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetCalendarRequest* Req = NewObject<UGetCalendarRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->From = _From;

@@ -18,7 +18,7 @@ void UAccountPlayerView::BeamSerializeProperties(TUnrealJsonSerializer& Serializ
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("thirdPartyAppAssociations"), ThirdPartyAppAssociations, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("email"), &Email, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("language"), &Language, Serializer);
-	UBeamJsonUtils::SerializeOptional<TArray<UExternalIdentity*>, UExternalIdentity*>(TEXT("external"), &External, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<FBeamExternalIdentity>, FBeamExternalIdentity>(TEXT("external"), &External, Serializer);
 }
 
 void UAccountPlayerView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
@@ -29,7 +29,7 @@ void UAccountPlayerView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("thirdPartyAppAssociations"), ThirdPartyAppAssociations, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("email"), &Email, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("language"), &Language, Serializer);
-	UBeamJsonUtils::SerializeOptional<TArray<UExternalIdentity*>, UExternalIdentity*>(TEXT("external"), &External, Serializer);		
+	UBeamJsonUtils::SerializeOptional<TArray<FBeamExternalIdentity>, FBeamExternalIdentity>(TEXT("external"), &External, Serializer);		
 }
 
 void UAccountPlayerView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
@@ -40,7 +40,7 @@ void UAccountPlayerView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("thirdPartyAppAssociations")), ThirdPartyAppAssociations, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("email", Bag, Email, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("language", Bag, Language, OuterOwner);
-	UBeamJsonUtils::DeserializeOptional<TArray<UExternalIdentity*>, UExternalIdentity*>("external", Bag, External, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TArray<FBeamExternalIdentity>, FBeamExternalIdentity>("external", Bag, External, OuterOwner);
 }
 
 

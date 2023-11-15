@@ -8,13 +8,13 @@
 #include "RouteVariables.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API URouteVariables : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API URouteVariables : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Variables", Category="Beam")
-	TArray<URouteVariable*> Variables;
+	TArray<URouteVariable*> Variables = {};
 
 	
 

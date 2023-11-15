@@ -8,17 +8,17 @@
 #include "SubscriptionVerificationRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API USubscriptionVerificationRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API USubscriptionVerificationRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Hub Mode", Category="Beam")
-	FString HubMode;
+	FString HubMode = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Hub Challenge", Category="Beam")
-	FString HubChallenge;
+	FString HubChallenge = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Hub Verify Token", Category="Beam")
-	FString HubVerifyToken;
+	FString HubVerifyToken = {};
 
 	
 

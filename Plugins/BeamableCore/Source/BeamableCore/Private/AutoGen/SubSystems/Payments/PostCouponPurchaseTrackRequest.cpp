@@ -27,9 +27,10 @@ void UPostCouponPurchaseTrackRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostCouponPurchaseTrackRequest* UPostCouponPurchaseTrackRequest::Make(double _PriceInLocalCurrency, FString _SkuName, FString _SkuProductId, FString _Store, FString _PurchaseId, FString _IsoCurrencySymbol, TArray<UItemCreateRequestBody*> _ObtainItems, TArray<UCurrencyChange*> _ObtainCurrency, UObject* RequestOwner)
+UPostCouponPurchaseTrackRequest* UPostCouponPurchaseTrackRequest::Make(double _PriceInLocalCurrency, FString _SkuName, FString _SkuProductId, FString _Store, FString _PurchaseId, FString _IsoCurrencySymbol, TArray<UItemCreateRequestBody*> _ObtainItems, TArray<UCurrencyChange*> _ObtainCurrency, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostCouponPurchaseTrackRequest* Req = NewObject<UPostCouponPurchaseTrackRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

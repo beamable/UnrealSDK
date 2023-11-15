@@ -22,14 +22,14 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
-	FString PlayerId;
+	FString PlayerId = {};
 	
 	// Query Params
 	
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	USetPresenceStatusRequestBody* Body;
+	USetPresenceStatusRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPutPresenceStatusRequest() = default;
@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Player", DisplayName="Beam - Make PutPresenceStatus",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Status,_Description,RequestOwner"))
-	static UPutPresenceStatusRequest* Make(FString _PlayerId, FOptionalPresenceStatus _Status, FOptionalString _Description, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Player", DisplayName="Beam - Make PutPresenceStatus",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Status,_Description,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPutPresenceStatusRequest* Make(FString _PlayerId, FOptionalPresenceStatus _Status, FOptionalString _Description, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

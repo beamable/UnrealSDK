@@ -9,17 +9,17 @@
 #include "RouteParameters.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API URouteParameters : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API URouteParameters : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Parameters", Category="Beam")
-	TArray<URouteParameter*> Parameters;
+	TArray<URouteParameter*> Parameters = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Payload", Category="Beam")
-	FOptionalString Payload;
+	FOptionalString Payload = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	FOptionalString ObjectId;
+	FOptionalString ObjectId = {};
 
 	
 

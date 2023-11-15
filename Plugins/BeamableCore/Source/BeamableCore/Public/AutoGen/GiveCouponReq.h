@@ -8,13 +8,13 @@
 #include "GiveCouponReq.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGiveCouponReq : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGiveCouponReq : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Listing", Category="Beam")
-	FString Listing;
+	FString Listing = {};
 
 	
 

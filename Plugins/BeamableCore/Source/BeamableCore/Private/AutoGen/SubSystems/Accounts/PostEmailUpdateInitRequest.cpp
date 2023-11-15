@@ -27,9 +27,10 @@ void UPostEmailUpdateInitRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostEmailUpdateInitRequest* UPostEmailUpdateInitRequest::Make(FString _NewEmail, FOptionalString _CodeType, UObject* RequestOwner)
+UPostEmailUpdateInitRequest* UPostEmailUpdateInitRequest::Make(FString _NewEmail, FOptionalString _CodeType, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostEmailUpdateInitRequest* Req = NewObject<UPostEmailUpdateInitRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

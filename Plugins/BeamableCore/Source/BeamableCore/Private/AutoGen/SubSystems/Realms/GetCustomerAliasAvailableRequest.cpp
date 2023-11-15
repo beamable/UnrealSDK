@@ -26,9 +26,10 @@ void UGetCustomerAliasAvailableRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetCustomerAliasAvailableRequest* UGetCustomerAliasAvailableRequest::Make(FString _Alias, UObject* RequestOwner)
+UGetCustomerAliasAvailableRequest* UGetCustomerAliasAvailableRequest::Make(FString _Alias, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetCustomerAliasAvailableRequest* Req = NewObject<UGetCustomerAliasAvailableRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Alias = _Alias;

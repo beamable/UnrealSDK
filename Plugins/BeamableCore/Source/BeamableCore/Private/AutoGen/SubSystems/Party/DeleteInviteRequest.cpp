@@ -27,9 +27,10 @@ void UDeleteInviteRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteInviteRequest* UDeleteInviteRequest::Make(FGuid _Id, FOptionalString _PlayerId, UObject* RequestOwner)
+UDeleteInviteRequest* UDeleteInviteRequest::Make(FGuid _Id, FOptionalString _PlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UDeleteInviteRequest* Req = NewObject<UDeleteInviteRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Id = _Id;

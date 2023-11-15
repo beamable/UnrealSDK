@@ -22,14 +22,14 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	int64 ObjectId;
+	int64 ObjectId = {};
 	
 	// Query Params
 	
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UCalendarClaimRequestBody* Body;
+	UCalendarClaimRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UObjectCalendarsPostClaimRequest() = default;
@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Calendars", DisplayName="Beam - Make ObjectCalendarsPostClaim",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
-	static UObjectCalendarsPostClaimRequest* Make(int64 _ObjectId, FString _Id, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Calendars", DisplayName="Beam - Make ObjectCalendarsPostClaim",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UObjectCalendarsPostClaimRequest* Make(int64 _ObjectId, FString _Id, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

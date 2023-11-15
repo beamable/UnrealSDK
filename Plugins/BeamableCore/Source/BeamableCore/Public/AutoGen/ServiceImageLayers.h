@@ -8,15 +8,15 @@
 #include "ServiceImageLayers.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UServiceImageLayers : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UServiceImageLayers : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Service", Category="Beam")
-	UBeamoBasicReference* Service;
+	UBeamoBasicReference* Service = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Layers", Category="Beam")
-	TArray<FString> Layers;
+	TArray<FString> Layers = {};
 
 	
 

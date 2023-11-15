@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UDeleteDevicesRequestBody* Body;
+	UDeleteDevicesRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UDeleteMeDeviceRequest() = default;
@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make DeleteMeDevice",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_DeviceIds,RequestOwner"))
-	static UDeleteMeDeviceRequest* Make(FOptionalArrayOfString _DeviceIds, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make DeleteMeDevice",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_DeviceIds,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UDeleteMeDeviceRequest* Make(FOptionalArrayOfString _DeviceIds, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -23,9 +23,10 @@ void UPutPresenceRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UPutPresenceRequest* UPutPresenceRequest::Make(FString _PlayerId, UObject* RequestOwner)
+UPutPresenceRequest* UPutPresenceRequest::Make(FString _PlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutPresenceRequest* Req = NewObject<UPutPresenceRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->PlayerId = _PlayerId;

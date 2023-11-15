@@ -8,15 +8,15 @@
 #include "SessionLanguageContext.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API USessionLanguageContext : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API USessionLanguageContext : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Code", Category="Beam")
-	FString Code;
+	FString Code = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Ctx", Category="Beam")
-	FString Ctx;
+	FString Ctx = {};
 
 	
 

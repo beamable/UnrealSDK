@@ -23,9 +23,10 @@ void UPostHeartbeatRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UPostHeartbeatRequest* UPostHeartbeatRequest::Make(UObject* RequestOwner)
+UPostHeartbeatRequest* UPostHeartbeatRequest::Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostHeartbeatRequest* Req = NewObject<UPostHeartbeatRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

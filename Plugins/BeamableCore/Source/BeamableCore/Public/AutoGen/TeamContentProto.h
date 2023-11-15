@@ -9,17 +9,17 @@
 #include "TeamContentProto.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UTeamContentProto : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UTeamContentProto : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FOptionalString Name;
+	FOptionalString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Players", Category="Beam")
-	FOptionalInt32 MaxPlayers;
+	FOptionalInt32 MaxPlayers = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Min Players", Category="Beam")
-	FOptionalInt32 MinPlayers;
+	FOptionalInt32 MinPlayers = {};
 
 	
 

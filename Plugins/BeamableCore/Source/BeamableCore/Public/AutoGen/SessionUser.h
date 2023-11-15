@@ -9,33 +9,33 @@
 #include "SessionUser.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API USessionUser : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API USessionUser : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Email", Category="Beam")
-	FString Email;
+	FString Email = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag", Category="Beam")
-	int64 GamerTag;
+	int64 GamerTag = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Username", Category="Beam")
-	FString Username;
+	FString Username = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Last Name", Category="Beam")
-	FString LastName;
+	FString LastName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="First Name", Category="Beam")
-	FString FirstName;
+	FString FirstName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	int64 Id;
+	int64 Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Lang", Category="Beam")
-	FString Lang;
+	FString Lang = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid", Category="Beam")
-	FOptionalString Cid;
+	FOptionalString Cid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Heartbeat", Category="Beam")
-	FOptionalInt64 Heartbeat;
+	FOptionalInt64 Heartbeat = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Password", Category="Beam")
-	FOptionalString Password;
+	FOptionalString Password = {};
 
 	
 

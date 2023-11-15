@@ -24,6 +24,8 @@
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetPlansRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/PostPlansRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetCustomerRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetAdminInflightFailuresRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Realms/DeleteAdminInflightFailuresRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/GetLaunchMessageRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/PostLaunchMessageRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Realms/DeleteLaunchMessageRequest.h"
@@ -273,6 +275,30 @@ private:
 	 */
 	void CPP_GetCustomerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UGetCustomerRequest* RequestData,
 	                   const FOnGetCustomerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+		
+	/**
+	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
+	 */
+	void BP_GetAdminInflightFailuresImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UGetAdminInflightFailuresRequest* RequestData,
+	                  const FOnGetAdminInflightFailuresSuccess& OnSuccess, const FOnGetAdminInflightFailuresError& OnError, const FOnGetAdminInflightFailuresComplete& OnComplete, 
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	/**
+	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
+	 */
+	void CPP_GetAdminInflightFailuresImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UGetAdminInflightFailuresRequest* RequestData,
+	                   const FOnGetAdminInflightFailuresFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+		
+	/**
+	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
+	 */
+	void BP_DeleteAdminInflightFailuresImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UDeleteAdminInflightFailuresRequest* RequestData,
+	                  const FOnDeleteAdminInflightFailuresSuccess& OnSuccess, const FOnDeleteAdminInflightFailuresError& OnError, const FOnDeleteAdminInflightFailuresComplete& OnComplete, 
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	/**
+	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
+	 */
+	void CPP_DeleteAdminInflightFailuresImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UDeleteAdminInflightFailuresRequest* RequestData,
+	                   const FOnDeleteAdminInflightFailuresFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 		
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
@@ -678,6 +704,38 @@ public:
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
 	void CPP_GetCustomer(const FUserSlot& UserSlot, UGetCustomerRequest* Request, const FOnGetCustomerFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /basic/realms/admin/inflight/failures endpoint of the Realms Service.
+	 *
+	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
+	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
+	 * 
+	 * @param UserSlot The Authenticated User Slot that is making this request.
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
+	 */
+	void CPP_GetAdminInflightFailures(const FUserSlot& UserSlot, UGetAdminInflightFailuresRequest* Request, const FOnGetAdminInflightFailuresFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Delete /basic/realms/admin/inflight/failures endpoint of the Realms Service.
+	 *
+	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
+	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
+	 * 
+	 * @param UserSlot The Authenticated User Slot that is making this request.
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
+	 */
+	void CPP_DeleteAdminInflightFailures(const FUserSlot& UserSlot, UDeleteAdminInflightFailuresRequest* Request, const FOnDeleteAdminInflightFailuresFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -1105,6 +1163,36 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void GetCustomer(FUserSlot UserSlot, UGetCustomerRequest* Request, const FOnGetCustomerSuccess& OnSuccess, const FOnGetCustomerError& OnError, const FOnGetCustomerComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /basic/realms/admin/inflight/failures endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void GetAdminInflightFailures(FUserSlot UserSlot, UGetAdminInflightFailuresRequest* Request, const FOnGetAdminInflightFailuresSuccess& OnSuccess, const FOnGetAdminInflightFailuresError& OnError, const FOnGetAdminInflightFailuresComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Delete /basic/realms/admin/inflight/failures endpoint of the Realms Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Realms", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void DeleteAdminInflightFailures(FUserSlot UserSlot, UDeleteAdminInflightFailuresRequest* Request, const FOnDeleteAdminInflightFailuresSuccess& OnSuccess, const FOnDeleteAdminInflightFailuresError& OnError, const FOnDeleteAdminInflightFailuresComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**

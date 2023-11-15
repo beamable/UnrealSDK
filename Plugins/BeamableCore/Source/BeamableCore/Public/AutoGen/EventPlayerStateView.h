@@ -11,35 +11,35 @@
 #include "EventPlayerStateView.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEventPlayerStateView : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UEventPlayerStateView : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Running", Category="Beam")
-	bool bRunning;
+	bool bRunning = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rank", Category="Beam")
-	int64 Rank;
+	int64 Rank = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Score", Category="Beam")
-	double Score;
+	double Score = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Seconds Remaining", Category="Beam")
-	int64 SecondsRemaining;
+	int64 SecondsRemaining = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FString Id;
+	FString Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Leaderboard Id", Category="Beam")
-	FString LeaderboardId;
+	FString LeaderboardId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="All Phases", Category="Beam")
-	TArray<UEventPlayerPhaseView*> AllPhases;
+	TArray<UEventPlayerPhaseView*> AllPhases = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rank Rewards", Category="Beam")
-	TArray<UEventRewardState*> RankRewards;
+	TArray<UEventRewardState*> RankRewards = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Score Rewards", Category="Beam")
-	TArray<UEventRewardState*> ScoreRewards;
+	TArray<UEventRewardState*> ScoreRewards = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Current Phase", Category="Beam")
-	FOptionalEventPlayerPhaseView CurrentPhase;
+	FOptionalEventPlayerPhaseView CurrentPhase = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Group Rewards", Category="Beam")
-	FOptionalEventPlayerGroupState GroupRewards;
+	FOptionalEventPlayerGroupState GroupRewards = {};
 
 	
 

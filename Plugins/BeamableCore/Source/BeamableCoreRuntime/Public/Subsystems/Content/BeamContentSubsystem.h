@@ -57,12 +57,12 @@ public:
 	/**
 	 * Only does something on dedicated server builds. Fetches the content manifest and downloads up-to-date content.
 	 */
-	virtual void OnBeamableStarted_Implementation(FBeamOperationHandle& ResultOp) override;
+	virtual void OnBeamableStarting_Implementation(FBeamOperationHandle& ResultOp) override;
 	
 	/**
 	 * If it's the first time this callback is being called (by our automatic auth flows for the owner UserSlot), we pull the latest 'global' manifest (default one) and cache it in-memory (and in a local file).
 	 */
-	virtual void OnPostUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserFirstAuth, FBeamOperationHandle& ResultOp) override;
+	virtual void OnUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp) override;
 
 private:
 	/**

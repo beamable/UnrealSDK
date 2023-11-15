@@ -14,29 +14,29 @@
 #include "LeaderboardCreateRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API ULeaderboardCreateRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API ULeaderboardCreateRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sharded", Category="Beam")
-	bool bSharded;
+	bool bSharded = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Partitioned", Category="Beam")
-	FOptionalBool bPartitioned;
+	FOptionalBool bPartitioned = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Freeze Time", Category="Beam")
-	FOptionalInt64 FreezeTime;
+	FOptionalInt64 FreezeTime = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Score Name", Category="Beam")
-	FOptionalString ScoreName;
+	FOptionalString ScoreName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cohort Settings", Category="Beam")
-	FOptionalLeaderboardCohortSettings CohortSettings;
+	FOptionalLeaderboardCohortSettings CohortSettings = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Permissions", Category="Beam")
-	FOptionalBeamClientPermission Permissions;
+	FOptionalBeamClientPermission Permissions = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Entries", Category="Beam")
-	FOptionalInt32 MaxEntries;
+	FOptionalInt32 MaxEntries = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Ttl", Category="Beam")
-	FOptionalInt64 Ttl;
+	FOptionalInt64 Ttl = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Derivatives", Category="Beam")
-	FOptionalArrayOfString Derivatives;
+	FOptionalArrayOfString Derivatives = {};
 
 	
 

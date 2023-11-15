@@ -23,9 +23,10 @@ void UGetRoleReportRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetRoleReportRequest* UGetRoleReportRequest::Make(FBeamAccountId _ObjectId, UObject* RequestOwner)
+UGetRoleReportRequest* UGetRoleReportRequest::Make(FBeamAccountId _ObjectId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetRoleReportRequest* Req = NewObject<UGetRoleReportRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

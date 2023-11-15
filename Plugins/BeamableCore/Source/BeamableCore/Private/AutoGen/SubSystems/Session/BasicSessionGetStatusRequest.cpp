@@ -30,9 +30,10 @@ void UBasicSessionGetStatusRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UBasicSessionGetStatusRequest* UBasicSessionGetStatusRequest::Make(FString _PlayerIds, int64 _IntervalSecs, UObject* RequestOwner)
+UBasicSessionGetStatusRequest* UBasicSessionGetStatusRequest::Make(FString _PlayerIds, int64 _IntervalSecs, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicSessionGetStatusRequest* Req = NewObject<UBasicSessionGetStatusRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->PlayerIds = _PlayerIds;

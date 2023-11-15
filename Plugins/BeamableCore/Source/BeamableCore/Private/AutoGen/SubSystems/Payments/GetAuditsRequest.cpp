@@ -64,9 +64,10 @@ void UGetAuditsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAuditsRequest* UGetAuditsRequest::Make(FOptionalString _Providerid, FOptionalString _Provider, FOptionalString _State, FOptionalInt64 _Txid, FOptionalInt64 _Player, FOptionalInt32 _Start, FOptionalInt32 _Limit, UObject* RequestOwner)
+UGetAuditsRequest* UGetAuditsRequest::Make(FOptionalString _Providerid, FOptionalString _Provider, FOptionalString _State, FOptionalInt64 _Txid, FOptionalInt64 _Player, FOptionalInt32 _Start, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetAuditsRequest* Req = NewObject<UGetAuditsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Providerid = _Providerid;

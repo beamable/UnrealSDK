@@ -8,13 +8,13 @@
 #include "VariableReference.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UVariableReference : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UVariableReference : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 
 	
 

@@ -27,9 +27,10 @@ void UPutListingsCooldownRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutListingsCooldownRequest* UPutListingsCooldownRequest::Make(int64 _ObjectId, int64 _GamerTag, TArray<UUpdateListingCooldownRequestBody*> _UpdateListingCooldownRequests, UObject* RequestOwner)
+UPutListingsCooldownRequest* UPutListingsCooldownRequest::Make(int64 _ObjectId, int64 _GamerTag, TArray<UUpdateListingCooldownRequestBody*> _UpdateListingCooldownRequests, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutListingsCooldownRequest* Req = NewObject<UPutListingsCooldownRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

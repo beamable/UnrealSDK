@@ -8,15 +8,15 @@
 #include "LeaderboardPlayerAssignmentRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API ULeaderboardPlayerAssignmentRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API ULeaderboardPlayerAssignmentRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Board Id", Category="Beam")
-	FString BoardId;
+	FString BoardId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Join Board", Category="Beam")
-	FOptionalBool bJoinBoard;
+	FOptionalBool bJoinBoard = {};
 
 	
 

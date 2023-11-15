@@ -7,7 +7,7 @@
 		
 TSharedPtr<FMonitoredProcess> UBeamCliServicesRunCommand::RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op)
 {
-	FString Params = ("services run");
+	FString Params = ("services run --reporter-use-fatal");
 	for (const auto& CommandParam : CommandParams)
 		Params.Appendf(TEXT(" %s"), *CommandParam);
 	Params = PrepareParams(Params);

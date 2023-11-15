@@ -13,41 +13,41 @@
 #include "AnnouncementView.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UAnnouncementView : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UAnnouncementView : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Claimed", Category="Beam")
-	bool bIsClaimed;
+	bool bIsClaimed = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Deleted", Category="Beam")
-	bool bIsDeleted;
+	bool bIsDeleted = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Read", Category="Beam")
-	bool bIsRead;
+	bool bIsRead = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Body", Category="Beam")
-	FString Body;
+	FString Body = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Channel", Category="Beam")
-	FString Channel;
+	FString Channel = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FString Id;
+	FString Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Title", Category="Beam")
-	FString Title;
+	FString Title = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Summary", Category="Beam")
-	FString Summary;
+	FString Summary = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Client Data List", Category="Beam")
-	TArray<UClientDataEntry*> ClientDataList;
+	TArray<UClientDataEntry*> ClientDataList = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Attachments", Category="Beam")
-	TArray<UAnnouncementAttachment*> Attachments;
+	TArray<UAnnouncementAttachment*> Attachments = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="End Date", Category="Beam")
-	FOptionalString EndDate;
+	FOptionalString EndDate = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gift", Category="Beam")
-	FOptionalPlayerReward Gift;
+	FOptionalPlayerReward Gift = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Seconds Remaining", Category="Beam")
-	FOptionalInt64 SecondsRemaining;
+	FOptionalInt64 SecondsRemaining = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Start Date", Category="Beam")
-	FOptionalString StartDate;
+	FOptionalString StartDate = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
-	FOptionalArrayOfString Tags;
+	FOptionalArrayOfString Tags = {};
 
 	
 

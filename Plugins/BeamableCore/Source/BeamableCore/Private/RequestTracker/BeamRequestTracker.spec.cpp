@@ -211,9 +211,9 @@ void FBeamRequestTrackerSpec::Define()
 				// We forcibly tag the requests as completed here so we can see if the wait callback will trigger
 				{
 					auto& Ctx = *BeamBackendSystem->InFlightRequestContexts.Find(ReqId);
-					Ctx.BeamStatus = Completed;
+					Ctx.BeamStatus = AS_Completed;
 					auto& Ctx2 = *BeamBackendSystem->InFlightRequestContexts.Find(ReqId2);
-					Ctx2.BeamStatus = Completed;
+					Ctx2.BeamStatus = AS_Completed;
 				}
 
 				// Now we run the tick OnRequestCompleted to see if it triggers the WaitComplete callback.
@@ -269,9 +269,9 @@ void FBeamRequestTrackerSpec::Define()
 				// We forcibly tag the requests as completed here so we can see if the wait callback will trigger
 				{
 					auto& Ctx = *BeamBackendSystem->InFlightRequestContexts.Find(ReqId);
-					Ctx.BeamStatus = Completed;
+					Ctx.BeamStatus = AS_Completed;
 					auto& Ctx2 = *BeamBackendSystem->InFlightRequestContexts.Find(ReqId2);
-					Ctx2.BeamStatus = Completed;
+					Ctx2.BeamStatus = AS_Completed;
 				}
 
 				// Now we run the tick OnRequestCompleted to see if it triggers the WaitComplete callback.
@@ -405,7 +405,7 @@ void FBeamRequestTrackerSpec::Define()
 				FBeamOperationEventHandler Handler;
 				Handler.BindUFunction(OperationCallbacks, GET_FUNCTION_NAME_CHECKED(UBeamRequestTrackerOperationTestCallbacks, MockOperationEvent_Expected));
 				OperationCallbacks->ExpectedEventRequestId = ReqId;
-				OperationCallbacks->ExpectedEventType = EBeamOperationEventType::SUCCESS;
+				OperationCallbacks->ExpectedEventType = EBeamOperationEventType::OET_SUCCESS;
 				OperationCallbacks->ExpectedEventSubTypeCode = EDefaultOperationEventSubType::Final;
 				OperationCallbacks->ExpectedEventSystem = TEXT("Success Test");
 				OperationCallbacks->ExpectedEventData = TEXT("SuccessData");
@@ -434,7 +434,7 @@ void FBeamRequestTrackerSpec::Define()
 				FBeamOperationEventHandler Handler;
 				Handler.BindUFunction(OperationCallbacks, GET_FUNCTION_NAME_CHECKED(UBeamRequestTrackerOperationTestCallbacks, MockOperationEvent_Expected));
 				OperationCallbacks->ExpectedEventRequestId = ErrorReqId;
-				OperationCallbacks->ExpectedEventType = EBeamOperationEventType::ERROR;
+				OperationCallbacks->ExpectedEventType = EBeamOperationEventType::OET_ERROR;
 				OperationCallbacks->ExpectedEventSubTypeCode = EDefaultOperationEventSubType::Final;
 				OperationCallbacks->ExpectedEventSystem = TEXT("Error Test");
 				OperationCallbacks->ExpectedEventData = TEXT("ErrorData");
@@ -463,7 +463,7 @@ void FBeamRequestTrackerSpec::Define()
 				FBeamOperationEventHandler Handler;
 				Handler.BindUFunction(OperationCallbacks, GET_FUNCTION_NAME_CHECKED(UBeamRequestTrackerOperationTestCallbacks, MockOperationEvent_Expected));
 				OperationCallbacks->ExpectedEventRequestId = ReqId;
-				OperationCallbacks->ExpectedEventType = EBeamOperationEventType::CANCELLED;
+				OperationCallbacks->ExpectedEventType = EBeamOperationEventType::OET_CANCELLED;
 				OperationCallbacks->ExpectedEventSubTypeCode = EDefaultOperationEventSubType::Final;
 				OperationCallbacks->ExpectedEventSystem = TEXT("Cancelled Test");
 				OperationCallbacks->ExpectedEventData = TEXT("CancelledData");
@@ -492,7 +492,7 @@ void FBeamRequestTrackerSpec::Define()
 				FBeamOperationEventHandler Handler;
 				Handler.BindUFunction(OperationCallbacks, GET_FUNCTION_NAME_CHECKED(UBeamRequestTrackerOperationTestCallbacks, MockOperationEvent_Expected));
 				OperationCallbacks->ExpectedEventRequestId = ReqId;
-				OperationCallbacks->ExpectedEventType = EBeamOperationEventType::SUCCESS;
+				OperationCallbacks->ExpectedEventType = EBeamOperationEventType::OET_SUCCESS;
 				OperationCallbacks->ExpectedEventSubTypeCode = 1;
 				OperationCallbacks->ExpectedEventSystem = GetTestName();
 				OperationCallbacks->ExpectedEventData = TEXT("SuccessData");
@@ -501,7 +501,7 @@ void FBeamRequestTrackerSpec::Define()
 
 				const auto OpHandle = RequestTrackerSystem->BeginOperation({FakeUserSlot}, GetTestName(), Handler, -1);
 				RequestTrackerSystem->AddRequestToOperation(OpHandle, ReqId);
-				RequestTrackerSystem->TriggerOperationEvent(OpHandle, EBeamOperationEventType::SUCCESS, 1, TEXT("SuccessData"));
+				RequestTrackerSystem->TriggerOperationEvent(OpHandle, EBeamOperationEventType::OET_SUCCESS, 1, TEXT("SuccessData"));
 
 				// Discard Request as we are not actually going to make it
 				BeamBackendSystem->CancelRequest(ReqId);
@@ -514,7 +514,7 @@ void FBeamRequestTrackerSpec::Define()
 				FBeamOperationEventHandler Handler;
 				Handler.BindUFunction(OperationCallbacks, GET_FUNCTION_NAME_CHECKED(UBeamRequestTrackerOperationTestCallbacks, MockOperationEvent_Expected));
 				OperationCallbacks->ExpectedEventRequestId = -1;
-				OperationCallbacks->ExpectedEventType = EBeamOperationEventType::SUCCESS;
+				OperationCallbacks->ExpectedEventType = EBeamOperationEventType::OET_SUCCESS;
 				OperationCallbacks->ExpectedEventSubTypeCode = 1;
 				OperationCallbacks->ExpectedEventSystem = GetTestName();
 				OperationCallbacks->ExpectedEventData = TEXT("SuccessData");
@@ -522,7 +522,7 @@ void FBeamRequestTrackerSpec::Define()
 				OperationCallbacks->ExpectedRequestsInOperations = {};
 
 				const auto OpHandle = RequestTrackerSystem->BeginOperation({FakeUserSlot}, GetTestName(), Handler, -1);
-				RequestTrackerSystem->TriggerOperationEvent(OpHandle, EBeamOperationEventType::SUCCESS, 1, TEXT("SuccessData"));
+				RequestTrackerSystem->TriggerOperationEvent(OpHandle, EBeamOperationEventType::OET_SUCCESS, 1, TEXT("SuccessData"));
 			}
 		});
 	});
@@ -684,8 +684,8 @@ void FBeamRequestTrackerSpec::Define()
 			                                                                   SecondOnCompleteCode);
 
 			// Forcibly complete the first wait handle only
-			RequestTrackerSystem->ActiveWaitHandles.FindByKey(FirstWaitHandle)->Status = Completed;
-			RequestTrackerSystem->ActiveWaitHandles.FindByKey(FirstWaitHandleCpp)->Status = Completed;
+			RequestTrackerSystem->ActiveWaitHandles.FindByKey(FirstWaitHandle)->Status = AS_Completed;
+			RequestTrackerSystem->ActiveWaitHandles.FindByKey(FirstWaitHandleCpp)->Status = AS_Completed;
 
 
 			// Now we assert that if we gather the dependencies for the first wait handle

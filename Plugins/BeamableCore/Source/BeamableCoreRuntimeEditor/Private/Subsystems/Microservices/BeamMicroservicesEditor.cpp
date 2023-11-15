@@ -243,7 +243,7 @@ void UBeamMicroservicesEditor::EnsureExistingServices()
 	};
 
 	// Handle completing the operation
-	ServicesPs->OnCompleted = [](const int&, const FBeamOperationHandle&)
+	ServicesPs->OnCompleted = [ServicesPs](const int&, const FBeamOperationHandle&)
 	{
 	};
 
@@ -269,7 +269,7 @@ void UBeamMicroservicesEditor::DeployMicroservices(const TArray<FString>& Enable
 		{
 			FString Json;
 			FJsonObjectConverter::UStructToJsonObjectString(Progress.Last(), Json);
-			RequestTracker->TriggerOperationEvent(Operation, SUCCESS, EDefaultOperationEventSubType::EventA, Json);
+			RequestTracker->TriggerOperationEvent(Operation, OET_SUCCESS, EDefaultOperationEventSubType::EventA, Json);
 		};
 
 	// Handle completing the operation
@@ -367,13 +367,13 @@ void UBeamMicroservicesEditor::StopDockerMicroservices(const TArray<FString>& Be
 		UE_LOG(LogBeamMicroservices, Display, TEXT("%s"), *Json);
 		for (const auto& BeamoId : Result.Last().Ids)
 		{
-			if (LocalMicroserviceData.Contains(BeamoId.ToLower()))
+			if (LocalMicroserviceData.Contains(BeamoId))
 			{
 				LocalMicroserviceData.Find(BeamoId)->RunningState = Stopped;
 			}
 			else
 			{
-				LocalMicroserviceData.Add(BeamoId.ToLower(), FLocalMicroserviceData{
+				LocalMicroserviceData.Add(BeamoId, FLocalMicroserviceData{
 					                          BeamoId,
 					                          Stopped,
 					                          false
@@ -414,7 +414,7 @@ void UBeamMicroservicesEditor::OnUpdateLocalStateReceived(const TArray<FBeamCliP
 	const auto ProjectStatusChange = Stream.Last();
 	const auto BeamoId = ProjectStatusChange.service;
 
-	if (LocalMicroserviceData.Contains(ProjectStatusChange.service.ToLower()))
+	if (LocalMicroserviceData.Contains(ProjectStatusChange.service))
 	{
 		if (ProjectStatusChange.isRunning)
 		{
@@ -429,7 +429,7 @@ void UBeamMicroservicesEditor::OnUpdateLocalStateReceived(const TArray<FBeamCliP
 	{
 		if (ProjectStatusChange.isRunning)
 		{
-			LocalMicroserviceData.Add(ProjectStatusChange.service.ToLower(), FLocalMicroserviceData{
+			LocalMicroserviceData.Add(ProjectStatusChange.service, FLocalMicroserviceData{
 				                          BeamoId,
 				                          ProjectStatusChange.isContainer ? RunningOnDocker : RunningStandalone,
 				                          false
@@ -437,7 +437,7 @@ void UBeamMicroservicesEditor::OnUpdateLocalStateReceived(const TArray<FBeamCliP
 		}
 		else
 		{
-			LocalMicroserviceData.Add(ProjectStatusChange.service.ToLower(), FLocalMicroserviceData{
+			LocalMicroserviceData.Add(ProjectStatusChange.service, FLocalMicroserviceData{
 				                          BeamoId,
 				                          Stopped,
 				                          false

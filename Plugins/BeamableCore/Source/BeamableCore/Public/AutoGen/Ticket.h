@@ -14,37 +14,37 @@
 #include "Ticket.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UTicket : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UTicket : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Watch Online Status", Category="Beam")
-	FOptionalBool bWatchOnlineStatus;
+	FOptionalBool bWatchOnlineStatus = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Ticket Id", Category="Beam")
-	FOptionalString TicketId;
+	FOptionalString TicketId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Status", Category="Beam")
-	FOptionalString Status;
+	FOptionalString Status = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
-	FOptionalString Created;
+	FOptionalString Created = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Expires", Category="Beam")
-	FOptionalString Expires;
+	FOptionalString Expires = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Match Type", Category="Beam")
-	FOptionalBeamContentId MatchType;
+	FOptionalBeamContentId MatchType = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Match Id", Category="Beam")
-	FOptionalString MatchId;
+	FOptionalString MatchId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Team", Category="Beam")
-	FOptionalString Team;
+	FOptionalString Team = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Priority", Category="Beam")
-	FOptionalInt32 Priority;
+	FOptionalInt32 Priority = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Party Id", Category="Beam")
-	FOptionalString PartyId;
+	FOptionalString PartyId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Players", Category="Beam")
-	FOptionalArrayOfString Players;
+	FOptionalArrayOfString Players = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="String Properties", Category="Beam")
-	FOptionalMapOfString StringProperties;
+	FOptionalMapOfString StringProperties = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Number Properties", Category="Beam")
-	FOptionalMapOfDouble NumberProperties;
+	FOptionalMapOfDouble NumberProperties = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

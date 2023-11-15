@@ -22,14 +22,14 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	int64 ObjectId;
+	int64 ObjectId = {};
 	
 	// Query Params
 	
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UGroupCreate* Body;
+	UGroupCreate* Body = {};
 
 	// Beam Base Request Declaration
 	UPostGroupRequest() = default;
@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", DisplayName="Beam - Make PostGroup",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Tag,_ClientData,_Time,_Group,_Scores,RequestOwner"))
-	static UPostGroupRequest* Make(int64 _ObjectId, FString _Name, FString _EnrollmentType, int64 _Requirement, EGroupType _Type, int32 _MaxSize, FOptionalString _Tag, FOptionalString _ClientData, FOptionalInt32 _Time, FOptionalInt64 _Group, FOptionalArrayOfGroupScoreBinding _Scores, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", DisplayName="Beam - Make PostGroup",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Tag,_ClientData,_Time,_Group,_Scores,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPostGroupRequest* Make(int64 _ObjectId, FString _Name, FString _EnrollmentType, int64 _Requirement, EGroupType _Type, int32 _MaxSize, FOptionalString _Tag, FOptionalString _ClientData, FOptionalInt32 _Time, FOptionalInt64 _Group, FOptionalArrayOfGroupScoreBinding _Scores, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

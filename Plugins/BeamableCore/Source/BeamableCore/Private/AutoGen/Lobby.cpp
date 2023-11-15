@@ -19,7 +19,7 @@ void ULobby::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("description"), &Description, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("host"), &Host, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("passcode"), &Passcode, Serializer);
-	UBeamJsonUtils::SerializeOptional<FString>(TEXT("restriction"), &Restriction, Serializer);
+	UBeamJsonUtils::SerializeOptional<ELobbyRestriction>(TEXT("restriction"), &Restriction, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("maxPlayers"), &MaxPlayers, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<ULobbyPlayer*>, ULobbyPlayer*>(TEXT("players"), &Players, Serializer);
 }
@@ -33,7 +33,7 @@ void ULobby::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) co
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("description"), &Description, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("host"), &Host, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("passcode"), &Passcode, Serializer);
-	UBeamJsonUtils::SerializeOptional<FString>(TEXT("restriction"), &Restriction, Serializer);
+	UBeamJsonUtils::SerializeOptional<ELobbyRestriction>(TEXT("restriction"), &Restriction, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("maxPlayers"), &MaxPlayers, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<ULobbyPlayer*>, ULobbyPlayer*>(TEXT("players"), &Players, Serializer);		
 }
@@ -47,7 +47,7 @@ void ULobby::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	UBeamJsonUtils::DeserializeOptional<FString>("description", Bag, Description, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("host", Bag, Host, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("passcode", Bag, Passcode, OuterOwner);
-	UBeamJsonUtils::DeserializeOptional<FString>("restriction", Bag, Restriction, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<ELobbyRestriction>("restriction", Bag, Restriction, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("maxPlayers", Bag, MaxPlayers, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<ULobbyPlayer*>, ULobbyPlayer*>("players", Bag, Players, OuterOwner);
 }

@@ -8,7 +8,7 @@
 #include "ApiMatchmakingTicketsDeleteTicketResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UApiMatchmakingTicketsDeleteTicketResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UApiMatchmakingTicketsDeleteTicketResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 

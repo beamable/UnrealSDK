@@ -9,15 +9,15 @@
 #include "UploadRequests.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UUploadRequests : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UUploadRequests : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Request", Category="Beam")
-	TArray<UUploadRequestBody*> Request;
+	TArray<UUploadRequestBody*> Request = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
-	FOptionalInt64 PlayerId;
+	FOptionalInt64 PlayerId = {};
 
 	
 

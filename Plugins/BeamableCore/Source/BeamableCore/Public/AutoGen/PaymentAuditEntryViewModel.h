@@ -14,39 +14,39 @@
 #include "PaymentAuditEntryViewModel.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPaymentAuditEntryViewModel : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UPaymentAuditEntryViewModel : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Providerid", Category="Beam")
-	FString Providerid;
+	FString Providerid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Txid", Category="Beam")
-	int64 Txid;
+	int64 Txid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Providername", Category="Beam")
-	FString Providername;
+	FString Providername = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Txstate", Category="Beam")
-	FString Txstate;
+	FString Txstate = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Details", Category="Beam")
-	UPaymentDetailsEntryViewModel* Details;
+	UPaymentDetailsEntryViewModel* Details = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gt", Category="Beam")
-	int64 Gt;
+	int64 Gt = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="History", Category="Beam")
-	TArray<UPaymentHistoryEntryViewModel*> History;
+	TArray<UPaymentHistoryEntryViewModel*> History = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Entitlements", Category="Beam")
-	TArray<UEntitlementGenerator*> Entitlements;
+	TArray<UEntitlementGenerator*> Entitlements = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Version", Category="Beam")
-	FOptionalString Version;
+	FOptionalString Version = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Updated", Category="Beam")
-	FOptionalInt64 Updated;
+	FOptionalInt64 Updated = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Replay Guard Value", Category="Beam")
-	FOptionalString ReplayGuardValue;
+	FOptionalString ReplayGuardValue = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
-	FOptionalInt64 Created;
+	FOptionalInt64 Created = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain Items", Category="Beam")
-	FOptionalArrayOfItemCreateRequestBody ObtainItems;
+	FOptionalArrayOfItemCreateRequestBody ObtainItems = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain Currency", Category="Beam")
-	FOptionalArrayOfCurrencyChange ObtainCurrency;
+	FOptionalArrayOfCurrencyChange ObtainCurrency = {};
 
 	
 

@@ -9,15 +9,15 @@
 #include "DeleteRoleRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UDeleteRoleRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UDeleteRoleRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Realm", Category="Beam")
-	FOptionalBeamPid Realm;
+	FOptionalBeamPid Realm = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Role", Category="Beam")
-	FOptionalString Role;
+	FOptionalString Role = {};
 
 	
 

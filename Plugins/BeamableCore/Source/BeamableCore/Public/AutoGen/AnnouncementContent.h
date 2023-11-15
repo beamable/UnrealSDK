@@ -13,35 +13,35 @@
 #include "AnnouncementContent.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UAnnouncementContent : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UAnnouncementContent : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Body", Category="Beam")
-	FString Body;
+	FString Body = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Channel", Category="Beam")
-	FString Channel;
+	FString Channel = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
-	FString Symbol;
+	FString Symbol = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Title", Category="Beam")
-	FString Title;
+	FString Title = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Summary", Category="Beam")
-	FString Summary;
+	FString Summary = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Start Date", Category="Beam")
-	FOptionalString StartDate;
+	FOptionalString StartDate = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gift", Category="Beam")
-	FOptionalPlayerReward Gift;
+	FOptionalPlayerReward Gift = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="End Date", Category="Beam")
-	FOptionalString EndDate;
+	FOptionalString EndDate = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
-	FOptionalArrayOfString Tags;
+	FOptionalArrayOfString Tags = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stat Requirements", Category="Beam")
-	FOptionalArrayOfPlayerStatRequirement StatRequirements;
+	FOptionalArrayOfPlayerStatRequirement StatRequirements = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Attachments", Category="Beam")
-	FOptionalArrayOfAnnouncementAttachment Attachments;
+	FOptionalArrayOfAnnouncementAttachment Attachments = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Client Data", Category="Beam")
-	FOptionalMapOfString ClientData;
+	FOptionalMapOfString ClientData = {};
 
 	
 

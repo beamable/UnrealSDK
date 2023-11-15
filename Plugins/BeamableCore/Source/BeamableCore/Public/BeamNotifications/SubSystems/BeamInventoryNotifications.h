@@ -7,7 +7,7 @@
 class UBeamNotifications;
 
 USTRUCT(BlueprintType)
-struct BEAMABLECORE_API FInventoryRefreshNotificationMessage : public FBeamJsonSerializable
+struct BEAMABLECORE_API FInventoryRefreshNotificationMessage : public FBeamJsonSerializableUStruct
 {
 	GENERATED_BODY()
 

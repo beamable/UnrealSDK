@@ -27,9 +27,10 @@ void UDeleteMeDeviceRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteMeDeviceRequest* UDeleteMeDeviceRequest::Make(FOptionalArrayOfString _DeviceIds, UObject* RequestOwner)
+UDeleteMeDeviceRequest* UDeleteMeDeviceRequest::Make(FOptionalArrayOfString _DeviceIds, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UDeleteMeDeviceRequest* Req = NewObject<UDeleteMeDeviceRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

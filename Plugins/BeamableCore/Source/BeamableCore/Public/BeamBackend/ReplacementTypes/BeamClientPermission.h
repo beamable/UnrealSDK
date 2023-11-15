@@ -9,7 +9,7 @@
 Expose_TNameOf(bool);
 
 USTRUCT(BlueprintType)
-struct BEAMABLECORE_API FBeamClientPermission : public FBeamJsonSerializable, public FBeamSemanticType
+struct BEAMABLECORE_API FBeamClientPermission : public FBeamJsonSerializableUStruct, public FBeamSemanticType
 {
 	GENERATED_BODY()
 

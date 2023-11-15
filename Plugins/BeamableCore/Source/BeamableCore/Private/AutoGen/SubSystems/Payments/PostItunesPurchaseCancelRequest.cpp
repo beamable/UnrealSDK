@@ -27,9 +27,10 @@ void UPostItunesPurchaseCancelRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostItunesPurchaseCancelRequest* UPostItunesPurchaseCancelRequest::Make(int64 _Txid, UObject* RequestOwner)
+UPostItunesPurchaseCancelRequest* UPostItunesPurchaseCancelRequest::Make(int64 _Txid, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostItunesPurchaseCancelRequest* Req = NewObject<UPostItunesPurchaseCancelRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

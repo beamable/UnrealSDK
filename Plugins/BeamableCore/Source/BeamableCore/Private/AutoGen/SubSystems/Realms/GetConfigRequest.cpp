@@ -23,9 +23,10 @@ void UGetConfigRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetConfigRequest* UGetConfigRequest::Make(UObject* RequestOwner)
+UGetConfigRequest* UGetConfigRequest::Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetConfigRequest* Req = NewObject<UGetConfigRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -8,17 +8,17 @@
 #include "AnnouncementState.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UAnnouncementState : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UAnnouncementState : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Claimed", Category="Beam")
-	bool bIsClaimed;
+	bool bIsClaimed = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Deleted", Category="Beam")
-	bool bIsDeleted;
+	bool bIsDeleted = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Read", Category="Beam")
-	bool bIsRead;
+	bool bIsRead = {};
 
 	
 

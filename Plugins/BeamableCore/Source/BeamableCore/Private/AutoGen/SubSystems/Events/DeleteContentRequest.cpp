@@ -23,9 +23,10 @@ void UDeleteContentRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UDeleteContentRequest* UDeleteContentRequest::Make(FString _ObjectId, UObject* RequestOwner)
+UDeleteContentRequest* UDeleteContentRequest::Make(FString _ObjectId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UDeleteContentRequest* Req = NewObject<UDeleteContentRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

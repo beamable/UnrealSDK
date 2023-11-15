@@ -23,9 +23,10 @@ void UGetPresenceRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetPresenceRequest* UGetPresenceRequest::Make(FString _PlayerId, UObject* RequestOwner)
+UGetPresenceRequest* UGetPresenceRequest::Make(FString _PlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetPresenceRequest* Req = NewObject<UGetPresenceRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->PlayerId = _PlayerId;

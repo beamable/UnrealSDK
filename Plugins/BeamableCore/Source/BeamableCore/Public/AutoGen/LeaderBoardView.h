@@ -9,19 +9,19 @@
 #include "LeaderBoardView.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API ULeaderBoardView : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API ULeaderBoardView : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Lb Id", Category="Beam")
-	FString LbId;
+	FString LbId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Board Size", Category="Beam")
-	int64 BoardSize;
+	int64 BoardSize = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rankings", Category="Beam")
-	TArray<URankEntry*> Rankings;
+	TArray<URankEntry*> Rankings = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rankgt", Category="Beam")
-	FOptionalRankEntry Rankgt;
+	FOptionalRankEntry Rankgt = {};
 
 	
 

@@ -27,9 +27,10 @@ void UDeleteGroupsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteGroupsRequest* UDeleteGroupsRequest::Make(int64 _ObjectId, FOptionalInt64 _SubGroup, UObject* RequestOwner)
+UDeleteGroupsRequest* UDeleteGroupsRequest::Make(int64 _ObjectId, FOptionalInt64 _SubGroup, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UDeleteGroupsRequest* Req = NewObject<UDeleteGroupsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

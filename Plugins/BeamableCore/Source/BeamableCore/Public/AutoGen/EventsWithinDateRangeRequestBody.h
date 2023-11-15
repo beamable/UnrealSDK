@@ -9,19 +9,19 @@
 #include "EventsWithinDateRangeRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEventsWithinDateRangeRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UEventsWithinDateRangeRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From", Category="Beam")
-	FOptionalString From;
+	FOptionalString From = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="To", Category="Beam")
-	FOptionalString To;
+	FOptionalString To = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Query", Category="Beam")
-	FOptionalString Query;
+	FOptionalString Query = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit", Category="Beam")
-	FOptionalInt32 Limit;
+	FOptionalInt32 Limit = {};
 
 	
 

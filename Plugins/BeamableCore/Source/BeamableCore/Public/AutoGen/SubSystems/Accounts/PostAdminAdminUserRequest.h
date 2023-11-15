@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UAddAccountRequestBody* Body;
+	UAddAccountRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPostAdminAdminUserRequest() = default;
@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make PostAdminAdminUser",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Role,RequestOwner"))
-	static UPostAdminAdminUserRequest* Make(FString _Email, FOptionalString _Role, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make PostAdminAdminUser",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Role,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPostAdminAdminUserRequest* Make(FString _Email, FOptionalString _Role, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

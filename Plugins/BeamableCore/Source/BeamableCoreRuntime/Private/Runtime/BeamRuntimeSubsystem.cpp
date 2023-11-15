@@ -60,7 +60,7 @@ void UBeamRuntimeSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 	ResultOp = Handle;
 }
 
-void UBeamRuntimeSubsystem::OnBeamableStarted_Implementation(FBeamOperationHandle& ResultOp)
+void UBeamRuntimeSubsystem::OnBeamableStarting_Implementation(FBeamOperationHandle& ResultOp)
 {
 	// By default, just return an empty completed operation
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({}, GetName(), {});
@@ -78,7 +78,7 @@ void UBeamRuntimeSubsystem::OnUserConnectionLost_Implementation(const FUserSlot&
 	UE_LOG(LogBeamRuntime, Verbose, TEXT("Runtime Subsystem %s - On User Connection Lost"), *GetName())
 }
 
-void UBeamRuntimeSubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserFirstAuth, FBeamOperationHandle& ResultOp)
+void UBeamRuntimeSubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp)
 {
 	UE_LOG(LogBeamRuntime, Verbose, TEXT("Runtime Subsystem %s - On User Signed In from Slot %s"), *GetName(), *UserSlot.Name)
 
@@ -88,7 +88,7 @@ void UBeamRuntimeSubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserS
 	ResultOp = Handle;
 }
 
-void UBeamRuntimeSubsystem::OnPostUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserFirstAuth, FBeamOperationHandle& ResultOp)
+void UBeamRuntimeSubsystem::OnPostUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp)
 {
 	UE_LOG(LogBeamRuntime, Verbose, TEXT("Runtime Subsystem %s - On Post User Signed Into Slot %s"), *GetName(), *UserSlot.Name)	
 

@@ -13,39 +13,39 @@
 #include "Project.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UProject : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UProject : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Archived", Category="Beam")
-	bool bArchived;
+	bool bArchived = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Root", Category="Beam")
-	bool bRoot;
+	bool bRoot = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Secret", Category="Beam")
-	FString Secret;
+	FString Secret = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FBeamPid Name;
+	FBeamPid Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Plan", Category="Beam")
-	FString Plan;
+	FString Plan = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Custom Charts", Category="Beam")
-	TMap<FString, FString> CustomCharts;
+	TMap<FString, FString> CustomCharts = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sharded", Category="Beam")
-	FOptionalBool bSharded;
+	FOptionalBool bSharded = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sigval", Category="Beam")
-	FOptionalBool bSigval;
+	FOptionalBool bSigval = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Display Name", Category="Beam")
-	FOptionalString DisplayName;
+	FOptionalString DisplayName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Parent", Category="Beam")
-	FOptionalString Parent;
+	FOptionalString Parent = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Status", Category="Beam")
-	FOptionalString Status;
+	FOptionalString Status = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
-	FOptionalInt64 Created;
+	FOptionalInt64 Created = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Children", Category="Beam")
-	FOptionalArrayOfString Children;
+	FOptionalArrayOfString Children = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Config", Category="Beam")
-	FOptionalMapOfString Config;
+	FOptionalMapOfString Config = {};
 
 	
 

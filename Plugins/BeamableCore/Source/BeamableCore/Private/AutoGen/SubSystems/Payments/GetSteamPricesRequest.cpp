@@ -26,9 +26,10 @@ void UGetSteamPricesRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetSteamPricesRequest* UGetSteamPricesRequest::Make(int64 _SteamId, UObject* RequestOwner)
+UGetSteamPricesRequest* UGetSteamPricesRequest::Make(int64 _SteamId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetSteamPricesRequest* Req = NewObject<UGetSteamPricesRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->SteamId = _SteamId;

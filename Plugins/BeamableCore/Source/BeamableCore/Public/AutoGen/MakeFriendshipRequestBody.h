@@ -8,13 +8,13 @@
 #include "MakeFriendshipRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UMakeFriendshipRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UMakeFriendshipRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag", Category="Beam")
-	FBeamGamerTag GamerTag;
+	FBeamGamerTag GamerTag = {};
 
 	
 

@@ -22,14 +22,14 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	FBeamAccountId ObjectId;
+	FBeamAccountId ObjectId = {};
 	
 	// Query Params
 	
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UUpdateRole* Body;
+	UUpdateRole* Body = {};
 
 	// Beam Base Request Declaration
 	UObjectAccountsPutRoleRequest() = default;
@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make ObjectAccountsPutRole",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Cid,_Realm,_Role,RequestOwner"))
-	static UObjectAccountsPutRoleRequest* Make(FBeamAccountId _ObjectId, FOptionalBeamCid _Cid, FOptionalBeamPid _Realm, FOptionalString _Role, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make ObjectAccountsPutRole",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Cid,_Realm,_Role,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UObjectAccountsPutRoleRequest* Make(FBeamAccountId _ObjectId, FOptionalBeamCid _Cid, FOptionalBeamPid _Realm, FOptionalString _Role, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

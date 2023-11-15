@@ -18,6 +18,8 @@ void FBeamBackendSpec::Define()
 		const FBeamRetryConfig FakeResponseCodeRetryConfig{{503}, {}, 10, TArray<float>{0.5, 1}, 1};
 		const FBeamRetryConfig FakeErrorCodeRetryConfig{{}, {"ErrorCode"}, 10, TArray<float>{0.5, 1}, 1};
 		const FBeamAuthToken FakeAuthToken{"AUTH_TOKEN", "REFRESH_TOKEN"};
+		const FString FakeCustomHeader{"X-FAKE-HEADER"};
+		const FString FakeCustomHeaderValue{"FakeHeaderValue"};
 
 		BeforeEach([this]()
 		{
@@ -69,6 +71,7 @@ void FBeamBackendSpec::Define()
 			// GET REQUESTS
 			{
 				UBeamMockGetRequest* FakeGetRequest = NewObject<UBeamMockGetRequest>();
+				FakeGetRequest->CustomHeaders.Add(FakeCustomHeader, FakeCustomHeaderValue);
 
 				int64 ReqId;
 				const auto Request = BeamBackendSystem->CreateRequest(ReqId, FakeRealmHandle, FakeNoRetryConfig, FakeGetRequest);
@@ -78,6 +81,7 @@ void FBeamBackendSpec::Define()
 				TestTrue("Content Type Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_CONTENT_TYPE) == UBeamBackend::HEADER_VALUE_ACCEPT_CONTENT_TYPE);
 				TestTrue("Client ID Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_CLIENT_ID) == FakeRealmHandle.Cid);
 				TestTrue("Project ID Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_PROJECT_ID) == FakeRealmHandle.Pid);
+				TestTrue("Custom Header was added correctly", Request->GetHeader(FakeCustomHeader) == FakeCustomHeaderValue);
 
 				const auto SetUpRetryConfig = BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).RetryConfiguration;
 				TestTrue("InFlightRetryConfig was set up correctly for this request", SetUpRetryConfig == FakeNoRetryConfig);
@@ -240,7 +244,7 @@ void FBeamBackendSpec::Define()
 				BeamBackendSystem->ProcessBlueprintRequest<UBeamMockGetRequest, UBeamMockGetRequestResponse>
 					(200, ResponseBody, TUnrealRequestStatus::Succeeded, ReqId, FakeRequestData, ResponseHandler, ResponseHandlerError, ResponseHandlerComplete);
 				TestTrue("Is Connected", BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
-				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == AS_Completed);
 			}
 
 			// Authenticated BP Handler
@@ -264,7 +268,7 @@ void FBeamBackendSpec::Define()
 				BeamBackendSystem->ProcessAuthenticatedBlueprintRequest<UBeamMockGetRequest, UBeamMockGetRequestResponse>
 					(200, ResponseBody, TUnrealRequestStatus::Succeeded, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequestData, ResponseHandler, ResponseHandlerError, ResponseHandlerComplete);
 				TestTrue("Is Connected", BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
-				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == AS_Completed);
 			}
 
 			// Un-Authenticated Code Handler 
@@ -275,7 +279,7 @@ void FBeamBackendSpec::Define()
 				FOnMockFullResponse ResponseHandler;
 				ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
 				{
-					TestTrue("State was Success", BeamFullResponse.State == EBeamFullResponseState::Success);
+					TestTrue("State was Success", BeamFullResponse.State == EBeamFullResponseState::RS_Success);
 
 					TestTrue("Request Id was correctly forwarded", BeamFullResponse.Context.RequestId == ReqId);
 					TestTrue("Attempt Number was correctly forwarded", BeamFullResponse.AttemptNumber == 0);
@@ -286,7 +290,7 @@ void FBeamBackendSpec::Define()
 				// This should clean up the created request's data
 				BeamBackendSystem->ProcessCodeRequest<UBeamMockGetRequest, UBeamMockGetRequestResponse>(200, ResponseBody, TUnrealRequestStatus::Succeeded, ReqId, FakeRequestData, ResponseHandler);
 				TestTrue("Is Connected", BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
-				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == AS_Completed);
 			}
 
 			// Authenticated Code Handler
@@ -297,7 +301,7 @@ void FBeamBackendSpec::Define()
 				FOnMockFullResponse ResponseHandler;
 				ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
 				{
-					TestTrue("State was Success", BeamFullResponse.State == EBeamFullResponseState::Success);
+					TestTrue("State was Success", BeamFullResponse.State == EBeamFullResponseState::RS_Success);
 
 					TestTrue("Request Id was correctly forwarded", BeamFullResponse.Context.RequestId == ReqId);
 					TestTrue("Attempt Number was correctly forwarded", BeamFullResponse.AttemptNumber == 0);
@@ -310,7 +314,7 @@ void FBeamBackendSpec::Define()
 					<UBeamMockGetRequest, UBeamMockGetRequestResponse>
 					(200, ResponseBody, TUnrealRequestStatus::Succeeded, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequestData, ResponseHandler);
 				TestTrue("Is Connected", BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
-				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == AS_Completed);
 			}
 
 			// Clean Up Fake Request Data
@@ -353,7 +357,7 @@ void FBeamBackendSpec::Define()
 				// This should clean up the created request's data
 				BeamBackendSystem->ProcessBlueprintRequest<UBeamMockGetRequest, UBeamMockGetRequestResponse>
 					(500, ResponseBody, TUnrealRequestStatus::Failed, ReqId, FakeRequest, ResponseHandler, ResponseHandlerError, ResponseHandlerComplete);
-				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == AS_Completed);
 			}
 
 			// Authenticated BP Handler
@@ -380,7 +384,7 @@ void FBeamBackendSpec::Define()
 				// This should clean up the created request's data
 				BeamBackendSystem->ProcessAuthenticatedBlueprintRequest<UBeamMockGetRequest, UBeamMockGetRequestResponse>
 					(500, ResponseBody, TUnrealRequestStatus::Failed, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequest, ResponseHandler, ResponseHandlerError, ResponseHandlerComplete);
-				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == AS_Completed);
 			}
 
 			// Un-Authenticated Code Handler 
@@ -398,13 +402,13 @@ void FBeamBackendSpec::Define()
 				FOnMockFullResponse ResponseHandler;
 				ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
 				{
-					TestTrue("State was Error", BeamFullResponse.State == EBeamFullResponseState::Error);
+					TestTrue("State was Error", BeamFullResponse.State == EBeamFullResponseState::RS_Error);
 					Callbacks->MockErrorCallback_Expected(BeamFullResponse.Context, BeamFullResponse.RequestData, BeamFullResponse.ErrorData);
 				});
 
 				// This should clean up the created request's data
 				BeamBackendSystem->ProcessCodeRequest(500, ResponseBody, TUnrealRequestStatus::Failed, ReqId, FakeRequest, ResponseHandler);
-				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == AS_Completed);
 			}
 
 			// Authenticated Code Handler
@@ -422,13 +426,13 @@ void FBeamBackendSpec::Define()
 				FOnMockFullResponse ResponseHandler;
 				ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
 				{
-					TestTrue("State was Error", BeamFullResponse.State == EBeamFullResponseState::Error);
+					TestTrue("State was Error", BeamFullResponse.State == EBeamFullResponseState::RS_Error);
 					Callbacks->MockErrorCallback_Expected(BeamFullResponse.Context, BeamFullResponse.RequestData, BeamFullResponse.ErrorData);
 				});
 
 				// This should clean up the created request's data
 				BeamBackendSystem->ProcessAuthenticatedCodeRequest(500, ResponseBody, TUnrealRequestStatus::Failed, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequest, ResponseHandler);
-				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == AS_Completed);
 			}
 
 			// Clean up Fake Request
@@ -496,7 +500,7 @@ void FBeamBackendSpec::Define()
 				FOnMockFullResponse ResponseHandler;
 				ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
 				{
-					TestTrue("State was Retrying", BeamFullResponse.State == EBeamFullResponseState::Retrying);
+					TestTrue("State was Retrying", BeamFullResponse.State == EBeamFullResponseState::RS_Retrying);
 					Callbacks->MockErrorCallback_Expected(BeamFullResponse.Context, BeamFullResponse.RequestData, BeamFullResponse.ErrorData);
 				});
 
@@ -563,7 +567,7 @@ void FBeamBackendSpec::Define()
 				FOnMockFullResponse ResponseHandler;
 				ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
 				{
-					TestTrue("State was Retrying", BeamFullResponse.State == EBeamFullResponseState::Retrying);
+					TestTrue("State was Retrying", BeamFullResponse.State == EBeamFullResponseState::RS_Retrying);
 					Callbacks->MockErrorCallback_Expected(BeamFullResponse.Context, BeamFullResponse.RequestData, BeamFullResponse.ErrorData);
 				});
 
@@ -705,7 +709,7 @@ void FBeamBackendSpec::Define()
 					(500, ResponseBody, TUnrealRequestStatus::Failed_ConnectionError, ReqId, FakeRequest, ResponseHandler, ResponseHandlerError, ResponseHandlerComplete);
 
 				TestTrue("Is No Longer Connected", !BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
-				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == AS_Completed);
 			}
 
 			// Authenticated BP Handler
@@ -734,7 +738,7 @@ void FBeamBackendSpec::Define()
 				(500, ResponseBody, TUnrealRequestStatus::Failed_ConnectionError, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequest, ResponseHandler, ResponseHandlerError,
 				 ResponseHandlerComplete);
 				TestTrue("Is No Longer Connected", !BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
-				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == AS_Completed);
 			}
 
 			// Un-Authenticated Code Handler 
@@ -752,14 +756,14 @@ void FBeamBackendSpec::Define()
 				FOnMockFullResponse ResponseHandler;
 				ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
 				{
-					TestTrue("State was Error", BeamFullResponse.State == EBeamFullResponseState::Error);
+					TestTrue("State was Error", BeamFullResponse.State == EBeamFullResponseState::RS_Error);
 					Callbacks->MockErrorCallback_Expected(BeamFullResponse.Context, BeamFullResponse.RequestData, BeamFullResponse.ErrorData);
 				});
 
 				// This should clean up the created request's data
 				BeamBackendSystem->ProcessCodeRequest(500, ResponseBody, TUnrealRequestStatus::Failed_ConnectionError, ReqId, FakeRequest, ResponseHandler);
 				TestTrue("Is No Longer Connected", !BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
-				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == AS_Completed);
 			}
 
 			// Authenticated Code Handler
@@ -777,7 +781,7 @@ void FBeamBackendSpec::Define()
 				FOnMockFullResponse ResponseHandler;
 				ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
 				{
-					TestTrue("State was Error", BeamFullResponse.State == EBeamFullResponseState::Error);
+					TestTrue("State was Error", BeamFullResponse.State == EBeamFullResponseState::RS_Error);
 					Callbacks->MockErrorCallback_Expected(BeamFullResponse.Context, BeamFullResponse.RequestData, BeamFullResponse.ErrorData);
 				});
 
@@ -785,7 +789,7 @@ void FBeamBackendSpec::Define()
 				BeamBackendSystem->ProcessAuthenticatedCodeRequest(500, ResponseBody, TUnrealRequestStatus::Failed_ConnectionError, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequest,
 				                                                   ResponseHandler);
 				TestTrue("Is No Longer Connected", !BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
-				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == Completed);
+				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == AS_Completed);
 			}
 
 			FakeRequest->MarkAsGarbage();
@@ -876,7 +880,7 @@ void FBeamBackendSpec::Define()
 			ResponseHandler.BindLambda([this, Done](const FMockFullResponse FullResponse)
 			{
 				TestTrue("Beam back-end correctly stores the state as cancelled", BeamBackendSystem->IsRequestCancelled(FullResponse.Context.RequestId));
-				TestTrue("Response state was Cancelled", FullResponse.State == EBeamFullResponseState::Cancelled);
+				TestTrue("Response state was Cancelled", FullResponse.State == EBeamFullResponseState::RS_Cancelled);
 				TestTrue("Response state was Cancelled on the first attempt", FullResponse.AttemptNumber == 0);
 				Done.Execute();
 			});
@@ -910,7 +914,7 @@ void FBeamBackendSpec::Define()
 			ResponseHandler.BindLambda([this, Done](const FMockFullResponse FullResponse)
 			{
 				TestTrue("Beam back-end correctly stores the state as cancelled", BeamBackendSystem->IsRequestCancelled(FullResponse.Context.RequestId));
-				TestTrue("Response state was Cancelled", FullResponse.State == EBeamFullResponseState::Cancelled);
+				TestTrue("Response state was Cancelled", FullResponse.State == EBeamFullResponseState::RS_Cancelled);
 				TestTrue("Response state was Cancelled on the first attempt", FullResponse.AttemptNumber == 0);
 				Done.Execute();
 			});
@@ -943,11 +947,11 @@ void FBeamBackendSpec::Define()
 
 			// We get the first request and fake it's completion.
 			const auto BeamRequestContext = BeamBackendSystem->InFlightRequestContexts.Find(ReqId);
-			BeamRequestContext->BeamStatus = Completed;
+			BeamRequestContext->BeamStatus = AS_Completed;
 
 			// We get the second request context and fake it's completion
 			const auto BeamRequestContext2 = BeamBackendSystem->InFlightRequestContexts.Find(ReqId2);
-			BeamRequestContext2->BeamStatus = Completed;
+			BeamRequestContext2->BeamStatus = AS_Completed;
 
 			// We set up the handler to pretend that request 2 is being depended by some external system.
 			Callbacks->ExternalRequestIds.Add(ReqId2);

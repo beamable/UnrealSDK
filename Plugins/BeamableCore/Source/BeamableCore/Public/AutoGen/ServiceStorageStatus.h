@@ -8,19 +8,19 @@
 #include "ServiceStorageStatus.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UServiceStorageStatus : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UServiceStorageStatus : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Current", Category="Beam")
-	bool bIsCurrent;
+	bool bIsCurrent = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Running", Category="Beam")
-	bool bIsRunning;
+	bool bIsRunning = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FString Id;
+	FString Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Storage Type", Category="Beam")
-	FString StorageType;
+	FString StorageType = {};
 
 	
 

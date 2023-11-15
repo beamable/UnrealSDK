@@ -16,63 +16,63 @@
 #include "Group.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGroup : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UGroup : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Requirement", Category="Beam")
-	int64 Requirement;
+	int64 Requirement = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Size", Category="Beam")
-	int32 MaxSize;
+	int32 MaxSize = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
-	EGroupType Type;
+	EGroupType Type = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	int64 Id;
+	int64 Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Motd", Category="Beam")
-	FString Motd;
+	FString Motd = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Slogan", Category="Beam")
-	FString Slogan;
+	FString Slogan = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Leader", Category="Beam")
-	int64 Leader;
+	int64 Leader = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
-	int64 Created;
+	int64 Created = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Enrollment Type", Category="Beam")
-	FString EnrollmentType;
+	FString EnrollmentType = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Free Slots", Category="Beam")
-	int32 FreeSlots;
+	int32 FreeSlots = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sub Groups", Category="Beam")
-	TArray<UGroup*> SubGroups;
+	TArray<UGroup*> SubGroups = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Members", Category="Beam")
-	TArray<UMember*> Members;
+	TArray<UMember*> Members = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scores", Category="Beam")
-	TMap<FString, FString> Scores;
+	TMap<FString, FString> Scores = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Can Disband", Category="Beam")
-	FOptionalBool bCanDisband;
+	FOptionalBool bCanDisband = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Can Update Enrollment", Category="Beam")
-	FOptionalBool bCanUpdateEnrollment;
+	FOptionalBool bCanUpdateEnrollment = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Can Update MOTD", Category="Beam")
-	FOptionalBool bCanUpdateMOTD;
+	FOptionalBool bCanUpdateMOTD = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Can Update Slogan", Category="Beam")
-	FOptionalBool bCanUpdateSlogan;
+	FOptionalBool bCanUpdateSlogan = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Shard", Category="Beam")
-	FOptionalString Shard;
+	FOptionalString Shard = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Client Data", Category="Beam")
-	FOptionalString ClientData;
+	FOptionalString ClientData = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Version", Category="Beam")
-	FOptionalInt32 Version;
+	FOptionalInt32 Version = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tag", Category="Beam")
-	FOptionalString Tag;
+	FOptionalString Tag = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Donations", Category="Beam")
-	FOptionalArrayOfDonationRequestBody Donations;
+	FOptionalArrayOfDonationRequestBody Donations = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Roles", Category="Beam")
-	FOptionalArrayOfGroupRole Roles;
+	FOptionalArrayOfGroupRole Roles = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="In Flight", Category="Beam")
-	FOptionalArrayOfInFlightMessage InFlight;
+	FOptionalArrayOfInFlightMessage InFlight = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Maybe Donations", Category="Beam")
-	FOptionalMapOfDonationRequestBody MaybeDonations;
+	FOptionalMapOfDonationRequestBody MaybeDonations = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

@@ -23,9 +23,10 @@ void UGetUploadAPIRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetUploadAPIRequest* UGetUploadAPIRequest::Make(UObject* RequestOwner)
+UGetUploadAPIRequest* UGetUploadAPIRequest::Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetUploadAPIRequest* Req = NewObject<UGetUploadAPIRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

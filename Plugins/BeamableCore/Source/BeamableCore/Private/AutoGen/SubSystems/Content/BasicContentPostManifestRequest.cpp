@@ -27,9 +27,10 @@ void UBasicContentPostManifestRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UBasicContentPostManifestRequest* UBasicContentPostManifestRequest::Make(FBeamContentManifestId _Id, TArray<UReferenceSuperset*> _References, UObject* RequestOwner)
+UBasicContentPostManifestRequest* UBasicContentPostManifestRequest::Make(FBeamContentManifestId _Id, TArray<UReferenceSuperset*> _References, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicContentPostManifestRequest* Req = NewObject<UBasicContentPostManifestRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

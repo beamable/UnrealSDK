@@ -25,9 +25,10 @@ void UGetSocialRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetSocialRequest* UGetSocialRequest::Make(TArray<FString> _PlayerIds, UObject* RequestOwner)
+UGetSocialRequest* UGetSocialRequest::Make(TArray<FString> _PlayerIds, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetSocialRequest* Req = NewObject<UGetSocialRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->PlayerIds = _PlayerIds;

@@ -9,17 +9,17 @@
 #include "EventInventoryPendingRewards.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEventInventoryPendingRewards : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UEventInventoryPendingRewards : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Empty", Category="Beam")
-	bool bEmpty;
+	bool bEmpty = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Items", Category="Beam")
-	FOptionalArrayOfItemCreateRequestBody Items;
+	FOptionalArrayOfItemCreateRequestBody Items = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currencies", Category="Beam")
-	FOptionalMapOfString Currencies;
+	FOptionalMapOfString Currencies = {};
 
 	
 

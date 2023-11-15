@@ -18,6 +18,10 @@ typedef int64 FBeamWaitHandleId;
 // As such, we pass in the last dependent request id added.
 #define DEFAULT_REQUEST_ID -1000
 
+// Used by our systems when we want to allow for one operation from a known set of operations to be executed in the middle of a predefined operation.
+// Ie.: UBeamRuntime's Authentication flows have varying things they want to do based on the type of operation before they notify UBeamRuntimeSubsystems and/or Project-Level code that the user has signed in.
+DECLARE_DELEGATE_RetVal(FBeamOperationHandle, FDelayedOperation)
+
 UCLASS(BlueprintType, NotBlueprintable)
 class BEAMABLECORE_API UBeamRequestTracker : public UEngineSubsystem
 {

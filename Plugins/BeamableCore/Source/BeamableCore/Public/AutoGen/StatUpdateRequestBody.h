@@ -10,19 +10,19 @@
 #include "StatUpdateRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UStatUpdateRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UStatUpdateRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Emit Analytics", Category="Beam")
-	FOptionalBool bEmitAnalytics;
+	FOptionalBool bEmitAnalytics = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	FOptionalBeamStatsType ObjectId;
+	FOptionalBeamStatsType ObjectId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Set", Category="Beam")
-	FOptionalMapOfString Set;
+	FOptionalMapOfString Set = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Add", Category="Beam")
-	FOptionalMapOfString Add;
+	FOptionalMapOfString Add = {};
 
 	
 

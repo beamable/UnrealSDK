@@ -25,11 +25,11 @@ public:
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Provider Service", Category="Beam")
-	FString ProviderService;
+	FString ProviderService = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="User Id", Category="Beam")
-	FString UserId;
+	FString UserId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Provider Namespace", Category="Beam")
-	FOptionalString ProviderNamespace;
+	FOptionalString ProviderNamespace = {};
 
 	// Body Params
 	
@@ -41,8 +41,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make GetAvailableExternalIdentity",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_ProviderNamespace,RequestOwner"))
-	static UGetAvailableExternalIdentityRequest* Make(FString _ProviderService, FString _UserId, FOptionalString _ProviderNamespace, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make GetAvailableExternalIdentity",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_ProviderNamespace,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UGetAvailableExternalIdentityRequest* Make(FString _ProviderService, FString _UserId, FOptionalString _ProviderNamespace, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

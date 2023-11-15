@@ -23,9 +23,10 @@ void UGetAvailableRolesRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAvailableRolesRequest* UGetAvailableRolesRequest::Make(FBeamAccountId _ObjectId, UObject* RequestOwner)
+UGetAvailableRolesRequest* UGetAvailableRolesRequest::Make(FBeamAccountId _ObjectId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetAvailableRolesRequest* Req = NewObject<UGetAvailableRolesRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

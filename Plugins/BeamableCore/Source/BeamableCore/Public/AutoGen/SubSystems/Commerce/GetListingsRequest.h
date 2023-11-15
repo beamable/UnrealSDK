@@ -23,15 +23,15 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	int64 ObjectId;
+	int64 ObjectId = {};
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Listing", Category="Beam")
-	FString Listing;
+	FString Listing = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Store", Category="Beam")
-	FOptionalString Store;
+	FOptionalString Store = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Time", Category="Beam")
-	FOptionalString Time;
+	FOptionalString Time = {};
 
 	// Body Params
 	
@@ -43,8 +43,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Commerce", DisplayName="Beam - Make GetListings",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Store,_Time,RequestOwner"))
-	static UGetListingsRequest* Make(int64 _ObjectId, FString _Listing, FOptionalString _Store, FOptionalString _Time, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Commerce", DisplayName="Beam - Make GetListings",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Store,_Time,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UGetListingsRequest* Make(int64 _ObjectId, FString _Listing, FOptionalString _Store, FOptionalString _Time, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

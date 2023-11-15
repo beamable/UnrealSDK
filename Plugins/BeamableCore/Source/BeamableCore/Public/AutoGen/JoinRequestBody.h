@@ -8,13 +8,13 @@
 #include "JoinRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UJoinRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UJoinRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id", Category="Beam")
-	FString TournamentId;
+	FString TournamentId = {};
 
 	
 

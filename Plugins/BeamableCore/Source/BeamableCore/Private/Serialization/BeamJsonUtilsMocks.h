@@ -7,7 +7,7 @@
 #include "BeamJsonUtilsMocks.generated.h"
 
 UCLASS()
-class UMockIntJsonSerializable : public UObject, public FBeamJsonSerializable
+class UMockIntJsonSerializable : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
@@ -33,7 +33,7 @@ public:
 };
 
 UCLASS()
-class UMockNestedJsonSerializable : public UObject, public FBeamJsonSerializable
+class UMockNestedJsonSerializable : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 

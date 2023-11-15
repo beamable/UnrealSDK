@@ -26,9 +26,10 @@ void UGetManifestExactRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetManifestExactRequest* UGetManifestExactRequest::Make(FString _Uid, UObject* RequestOwner)
+UGetManifestExactRequest* UGetManifestExactRequest::Make(FString _Uid, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetManifestExactRequest* Req = NewObject<UGetManifestExactRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Uid = _Uid;

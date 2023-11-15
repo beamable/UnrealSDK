@@ -27,9 +27,10 @@ void UPostFacebookUpdateRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostFacebookUpdateRequest* UPostFacebookUpdateRequest::Make(FString _Object, TArray<UFacebookUpdatedEntry*> _Entry, UObject* RequestOwner)
+UPostFacebookUpdateRequest* UPostFacebookUpdateRequest::Make(FString _Object, TArray<UFacebookUpdatedEntry*> _Entry, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostFacebookUpdateRequest* Req = NewObject<UPostFacebookUpdateRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -27,9 +27,10 @@ void UBasicBeamoPostManifestRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UBasicBeamoPostManifestRequest* UBasicBeamoPostManifestRequest::Make(TArray<UServiceReference*> _Manifest, FOptionalBool _bAutoDeploy, FOptionalString _Comments, FOptionalArrayOfServiceStorageReference _StorageReferences, UObject* RequestOwner)
+UBasicBeamoPostManifestRequest* UBasicBeamoPostManifestRequest::Make(TArray<UServiceReference*> _Manifest, FOptionalBool _bAutoDeploy, FOptionalString _Comments, FOptionalArrayOfServiceStorageReference _StorageReferences, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicBeamoPostManifestRequest* Req = NewObject<UBasicBeamoPostManifestRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

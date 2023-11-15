@@ -23,9 +23,10 @@ void UGetNotificationRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetNotificationRequest* UGetNotificationRequest::Make(UObject* RequestOwner)
+UGetNotificationRequest* UGetNotificationRequest::Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetNotificationRequest* Req = NewObject<UGetNotificationRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

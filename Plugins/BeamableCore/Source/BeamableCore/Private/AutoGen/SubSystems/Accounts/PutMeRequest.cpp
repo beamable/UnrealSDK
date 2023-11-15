@@ -27,9 +27,10 @@ void UPutMeRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutMeRequest* UPutMeRequest::Make(bool _bHasThirdPartyToken, FOptionalString _ThirdParty, FOptionalString _Country, FOptionalString _Language, FOptionalGamerTagAssociation _GamerTagAssoc, FOptionalString _Token, FOptionalString _DeviceId, FOptionalString _UserName, FOptionalArrayOfExternalIdentity _External, UObject* RequestOwner)
+UPutMeRequest* UPutMeRequest::Make(bool _bHasThirdPartyToken, FOptionalString _ThirdParty, FOptionalString _Country, FOptionalString _Language, FOptionalGamerTagAssociation _GamerTagAssoc, FOptionalString _Token, FOptionalString _DeviceId, FOptionalString _UserName, FOptionalArrayOfBeamExternalIdentity _External, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutMeRequest* Req = NewObject<UPutMeRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

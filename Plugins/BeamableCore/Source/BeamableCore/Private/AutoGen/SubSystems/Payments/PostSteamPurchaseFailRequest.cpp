@@ -27,9 +27,10 @@ void UPostSteamPurchaseFailRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostSteamPurchaseFailRequest* UPostSteamPurchaseFailRequest::Make(int64 _Txid, FString _Reason, UObject* RequestOwner)
+UPostSteamPurchaseFailRequest* UPostSteamPurchaseFailRequest::Make(int64 _Txid, FString _Reason, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostSteamPurchaseFailRequest* Req = NewObject<UPostSteamPurchaseFailRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -28,9 +28,10 @@ void UGetManifestCurrentRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetManifestCurrentRequest* UGetManifestCurrentRequest::Make(FOptionalBool _bArchived, UObject* RequestOwner)
+UGetManifestCurrentRequest* UGetManifestCurrentRequest::Make(FOptionalBool _bArchived, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetManifestCurrentRequest* Req = NewObject<UGetManifestCurrentRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->bArchived = _bArchived;

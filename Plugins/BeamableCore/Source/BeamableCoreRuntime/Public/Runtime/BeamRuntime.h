@@ -43,9 +43,9 @@ enum EBeamRuntimeConnectivityState
  * The BeamRuntimeSubsystem that makes the operation is responsible for the data format of this buffer. 
  */
 struct FOfflineOperationData
-{	
-	FName          OperationKey;	
-	TArray<uint8>  OperationRequestDataBackingArray;		
+{
+	FName          OperationKey;
+	TArray<uint8>  OperationRequestDataBackingArray;
 	FMemoryArchive OperationRequestData;
 };
 
@@ -148,6 +148,11 @@ DECLARE_DYNAMIC_DELEGATE(FRuntimeStateChangedHandler);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRuntimeStateChangedEvent);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUserStateChangedEvent, const FUserSlot&, Slot);
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FUserStateChangedEventCode, FUserSlot);
+
+
 /**
  * 
  */
@@ -169,11 +174,11 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	/**
 	 * @brief This gets called after all runtime systems had the opportunity to get ready for authentication to happen.
 	 */
-	void TriggerOnBeamableStarted(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&, const TArray<FBeamErrorResponse>&);
+	void TriggerOnBeamableStarting(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&, const TArray<FBeamErrorResponse>&);
 	/**
 	 * @brief This gets called after all runtime subsystems have been initialized, but before the Owner Player's auth has been made.
 	 */
-	void TriggerGlobalOnStartedAndFrictionlessAuth(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&, const TArray<FBeamErrorResponse>&);
+	void TriggerOnStartedAndFrictionlessAuth(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&, const TArray<FBeamErrorResponse>&);
 
 	/**
 	 * Manages connectivity and recovery for every user slot.
@@ -271,10 +276,12 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	FRuntimeStateChangedEvent OnFailedUserAuth;
 
 	/**
-	 * @brief So that actors and components can react to beamable's initialization flow being finished.
-	 *  The OnReady event is what game makers should use when registering their actors, systems, etc... if they wish to depend on beamable's runtime systems.
+	 * @brief So that actors and components can react to beamable's initialization flow being finished for the first time.
+	 *  Use this callback to run code the first time the configured UBeamCoreSettings::GetOwnerPlayerSlot() is authenticated.
 	 *
-	 *  This runs only once during your game's entire run: after the PostUserSignIn call of the OwnerPlayer's authentication. 
+	 *  This runs only once during your game's entire run: after the PostUserSignIn call of the OwnerPlayer's authentication.
+	 *  
+	 *  If you wish to instead run code EVERY time a user is authenticated into a slot, use the OnUserReady callbacks instead.	  
 	 */
 	UPROPERTY()
 	FRuntimeStateChangedEvent OnReady;
@@ -315,6 +322,7 @@ public:
 	UFUNCTION()
 	void PIEExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity);
 
+
 	UPROPERTY()
 	UBeamUserSlots* UserSlotSystem;
 
@@ -335,20 +343,16 @@ public:
 	 *  The OnReady event exposed here is what game makers should use when registering their actors, components, etc... if they wish to depend on beamable's runtime systems.	  
 	 */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="IsOwnerUserAuthenticated")
-	bool bIsOwnerPlayerAuthenticated = false;
+	bool bDidFirstAuthRun = false;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsFirstAuth() const { return !bDidFirstAuthRun; }
 
 	/**
 	 * @brief This flag is used to verify that beamable has been properly initialized and is ready for authentication.
 	 */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="IsBeamableStarted")
 	bool bIsBeamableStarted = false;
-
-	/**
-	 * If runs the FrictionlessAuthentication flow for the given user slot. You can make this call whenever you want to create a new user into a new slot.
-	 * Passing nothing, will sign into the OwnerPlayerSlot. If the given slot is already authenticated, this is a no-op.
-	 */
-	UFUNCTION(BlueprintCallable)
-	void FrictionlessAuthenticateSlot(const FUserSlot& UserSlot);
 
 	/**
 	 * @brief In BP, use this function to bind initialization functions to OnReady. This will execute the delegate if you're already ready before it binds it. 
@@ -372,10 +376,29 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UnregisterOnStarted(FRuntimeStateChangedHandler Handler)
 	{
-		if(OnStarted.Contains(Handler))
+		if (OnStarted.Contains(Handler))
 			OnStarted.Remove(Handler);
 	}
+	
+	/**
+	 * @brief So that actors and components can react to user data being ready for a specific user slot. 
+	 *  The event is what game makers should use when registering their actors, systems, etc... if they wish to depend on a specific user slot's data in BeamRuntimeSubsystems.
+	 *
+	 *  This runs every time a UserSlot is authenticated into. The first time, it runs after the OnReady global callback. 
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FUserStateChangedEvent     OnUserReady;
+	FUserStateChangedEventCode OnUserReadyCode;
 
+	/**
+	 * @brief So that actors and components can react to user data being cleared for a specific user slot. 
+	 *  The event is what game makers should use when registering their actors, systems, etc... if they wish to react to a specific user slot's data in BeamRuntimeSubsystems being cleared.
+	 *
+	 *  This runs every time a UserSlot is cleared, after all BeamRuntimeSubsystems have run their SignOut callbacks. 
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FUserStateChangedEvent     OnUserCleared;
+	FUserStateChangedEventCode OnUserClearedCode;
 	
 	/**
 	 * @brief In BP, use this function to bind initialization functions to OnReady. This will execute the delegate if you're already ready before it binds it. 
@@ -383,8 +406,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RegisterOnReady(FRuntimeStateChangedHandler Handler)
 	{
-		if (bIsOwnerPlayerAuthenticated) const auto _ = Handler.ExecuteIfBound();
-		OnReady.Add(Handler);		
+		if (bDidFirstAuthRun) const auto _ = Handler.ExecuteIfBound();
+		OnReady.Add(Handler);
 	}
 
 	/**
@@ -399,49 +422,122 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UnregisterOnReady(FRuntimeStateChangedHandler Handler)
 	{
-		if(OnReady.Contains(Handler))
+		if (OnReady.Contains(Handler))
 			OnReady.Remove(Handler);
 	}
 
-	/**
-	 * @brief An operation that will authenticate a user with the beamable and persist that authentication locally.
-	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle AuthenticateFrictionlessOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext = nullptr);
 
 	/**
 	 * @brief An operation that will authenticate a user with the beamable and persist that authentication locally.
 	 */
-	FBeamOperationHandle CPP_AuthenticateFrictionlessOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent, UObject* CallingContext = nullptr);
-
-	/**
-	 * Use this if you wish to authenticate by manually making an Authenticate Request to the Auth Service (pass in the Token you get as a response here).
-	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle AuthenticateWithTokenOperation(FUserSlot UserSlot, UTokenResponse* TokenResponse, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext = nullptr);
+	FBeamOperationHandle LoginFrictionlessOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent);
+	/**
+	 * @brief An operation that will authenticate a user with the beamable and persist that authentication locally.
+	 */
+	FBeamOperationHandle CPP_LoginFrictionlessOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent);
+
 
 	/**
-	 * Use this if you wish to authenticate by manually making an Authenticate Request to the Auth Service (pass in the Token you get as a response here).
+	 * @brief An operation that will authenticate a user with the beamable using a Federated Identity and persist that authentication locally.
+	 * If a user is already in the given slot, this operation will sign out entirely before signing in.
 	 */
-	FBeamOperationHandle CPP_AuthenticateWithTokenOperation(FUserSlot UserSlot, const UTokenResponse* TokenResponse, FBeamOperationEventHandlerCode OnOperationEvent, UObject* CallingContext = nullptr);
+	FBeamOperationHandle LoginExternalIdentityOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationEventHandler OnOperationEvent);
+	/**
+	 * @brief An operation that will authenticate a user with the beamable using a Federated Identity and persist that authentication locally.
+	 * If a user is already in the given slot, this operation will sign out entirely before signing in.
+	 */
+	FBeamOperationHandle CPP_LoginExternalIdentityOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationEventHandlerCode OnOperationEvent);
+
+
+	/**
+	 * @brief An operation that will authenticate a user with the beamable using a Federated Identity and persist that authentication locally.
+	 * If a user is already in the given slot, this operation will sign out entirely before signing in.
+	 */
+	FBeamOperationHandle LoginEmailAndPasswordOperation(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationEventHandler OnOperationEvent);
+	/**
+	 * @brief An operation that will authenticate a user with the beamable using a Federated Identity and persist that authentication locally.
+	 * If a user is already in the given slot, this operation will sign out entirely before signing in.
+	 */
+	FBeamOperationHandle CPP_LoginEmailAndPasswordOperation(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationEventHandlerCode OnOperationEvent);
+
+	/**
+	 * If the given IdentityUserId is NOT attached to an account in the current realm, we attach it to the account in the given slot.
+	 */
+	FBeamOperationHandle AttachExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, FBeamOperationEventHandler OnOperationEvent);
+	/**
+	 * If the given IdentityUserId is NOT attached to an account in the current realm, we attach it to the account in the given slot.
+	 */
+	FBeamOperationHandle CPP_AttachExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, FBeamOperationEventHandlerCode OnOperationEvent);
+
+
+	/**	 
+	 * If the given Email is NOT attached to an account in the current realm, we attach it to the account in the given slot.
+	 */
+	FBeamOperationHandle AttachEmailAndPasswordOperation(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationEventHandler OnOperationEvent);
+	/**	 	 
+	 * If the given Email is NOT attached to an account in the current realm, we attach it to the account in the given slot.
+	 */
+	FBeamOperationHandle CPP_AttachEmailAndPasswordOperation(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationEventHandlerCode OnOperationEvent);
+
+	/**	 
+	 * If no user is in the given slot and the given ExternalIdentity is NOT attached to an account in the current realm, we create a new account and attach the given email/password to it as an atomic operation (client-side).
+	 * The new user is authenticated into the target slot at the end of this process ONLY IF THE ENTIRE PROCESS IS SUCCESSFUL.
+	 */
+	FBeamOperationHandle SignUpExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, FBeamOperationEventHandler OnOperationEvent);
+	/**	 
+	 * If no user is in the given slot and the given ExternalIdentity is NOT attached to an account in the current realm, we create a new account and attach the given email/password to it as an atomic operation (client-side).
+	 * The new user is authenticated into the target slot at the end of this process ONLY IF THE ENTIRE PROCESS IS SUCCESSFUL. 
+	 */
+	FBeamOperationHandle CPP_SignUpExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, FBeamOperationEventHandlerCode OnOperationEvent);
+
+	/**	 
+	 * If no user is in the given slot and the given Email is NOT attached to an account in the current realm, we create a new account and attach the given email/password to it as an atomic operation (client-side).
+	 * The new user is authenticated into the target slot at the end of this process ONLY IF THE ENTIRE PROCESS IS SUCCESSFUL.
+	 */
+	FBeamOperationHandle SignUpEmailAndPasswordOperation(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationEventHandler OnOperationEvent);
+	/**	 
+	 * If no user is in the given slot and the given Email is NOT attached to an account in the current realm, we create a new account and attach the given email/password to it as an atomic operation (client-side).
+	 * The new user is authenticated into the target slot at the end of this process ONLY IF THE ENTIRE PROCESS IS SUCCESSFUL. 
+	 */
+	FBeamOperationHandle CPP_SignUpEmailAndPasswordOperation(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationEventHandlerCode OnOperationEvent);
 
 private:
-	// Operation Implementations
-	void AuthenticateFrictionless(FUserSlot UserSlot, FBeamOperationHandle Op, UObject* CallingContext);
-	void AuthenticateFrictionless_OnAuthenticated(FAuthenticateFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op);
+	// Hard-coded special case auth flow	
+	UFUNCTION(BlueprintCallable)
+	void FrictionlessLoginIntoSlot(const FUserSlot& UserSlot);
 
-	void AuthenticateWithToken(FUserSlot UserSlot, const UTokenResponse* Token, FBeamOperationHandle Op);
+	// BP/CPP Independent Operation Implementations
+	void LoginFrictionless(FUserSlot UserSlot, FBeamOperationHandle Op);
+	void LoginExternalIdentity(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op);
+	void LoginEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op);
+	void AttachExternalIdentity(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, FBeamOperationHandle Op);
+	void AttachEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op);
+	void SignUpExternalIdentity(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, FBeamOperationHandle Op);
+	void SignUpEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op);
 
+
+	// Reusable Operation Callbacks
+	void OnAuthenticated(FAuthenticateFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op, FDelayedOperation BeforeUserNotifyOperation);
+	void AuthenticateWithToken(FUserSlot UserSlot, const UTokenResponse* Token, FBeamOperationHandle Op, FDelayedOperation BeforeUserNotifyOperation);
 	void RunPostAuthenticationSetup(FUserSlot UserSlot, FBeamOperationHandle Op);
 	void RunPostAuthenticationSetup_OnGetMe(FBasicAccountsGetMeFullResponse Response, FUserSlot UserSlot, FBeamOperationHandle Op);
 	void RunPostAuthenticationSetup_PrepareNotificationService(FGetClientDefaultsFullResponse Resp, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op);
 
+	// Reusable API Calls
+	void LoginGuest(FUserSlot UserSlot, FBeamOperationHandle Op, FDelayedOperation OnBeforePostAuthentication = {});
+	void CheckExternalIdentityAvailable(FString ExternalService, FString ExternalNamespace, FString ExternalUserId, FBeamOperationHandle Op, FOnGetAvailableExternalIdentityFullResponse Handler) const;
+	void CheckEmailAvailable(FString Email, FBeamOperationHandle Op, FOnGetAvailableFullResponse Handler) const;
+	void AttachIdentityToUser(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op, FOnPostExternalIdentityFullResponse Handler) const;
+	void AttachEmailAndPasswordToUser(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op, FOnBasicAccountsPostRegisterFullResponse Handler) const;
+	void RemoveIdentityFromUser(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op, FOnDeleteExternalIdentityFullResponse Handler) const;
 
-	/**
-	 * Call as part of an operation to verify that the given token, generated by the given provider and in the given namespace, is available for association to a beamable account.
-	 * @param IsAvailable Allocated bool where we'll write the availability. We do not own this memory. Deallocate on Operation completion.
-	 */
-	void CheckExternalIdentityAvailable(FString ExternalProvider, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op, bool* IsAvailable);
+	// Runtime Notification Configuration and Automated Session Tracking 
+	static inline FString BEAM_SESSION_HEADER_PLATFORM = FString(TEXT("X-BEAM-SESSION-PLATFORM"));
+	static inline FString BEAM_SESSION_HEADER_DEVICE   = FString(TEXT("X-BEAM-SESSION-DEVICE"));
+	static inline FString BEAM_SESSION_HEADER_SOURCE   = FString(TEXT("X-BEAM-SESSION-SOURCE"));
+	static inline FString BEAM_SESSION_HEADER_LOCALE   = FString(TEXT("X-BEAM-SESSION-LOCALE"));
+	static inline FString BEAM_SESSION_HEADER_LANGUAGE = FString(TEXT("X-BEAM-SESSION-LANGUAGE"));
 
 	/**
 	 * Tries to get the default notification channel for the given user slot. 
@@ -452,10 +548,4 @@ private:
 	 * Adds the default information session information tracked by the SDK into the given header dictionary. 
 	 */
 	virtual void FillDefaultSessionHeaders(TMap<FString, FString>& Headers);
-
-	static inline FString BEAM_SESSION_HEADER_PLATFORM = FString(TEXT("X-BEAM-SESSION-PLATFORM"));
-	static inline FString BEAM_SESSION_HEADER_DEVICE   = FString(TEXT("X-BEAM-SESSION-DEVICE"));
-	static inline FString BEAM_SESSION_HEADER_SOURCE   = FString(TEXT("X-BEAM-SESSION-SOURCE"));
-	static inline FString BEAM_SESSION_HEADER_LOCALE   = FString(TEXT("X-BEAM-SESSION-LOCALE"));
-	static inline FString BEAM_SESSION_HEADER_LANGUAGE = FString(TEXT("X-BEAM-SESSION-LANGUAGE"));
 };

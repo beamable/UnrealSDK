@@ -10,25 +10,25 @@
 #include "NotificationRequestData.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UNotificationRequestData : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UNotificationRequestData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Channel", Category="Beam")
-	FOptionalString Channel;
+	FOptionalString Channel = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Message Key", Category="Beam")
-	FOptionalString MessageKey;
+	FOptionalString MessageKey = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Context", Category="Beam")
-	FOptionalString Context;
+	FOptionalString Context = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Shard", Category="Beam")
-	FOptionalString Shard;
+	FOptionalString Shard = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Message Full", Category="Beam")
-	FOptionalString MessageFull;
+	FOptionalString MessageFull = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Message Params", Category="Beam")
-	FOptionalArrayOfString MessageParams;
+	FOptionalArrayOfString MessageParams = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Meta", Category="Beam")
-	FOptionalMapOfString Meta;
+	FOptionalMapOfString Meta = {};
 
 	
 

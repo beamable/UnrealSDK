@@ -38,9 +38,10 @@ void UGetHistoryRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetHistoryRequest* UGetHistoryRequest::Make(int64 _Dbid, FOptionalInt32 _Month, FOptionalInt32 _Year, UObject* RequestOwner)
+UGetHistoryRequest* UGetHistoryRequest::Make(int64 _Dbid, FOptionalInt32 _Month, FOptionalInt32 _Year, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetHistoryRequest* Req = NewObject<UGetHistoryRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Dbid = _Dbid;

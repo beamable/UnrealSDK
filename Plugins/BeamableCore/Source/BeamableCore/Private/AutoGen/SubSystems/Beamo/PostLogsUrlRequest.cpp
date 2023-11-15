@@ -27,9 +27,10 @@ void UPostLogsUrlRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostLogsUrlRequest* UPostLogsUrlRequest::Make(FString _ServiceName, FOptionalInt64 _StartTime, FOptionalString _NextToken, FOptionalString _Filter, FOptionalInt64 _EndTime, FOptionalInt32 _Limit, UObject* RequestOwner)
+UPostLogsUrlRequest* UPostLogsUrlRequest::Make(FString _ServiceName, FOptionalInt64 _StartTime, FOptionalString _NextToken, FOptionalString _Filter, FOptionalInt64 _EndTime, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostLogsUrlRequest* Req = NewObject<UPostLogsUrlRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

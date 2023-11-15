@@ -27,9 +27,10 @@ void UPutTransferRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutTransferRequest* UPutTransferRequest::Make(FBeamGamerTag _ObjectId, FBeamGamerTag _RecipientPlayer, FOptionalString _Transaction, FOptionalMapOfInt64 _Currencies, UObject* RequestOwner)
+UPutTransferRequest* UPutTransferRequest::Make(FBeamGamerTag _ObjectId, FBeamGamerTag _RecipientPlayer, FOptionalString _Transaction, FOptionalMapOfInt64 _Currencies, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutTransferRequest* Req = NewObject<UPutTransferRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

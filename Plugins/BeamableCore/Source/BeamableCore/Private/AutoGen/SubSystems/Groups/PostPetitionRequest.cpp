@@ -27,9 +27,10 @@ void UPostPetitionRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostPetitionRequest* UPostPetitionRequest::Make(int64 _ObjectId, FOptionalInt64 _SubGroup, UObject* RequestOwner)
+UPostPetitionRequest* UPostPetitionRequest::Make(int64 _ObjectId, FOptionalInt64 _SubGroup, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostPetitionRequest* Req = NewObject<UPostPetitionRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

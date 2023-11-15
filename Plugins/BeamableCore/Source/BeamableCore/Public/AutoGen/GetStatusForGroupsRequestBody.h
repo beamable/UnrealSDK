@@ -8,15 +8,15 @@
 #include "GetStatusForGroupsRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGetStatusForGroupsRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGetStatusForGroupsRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id", Category="Beam")
-	FString ContentId;
+	FString ContentId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Group Ids", Category="Beam")
-	TArray<int64> GroupIds;
+	TArray<int64> GroupIds = {};
 
 	
 

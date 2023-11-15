@@ -8,15 +8,15 @@
 #include "GetContentRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGetContentRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGetContentRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id", Category="Beam")
-	FBeamContentId ContentId;
+	FBeamContentId ContentId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Version", Category="Beam")
-	FString Version;
+	FString Version = {};
 
 	
 

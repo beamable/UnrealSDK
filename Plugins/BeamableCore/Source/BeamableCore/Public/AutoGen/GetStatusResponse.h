@@ -9,17 +9,17 @@
 #include "GetStatusResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGetStatusResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UGetStatusResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Current", Category="Beam")
-	bool bIsCurrent;
+	bool bIsCurrent = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Services", Category="Beam")
-	TArray<UServiceStatus*> Services;
+	TArray<UServiceStatus*> Services = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Storage Statuses", Category="Beam")
-	FOptionalArrayOfServiceStorageStatus StorageStatuses;
+	FOptionalArrayOfServiceStorageStatus StorageStatuses = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

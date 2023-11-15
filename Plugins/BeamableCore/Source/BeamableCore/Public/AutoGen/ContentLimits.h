@@ -8,13 +8,13 @@
 #include "ContentLimits.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UContentLimits : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UContentLimits : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Distinct Content Ids", Category="Beam")
-	FOptionalInt32 MaxDistinctContentIds;
+	FOptionalInt32 MaxDistinctContentIds = {};
 
 	
 

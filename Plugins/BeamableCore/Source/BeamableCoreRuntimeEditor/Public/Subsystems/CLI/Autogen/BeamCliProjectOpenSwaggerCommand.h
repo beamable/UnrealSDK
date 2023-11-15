@@ -12,10 +12,10 @@ class FMonitoredProcess;
   Opens the swagger page for a given service
 
 Usage:
-  Beamable.Tools project open-swagger <service-name> [options]
+  Beamable.Tools project open-swagger [<service-name>] [options]
 
 Arguments:
-  <service-name>  Name of the service to open swagger to
+  <service-name>  Name of the service to open swagger to []
 
 Options:
   --remote                         If passed, swagger will open to the remote version of this service. Otherwise, it will try and use the local version
@@ -26,6 +26,7 @@ Options:
   --refresh-token <refresh-token>  Refresh token to use for the requests
   --log <log>                      Extra logs gets printed out
   --dir <dir>                      Directory to use for configuration
+  --dotnet-path <dotnet-path>      a custom location for dotnet
   -?, -h, --help                   Show help and usage information
 
 

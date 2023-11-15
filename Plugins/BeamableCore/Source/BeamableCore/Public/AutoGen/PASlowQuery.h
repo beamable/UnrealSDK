@@ -8,15 +8,15 @@
 #include "PASlowQuery.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPASlowQuery : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UPASlowQuery : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Line", Category="Beam")
-	FString Line;
+	FString Line = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Namespace", Category="Beam")
-	FString Namespace;
+	FString Namespace = {};
 
 	
 

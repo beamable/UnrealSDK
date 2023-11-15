@@ -8,15 +8,15 @@
 #include "Link.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API ULink : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API ULink : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Href", Category="Beam")
-	FString Href;
+	FString Href = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rel", Category="Beam")
-	FString Rel;
+	FString Rel = {};
 
 	
 

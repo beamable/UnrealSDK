@@ -10,10 +10,10 @@
 UENUM(BlueprintType)
 enum EBeamFullResponseState
 {
-	Success,
-	Error,
-	Cancelled,
-	Retrying,
+	RS_Success,
+	RS_Error,
+	RS_Cancelled,
+	RS_Retrying,
 };
 
 /**

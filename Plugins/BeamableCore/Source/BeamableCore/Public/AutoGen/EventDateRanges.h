@@ -9,21 +9,21 @@
 #include "EventDateRanges.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEventDateRanges : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UEventDateRanges : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="State", Category="Beam")
-	FString State;
+	FString State = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FString Id;
+	FString Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Dates", Category="Beam")
-	TArray<UDateRange*> Dates;
+	TArray<UDateRange*> Dates = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created At", Category="Beam")
-	FOptionalInt64 CreatedAt;
+	FOptionalInt64 CreatedAt = {};
 
 	
 

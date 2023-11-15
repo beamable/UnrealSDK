@@ -10,17 +10,17 @@
 #include "BaseContentReference.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UBaseContentReference : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UBaseContentReference : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content", Category="Beam")
-	UContentReference* Content;
+	UContentReference* Content = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Text", Category="Beam")
-	UTextReference* Text;
+	UTextReference* Text = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Binary", Category="Beam")
-	UBinaryReference* Binary;
+	UBinaryReference* Binary = {};
 
 	
 

@@ -8,15 +8,15 @@
 #include "EventRewardObtain.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEventRewardObtain : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UEventRewardObtain : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
-	FString Symbol;
+	FString Symbol = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Count", Category="Beam")
-	int32 Count;
+	int32 Count = {};
 
 	
 

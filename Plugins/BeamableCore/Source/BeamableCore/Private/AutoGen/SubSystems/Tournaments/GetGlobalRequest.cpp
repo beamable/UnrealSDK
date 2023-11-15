@@ -50,9 +50,10 @@ void UGetGlobalRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetGlobalRequest* UGetGlobalRequest::Make(FString _TournamentId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalInt32 _Cycle, FOptionalInt32 _From, UObject* RequestOwner)
+UGetGlobalRequest* UGetGlobalRequest::Make(FString _TournamentId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalInt32 _Cycle, FOptionalInt32 _From, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetGlobalRequest* Req = NewObject<UGetGlobalRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->TournamentId = _TournamentId;

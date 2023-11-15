@@ -8,15 +8,15 @@
 #include "StatsSubscribeRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UStatsSubscribeRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UStatsSubscribeRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Service", Category="Beam")
-	FString Service;
+	FString Service = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Subscriptions", Category="Beam")
-	TArray<FString> Subscriptions;
+	TArray<FString> Subscriptions = {};
 
 	
 

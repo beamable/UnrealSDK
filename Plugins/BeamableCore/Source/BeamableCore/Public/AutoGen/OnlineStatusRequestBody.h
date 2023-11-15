@@ -8,15 +8,15 @@
 #include "OnlineStatusRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UOnlineStatusRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UOnlineStatusRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Ids", Category="Beam")
-	FString PlayerIds;
+	FString PlayerIds = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Interval Secs", Category="Beam")
-	int64 IntervalSecs;
+	int64 IntervalSecs = {};
 
 	
 

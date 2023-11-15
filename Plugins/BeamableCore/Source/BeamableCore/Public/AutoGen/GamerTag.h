@@ -11,23 +11,23 @@
 #include "GamerTag.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGamerTag : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGamerTag : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tag", Category="Beam")
-	int64 Tag;
+	int64 Tag = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Platform", Category="Beam")
-	FString Platform;
+	FString Platform = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Alias", Category="Beam")
-	FOptionalString Alias;
+	FOptionalString Alias = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Added", Category="Beam")
-	FOptionalInt64 Added;
+	FOptionalInt64 Added = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="User", Category="Beam")
-	FOptionalSessionUser User;
+	FOptionalSessionUser User = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Trials", Category="Beam")
-	FOptionalArrayOfCohortEntry Trials;
+	FOptionalArrayOfCohortEntry Trials = {};
 
 	
 

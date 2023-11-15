@@ -30,9 +30,10 @@ void UGetChampionsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetChampionsRequest* UGetChampionsRequest::Make(FString _TournamentId, int32 _Cycles, UObject* RequestOwner)
+UGetChampionsRequest* UGetChampionsRequest::Make(FString _TournamentId, int32 _Cycles, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetChampionsRequest* Req = NewObject<UGetChampionsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->TournamentId = _TournamentId;

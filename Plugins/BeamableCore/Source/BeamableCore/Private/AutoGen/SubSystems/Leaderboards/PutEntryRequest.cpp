@@ -27,9 +27,10 @@ void UPutEntryRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutEntryRequest* UPutEntryRequest::Make(FString _ObjectId, double _Score, int64 _Id, FOptionalBool _bIncrement, FOptionalDouble _MaxScore, FOptionalDouble _MinScore, FOptionalMapOfString _Stats, UObject* RequestOwner)
+UPutEntryRequest* UPutEntryRequest::Make(FString _ObjectId, double _Score, int64 _Id, FOptionalBool _bIncrement, FOptionalDouble _MaxScore, FOptionalDouble _MinScore, FOptionalMapOfString _Stats, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutEntryRequest* Req = NewObject<UPutEntryRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

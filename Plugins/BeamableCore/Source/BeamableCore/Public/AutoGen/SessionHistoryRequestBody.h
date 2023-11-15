@@ -8,17 +8,17 @@
 #include "SessionHistoryRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API USessionHistoryRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API USessionHistoryRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Dbid", Category="Beam")
-	int64 Dbid;
+	int64 Dbid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Month", Category="Beam")
-	FOptionalInt32 Month;
+	FOptionalInt32 Month = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Year", Category="Beam")
-	FOptionalInt32 Year;
+	FOptionalInt32 Year = {};
 
 	
 

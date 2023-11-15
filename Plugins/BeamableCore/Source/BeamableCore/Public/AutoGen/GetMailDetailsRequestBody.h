@@ -8,13 +8,13 @@
 #include "GetMailDetailsRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGetMailDetailsRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGetMailDetailsRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Mid", Category="Beam")
-	int64 Mid;
+	int64 Mid = {};
 
 	
 

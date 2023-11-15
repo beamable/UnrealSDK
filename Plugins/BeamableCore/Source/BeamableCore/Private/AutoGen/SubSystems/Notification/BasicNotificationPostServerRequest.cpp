@@ -27,9 +27,10 @@ void UBasicNotificationPostServerRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UBasicNotificationPostServerRequest* UBasicNotificationPostServerRequest::Make(FString _Event, bool _bToAll, FOptionalString _Payload, UObject* RequestOwner)
+UBasicNotificationPostServerRequest* UBasicNotificationPostServerRequest::Make(FString _Event, bool _bToAll, FOptionalString _Payload, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicNotificationPostServerRequest* Req = NewObject<UBasicNotificationPostServerRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

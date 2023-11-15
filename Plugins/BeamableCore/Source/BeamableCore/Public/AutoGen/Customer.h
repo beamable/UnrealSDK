@@ -12,33 +12,33 @@
 #include "Customer.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UCustomer : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UCustomer : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid", Category="Beam")
-	FBeamCid Cid;
+	FBeamCid Cid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Projects", Category="Beam")
-	TArray<UProject*> Projects;
+	TArray<UProject*> Projects = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Accounts", Category="Beam")
-	TArray<URealmsBasicAccount*> Accounts;
+	TArray<URealmsBasicAccount*> Accounts = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Payment Status", Category="Beam")
-	FOptionalString PaymentStatus;
+	FOptionalString PaymentStatus = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Image", Category="Beam")
-	FOptionalString Image;
+	FOptionalString Image = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Contact", Category="Beam")
-	FOptionalString Contact;
+	FOptionalString Contact = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Alias", Category="Beam")
-	FOptionalString Alias;
+	FOptionalString Alias = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Updated", Category="Beam")
-	FOptionalInt64 Updated;
+	FOptionalInt64 Updated = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Crm Link", Category="Beam")
-	FOptionalString CrmLink;
+	FOptionalString CrmLink = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
-	FOptionalInt64 Created;
+	FOptionalInt64 Created = {};
 
 	
 

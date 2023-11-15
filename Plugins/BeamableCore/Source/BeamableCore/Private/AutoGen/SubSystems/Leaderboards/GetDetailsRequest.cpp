@@ -34,9 +34,10 @@ void UGetDetailsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetDetailsRequest* UGetDetailsRequest::Make(FString _ObjectId, FOptionalInt32 _From, FOptionalInt32 _Max, UObject* RequestOwner)
+UGetDetailsRequest* UGetDetailsRequest::Make(FString _ObjectId, FOptionalInt32 _From, FOptionalInt32 _Max, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetDetailsRequest* Req = NewObject<UGetDetailsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

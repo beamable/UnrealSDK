@@ -46,9 +46,10 @@ void UGetTokenListRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetTokenListRequest* UGetTokenListRequest::Make(int32 _PageSize, int32 _Page, FOptionalBeamCid _Cid, FOptionalBeamPid _Pid, int64 _GamerTagOrAccountId, UObject* RequestOwner)
+UGetTokenListRequest* UGetTokenListRequest::Make(int32 _PageSize, int32 _Page, FOptionalBeamCid _Cid, FOptionalBeamPid _Pid, int64 _GamerTagOrAccountId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetTokenListRequest* Req = NewObject<UGetTokenListRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->PageSize = _PageSize;

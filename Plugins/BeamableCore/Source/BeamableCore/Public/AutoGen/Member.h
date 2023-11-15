@@ -9,23 +9,23 @@
 #include "Member.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UMember : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UMember : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Role", Category="Beam")
-	FString Role;
+	FString Role = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag", Category="Beam")
-	int64 GamerTag;
+	int64 GamerTag = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Can Demote", Category="Beam")
-	FOptionalBool bCanDemote;
+	FOptionalBool bCanDemote = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Can Kick", Category="Beam")
-	FOptionalBool bCanKick;
+	FOptionalBool bCanKick = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Can Promote", Category="Beam")
-	FOptionalBool bCanPromote;
+	FOptionalBool bCanPromote = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scores", Category="Beam")
-	FOptionalArrayOfGroupScoreBinding Scores;
+	FOptionalArrayOfGroupScoreBinding Scores = {};
 
 	
 

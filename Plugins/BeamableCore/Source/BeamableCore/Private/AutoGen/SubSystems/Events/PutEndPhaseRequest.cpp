@@ -27,9 +27,10 @@ void UPutEndPhaseRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutEndPhaseRequest* UPutEndPhaseRequest::Make(FString _ObjectId, FOptionalString _Time, UObject* RequestOwner)
+UPutEndPhaseRequest* UPutEndPhaseRequest::Make(FString _ObjectId, FOptionalString _Time, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutEndPhaseRequest* Req = NewObject<UPutEndPhaseRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

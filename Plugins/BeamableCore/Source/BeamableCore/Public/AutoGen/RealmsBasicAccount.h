@@ -8,19 +8,19 @@
 #include "RealmsBasicAccount.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API URealmsBasicAccount : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API URealmsBasicAccount : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="User", Category="Beam")
-	FString User;
+	FString User = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Password", Category="Beam")
-	FString Password;
+	FString Password = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Projects", Category="Beam")
-	TArray<FString> Projects;
+	TArray<FString> Projects = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
-	FOptionalInt64 Created;
+	FOptionalInt64 Created = {};
 
 	
 

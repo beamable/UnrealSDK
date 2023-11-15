@@ -22,14 +22,14 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	FString ObjectId;
+	FString ObjectId = {};
 	
 	// Query Params
 	
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	ULeaderboardAddRequestBody* Body;
+	ULeaderboardAddRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPutEntryRequest() = default;
@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make PutEntry",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bIncrement,_MaxScore,_MinScore,_Stats,RequestOwner"))
-	static UPutEntryRequest* Make(FString _ObjectId, double _Score, int64 _Id, FOptionalBool _bIncrement, FOptionalDouble _MaxScore, FOptionalDouble _MinScore, FOptionalMapOfString _Stats, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make PutEntry",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bIncrement,_MaxScore,_MinScore,_Stats,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPutEntryRequest* Make(FString _ObjectId, double _Score, int64 _Id, FOptionalBool _bIncrement, FOptionalDouble _MaxScore, FOptionalDouble _MinScore, FOptionalMapOfString _Stats, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

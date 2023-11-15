@@ -27,9 +27,10 @@ void UApiLobbyPutMetadataRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UApiLobbyPutMetadataRequest* UApiLobbyPutMetadataRequest::Make(FGuid _Id, FOptionalString _Name, FOptionalString _Description, FOptionalString _Restriction, FOptionalBeamContentId _MatchType, FOptionalInt32 _MaxPlayers, FOptionalString _NewHost, UObject* RequestOwner)
+UApiLobbyPutMetadataRequest* UApiLobbyPutMetadataRequest::Make(FGuid _Id, FOptionalString _Name, FOptionalString _Description, FOptionalString _Restriction, FOptionalBeamContentId _MatchType, FOptionalInt32 _MaxPlayers, FOptionalString _NewHost, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UApiLobbyPutMetadataRequest* Req = NewObject<UApiLobbyPutMetadataRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Id = _Id;

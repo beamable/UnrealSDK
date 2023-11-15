@@ -27,9 +27,10 @@ void UDeleteLobbyRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteLobbyRequest* UDeleteLobbyRequest::Make(FGuid _Id, FOptionalString _PlayerId, UObject* RequestOwner)
+UDeleteLobbyRequest* UDeleteLobbyRequest::Make(FGuid _Id, FOptionalString _PlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UDeleteLobbyRequest* Req = NewObject<UDeleteLobbyRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Id = _Id;

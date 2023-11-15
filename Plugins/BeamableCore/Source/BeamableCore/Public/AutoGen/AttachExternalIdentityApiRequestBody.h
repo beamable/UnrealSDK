@@ -9,19 +9,19 @@
 #include "AttachExternalIdentityApiRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UAttachExternalIdentityApiRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UAttachExternalIdentityApiRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Provider Service", Category="Beam")
-	FString ProviderService;
+	FString ProviderService = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="External Token", Category="Beam")
-	FString ExternalToken;
+	FString ExternalToken = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Challenge Solution", Category="Beam")
-	FOptionalChallengeSolution ChallengeSolution;
+	FOptionalChallengeSolution ChallengeSolution = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Provider Namespace", Category="Beam")
-	FOptionalString ProviderNamespace;
+	FOptionalString ProviderNamespace = {};
 
 	
 

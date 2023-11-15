@@ -8,13 +8,13 @@
 #include "ObjectRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UObjectRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UObjectRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Key", Category="Beam")
-	FString ObjectKey;
+	FString ObjectKey = {};
 
 	
 

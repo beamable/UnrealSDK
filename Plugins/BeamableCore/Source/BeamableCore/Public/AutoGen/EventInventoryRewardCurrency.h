@@ -8,15 +8,15 @@
 #include "EventInventoryRewardCurrency.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEventInventoryRewardCurrency : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UEventInventoryRewardCurrency : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FString Id;
+	FString Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Amount", Category="Beam")
-	int64 Amount;
+	int64 Amount = {};
 
 	
 

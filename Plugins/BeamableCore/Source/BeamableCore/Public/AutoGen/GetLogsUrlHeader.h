@@ -8,15 +8,15 @@
 #include "GetLogsUrlHeader.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGetLogsUrlHeader : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGetLogsUrlHeader : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Key", Category="Beam")
-	FString Key;
+	FString Key = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Value", Category="Beam")
-	FString Value;
+	FString Value = {};
 
 	
 

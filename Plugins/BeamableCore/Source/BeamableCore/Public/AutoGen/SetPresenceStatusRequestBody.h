@@ -9,15 +9,15 @@
 #include "SetPresenceStatusRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API USetPresenceStatusRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API USetPresenceStatusRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Status", Category="Beam")
-	FOptionalPresenceStatus Status;
+	FOptionalPresenceStatus Status = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Description", Category="Beam")
-	FOptionalString Description;
+	FOptionalString Description = {};
 
 	
 

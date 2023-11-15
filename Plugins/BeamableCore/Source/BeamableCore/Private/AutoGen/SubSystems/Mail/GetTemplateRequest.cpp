@@ -30,9 +30,10 @@ void UGetTemplateRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetTemplateRequest* UGetTemplateRequest::Make(FString _TemplateName, int64 _GamerTag, UObject* RequestOwner)
+UGetTemplateRequest* UGetTemplateRequest::Make(FString _TemplateName, int64 _GamerTag, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetTemplateRequest* Req = NewObject<UGetTemplateRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->TemplateName = _TemplateName;

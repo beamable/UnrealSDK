@@ -10,19 +10,19 @@
 #include "AvailabilityRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UAvailabilityRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UAvailabilityRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
-	EGroupType Type;
+	EGroupType Type = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sub Group", Category="Beam")
-	FOptionalBool bSubGroup;
+	FOptionalBool bSubGroup = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FOptionalString Name;
+	FOptionalString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tag", Category="Beam")
-	FOptionalString Tag;
+	FOptionalString Tag = {};
 
 	
 

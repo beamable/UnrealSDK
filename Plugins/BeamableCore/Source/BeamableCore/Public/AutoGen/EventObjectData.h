@@ -15,45 +15,45 @@
 #include "EventObjectData.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEventObjectData : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UEventObjectData : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Done", Category="Beam")
-	bool bDone;
+	bool bDone = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Running", Category="Beam")
-	bool bRunning;
+	bool bRunning = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="State", Category="Beam")
-	EEventState State;
+	EEventState State = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Leaderboard Id", Category="Beam")
-	FString LeaderboardId;
+	FString LeaderboardId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FString Id;
+	FString Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content", Category="Beam")
-	UEvent* Content;
+	UEvent* Content = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Last Child Event Id", Category="Beam")
-	FOptionalString LastChildEventId;
+	FOptionalString LastChildEventId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Start Time", Category="Beam")
-	FOptionalInt64 StartTime;
+	FOptionalInt64 StartTime = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Root Event Id", Category="Beam")
-	FOptionalString RootEventId;
+	FOptionalString RootEventId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Origin Type", Category="Beam")
-	FOptionalString OriginType;
+	FOptionalString OriginType = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Phase", Category="Beam")
-	FOptionalEventPhaseRuntime Phase;
+	FOptionalEventPhaseRuntime Phase = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Permissions", Category="Beam")
-	FOptionalBeamClientPermission Permissions;
+	FOptionalBeamClientPermission Permissions = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="End Time", Category="Beam")
-	FOptionalInt64 EndTime;
+	FOptionalInt64 EndTime = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Origin", Category="Beam")
-	FOptionalString Origin;
+	FOptionalString Origin = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created At", Category="Beam")
-	FOptionalInt64 CreatedAt;
+	FOptionalInt64 CreatedAt = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="In Flight", Category="Beam")
-	FOptionalArrayOfInFlightMessage InFlight;
+	FOptionalArrayOfInFlightMessage InFlight = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Phase Times", Category="Beam")
-	FOptionalArrayOfEventPhaseTime PhaseTimes;
+	FOptionalArrayOfEventPhaseTime PhaseTimes = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

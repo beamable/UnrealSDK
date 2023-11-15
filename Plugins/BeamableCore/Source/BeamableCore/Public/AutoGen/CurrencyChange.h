@@ -8,17 +8,17 @@
 #include "CurrencyChange.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UCurrencyChange : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UCurrencyChange : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
-	FString Symbol;
+	FString Symbol = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Amount", Category="Beam")
-	int64 Amount;
+	int64 Amount = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Original Amount", Category="Beam")
-	FOptionalInt64 OriginalAmount;
+	FOptionalInt64 OriginalAmount = {};
 
 	
 

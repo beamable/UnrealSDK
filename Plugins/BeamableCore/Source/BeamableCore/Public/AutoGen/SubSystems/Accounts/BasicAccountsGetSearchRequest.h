@@ -25,11 +25,11 @@ public:
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Query", Category="Beam")
-	FString Query;
+	FString Query = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Page", Category="Beam")
-	int32 Page;
+	int32 Page = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pagesize", Category="Beam")
-	int32 Pagesize;
+	int32 Pagesize = {};
 
 	// Body Params
 	
@@ -41,8 +41,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make BasicAccountsGetSearch",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner"))
-	static UBasicAccountsGetSearchRequest* Make(FString _Query, int32 _Page, int32 _Pagesize, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make BasicAccountsGetSearch",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UBasicAccountsGetSearchRequest* Make(FString _Query, int32 _Page, int32 _Pagesize, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

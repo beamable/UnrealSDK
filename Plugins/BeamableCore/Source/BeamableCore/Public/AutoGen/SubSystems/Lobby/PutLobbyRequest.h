@@ -22,14 +22,14 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FGuid Id;
+	FGuid Id = {};
 	
 	// Query Params
 	
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UJoinLobby* Body;
+	UJoinLobby* Body = {};
 
 	// Beam Base Request Declaration
 	UPutLobbyRequest() = default;
@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Lobby", DisplayName="Beam - Make PutLobby",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Tags,RequestOwner"))
-	static UPutLobbyRequest* Make(FGuid _Id, FOptionalArrayOfTag _Tags, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Lobby", DisplayName="Beam - Make PutLobby",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Tags,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPutLobbyRequest* Make(FGuid _Id, FOptionalArrayOfTag _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -27,9 +27,10 @@ void UBasicAnnouncementsDeleteAnnouncementsRequest::BuildBody(FString& BodyStrin
 	JsonSerializer->Close();
 }
 
-UBasicAnnouncementsDeleteAnnouncementsRequest* UBasicAnnouncementsDeleteAnnouncementsRequest::Make(FString _Symbol, UObject* RequestOwner)
+UBasicAnnouncementsDeleteAnnouncementsRequest* UBasicAnnouncementsDeleteAnnouncementsRequest::Make(FString _Symbol, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicAnnouncementsDeleteAnnouncementsRequest* Req = NewObject<UBasicAnnouncementsDeleteAnnouncementsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

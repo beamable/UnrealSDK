@@ -8,13 +8,13 @@
 #include "ArchiveOrUnarchiveManifestsRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UArchiveOrUnarchiveManifestsRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UArchiveOrUnarchiveManifestsRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Manifest Ids", Category="Beam")
-	TArray<FBeamContentManifestId> ManifestIds;
+	TArray<FBeamContentManifestId> ManifestIds = {};
 
 	
 

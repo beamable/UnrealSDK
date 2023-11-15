@@ -4,7 +4,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamContentId.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfBeamContentId.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
@@ -12,21 +12,21 @@
 #include "TicketReservationRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UTicketReservationRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UTicketReservationRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Watch Online Status", Category="Beam")
-	FOptionalBool bWatchOnlineStatus;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Match Types", Category="Beam")
-	FOptionalBeamContentId MatchTypes;
+	FOptionalBool bWatchOnlineStatus = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Wait Duration Secs", Category="Beam")
-	FOptionalInt32 MaxWaitDurationSecs;
+	FOptionalInt32 MaxWaitDurationSecs = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Team", Category="Beam")
-	FOptionalString Team;
+	FOptionalString Team = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Players", Category="Beam")
-	FOptionalArrayOfString Players;
+	FOptionalArrayOfString Players = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Match Types", Category="Beam")
+	FOptionalArrayOfBeamContentId MatchTypes = {};
 
 	
 

@@ -16,7 +16,7 @@ struct FBeamCliServicesRunStreamData
 	UPROPERTY()
 	bool Success = {};
 	UPROPERTY()
-	FString FailureReason;	
+	FString FailureReason = {};	
 };
 
 
@@ -28,7 +28,7 @@ struct FBeamCliServicesRunLocalProgressStreamData
 	inline static FString StreamTypeName = FString(TEXT("local_progress"));
 
 	UPROPERTY()
-	FString BeamoId;
+	FString BeamoId = {};
 	UPROPERTY()
 	double LocalDeployProgress = {};	
 };
@@ -43,6 +43,7 @@ Usage:
 
 Options:
   --ids <ids>                      The ids for the services you wish to deploy. Ignoring this option deploys all services
+  -fcpu, --force-amd-cpu-arch      Force the services to run with amd64 CPU architecture, useful when deploying from computers with ARM architecture [default: False]
   --dryrun                         Should any networking happen?
   --cid <cid>                      Cid to use; will default to whatever is in the file system
   --pid <pid>                      Pid to use; will default to whatever is in the file system
@@ -50,6 +51,7 @@ Options:
   --refresh-token <refresh-token>  Refresh token to use for the requests
   --log <log>                      Extra logs gets printed out
   --dir <dir>                      Directory to use for configuration
+  --dotnet-path <dotnet-path>      a custom location for dotnet
   -?, -h, --help                   Show help and usage information
 
 

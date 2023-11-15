@@ -8,23 +8,23 @@
 #include "TournamentClientView.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UTournamentClientView : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UTournamentClientView : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id", Category="Beam")
-	FString TournamentId;
+	FString TournamentId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Start Time Utc", Category="Beam")
-	FString StartTimeUtc;
+	FString StartTimeUtc = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Seconds Remaining", Category="Beam")
-	int64 SecondsRemaining;
+	int64 SecondsRemaining = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cycle", Category="Beam")
-	int32 Cycle;
+	int32 Cycle = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="End Time Utc", Category="Beam")
-	FString EndTimeUtc;
+	FString EndTimeUtc = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id", Category="Beam")
-	FString ContentId;
+	FString ContentId = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

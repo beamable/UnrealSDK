@@ -27,9 +27,10 @@ void UPostGoogleplayPurchaseFailRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostGoogleplayPurchaseFailRequest* UPostGoogleplayPurchaseFailRequest::Make(int64 _Txid, FString _Reason, UObject* RequestOwner)
+UPostGoogleplayPurchaseFailRequest* UPostGoogleplayPurchaseFailRequest::Make(int64 _Txid, FString _Reason, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostGoogleplayPurchaseFailRequest* Req = NewObject<UPostGoogleplayPurchaseFailRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

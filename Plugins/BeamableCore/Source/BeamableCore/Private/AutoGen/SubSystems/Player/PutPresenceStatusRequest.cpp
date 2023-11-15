@@ -27,9 +27,10 @@ void UPutPresenceStatusRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutPresenceStatusRequest* UPutPresenceStatusRequest::Make(FString _PlayerId, FOptionalPresenceStatus _Status, FOptionalString _Description, UObject* RequestOwner)
+UPutPresenceStatusRequest* UPutPresenceStatusRequest::Make(FString _PlayerId, FOptionalPresenceStatus _Status, FOptionalString _Description, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutPresenceStatusRequest* Req = NewObject<UPutPresenceStatusRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->PlayerId = _PlayerId;

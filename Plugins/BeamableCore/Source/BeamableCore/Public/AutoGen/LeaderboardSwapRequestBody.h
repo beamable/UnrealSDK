@@ -8,19 +8,19 @@
 #include "LeaderboardSwapRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API ULeaderboardSwapRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API ULeaderboardSwapRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Swap Base", Category="Beam")
-	int64 SwapBase;
+	int64 SwapBase = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Delta", Category="Beam")
-	int64 Delta;
+	int64 Delta = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Winner Id", Category="Beam")
-	FOptionalInt64 WinnerId;
+	FOptionalInt64 WinnerId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Loser Id", Category="Beam")
-	FOptionalInt64 LoserId;
+	FOptionalInt64 LoserId = {};
 
 	
 

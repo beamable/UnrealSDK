@@ -8,15 +8,15 @@
 #include "RouteVariable.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API URouteVariable : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API URouteVariable : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type Name", Category="Beam")
-	FString TypeName;
+	FString TypeName = {};
 
 	
 

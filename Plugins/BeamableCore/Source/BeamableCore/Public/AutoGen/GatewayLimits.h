@@ -8,13 +8,13 @@
 #include "GatewayLimits.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGatewayLimits : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGatewayLimits : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Concurrent Requests", Category="Beam")
-	int32 MaxConcurrentRequests;
+	int32 MaxConcurrentRequests = {};
 
 	
 

@@ -27,9 +27,10 @@ void UPostClientStringlistRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostClientStringlistRequest* UPostClientStringlistRequest::Make(FBeamStatsType _ObjectId, FOptionalArrayOfStatStringListEntry _Set, UObject* RequestOwner)
+UPostClientStringlistRequest* UPostClientStringlistRequest::Make(FBeamStatsType _ObjectId, FOptionalArrayOfStatStringListEntry _Set, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostClientStringlistRequest* Req = NewObject<UPostClientStringlistRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

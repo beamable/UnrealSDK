@@ -25,15 +25,15 @@ public:
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="End Date", Category="Beam")
-	FOptionalString EndDate;
+	FOptionalString EndDate = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Storage Object Name", Category="Beam")
-	FString StorageObjectName;
+	FString StorageObjectName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Granularity", Category="Beam")
-	FString Granularity;
+	FString Granularity = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Start Date", Category="Beam")
-	FOptionalString StartDate;
+	FOptionalString StartDate = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Period", Category="Beam")
-	FOptionalString Period;
+	FOptionalString Period = {};
 
 	// Body Params
 	
@@ -45,8 +45,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make GetStoragePerformance",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_EndDate,_StartDate,_Period,RequestOwner"))
-	static UGetStoragePerformanceRequest* Make(FOptionalString _EndDate, FString _StorageObjectName, FString _Granularity, FOptionalString _StartDate, FOptionalString _Period, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make GetStoragePerformance",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_EndDate,_StartDate,_Period,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UGetStoragePerformanceRequest* Make(FOptionalString _EndDate, FString _StorageObjectName, FString _Granularity, FOptionalString _StartDate, FOptionalString _Period, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

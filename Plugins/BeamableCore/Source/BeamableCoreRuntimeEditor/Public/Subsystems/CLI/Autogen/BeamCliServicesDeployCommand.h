@@ -16,7 +16,7 @@ struct FBeamCliServicesDeployStreamData
 	UPROPERTY()
 	bool Success = {};
 	UPROPERTY()
-	FString FailureReason;	
+	FString FailureReason = {};	
 };
 
 
@@ -28,7 +28,7 @@ struct FBeamCliServicesDeployRemoteProgressStreamData
 	inline static FString StreamTypeName = FString(TEXT("remote_progress"));
 
 	UPROPERTY()
-	FString BeamoId;
+	FString BeamoId = {};
 	UPROPERTY()
 	double BuildAndTestProgress = {};
 	UPROPERTY()
@@ -44,20 +44,22 @@ Usage:
   Beamable.Tools services deploy [options]
 
 Options:
-  --enable <enable>                      These are the ids for services you wish to be enabled once Beam-O receives the updated manifest
-  --disable <disable>                    These are the ids for services you wish to be disabled once Beam-O receives the updated manifest
-  --from-file <from-file>                If this option is set to a valid path to a ServiceManifest JSON, deploys that instead []
-  --comment <comment>                    Associates this comment along with the published Manifest. You'll be able to read it via the Beamable Portal []
-  --service-comments <service-comments>  Any number of strings in the format BeamoId::Comment
-                                         Associates each comment to the given Beamo Id if it's among the published services. You'll be able to read it via the Beamable Portal []
-  --dryrun                               Should any networking happen?
-  --cid <cid>                            Cid to use; will default to whatever is in the file system
-  --pid <pid>                            Pid to use; will default to whatever is in the file system
-  --host <host>                          The host endpoint for beamable
-  --refresh-token <refresh-token>        Refresh token to use for the requests
-  --log <log>                            Extra logs gets printed out
-  --dir <dir>                            Directory to use for configuration
-  -?, -h, --help                         Show help and usage information
+  --enable <enable>                            These are the ids for services you wish to be enabled once Beam-O receives the updated manifest
+  --disable <disable>                          These are the ids for services you wish to be disabled once Beam-O receives the updated manifest
+  --from-file <from-file>                      If this option is set to a valid path to a ServiceManifest JSON, deploys that instead []
+  --comment <comment>                          Associates this comment along with the published Manifest. You'll be able to read it via the Beamable Portal []
+  --service-comments <service-comments>        Any number of strings in the format BeamoId::Comment
+                                               Associates each comment to the given Beamo Id if it's among the published services. You'll be able to read it via the Beamable Portal []
+  --docker-registry-url <docker-registry-url>  A custom docker registry url to use when uploading. By default, the result from the beamo/registry network call will be used, with minor string manipulation to add https scheme, remove port specificatino, and add /v2
+  --dryrun                                     Should any networking happen?
+  --cid <cid>                                  Cid to use; will default to whatever is in the file system
+  --pid <pid>                                  Pid to use; will default to whatever is in the file system
+  --host <host>                                The host endpoint for beamable
+  --refresh-token <refresh-token>              Refresh token to use for the requests
+  --log <log>                                  Extra logs gets printed out
+  --dir <dir>                                  Directory to use for configuration
+  --dotnet-path <dotnet-path>                  a custom location for dotnet
+  -?, -h, --help                               Show help and usage information
 
 
 

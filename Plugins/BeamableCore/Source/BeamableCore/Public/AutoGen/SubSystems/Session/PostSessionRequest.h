@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UStartSessionRequestBody* Body;
+	UStartSessionRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPostSessionRequest() = default;
@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Session", DisplayName="Beam - Make PostSession",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Source,_Shard,_Locale,_Language,_Time,_Platform,_Gamer,_Device,_CustomParams,_DeviceParams,RequestOwner"))
-	static UPostSessionRequest* Make(FOptionalString _Source, FOptionalString _Shard, FOptionalString _Locale, FOptionalSessionLanguageContext _Language, FOptionalInt64 _Time, FOptionalString _Platform, FOptionalInt64 _Gamer, FOptionalString _Device, FOptionalMapOfString _CustomParams, FOptionalMapOfString _DeviceParams, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Session", DisplayName="Beam - Make PostSession",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Source,_Shard,_Locale,_Language,_Time,_Platform,_Gamer,_Device,_CustomParams,_DeviceParams,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPostSessionRequest* Make(FOptionalString _Source, FOptionalString _Shard, FOptionalString _Locale, FOptionalSessionLanguageContext _Language, FOptionalInt64 _Time, FOptionalString _Platform, FOptionalInt64 _Gamer, FOptionalString _Device, FOptionalMapOfString _CustomParams, FOptionalMapOfString _DeviceParams, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

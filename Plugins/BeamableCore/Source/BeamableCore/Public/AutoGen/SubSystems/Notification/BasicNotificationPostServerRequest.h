@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UServerEvent* Body;
+	UServerEvent* Body = {};
 
 	// Beam Base Request Declaration
 	UBasicNotificationPostServerRequest() = default;
@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Notification", DisplayName="Beam - Make BasicNotificationPostServer",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Payload,RequestOwner"))
-	static UBasicNotificationPostServerRequest* Make(FString _Event, bool _bToAll, FOptionalString _Payload, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Notification", DisplayName="Beam - Make BasicNotificationPostServer",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Payload,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UBasicNotificationPostServerRequest* Make(FString _Event, bool _bToAll, FOptionalString _Payload, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

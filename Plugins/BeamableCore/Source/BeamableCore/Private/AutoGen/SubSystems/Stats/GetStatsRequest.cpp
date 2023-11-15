@@ -28,9 +28,10 @@ void UGetStatsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetStatsRequest* UGetStatsRequest::Make(FBeamStatsType _ObjectId, FOptionalString _Stats, UObject* RequestOwner)
+UGetStatsRequest* UGetStatsRequest::Make(FBeamStatsType _ObjectId, FOptionalString _Stats, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetStatsRequest* Req = NewObject<UGetStatsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

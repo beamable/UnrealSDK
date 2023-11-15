@@ -26,9 +26,10 @@ void UGetSteamOrderRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetSteamOrderRequest* UGetSteamOrderRequest::Make(FString _OrderId, UObject* RequestOwner)
+UGetSteamOrderRequest* UGetSteamOrderRequest::Make(FString _OrderId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetSteamOrderRequest* Req = NewObject<UGetSteamOrderRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->OrderId = _OrderId;

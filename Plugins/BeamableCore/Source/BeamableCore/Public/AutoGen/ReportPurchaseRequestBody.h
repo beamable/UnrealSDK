@@ -8,15 +8,15 @@
 #include "ReportPurchaseRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UReportPurchaseRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UReportPurchaseRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Listing Id", Category="Beam")
-	FString ListingId;
+	FString ListingId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Free", Category="Beam")
-	FOptionalBool bFree;
+	FOptionalBool bFree = {};
 
 	
 

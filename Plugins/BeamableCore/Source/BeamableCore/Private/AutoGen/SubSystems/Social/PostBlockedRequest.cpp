@@ -27,9 +27,10 @@ void UPostBlockedRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostBlockedRequest* UPostBlockedRequest::Make(FBeamGamerTag _PlayerId, UObject* RequestOwner)
+UPostBlockedRequest* UPostBlockedRequest::Make(FBeamGamerTag _PlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostBlockedRequest* Req = NewObject<UPostBlockedRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

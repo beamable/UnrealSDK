@@ -22,14 +22,14 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	int64 ObjectId;
+	int64 ObjectId = {};
 	
 	// Query Params
 	
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UGroupUpdate* Body;
+	UGroupUpdate* Body = {};
 
 	// Beam Base Request Declaration
 	UPutGroupsRequest() = default;
@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Groups", DisplayName="Beam - Make PutGroups",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Name,_EnrollmentType,_Tag,_Slogan,_Requirement,_Motd,_ClientData,_SubGroup,RequestOwner"))
-	static UPutGroupsRequest* Make(int64 _ObjectId, FOptionalString _Name, FOptionalString _EnrollmentType, FOptionalString _Tag, FOptionalString _Slogan, FOptionalInt64 _Requirement, FOptionalString _Motd, FOptionalString _ClientData, FOptionalInt64 _SubGroup, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Groups", DisplayName="Beam - Make PutGroups",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Name,_EnrollmentType,_Tag,_Slogan,_Requirement,_Motd,_ClientData,_SubGroup,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPutGroupsRequest* Make(int64 _ObjectId, FOptionalString _Name, FOptionalString _EnrollmentType, FOptionalString _Tag, FOptionalString _Slogan, FOptionalInt64 _Requirement, FOptionalString _Motd, FOptionalString _ClientData, FOptionalInt64 _SubGroup, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -98,7 +98,7 @@ struct BEAMABLECORE_API FNotificationConnectionFailed
  * Data for the Message ENotificationMessageType.
  */
 USTRUCT(BlueprintType)
-struct BEAMABLECORE_API FNotificationMessage : public FBeamJsonSerializable
+struct BEAMABLECORE_API FNotificationMessage : public FBeamJsonSerializableUStruct
 {
 	GENERATED_BODY()
 
@@ -185,7 +185,7 @@ struct FNotificationMessageEventHandler
 {
 	GENERATED_BODY()
 
-	FNotificationMessageEventHandler() = default;	
+	FNotificationMessageEventHandler() = default;
 
 	friend bool operator==(const FNotificationMessageEventHandler& Lhs, const FNotificationMessageEventHandler& RHS)
 	{
@@ -197,13 +197,18 @@ struct FNotificationMessageEventHandler
 		return !(Lhs == RHS);
 	}
 
-	
+
 	FString              ContextKey;
 	FOnNotificationEvent Handler;
 };
 
 FORCEINLINE uint32 GetTypeHash(const FNotificationMessageEventHandler& MessageEventHandler) { return GetTypeHash(MessageEventHandler.ContextKey); }
 
+USTRUCT()
+struct FBeamBaseNotificationMessage : public FBeamJsonSerializableUStruct
+{
+	GENERATED_BODY()
+};
 
 /**
  * Notification engine system. This system keeps track of all Open Websocket connections in association with a UserSlot and a connection name.
@@ -238,6 +243,7 @@ public:
 	void Connect(const FUserSlot& Slot, const FBeamRealmUser& UserData, const FName& SocketName, const FString& Uri, const TMap<FString, FString>& ExtraHeaders, const FOnNotificationEvent& ConnectionEventHandler, FBeamWebSocketHandle& OutHandle, UObject* ContextObject = nullptr);
 
 	bool TryGetHandle(const FUserSlot& Slot, const FName& SocketName, FBeamWebSocketHandle& OutHandle);
+	void CloseSocketsForSlot(const FUserSlot& Slot);
 
 	void ClearPIESockets();
 
@@ -253,7 +259,7 @@ public:
 					TIsDerivedFrom<THandler, TBaseDynamicDelegate<FWeakObjectPtr, void, TMessage>>::Value);
 
 				// Make sure the Message type is a FBeamJsonSerializable
-				static_assert(TIsDerivedFrom<TMessage, FBeamJsonSerializable>::Value);
+				static_assert(TIsDerivedFrom<TMessage, FBeamJsonSerializableUStruct>::Value);
 
 				const FOnNotificationEvent EventHandler = FOnNotificationEvent::CreateLambda([Slot, SocketName, ContextKey, Handler](FNotificationEvent Evt)
 				{
@@ -268,6 +274,27 @@ public:
 				});
 
 				MessageEventHandlers.Add(FBeamWebSocketHandle(Slot, SocketName, this), {ContextKey, EventHandler});
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	bool TryUnsubscribeAllFromSlot(const FUserSlot& Slot, const FName& SocketName)
+	{
+		if (OpenSockets.Contains(Slot))
+		{
+			if (const auto& UserSockets = OpenSockets.FindChecked(Slot); UserSockets.Contains(SocketName))
+			{
+				const FBeamWebSocketHandle Key(Slot, SocketName, this);
+
+				TArray<FNotificationMessageEventHandler> Handlers;
+				MessageEventHandlers.MultiFind(Key, Handlers);
+				for (const auto& NotificationMessageEventHandler : Handlers)
+				{
+					MessageEventHandlers.RemoveSingle(Key, NotificationMessageEventHandler);
+				}
 				return true;
 			}
 		}

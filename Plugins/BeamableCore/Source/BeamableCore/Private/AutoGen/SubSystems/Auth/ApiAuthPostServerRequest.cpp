@@ -27,9 +27,10 @@ void UApiAuthPostServerRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UApiAuthPostServerRequest* UApiAuthPostServerRequest::Make(FOptionalString _ClientId, FOptionalString _ClientSecret, FOptionalBeamCid _CustomerId, FOptionalBeamPid _RealmId, UObject* RequestOwner)
+UApiAuthPostServerRequest* UApiAuthPostServerRequest::Make(FOptionalString _ClientId, FOptionalString _ClientSecret, FOptionalBeamCid _CustomerId, FOptionalBeamPid _RealmId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UApiAuthPostServerRequest* Req = NewObject<UApiAuthPostServerRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

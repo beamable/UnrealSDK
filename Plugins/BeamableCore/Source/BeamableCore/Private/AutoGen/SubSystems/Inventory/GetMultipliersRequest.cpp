@@ -23,9 +23,10 @@ void UGetMultipliersRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetMultipliersRequest* UGetMultipliersRequest::Make(FBeamGamerTag _ObjectId, UObject* RequestOwner)
+UGetMultipliersRequest* UGetMultipliersRequest::Make(FBeamGamerTag _ObjectId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetMultipliersRequest* Req = NewObject<UGetMultipliersRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

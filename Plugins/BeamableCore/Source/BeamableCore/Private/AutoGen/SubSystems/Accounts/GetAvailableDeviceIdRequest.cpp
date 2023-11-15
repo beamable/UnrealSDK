@@ -26,9 +26,10 @@ void UGetAvailableDeviceIdRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAvailableDeviceIdRequest* UGetAvailableDeviceIdRequest::Make(FString _DeviceId, UObject* RequestOwner)
+UGetAvailableDeviceIdRequest* UGetAvailableDeviceIdRequest::Make(FString _DeviceId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetAvailableDeviceIdRequest* Req = NewObject<UGetAvailableDeviceIdRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->DeviceId = _DeviceId;

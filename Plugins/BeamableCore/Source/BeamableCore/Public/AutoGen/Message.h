@@ -13,39 +13,39 @@
 #include "Message.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UMessage : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UMessage : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Receiver Gamer Tag", Category="Beam")
-	int64 ReceiverGamerTag;
+	int64 ReceiverGamerTag = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="State", Category="Beam")
-	FString State;
+	FString State = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	int64 Id;
+	int64 Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sender Gamer Tag", Category="Beam")
-	int64 SenderGamerTag;
+	int64 SenderGamerTag = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sent", Category="Beam")
-	int64 Sent;
+	int64 Sent = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Category", Category="Beam")
-	FString Category;
+	FString Category = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Attachments", Category="Beam")
-	TArray<UAttachment*> Attachments;
+	TArray<UAttachment*> Attachments = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Body", Category="Beam")
-	FOptionalString Body;
+	FOptionalString Body = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Expires", Category="Beam")
-	FOptionalInt32 Expires;
+	FOptionalInt32 Expires = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Rewards", Category="Beam")
-	FOptionalPlayerReward PlayerRewards;
+	FOptionalPlayerReward PlayerRewards = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Subject", Category="Beam")
-	FOptionalString Subject;
+	FOptionalString Subject = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rewards", Category="Beam")
-	FOptionalMailRewards Rewards;
+	FOptionalMailRewards Rewards = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Body Ref", Category="Beam")
-	FOptionalInt64 BodyRef;
+	FOptionalInt64 BodyRef = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Claimed Time Ms", Category="Beam")
-	FOptionalInt64 ClaimedTimeMs;
+	FOptionalInt64 ClaimedTimeMs = {};
 
 	
 

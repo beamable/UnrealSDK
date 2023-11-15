@@ -44,9 +44,10 @@ void UGetAdminPlayerRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAdminPlayerRequest* UGetAdminPlayerRequest::Make(int64 _PlayerId, FOptionalString _TournamentId, FOptionalString _ContentId, FOptionalBool _bHasUnclaimedRewards, UObject* RequestOwner)
+UGetAdminPlayerRequest* UGetAdminPlayerRequest::Make(int64 _PlayerId, FOptionalString _TournamentId, FOptionalString _ContentId, FOptionalBool _bHasUnclaimedRewards, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetAdminPlayerRequest* Req = NewObject<UGetAdminPlayerRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->PlayerId = _PlayerId;

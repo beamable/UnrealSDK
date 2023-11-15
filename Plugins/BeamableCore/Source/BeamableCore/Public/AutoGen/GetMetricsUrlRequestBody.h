@@ -9,21 +9,21 @@
 #include "GetMetricsUrlRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGetMetricsUrlRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGetMetricsUrlRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Service Name", Category="Beam")
-	FString ServiceName;
+	FString ServiceName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Metric Name", Category="Beam")
-	FString MetricName;
+	FString MetricName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Start Time", Category="Beam")
-	FOptionalInt64 StartTime;
+	FOptionalInt64 StartTime = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="End Time", Category="Beam")
-	FOptionalInt64 EndTime;
+	FOptionalInt64 EndTime = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Period", Category="Beam")
-	FOptionalInt32 Period;
+	FOptionalInt32 Period = {};
 
 	
 

@@ -8,13 +8,13 @@
 #include "EndTransactionRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEndTransactionRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UEndTransactionRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Transaction", Category="Beam")
-	FString Transaction;
+	FString Transaction = {};
 
 	
 

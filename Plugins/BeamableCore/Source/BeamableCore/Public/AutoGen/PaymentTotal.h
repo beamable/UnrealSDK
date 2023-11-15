@@ -8,15 +8,15 @@
 #include "PaymentTotal.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPaymentTotal : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UPaymentTotal : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Total Revenue", Category="Beam")
-	int64 TotalRevenue;
+	int64 TotalRevenue = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currency Code", Category="Beam")
-	FOptionalString CurrencyCode;
+	FOptionalString CurrencyCode = {};
 
 	
 

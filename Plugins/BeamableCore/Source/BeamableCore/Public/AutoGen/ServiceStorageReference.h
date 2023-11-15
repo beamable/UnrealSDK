@@ -8,23 +8,23 @@
 #include "ServiceStorageReference.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UServiceStorageReference : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UServiceStorageReference : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Archived", Category="Beam")
-	bool bArchived;
+	bool bArchived = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Enabled", Category="Beam")
-	bool bEnabled;
+	bool bEnabled = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Storage Type", Category="Beam")
-	FString StorageType;
+	FString StorageType = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FString Id;
+	FString Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Checksum", Category="Beam")
-	FString Checksum;
+	FString Checksum = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Template Id", Category="Beam")
-	FOptionalString TemplateId;
+	FOptionalString TemplateId = {};
 
 	
 

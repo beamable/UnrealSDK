@@ -8,7 +8,7 @@
 #include "CloudsavingBasicReference.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UCloudsavingBasicReference : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UCloudsavingBasicReference : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 

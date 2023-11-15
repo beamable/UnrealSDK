@@ -27,9 +27,10 @@ void UPostPublishRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostPublishRequest* UPostPublishRequest::Make(FOptionalString _Body, FOptionalString _Cid, FOptionalString _Pid, FOptionalString _PlayerId, UObject* RequestOwner)
+UPostPublishRequest* UPostPublishRequest::Make(FOptionalString _Body, FOptionalString _Cid, FOptionalString _Pid, FOptionalString _PlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostPublishRequest* Req = NewObject<UPostPublishRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

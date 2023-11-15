@@ -146,7 +146,7 @@ TSharedPtr<FName> SBeamContentIdPin::GetSelectedId() const
 
 		for (const auto& Name : *FoundIds)
 		{
-			if (Name->ToString() == ContentId.AsString)
+			if (Name->ToString().Equals(ContentId.AsString))
 				return Name;
 		}
 
@@ -175,7 +175,7 @@ TSharedPtr<FName> SBeamContentIdPin::GetSelectedType() const
 	{
 		for (const auto& Name : ContentTypeNames)
 		{
-			if (Name->ToString() == ContentId.AsString)
+			if (Name->ToString().Equals(TypeName))
 				return Name;
 		}
 

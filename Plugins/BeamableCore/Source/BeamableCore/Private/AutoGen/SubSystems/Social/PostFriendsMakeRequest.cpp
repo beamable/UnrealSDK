@@ -27,9 +27,10 @@ void UPostFriendsMakeRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostFriendsMakeRequest* UPostFriendsMakeRequest::Make(FBeamGamerTag _GamerTag, UObject* RequestOwner)
+UPostFriendsMakeRequest* UPostFriendsMakeRequest::Make(FBeamGamerTag _GamerTag, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostFriendsMakeRequest* Req = NewObject<UPostFriendsMakeRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

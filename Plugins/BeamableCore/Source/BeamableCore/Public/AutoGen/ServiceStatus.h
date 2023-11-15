@@ -8,21 +8,21 @@
 #include "ServiceStatus.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UServiceStatus : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UServiceStatus : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Current", Category="Beam")
-	bool bIsCurrent;
+	bool bIsCurrent = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Running", Category="Beam")
-	bool bRunning;
+	bool bRunning = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Service Name", Category="Beam")
-	FString ServiceName;
+	FString ServiceName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Image Id", Category="Beam")
-	FString ImageId;
+	FString ImageId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Service Dependency References", Category="Beam")
-	FOptionalArrayOfServiceDependencyReference ServiceDependencyReferences;
+	FOptionalArrayOfServiceDependencyReference ServiceDependencyReferences = {};
 
 	
 

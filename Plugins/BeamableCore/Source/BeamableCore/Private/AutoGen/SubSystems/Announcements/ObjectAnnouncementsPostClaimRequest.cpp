@@ -27,9 +27,10 @@ void UObjectAnnouncementsPostClaimRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UObjectAnnouncementsPostClaimRequest* UObjectAnnouncementsPostClaimRequest::Make(int64 _ObjectId, FOptionalString _Announcement, FOptionalArrayOfString _Announcements, UObject* RequestOwner)
+UObjectAnnouncementsPostClaimRequest* UObjectAnnouncementsPostClaimRequest::Make(int64 _ObjectId, FOptionalString _Announcement, FOptionalArrayOfString _Announcements, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UObjectAnnouncementsPostClaimRequest* Req = NewObject<UObjectAnnouncementsPostClaimRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

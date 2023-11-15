@@ -10,19 +10,19 @@
 #include "CustomerView.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UCustomerView : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UCustomerView : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cid", Category="Beam")
-	FBeamCid Cid;
+	FBeamCid Cid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Projects", Category="Beam")
-	TArray<UProjectView*> Projects;
+	TArray<UProjectView*> Projects = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Alias", Category="Beam")
-	FOptionalString Alias;
+	FOptionalString Alias = {};
 
 	
 

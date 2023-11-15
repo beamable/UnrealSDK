@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UObjectRequests* Body;
+	UObjectRequests* Body = {};
 
 	// Beam Base Request Declaration
 	UPostDataDownloadURLRequest() = default;
@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Cloudsaving", DisplayName="Beam - Make PostDataDownloadURL",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_PlayerId,_Request,RequestOwner"))
-	static UPostDataDownloadURLRequest* Make(FOptionalInt64 _PlayerId, FOptionalArrayOfObjectRequestBody _Request, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Cloudsaving", DisplayName="Beam - Make PostDataDownloadURL",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_PlayerId,_Request,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPostDataDownloadURLRequest* Make(FOptionalInt64 _PlayerId, FOptionalArrayOfObjectRequestBody _Request, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

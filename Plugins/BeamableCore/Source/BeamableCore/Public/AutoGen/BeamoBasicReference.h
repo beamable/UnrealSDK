@@ -8,15 +8,15 @@
 #include "BeamoBasicReference.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UBeamoBasicReference : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UBeamoBasicReference : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Archived", Category="Beam")
-	bool bArchived;
+	bool bArchived = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Arm", Category="Beam")
-	bool bArm;
+	bool bArm = {};
 
 	
 

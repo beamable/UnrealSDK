@@ -9,15 +9,15 @@
 #include "WebhookInvocationStrategy.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UWebhookInvocationStrategy : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UWebhookInvocationStrategy : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Invocation Type", Category="Beam")
-	EWebhookInvocationType InvocationType;
+	EWebhookInvocationType InvocationType = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Retry Type", Category="Beam")
-	EWebhookRetryType RetryType;
+	EWebhookRetryType RetryType = {};
 
 	
 

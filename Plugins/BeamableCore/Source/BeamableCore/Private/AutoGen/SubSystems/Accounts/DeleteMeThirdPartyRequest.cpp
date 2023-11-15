@@ -27,9 +27,10 @@ void UDeleteMeThirdPartyRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteMeThirdPartyRequest* UDeleteMeThirdPartyRequest::Make(FString _ThirdParty, FString _Token, UObject* RequestOwner)
+UDeleteMeThirdPartyRequest* UDeleteMeThirdPartyRequest::Make(FString _ThirdParty, FString _Token, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UDeleteMeThirdPartyRequest* Req = NewObject<UDeleteMeThirdPartyRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -23,7 +23,7 @@ FName UK2BeamNode_Operation::GetSubsystemSelfFunctionName() const
 
 FName UK2BeamNode_Operation::GetOperationFunctionName() const
 {
-	return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, AuthenticateFrictionlessOperation);
+	return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, LoginFrictionlessOperation);
 }
 
 void UK2BeamNode_Operation::BuildPinToolTipMap(TMap<FName, FString>& OutTooltipMap)
@@ -710,7 +710,7 @@ void UK2BeamNode_Operation::SetUpPinsForSuccessNotSuccessBeamFlow(FKismetCompile
 
 	// Create the node that will check if the result code was success or not
 	const auto EnumEquality = CreateEnumEqualityAgainstDefault(this, CompilerContext, SourceGraph, K2Schema,
-	                                                           StaticEnum<EBeamOperationEventType>(), static_cast<uint8>(EBeamOperationEventType::SUCCESS),
+	                                                           StaticEnum<EBeamOperationEventType>(), static_cast<uint8>(EBeamOperationEventType::OET_SUCCESS),
 	                                                           BreakStructNode->FindPin(GET_MEMBER_NAME_CHECKED(FBeamOperationEvent, EventType)));
 
 	// Connect the EnumEquality to the Condition pin and the Then pin
@@ -782,9 +782,9 @@ void UK2BeamNode_Operation::SetUpPinsForSuccessErrorCancelledBeamFlow(FKismetCom
 	// Move the execution flow from the Custom Node's flow pins to the intermediate ones
 	{
 		// Get the flow pins
-		const auto IntermediateSuccessFlowPin = SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(static_cast<uint8>(EBeamOperationEventType::SUCCESS)));
-		const auto IntermediateErrorFlowPin = SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(static_cast<uint8>(EBeamOperationEventType::ERROR)));
-		const auto IntermediateCancelledFlowPin = SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(static_cast<uint8>(EBeamOperationEventType::CANCELLED)));
+		const auto IntermediateSuccessFlowPin = SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(static_cast<uint8>(EBeamOperationEventType::OET_SUCCESS)));
+		const auto IntermediateErrorFlowPin = SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(static_cast<uint8>(EBeamOperationEventType::OET_ERROR)));
+		const auto IntermediateCancelledFlowPin = SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(static_cast<uint8>(EBeamOperationEventType::OET_CANCELLED)));
 
 		const auto SuccessFlowMoved = CompilerContext.MovePinLinksToIntermediate(*SuccessFlowPin, *IntermediateSuccessFlowPin);
 		check(!SuccessFlowMoved.IsFatal());
@@ -837,17 +837,17 @@ void UK2BeamNode_Operation::SetUpPinsForSubEventsBeamFlow(FKismetCompilerContext
 	// Expand the Success SubEvents
 	ExpandBeamFlowSubEvents(CompilerContext, SourceGraph, K2Schema, SuccessFlows, SuccessEventFlows,
 	                        OthersFlowPin, SuccessSubEventsFlowPinNames, SuccessSubEventsDataPinNames, RelevantSuccessSubEvents, SuccessSubEventsNotRelevantValues, BreakOperationResultNode,
-	                        SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(static_cast<uint8>(EBeamOperationEventType::SUCCESS))));
+	                        SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(static_cast<uint8>(EBeamOperationEventType::OET_SUCCESS))));
 
 	// Expand the Error SubEvents
 	ExpandBeamFlowSubEvents(CompilerContext, SourceGraph, K2Schema, ErrorFlows, ErrorEventFlows,
 	                        OthersFlowPin, ErrorSubEventsFlowPinNames, ErrorSubEventsDataPinNames, RelevantErrorSubEvents, ErrorSubEventsNotRelevantValues, BreakOperationResultNode,
-	                        SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(static_cast<uint8>(EBeamOperationEventType::ERROR))));
+	                        SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(static_cast<uint8>(EBeamOperationEventType::OET_ERROR))));
 
 	// Expand the Cancelled SubEvents
 	ExpandBeamFlowSubEvents(CompilerContext, SourceGraph, K2Schema, CancelledFlows, CancelledEventFlows,
 	                        OthersFlowPin, CancelledSubEventsFlowPinNames, CancelledSubEventsDataPinNames, RelevantCancelledSubEvents, CancelledSubEventsNotRelevantValues, BreakOperationResultNode,
-	                        SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(static_cast<uint8>(EBeamOperationEventType::CANCELLED))));
+	                        SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(static_cast<uint8>(EBeamOperationEventType::OET_CANCELLED))));
 
 	for (int i = 0; i < OutPerFlowNodes.Num(); ++i)
 	{

@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UGetLogsUrlRequestBody* Body;
+	UGetLogsUrlRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPostLogsUrlRequest() = default;
@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make PostLogsUrl",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_StartTime,_NextToken,_Filter,_EndTime,_Limit,RequestOwner"))
-	static UPostLogsUrlRequest* Make(FString _ServiceName, FOptionalInt64 _StartTime, FOptionalString _NextToken, FOptionalString _Filter, FOptionalInt64 _EndTime, FOptionalInt32 _Limit, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make PostLogsUrl",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_StartTime,_NextToken,_Filter,_EndTime,_Limit,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPostLogsUrlRequest* Make(FString _ServiceName, FOptionalInt64 _StartTime, FOptionalString _NextToken, FOptionalString _Filter, FOptionalInt64 _EndTime, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

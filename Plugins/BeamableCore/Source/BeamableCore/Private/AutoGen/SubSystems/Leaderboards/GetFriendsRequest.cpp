@@ -23,9 +23,10 @@ void UGetFriendsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetFriendsRequest* UGetFriendsRequest::Make(FString _ObjectId, UObject* RequestOwner)
+UGetFriendsRequest* UGetFriendsRequest::Make(FString _ObjectId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetFriendsRequest* Req = NewObject<UGetFriendsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

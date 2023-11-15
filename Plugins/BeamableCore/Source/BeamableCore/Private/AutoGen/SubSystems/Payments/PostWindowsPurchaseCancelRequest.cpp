@@ -27,9 +27,10 @@ void UPostWindowsPurchaseCancelRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostWindowsPurchaseCancelRequest* UPostWindowsPurchaseCancelRequest::Make(int64 _Txid, UObject* RequestOwner)
+UPostWindowsPurchaseCancelRequest* UPostWindowsPurchaseCancelRequest::Make(int64 _Txid, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostWindowsPurchaseCancelRequest* Req = NewObject<UPostWindowsPurchaseCancelRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

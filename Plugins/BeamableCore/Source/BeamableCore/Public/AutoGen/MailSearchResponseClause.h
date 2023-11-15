@@ -8,17 +8,17 @@
 #include "MailSearchResponseClause.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UMailSearchResponseClause : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UMailSearchResponseClause : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Count", Category="Beam")
-	int64 Count;
+	int64 Count = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content", Category="Beam")
-	FOptionalArrayOfMessage Content;
+	FOptionalArrayOfMessage Content = {};
 
 	
 

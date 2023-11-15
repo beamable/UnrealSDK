@@ -27,9 +27,10 @@ void UPostManifestsUnarchiveRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostManifestsUnarchiveRequest* UPostManifestsUnarchiveRequest::Make(TArray<FBeamContentManifestId> _ManifestIds, UObject* RequestOwner)
+UPostManifestsUnarchiveRequest* UPostManifestsUnarchiveRequest::Make(TArray<FBeamContentManifestId> _ManifestIds, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostManifestsUnarchiveRequest* Req = NewObject<UPostManifestsUnarchiveRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

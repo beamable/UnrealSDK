@@ -10,21 +10,21 @@
 #include "PlayerStoreView.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPlayerStoreView : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UPlayerStoreView : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
-	FString Symbol;
+	FString Symbol = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Listings", Category="Beam")
-	TArray<UPlayerListingView*> Listings;
+	TArray<UPlayerListingView*> Listings = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Next Delta Seconds", Category="Beam")
-	FOptionalInt64 NextDeltaSeconds;
+	FOptionalInt64 NextDeltaSeconds = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Title", Category="Beam")
-	FOptionalString Title;
+	FOptionalString Title = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Seconds Remain", Category="Beam")
-	FOptionalInt64 SecondsRemain;
+	FOptionalInt64 SecondsRemain = {};
 
 	
 

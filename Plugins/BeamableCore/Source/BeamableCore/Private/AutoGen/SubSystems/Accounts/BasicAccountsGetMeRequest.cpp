@@ -23,9 +23,10 @@ void UBasicAccountsGetMeRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UBasicAccountsGetMeRequest* UBasicAccountsGetMeRequest::Make(UObject* RequestOwner)
+UBasicAccountsGetMeRequest* UBasicAccountsGetMeRequest::Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicAccountsGetMeRequest* Req = NewObject<UBasicAccountsGetMeRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

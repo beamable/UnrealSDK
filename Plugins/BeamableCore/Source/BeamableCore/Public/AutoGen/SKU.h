@@ -8,19 +8,19 @@
 #include "SKU.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API USKU : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API USKU : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Description", Category="Beam")
-	FString Description;
+	FString Description = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Real Price", Category="Beam")
-	int32 RealPrice;
+	int32 RealPrice = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Product Ids", Category="Beam")
-	TMap<FString, FString> ProductIds;
+	TMap<FString, FString> ProductIds = {};
 
 	
 

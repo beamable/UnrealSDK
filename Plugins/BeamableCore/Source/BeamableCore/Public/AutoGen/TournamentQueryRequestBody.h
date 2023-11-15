@@ -10,17 +10,17 @@
 #include "TournamentQueryRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UTournamentQueryRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UTournamentQueryRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Running", Category="Beam")
-	FOptionalBool bIsRunning;
+	FOptionalBool bIsRunning = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id", Category="Beam")
-	FOptionalString ContentId;
+	FOptionalString ContentId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cycle", Category="Beam")
-	FOptionalInt32 Cycle;
+	FOptionalInt32 Cycle = {};
 
 	
 

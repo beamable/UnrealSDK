@@ -8,17 +8,17 @@
 #include "FriendshipStatus.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UFriendshipStatus : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UFriendshipStatus : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Blocked", Category="Beam")
-	bool bIsBlocked;
+	bool bIsBlocked = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Friend Id", Category="Beam")
-	FBeamGamerTag FriendId;
+	FBeamGamerTag FriendId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
-	FBeamGamerTag PlayerId;
+	FBeamGamerTag PlayerId = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

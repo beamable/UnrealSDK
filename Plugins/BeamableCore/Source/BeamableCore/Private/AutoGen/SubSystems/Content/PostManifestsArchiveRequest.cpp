@@ -27,9 +27,10 @@ void UPostManifestsArchiveRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostManifestsArchiveRequest* UPostManifestsArchiveRequest::Make(TArray<FBeamContentManifestId> _ManifestIds, UObject* RequestOwner)
+UPostManifestsArchiveRequest* UPostManifestsArchiveRequest::Make(TArray<FBeamContentManifestId> _ManifestIds, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostManifestsArchiveRequest* Req = NewObject<UPostManifestsArchiveRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

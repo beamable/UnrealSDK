@@ -8,15 +8,15 @@
 #include "RenameProjectRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API URenameProjectRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API URenameProjectRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Project Id", Category="Beam")
-	FBeamPid ProjectId;
+	FBeamPid ProjectId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="New Name", Category="Beam")
-	FString NewName;
+	FString NewName = {};
 
 	
 

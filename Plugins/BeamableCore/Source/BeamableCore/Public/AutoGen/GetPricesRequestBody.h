@@ -8,13 +8,13 @@
 #include "GetPricesRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGetPricesRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGetPricesRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Steam Id", Category="Beam")
-	int64 SteamId;
+	int64 SteamId = {};
 
 	
 

@@ -27,9 +27,10 @@ void UDeleteLaunchMessageRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteLaunchMessageRequest* UDeleteLaunchMessageRequest::Make(FString _File, UObject* RequestOwner)
+UDeleteLaunchMessageRequest* UDeleteLaunchMessageRequest::Make(FString _File, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UDeleteLaunchMessageRequest* Req = NewObject<UDeleteLaunchMessageRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -27,9 +27,10 @@ void UPutImageCommitRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutImageCommitRequest* UPutImageCommitRequest::Make(UBeamoBasicReference* _Service, UObject* RequestOwner)
+UPutImageCommitRequest* UPutImageCommitRequest::Make(UBeamoBasicReference* _Service, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutImageCommitRequest* Req = NewObject<UPutImageCommitRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

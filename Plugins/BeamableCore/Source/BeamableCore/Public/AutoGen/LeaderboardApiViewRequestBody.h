@@ -10,23 +10,23 @@
 #include "LeaderboardApiViewRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API ULeaderboardApiViewRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API ULeaderboardApiViewRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Friends", Category="Beam")
-	FOptionalBool bFriends;
+	FOptionalBool bFriends = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Guild", Category="Beam")
-	FOptionalBool bGuild;
+	FOptionalBool bGuild = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max", Category="Beam")
-	FOptionalInt32 Max;
+	FOptionalInt32 Max = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Focus", Category="Beam")
-	FOptionalInt64 Focus;
+	FOptionalInt64 Focus = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From", Category="Beam")
-	FOptionalInt32 From;
+	FOptionalInt32 From = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Outlier", Category="Beam")
-	FOptionalInt64 Outlier;
+	FOptionalInt64 Outlier = {};
 
 	
 

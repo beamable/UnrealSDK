@@ -49,7 +49,8 @@ void UBeamEditorContent::Initialize(FSubsystemCollectionBase& Collection)
 	OnWillEnterPIE = FEditorDelegates::PreBeginPIE.AddLambda([this](bool Cond)
 	{
 		UBeamCoreSettings* EditorSettings = GetMutableDefault<UBeamCoreSettings>();
-		for (int i = EditorSettings->BakedContentManifests.Num() - 1; i >= 0; --i)
+		const auto NumBakedContent = EditorSettings->BakedContentManifests.Num(); 
+		for (int i = NumBakedContent - 1; i >= 0; --i)
 		{
 			const auto BeamRuntimeContentCache = EditorSettings->BakedContentManifests[i];
 			const auto CookedAssetPath = BeamRuntimeContentCache.ToSoftObjectPath().GetAssetPathString();
@@ -59,7 +60,9 @@ void UBeamEditorContent::Initialize(FSubsystemCollectionBase& Collection)
 				EditorSettings->BakedContentManifests.RemoveAt(i);
 			}
 		}
-		EditorSettings->SaveConfig(CPF_Config, *EditorSettings->GetDefaultConfigFilename());		
+		
+		if(NumBakedContent != EditorSettings->BakedContentManifests.Num())
+			EditorSettings->SaveConfig(CPF_Config, *EditorSettings->GetDefaultConfigFilename());		
 	});
 }
 
@@ -157,7 +160,7 @@ FBeamOperationHandle UBeamEditorContent::EnsureGlobalManifest()
 	const auto EditorSlot = Editor->GetMainEditorSlot();
 	const auto Op = RequestTracker->BeginOperation({Editor->GetMainEditorSlot()}, GetName(), {});
 
-	const auto GetManifestsRequest = UBasicContentGetManifestsRequest::Make(GetTransientPackage());
+	const auto GetManifestsRequest = UBasicContentGetManifestsRequest::Make(GetTransientPackage(), {});
 	const auto GetManifestsHandler = FOnBasicContentGetManifestsFullResponse::CreateUObject(this, &UBeamEditorContent::EnsureGlobalManifest_OnGetManifests, Op);
 	FBeamRequestContext Ctx;
 	ContentApi->CPP_GetManifests(EditorSlot, GetManifestsRequest, GetManifestsHandler, Ctx, Op, this);
@@ -167,14 +170,14 @@ FBeamOperationHandle UBeamEditorContent::EnsureGlobalManifest()
 
 void UBeamEditorContent::EnsureGlobalManifest_OnGetManifests(FBasicContentGetManifestsFullResponse Response, const FBeamOperationHandle Op)
 {
-	if (Response.State == Error)
+	if (Response.State == RS_Error)
 	{
 		// TODO: Open popup explaining that we failed to get the content manifests and as such the content service is not fine. Have option to try again
 		RequestTracker->TriggerOperationError(Op, Response.ErrorData.message, Response.Context.RequestId);
 		return;
 	}
 
-	if (Response.State == Success)
+	if (Response.State == RS_Success)
 	{
 		for (const auto Manifest : Response.SuccessData->Manifests)
 		{
@@ -187,7 +190,7 @@ void UBeamEditorContent::EnsureGlobalManifest_OnGetManifests(FBasicContentGetMan
 			UE_LOG(LogBeamContent, Error, TEXT("No Manifest Found!"))
 
 			const TArray<UReferenceSuperset*> EmptySuperset{};
-			UBasicContentPostManifestRequest* EmptyManifest = UBasicContentPostManifestRequest::Make(Global_Manifest, EmptySuperset, GetTransientPackage());
+			UBasicContentPostManifestRequest* EmptyManifest = UBasicContentPostManifestRequest::Make(Global_Manifest, EmptySuperset, GetTransientPackage(), {});
 
 			const auto Handler = FOnBasicContentPostManifestFullResponse::CreateUObject(this, &UBeamEditorContent::EnsureGlobalManifest_OnPostManifest, Op);
 			FBeamRequestContext Ctx;
@@ -299,14 +302,14 @@ void UBeamEditorContent::EnsureGlobalManifest_OnGetManifests(FBasicContentGetMan
 void UBeamEditorContent::EnsureGlobalManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response,
                                                              const FBeamOperationHandle Op)
 {
-	if (Response.State == Error)
+	if (Response.State == RS_Error)
 	{
 		// TODO: Open popup explaining that we failed to get the content manifests and as such the content service is not fine. Have option to try again			
 		RequestTracker->TriggerOperationError(Op, Response.ErrorData.message, Response.Context.RequestId);
 		return;
 	}
 
-	if (Response.State == Success)
+	if (Response.State == RS_Success)
 	{
 		UE_LOG(LogBeamContent, Warning, TEXT("Found no content manifests so creating a default = %s - %lld"), *Response.SuccessData->Id.AsString, Response.SuccessData->Created)
 
@@ -395,7 +398,7 @@ FBeamOperationHandle UBeamEditorContent::PublishManifest(FBeamContentManifestId 
 	}
 
 	FBeamRequestContext Ctx;
-	const auto ManifestRequest = UBasicContentGetManifestRequest::Make(FOptionalBeamContentManifestId(ContentManifestId), GetTransientPackage());
+	const auto ManifestRequest = UBasicContentGetManifestRequest::Make(FOptionalBeamContentManifestId(ContentManifestId), GetTransientPackage(), {});
 	const auto ManifestRequestHandler = FOnBasicContentGetManifestFullResponse::CreateUObject(this, &UBeamEditorContent::PublishManifest_OnGetManifest, Op, ContentManifestId);
 	ContentApi->CPP_GetManifest(EditorSlot, ManifestRequest, ManifestRequestHandler, Ctx, Op, this);
 
@@ -406,14 +409,14 @@ void UBeamEditorContent::PublishManifest_OnGetManifest(FBasicContentGetManifestF
                                                        FBeamOperationHandle Op,
                                                        FBeamContentManifestId ContentManifestId)
 {
-	if (Response.State == Error)
+	if (Response.State == RS_Error)
 	{
 		// TODO: Open popup explaining that we failed to get the content manifests and as such the content service is not fine. Have option to try again
 		RequestTracker->TriggerOperationError(Op, Response.ErrorData.message, Response.Context.RequestId);
 		return;
 	}
 
-	if (Response.State == Success)
+	if (Response.State == RS_Success)
 	{
 		const auto LocalManifestToPublish = LocalManifests[ContentManifestId];
 		const auto PublishState = WorkingPublishStates[ContentManifestId];
@@ -496,7 +499,7 @@ void UBeamEditorContent::PublishManifest_OnGetManifest(FBasicContentGetManifestF
 
 		// Send out the post request containing all content objects...
 		FBeamRequestContext PostRequest;
-		const auto PostContent = UPostContentRequest::Make(ContentDefinitions, GetTransientPackage());
+		const auto PostContent = UPostContentRequest::Make(ContentDefinitions, GetTransientPackage(), {});
 		const auto PostContentHandler = FOnPostContentFullResponse::CreateUObject(this, &UBeamEditorContent::PublishManifest_OnPostContent, Op, ContentManifestId);
 		ContentApi->CPP_PostContent({Editor->GetMainEditorSlot()}, PostContent, PostContentHandler, PostRequest, Op, this);
 		return;
@@ -507,14 +510,14 @@ void UBeamEditorContent::PublishManifest_OnGetManifest(FBasicContentGetManifestF
 
 void UBeamEditorContent::PublishManifest_OnPostContent(FPostContentFullResponse Response, FBeamOperationHandle Op, FBeamContentManifestId ContentManifestId)
 {
-	if (Response.State == Error)
+	if (Response.State == RS_Error)
 	{
 		// TODO: Open popup explaining that we failed to get the content manifests and as such the content service is not fine. Have option to try again
 		RequestTracker->TriggerOperationError(Op, Response.ErrorData.message, Response.Context.RequestId);
 		return;
 	}
 
-	if (Response.State == Success)
+	if (Response.State == RS_Success)
 	{
 		const auto PublishState = WorkingPublishStates[ContentManifestId];
 
@@ -570,7 +573,7 @@ void UBeamEditorContent::PublishManifest_OnPostContent(FPostContentFullResponse 
 		}
 
 		FBeamRequestContext Ctx;
-		const auto PostManifestRequest = UBasicContentPostManifestRequest::Make(ContentManifestId, Supersets, this);
+		const auto PostManifestRequest = UBasicContentPostManifestRequest::Make(ContentManifestId, Supersets, this, {});
 		const auto PostManifestRequestHandler = FOnBasicContentPostManifestFullResponse::CreateUObject(this, &UBeamEditorContent::PublishManifest_OnPostManifest, Op, ContentManifestId);
 		ContentApi->CPP_PostManifest({Editor->GetMainEditorSlot()}, PostManifestRequest, PostManifestRequestHandler, Ctx, Op, this);
 
@@ -582,14 +585,14 @@ void UBeamEditorContent::PublishManifest_OnPostContent(FPostContentFullResponse 
 
 void UBeamEditorContent::PublishManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response, FBeamOperationHandle Op, FBeamContentManifestId ContentManifestId) const
 {
-	if (Response.State == Error)
+	if (Response.State == RS_Error)
 	{
 		// TODO: Open popup explaining that we failed to get the content manifests and as such the content service is not fine. Have option to try again
 		RequestTracker->TriggerOperationError(Op, Response.ErrorData.message, Response.Context.RequestId);
 		return;
 	}
 
-	if (Response.State == Success)
+	if (Response.State == RS_Success)
 	{
 		// Just notify the caller that we have finished publishing.
 		RequestTracker->TriggerOperationSuccess(Op, Response.SuccessData->Id.AsString, Response.Context.RequestId);
@@ -622,10 +625,8 @@ FBeamOperationHandle UBeamEditorContent::DownloadManifest(FBeamContentManifestId
 	}
 
 	FBeamRequestContext Ctx;
-	const auto ManifestRequest = UBasicContentGetManifestRequest::Make(
-		FOptionalBeamContentManifestId(ContentManifestId), GetTransientPackage());
-	const auto ManifestRequestHandler = FOnBasicContentGetManifestFullResponse::CreateUObject(
-		this, &UBeamEditorContent::DownloadManifest_OnGetManifest, Op, ContentManifestId);
+	const auto ManifestRequest = UBasicContentGetManifestRequest::Make(FOptionalBeamContentManifestId(ContentManifestId), GetTransientPackage(), {});
+	const auto ManifestRequestHandler = FOnBasicContentGetManifestFullResponse::CreateUObject(this, &UBeamEditorContent::DownloadManifest_OnGetManifest, Op, ContentManifestId);
 	ContentApi->CPP_GetManifest(EditorSlot, ManifestRequest, ManifestRequestHandler, Ctx, Op, this);
 	return Op;
 }
@@ -634,13 +635,13 @@ void UBeamEditorContent::DownloadManifest_OnGetManifest(FBasicContentGetManifest
                                                         FBeamOperationHandle Op,
                                                         FBeamContentManifestId ManifestId)
 {
-	if (Response.State == Error || Response.State == Cancelled)
+	if (Response.State == RS_Error || Response.State == RS_Cancelled)
 	{
 		RequestTracker->TriggerOperationError(Op, Response.ErrorData.message);
 		return;
 	}
 
-	if (Response.State == Success)
+	if (Response.State == RS_Success)
 	{
 		// Build change set that says: which content will be added and which will be overwritten (no content is deleted when downloading)
 		const auto RemoteManifest = Response.SuccessData;
@@ -671,7 +672,7 @@ void UBeamEditorContent::DownloadManifest_OnGetManifest(FBasicContentGetManifest
 
 		// Trigger a sub-event to let the UI react by asking the user whether or not we should continue given the changes that'll happen locally.
 		// We expect the user confirmation to eventually call "DownloadManifest_ApplyUserInput(bool)" with true/false given the user's choice of whether or not to apply the changes  
-		RequestTracker->TriggerOperationEvent(Op, SUCCESS, 1, {});
+		RequestTracker->TriggerOperationEvent(Op, OET_SUCCESS, 1, {});
 	}
 }
 

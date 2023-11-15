@@ -10,6 +10,17 @@ public class BeamableUnrealEditorTarget : TargetRules
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_2;
-		ExtraModuleNames.AddRange( new string[] { "BeamableUnreal" } );
+		ExtraModuleNames.AddRange( new string[]
+		{
+			"BeamableUnreal",
+			"BeamableUnrealBlueprintNodes",
+			
+			"BeamableCore",
+			"BeamableCoreBlueprintNodes",
+			"BeamableCoreEditor",
+			
+			"Json",
+			"JsonUtilities"
+		});		
 	}
 }

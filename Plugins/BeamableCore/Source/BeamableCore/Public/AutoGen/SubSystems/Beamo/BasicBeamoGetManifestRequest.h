@@ -25,9 +25,9 @@ public:
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FString Id;
+	FString Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Archived", Category="Beam")
-	FOptionalBool bArchived;
+	FOptionalBool bArchived = {};
 
 	// Body Params
 	
@@ -39,8 +39,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make BasicBeamoGetManifest",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bArchived,RequestOwner"))
-	static UBasicBeamoGetManifestRequest* Make(FString _Id, FOptionalBool _bArchived, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make BasicBeamoGetManifest",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bArchived,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UBasicBeamoGetManifestRequest* Make(FString _Id, FOptionalBool _bArchived, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -17,6 +17,9 @@
 #include "BeamableCore/Public/AutoGen/SubSystems/Stats/GetStatsRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Stats/PostStatsRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Stats/DeleteStatsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/GetClientSubscriptionsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/PostClientSubscriptionsRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Stats/DeleteClientSubscriptionsRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Stats/GetClientRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Stats/PostClientRequest.h"
 
@@ -168,6 +171,42 @@ private:
 	 */
 	void CPP_DeleteStatsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UDeleteStatsRequest* RequestData,
 	                   const FOnDeleteStatsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+		
+	/**
+	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
+	 */
+	void BP_GetClientSubscriptionsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UGetClientSubscriptionsRequest* RequestData,
+	                  const FOnGetClientSubscriptionsSuccess& OnSuccess, const FOnGetClientSubscriptionsError& OnError, const FOnGetClientSubscriptionsComplete& OnComplete, 
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	/**
+	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
+	 */
+	void CPP_GetClientSubscriptionsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UGetClientSubscriptionsRequest* RequestData,
+	                   const FOnGetClientSubscriptionsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+		
+	/**
+	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
+	 */
+	void BP_PostClientSubscriptionsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UPostClientSubscriptionsRequest* RequestData,
+	                  const FOnPostClientSubscriptionsSuccess& OnSuccess, const FOnPostClientSubscriptionsError& OnError, const FOnPostClientSubscriptionsComplete& OnComplete, 
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	/**
+	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
+	 */
+	void CPP_PostClientSubscriptionsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UPostClientSubscriptionsRequest* RequestData,
+	                   const FOnPostClientSubscriptionsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+		
+	/**
+	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
+	 */
+	void BP_DeleteClientSubscriptionsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UDeleteClientSubscriptionsRequest* RequestData,
+	                  const FOnDeleteClientSubscriptionsSuccess& OnSuccess, const FOnDeleteClientSubscriptionsError& OnError, const FOnDeleteClientSubscriptionsComplete& OnComplete, 
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	/**
+	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
+	 */
+	void CPP_DeleteClientSubscriptionsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UDeleteClientSubscriptionsRequest* RequestData,
+	                   const FOnDeleteClientSubscriptionsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 		
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
@@ -361,6 +400,54 @@ public:
 
 		
 	/**
+	 * @brief Makes an authenticated request to the Get /object/stats/{objectId}/client/subscriptions endpoint of the Stats Service.
+	 *
+	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
+	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
+	 * 
+	 * @param UserSlot The Authenticated User Slot that is making this request.
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
+	 */
+	void CPP_GetClientSubscriptions(const FUserSlot& UserSlot, UGetClientSubscriptionsRequest* Request, const FOnGetClientSubscriptionsFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Post /object/stats/{objectId}/client/subscriptions endpoint of the Stats Service.
+	 *
+	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
+	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
+	 * 
+	 * @param UserSlot The Authenticated User Slot that is making this request.
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
+	 */
+	void CPP_PostClientSubscriptions(const FUserSlot& UserSlot, UPostClientSubscriptionsRequest* Request, const FOnPostClientSubscriptionsFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Delete /object/stats/{objectId}/client/subscriptions endpoint of the Stats Service.
+	 *
+	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
+	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
+	 * 
+	 * @param UserSlot The Authenticated User Slot that is making this request.
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
+	 */
+	void CPP_DeleteClientSubscriptions(const FUserSlot& UserSlot, UDeleteClientSubscriptionsRequest* Request, const FOnDeleteClientSubscriptionsFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+
+		
+	/**
 	 * @brief Makes an authenticated request to the Get /object/stats/{objectId}/client endpoint of the Stats Service.
 	 *
 	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
@@ -541,6 +628,51 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void DeleteStats(FUserSlot UserSlot, UDeleteStatsRequest* Request, const FOnDeleteStatsSuccess& OnSuccess, const FOnDeleteStatsError& OnError, const FOnDeleteStatsComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /object/stats/{objectId}/client/subscriptions endpoint of the Stats Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void GetClientSubscriptions(FUserSlot UserSlot, UGetClientSubscriptionsRequest* Request, const FOnGetClientSubscriptionsSuccess& OnSuccess, const FOnGetClientSubscriptionsError& OnError, const FOnGetClientSubscriptionsComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Post /object/stats/{objectId}/client/subscriptions endpoint of the Stats Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void PostClientSubscriptions(FUserSlot UserSlot, UPostClientSubscriptionsRequest* Request, const FOnPostClientSubscriptionsSuccess& OnSuccess, const FOnPostClientSubscriptionsError& OnError, const FOnPostClientSubscriptionsComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Delete /object/stats/{objectId}/client/subscriptions endpoint of the Stats Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void DeleteClientSubscriptions(FUserSlot UserSlot, UDeleteClientSubscriptionsRequest* Request, const FOnDeleteClientSubscriptionsSuccess& OnSuccess, const FOnDeleteClientSubscriptionsError& OnError, const FOnDeleteClientSubscriptionsComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**

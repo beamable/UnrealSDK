@@ -8,19 +8,19 @@
 #include "EntitlementRequirement.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEntitlementRequirement : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UEntitlementRequirement : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
-	FString Symbol;
+	FString Symbol = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Constraint", Category="Beam")
-	FString Constraint;
+	FString Constraint = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="State", Category="Beam")
-	FString State;
+	FString State = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Specialization", Category="Beam")
-	FOptionalString Specialization;
+	FOptionalString Specialization = {};
 
 	
 

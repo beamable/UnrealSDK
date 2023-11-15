@@ -21,11 +21,11 @@ struct BEAMABLECORE_API FClientContentInfoTableRow : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
 	EContentType Type = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="ContentId", Category="Beam")
-	FString ContentId;
+	FString ContentId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Version", Category="Beam")
-	FString Version;
+	FString Version = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Uri", Category="Beam")
-	FString Uri;
+	FString Uri = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
-	TArray<FString> Tags;		
+	TArray<FString> Tags = {};		
 };
