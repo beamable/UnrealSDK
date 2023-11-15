@@ -11,21 +11,21 @@
 #include "EventRewardContent.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEventRewardContent : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UEventRewardContent : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Min", Category="Beam")
-	double Min;
+	double Min = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max", Category="Beam")
-	FOptionalDouble Max;
+	FOptionalDouble Max = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currencies", Category="Beam")
-	FOptionalArrayOfEventInventoryRewardCurrency Currencies;
+	FOptionalArrayOfEventInventoryRewardCurrency Currencies = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Items", Category="Beam")
-	FOptionalArrayOfEventInventoryRewardItem Items;
+	FOptionalArrayOfEventInventoryRewardItem Items = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain", Category="Beam")
-	FOptionalArrayOfEventRewardObtain Obtain;
+	FOptionalArrayOfEventRewardObtain Obtain = {};
 
 	
 

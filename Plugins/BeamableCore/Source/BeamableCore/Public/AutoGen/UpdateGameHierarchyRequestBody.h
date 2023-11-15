@@ -9,15 +9,15 @@
 #include "UpdateGameHierarchyRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UUpdateGameHierarchyRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UUpdateGameHierarchyRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Root PID", Category="Beam")
-	FBeamPid RootPID;
+	FBeamPid RootPID = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Projects", Category="Beam")
-	TArray<UProjectView*> Projects;
+	TArray<UProjectView*> Projects = {};
 
 	
 

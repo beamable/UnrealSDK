@@ -44,9 +44,10 @@ void UGetAvailabilityRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAvailabilityRequest* UGetAvailabilityRequest::Make(int64 _ObjectId, FOptionalString _Name, FOptionalString _Tag, EGroupType _Type, FOptionalBool _bSubGroup, UObject* RequestOwner)
+UGetAvailabilityRequest* UGetAvailabilityRequest::Make(int64 _ObjectId, FOptionalString _Name, FOptionalString _Tag, EGroupType _Type, FOptionalBool _bSubGroup, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetAvailabilityRequest* Req = NewObject<UGetAvailabilityRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

@@ -50,9 +50,10 @@ void UGetStandingsGroupRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetStandingsGroupRequest* UGetStandingsGroupRequest::Make(FString _TournamentId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalInt32 _Cycle, FOptionalInt32 _From, UObject* RequestOwner)
+UGetStandingsGroupRequest* UGetStandingsGroupRequest::Make(FString _TournamentId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalInt32 _Cycle, FOptionalInt32 _From, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetStandingsGroupRequest* Req = NewObject<UGetStandingsGroupRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->TournamentId = _TournamentId;

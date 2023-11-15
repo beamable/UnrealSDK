@@ -27,9 +27,10 @@ void UPostLaunchMessageRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostLaunchMessageRequest* UPostLaunchMessageRequest::Make(FString _Name, FString _Body, UObject* RequestOwner)
+UPostLaunchMessageRequest* UPostLaunchMessageRequest::Make(FString _Name, FString _Body, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostLaunchMessageRequest* Req = NewObject<UPostLaunchMessageRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

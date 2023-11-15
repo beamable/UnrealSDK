@@ -8,17 +8,17 @@
 #include "GroupUserMember.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGroupUserMember : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGroupUserMember : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	int64 Id;
+	int64 Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sub Groups", Category="Beam")
-	TArray<UGroupUserMember*> SubGroups;
+	TArray<UGroupUserMember*> SubGroups = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Joined", Category="Beam")
-	FOptionalInt64 Joined;
+	FOptionalInt64 Joined = {};
 
 	
 

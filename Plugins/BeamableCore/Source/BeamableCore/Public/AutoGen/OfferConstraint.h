@@ -8,15 +8,15 @@
 #include "OfferConstraint.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UOfferConstraint : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UOfferConstraint : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Constraint", Category="Beam")
-	FString Constraint;
+	FString Constraint = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Value", Category="Beam")
-	int32 Value;
+	int32 Value = {};
 
 	
 

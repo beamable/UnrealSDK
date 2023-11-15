@@ -27,9 +27,10 @@ void UPostEmailUpdateConfirmRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostEmailUpdateConfirmRequest* UPostEmailUpdateConfirmRequest::Make(FString _Code, FString _Password, UObject* RequestOwner)
+UPostEmailUpdateConfirmRequest* UPostEmailUpdateConfirmRequest::Make(FString _Code, FString _Password, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostEmailUpdateConfirmRequest* Req = NewObject<UPostEmailUpdateConfirmRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

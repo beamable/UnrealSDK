@@ -27,9 +27,10 @@ void UPostMetricsUrlRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostMetricsUrlRequest* UPostMetricsUrlRequest::Make(FString _ServiceName, FString _MetricName, FOptionalInt64 _StartTime, FOptionalInt64 _EndTime, FOptionalInt32 _Period, UObject* RequestOwner)
+UPostMetricsUrlRequest* UPostMetricsUrlRequest::Make(FString _ServiceName, FString _MetricName, FOptionalInt64 _StartTime, FOptionalInt64 _EndTime, FOptionalInt32 _Period, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostMetricsUrlRequest* Req = NewObject<UPostMetricsUrlRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

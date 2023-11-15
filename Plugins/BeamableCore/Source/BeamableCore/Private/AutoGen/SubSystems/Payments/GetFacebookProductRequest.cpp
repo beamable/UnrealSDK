@@ -26,9 +26,10 @@ void UGetFacebookProductRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetFacebookProductRequest* UGetFacebookProductRequest::Make(FString _Sku, UObject* RequestOwner)
+UGetFacebookProductRequest* UGetFacebookProductRequest::Make(FString _Sku, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetFacebookProductRequest* Req = NewObject<UGetFacebookProductRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Sku = _Sku;

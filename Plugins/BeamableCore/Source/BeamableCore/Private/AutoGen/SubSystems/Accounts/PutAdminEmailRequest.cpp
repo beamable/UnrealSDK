@@ -27,9 +27,10 @@ void UPutAdminEmailRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutAdminEmailRequest* UPutAdminEmailRequest::Make(FBeamAccountId _ObjectId, FString _NewEmail, FOptionalString _CodeType, UObject* RequestOwner)
+UPutAdminEmailRequest* UPutAdminEmailRequest::Make(FBeamAccountId _ObjectId, FString _NewEmail, FOptionalString _CodeType, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutAdminEmailRequest* Req = NewObject<UPutAdminEmailRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

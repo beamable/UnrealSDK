@@ -10,17 +10,17 @@
 #include "RefreshTokenAuthRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API URefreshTokenAuthRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API URefreshTokenAuthRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Refresh Token", Category="Beam")
-	FOptionalString RefreshToken;
+	FOptionalString RefreshToken = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Customer Id", Category="Beam")
-	FOptionalBeamCid CustomerId;
+	FOptionalBeamCid CustomerId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Realm Id", Category="Beam")
-	FOptionalBeamPid RealmId;
+	FOptionalBeamPid RealmId = {};
 
 	
 

@@ -10,19 +10,19 @@
 #include "CurrencyArchetype.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UCurrencyArchetype : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UCurrencyArchetype : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
-	FString Symbol;
+	FString Symbol = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="External", Category="Beam")
-	FOptionalArchetypeProxy External;
+	FOptionalArchetypeProxy External = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Client Permission", Category="Beam")
-	FOptionalBeamClientPermission ClientPermission;
+	FOptionalBeamClientPermission ClientPermission = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Starting Amount", Category="Beam")
-	FOptionalInt64 StartingAmount;
+	FOptionalInt64 StartingAmount = {};
 
 	
 

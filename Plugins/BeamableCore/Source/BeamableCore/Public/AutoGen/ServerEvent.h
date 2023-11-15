@@ -8,17 +8,17 @@
 #include "ServerEvent.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UServerEvent : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UServerEvent : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Event", Category="Beam")
-	FString Event;
+	FString Event = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B To All", Category="Beam")
-	bool bToAll;
+	bool bToAll = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Payload", Category="Beam")
-	FOptionalString Payload;
+	FOptionalString Payload = {};
 
 	
 

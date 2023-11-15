@@ -27,9 +27,10 @@ void UPostTournamentsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostTournamentsRequest* UPostTournamentsRequest::Make(FString _TournamentId, UObject* RequestOwner)
+UPostTournamentsRequest* UPostTournamentsRequest::Make(FString _TournamentId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostTournamentsRequest* Req = NewObject<UPostTournamentsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

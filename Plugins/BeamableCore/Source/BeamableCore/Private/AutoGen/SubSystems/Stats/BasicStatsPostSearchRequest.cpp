@@ -27,9 +27,10 @@ void UBasicStatsPostSearchRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UBasicStatsPostSearchRequest* UBasicStatsPostSearchRequest::Make(FString _Domain, FString _Access, FString _ObjectType, TArray<UStatsSearchCriteria*> _Criteria, UObject* RequestOwner)
+UBasicStatsPostSearchRequest* UBasicStatsPostSearchRequest::Make(FString _Domain, FString _Access, FString _ObjectType, TArray<UStatsSearchCriteria*> _Criteria, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicStatsPostSearchRequest* Req = NewObject<UBasicStatsPostSearchRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

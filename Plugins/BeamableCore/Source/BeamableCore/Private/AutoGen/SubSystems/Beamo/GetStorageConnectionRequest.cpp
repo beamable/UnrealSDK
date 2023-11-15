@@ -23,9 +23,10 @@ void UGetStorageConnectionRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetStorageConnectionRequest* UGetStorageConnectionRequest::Make(UObject* RequestOwner)
+UGetStorageConnectionRequest* UGetStorageConnectionRequest::Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetStorageConnectionRequest* Req = NewObject<UGetStorageConnectionRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -27,9 +27,10 @@ void UPostCustomerRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostCustomerRequest* UPostCustomerRequest::Make(FString _ProjectName, FString _Email, FString _Password, FOptionalBool _bHierarchy, FOptionalString _CustomerName, FOptionalString _Alias, UObject* RequestOwner)
+UPostCustomerRequest* UPostCustomerRequest::Make(FString _ProjectName, FString _Email, FString _Password, FOptionalBool _bHierarchy, FOptionalString _CustomerName, FOptionalString _Alias, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostCustomerRequest* Req = NewObject<UPostCustomerRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

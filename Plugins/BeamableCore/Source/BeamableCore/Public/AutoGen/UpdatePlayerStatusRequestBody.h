@@ -8,17 +8,17 @@
 #include "UpdatePlayerStatusRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UUpdatePlayerStatusRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UUpdatePlayerStatusRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
-	int64 PlayerId;
+	int64 PlayerId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id", Category="Beam")
-	FString TournamentId;
+	FString TournamentId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Update", Category="Beam")
-	UPlayerStatusUpdate* Update;
+	UPlayerStatusUpdate* Update = {};
 
 	
 

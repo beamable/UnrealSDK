@@ -27,9 +27,10 @@ void UPostProjectRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostProjectRequest* UPostProjectRequest::Make(FString _Name, FOptionalBool _bSharded, FOptionalString _Plan, FOptionalString _Parent, UObject* RequestOwner)
+UPostProjectRequest* UPostProjectRequest::Make(FString _Name, FOptionalBool _bSharded, FOptionalString _Plan, FOptionalString _Parent, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostProjectRequest* Req = NewObject<UPostProjectRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -11,23 +11,23 @@
 #include "EntitlementGenerator.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEntitlementGenerator : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UEntitlementGenerator : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
-	FString Symbol;
+	FString Symbol = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Action", Category="Beam")
-	FString Action;
+	FString Action = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Quantity", Category="Beam")
-	FOptionalInt32 Quantity;
+	FOptionalInt32 Quantity = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Claim Window", Category="Beam")
-	FOptionalEntitlementClaimWindow ClaimWindow;
+	FOptionalEntitlementClaimWindow ClaimWindow = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Specialization", Category="Beam")
-	FOptionalString Specialization;
+	FOptionalString Specialization = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Params", Category="Beam")
-	FOptionalMapOfString Params;
+	FOptionalMapOfString Params = {};
 
 	
 

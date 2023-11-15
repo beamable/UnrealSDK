@@ -23,9 +23,10 @@ void UGetListDefinitionsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetListDefinitionsRequest* UGetListDefinitionsRequest::Make(UObject* RequestOwner)
+UGetListDefinitionsRequest* UGetListDefinitionsRequest::Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetListDefinitionsRequest* Req = NewObject<UGetListDefinitionsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

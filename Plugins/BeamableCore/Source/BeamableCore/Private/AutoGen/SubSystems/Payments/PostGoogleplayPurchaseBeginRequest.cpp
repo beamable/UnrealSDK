@@ -27,9 +27,10 @@ void UPostGoogleplayPurchaseBeginRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostGoogleplayPurchaseBeginRequest* UPostGoogleplayPurchaseBeginRequest::Make(FString _PurchaseId, FOptionalString _Language, FOptionalString _Time, UObject* RequestOwner)
+UPostGoogleplayPurchaseBeginRequest* UPostGoogleplayPurchaseBeginRequest::Make(FString _PurchaseId, FOptionalString _Language, FOptionalString _Time, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostGoogleplayPurchaseBeginRequest* Req = NewObject<UPostGoogleplayPurchaseBeginRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

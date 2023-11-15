@@ -27,9 +27,10 @@ void UDeleteTransactionRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteTransactionRequest* UDeleteTransactionRequest::Make(FBeamGamerTag _ObjectId, FString _Transaction, UObject* RequestOwner)
+UDeleteTransactionRequest* UDeleteTransactionRequest::Make(FBeamGamerTag _ObjectId, FString _Transaction, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UDeleteTransactionRequest* Req = NewObject<UDeleteTransactionRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

@@ -8,13 +8,13 @@
 #include "PromoteNewLeader.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPromoteNewLeader : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UPromoteNewLeader : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
-	FOptionalString PlayerId;
+	FOptionalString PlayerId = {};
 
 	
 

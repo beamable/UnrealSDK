@@ -22,25 +22,25 @@ FString UTicketReservationRequestBodyLibrary::TicketReservationRequestBodyToJson
 	return Result;
 }	
 
-UTicketReservationRequestBody* UTicketReservationRequestBodyLibrary::Make(FOptionalBool bWatchOnlineStatus, FOptionalBeamContentId MatchTypes, FOptionalInt32 MaxWaitDurationSecs, FOptionalString Team, FOptionalArrayOfString Players, UObject* Outer)
+UTicketReservationRequestBody* UTicketReservationRequestBodyLibrary::Make(FOptionalBool bWatchOnlineStatus, FOptionalInt32 MaxWaitDurationSecs, FOptionalString Team, FOptionalArrayOfString Players, FOptionalArrayOfBeamContentId MatchTypes, UObject* Outer)
 {
 	auto Serializable = NewObject<UTicketReservationRequestBody>(Outer);
 	Serializable->bWatchOnlineStatus = bWatchOnlineStatus;
-	Serializable->MatchTypes = MatchTypes;
 	Serializable->MaxWaitDurationSecs = MaxWaitDurationSecs;
 	Serializable->Team = Team;
 	Serializable->Players = Players;
+	Serializable->MatchTypes = MatchTypes;
 	
 	return Serializable;
 }
 
-void UTicketReservationRequestBodyLibrary::Break(const UTicketReservationRequestBody* Serializable, FOptionalBool& bWatchOnlineStatus, FOptionalBeamContentId& MatchTypes, FOptionalInt32& MaxWaitDurationSecs, FOptionalString& Team, FOptionalArrayOfString& Players)
+void UTicketReservationRequestBodyLibrary::Break(const UTicketReservationRequestBody* Serializable, FOptionalBool& bWatchOnlineStatus, FOptionalInt32& MaxWaitDurationSecs, FOptionalString& Team, FOptionalArrayOfString& Players, FOptionalArrayOfBeamContentId& MatchTypes)
 {
 	bWatchOnlineStatus = Serializable->bWatchOnlineStatus;
-	MatchTypes = Serializable->MatchTypes;
 	MaxWaitDurationSecs = Serializable->MaxWaitDurationSecs;
 	Team = Serializable->Team;
 	Players = Serializable->Players;
+	MatchTypes = Serializable->MatchTypes;
 		
 }
 

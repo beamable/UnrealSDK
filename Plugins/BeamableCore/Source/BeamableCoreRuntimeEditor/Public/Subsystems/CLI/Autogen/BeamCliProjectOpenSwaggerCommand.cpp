@@ -7,7 +7,7 @@
 		
 TSharedPtr<FMonitoredProcess> UBeamCliProjectOpenSwaggerCommand::RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op)
 {
-	FString Params = ("project open-swagger");
+	FString Params = ("project open-swagger --reporter-use-fatal");
 	for (const auto& CommandParam : CommandParams)
 		Params.Appendf(TEXT(" %s"), *CommandParam);
 	Params = PrepareParams(Params);

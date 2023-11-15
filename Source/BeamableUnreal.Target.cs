@@ -10,6 +10,15 @@ public class BeamableUnrealTarget : TargetRules
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_2;
-		ExtraModuleNames.AddRange(new string[] { "BeamableUnreal", "BeamableCore", "BeamableCoreRuntime" });
+		ExtraModuleNames.AddRange(new string[]
+		{
+			"BeamableUnreal", 
+			
+			"BeamableCore",
+			"BeamableCoreRuntime",
+			
+			"Json",
+			"JsonUtilities"
+		});
 	}
 }

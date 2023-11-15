@@ -11,23 +11,23 @@
 #include "ContentDefinition.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UContentDefinition : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UContentDefinition : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Prefix", Category="Beam")
-	FString Prefix;
+	FString Prefix = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FBeamContentId Id;
+	FBeamContentId Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Checksum", Category="Beam")
-	FString Checksum;
+	FString Checksum = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Properties", Category="Beam")
-	TMap<FString, UContentMeta*> Properties;
+	TMap<FString, UContentMeta*> Properties = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
-	FOptionalArrayOfString Tags;
+	FOptionalArrayOfString Tags = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Variants", Category="Beam")
-	FOptionalArrayOfMapOfContentMeta Variants;
+	FOptionalArrayOfMapOfContentMeta Variants = {};
 
 	
 

@@ -8,15 +8,15 @@
 #include "AvailabilityResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UAvailabilityResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UAvailabilityResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Name", Category="Beam")
-	bool bName;
+	bool bName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Tag", Category="Beam")
-	bool bTag;
+	bool bTag = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

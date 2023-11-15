@@ -40,9 +40,10 @@ void UBasicBeamoGetManifestsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UBasicBeamoGetManifestsRequest* UBasicBeamoGetManifestsRequest::Make(FOptionalInt32 _Offset, FOptionalInt32 _Limit, FOptionalBool _bArchived, UObject* RequestOwner)
+UBasicBeamoGetManifestsRequest* UBasicBeamoGetManifestsRequest::Make(FOptionalInt32 _Offset, FOptionalInt32 _Limit, FOptionalBool _bArchived, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicBeamoGetManifestsRequest* Req = NewObject<UBasicBeamoGetManifestsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Offset = _Offset;

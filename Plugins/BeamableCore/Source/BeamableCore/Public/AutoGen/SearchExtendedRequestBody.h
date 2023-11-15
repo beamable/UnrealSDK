@@ -8,21 +8,21 @@
 #include "SearchExtendedRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API USearchExtendedRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API USearchExtendedRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Domain", Category="Beam")
-	FString Domain;
+	FString Domain = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Type", Category="Beam")
-	FString ObjectType;
+	FString ObjectType = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Access", Category="Beam")
-	FString Access;
+	FString Access = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Criteria", Category="Beam")
-	TArray<UStatsSearchCriteria*> Criteria;
+	TArray<UStatsSearchCriteria*> Criteria = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stat Keys", Category="Beam")
-	TArray<FString> StatKeys;
+	TArray<FString> StatKeys = {};
 
 	
 

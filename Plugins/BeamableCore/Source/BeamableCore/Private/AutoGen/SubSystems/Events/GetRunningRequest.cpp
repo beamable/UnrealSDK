@@ -23,9 +23,10 @@ void UGetRunningRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetRunningRequest* UGetRunningRequest::Make(UObject* RequestOwner)
+UGetRunningRequest* UGetRunningRequest::Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetRunningRequest* Req = NewObject<UGetRunningRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

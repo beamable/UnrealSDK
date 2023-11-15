@@ -17,7 +17,7 @@ void UAccountsBasicAccount::BeamSerializeProperties(TUnrealJsonSerializer& Seria
 	Serializer->WriteValue(TEXT("createdTimeMillis"), CreatedTimeMillis);
 	Serializer->WriteValue(TEXT("updatedTimeMillis"), UpdatedTimeMillis);
 	UBeamJsonUtils::SerializeArray<UThirdPartyAssociation*>(TEXT("thirdParties"), ThirdParties, Serializer);
-	UBeamJsonUtils::SerializeArray<UExternalIdentity*>(TEXT("external"), External, Serializer);
+	UBeamJsonUtils::SerializeArray<FBeamExternalIdentity>(TEXT("external"), External, Serializer);
 	UBeamJsonUtils::SerializeArray<UGamerTagAssociation*>(TEXT("gamerTags"), GamerTags, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("wasMigrated"), &bWasMigrated, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("userName"), &UserName, Serializer);
@@ -41,7 +41,7 @@ void UAccountsBasicAccount::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 	Serializer->WriteValue(TEXT("createdTimeMillis"), CreatedTimeMillis);
 	Serializer->WriteValue(TEXT("updatedTimeMillis"), UpdatedTimeMillis);
 	UBeamJsonUtils::SerializeArray<UThirdPartyAssociation*>(TEXT("thirdParties"), ThirdParties, Serializer);
-	UBeamJsonUtils::SerializeArray<UExternalIdentity*>(TEXT("external"), External, Serializer);
+	UBeamJsonUtils::SerializeArray<FBeamExternalIdentity>(TEXT("external"), External, Serializer);
 	UBeamJsonUtils::SerializeArray<UGamerTagAssociation*>(TEXT("gamerTags"), GamerTags, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("wasMigrated"), &bWasMigrated, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("userName"), &UserName, Serializer);
@@ -65,7 +65,7 @@ void UAccountsBasicAccount::BeamDeserializeProperties(const TSharedPtr<FJsonObje
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("createdTimeMillis")), CreatedTimeMillis);
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("updatedTimeMillis")), UpdatedTimeMillis);
 	UBeamJsonUtils::DeserializeArray<UThirdPartyAssociation*>(Bag->GetArrayField(TEXT("thirdParties")), ThirdParties, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<UExternalIdentity*>(Bag->GetArrayField(TEXT("external")), External, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<FBeamExternalIdentity>(Bag->GetArrayField(TEXT("external")), External, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UGamerTagAssociation*>(Bag->GetArrayField(TEXT("gamerTags")), GamerTags, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("wasMigrated", Bag, bWasMigrated, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("userName", Bag, UserName, OuterOwner);

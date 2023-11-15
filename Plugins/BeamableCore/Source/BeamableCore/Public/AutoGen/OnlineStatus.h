@@ -10,21 +10,21 @@
 #include "OnlineStatus.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UOnlineStatus : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UOnlineStatus : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Last Online", Category="Beam")
-	FOptionalString LastOnline;
+	FOptionalString LastOnline = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Online", Category="Beam")
-	FOptionalBool bOnline;
+	FOptionalBool bOnline = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
-	FOptionalString PlayerId;
+	FOptionalString PlayerId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Status", Category="Beam")
-	FOptionalPresenceStatus Status;
+	FOptionalPresenceStatus Status = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Description", Category="Beam")
-	FOptionalString Description;
+	FOptionalString Description = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

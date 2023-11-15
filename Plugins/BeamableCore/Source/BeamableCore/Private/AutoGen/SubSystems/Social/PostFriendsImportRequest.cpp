@@ -27,9 +27,10 @@ void UPostFriendsImportRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostFriendsImportRequest* UPostFriendsImportRequest::Make(FString _Source, FString _Token, UObject* RequestOwner)
+UPostFriendsImportRequest* UPostFriendsImportRequest::Make(FString _Source, FString _Token, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostFriendsImportRequest* Req = NewObject<UPostFriendsImportRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

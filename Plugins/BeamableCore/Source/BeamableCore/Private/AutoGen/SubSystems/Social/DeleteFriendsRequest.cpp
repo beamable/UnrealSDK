@@ -27,9 +27,10 @@ void UDeleteFriendsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteFriendsRequest* UDeleteFriendsRequest::Make(FBeamGamerTag _PlayerId, UObject* RequestOwner)
+UDeleteFriendsRequest* UDeleteFriendsRequest::Make(FBeamGamerTag _PlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UDeleteFriendsRequest* Req = NewObject<UDeleteFriendsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

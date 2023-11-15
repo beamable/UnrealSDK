@@ -8,13 +8,13 @@
 #include "ArchiveProjectRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UArchiveProjectRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UArchiveProjectRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pid", Category="Beam")
-	FBeamPid Pid;
+	FBeamPid Pid = {};
 
 	
 

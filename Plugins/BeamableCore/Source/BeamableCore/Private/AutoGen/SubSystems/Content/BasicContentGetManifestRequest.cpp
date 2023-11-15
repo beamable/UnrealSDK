@@ -28,9 +28,10 @@ void UBasicContentGetManifestRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UBasicContentGetManifestRequest* UBasicContentGetManifestRequest::Make(FOptionalBeamContentManifestId _Id, UObject* RequestOwner)
+UBasicContentGetManifestRequest* UBasicContentGetManifestRequest::Make(FOptionalBeamContentManifestId _Id, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicContentGetManifestRequest* Req = NewObject<UBasicContentGetManifestRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Id = _Id;

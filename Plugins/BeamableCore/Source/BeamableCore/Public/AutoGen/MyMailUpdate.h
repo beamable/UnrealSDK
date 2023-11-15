@@ -8,15 +8,15 @@
 #include "MyMailUpdate.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UMyMailUpdate : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UMyMailUpdate : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	int64 Id;
+	int64 Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Update", Category="Beam")
-	UUpdateMailRequestBody* Update;
+	UUpdateMailRequestBody* Update = {};
 
 	
 

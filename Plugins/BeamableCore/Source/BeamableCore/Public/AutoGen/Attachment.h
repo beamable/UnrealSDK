@@ -9,19 +9,19 @@
 #include "Attachment.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UAttachment : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UAttachment : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	int64 Id;
+	int64 Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Wrapped", Category="Beam")
-	UEntitlementGenerator* Wrapped;
+	UEntitlementGenerator* Wrapped = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="State", Category="Beam")
-	FString State;
+	FString State = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Target", Category="Beam")
-	FOptionalInt64 Target;
+	FOptionalInt64 Target = {};
 
 	
 

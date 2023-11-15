@@ -22,7 +22,7 @@ FString UCreatePlanRequestBodyLibrary::CreatePlanRequestBodyToJsonString(const U
 	return Result;
 }	
 
-UCreatePlanRequestBody* UCreatePlanRequestBodyLibrary::Make(bool bMongoSSL, bool bSharded, FString Name, FString MemcachedHosts, FString PlatformJBDC, FString MongoHosts, TArray<URedisShardRequestBody*> RedisShards, FOptionalArrayOfString MessageBusAnalytics, FOptionalArrayOfString MessageBusCommon, UObject* Outer)
+UCreatePlanRequestBody* UCreatePlanRequestBodyLibrary::Make(bool bMongoSSL, bool bSharded, FString Name, FString MemcachedHosts, FString PlatformJBDC, FString MongoHosts, TArray<URedisShardRequestBody*> RedisShards, FOptionalString MongoSrvAddress, FOptionalArrayOfString MessageBusAnalytics, FOptionalArrayOfString MessageBusCommon, UObject* Outer)
 {
 	auto Serializable = NewObject<UCreatePlanRequestBody>(Outer);
 	Serializable->bMongoSSL = bMongoSSL;
@@ -32,13 +32,14 @@ UCreatePlanRequestBody* UCreatePlanRequestBodyLibrary::Make(bool bMongoSSL, bool
 	Serializable->PlatformJBDC = PlatformJBDC;
 	Serializable->MongoHosts = MongoHosts;
 	Serializable->RedisShards = RedisShards;
+	Serializable->MongoSrvAddress = MongoSrvAddress;
 	Serializable->MessageBusAnalytics = MessageBusAnalytics;
 	Serializable->MessageBusCommon = MessageBusCommon;
 	
 	return Serializable;
 }
 
-void UCreatePlanRequestBodyLibrary::Break(const UCreatePlanRequestBody* Serializable, bool& bMongoSSL, bool& bSharded, FString& Name, FString& MemcachedHosts, FString& PlatformJBDC, FString& MongoHosts, TArray<URedisShardRequestBody*>& RedisShards, FOptionalArrayOfString& MessageBusAnalytics, FOptionalArrayOfString& MessageBusCommon)
+void UCreatePlanRequestBodyLibrary::Break(const UCreatePlanRequestBody* Serializable, bool& bMongoSSL, bool& bSharded, FString& Name, FString& MemcachedHosts, FString& PlatformJBDC, FString& MongoHosts, TArray<URedisShardRequestBody*>& RedisShards, FOptionalString& MongoSrvAddress, FOptionalArrayOfString& MessageBusAnalytics, FOptionalArrayOfString& MessageBusCommon)
 {
 	bMongoSSL = Serializable->bMongoSSL;
 	bSharded = Serializable->bSharded;
@@ -47,6 +48,7 @@ void UCreatePlanRequestBodyLibrary::Break(const UCreatePlanRequestBody* Serializ
 	PlatformJBDC = Serializable->PlatformJBDC;
 	MongoHosts = Serializable->MongoHosts;
 	RedisShards = Serializable->RedisShards;
+	MongoSrvAddress = Serializable->MongoSrvAddress;
 	MessageBusAnalytics = Serializable->MessageBusAnalytics;
 	MessageBusCommon = Serializable->MessageBusCommon;
 		

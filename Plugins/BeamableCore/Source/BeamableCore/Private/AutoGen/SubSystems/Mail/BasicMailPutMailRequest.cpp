@@ -27,9 +27,10 @@ void UBasicMailPutMailRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UBasicMailPutMailRequest* UBasicMailPutMailRequest::Make(int64 _MailId, FOptionalBool _bAcceptAttachments, FOptionalString _Body, FOptionalString _Expires, FOptionalString _Subject, FOptionalString _State, FOptionalString _Category, UObject* RequestOwner)
+UBasicMailPutMailRequest* UBasicMailPutMailRequest::Make(int64 _MailId, FOptionalBool _bAcceptAttachments, FOptionalString _Body, FOptionalString _Expires, FOptionalString _Subject, FOptionalString _State, FOptionalString _Category, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicMailPutMailRequest* Req = NewObject<UBasicMailPutMailRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -27,9 +27,10 @@ void UPostPurchaseRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostPurchaseRequest* UPostPurchaseRequest::Make(int64 _ObjectId, FString _PurchaseId, UObject* RequestOwner)
+UPostPurchaseRequest* UPostPurchaseRequest::Make(int64 _ObjectId, FString _PurchaseId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostPurchaseRequest* Req = NewObject<UPostPurchaseRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

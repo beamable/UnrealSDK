@@ -8,19 +8,19 @@
 #include "LocalizedPrice.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API ULocalizedPrice : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API ULocalizedPrice : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="To", Category="Beam")
-	int64 To;
+	int64 To = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Price", Category="Beam")
-	int64 Price;
+	int64 Price = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Price Localized", Category="Beam")
-	double PriceLocalized;
+	double PriceLocalized = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Price Localized String", Category="Beam")
-	FString PriceLocalizedString;
+	FString PriceLocalizedString = {};
 
 	
 

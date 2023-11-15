@@ -27,9 +27,10 @@ void UPutAdminPlayerRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutAdminPlayerRequest* UPutAdminPlayerRequest::Make(int64 _PlayerId, FString _TournamentId, UPlayerStatusUpdate* _Update, UObject* RequestOwner)
+UPutAdminPlayerRequest* UPutAdminPlayerRequest::Make(int64 _PlayerId, FString _TournamentId, UPlayerStatusUpdate* _Update, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutAdminPlayerRequest* Req = NewObject<UPutAdminPlayerRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

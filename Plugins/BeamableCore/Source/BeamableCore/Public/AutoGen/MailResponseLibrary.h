@@ -17,8 +17,8 @@ public:
 	static FString MailResponseToJsonString(const UMailResponse* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make MailResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Result, Outer", NativeMakeFunc))
-	static UMailResponse* Make(FOptionalMailBasicMessage Result, UObject* Outer);
+	static UMailResponse* Make(FOptionalMessage Result, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break MailResponse", meta=(NativeBreakFunc))
-	static void Break(const UMailResponse* Serializable, FOptionalMailBasicMessage& Result);
+	static void Break(const UMailResponse* Serializable, FOptionalMessage& Result);
 };

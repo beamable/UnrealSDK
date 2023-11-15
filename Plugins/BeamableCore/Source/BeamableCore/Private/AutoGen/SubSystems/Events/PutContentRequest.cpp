@@ -27,9 +27,10 @@ void UPutContentRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutContentRequest* UPutContentRequest::Make(FString _ObjectId, UEvent* _Event, FString _Origin, FOptionalString _RootEventId, FOptionalString _OriginType, UObject* RequestOwner)
+UPutContentRequest* UPutContentRequest::Make(FString _ObjectId, UEvent* _Event, FString _Origin, FOptionalString _RootEventId, FOptionalString _OriginType, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutContentRequest* Req = NewObject<UPutContentRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

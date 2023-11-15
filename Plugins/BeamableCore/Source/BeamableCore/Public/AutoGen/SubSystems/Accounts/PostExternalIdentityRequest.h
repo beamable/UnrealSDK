@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UAttachExternalIdentityApiRequestBody* Body;
+	UAttachExternalIdentityApiRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPostExternalIdentityRequest() = default;
@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make PostExternalIdentity",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_ChallengeSolution,_ProviderNamespace,RequestOwner"))
-	static UPostExternalIdentityRequest* Make(FString _ProviderService, FString _ExternalToken, FOptionalChallengeSolution _ChallengeSolution, FOptionalString _ProviderNamespace, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make PostExternalIdentity",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_ChallengeSolution,_ProviderNamespace,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPostExternalIdentityRequest* Make(FString _ProviderService, FString _ExternalToken, FOptionalChallengeSolution _ChallengeSolution, FOptionalString _ProviderNamespace, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

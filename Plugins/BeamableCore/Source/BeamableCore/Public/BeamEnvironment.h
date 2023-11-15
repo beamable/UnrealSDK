@@ -109,6 +109,7 @@ public:
 	virtual void Deinitialize() override;
 
 
+	UPROPERTY()
 	UBeamEnvironmentData* Data;
 
 	UFUNCTION()

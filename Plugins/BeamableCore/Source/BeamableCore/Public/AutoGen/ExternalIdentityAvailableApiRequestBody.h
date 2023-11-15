@@ -8,17 +8,17 @@
 #include "ExternalIdentityAvailableApiRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UExternalIdentityAvailableApiRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UExternalIdentityAvailableApiRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Provider Service", Category="Beam")
-	FString ProviderService;
+	FString ProviderService = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="User Id", Category="Beam")
-	FString UserId;
+	FString UserId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Provider Namespace", Category="Beam")
-	FOptionalString ProviderNamespace;
+	FOptionalString ProviderNamespace = {};
 
 	
 

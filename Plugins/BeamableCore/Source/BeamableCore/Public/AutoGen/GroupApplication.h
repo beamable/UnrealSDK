@@ -8,13 +8,13 @@
 #include "GroupApplication.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGroupApplication : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGroupApplication : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sub Group", Category="Beam")
-	FOptionalInt64 SubGroup;
+	FOptionalInt64 SubGroup = {};
 
 	
 

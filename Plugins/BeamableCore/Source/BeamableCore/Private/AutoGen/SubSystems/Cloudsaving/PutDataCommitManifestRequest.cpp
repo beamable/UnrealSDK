@@ -27,9 +27,10 @@ void UPutDataCommitManifestRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutDataCommitManifestRequest* UPutDataCommitManifestRequest::Make(TArray<UUploadRequestBody*> _Request, FOptionalInt64 _PlayerId, UObject* RequestOwner)
+UPutDataCommitManifestRequest* UPutDataCommitManifestRequest::Make(TArray<UUploadRequestBody*> _Request, FOptionalInt64 _PlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutDataCommitManifestRequest* Req = NewObject<UPutDataCommitManifestRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

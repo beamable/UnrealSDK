@@ -17,7 +17,7 @@
 class FBeamBackendSpec;
 
 UCLASS()
-class UBeamMockBody final : public UObject, public FBeamJsonSerializable
+class UBeamMockBody final : public UObject, public FBeamJsonSerializableUStruct
 {
 	GENERATED_BODY()
 
@@ -68,7 +68,7 @@ public:
 };
 
 UCLASS()
-class UBeamMockGetRequestResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class UBeamMockGetRequestResponse : public UObject, public FBeamJsonSerializableUStruct, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 

@@ -26,11 +26,11 @@ public:
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Is Running", Category="Beam")
-	FOptionalBool bIsRunning;
+	FOptionalBool bIsRunning = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id", Category="Beam")
-	FOptionalString ContentId;
+	FOptionalString ContentId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cycle", Category="Beam")
-	FOptionalInt32 Cycle;
+	FOptionalInt32 Cycle = {};
 
 	// Body Params
 	
@@ -42,8 +42,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", DisplayName="Beam - Make BasicTournamentsGetTournaments",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bIsRunning,_ContentId,_Cycle,RequestOwner"))
-	static UBasicTournamentsGetTournamentsRequest* Make(FOptionalBool _bIsRunning, FOptionalString _ContentId, FOptionalInt32 _Cycle, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", DisplayName="Beam - Make BasicTournamentsGetTournaments",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bIsRunning,_ContentId,_Cycle,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UBasicTournamentsGetTournamentsRequest* Make(FOptionalBool _bIsRunning, FOptionalString _ContentId, FOptionalInt32 _Cycle, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

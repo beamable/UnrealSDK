@@ -23,9 +23,10 @@ void UPutFreezeRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UPutFreezeRequest* UPutFreezeRequest::Make(FString _ObjectId, UObject* RequestOwner)
+UPutFreezeRequest* UPutFreezeRequest::Make(FString _ObjectId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutFreezeRequest* Req = NewObject<UPutFreezeRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

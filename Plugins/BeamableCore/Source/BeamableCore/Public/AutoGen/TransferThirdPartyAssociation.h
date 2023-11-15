@@ -8,15 +8,15 @@
 #include "TransferThirdPartyAssociation.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UTransferThirdPartyAssociation : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UTransferThirdPartyAssociation : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From Account Id", Category="Beam")
-	int64 FromAccountId;
+	int64 FromAccountId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Third Party", Category="Beam")
-	UThirdPartyAssociation* ThirdParty;
+	UThirdPartyAssociation* ThirdParty = {};
 
 	
 

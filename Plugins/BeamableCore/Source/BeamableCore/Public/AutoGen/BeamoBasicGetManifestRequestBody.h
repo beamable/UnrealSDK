@@ -8,15 +8,15 @@
 #include "BeamoBasicGetManifestRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UBeamoBasicGetManifestRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UBeamoBasicGetManifestRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FString Id;
+	FString Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Archived", Category="Beam")
-	FOptionalBool bArchived;
+	FOptionalBool bArchived = {};
 
 	
 

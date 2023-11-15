@@ -8,15 +8,15 @@
 #include "PartyInvitation.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPartyInvitation : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UPartyInvitation : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Party Id", Category="Beam")
-	FOptionalString PartyId;
+	FOptionalString PartyId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Invited By", Category="Beam")
-	FOptionalString InvitedBy;
+	FOptionalString InvitedBy = {};
 
 	
 

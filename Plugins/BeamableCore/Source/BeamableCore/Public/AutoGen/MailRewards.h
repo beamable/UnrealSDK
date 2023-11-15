@@ -10,17 +10,17 @@
 #include "MailRewards.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UMailRewards : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UMailRewards : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currencies", Category="Beam")
-	TArray<UCurrencyChange*> Currencies;
+	TArray<UCurrencyChange*> Currencies = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Items", Category="Beam")
-	TArray<UItemCreateRequestBody*> Items;
+	TArray<UItemCreateRequestBody*> Items = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Apply Vip Bonus", Category="Beam")
-	FOptionalBool bApplyVipBonus;
+	FOptionalBool bApplyVipBonus = {};
 
 	
 

@@ -9,17 +9,17 @@
 #include "ContentMeta.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UContentMeta : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UContentMeta : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Visibility", Category="Beam")
-	EContentVisibility Visibility;
+	EContentVisibility Visibility = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Text", Category="Beam")
-	FOptionalString Text;
+	FOptionalString Text = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Data", Category="Beam")
-	FOptionalString Data;
+	FOptionalString Data = {};
 
 	
 

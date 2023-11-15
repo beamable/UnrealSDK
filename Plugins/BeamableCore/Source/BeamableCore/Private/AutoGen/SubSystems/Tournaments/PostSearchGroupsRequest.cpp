@@ -27,9 +27,10 @@ void UPostSearchGroupsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostSearchGroupsRequest* UPostSearchGroupsRequest::Make(FString _ContentId, TArray<int64> _GroupIds, UObject* RequestOwner)
+UPostSearchGroupsRequest* UPostSearchGroupsRequest::Make(FString _ContentId, TArray<int64> _GroupIds, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostSearchGroupsRequest* Req = NewObject<UPostSearchGroupsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

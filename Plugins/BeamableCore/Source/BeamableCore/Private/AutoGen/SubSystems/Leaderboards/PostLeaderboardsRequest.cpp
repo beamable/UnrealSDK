@@ -27,9 +27,10 @@ void UPostLeaderboardsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostLeaderboardsRequest* UPostLeaderboardsRequest::Make(FString _ObjectId, bool _bSharded, FOptionalBool _bPartitioned, FOptionalInt64 _FreezeTime, FOptionalString _ScoreName, FOptionalLeaderboardCohortSettings _CohortSettings, FOptionalBeamClientPermission _Permissions, FOptionalInt32 _MaxEntries, FOptionalInt64 _Ttl, FOptionalArrayOfString _Derivatives, UObject* RequestOwner)
+UPostLeaderboardsRequest* UPostLeaderboardsRequest::Make(FString _ObjectId, bool _bSharded, FOptionalBool _bPartitioned, FOptionalInt64 _FreezeTime, FOptionalString _ScoreName, FOptionalLeaderboardCohortSettings _CohortSettings, FOptionalBeamClientPermission _Permissions, FOptionalInt32 _MaxEntries, FOptionalInt64 _Ttl, FOptionalArrayOfString _Derivatives, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostLeaderboardsRequest* Req = NewObject<UPostLeaderboardsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

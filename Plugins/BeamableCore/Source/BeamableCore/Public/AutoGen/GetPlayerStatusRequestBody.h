@@ -9,17 +9,17 @@
 #include "GetPlayerStatusRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGetPlayerStatusRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGetPlayerStatusRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Has Unclaimed Rewards", Category="Beam")
-	FOptionalBool bHasUnclaimedRewards;
+	FOptionalBool bHasUnclaimedRewards = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id", Category="Beam")
-	FOptionalString ContentId;
+	FOptionalString ContentId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id", Category="Beam")
-	FOptionalString TournamentId;
+	FOptionalString TournamentId = {};
 
 	
 

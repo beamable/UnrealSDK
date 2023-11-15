@@ -27,9 +27,10 @@ void UPutProjectRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutProjectRequest* UPutProjectRequest::Make(FBeamPid _ProjectId, UObject* RequestOwner)
+UPutProjectRequest* UPutProjectRequest::Make(FBeamPid _ProjectId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutProjectRequest* Req = NewObject<UPutProjectRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

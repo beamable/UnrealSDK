@@ -30,9 +30,10 @@ void UBasicContentGetContentRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UBasicContentGetContentRequest* UBasicContentGetContentRequest::Make(FBeamContentId _ContentId, FString _Version, UObject* RequestOwner)
+UBasicContentGetContentRequest* UBasicContentGetContentRequest::Make(FBeamContentId _ContentId, FString _Version, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicContentGetContentRequest* Req = NewObject<UBasicContentGetContentRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ContentId = _ContentId;

@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UPasswordUpdateRequestBody* Body;
+	UPasswordUpdateRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPostPasswordUpdateInitRequest() = default;
@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make PostPasswordUpdateInit",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_CodeType,RequestOwner"))
-	static UPostPasswordUpdateInitRequest* Make(FString _Email, FOptionalString _CodeType, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make PostPasswordUpdateInit",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_CodeType,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPostPasswordUpdateInitRequest* Make(FString _Email, FOptionalString _CodeType, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -27,9 +27,10 @@ void UPostSteamPurchaseVerifyRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostSteamPurchaseVerifyRequest* UPostSteamPurchaseVerifyRequest::Make(FString _Receipt, UObject* RequestOwner)
+UPostSteamPurchaseVerifyRequest* UPostSteamPurchaseVerifyRequest::Make(FString _Receipt, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostSteamPurchaseVerifyRequest* Req = NewObject<UPostSteamPurchaseVerifyRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

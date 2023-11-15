@@ -8,13 +8,13 @@
 #include "ListTagsRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UListTagsRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UListTagsRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tag Name Filter", Category="Beam")
-	FOptionalString TagNameFilter;
+	FOptionalString TagNameFilter = {};
 
 	
 

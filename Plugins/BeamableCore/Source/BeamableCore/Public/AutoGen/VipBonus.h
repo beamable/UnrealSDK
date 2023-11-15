@@ -8,17 +8,17 @@
 #include "VipBonus.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UVipBonus : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UVipBonus : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currency", Category="Beam")
-	FString Currency;
+	FString Currency = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Multiplier", Category="Beam")
-	double Multiplier;
+	double Multiplier = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Round To Nearest", Category="Beam")
-	int32 RoundToNearest;
+	int32 RoundToNearest = {};
 
 	
 

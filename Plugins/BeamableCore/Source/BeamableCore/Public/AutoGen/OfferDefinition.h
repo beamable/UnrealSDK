@@ -11,29 +11,29 @@
 #include "OfferDefinition.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UOfferDefinition : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UOfferDefinition : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
-	FString Symbol;
+	FString Symbol = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Titles", Category="Beam")
-	TArray<FString> Titles;
+	TArray<FString> Titles = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Images", Category="Beam")
-	TArray<FString> Images;
+	TArray<FString> Images = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Descriptions", Category="Beam")
-	TArray<FString> Descriptions;
+	TArray<FString> Descriptions = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain", Category="Beam")
-	TArray<FString> Obtain;
+	TArray<FString> Obtain = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Loot Roll", Category="Beam")
-	FOptionalCommerceLootRoll LootRoll;
+	FOptionalCommerceLootRoll LootRoll = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Metadata", Category="Beam")
-	FOptionalString Metadata;
+	FOptionalString Metadata = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain Items", Category="Beam")
-	FOptionalArrayOfItemCreateRequestBody ObtainItems;
+	FOptionalArrayOfItemCreateRequestBody ObtainItems = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain Currency", Category="Beam")
-	FOptionalArrayOfCurrencyChange ObtainCurrency;
+	FOptionalArrayOfCurrencyChange ObtainCurrency = {};
 
 	
 

@@ -8,17 +8,17 @@
 #include "ItemUpdateRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UItemUpdateRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UItemUpdateRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id", Category="Beam")
-	FString ContentId;
+	FString ContentId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	int64 Id;
+	int64 Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Properties", Category="Beam")
-	TArray<UItemProperty*> Properties;
+	TArray<UItemProperty*> Properties = {};
 
 	
 

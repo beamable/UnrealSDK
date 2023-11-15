@@ -16,9 +16,9 @@ public:
 	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - Item To JSON String")
 	static FString ItemToJsonString(const UItem* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make Item", meta=(DefaultToSelf="Outer", AdvancedDisplay="UpdatedAt, ProxyId, CreatedAt, Outer", NativeMakeFunc))
-	static UItem* Make(int64 Id, TArray<UItemProperty*> Properties, FOptionalInt64 UpdatedAt, FOptionalString ProxyId, FOptionalInt64 CreatedAt, UObject* Outer);
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make Item", meta=(DefaultToSelf="Outer", AdvancedDisplay="UpdatedAt, ProxyId, Proxy, CreatedAt, Outer", NativeMakeFunc))
+	static UItem* Make(int64 Id, TArray<UItemProperty*> Properties, FOptionalInt64 UpdatedAt, FOptionalString ProxyId, FOptionalArchetypeProxy Proxy, FOptionalInt64 CreatedAt, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break Item", meta=(NativeBreakFunc))
-	static void Break(const UItem* Serializable, int64& Id, TArray<UItemProperty*>& Properties, FOptionalInt64& UpdatedAt, FOptionalString& ProxyId, FOptionalInt64& CreatedAt);
+	static void Break(const UItem* Serializable, int64& Id, TArray<UItemProperty*>& Properties, FOptionalInt64& UpdatedAt, FOptionalString& ProxyId, FOptionalArchetypeProxy& Proxy, FOptionalInt64& CreatedAt);
 };

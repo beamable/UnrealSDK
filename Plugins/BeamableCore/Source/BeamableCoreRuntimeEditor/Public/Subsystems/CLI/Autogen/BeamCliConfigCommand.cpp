@@ -7,7 +7,7 @@
 		
 TSharedPtr<FMonitoredProcess> UBeamCliConfigCommand::RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op)
 {
-	FString Params = ("config");
+	FString Params = ("config --reporter-use-fatal");
 	for (const auto& CommandParam : CommandParams)
 		Params.Appendf(TEXT(" %s"), *CommandParam);
 	Params = PrepareParams(Params);

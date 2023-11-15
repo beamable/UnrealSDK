@@ -8,15 +8,15 @@
 #include "GroupRole.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGroupRole : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGroupRole : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Permissions", Category="Beam")
-	TArray<FString> Permissions;
+	TArray<FString> Permissions = {};
 
 	
 

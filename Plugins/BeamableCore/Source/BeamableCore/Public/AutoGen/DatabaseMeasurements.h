@@ -10,29 +10,29 @@
 #include "DatabaseMeasurements.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UDatabaseMeasurements : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UDatabaseMeasurements : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Database Name", Category="Beam")
-	FString DatabaseName;
+	FString DatabaseName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Links", Category="Beam")
-	TArray<ULink*> Links;
+	TArray<ULink*> Links = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Group Id", Category="Beam")
-	FOptionalString GroupId;
+	FOptionalString GroupId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Host Id", Category="Beam")
-	FOptionalString HostId;
+	FOptionalString HostId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Granularity", Category="Beam")
-	FOptionalString Granularity;
+	FOptionalString Granularity = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="End", Category="Beam")
-	FOptionalString End;
+	FOptionalString End = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Start", Category="Beam")
-	FOptionalString Start;
+	FOptionalString Start = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Process Id", Category="Beam")
-	FOptionalString ProcessId;
+	FOptionalString ProcessId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Measurements", Category="Beam")
-	FOptionalArrayOfDatabaseMeasurement Measurements;
+	FOptionalArrayOfDatabaseMeasurement Measurements = {};
 
 	
 

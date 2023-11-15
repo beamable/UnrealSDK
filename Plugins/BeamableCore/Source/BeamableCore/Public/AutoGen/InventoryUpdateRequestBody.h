@@ -14,31 +14,31 @@
 #include "InventoryUpdateRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UInventoryUpdateRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UInventoryUpdateRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Empty", Category="Beam")
-	bool bEmpty;
+	bool bEmpty = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currency Content Ids", Category="Beam")
-	TArray<FString> CurrencyContentIds;
+	TArray<FString> CurrencyContentIds = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Item Content Ids", Category="Beam")
-	TArray<FString> ItemContentIds;
+	TArray<FString> ItemContentIds = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Apply Vip Bonus", Category="Beam")
-	FOptionalBool bApplyVipBonus;
+	FOptionalBool bApplyVipBonus = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Transaction", Category="Beam")
-	FOptionalString Transaction;
+	FOptionalString Transaction = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Update Items", Category="Beam")
-	FOptionalArrayOfItemUpdateRequestBody UpdateItems;
+	FOptionalArrayOfItemUpdateRequestBody UpdateItems = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="New Items", Category="Beam")
-	FOptionalArrayOfItemCreateRequestBody NewItems;
+	FOptionalArrayOfItemCreateRequestBody NewItems = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Delete Items", Category="Beam")
-	FOptionalArrayOfItemDeleteRequestBody DeleteItems;
+	FOptionalArrayOfItemDeleteRequestBody DeleteItems = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currencies", Category="Beam")
-	FOptionalMapOfInt64 Currencies;
+	FOptionalMapOfInt64 Currencies = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currency Properties", Category="Beam")
-	FOptionalMapOfArrayOfCurrencyProperty CurrencyProperties;
+	FOptionalMapOfArrayOfCurrencyProperty CurrencyProperties = {};
 
 	
 

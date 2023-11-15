@@ -22,14 +22,14 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FGuid Id;
+	FGuid Id = {};
 	
 	// Query Params
 	
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UAddTags* Body;
+	UAddTags* Body = {};
 
 	// Beam Base Request Declaration
 	UPutTagsRequest() = default;
@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Lobby", DisplayName="Beam - Make PutTags",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_PlayerId,_bReplace,_Tags,RequestOwner"))
-	static UPutTagsRequest* Make(FGuid _Id, FOptionalString _PlayerId, FOptionalBool _bReplace, FOptionalArrayOfTag _Tags, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Lobby", DisplayName="Beam - Make PutTags",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_PlayerId,_bReplace,_Tags,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPutTagsRequest* Make(FGuid _Id, FOptionalString _PlayerId, FOptionalBool _bReplace, FOptionalArrayOfTag _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

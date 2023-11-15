@@ -8,7 +8,7 @@
 #include "NetworkSerializable.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UNetworkSerializable : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UNetworkSerializable : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 

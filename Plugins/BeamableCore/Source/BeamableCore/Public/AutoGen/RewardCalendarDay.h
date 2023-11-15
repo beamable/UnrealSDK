@@ -8,13 +8,13 @@
 #include "RewardCalendarDay.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API URewardCalendarDay : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API URewardCalendarDay : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain", Category="Beam")
-	TArray<UEntitlementGenerator*> Obtain;
+	TArray<UEntitlementGenerator*> Obtain = {};
 
 	
 

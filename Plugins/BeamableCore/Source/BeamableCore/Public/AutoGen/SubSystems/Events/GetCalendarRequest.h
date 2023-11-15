@@ -25,13 +25,13 @@ public:
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From", Category="Beam")
-	FOptionalString From;
+	FOptionalString From = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="To", Category="Beam")
-	FOptionalString To;
+	FOptionalString To = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Query", Category="Beam")
-	FOptionalString Query;
+	FOptionalString Query = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit", Category="Beam")
-	FOptionalInt32 Limit;
+	FOptionalInt32 Limit = {};
 
 	// Body Params
 	
@@ -43,8 +43,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Events", DisplayName="Beam - Make GetCalendar",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_From,_To,_Query,_Limit,RequestOwner"))
-	static UGetCalendarRequest* Make(FOptionalString _From, FOptionalString _To, FOptionalString _Query, FOptionalInt32 _Limit, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Events", DisplayName="Beam - Make GetCalendar",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_From,_To,_Query,_Limit,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UGetCalendarRequest* Make(FOptionalString _From, FOptionalString _To, FOptionalString _Query, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

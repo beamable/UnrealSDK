@@ -8,17 +8,17 @@
 #include "RealmPromotion.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API URealmPromotion : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API URealmPromotion : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Source", Category="Beam")
-	UPromotable* Source;
+	UPromotable* Source = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Destination", Category="Beam")
-	UPromotable* Destination;
+	UPromotable* Destination = {};
 
 	
 

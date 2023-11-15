@@ -8,15 +8,15 @@
 #include "Period.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPeriod : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UPeriod : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Start", Category="Beam")
-	FString Start;
+	FString Start = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="End", Category="Beam")
-	FOptionalString End;
+	FOptionalString End = {};
 
 	
 

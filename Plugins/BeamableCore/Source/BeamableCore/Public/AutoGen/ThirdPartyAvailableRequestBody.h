@@ -8,15 +8,15 @@
 #include "ThirdPartyAvailableRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UThirdPartyAvailableRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UThirdPartyAvailableRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Third Party", Category="Beam")
-	FString ThirdParty;
+	FString ThirdParty = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Token", Category="Beam")
-	FString Token;
+	FString Token = {};
 
 	
 

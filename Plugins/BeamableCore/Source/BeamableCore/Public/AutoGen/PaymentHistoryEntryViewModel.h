@@ -8,17 +8,17 @@
 #include "PaymentHistoryEntryViewModel.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPaymentHistoryEntryViewModel : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UPaymentHistoryEntryViewModel : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Change", Category="Beam")
-	FString Change;
+	FString Change = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Data", Category="Beam")
-	FOptionalString Data;
+	FOptionalString Data = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Timestamp", Category="Beam")
-	FOptionalString Timestamp;
+	FOptionalString Timestamp = {};
 
 	
 

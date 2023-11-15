@@ -8,13 +8,13 @@
 #include "LeaderboardPlayerRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API ULeaderboardPlayerRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API ULeaderboardPlayerRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Dbid", Category="Beam")
-	int64 Dbid;
+	int64 Dbid = {};
 
 	
 

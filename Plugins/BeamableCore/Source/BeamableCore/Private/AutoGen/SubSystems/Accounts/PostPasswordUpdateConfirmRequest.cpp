@@ -27,9 +27,10 @@ void UPostPasswordUpdateConfirmRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostPasswordUpdateConfirmRequest* UPostPasswordUpdateConfirmRequest::Make(FString _Code, FString _NewPassword, FOptionalString _Email, UObject* RequestOwner)
+UPostPasswordUpdateConfirmRequest* UPostPasswordUpdateConfirmRequest::Make(FString _Code, FString _NewPassword, FOptionalString _Email, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostPasswordUpdateConfirmRequest* Req = NewObject<UPostPasswordUpdateConfirmRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

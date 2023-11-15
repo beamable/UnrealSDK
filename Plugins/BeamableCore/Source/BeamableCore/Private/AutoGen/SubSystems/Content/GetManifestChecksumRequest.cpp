@@ -28,9 +28,10 @@ void UGetManifestChecksumRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetManifestChecksumRequest* UGetManifestChecksumRequest::Make(FOptionalBeamContentManifestId _Id, UObject* RequestOwner)
+UGetManifestChecksumRequest* UGetManifestChecksumRequest::Make(FOptionalBeamContentManifestId _Id, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetManifestChecksumRequest* Req = NewObject<UGetManifestChecksumRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Id = _Id;

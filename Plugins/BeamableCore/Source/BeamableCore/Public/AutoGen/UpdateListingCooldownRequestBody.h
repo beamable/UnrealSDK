@@ -8,15 +8,15 @@
 #include "UpdateListingCooldownRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UUpdateListingCooldownRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UUpdateListingCooldownRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
-	FString Symbol;
+	FString Symbol = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cooldown Reduction", Category="Beam")
-	int32 CooldownReduction;
+	int32 CooldownReduction = {};
 
 	
 

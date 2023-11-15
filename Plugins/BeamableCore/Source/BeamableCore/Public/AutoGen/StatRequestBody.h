@@ -8,13 +8,13 @@
 #include "StatRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UStatRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UStatRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stats", Category="Beam")
-	FOptionalString Stats;
+	FOptionalString Stats = {};
 
 	
 

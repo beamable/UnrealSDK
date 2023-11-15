@@ -27,9 +27,10 @@ void UPostProjectBeamableRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostProjectBeamableRequest* UPostProjectBeamableRequest::Make(FString _Name, FOptionalBool _bSharded, FOptionalString _Plan, FOptionalString _Parent, UObject* RequestOwner)
+UPostProjectBeamableRequest* UPostProjectBeamableRequest::Make(FString _Name, FOptionalBool _bSharded, FOptionalString _Plan, FOptionalString _Parent, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostProjectBeamableRequest* Req = NewObject<UPostProjectBeamableRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

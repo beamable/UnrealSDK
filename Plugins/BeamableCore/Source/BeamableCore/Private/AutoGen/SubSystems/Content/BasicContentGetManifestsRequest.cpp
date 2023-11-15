@@ -23,9 +23,10 @@ void UBasicContentGetManifestsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UBasicContentGetManifestsRequest* UBasicContentGetManifestsRequest::Make(UObject* RequestOwner)
+UBasicContentGetManifestsRequest* UBasicContentGetManifestsRequest::Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicContentGetManifestsRequest* Req = NewObject<UBasicContentGetManifestsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -4,34 +4,37 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/RedisShardRequestBody.h"
 
 #include "CreatePlanRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UCreatePlanRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UCreatePlanRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Mongo SSL", Category="Beam")
-	bool bMongoSSL;
+	bool bMongoSSL = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sharded", Category="Beam")
-	bool bSharded;
+	bool bSharded = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Memcached Hosts", Category="Beam")
-	FString MemcachedHosts;
+	FString MemcachedHosts = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Platform JBDC", Category="Beam")
-	FString PlatformJBDC;
+	FString PlatformJBDC = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Mongo Hosts", Category="Beam")
-	FString MongoHosts;
+	FString MongoHosts = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Redis Shards", Category="Beam")
-	TArray<URedisShardRequestBody*> RedisShards;
+	TArray<URedisShardRequestBody*> RedisShards = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Mongo Srv Address", Category="Beam")
+	FOptionalString MongoSrvAddress = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Message Bus Analytics", Category="Beam")
-	FOptionalArrayOfString MessageBusAnalytics;
+	FOptionalArrayOfString MessageBusAnalytics = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Message Bus Common", Category="Beam")
-	FOptionalArrayOfString MessageBusCommon;
+	FOptionalArrayOfString MessageBusCommon = {};
 
 	
 

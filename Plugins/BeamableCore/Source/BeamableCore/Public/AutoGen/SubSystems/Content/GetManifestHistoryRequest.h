@@ -25,9 +25,9 @@ public:
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FOptionalBeamContentManifestId Id;
+	FOptionalBeamContentManifestId Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit", Category="Beam")
-	FOptionalInt32 Limit;
+	FOptionalInt32 Limit = {};
 
 	// Body Params
 	
@@ -39,8 +39,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Content", DisplayName="Beam - Make GetManifestHistory",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Id,_Limit,RequestOwner"))
-	static UGetManifestHistoryRequest* Make(FOptionalBeamContentManifestId _Id, FOptionalInt32 _Limit, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Content", DisplayName="Beam - Make GetManifestHistory",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Id,_Limit,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UGetManifestHistoryRequest* Make(FOptionalBeamContentManifestId _Id, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

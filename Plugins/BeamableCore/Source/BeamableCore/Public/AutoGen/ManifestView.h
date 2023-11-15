@@ -11,25 +11,25 @@
 #include "ManifestView.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UManifestView : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UManifestView : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FString Id;
+	FString Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Checksum", Category="Beam")
-	FString Checksum;
+	FString Checksum = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
-	int64 Created;
+	int64 Created = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Manifest", Category="Beam")
-	TArray<UServiceReference*> Manifest;
+	TArray<UServiceReference*> Manifest = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created By Account Id", Category="Beam")
-	FOptionalInt64 CreatedByAccountId;
+	FOptionalInt64 CreatedByAccountId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Comments", Category="Beam")
-	FOptionalString Comments;
+	FOptionalString Comments = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Storage Reference", Category="Beam")
-	FOptionalArrayOfServiceStorageReference StorageReference;
+	FOptionalArrayOfServiceStorageReference StorageReference = {};
 
 	
 

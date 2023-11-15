@@ -27,9 +27,10 @@ void UPostPartiesRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostPartiesRequest* UPostPartiesRequest::Make(FOptionalString _Restriction, FOptionalString _Leader, FOptionalInt32 _MaxSize, UObject* RequestOwner)
+UPostPartiesRequest* UPostPartiesRequest::Make(FOptionalString _Restriction, FOptionalString _Leader, FOptionalInt32 _MaxSize, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostPartiesRequest* Req = NewObject<UPostPartiesRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

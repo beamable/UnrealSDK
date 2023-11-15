@@ -48,9 +48,10 @@ void UGetStoragePerformanceRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetStoragePerformanceRequest* UGetStoragePerformanceRequest::Make(FOptionalString _EndDate, FString _StorageObjectName, FString _Granularity, FOptionalString _StartDate, FOptionalString _Period, UObject* RequestOwner)
+UGetStoragePerformanceRequest* UGetStoragePerformanceRequest::Make(FOptionalString _EndDate, FString _StorageObjectName, FString _Granularity, FOptionalString _StartDate, FOptionalString _Period, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetStoragePerformanceRequest* Req = NewObject<UGetStoragePerformanceRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->EndDate = _EndDate;

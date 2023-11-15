@@ -8,21 +8,21 @@
 #include "TournamentGroupEntry.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UTournamentGroupEntry : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UTournamentGroupEntry : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rank", Category="Beam")
-	int64 Rank;
+	int64 Rank = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Score", Category="Beam")
-	double Score;
+	double Score = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Group Id", Category="Beam")
-	int64 GroupId;
+	int64 GroupId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stage Change", Category="Beam")
-	int32 StageChange;
+	int32 StageChange = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currency Rewards", Category="Beam")
-	TArray<UTournamentCurrencyReward*> CurrencyRewards;
+	TArray<UTournamentCurrencyReward*> CurrencyRewards = {};
 
 	
 

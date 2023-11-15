@@ -9,17 +9,17 @@
 #include "PromoteRealmRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPromoteRealmRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UPromoteRealmRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Source Pid", Category="Beam")
-	FBeamPid SourcePid;
+	FBeamPid SourcePid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Promotions", Category="Beam")
-	FOptionalArrayOfString Promotions;
+	FOptionalArrayOfString Promotions = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Manifest Ids", Category="Beam")
-	FOptionalArrayOfString ContentManifestIds;
+	FOptionalArrayOfString ContentManifestIds = {};
 
 	
 

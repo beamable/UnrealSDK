@@ -22,7 +22,7 @@ FString UURLSResponseLibrary::URLSResponseToJsonString(const UURLSResponse* Seri
 	return Result;
 }	
 
-UURLSResponse* UURLSResponseLibrary::Make(TArray<UURLResponse*> Response, UObject* Outer)
+UURLSResponse* UURLSResponseLibrary::Make(TArray<UCloudsavingBasicURLResponse*> Response, UObject* Outer)
 {
 	auto Serializable = NewObject<UURLSResponse>(Outer);
 	Serializable->Response = Response;
@@ -30,7 +30,7 @@ UURLSResponse* UURLSResponseLibrary::Make(TArray<UURLResponse*> Response, UObjec
 	return Serializable;
 }
 
-void UURLSResponseLibrary::Break(const UURLSResponse* Serializable, TArray<UURLResponse*>& Response)
+void UURLSResponseLibrary::Break(const UURLSResponse* Serializable, TArray<UCloudsavingBasicURLResponse*>& Response)
 {
 	Response = Serializable->Response;
 		

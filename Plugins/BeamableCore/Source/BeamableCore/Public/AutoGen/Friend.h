@@ -9,15 +9,15 @@
 #include "Friend.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UFriend : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UFriend : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
-	FBeamGamerTag PlayerId;
+	FBeamGamerTag PlayerId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Source", Category="Beam")
-	EFriendSource Source;
+	EFriendSource Source = {};
 
 	
 

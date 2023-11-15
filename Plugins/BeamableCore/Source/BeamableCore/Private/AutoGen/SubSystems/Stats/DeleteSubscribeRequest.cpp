@@ -27,9 +27,10 @@ void UDeleteSubscribeRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteSubscribeRequest* UDeleteSubscribeRequest::Make(FString _Service, FOptionalArrayOfString _Subscriptions, UObject* RequestOwner)
+UDeleteSubscribeRequest* UDeleteSubscribeRequest::Make(FString _Service, FOptionalArrayOfString _Subscriptions, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UDeleteSubscribeRequest* Req = NewObject<UDeleteSubscribeRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

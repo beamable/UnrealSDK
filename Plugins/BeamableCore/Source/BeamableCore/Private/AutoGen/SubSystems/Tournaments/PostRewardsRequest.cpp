@@ -27,9 +27,10 @@ void UPostRewardsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostRewardsRequest* UPostRewardsRequest::Make(FOptionalString _TournamentId, FOptionalString _ContentId, UObject* RequestOwner)
+UPostRewardsRequest* UPostRewardsRequest::Make(FOptionalString _TournamentId, FOptionalString _ContentId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostRewardsRequest* Req = NewObject<UPostRewardsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

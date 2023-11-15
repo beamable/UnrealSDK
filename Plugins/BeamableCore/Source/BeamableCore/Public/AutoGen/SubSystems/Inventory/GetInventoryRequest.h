@@ -22,11 +22,11 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	FBeamGamerTag ObjectId;
+	FBeamGamerTag ObjectId = {};
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scope", Category="Beam")
-	FOptionalString Scope;
+	FOptionalString Scope = {};
 
 	// Body Params
 	
@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Inventory", DisplayName="Beam - Make GetInventory",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Scope,RequestOwner"))
-	static UGetInventoryRequest* Make(FBeamGamerTag _ObjectId, FOptionalString _Scope, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Inventory", DisplayName="Beam - Make GetInventory",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Scope,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UGetInventoryRequest* Make(FBeamGamerTag _ObjectId, FOptionalString _Scope, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

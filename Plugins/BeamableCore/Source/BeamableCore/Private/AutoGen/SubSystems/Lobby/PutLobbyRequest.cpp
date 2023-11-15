@@ -27,9 +27,10 @@ void UPutLobbyRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutLobbyRequest* UPutLobbyRequest::Make(FGuid _Id, FOptionalArrayOfTag _Tags, UObject* RequestOwner)
+UPutLobbyRequest* UPutLobbyRequest::Make(FGuid _Id, FOptionalArrayOfTag _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutLobbyRequest* Req = NewObject<UPutLobbyRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Id = _Id;

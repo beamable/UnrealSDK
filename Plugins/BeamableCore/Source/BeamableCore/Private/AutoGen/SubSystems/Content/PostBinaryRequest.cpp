@@ -27,9 +27,10 @@ void UPostBinaryRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostBinaryRequest* UPostBinaryRequest::Make(TArray<UBinaryDefinition*> _Binary, UObject* RequestOwner)
+UPostBinaryRequest* UPostBinaryRequest::Make(TArray<UBinaryDefinition*> _Binary, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostBinaryRequest* Req = NewObject<UPostBinaryRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

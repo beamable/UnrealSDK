@@ -26,9 +26,10 @@ void UGetSteamProductsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetSteamProductsRequest* UGetSteamProductsRequest::Make(int64 _SteamId, UObject* RequestOwner)
+UGetSteamProductsRequest* UGetSteamProductsRequest::Make(int64 _SteamId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetSteamProductsRequest* Req = NewObject<UGetSteamProductsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->SteamId = _SteamId;

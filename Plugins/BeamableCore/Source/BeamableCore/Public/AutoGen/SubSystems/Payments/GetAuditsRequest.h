@@ -26,19 +26,19 @@ public:
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Providerid", Category="Beam")
-	FOptionalString Providerid;
+	FOptionalString Providerid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Provider", Category="Beam")
-	FOptionalString Provider;
+	FOptionalString Provider = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="State", Category="Beam")
-	FOptionalString State;
+	FOptionalString State = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Txid", Category="Beam")
-	FOptionalInt64 Txid;
+	FOptionalInt64 Txid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player", Category="Beam")
-	FOptionalInt64 Player;
+	FOptionalInt64 Player = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Start", Category="Beam")
-	FOptionalInt32 Start;
+	FOptionalInt32 Start = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit", Category="Beam")
-	FOptionalInt32 Limit;
+	FOptionalInt32 Limit = {};
 
 	// Body Params
 	
@@ -50,8 +50,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Payments", DisplayName="Beam - Make GetAudits",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Providerid,_Provider,_State,_Txid,_Player,_Start,_Limit,RequestOwner"))
-	static UGetAuditsRequest* Make(FOptionalString _Providerid, FOptionalString _Provider, FOptionalString _State, FOptionalInt64 _Txid, FOptionalInt64 _Player, FOptionalInt32 _Start, FOptionalInt32 _Limit, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Payments", DisplayName="Beam - Make GetAudits",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Providerid,_Provider,_State,_Txid,_Player,_Start,_Limit,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UGetAuditsRequest* Make(FOptionalString _Providerid, FOptionalString _Provider, FOptionalString _State, FOptionalInt64 _Txid, FOptionalInt64 _Player, FOptionalInt32 _Start, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -8,17 +8,17 @@
 #include "EventPhaseTime.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEventPhaseTime : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UEventPhaseTime : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Start Time", Category="Beam")
-	FOptionalInt64 StartTime;
+	FOptionalInt64 StartTime = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="End Time", Category="Beam")
-	FOptionalInt64 EndTime;
+	FOptionalInt64 EndTime = {};
 
 	
 

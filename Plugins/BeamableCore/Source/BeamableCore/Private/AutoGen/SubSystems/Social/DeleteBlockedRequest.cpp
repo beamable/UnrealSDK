@@ -27,9 +27,10 @@ void UDeleteBlockedRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteBlockedRequest* UDeleteBlockedRequest::Make(FBeamGamerTag _PlayerId, UObject* RequestOwner)
+UDeleteBlockedRequest* UDeleteBlockedRequest::Make(FBeamGamerTag _PlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UDeleteBlockedRequest* Req = NewObject<UDeleteBlockedRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

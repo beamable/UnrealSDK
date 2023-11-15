@@ -8,15 +8,15 @@
 #include "LeaderboardListRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API ULeaderboardListRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API ULeaderboardListRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Skip", Category="Beam")
-	FOptionalInt32 Skip;
+	FOptionalInt32 Skip = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit", Category="Beam")
-	FOptionalInt32 Limit;
+	FOptionalInt32 Limit = {};
 
 	
 

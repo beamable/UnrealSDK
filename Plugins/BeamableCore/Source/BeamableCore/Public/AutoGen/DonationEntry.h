@@ -8,19 +8,19 @@
 #include "DonationEntry.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UDonationEntry : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UDonationEntry : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
-	int64 PlayerId;
+	int64 PlayerId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Amount", Category="Beam")
-	int64 Amount;
+	int64 Amount = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Time", Category="Beam")
-	int64 Time;
+	int64 Time = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Claimed", Category="Beam")
-	FOptionalBool bClaimed;
+	FOptionalBool bClaimed = {};
 
 	
 

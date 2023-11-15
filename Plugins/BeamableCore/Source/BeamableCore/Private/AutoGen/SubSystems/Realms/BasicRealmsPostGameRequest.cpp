@@ -27,9 +27,10 @@ void UBasicRealmsPostGameRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UBasicRealmsPostGameRequest* UBasicRealmsPostGameRequest::Make(FString _GameName, UObject* RequestOwner)
+UBasicRealmsPostGameRequest* UBasicRealmsPostGameRequest::Make(FString _GameName, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicRealmsPostGameRequest* Req = NewObject<UBasicRealmsPostGameRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

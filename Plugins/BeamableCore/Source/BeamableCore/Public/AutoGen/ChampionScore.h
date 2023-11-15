@@ -8,21 +8,21 @@
 #include "ChampionScore.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UChampionScore : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UChampionScore : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="End Time Ms", Category="Beam")
-	int64 EndTimeMs;
+	int64 EndTimeMs = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Start Time Ms", Category="Beam")
-	int64 StartTimeMs;
+	int64 StartTimeMs = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Score", Category="Beam")
-	double Score;
+	double Score = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cycle", Category="Beam")
-	int32 Cycle;
+	int32 Cycle = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
-	int64 PlayerId;
+	int64 PlayerId = {};
 
 	
 

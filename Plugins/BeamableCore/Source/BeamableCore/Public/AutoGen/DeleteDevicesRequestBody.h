@@ -8,13 +8,13 @@
 #include "DeleteDevicesRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UDeleteDevicesRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UDeleteDevicesRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Device Ids", Category="Beam")
-	FOptionalArrayOfString DeviceIds;
+	FOptionalArrayOfString DeviceIds = {};
 
 	
 

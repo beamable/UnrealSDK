@@ -23,9 +23,10 @@ void UGetRegistryRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetRegistryRequest* UGetRegistryRequest::Make(UObject* RequestOwner)
+UGetRegistryRequest* UGetRegistryRequest::Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetRegistryRequest* Req = NewObject<UGetRegistryRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

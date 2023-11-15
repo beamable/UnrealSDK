@@ -1,38 +1,74 @@
 ﻿#include "Serialization/BeamJsonSerializable.h"
-FBeamJsonSerializable::~FBeamJsonSerializable() = default;
+FBeamJsonSerializableUStruct::~FBeamJsonSerializableUStruct() = default;
 
-void FBeamJsonSerializable::BeamSerialize(TUnrealJsonSerializer& Serializer) const
+void FBeamJsonSerializableUStruct::BeamSerialize(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteObjectStart();
 	BeamSerializeProperties(Serializer);
 	Serializer->WriteObjectEnd();
 }
 
-void FBeamJsonSerializable::BeamSerialize(TUnrealPrettyJsonSerializer& Serializer) const
+void FBeamJsonSerializableUStruct::BeamSerialize(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	Serializer->WriteObjectStart();
 	BeamSerializeProperties(Serializer);
 	Serializer->WriteObjectEnd();
 }
 
-void FBeamJsonSerializable::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void FBeamJsonSerializableUStruct::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	ensure(false);
 }
 
-void FBeamJsonSerializable::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
+void FBeamJsonSerializableUStruct::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	ensure(false);
 }
 
-void FBeamJsonSerializable::BeamDeserialize(const FString& JsonString)
+void FBeamJsonSerializableUStruct::BeamDeserialize(const FString& JsonString)
 {
 	auto Bag = FJsonDataBag{};
 	Bag.FromJson(JsonString);
 	BeamDeserializeProperties(Bag.JsonObject);
 }
 
-void FBeamJsonSerializable::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void FBeamJsonSerializableUStruct::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+{
+	ensure(false);
+}
+
+void IBeamJsonSerializableUObject::BeamSerialize(TUnrealJsonSerializer& Serializer) const
+{
+	Serializer->WriteObjectStart();
+	BeamSerializeProperties(Serializer);
+	Serializer->WriteObjectEnd();
+}
+
+void IBeamJsonSerializableUObject::BeamSerialize(TUnrealPrettyJsonSerializer& Serializer) const
+{
+	Serializer->WriteObjectStart();
+	BeamSerializeProperties(Serializer);
+	Serializer->WriteObjectEnd();
+}
+
+void IBeamJsonSerializableUObject::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+{
+	ensure(false);
+}
+
+void IBeamJsonSerializableUObject::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
+{
+	ensure(false);
+}
+
+void IBeamJsonSerializableUObject::BeamDeserialize(const FString& JsonString)
+{
+	auto Bag = FJsonDataBag{};
+	Bag.FromJson(JsonString);
+	BeamDeserializeProperties(Bag.JsonObject);
+}
+
+void IBeamJsonSerializableUObject::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	ensure(false);
 }

@@ -8,17 +8,17 @@
 #include "RealmRolesReport.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API URealmRolesReport : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API URealmRolesReport : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Realm Name", Category="Beam")
-	FString RealmName;
+	FString RealmName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Realm Display Name", Category="Beam")
-	FString RealmDisplayName;
+	FString RealmDisplayName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Roles", Category="Beam")
-	TArray<FString> Roles;
+	TArray<FString> Roles = {};
 
 	
 

@@ -27,9 +27,10 @@ void UPostWindowsPurchaseVerifyRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostWindowsPurchaseVerifyRequest* UPostWindowsPurchaseVerifyRequest::Make(FString _Receipt, UObject* RequestOwner)
+UPostWindowsPurchaseVerifyRequest* UPostWindowsPurchaseVerifyRequest::Make(FString _Receipt, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostWindowsPurchaseVerifyRequest* Req = NewObject<UPostWindowsPurchaseVerifyRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

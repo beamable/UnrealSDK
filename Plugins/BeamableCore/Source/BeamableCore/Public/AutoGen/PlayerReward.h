@@ -13,25 +13,25 @@
 #include "PlayerReward.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPlayerReward : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UPlayerReward : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Add Item Requests", Category="Beam")
-	TArray<UItemCreateRequestBody*> AddItemRequests;
+	TArray<UItemCreateRequestBody*> AddItemRequests = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Add Currency Map", Category="Beam")
-	TMap<FString, FString> AddCurrencyMap;
+	TMap<FString, FString> AddCurrencyMap = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Apply Vip Bonus", Category="Beam")
-	FOptionalBool bApplyVipBonus;
+	FOptionalBool bApplyVipBonus = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Description", Category="Beam")
-	FOptionalString Description;
+	FOptionalString Description = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Change Currencies", Category="Beam")
-	FOptionalArrayOfCurrencyChangeReward ChangeCurrencies;
+	FOptionalArrayOfCurrencyChangeReward ChangeCurrencies = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Call Webhooks", Category="Beam")
-	FOptionalArrayOfWebhookReward CallWebhooks;
+	FOptionalArrayOfWebhookReward CallWebhooks = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Add Items", Category="Beam")
-	FOptionalArrayOfNewItemReward AddItems;
+	FOptionalArrayOfNewItemReward AddItems = {};
 
 	
 

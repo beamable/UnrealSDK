@@ -1,0 +1,38 @@
+
+#include "BeamableCore/Public/AutoGen/CommitImageRequestBodyLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UCommitImageRequestBodyLibrary::CommitImageRequestBodyToJsonString(const UCommitImageRequestBody* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UCommitImageRequestBody* UCommitImageRequestBodyLibrary::Make(UBeamoBasicReference* Service, UObject* Outer)
+{
+	auto Serializable = NewObject<UCommitImageRequestBody>(Outer);
+	Serializable->Service = Service;
+	
+	return Serializable;
+}
+
+void UCommitImageRequestBodyLibrary::Break(const UCommitImageRequestBody* Serializable, UBeamoBasicReference*& Service)
+{
+	Service = Serializable->Service;
+		
+}
+

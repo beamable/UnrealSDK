@@ -27,9 +27,10 @@ void UApiPartyPutMetadataRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UApiPartyPutMetadataRequest* UApiPartyPutMetadataRequest::Make(FGuid _Id, FOptionalString _Restriction, FOptionalInt32 _MaxSize, UObject* RequestOwner)
+UApiPartyPutMetadataRequest* UApiPartyPutMetadataRequest::Make(FGuid _Id, FOptionalString _Restriction, FOptionalInt32 _MaxSize, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UApiPartyPutMetadataRequest* Req = NewObject<UApiPartyPutMetadataRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Id = _Id;

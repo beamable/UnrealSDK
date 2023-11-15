@@ -8,15 +8,15 @@
 #include "CommerceLootRoll.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UCommerceLootRoll : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UCommerceLootRoll : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Preroll", Category="Beam")
-	bool bPreroll;
+	bool bPreroll = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="External Tables", Category="Beam")
-	FOptionalArrayOfString ExternalTables;
+	FOptionalArrayOfString ExternalTables = {};
 
 	
 

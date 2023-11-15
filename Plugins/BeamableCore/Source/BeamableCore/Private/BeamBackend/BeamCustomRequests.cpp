@@ -42,6 +42,6 @@ void ULoginRefreshTokenResponse::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void ULoginRefreshTokenResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Body = NewObject<UTokenResponse>(OuterOwner);
+	Body = NewObject<UTokenResponse>(OuterOwner.GetEvenIfUnreachable());
 	Body->BeamDeserializeProperties(Bag);
 }

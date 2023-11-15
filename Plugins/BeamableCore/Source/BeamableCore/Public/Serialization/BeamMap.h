@@ -5,7 +5,7 @@
 
 
 USTRUCT(BlueprintType)
-struct BEAMABLECORE_API FBeamMap : public FBeamJsonSerializable
+struct BEAMABLECORE_API FBeamMap : public FBeamJsonSerializableUStruct
 {
 	GENERATED_BODY()
 

@@ -27,9 +27,10 @@ void UPostJoinRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostJoinRequest* UPostJoinRequest::Make(int64 _ObjectId, EGroupType _Type, int64 _Group, FOptionalInt64 _Successor, FOptionalInt64 _Score, FOptionalInt64 _SubGroup, UObject* RequestOwner)
+UPostJoinRequest* UPostJoinRequest::Make(int64 _ObjectId, EGroupType _Type, int64 _Group, FOptionalInt64 _Successor, FOptionalInt64 _Score, FOptionalInt64 _SubGroup, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostJoinRequest* Req = NewObject<UPostJoinRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

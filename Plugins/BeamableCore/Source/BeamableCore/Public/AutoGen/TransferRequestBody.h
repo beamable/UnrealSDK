@@ -10,17 +10,17 @@
 #include "TransferRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UTransferRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UTransferRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Recipient Player", Category="Beam")
-	FBeamGamerTag RecipientPlayer;
+	FBeamGamerTag RecipientPlayer = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Transaction", Category="Beam")
-	FOptionalString Transaction;
+	FOptionalString Transaction = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currencies", Category="Beam")
-	FOptionalMapOfInt64 Currencies;
+	FOptionalMapOfInt64 Currencies = {};
 
 	
 

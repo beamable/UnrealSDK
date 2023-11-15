@@ -10,23 +10,23 @@
 #include "UpdateLobby.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UUpdateLobby : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UUpdateLobby : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FOptionalString Name;
+	FOptionalString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Description", Category="Beam")
-	FOptionalString Description;
+	FOptionalString Description = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Restriction", Category="Beam")
-	FOptionalString Restriction;
+	FOptionalString Restriction = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Match Type", Category="Beam")
-	FOptionalBeamContentId MatchType;
+	FOptionalBeamContentId MatchType = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Players", Category="Beam")
-	FOptionalInt32 MaxPlayers;
+	FOptionalInt32 MaxPlayers = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="New Host", Category="Beam")
-	FOptionalString NewHost;
+	FOptionalString NewHost = {};
 
 	
 

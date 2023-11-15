@@ -23,9 +23,10 @@ void UGetClientDefaultsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetClientDefaultsRequest* UGetClientDefaultsRequest::Make(UObject* RequestOwner)
+UGetClientDefaultsRequest* UGetClientDefaultsRequest::Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetClientDefaultsRequest* Req = NewObject<UGetClientDefaultsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

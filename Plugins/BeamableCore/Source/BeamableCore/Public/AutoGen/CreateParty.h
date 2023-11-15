@@ -9,17 +9,17 @@
 #include "CreateParty.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UCreateParty : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UCreateParty : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Restriction", Category="Beam")
-	FOptionalString Restriction;
+	FOptionalString Restriction = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Leader", Category="Beam")
-	FOptionalString Leader;
+	FOptionalString Leader = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Size", Category="Beam")
-	FOptionalInt32 MaxSize;
+	FOptionalInt32 MaxSize = {};
 
 	
 

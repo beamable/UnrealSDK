@@ -27,9 +27,10 @@ void UPutManifestRepeatRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutManifestRepeatRequest* UPutManifestRepeatRequest::Make(FString _Uid, UObject* RequestOwner)
+UPutManifestRepeatRequest* UPutManifestRepeatRequest::Make(FString _Uid, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutManifestRepeatRequest* Req = NewObject<UPutManifestRepeatRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

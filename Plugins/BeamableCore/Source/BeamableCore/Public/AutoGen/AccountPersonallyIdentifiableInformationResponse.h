@@ -10,17 +10,17 @@
 #include "AccountPersonallyIdentifiableInformationResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UAccountPersonallyIdentifiableInformationResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UAccountPersonallyIdentifiableInformationResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Account", Category="Beam")
-	UAccountsBasicAccount* Account;
+	UAccountsBasicAccount* Account = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Payment Audits", Category="Beam")
-	UListAuditResponse* PaymentAudits;
+	UListAuditResponse* PaymentAudits = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stats", Category="Beam")
-	TArray<UStatsResponse*> Stats;
+	TArray<UStatsResponse*> Stats = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

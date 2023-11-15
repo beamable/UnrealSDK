@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UGetMetricsUrlRequestBody* Body;
+	UGetMetricsUrlRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPostMetricsUrlRequest() = default;
@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make PostMetricsUrl",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_StartTime,_EndTime,_Period,RequestOwner"))
-	static UPostMetricsUrlRequest* Make(FString _ServiceName, FString _MetricName, FOptionalInt64 _StartTime, FOptionalInt64 _EndTime, FOptionalInt32 _Period, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make PostMetricsUrl",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_StartTime,_EndTime,_Period,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPostMetricsUrlRequest* Make(FString _ServiceName, FString _MetricName, FOptionalInt64 _StartTime, FOptionalInt64 _EndTime, FOptionalInt32 _Period, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

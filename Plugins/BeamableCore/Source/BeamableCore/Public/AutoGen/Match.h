@@ -11,23 +11,23 @@
 #include "Match.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UMatch : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UMatch : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Match Id", Category="Beam")
-	FOptionalString MatchId;
+	FOptionalString MatchId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Status", Category="Beam")
-	FOptionalString Status;
+	FOptionalString Status = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
-	FOptionalString Created;
+	FOptionalString Created = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Match Type", Category="Beam")
-	FOptionalMatchType MatchType;
+	FOptionalMatchType MatchType = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Teams", Category="Beam")
-	FOptionalArrayOfTeam Teams;
+	FOptionalArrayOfTeam Teams = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tickets", Category="Beam")
-	FOptionalArrayOfTicket Tickets;
+	FOptionalArrayOfTicket Tickets = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

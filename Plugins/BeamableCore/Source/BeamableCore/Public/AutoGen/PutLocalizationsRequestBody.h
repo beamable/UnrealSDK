@@ -8,13 +8,13 @@
 #include "PutLocalizationsRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPutLocalizationsRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UPutLocalizationsRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Localizations", Category="Beam")
-	TMap<FString, FArrayOfLocalizedValue> Localizations;
+	TMap<FString, FArrayOfLocalizedValue> Localizations = {};
 
 	
 

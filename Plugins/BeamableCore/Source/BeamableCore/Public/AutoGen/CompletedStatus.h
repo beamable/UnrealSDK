@@ -8,19 +8,19 @@
 #include "CompletedStatus.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UCompletedStatus : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UCompletedStatus : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cycle", Category="Beam")
-	int32 Cycle;
+	int32 Cycle = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tier", Category="Beam")
-	int32 Tier;
+	int32 Tier = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stage", Category="Beam")
-	int32 Stage;
+	int32 Stage = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Delta", Category="Beam")
-	int32 Delta;
+	int32 Delta = {};
 
 	
 

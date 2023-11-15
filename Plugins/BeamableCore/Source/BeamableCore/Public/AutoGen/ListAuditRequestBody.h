@@ -10,25 +10,25 @@
 #include "ListAuditRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UListAuditRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UListAuditRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Providerid", Category="Beam")
-	FOptionalString Providerid;
+	FOptionalString Providerid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Provider", Category="Beam")
-	FOptionalString Provider;
+	FOptionalString Provider = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="State", Category="Beam")
-	FOptionalString State;
+	FOptionalString State = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Txid", Category="Beam")
-	FOptionalInt64 Txid;
+	FOptionalInt64 Txid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player", Category="Beam")
-	FOptionalInt64 Player;
+	FOptionalInt64 Player = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Start", Category="Beam")
-	FOptionalInt32 Start;
+	FOptionalInt32 Start = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit", Category="Beam")
-	FOptionalInt32 Limit;
+	FOptionalInt32 Limit = {};
 
 	
 

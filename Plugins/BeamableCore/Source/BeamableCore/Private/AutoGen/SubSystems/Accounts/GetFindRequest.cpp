@@ -26,9 +26,10 @@ void UGetFindRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetFindRequest* UGetFindRequest::Make(FString _Query, UObject* RequestOwner)
+UGetFindRequest* UGetFindRequest::Make(FString _Query, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetFindRequest* Req = NewObject<UGetFindRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Query = _Query;

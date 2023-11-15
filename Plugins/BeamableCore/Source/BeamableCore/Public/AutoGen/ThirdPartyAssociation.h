@@ -8,23 +8,23 @@
 #include "ThirdPartyAssociation.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UThirdPartyAssociation : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UThirdPartyAssociation : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="User App Id", Category="Beam")
-	FString UserAppId;
+	FString UserAppId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="App Id", Category="Beam")
-	FString AppId;
+	FString AppId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Meta", Category="Beam")
-	TMap<FString, FString> Meta;
+	TMap<FString, FString> Meta = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Email", Category="Beam")
-	FOptionalString Email;
+	FOptionalString Email = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="User Business Id", Category="Beam")
-	FOptionalString UserBusinessId;
+	FOptionalString UserBusinessId = {};
 
 	
 

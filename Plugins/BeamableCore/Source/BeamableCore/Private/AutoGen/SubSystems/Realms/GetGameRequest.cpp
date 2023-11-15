@@ -26,9 +26,10 @@ void UGetGameRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetGameRequest* UGetGameRequest::Make(FBeamPid _RootPID, UObject* RequestOwner)
+UGetGameRequest* UGetGameRequest::Make(FBeamPid _RootPID, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetGameRequest* Req = NewObject<UGetGameRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->RootPID = _RootPID;

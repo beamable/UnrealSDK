@@ -8,13 +8,13 @@
 #include "DeviceIdAvailableRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UDeviceIdAvailableRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UDeviceIdAvailableRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Device Id", Category="Beam")
-	FString DeviceId;
+	FString DeviceId = {};
 
 	
 

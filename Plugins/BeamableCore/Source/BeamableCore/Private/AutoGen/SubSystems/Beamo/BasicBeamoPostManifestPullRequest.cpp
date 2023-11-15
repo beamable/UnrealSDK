@@ -27,9 +27,10 @@ void UBasicBeamoPostManifestPullRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UBasicBeamoPostManifestPullRequest* UBasicBeamoPostManifestPullRequest::Make(FString _SourceRealmPid, UObject* RequestOwner)
+UBasicBeamoPostManifestPullRequest* UBasicBeamoPostManifestPullRequest::Make(FString _SourceRealmPid, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicBeamoPostManifestPullRequest* Req = NewObject<UBasicBeamoPostManifestPullRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

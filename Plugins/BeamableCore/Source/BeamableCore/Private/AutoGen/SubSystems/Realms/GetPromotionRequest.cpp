@@ -36,9 +36,10 @@ void UGetPromotionRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetPromotionRequest* UGetPromotionRequest::Make(FBeamPid _SourcePid, FOptionalArrayOfString _Promotions, FOptionalArrayOfString _ContentManifestIds, UObject* RequestOwner)
+UGetPromotionRequest* UGetPromotionRequest::Make(FBeamPid _SourcePid, FOptionalArrayOfString _Promotions, FOptionalArrayOfString _ContentManifestIds, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetPromotionRequest* Req = NewObject<UGetPromotionRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->SourcePid = _SourcePid;

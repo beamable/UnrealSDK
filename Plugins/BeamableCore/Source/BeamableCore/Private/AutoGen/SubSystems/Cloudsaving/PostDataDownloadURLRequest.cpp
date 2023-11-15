@@ -27,9 +27,10 @@ void UPostDataDownloadURLRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostDataDownloadURLRequest* UPostDataDownloadURLRequest::Make(FOptionalInt64 _PlayerId, FOptionalArrayOfObjectRequestBody _Request, UObject* RequestOwner)
+UPostDataDownloadURLRequest* UPostDataDownloadURLRequest::Make(FOptionalInt64 _PlayerId, FOptionalArrayOfObjectRequestBody _Request, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostDataDownloadURLRequest* Req = NewObject<UPostDataDownloadURLRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

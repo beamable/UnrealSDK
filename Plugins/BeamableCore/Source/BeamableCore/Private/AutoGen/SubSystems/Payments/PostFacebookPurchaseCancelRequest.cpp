@@ -27,9 +27,10 @@ void UPostFacebookPurchaseCancelRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostFacebookPurchaseCancelRequest* UPostFacebookPurchaseCancelRequest::Make(int64 _Txid, UObject* RequestOwner)
+UPostFacebookPurchaseCancelRequest* UPostFacebookPurchaseCancelRequest::Make(int64 _Txid, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostFacebookPurchaseCancelRequest* Req = NewObject<UPostFacebookPurchaseCancelRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

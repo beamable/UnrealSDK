@@ -9,17 +9,17 @@
 #include "BatchReadStatsRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UBatchReadStatsRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UBatchReadStatsRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Ids", Category="Beam")
-	FBeamStatsType ObjectIds;
+	FBeamStatsType ObjectIds = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stats", Category="Beam")
-	FOptionalString Stats;
+	FOptionalString Stats = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Format", Category="Beam")
-	FOptionalString Format;
+	FOptionalString Format = {};
 
 	
 

@@ -34,9 +34,10 @@ void UGetFacebookUpdateRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetFacebookUpdateRequest* UGetFacebookUpdateRequest::Make(FString _HubMode, FString _HubChallenge, FString _HubVerifyToken, UObject* RequestOwner)
+UGetFacebookUpdateRequest* UGetFacebookUpdateRequest::Make(FString _HubMode, FString _HubChallenge, FString _HubVerifyToken, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetFacebookUpdateRequest* Req = NewObject<UGetFacebookUpdateRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->HubMode = _HubMode;

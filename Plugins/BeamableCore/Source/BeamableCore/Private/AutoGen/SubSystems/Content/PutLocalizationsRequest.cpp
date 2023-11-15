@@ -27,9 +27,10 @@ void UPutLocalizationsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutLocalizationsRequest* UPutLocalizationsRequest::Make(TMap<FString, FArrayOfLocalizedValue> _Localizations, UObject* RequestOwner)
+UPutLocalizationsRequest* UPutLocalizationsRequest::Make(TMap<FString, FArrayOfLocalizedValue> _Localizations, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutLocalizationsRequest* Req = NewObject<UPutLocalizationsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

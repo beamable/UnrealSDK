@@ -27,9 +27,10 @@ void UPostExternalIdentityRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostExternalIdentityRequest* UPostExternalIdentityRequest::Make(FString _ProviderService, FString _ExternalToken, FOptionalChallengeSolution _ChallengeSolution, FOptionalString _ProviderNamespace, UObject* RequestOwner)
+UPostExternalIdentityRequest* UPostExternalIdentityRequest::Make(FString _ProviderService, FString _ExternalToken, FOptionalChallengeSolution _ChallengeSolution, FOptionalString _ProviderNamespace, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostExternalIdentityRequest* Req = NewObject<UPostExternalIdentityRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

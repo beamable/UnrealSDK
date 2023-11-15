@@ -11,19 +11,19 @@
 #include "PostManifestRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPostManifestRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UPostManifestRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Manifest", Category="Beam")
-	TArray<UServiceReference*> Manifest;
+	TArray<UServiceReference*> Manifest = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Auto Deploy", Category="Beam")
-	FOptionalBool bAutoDeploy;
+	FOptionalBool bAutoDeploy = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Comments", Category="Beam")
-	FOptionalString Comments;
+	FOptionalString Comments = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Storage References", Category="Beam")
-	FOptionalArrayOfServiceStorageReference StorageReferences;
+	FOptionalArrayOfServiceStorageReference StorageReferences = {};
 
 	
 

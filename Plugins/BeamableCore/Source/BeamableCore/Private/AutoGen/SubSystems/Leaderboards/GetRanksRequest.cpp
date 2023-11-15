@@ -26,9 +26,10 @@ void UGetRanksRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetRanksRequest* UGetRanksRequest::Make(FString _ObjectId, FString _Ids, UObject* RequestOwner)
+UGetRanksRequest* UGetRanksRequest::Make(FString _ObjectId, FString _Ids, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetRanksRequest* Req = NewObject<UGetRanksRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

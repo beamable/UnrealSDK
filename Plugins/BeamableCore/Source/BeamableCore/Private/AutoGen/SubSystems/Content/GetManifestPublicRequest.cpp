@@ -28,9 +28,10 @@ void UGetManifestPublicRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetManifestPublicRequest* UGetManifestPublicRequest::Make(FOptionalBeamContentManifestId _Id, UObject* RequestOwner)
+UGetManifestPublicRequest* UGetManifestPublicRequest::Make(FOptionalBeamContentManifestId _Id, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetManifestPublicRequest* Req = NewObject<UGetManifestPublicRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Id = _Id;

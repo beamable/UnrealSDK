@@ -8,15 +8,15 @@
 #include "CreateLaunchMessageRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UCreateLaunchMessageRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UCreateLaunchMessageRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Body", Category="Beam")
-	FString Body;
+	FString Body = {};
 
 	
 

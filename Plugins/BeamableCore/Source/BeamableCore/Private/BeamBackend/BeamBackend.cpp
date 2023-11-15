@@ -73,7 +73,7 @@ void UBeamBackend::Deinitialize()
 
 void UBeamBackend::TryTriggerRequestCompleteDelegates(const int64& RequestId)
 {
-	if (InFlightRequestContexts.Find(RequestId)->BeamStatus == Completed)
+	if (InFlightRequestContexts.Find(RequestId)->BeamStatus == AS_Completed)
 	{
 		UE_LOG(LogBeamBackend, Verbose,
 		       TEXT("Checking OnRequestIdCompleted Delegates | REQUEST_ID=%lld, DELEGATE_COUNT=%d"), RequestId,
@@ -234,7 +234,7 @@ void UBeamBackend::PrepareBeamableRequestToRealmWithAuthToken(const TUnrealReque
 	}
 }
 
-void UBeamBackend::HandlePIESessionRequestGuard(TUnrealRequestPtr Request, int64 RequestId)
+bool UBeamBackend::HandlePIESessionRequestGuard(TUnrealRequestPtr Request, int64 RequestId)
 {
 	if (!bIsInPIE && InFlightPIERequests.Contains(Request))
 	{
@@ -244,11 +244,13 @@ void UBeamBackend::HandlePIESessionRequestGuard(TUnrealRequestPtr Request, int64
 		if (RequestId != -1)
 		{
 			FBeamRequestContext& RequestContext = *InFlightRequestContexts.Find(RequestId);
-			RequestContext.BeamStatus = Completed;
+			RequestContext.BeamStatus = AS_Completed;
 		}
 
 		UE_LOG(LogBeamBackend, Warning, TEXT("Ignoring Beamable Request made during terminated PIE Session | REQUEST_ID=%lld"), RequestId);
+		return true;
 	}
+	return false;
 }
 
 void UBeamBackend::DefaultExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity)
@@ -258,7 +260,7 @@ void UBeamBackend::DefaultExecuteRequestImpl(int64 ActiveRequestId, FBeamConnect
 	if (InFlightRequests[ActiveRequestId]->ProcessRequest())
 	{
 		auto Context = InFlightRequestContexts.FindRef(ActiveRequestId);
-		Context.BeamStatus = InFlight;
+		Context.BeamStatus = AS_InFlight;
 		InFlightRequestContexts[ActiveRequestId] = Context;
 	}
 }
@@ -304,7 +306,7 @@ void UBeamBackend::DedicatedServerExecuteRequestImpl(int64 ActiveRequestId, FBea
 	if (HttpRequest->ProcessRequest())
 	{
 		auto Context = InFlightRequestContexts.FindRef(ActiveRequestId);
-		Context.BeamStatus = InFlight;
+		Context.BeamStatus = AS_InFlight;
 		InFlightRequestContexts[ActiveRequestId] = Context;
 	}
 }
@@ -394,7 +396,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 						const auto ResponseBody = Response->GetContentAsString();
 
 						// Handle a successful re-authentication
-						if (ResponseCode == 200)
+						if (IsSuccessfulResponse(ResponseCode))
 						{
 							// Extract the data from the response
 							ULoginRefreshTokenResponse* LoginRefreshTokenResponse = NewObject<
@@ -426,7 +428,8 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 								BeamUserSlots->SetAuthenticationDataAtNamespacedSlot(NamespacedSlotId, NewToken.AccessToken, NewToken.RefreshToken, FDateTime::UtcNow().ToUnixTimestamp(),
 								                                                     NewToken.ExpiresIn, RealmUserData.RealmHandle.Cid, RealmUserData.RealmHandle.Pid);
 								BeamUserSlots->SetGamerTagAtSlot(NamespacedSlotId, RealmUserData.GamerTag, this);
-								BeamUserSlots->SetEmailAtSlot(NamespacedSlotId, RealmUserData.Email, this);								
+								BeamUserSlots->SetEmailAtSlot(NamespacedSlotId, RealmUserData.Email, this);
+								BeamUserSlots->SetExternalIdsAtSlot(NamespacedSlotId, RealmUserData.ExternalIdentities, this);
 								BeamUserSlots->SaveSlot(NamespacedSlotId, this);
 							}
 							// Then, we just fix the request up and send it along.						
@@ -455,7 +458,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 							// If the failed re-auth was made using a user slot, we clear that slot.
 							if (WasMadeWithUserSlot)
 							{
-								BeamUserSlots->ClearUserAtSlot(UserSlot, FailedAutomaticAuthentication, true);
+								BeamUserSlots->ClearUserAtSlot(UserSlot, FailedAuthentication, true);
 								UE_LOG(LogBeamBackend, Verbose,
 								       TEXT("Invalidated user data as the user failed to re-authenticated. USER_SLOT=%s"
 								       ), *UserSlot.Name);
@@ -471,7 +474,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 							FailedReq->ProcessRequest();
 
 							// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
-							Context->BeamStatus = Completed;
+							Context->BeamStatus = AS_Completed;
 						}
 					});
 
@@ -530,7 +533,7 @@ bool UBeamBackend::CleanUpRequestData()
 	for (const auto& Kvp : InFlightRequestContexts)
 	{
 		const auto Ctx = Kvp.Value;
-		if (Ctx.BeamStatus == Completed)
+		if (Ctx.BeamStatus == AS_Completed)
 		{
 			ReqIdsToCleanUp.Add(Kvp.Key);
 		}
@@ -585,6 +588,9 @@ void UBeamBackend::UpdateResponseCache(const FRequestType& RequestType, const UO
 	GEngine->GetEngineSubsystem<UBeamResponseCache>()->
 	         UpdateResponseCache(RequestType, CallingContext, Request, Content);
 }
+
+bool UBeamBackend::IsSuccessfulResponse(int32 ResponseCode)
+{		return ResponseCode >= 200 && ResponseCode < 300;	}
 
 /*
  

@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UServerTokenAuthRequestBody* Body;
+	UServerTokenAuthRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UApiAuthPostServerRequest() = default;
@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", DisplayName="Beam - Make ApiAuthPostServer",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_ClientId,_ClientSecret,_CustomerId,_RealmId,RequestOwner"))
-	static UApiAuthPostServerRequest* Make(FOptionalString _ClientId, FOptionalString _ClientSecret, FOptionalBeamCid _CustomerId, FOptionalBeamPid _RealmId, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", DisplayName="Beam - Make ApiAuthPostServer",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_ClientId,_ClientSecret,_CustomerId,_RealmId,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UApiAuthPostServerRequest* Make(FOptionalString _ClientId, FOptionalString _ClientSecret, FOptionalBeamCid _CustomerId, FOptionalBeamPid _RealmId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

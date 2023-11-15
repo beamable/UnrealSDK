@@ -9,19 +9,19 @@
 #include "MatchMakingMatchesPvpResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UMatchMakingMatchesPvpResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UMatchMakingMatchesPvpResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Result", Category="Beam")
-	FString Result;
+	FString Result = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Total Entries", Category="Beam")
-	int32 TotalEntries;
+	int32 TotalEntries = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Rank", Category="Beam")
-	UMatchMakingRanking* PlayerRank;
+	UMatchMakingRanking* PlayerRank = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Windows", Category="Beam")
-	TArray<UMatchMakingWindowResp*> Windows;
+	TArray<UMatchMakingWindowResp*> Windows = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

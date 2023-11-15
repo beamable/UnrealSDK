@@ -23,9 +23,10 @@ void UBasicAnnouncementsGetListRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UBasicAnnouncementsGetListRequest* UBasicAnnouncementsGetListRequest::Make(UObject* RequestOwner)
+UBasicAnnouncementsGetListRequest* UBasicAnnouncementsGetListRequest::Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicAnnouncementsGetListRequest* Req = NewObject<UBasicAnnouncementsGetListRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

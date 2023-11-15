@@ -28,9 +28,10 @@ void UGetCommerceRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetCommerceRequest* UGetCommerceRequest::Make(int64 _ObjectId, FOptionalString _Scope, UObject* RequestOwner)
+UGetCommerceRequest* UGetCommerceRequest::Make(int64 _ObjectId, FOptionalString _Scope, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetCommerceRequest* Req = NewObject<UGetCommerceRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

@@ -23,9 +23,10 @@ void UGetPartiesInvitesRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetPartiesInvitesRequest* UGetPartiesInvitesRequest::Make(FString _PlayerId, UObject* RequestOwner)
+UGetPartiesInvitesRequest* UGetPartiesInvitesRequest::Make(FString _PlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetPartiesInvitesRequest* Req = NewObject<UGetPartiesInvitesRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->PlayerId = _PlayerId;

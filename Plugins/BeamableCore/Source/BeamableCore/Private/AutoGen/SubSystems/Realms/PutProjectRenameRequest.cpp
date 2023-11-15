@@ -27,9 +27,10 @@ void UPutProjectRenameRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutProjectRenameRequest* UPutProjectRenameRequest::Make(FBeamPid _ProjectId, FString _NewName, UObject* RequestOwner)
+UPutProjectRenameRequest* UPutProjectRenameRequest::Make(FBeamPid _ProjectId, FString _NewName, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutProjectRenameRequest* Req = NewObject<UPutProjectRenameRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

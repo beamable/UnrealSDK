@@ -8,17 +8,17 @@
 #include "GetActiveListingRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGetActiveListingRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGetActiveListingRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Listing", Category="Beam")
-	FString Listing;
+	FString Listing = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Store", Category="Beam")
-	FOptionalString Store;
+	FOptionalString Store = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Time", Category="Beam")
-	FOptionalString Time;
+	FOptionalString Time = {};
 
 	
 

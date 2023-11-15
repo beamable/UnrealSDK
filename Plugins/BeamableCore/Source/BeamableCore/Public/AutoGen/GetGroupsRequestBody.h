@@ -9,21 +9,21 @@
 #include "GetGroupsRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGetGroupsRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGetGroupsRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id", Category="Beam")
-	FString TournamentId;
+	FString TournamentId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max", Category="Beam")
-	FOptionalInt32 Max;
+	FOptionalInt32 Max = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Focus", Category="Beam")
-	FOptionalInt64 Focus;
+	FOptionalInt64 Focus = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cycle", Category="Beam")
-	FOptionalInt32 Cycle;
+	FOptionalInt32 Cycle = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From", Category="Beam")
-	FOptionalInt32 From;
+	FOptionalInt32 From = {};
 
 	
 

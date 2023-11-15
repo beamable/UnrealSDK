@@ -8,33 +8,33 @@
 #include "PaymentDetailsEntryViewModel.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPaymentDetailsEntryViewModel : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UPaymentDetailsEntryViewModel : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Reference", Category="Beam")
-	FString Reference;
+	FString Reference = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Quantity", Category="Beam")
-	int32 Quantity;
+	int32 Quantity = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sku", Category="Beam")
-	FString Sku;
+	FString Sku = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Price", Category="Beam")
-	int32 Price;
+	int32 Price = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gameplace", Category="Beam")
-	FString Gameplace;
+	FString Gameplace = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Provider Product Id", Category="Beam")
-	FString ProviderProductId;
+	FString ProviderProductId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Subcategory", Category="Beam")
-	FOptionalString Subcategory;
+	FOptionalString Subcategory = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Local Price", Category="Beam")
-	FOptionalString LocalPrice;
+	FOptionalString LocalPrice = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Category", Category="Beam")
-	FOptionalString Category;
+	FOptionalString Category = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Local Currency", Category="Beam")
-	FOptionalString LocalCurrency;
+	FOptionalString LocalCurrency = {};
 
 	
 

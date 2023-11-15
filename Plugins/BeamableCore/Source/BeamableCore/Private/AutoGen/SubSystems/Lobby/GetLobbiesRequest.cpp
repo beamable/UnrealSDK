@@ -40,9 +40,10 @@ void UGetLobbiesRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetLobbiesRequest* UGetLobbiesRequest::Make(FOptionalInt32 _Skip, FOptionalInt32 _Limit, FOptionalBeamContentId _MatchType, UObject* RequestOwner)
+UGetLobbiesRequest* UGetLobbiesRequest::Make(FOptionalInt32 _Skip, FOptionalInt32 _Limit, FOptionalBeamContentId _MatchType, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetLobbiesRequest* Req = NewObject<UGetLobbiesRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Skip = _Skip;

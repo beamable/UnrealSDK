@@ -12,21 +12,21 @@
 #include "NotificationRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UNotificationRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UNotificationRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Payload", Category="Beam")
-	UNotificationRequestData* Payload;
+	UNotificationRequestData* Payload = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Use Signal When Possible", Category="Beam")
-	FOptionalBool bUseSignalWhenPossible;
+	FOptionalBool bUseSignalWhenPossible = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Custom Channel Suffix", Category="Beam")
-	FOptionalString CustomChannelSuffix;
+	FOptionalString CustomChannelSuffix = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Dbid", Category="Beam")
-	FOptionalInt64 Dbid;
+	FOptionalInt64 Dbid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Dbids", Category="Beam")
-	FOptionalArrayOfInt64 Dbids;
+	FOptionalArrayOfInt64 Dbids = {};
 
 	
 

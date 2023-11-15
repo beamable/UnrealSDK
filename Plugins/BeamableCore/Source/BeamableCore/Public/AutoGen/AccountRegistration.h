@@ -8,15 +8,15 @@
 #include "AccountRegistration.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UAccountRegistration : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UAccountRegistration : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Email", Category="Beam")
-	FString Email;
+	FString Email = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Password", Category="Beam")
-	FString Password;
+	FString Password = {};
 
 	
 

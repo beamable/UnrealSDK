@@ -18,25 +18,25 @@ struct FBeamCliServicesPsStreamData
 	UPROPERTY()
 	bool IsDockerRunning = {};
 	UPROPERTY()
-	TArray<FString> BeamoIds;
+	TArray<FString> BeamoIds = {};
 	UPROPERTY()
-	TArray<bool> ShouldBeEnabledOnRemote;
+	TArray<bool> ShouldBeEnabledOnRemote = {};
 	UPROPERTY()
-	TArray<bool> RunningState;
+	TArray<bool> RunningState = {};
 	UPROPERTY()
-	TArray<FString> ProtocolTypes;
+	TArray<FString> ProtocolTypes = {};
 	UPROPERTY()
-	TArray<FString> ImageIds;
+	TArray<FString> ImageIds = {};
 	UPROPERTY()
-	TArray<FString> ContainerNames;
+	TArray<FString> ContainerNames = {};
 	UPROPERTY()
-	TArray<FString> ContainerIds;
+	TArray<FString> ContainerIds = {};
 	UPROPERTY()
-	TArray<FString> LocalHostPorts;
+	TArray<FString> LocalHostPorts = {};
 	UPROPERTY()
-	TArray<FString> LocalContainerPorts;
+	TArray<FString> LocalContainerPorts = {};
 	UPROPERTY()
-	TArray<FString> Dependencies;	
+	TArray<FString> Dependencies = {};	
 };
 
 
@@ -57,6 +57,7 @@ Options:
   --refresh-token <refresh-token>  Refresh token to use for the requests
   --log <log>                      Extra logs gets printed out
   --dir <dir>                      Directory to use for configuration
+  --dotnet-path <dotnet-path>      a custom location for dotnet
   -?, -h, --help                   Show help and usage information
 
 

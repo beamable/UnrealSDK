@@ -27,9 +27,10 @@ void UPostSteamAuthRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostSteamAuthRequest* UPostSteamAuthRequest::Make(FString _Ticket, UObject* RequestOwner)
+UPostSteamAuthRequest* UPostSteamAuthRequest::Make(FString _Ticket, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostSteamAuthRequest* Req = NewObject<UPostSteamAuthRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

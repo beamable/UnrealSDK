@@ -8,21 +8,21 @@
 #include "PASuggestedIndex.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPASuggestedIndex : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UPASuggestedIndex : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Weight", Category="Beam")
-	FString Weight;
+	FString Weight = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FString Id;
+	FString Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Namespace", Category="Beam")
-	FString Namespace;
+	FString Namespace = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Impact", Category="Beam")
-	TArray<FString> Impact;
+	TArray<FString> Impact = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Index", Category="Beam")
-	TArray<FString> Index;
+	TArray<FString> Index = {};
 
 	
 

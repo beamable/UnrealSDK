@@ -11,21 +11,21 @@
 #include "ServicePlan.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UServicePlan : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UServicePlan : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Data Domain", Category="Beam")
-	UDataDomain* DataDomain;
+	UDataDomain* DataDomain = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Min Customer Status Saved", Category="Beam")
-	FOptionalString MinCustomerStatusSaved;
+	FOptionalString MinCustomerStatusSaved = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limits", Category="Beam")
-	FOptionalServiceLimits Limits;
+	FOptionalServiceLimits Limits = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
-	FOptionalInt64 Created;
+	FOptionalInt64 Created = {};
 
 	
 

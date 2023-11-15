@@ -23,9 +23,10 @@ void UGetLaunchMessageRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetLaunchMessageRequest* UGetLaunchMessageRequest::Make(UObject* RequestOwner)
+UGetLaunchMessageRequest* UGetLaunchMessageRequest::Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetLaunchMessageRequest* Req = NewObject<UGetLaunchMessageRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

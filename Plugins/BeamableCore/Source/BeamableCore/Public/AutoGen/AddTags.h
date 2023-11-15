@@ -10,17 +10,17 @@
 #include "AddTags.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UAddTags : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UAddTags : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
-	FOptionalString PlayerId;
+	FOptionalString PlayerId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Replace", Category="Beam")
-	FOptionalBool bReplace;
+	FOptionalBool bReplace = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
-	FOptionalArrayOfTag Tags;
+	FOptionalArrayOfTag Tags = {};
 
 	
 

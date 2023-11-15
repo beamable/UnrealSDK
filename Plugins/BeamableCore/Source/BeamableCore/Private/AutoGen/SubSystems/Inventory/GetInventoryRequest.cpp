@@ -28,9 +28,10 @@ void UGetInventoryRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetInventoryRequest* UGetInventoryRequest::Make(FBeamGamerTag _ObjectId, FOptionalString _Scope, UObject* RequestOwner)
+UGetInventoryRequest* UGetInventoryRequest::Make(FBeamGamerTag _ObjectId, FOptionalString _Scope, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetInventoryRequest* Req = NewObject<UGetInventoryRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

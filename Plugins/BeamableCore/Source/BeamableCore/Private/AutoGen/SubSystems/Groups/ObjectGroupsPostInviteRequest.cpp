@@ -27,9 +27,10 @@ void UObjectGroupsPostInviteRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UObjectGroupsPostInviteRequest* UObjectGroupsPostInviteRequest::Make(int64 _ObjectId, int64 _GamerTag, FOptionalInt64 _SubGroup, FOptionalBool _bUseNewRewardsSystem, UObject* RequestOwner)
+UObjectGroupsPostInviteRequest* UObjectGroupsPostInviteRequest::Make(int64 _ObjectId, int64 _GamerTag, FOptionalInt64 _SubGroup, FOptionalBool _bUseNewRewardsSystem, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UObjectGroupsPostInviteRequest* Req = NewObject<UObjectGroupsPostInviteRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

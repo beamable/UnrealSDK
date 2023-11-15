@@ -8,25 +8,25 @@
 #include "SubscriberDetailsResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API USubscriberDetailsResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API USubscriberDetailsResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Custom Channel Prefix", Category="Beam")
-	FString CustomChannelPrefix;
+	FString CustomChannelPrefix = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player For Realm Channel", Category="Beam")
-	FString PlayerForRealmChannel;
+	FString PlayerForRealmChannel = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Authentication Key", Category="Beam")
-	FString AuthenticationKey;
+	FString AuthenticationKey = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Game Notification Channel", Category="Beam")
-	FString GameNotificationChannel;
+	FString GameNotificationChannel = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Subscribe Key", Category="Beam")
-	FString SubscribeKey;
+	FString SubscribeKey = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Channel", Category="Beam")
-	FString PlayerChannel;
+	FString PlayerChannel = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Game Global Notification Channel", Category="Beam")
-	FOptionalString GameGlobalNotificationChannel;
+	FOptionalString GameGlobalNotificationChannel = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

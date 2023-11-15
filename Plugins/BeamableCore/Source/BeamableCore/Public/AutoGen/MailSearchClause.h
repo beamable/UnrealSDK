@@ -10,25 +10,25 @@
 #include "MailSearchClause.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UMailSearchClause : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UMailSearchClause : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Only Count", Category="Beam")
-	bool bOnlyCount;
+	bool bOnlyCount = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="For Sender", Category="Beam")
-	FOptionalInt64 ForSender;
+	FOptionalInt64 ForSender = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Start", Category="Beam")
-	FOptionalInt64 Start;
+	FOptionalInt64 Start = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit", Category="Beam")
-	FOptionalInt32 Limit;
+	FOptionalInt32 Limit = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Categories", Category="Beam")
-	FOptionalArrayOfString Categories;
+	FOptionalArrayOfString Categories = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="States", Category="Beam")
-	FOptionalArrayOfString States;
+	FOptionalArrayOfString States = {};
 
 	
 

@@ -38,9 +38,10 @@ void UGetClientBatchRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetClientBatchRequest* UGetClientBatchRequest::Make(FBeamStatsType _ObjectIds, FOptionalString _Stats, FOptionalString _Format, UObject* RequestOwner)
+UGetClientBatchRequest* UGetClientBatchRequest::Make(FBeamStatsType _ObjectIds, FOptionalString _Stats, FOptionalString _Format, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetClientBatchRequest* Req = NewObject<UGetClientBatchRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectIds = _ObjectIds;

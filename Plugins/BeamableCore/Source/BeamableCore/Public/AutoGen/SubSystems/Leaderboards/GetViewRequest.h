@@ -24,21 +24,21 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	FString ObjectId;
+	FString ObjectId = {};
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max", Category="Beam")
-	FOptionalInt32 Max;
+	FOptionalInt32 Max = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Focus", Category="Beam")
-	FOptionalInt64 Focus;
+	FOptionalInt64 Focus = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Friends", Category="Beam")
-	FOptionalBool bFriends;
+	FOptionalBool bFriends = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From", Category="Beam")
-	FOptionalInt32 From;
+	FOptionalInt32 From = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Outlier", Category="Beam")
-	FOptionalInt64 Outlier;
+	FOptionalInt64 Outlier = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Guild", Category="Beam")
-	FOptionalBool bGuild;
+	FOptionalBool bGuild = {};
 
 	// Body Params
 	
@@ -50,8 +50,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make GetView",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Max,_Focus,_bFriends,_From,_Outlier,_bGuild,RequestOwner"))
-	static UGetViewRequest* Make(FString _ObjectId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalBool _bFriends, FOptionalInt32 _From, FOptionalInt64 _Outlier, FOptionalBool _bGuild, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make GetView",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Max,_Focus,_bFriends,_From,_Outlier,_bGuild,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UGetViewRequest* Make(FString _ObjectId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalBool _bFriends, FOptionalInt32 _From, FOptionalInt64 _Outlier, FOptionalBool _bGuild, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

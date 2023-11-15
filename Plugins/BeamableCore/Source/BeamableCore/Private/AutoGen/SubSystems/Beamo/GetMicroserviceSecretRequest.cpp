@@ -23,9 +23,10 @@ void UGetMicroserviceSecretRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetMicroserviceSecretRequest* UGetMicroserviceSecretRequest::Make(UObject* RequestOwner)
+UGetMicroserviceSecretRequest* UGetMicroserviceSecretRequest::Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetMicroserviceSecretRequest* Req = NewObject<UGetMicroserviceSecretRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

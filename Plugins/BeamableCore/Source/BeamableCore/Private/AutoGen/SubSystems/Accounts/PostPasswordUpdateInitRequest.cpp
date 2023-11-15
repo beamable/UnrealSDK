@@ -27,9 +27,10 @@ void UPostPasswordUpdateInitRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostPasswordUpdateInitRequest* UPostPasswordUpdateInitRequest::Make(FString _Email, FOptionalString _CodeType, UObject* RequestOwner)
+UPostPasswordUpdateInitRequest* UPostPasswordUpdateInitRequest::Make(FString _Email, FOptionalString _CodeType, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostPasswordUpdateInitRequest* Req = NewObject<UPostPasswordUpdateInitRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

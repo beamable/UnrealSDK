@@ -52,12 +52,17 @@ public:
 	/**
 	 * For every cooked content manifest tries to load either a local cache from the latest downloaded content (of previous runs) OR falls back to the cooked content with the build. 
 	 */
-	virtual FBeamOperationHandle InitializeWhenUnrealReady() override;
+	virtual void InitializeWhenUnrealReady_Implementation(FBeamOperationHandle& ResultOp) override;
 
+	/**
+	 * Only does something on dedicated server builds. Fetches the content manifest and downloads up-to-date content.
+	 */
+	virtual void OnBeamableStarting_Implementation(FBeamOperationHandle& ResultOp) override;
+	
 	/**
 	 * If it's the first time this callback is being called (by our automatic auth flows for the owner UserSlot), we pull the latest 'global' manifest (default one) and cache it in-memory (and in a local file).
 	 */
-	virtual FBeamOperationHandle OnBeamableReady_Implementation() override;
+	virtual void OnUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp) override;
 
 private:
 	/**
@@ -135,8 +140,8 @@ public:
 	{
 		static_assert(TIsDerivedFrom<TContentType, UBeamContentObject>::Value, "TContentType must be a UBeamContentObject.");
 		UBeamContentObject* Obj;
-		const bool bFound = TryGetContentFromManifest(ManifestId, ContentId, Obj);
-		OutContent = Cast<TContentType>(Obj);
+		const bool          bFound = TryGetContentFromManifest(ManifestId, ContentId, Obj);
+		OutContent                 = Cast<TContentType>(Obj);
 		return bFound && OutContent;
 	}
 

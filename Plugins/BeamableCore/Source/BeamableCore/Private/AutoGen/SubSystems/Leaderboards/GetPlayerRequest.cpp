@@ -26,9 +26,10 @@ void UGetPlayerRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetPlayerRequest* UGetPlayerRequest::Make(int64 _Dbid, UObject* RequestOwner)
+UGetPlayerRequest* UGetPlayerRequest::Make(int64 _Dbid, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetPlayerRequest* Req = NewObject<UGetPlayerRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Dbid = _Dbid;

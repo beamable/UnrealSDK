@@ -24,17 +24,17 @@ public:
 
 	// Path Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Id", Category="Beam")
-	int64 ObjectId;
+	int64 ObjectId = {};
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FOptionalString Name;
+	FOptionalString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tag", Category="Beam")
-	FOptionalString Tag;
+	FOptionalString Tag = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
-	EGroupType Type;
+	EGroupType Type = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sub Group", Category="Beam")
-	FOptionalBool bSubGroup;
+	FOptionalBool bSubGroup = {};
 
 	// Body Params
 	
@@ -46,8 +46,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", DisplayName="Beam - Make GetAvailability",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Name,_Tag,_bSubGroup,RequestOwner"))
-	static UGetAvailabilityRequest* Make(int64 _ObjectId, FOptionalString _Name, FOptionalString _Tag, EGroupType _Type, FOptionalBool _bSubGroup, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", DisplayName="Beam - Make GetAvailability",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Name,_Tag,_bSubGroup,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UGetAvailabilityRequest* Make(int64 _ObjectId, FOptionalString _Name, FOptionalString _Tag, EGroupType _Type, FOptionalBool _bSubGroup, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

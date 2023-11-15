@@ -8,15 +8,15 @@
 #include "OrderRule.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UOrderRule : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UOrderRule : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="V", Category="Beam")
-	FString V;
+	FString V = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="O", Category="Beam")
-	int32 O;
+	int32 O = {};
 
 	
 

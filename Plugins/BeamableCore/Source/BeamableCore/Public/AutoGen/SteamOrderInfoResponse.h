@@ -8,31 +8,31 @@
 #include "SteamOrderInfoResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API USteamOrderInfoResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API USteamOrderInfoResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Usstate", Category="Beam")
-	FString Usstate;
+	FString Usstate = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Country", Category="Beam")
-	FString Country;
+	FString Country = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Timecreated", Category="Beam")
-	FString Timecreated;
+	FString Timecreated = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Transid", Category="Beam")
-	int64 Transid;
+	int64 Transid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Status", Category="Beam")
-	FString Status;
+	FString Status = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Orderid", Category="Beam")
-	int64 Orderid;
+	int64 Orderid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Steamid", Category="Beam")
-	int64 Steamid;
+	int64 Steamid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currency", Category="Beam")
-	FString Currency;
+	FString Currency = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Time", Category="Beam")
-	FString Time;
+	FString Time = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Items", Category="Beam")
-	TArray<USteamOrderInfoItem*> Items;
+	TArray<USteamOrderInfoItem*> Items = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

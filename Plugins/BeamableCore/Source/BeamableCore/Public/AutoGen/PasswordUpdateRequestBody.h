@@ -8,15 +8,15 @@
 #include "PasswordUpdateRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPasswordUpdateRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UPasswordUpdateRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Email", Category="Beam")
-	FString Email;
+	FString Email = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Code Type", Category="Beam")
-	FOptionalString CodeType;
+	FOptionalString CodeType = {};
 
 	
 

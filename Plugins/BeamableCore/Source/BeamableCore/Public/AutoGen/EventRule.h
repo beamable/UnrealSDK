@@ -8,15 +8,15 @@
 #include "EventRule.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEventRule : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UEventRule : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rule", Category="Beam")
-	FString Rule;
+	FString Rule = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Value", Category="Beam")
-	FString Value;
+	FString Value = {};
 
 	
 

@@ -25,9 +25,9 @@ public:
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Request", Category="Beam")
-	FOptionalArrayOfObjectRequestBody Request;
+	FOptionalArrayOfObjectRequestBody Request = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
-	FOptionalInt64 PlayerId;
+	FOptionalInt64 PlayerId = {};
 
 	// Body Params
 	
@@ -39,8 +39,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Cloudsaving", DisplayName="Beam - Make GetDataMetadata",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Request,_PlayerId,RequestOwner"))
-	static UGetDataMetadataRequest* Make(FOptionalArrayOfObjectRequestBody _Request, FOptionalInt64 _PlayerId, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Cloudsaving", DisplayName="Beam - Make GetDataMetadata",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Request,_PlayerId,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UGetDataMetadataRequest* Make(FOptionalArrayOfObjectRequestBody _Request, FOptionalInt64 _PlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -26,9 +26,10 @@ void UGetTestProductRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetTestProductRequest* UGetTestProductRequest::Make(FString _Sku, UObject* RequestOwner)
+UGetTestProductRequest* UGetTestProductRequest::Make(FString _Sku, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetTestProductRequest* Req = NewObject<UGetTestProductRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Sku = _Sku;

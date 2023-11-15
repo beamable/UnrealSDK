@@ -8,13 +8,13 @@
 #include "PurchaseRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPurchaseRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UPurchaseRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Purchase Id", Category="Beam")
-	FString PurchaseId;
+	FString PurchaseId = {};
 
 	
 

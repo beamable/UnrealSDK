@@ -8,13 +8,13 @@
 #include "EventApplyRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEventApplyRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UEventApplyRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content", Category="Beam")
-	UEvent* Content;
+	UEvent* Content = {};
 
 	
 

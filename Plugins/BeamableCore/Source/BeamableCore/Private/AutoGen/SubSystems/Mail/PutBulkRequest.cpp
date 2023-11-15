@@ -27,9 +27,10 @@ void UPutBulkRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutBulkRequest* UPutBulkRequest::Make(int64 _ObjectId, TArray<UMyMailUpdate*> _UpdateMailRequests, UObject* RequestOwner)
+UPutBulkRequest* UPutBulkRequest::Make(int64 _ObjectId, TArray<UMyMailUpdate*> _UpdateMailRequests, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutBulkRequest* Req = NewObject<UPutBulkRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

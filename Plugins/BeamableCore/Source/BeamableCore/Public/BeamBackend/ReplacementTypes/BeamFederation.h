@@ -7,7 +7,7 @@
 #include "BeamFederation.generated.h"
 
 USTRUCT(BlueprintType)
-struct BEAMABLECORE_API FBeamFederation : public FBeamJsonSerializable
+struct BEAMABLECORE_API FBeamFederation : public FBeamJsonSerializableUStruct
 {
 	GENERATED_BODY()
 
@@ -52,7 +52,7 @@ struct BEAMABLECORE_API FBeamFederation : public FBeamJsonSerializable
 
 // Has Native Make/Break require static blueprint pure functions to present as nodes that
 // don't require an execution pin connection. This is super relevant for Blueprint UX. 
-USTRUCT(BlueprintType, meta=(HasNativeMake="BeamableCore.OptionalBeamFederationLibrary.MakeOptional", BeamOptionalType="FBeamFederation"))
+USTRUCT(BlueprintType, meta=(HasNativeMake="/Script/BeamableCore.OptionalBeamFederationLibrary.MakeOptional", BeamOptionalType="FBeamFederation"))
 struct BEAMABLECORE_API FOptionalBeamFederation : public FBeamOptional
 {
 	GENERATED_BODY()

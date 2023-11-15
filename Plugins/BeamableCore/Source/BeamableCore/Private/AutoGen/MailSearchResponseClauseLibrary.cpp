@@ -22,7 +22,7 @@ FString UMailSearchResponseClauseLibrary::MailSearchResponseClauseToJsonString(c
 	return Result;
 }	
 
-UMailSearchResponseClause* UMailSearchResponseClauseLibrary::Make(FString Name, int64 Count, FOptionalArrayOfMailObjectMessage Content, UObject* Outer)
+UMailSearchResponseClause* UMailSearchResponseClauseLibrary::Make(FString Name, int64 Count, FOptionalArrayOfMessage Content, UObject* Outer)
 {
 	auto Serializable = NewObject<UMailSearchResponseClause>(Outer);
 	Serializable->Name = Name;
@@ -32,7 +32,7 @@ UMailSearchResponseClause* UMailSearchResponseClauseLibrary::Make(FString Name, 
 	return Serializable;
 }
 
-void UMailSearchResponseClauseLibrary::Break(const UMailSearchResponseClause* Serializable, FString& Name, int64& Count, FOptionalArrayOfMailObjectMessage& Content)
+void UMailSearchResponseClauseLibrary::Break(const UMailSearchResponseClause* Serializable, FString& Name, int64& Count, FOptionalArrayOfMessage& Content)
 {
 	Name = Serializable->Name;
 	Count = Serializable->Count;

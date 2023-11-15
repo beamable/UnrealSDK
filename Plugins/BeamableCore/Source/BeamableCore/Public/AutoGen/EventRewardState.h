@@ -14,33 +14,33 @@
 #include "EventRewardState.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEventRewardState : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UEventRewardState : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Claimed", Category="Beam")
-	bool bClaimed;
+	bool bClaimed = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Earned", Category="Beam")
-	bool bEarned;
+	bool bEarned = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pending Inventory Rewards", Category="Beam")
-	UEventInventoryPendingRewards* PendingInventoryRewards;
+	UEventInventoryPendingRewards* PendingInventoryRewards = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Min", Category="Beam")
-	double Min;
+	double Min = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max", Category="Beam")
-	FOptionalDouble Max;
+	FOptionalDouble Max = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currencies", Category="Beam")
-	FOptionalArrayOfEventInventoryRewardCurrency Currencies;
+	FOptionalArrayOfEventInventoryRewardCurrency Currencies = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pending Item Rewards", Category="Beam")
-	FOptionalArrayOfItemCreateRequestBody PendingItemRewards;
+	FOptionalArrayOfItemCreateRequestBody PendingItemRewards = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Items", Category="Beam")
-	FOptionalArrayOfEventInventoryRewardItem Items;
+	FOptionalArrayOfEventInventoryRewardItem Items = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain", Category="Beam")
-	FOptionalArrayOfEventRewardObtain Obtain;
+	FOptionalArrayOfEventRewardObtain Obtain = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pending Currency Rewards", Category="Beam")
-	FOptionalMapOfString PendingCurrencyRewards;
+	FOptionalMapOfString PendingCurrencyRewards = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pending Entitlement Rewards", Category="Beam")
-	FOptionalMapOfString PendingEntitlementRewards;
+	FOptionalMapOfString PendingEntitlementRewards = {};
 
 	
 

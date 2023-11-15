@@ -8,13 +8,13 @@
 #include "NewGameRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UNewGameRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UNewGameRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Game Name", Category="Beam")
-	FString GameName;
+	FString GameName = {};
 
 	
 

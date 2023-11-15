@@ -23,9 +23,10 @@ void UPutPartyRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UPutPartyRequest* UPutPartyRequest::Make(FGuid _Id, UObject* RequestOwner)
+UPutPartyRequest* UPutPartyRequest::Make(FGuid _Id, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutPartyRequest* Req = NewObject<UPutPartyRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Id = _Id;

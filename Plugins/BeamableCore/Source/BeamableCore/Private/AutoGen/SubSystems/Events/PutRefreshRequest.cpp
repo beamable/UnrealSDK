@@ -23,9 +23,10 @@ void UPutRefreshRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UPutRefreshRequest* UPutRefreshRequest::Make(FString _ObjectId, UObject* RequestOwner)
+UPutRefreshRequest* UPutRefreshRequest::Make(FString _ObjectId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutRefreshRequest* Req = NewObject<UPutRefreshRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

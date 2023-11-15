@@ -15,35 +15,35 @@
 #include "Event.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEvent : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UEvent : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Start Date", Category="Beam")
-	FString StartDate;
+	FString StartDate = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
-	FString Symbol;
+	FString Symbol = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Phases", Category="Beam")
-	TArray<UEventPhase*> Phases;
+	TArray<UEventPhase*> Phases = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Partition Size", Category="Beam")
-	FOptionalInt32 PartitionSize;
+	FOptionalInt32 PartitionSize = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Group Rewards", Category="Beam")
-	FOptionalEventGroupRewards GroupRewards;
+	FOptionalEventGroupRewards GroupRewards = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cohort Settings", Category="Beam")
-	FOptionalLeaderboardCohortSettings CohortSettings;
+	FOptionalLeaderboardCohortSettings CohortSettings = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Permissions", Category="Beam")
-	FOptionalBeamClientPermission Permissions;
+	FOptionalBeamClientPermission Permissions = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Schedule", Category="Beam")
-	FOptionalSchedule Schedule;
+	FOptionalSchedule Schedule = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stores", Category="Beam")
-	FOptionalArrayOfString Stores;
+	FOptionalArrayOfString Stores = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Score Rewards", Category="Beam")
-	FOptionalArrayOfEventRewardContent ScoreRewards;
+	FOptionalArrayOfEventRewardContent ScoreRewards = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rank Rewards", Category="Beam")
-	FOptionalArrayOfEventRewardContent RankRewards;
+	FOptionalArrayOfEventRewardContent RankRewards = {};
 
 	
 

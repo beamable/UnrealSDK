@@ -8,15 +8,15 @@
 #include "ManifestSummary.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UManifestSummary : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UManifestSummary : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Uid", Category="Beam")
-	FString Uid;
+	FString Uid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Manifest", Category="Beam")
-	UContentBasicManifestChecksum* Manifest;
+	UContentBasicManifestChecksum* Manifest = {};
 
 	
 

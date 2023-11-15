@@ -4,6 +4,7 @@
 #include "Subsystems/BeamEditor.h"
 
 #include "EditorUtilitySubsystem.h"
+#include "AutoGen/Optionals/OptionalArrayOfBeamExternalIdentityLibrary.h"
 #include "AutoGen/Optionals/OptionalStringLibrary.h"
 #include "AutoGen/SubSystems/BeamAuthApi.h"
 #include "AutoGen/SubSystems/BeamAccountsApi.h"
@@ -189,7 +190,7 @@ void UBeamEditor::SignOut()
 void UBeamEditor::OnUserSlotCleared(const EUserSlotClearedReason& Reason, const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const UObject* Context)
 {
 	const auto SlotId = GetMainEditorSlot();
-	if (Reason == Manual || Reason == FailedAutomaticAuthentication)
+	if (Reason == Manual || Reason == FailedAuthentication)
 	{
 		if (UserSlot.Name.Equals(SlotId.Name))
 		{
@@ -275,7 +276,7 @@ void UBeamEditor::SignUp(FString ProjectName, FString OrgName, FString Email, FS
 {
 	const auto RealmsApi = GEngine->GetEngineSubsystem<UBeamRealmsApi>();
 
-	const auto PostCustomerRequest = UPostCustomerRequest::Make(ProjectName, Email, Password, {}, FOptionalString{OrgName}, FOptionalString{Alias}, GetTransientPackage());
+	const auto PostCustomerRequest = UPostCustomerRequest::Make(ProjectName, Email, Password, {}, FOptionalString{OrgName}, FOptionalString{Alias}, GetTransientPackage(), {});
 	FBeamRequestContext Ctx;
 	const auto Handler = FOnPostCustomerFullResponse::CreateUObject(this, &UBeamEditor::SignUp_OnPostCustomer, Op, OrgName, Email, Password);
 	RealmsApi->CPP_PostCustomer(PostCustomerRequest, Handler, Ctx, Op, this);
@@ -283,7 +284,7 @@ void UBeamEditor::SignUp(FString ProjectName, FString OrgName, FString Email, FS
 
 void UBeamEditor::SignUp_OnPostCustomer(const FPostCustomerFullResponse Response, const FBeamOperationHandle Op, const FString OrgName, const FString Email, const FString Password)
 {
-	if (Response.State == Error)
+	if (Response.State == RS_Error)
 	{
 		FString Error;
 		FJsonObjectConverter::UStructToJsonObjectString(Response.ErrorData, Error);
@@ -291,7 +292,7 @@ void UBeamEditor::SignUp_OnPostCustomer(const FPostCustomerFullResponse Response
 		return;
 	}
 
-	if (Response.State == Success)
+	if (Response.State == RS_Success)
 	{
 		SignIn(OrgName, Email, Password, Op);
 		return;
@@ -304,7 +305,7 @@ void UBeamEditor::SignIn(FString OrgName, FString Email, FString Password, const
 {
 	const auto RealmsApi = GEngine->GetEngineSubsystem<UBeamRealmsApi>();
 
-	const auto CustomerAliasReq = UGetCustomerAliasAvailableRequest::Make(OrgName, GetTransientPackage());
+	const auto CustomerAliasReq = UGetCustomerAliasAvailableRequest::Make(OrgName, GetTransientPackage(), {});
 	CustomerAliasReq->Alias = OrgName;
 
 	FBeamRequestContext Ctx;
@@ -314,7 +315,7 @@ void UBeamEditor::SignIn(FString OrgName, FString Email, FString Password, const
 
 void UBeamEditor::SignIn_OnGetCustomerAliasAvailable(const FGetCustomerAliasAvailableFullResponse Response, const FBeamOperationHandle Op, const FString Email, const FString Password)
 {
-	if (Response.State == Error)
+	if (Response.State == RS_Error)
 	{
 		FString Error;
 		FJsonObjectConverter::UStructToJsonObjectString(Response.ErrorData, Error);
@@ -322,7 +323,7 @@ void UBeamEditor::SignIn_OnGetCustomerAliasAvailable(const FGetCustomerAliasAvai
 		return;
 	}
 
-	if (Response.State == Success)
+	if (Response.State == RS_Success)
 	{
 		// If no CID was found for this alias... let the user know.
 		if (!Response.SuccessData->bAvailable)
@@ -355,7 +356,7 @@ void UBeamEditor::SignIn_OnGetCustomerAliasAvailable(const FGetCustomerAliasAvai
 
 void UBeamEditor::SignIn_OnAuthenticate(const FAuthenticateFullResponse Response, const FBeamOperationHandle Op, const FBeamCid Cid)
 {
-	if (Response.State == Error)
+	if (Response.State == RS_Error)
 	{
 		FString Error;
 		FJsonObjectConverter::UStructToJsonObjectString(Response.ErrorData, Error);
@@ -363,7 +364,7 @@ void UBeamEditor::SignIn_OnAuthenticate(const FAuthenticateFullResponse Response
 		return;
 	}
 
-	if (Response.State == Success)
+	if (Response.State == RS_Success)
 	{
 		const auto AccessToken = Response.SuccessData->AccessToken.Val;
 		const auto RefreshToken = Response.SuccessData->RefreshToken.Val;
@@ -431,6 +432,29 @@ void UBeamEditor::SelectRealm_OnSystemsReady(const TArray<FBeamRequestContext>&,
 	}
 
 	RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+}
+
+void UBeamEditor::OpenPortalOnCurrentRealm()
+{		
+	FUserSlot      MainEditorSlot;
+	FBeamRealmUser Data;
+	if(TryGetMainEditorSlot(MainEditorSlot, Data))
+	{
+		FBeamCustomerProjectData Proj;
+		FBeamProjectRealmData    RealmData;
+		GetActiveProjectAndRealmData(Proj, RealmData);
+			
+		const auto PortalUrl = GetDefault<UBeamCoreSettings>()->BeamableEnvironment->PortalUrl;
+		const auto Cid = Data.RealmHandle.Cid.AsString;
+		const auto ProductionPid = Proj.AllRealms.FindByPredicate([](FBeamProjectRealmData d) { return !d.ParentPID.IsSet; })->PID.AsString; 
+		const auto CurrentPid = Data.RealmHandle.Pid.AsString;
+		const auto RefreshToken = Data.AuthToken.RefreshToken;
+			
+		const auto URL = FString::Format(TEXT("{0}/{1}/games/{2}/realms/{3}/dashboard?refresh_token={4}"),
+		                                 { PortalUrl, Cid, ProductionPid, CurrentPid, RefreshToken });
+
+		FPlatformProcess::LaunchURL(*URL, nullptr, nullptr);
+	}
 }
 
 
@@ -505,7 +529,7 @@ void UBeamEditor::UpdateSignedInUserData(const FBeamOperationHandle Op, const FB
 	UserSlots->SetAuthenticationDataAtSlot(GetMainEditorSlot(), AccessToken, RefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), ExpiresIn, Cid, Pid, this);
 
 	const auto RealmsApi = GEngine->GetEngineSubsystem<UBeamRealmsApi>();
-	const auto Req = UGetGamesRequest::Make(GetTransientPackage());
+	const auto Req = UGetGamesRequest::Make(GetTransientPackage(), {});
 	const auto Handler = FOnGetGamesFullResponse::CreateUObject(this, &UBeamEditor::UpdateSignedInUserData_OnGetRealms, Op, Cid);
 
 	FBeamRequestContext Ctx;
@@ -514,7 +538,7 @@ void UBeamEditor::UpdateSignedInUserData(const FBeamOperationHandle Op, const FB
 
 void UBeamEditor::UpdateSignedInUserData_OnGetRealms(const FGetGamesFullResponse Response, const FBeamOperationHandle Op, const FBeamCid Cid)
 {
-	if (Response.State == Error)
+	if (Response.State == RS_Error)
 	{
 		FString Error;
 		FJsonObjectConverter::UStructToJsonObjectString(Response.ErrorData, Error);
@@ -522,7 +546,7 @@ void UBeamEditor::UpdateSignedInUserData_OnGetRealms(const FGetGamesFullResponse
 		return;
 	}
 
-	if (Response.State == Success)
+	if (Response.State == RS_Success)
 	{
 		const auto Games = Response.SuccessData->Projects;
 		// If we only have 1 project (Root PID) associated with this customer, we sign in automatically.				
@@ -537,7 +561,7 @@ void UBeamEditor::UpdateSignedInUserData_OnGetRealms(const FGetGamesFullResponse
 
 			// Now, we need to get the admin me data so we can know all the projects/realms associated with this CID
 			const auto AccountApi = GEngine->GetEngineSubsystem<UBeamAccountsApi>();
-			const auto Req = UGetAdminMeRequest::Make(GetTransientPackage());
+			const auto Req = UGetAdminMeRequest::Make(GetTransientPackage(), {});
 			const auto Handler = FOnGetAdminMeFullResponse::CreateUObject(this, &UBeamEditor::UpdateSignedInUserData_OnGetAdminMe, Op);
 
 			FBeamRequestContext Ctx;
@@ -551,7 +575,7 @@ void UBeamEditor::UpdateSignedInUserData_OnGetRealms(const FGetGamesFullResponse
 
 void UBeamEditor::UpdateSignedInUserData_OnGetAdminMe(const FBeamFullResponse<UGetAdminMeRequest*, UAccountPortalView*> Response, const FBeamOperationHandle Op)
 {
-	if (Response.State == Error)
+	if (Response.State == RS_Error)
 	{
 		FString Error;
 		FJsonObjectConverter::UStructToJsonObjectString(Response.ErrorData, Error);
@@ -559,15 +583,18 @@ void UBeamEditor::UpdateSignedInUserData_OnGetAdminMe(const FBeamFullResponse<UG
 		return;
 	}
 
-	if (Response.State == Success)
+	if (Response.State == RS_Success)
 	{
 		const auto AccountId = Response.SuccessData->Id;
 		bool HadEmail = false;
 		const auto Email = UOptionalStringLibrary::GetOptionalValue(Response.SuccessData->Email, TEXT(""), HadEmail);
+		bool HadExternalIds = false;
+		const auto ExternalIds = UOptionalArrayOfBeamExternalIdentityLibrary::GetOptionalValue(Response.SuccessData->External, {}, HadExternalIds);
 
 		const auto Slot = GetMainEditorSlot();
 		UserSlots->SetEmailAtSlot(Slot, Email, this);
 		UserSlots->SetAccountIdAtSlot(Slot, AccountId, this);
+		UserSlots->SetExternalIdsAtSlot(Slot, ExternalIds, this);
 
 		UserSlots->SaveSlot(Slot, this);
 
@@ -589,7 +616,7 @@ void UBeamEditor::UpdateSignedInUserData_OnUserSlotAuthenticated(const FUserSlot
 	const auto MainEditorSlot = GetMainEditorSlot();
 	if (UserSlot.Name.Equals(MainEditorSlot.Name))
 	{
-		const auto GetCustomerRequest = UGetCustomerRequest::Make(GetTransientPackage());
+		const auto GetCustomerRequest = UGetCustomerRequest::Make(GetTransientPackage(), {});
 		const auto GetCustomerHandler = FOnGetCustomerFullResponse::CreateUObject(this, &UBeamEditor::UpdateSignedInUserData_OnFetchProjectDataForSlot, Op);
 		FBeamRequestContext RequestContext;
 		GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_GetCustomer(MainEditorSlot, GetCustomerRequest, GetCustomerHandler, RequestContext, Op);
@@ -602,7 +629,7 @@ void UBeamEditor::UpdateSignedInUserData_OnFetchProjectDataForSlot(FGetCustomerF
 	const auto UserSlot = GetMainEditorSlot(MainEditorUserData);
 	switch (Response.State)
 	{
-	case Success:
+	case RS_Success:
 		{
 			// Update the ProjectData for this user slot
 			CacheProjectDataForUserSlot(UserSlot, Response.SuccessData);
@@ -613,13 +640,13 @@ void UBeamEditor::UpdateSignedInUserData_OnFetchProjectDataForSlot(FGetCustomerF
 
 			break;
 		}
-	case Error:
+	case RS_Error:
 		{
 			SignOut();
 			break;
 		}
-	case Cancelled: break;
-	case Retrying: break;
+	case RS_Cancelled: break;
+	case RS_Retrying: break;
 	default: ;
 	}
 }

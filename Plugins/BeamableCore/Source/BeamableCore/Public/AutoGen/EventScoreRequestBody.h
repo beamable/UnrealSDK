@@ -9,19 +9,19 @@
 #include "EventScoreRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEventScoreRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UEventScoreRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Event Id", Category="Beam")
-	FString EventId;
+	FString EventId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Score", Category="Beam")
-	double Score;
+	double Score = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Increment", Category="Beam")
-	FOptionalBool bIncrement;
+	FOptionalBool bIncrement = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stats", Category="Beam")
-	FOptionalMapOfString Stats;
+	FOptionalMapOfString Stats = {};
 
 	
 

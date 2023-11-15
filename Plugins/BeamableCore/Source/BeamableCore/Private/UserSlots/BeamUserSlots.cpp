@@ -6,6 +6,7 @@
 #include "BeamCoreSettings.h"
 #include "BeamLogging.h"
 #include "JsonObjectConverter.h"
+#include "HAL/FileManagerGeneric.h"
 
 void UBeamUserSlots::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -24,21 +25,25 @@ void UBeamUserSlots::Deinitialize()
 	AuthenticatedUserMapping.Empty();
 }
 
+FString UBeamUserSlots::GetSavedSlotsDirectory()
+{
+	return FPaths::ProjectSavedDir() / TEXT("Beamable") / TEXT("UserSlots");
+}
 
 FString UBeamUserSlots::GetSavedSlotAuthFilePath(FString NamespacedSlotId)
 {
-	return FPaths::ProjectSavedDir() / TEXT("Beamable") / TEXT("UserSlots") / NamespacedSlotId + TEXT("_Auth.json");
+	return GetSavedSlotsDirectory() / NamespacedSlotId + TEXT("_Auth.json");
 }
 
 FString UBeamUserSlots::GetSavedSlotAccountFilePath(FString NamespacedSlotId)
 {
-	return FPaths::ProjectSavedDir() / TEXT("Beamable") / TEXT("UserSlots") / NamespacedSlotId + TEXT("_Account.json");
+	return GetSavedSlotsDirectory() / NamespacedSlotId + TEXT("_Account.json");
 }
 
 FString UBeamUserSlots::GetSlotDataSavedFilePath(FString SlotDataType, FUserSlot SlotId, const UObject* CallingContext)
 {
 	const auto NamespacedSlotId = GetNamespacedSlotId(SlotId, CallingContext);
-	return FPaths::ProjectSavedDir() / TEXT("Beamable") / TEXT("UserSlots") / NamespacedSlotId + TEXT("_") + SlotDataType + TEXT(".json");
+	return GetSavedSlotsDirectory() / NamespacedSlotId + TEXT("_") + SlotDataType + TEXT(".json");
 }
 
 bool UBeamUserSlots::IsPIEContext(const UObject* CallingContext)
@@ -113,6 +118,30 @@ bool UBeamUserSlots::GetUserDataAtSlot(FUserSlot SlotId, FBeamRealmUser& OutUser
 	OutUserData.AuthToken = FBeamAuthToken{TEXT(""), TEXT(""), 0};
 	OutUserData.RealmHandle = FBeamRealmHandle{TEXT(""), TEXT("")};
 
+	return false;
+}
+
+bool UBeamUserSlots::GetUserDataWithGamerTag(const FBeamGamerTag& GamerTag, FBeamRealmUser& OutUserData, FUserSlot& OutUserSlot, FString& NamespacedSlotId) const
+{
+	for (const auto& UserMapping : AuthenticatedUserMapping)
+	{
+		OutUserData = AuthenticatedUsers[UserMapping.Value];
+		if (OutUserData.GamerTag == GamerTag)
+		{
+			NamespacedSlotId = UserMapping.Key;
+			GetSlotIdFromNamespacedSlotId(NamespacedSlotId, OutUserSlot);
+			UE_LOG(LogBeamUserSlots, Verbose, TEXT("Found User Data with PID and RefreshToken At Slot!\nUSER_SLOT=%s"), *OutUserSlot.Name);
+			return true;
+		}
+	}
+
+	OutUserData.AccountId = -1;
+	OutUserData.GamerTag = -1;
+	OutUserData.Email = TEXT("");
+	OutUserData.AuthToken = FBeamAuthToken{TEXT(""), TEXT(""), 0};
+	OutUserData.RealmHandle = FBeamRealmHandle{TEXT(""), TEXT("")};
+
+	OutUserSlot.Name = TEXT("");
 	return false;
 }
 
@@ -227,6 +256,24 @@ void UBeamUserSlots::SetPIDAtSlot(FUserSlot SlotId, const FBeamPid& Pid, const U
 	UE_LOG(LogBeamUserSlots, Verbose, TEXT("Updated PID at slot!\nUSER_SLOT=%s, PID=%s"), *NamespacedSlotId, *Pid.AsString);
 }
 
+void UBeamUserSlots::SetExternalIdsAtSlot(const FUserSlot& SlotId, const TArray<FBeamExternalIdentity> ExternalIdentities, const UObject* CallingContext)
+{
+	const auto NamespacedSlotId = GetNamespacedSlotId(SlotId, CallingContext);
+
+	// This is here since you need to be authenticated to get the email anyways...
+	ensureAlwaysMsgf(AuthenticatedUserMapping.Contains(NamespacedSlotId), TEXT("This must always be called after SetAuthenticationDataAtSlot."));
+
+	const auto UserSlotIdx = AuthenticatedUserMapping.FindRef(NamespacedSlotId);
+	auto& ExistingRealmUser = AuthenticatedUsers[UserSlotIdx];
+	ExistingRealmUser.ExternalIdentities = ExternalIdentities;
+
+	FString Identities;
+	for (FBeamExternalIdentity ExternalIdentity : ExternalIdentities)
+		Identities += FString::Printf(TEXT("%s/%s:%s, "), *ExternalIdentity.ProviderService, *ExternalIdentity.ProviderNamespace, *ExternalIdentity.UserId);
+	
+	UE_LOG(LogBeamUserSlots, Verbose, TEXT("Updated Email at slot!\nUSER_SLOT=%s, IDENTITIES=[%s]"), *NamespacedSlotId, *Identities);
+}
+
 void UBeamUserSlots::TriggerUserAuthenticatedIntoSlot(FUserSlot SlotId, const UObject* CallingContext)
 {
 	// Gets the auth'ed user
@@ -284,7 +331,8 @@ bool UBeamUserSlots::SaveSlot(FUserSlot SlotId, const UObject* CallingContext)
 	const auto AccountDataForSlot = FUserSlotAccountData{
 		User.AccountId,
 		User.GamerTag,
-		User.Email
+		User.Email,
+		User.ExternalIdentities,
 	};
 	FString JsonSerializedAccountData;
 	ensureAlways(FJsonObjectConverter::UStructToJsonObjectString(AccountDataForSlot, JsonSerializedAccountData));
@@ -367,6 +415,60 @@ void UBeamUserSlots::ClearUserAtSlot(FUserSlot SlotId, const EUserSlotClearedRea
 	}
 }
 
+void UBeamUserSlots::ClearAllCachedUserDataAtSlot(FUserSlot SlotId)
+{
+	TArray<FString> AllCachedUserSlots;
+	FFileManagerGeneric::Get().FindFiles(AllCachedUserSlots, *GetSavedSlotsDirectory(),TEXT(".json"));
+
+	for (const auto& CachedUserSlotDataFile : AllCachedUserSlots)
+	{		
+		if(!CachedUserSlotDataFile.Contains(SlotId.Name)) continue;
+
+		if(CachedUserSlotDataFile.Contains(TEXT("_Auth.json")))
+		{
+			// Save the User's Auth data to the slot.
+			const auto SavedUserAuthDataPath = GetSavedSlotsDirectory() / CachedUserSlotDataFile;
+			const auto AuthDataForSlot = FUserSlotAuthData{TEXT(""), TEXT(""), 0, 0,TEXT(""),TEXT("")};
+			FString JsonSerializedAuthData;
+			ensureAlways(FJsonObjectConverter::UStructToJsonObjectString(AuthDataForSlot, JsonSerializedAuthData));
+
+			if (FFileHelper::SaveStringToFile(*JsonSerializedAuthData, *SavedUserAuthDataPath))
+			{
+				UE_LOG(LogBeamUserSlots, Verbose, TEXT("Cleared User Slot - Auth File!\nUSER_SLOT=%s\nFILE_PATH=%s\nFILE_CONTENTS=%s"), *SlotId.Name, *SavedUserAuthDataPath,
+					   *JsonSerializedAuthData);
+			}
+			else
+			{
+				UE_LOG(LogBeamUserSlots, Error, TEXT("Failed to clear User Slot - Auth File!\nUSER_SLOT=%s\nFILE_PATH=%s\nFILE_CONTENTS=%s"), *SlotId.Name, *SavedUserAuthDataPath,
+					   *JsonSerializedAuthData);
+			}	
+		}
+
+		if(CachedUserSlotDataFile.Contains("_Account.json"))
+		{
+			// Save the User Account data to the slot.
+			const auto SavedUserAccountDataPath = GetSavedSlotsDirectory() / CachedUserSlotDataFile;
+
+			const auto AccountDataForSlot = FUserSlotAccountData{-1, -1, TEXT("")};
+			FString JsonSerializedAccountData;
+			ensureAlways(FJsonObjectConverter::UStructToJsonObjectString(AccountDataForSlot, JsonSerializedAccountData));
+
+			if (FFileHelper::SaveStringToFile(*JsonSerializedAccountData, *SavedUserAccountDataPath))
+			{
+				UE_LOG(LogBeamUserSlots, Verbose, TEXT("Cleared User Slot - Account File!\nUSER_SLOT=%s\nFILE_PATH=%s\nFILE_CONTENTS=%s"), *SlotId.Name, *SavedUserAccountDataPath,
+					   *JsonSerializedAccountData);
+			}
+			else
+			{
+				UE_LOG(LogBeamUserSlots, Error, TEXT("Failed to clear User Slot - Account File!\nUSER_SLOT=%s\nFILE_PATH=%s\nFILE_CONTENTS=%s"), *SlotId.Name, *SavedUserAccountDataPath,
+					   *JsonSerializedAccountData);
+			}
+		}
+		
+		UE_LOG(LogBeamUserSlots, Verbose, TEXT("Cleared Saved User Slot!\nUSER_SLOT=%s"), *SlotId.Name);
+	}	
+}
+
 bool UBeamUserSlots::IsUserSlotAuthenticated(FUserSlot SlotId, const UObject* CallingContext)
 {
 	return AuthenticatedUserMapping.Contains(GetNamespacedSlotId(SlotId, CallingContext));
@@ -417,7 +519,8 @@ int32 UBeamUserSlots::TryLoadSavedUserAtSlot(FUserSlot SlotId, UObject* CallingC
 				SetAuthenticationDataAtSlot(SlotId, AccessToken, RefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), ExpiresIn, Cid, Pid, CallingContext);
 				SetAccountIdAtSlot(SlotId, SlotSerializedAccountData.AccountId, CallingContext);
 				SetGamerTagAtSlot(SlotId, SlotSerializedAccountData.GamerTag, CallingContext);
-				SetEmailAtSlot(SlotId, SlotSerializedAccountData.Email, CallingContext);				
+				SetEmailAtSlot(SlotId, SlotSerializedAccountData.Email, CallingContext);
+				SetExternalIdsAtSlot(SlotId, SlotSerializedAccountData.ExternalIdentities, CallingContext);
 
 				UE_LOG(LogBeamUserSlots, Verbose, TEXT("Loaded user saved at slot!\nUSER_SLOT=%s, CID=%s, PID=%s"), *NamespacedSlotId, *Cid.AsString, *Pid.AsString);
 				return SlotSerializedAuthData.IsExpired() ? LoadSavedUserResult_ExpiredToken : LoadSavedUserResult_Success;

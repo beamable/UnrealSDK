@@ -8,15 +8,15 @@
 #include "WebSocketConfiguration.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UWebSocketConfiguration : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UWebSocketConfiguration : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Provider", Category="Beam")
-	FString Provider;
+	FString Provider = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Uri", Category="Beam")
-	FOptionalString Uri;
+	FOptionalString Uri = {};
 
 	
 

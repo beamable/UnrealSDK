@@ -8,17 +8,17 @@
 #include "CohortRequirement.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UCohortRequirement : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UCohortRequirement : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Trial", Category="Beam")
-	FString Trial;
+	FString Trial = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cohort", Category="Beam")
-	FString Cohort;
+	FString Cohort = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Constraint", Category="Beam")
-	FString Constraint;
+	FString Constraint = {};
 
 	
 

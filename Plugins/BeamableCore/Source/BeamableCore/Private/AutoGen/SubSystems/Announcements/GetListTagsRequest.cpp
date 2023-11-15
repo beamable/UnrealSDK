@@ -28,9 +28,10 @@ void UGetListTagsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetListTagsRequest* UGetListTagsRequest::Make(FOptionalString _TagNameFilter, UObject* RequestOwner)
+UGetListTagsRequest* UGetListTagsRequest::Make(FOptionalString _TagNameFilter, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetListTagsRequest* Req = NewObject<UGetListTagsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->TagNameFilter = _TagNameFilter;

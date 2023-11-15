@@ -9,27 +9,27 @@
 #include "TrackPurchaseRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UTrackPurchaseRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UTrackPurchaseRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Price In Local Currency", Category="Beam")
-	double PriceInLocalCurrency;
+	double PriceInLocalCurrency = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sku Name", Category="Beam")
-	FString SkuName;
+	FString SkuName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Sku Product Id", Category="Beam")
-	FString SkuProductId;
+	FString SkuProductId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Store", Category="Beam")
-	FString Store;
+	FString Store = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Purchase Id", Category="Beam")
-	FString PurchaseId;
+	FString PurchaseId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Iso Currency Symbol", Category="Beam")
-	FString IsoCurrencySymbol;
+	FString IsoCurrencySymbol = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain Items", Category="Beam")
-	TArray<UItemCreateRequestBody*> ObtainItems;
+	TArray<UItemCreateRequestBody*> ObtainItems = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Obtain Currency", Category="Beam")
-	TArray<UCurrencyChange*> ObtainCurrency;
+	TArray<UCurrencyChange*> ObtainCurrency = {};
 
 	
 

@@ -8,15 +8,15 @@
 #include "NewItemReward.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UNewItemReward : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UNewItemReward : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
-	FString Symbol;
+	FString Symbol = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Properties", Category="Beam")
-	FOptionalMapOfString Properties;
+	FOptionalMapOfString Properties = {};
 
 	
 

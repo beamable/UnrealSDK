@@ -24,6 +24,7 @@ Options:
   --refresh-token <refresh-token>  Refresh token to use for the requests
   --log <log>                      Extra logs gets printed out
   --dir <dir>                      Directory to use for configuration
+  --dotnet-path <dotnet-path>      a custom location for dotnet
   -?, -h, --help                   Show help and usage information
 
 

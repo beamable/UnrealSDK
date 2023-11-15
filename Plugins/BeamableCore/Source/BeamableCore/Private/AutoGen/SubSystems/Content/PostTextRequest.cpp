@@ -27,9 +27,10 @@ void UPostTextRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostTextRequest* UPostTextRequest::Make(TArray<UTextDefinition*> _Text, UObject* RequestOwner)
+UPostTextRequest* UPostTextRequest::Make(TArray<UTextDefinition*> _Text, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostTextRequest* Req = NewObject<UPostTextRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

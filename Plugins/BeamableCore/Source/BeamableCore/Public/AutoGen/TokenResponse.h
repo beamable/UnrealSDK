@@ -9,23 +9,23 @@
 #include "TokenResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UTokenResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UTokenResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Expires In", Category="Beam")
-	int64 ExpiresIn;
+	int64 ExpiresIn = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Token Type", Category="Beam")
-	FString TokenType;
+	FString TokenType = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Access Token", Category="Beam")
-	FOptionalString AccessToken;
+	FOptionalString AccessToken = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Refresh Token", Category="Beam")
-	FOptionalString RefreshToken;
+	FOptionalString RefreshToken = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Challenge Token", Category="Beam")
-	FOptionalString ChallengeToken;
+	FOptionalString ChallengeToken = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scopes", Category="Beam")
-	FOptionalArrayOfString Scopes;
+	FOptionalArrayOfString Scopes = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

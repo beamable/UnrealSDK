@@ -27,9 +27,10 @@ void UPostBatchRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostBatchRequest* UPostBatchRequest::Make(TArray<UStatUpdateRequestBody*> _Updates, UObject* RequestOwner)
+UPostBatchRequest* UPostBatchRequest::Make(TArray<UStatUpdateRequestBody*> _Updates, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostBatchRequest* Req = NewObject<UPostBatchRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

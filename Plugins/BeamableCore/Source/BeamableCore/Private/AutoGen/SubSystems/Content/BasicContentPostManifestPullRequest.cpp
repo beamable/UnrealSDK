@@ -27,9 +27,10 @@ void UBasicContentPostManifestPullRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UBasicContentPostManifestPullRequest* UBasicContentPostManifestPullRequest::Make(FBeamPid _SourceRealmPid, FOptionalBeamContentManifestId _Id, UObject* RequestOwner)
+UBasicContentPostManifestPullRequest* UBasicContentPostManifestPullRequest::Make(FBeamPid _SourceRealmPid, FOptionalBeamContentManifestId _Id, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicContentPostManifestPullRequest* Req = NewObject<UBasicContentPostManifestPullRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

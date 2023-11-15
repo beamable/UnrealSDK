@@ -23,9 +23,10 @@ void UGetPaymentsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetPaymentsRequest* UGetPaymentsRequest::Make(int64 _ObjectId, UObject* RequestOwner)
+UGetPaymentsRequest* UGetPaymentsRequest::Make(int64 _ObjectId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetPaymentsRequest* Req = NewObject<UGetPaymentsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

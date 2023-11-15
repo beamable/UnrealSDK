@@ -27,9 +27,10 @@ void UDeleteProjectRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteProjectRequest* UDeleteProjectRequest::Make(FBeamPid _Pid, UObject* RequestOwner)
+UDeleteProjectRequest* UDeleteProjectRequest::Make(FBeamPid _Pid, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UDeleteProjectRequest* Req = NewObject<UDeleteProjectRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

@@ -22,7 +22,7 @@ FString UInFlightMessageLibrary::InFlightMessageToJsonString(const UInFlightMess
 	return Result;
 }	
 
-UInFlightMessage* UInFlightMessageLibrary::Make(FString Method, FString Body, FString Path, FString Service, FString Id, FOptionalInt64 GamerTag, FOptionalString Shard, UObject* Outer)
+UInFlightMessage* UInFlightMessageLibrary::Make(FString Method, FString Body, FString Path, FString Service, FString Id, FOptionalBool bLimitFailureRetries, FOptionalInt64 GamerTag, FOptionalString Shard, UObject* Outer)
 {
 	auto Serializable = NewObject<UInFlightMessage>(Outer);
 	Serializable->Method = Method;
@@ -30,19 +30,21 @@ UInFlightMessage* UInFlightMessageLibrary::Make(FString Method, FString Body, FS
 	Serializable->Path = Path;
 	Serializable->Service = Service;
 	Serializable->Id = Id;
+	Serializable->bLimitFailureRetries = bLimitFailureRetries;
 	Serializable->GamerTag = GamerTag;
 	Serializable->Shard = Shard;
 	
 	return Serializable;
 }
 
-void UInFlightMessageLibrary::Break(const UInFlightMessage* Serializable, FString& Method, FString& Body, FString& Path, FString& Service, FString& Id, FOptionalInt64& GamerTag, FOptionalString& Shard)
+void UInFlightMessageLibrary::Break(const UInFlightMessage* Serializable, FString& Method, FString& Body, FString& Path, FString& Service, FString& Id, FOptionalBool& bLimitFailureRetries, FOptionalInt64& GamerTag, FOptionalString& Shard)
 {
 	Method = Serializable->Method;
 	Body = Serializable->Body;
 	Path = Serializable->Path;
 	Service = Serializable->Service;
 	Id = Serializable->Id;
+	bLimitFailureRetries = Serializable->bLimitFailureRetries;
 	GamerTag = Serializable->GamerTag;
 	Shard = Serializable->Shard;
 		

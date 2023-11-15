@@ -25,11 +25,11 @@ public:
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Object Ids", Category="Beam")
-	FBeamStatsType ObjectIds;
+	FBeamStatsType ObjectIds = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stats", Category="Beam")
-	FOptionalString Stats;
+	FOptionalString Stats = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Format", Category="Beam")
-	FOptionalString Format;
+	FOptionalString Format = {};
 
 	// Body Params
 	
@@ -41,8 +41,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", DisplayName="Beam - Make GetClientBatch",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Stats,_Format,RequestOwner"))
-	static UGetClientBatchRequest* Make(FBeamStatsType _ObjectIds, FOptionalString _Stats, FOptionalString _Format, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", DisplayName="Beam - Make GetClientBatch",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Stats,_Format,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UGetClientBatchRequest* Make(FBeamStatsType _ObjectIds, FOptionalString _Stats, FOptionalString _Format, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

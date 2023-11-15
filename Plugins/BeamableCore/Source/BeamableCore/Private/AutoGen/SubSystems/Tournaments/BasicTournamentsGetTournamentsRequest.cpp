@@ -40,9 +40,10 @@ void UBasicTournamentsGetTournamentsRequest::BuildBody(FString& BodyString) cons
 	
 }
 
-UBasicTournamentsGetTournamentsRequest* UBasicTournamentsGetTournamentsRequest::Make(FOptionalBool _bIsRunning, FOptionalString _ContentId, FOptionalInt32 _Cycle, UObject* RequestOwner)
+UBasicTournamentsGetTournamentsRequest* UBasicTournamentsGetTournamentsRequest::Make(FOptionalBool _bIsRunning, FOptionalString _ContentId, FOptionalInt32 _Cycle, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicTournamentsGetTournamentsRequest* Req = NewObject<UBasicTournamentsGetTournamentsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->bIsRunning = _bIsRunning;

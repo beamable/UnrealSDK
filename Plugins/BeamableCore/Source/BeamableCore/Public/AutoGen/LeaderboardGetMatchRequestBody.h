@@ -8,17 +8,17 @@
 #include "LeaderboardGetMatchRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API ULeaderboardGetMatchRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API ULeaderboardGetMatchRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pool Size", Category="Beam")
-	int32 PoolSize;
+	int32 PoolSize = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Windows", Category="Beam")
-	int32 Windows;
+	int32 Windows = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Window Size", Category="Beam")
-	int32 WindowSize;
+	int32 WindowSize = {};
 
 	
 

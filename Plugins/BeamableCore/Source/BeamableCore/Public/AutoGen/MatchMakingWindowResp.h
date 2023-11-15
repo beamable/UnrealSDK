@@ -8,15 +8,15 @@
 #include "MatchMakingWindowResp.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UMatchMakingWindowResp : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UMatchMakingWindowResp : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Difficulty", Category="Beam")
-	int32 Difficulty;
+	int32 Difficulty = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Matches", Category="Beam")
-	TArray<UMatchMakingRanking*> Matches;
+	TArray<UMatchMakingRanking*> Matches = {};
 
 	
 

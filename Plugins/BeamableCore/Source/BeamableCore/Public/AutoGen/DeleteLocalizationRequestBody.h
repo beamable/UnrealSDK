@@ -8,13 +8,13 @@
 #include "DeleteLocalizationRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UDeleteLocalizationRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UDeleteLocalizationRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Localizations", Category="Beam")
-	TArray<ULocalizationQuery*> Localizations;
+	TArray<ULocalizationQuery*> Localizations = {};
 
 	
 

@@ -11,23 +11,23 @@
 #include "WebhookComet.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UWebhookComet : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UWebhookComet : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Method", Category="Beam")
-	FString Method;
+	FString Method = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Variables", Category="Beam")
-	URouteVariables* Variables;
+	URouteVariables* Variables = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
-	FString Symbol;
+	FString Symbol = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Route", Category="Beam")
-	UServiceRoute* Route;
+	UServiceRoute* Route = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Parameters", Category="Beam")
-	URouteParameters* Parameters;
+	URouteParameters* Parameters = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Description", Category="Beam")
-	FOptionalString Description;
+	FOptionalString Description = {};
 
 	
 

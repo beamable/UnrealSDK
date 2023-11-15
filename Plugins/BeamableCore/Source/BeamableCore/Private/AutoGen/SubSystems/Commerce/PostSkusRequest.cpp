@@ -27,9 +27,10 @@ void UPostSkusRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostSkusRequest* UPostSkusRequest::Make(TArray<USKU*> _Definitions, UObject* RequestOwner)
+UPostSkusRequest* UPostSkusRequest::Make(TArray<USKU*> _Definitions, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostSkusRequest* Req = NewObject<UPostSkusRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

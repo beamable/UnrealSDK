@@ -28,9 +28,10 @@ void UGetCloudsavingRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetCloudsavingRequest* UGetCloudsavingRequest::Make(FOptionalInt64 _PlayerId, UObject* RequestOwner)
+UGetCloudsavingRequest* UGetCloudsavingRequest::Make(FOptionalInt64 _PlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetCloudsavingRequest* Req = NewObject<UGetCloudsavingRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->PlayerId = _PlayerId;

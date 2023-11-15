@@ -8,15 +8,15 @@
 #include "DateRange.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UDateRange : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UDateRange : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="From", Category="Beam")
-	FString From;
+	FString From = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="To", Category="Beam")
-	FString To;
+	FString To = {};
 
 	
 

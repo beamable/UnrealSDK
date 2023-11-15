@@ -31,7 +31,8 @@ public class BeamableCoreEditor : ModuleRules
 				"DeveloperToolSettings",
 				"BeamableCoreRuntime",
 				"BeamableCoreRuntimeEditor",
-				"AssetTools"
+				"AssetTools",
+				"InputCore"
 			}
 		);
 
@@ -54,6 +55,7 @@ public class BeamableCoreEditor : ModuleRules
 				"ToolWidgets",
 				"EditorScriptingUtilities",
 				"HTTP",
+				"InputCore"
 			}
 		);
 	}

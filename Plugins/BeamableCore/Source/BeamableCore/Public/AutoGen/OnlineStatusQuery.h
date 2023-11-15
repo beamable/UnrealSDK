@@ -9,15 +9,15 @@
 #include "OnlineStatusQuery.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UOnlineStatusQuery : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UOnlineStatusQuery : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B To Many Requests", Category="Beam")
-	FOptionalBool bToManyRequests;
+	FOptionalBool bToManyRequests = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Ids", Category="Beam")
-	FOptionalArrayOfString PlayerIds;
+	FOptionalArrayOfString PlayerIds = {};
 
 	
 

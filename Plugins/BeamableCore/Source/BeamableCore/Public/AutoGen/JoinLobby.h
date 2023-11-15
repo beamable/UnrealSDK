@@ -8,13 +8,13 @@
 #include "JoinLobby.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UJoinLobby : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UJoinLobby : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
-	FOptionalArrayOfTag Tags;
+	FOptionalArrayOfTag Tags = {};
 
 	
 

@@ -24,7 +24,7 @@ public:
 	
 	// Query Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tag Name Filter", Category="Beam")
-	FOptionalString TagNameFilter;
+	FOptionalString TagNameFilter = {};
 
 	// Body Params
 	
@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Announcements", DisplayName="Beam - Make GetListTags",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_TagNameFilter,RequestOwner"))
-	static UGetListTagsRequest* Make(FOptionalString _TagNameFilter, UObject* RequestOwner);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Announcements", DisplayName="Beam - Make GetListTags",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_TagNameFilter,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UGetListTagsRequest* Make(FOptionalString _TagNameFilter, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

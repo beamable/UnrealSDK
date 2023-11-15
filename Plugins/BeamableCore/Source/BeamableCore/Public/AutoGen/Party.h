@@ -10,23 +10,23 @@
 #include "Party.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UParty : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UParty : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FOptionalString Id;
+	FOptionalString Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Restriction", Category="Beam")
-	FOptionalString Restriction;
+	FOptionalString Restriction = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Leader", Category="Beam")
-	FOptionalString Leader;
+	FOptionalString Leader = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Size", Category="Beam")
-	FOptionalInt32 MaxSize;
+	FOptionalInt32 MaxSize = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Members", Category="Beam")
-	FOptionalArrayOfString Members;
+	FOptionalArrayOfString Members = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Pending Invites", Category="Beam")
-	FOptionalArrayOfString PendingInvites;
+	FOptionalArrayOfString PendingInvites = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

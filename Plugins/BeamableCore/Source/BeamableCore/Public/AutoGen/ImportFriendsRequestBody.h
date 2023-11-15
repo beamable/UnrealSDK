@@ -8,15 +8,15 @@
 #include "ImportFriendsRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UImportFriendsRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UImportFriendsRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Source", Category="Beam")
-	FString Source;
+	FString Source = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Token", Category="Beam")
-	FString Token;
+	FString Token = {};
 
 	
 

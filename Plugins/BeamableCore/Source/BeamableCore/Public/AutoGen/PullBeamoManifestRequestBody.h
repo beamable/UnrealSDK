@@ -8,13 +8,13 @@
 #include "PullBeamoManifestRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPullBeamoManifestRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UPullBeamoManifestRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Source Realm Pid", Category="Beam")
-	FString SourceRealmPid;
+	FString SourceRealmPid = {};
 
 	
 

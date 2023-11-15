@@ -1,0 +1,38 @@
+
+#include "BeamableCore/Public/AutoGen/OnlineStatusResponsesLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString UOnlineStatusResponsesLibrary::OnlineStatusResponsesToJsonString(const UOnlineStatusResponses* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+UOnlineStatusResponses* UOnlineStatusResponsesLibrary::Make(TArray<UPlayerOnlineStatusResponse*> Players, UObject* Outer)
+{
+	auto Serializable = NewObject<UOnlineStatusResponses>(Outer);
+	Serializable->Players = Players;
+	
+	return Serializable;
+}
+
+void UOnlineStatusResponsesLibrary::Break(const UOnlineStatusResponses* Serializable, TArray<UPlayerOnlineStatusResponse*>& Players)
+{
+	Players = Serializable->Players;
+		
+}
+

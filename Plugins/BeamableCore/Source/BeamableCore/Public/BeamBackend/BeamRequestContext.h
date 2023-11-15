@@ -12,7 +12,7 @@
 
 
 UENUM()
-enum EBeamRequestStatus { None = 0, InFlight, Completed };
+enum EBeamAsyncStatus { AS_None = 0, AS_InFlight, AS_Completed };
 
 
 USTRUCT(BlueprintType)
@@ -56,17 +56,17 @@ struct FBeamRequestContext
 	/**
 	 * @brief Used to keep track of the request and when it can be cleared.
 	 */
-	EBeamRequestStatus BeamStatus;
+	EBeamAsyncStatus BeamStatus;
 
 	FBeamRequestContext() = default;
 
 	explicit FBeamRequestContext(int64 RequestId)
-		: RequestId(RequestId), RetryConfiguration(), ResponseCode(-1), BeamStatus(None)
+		: RequestId(RequestId), RetryConfiguration(), ResponseCode(-1), BeamStatus(AS_None)
 	{
 	}
 
 	explicit FBeamRequestContext(int64 RequestId, const FBeamRetryConfig& RetryConfiguration, const FBeamRealmHandle& Handle, int32 ResponseCode, const FUserSlot& UserSlot,
-	                             EBeamRequestStatus BeamStatus)
+	                             EBeamAsyncStatus BeamStatus)
 		: RequestId(RequestId),
 		  RetryConfiguration(RetryConfiguration),
 		  Handle(Handle),

@@ -27,9 +27,10 @@ void UPostCatalogLegacyRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostCatalogLegacyRequest* UPostCatalogLegacyRequest::Make(TArray<UStore*> _Stores, TArray<UOfferDefinition*> _OfferDefinitions, UObject* RequestOwner)
+UPostCatalogLegacyRequest* UPostCatalogLegacyRequest::Make(TArray<UStore*> _Stores, TArray<UOfferDefinition*> _OfferDefinitions, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostCatalogLegacyRequest* Req = NewObject<UPostCatalogLegacyRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

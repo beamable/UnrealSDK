@@ -8,21 +8,21 @@
 #include "SteamOrderInfoItem.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API USteamOrderInfoItem : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API USteamOrderInfoItem : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Vat", Category="Beam")
-	int64 Vat;
+	int64 Vat = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Amount", Category="Beam")
-	int64 Amount;
+	int64 Amount = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Itemid", Category="Beam")
-	int64 Itemid;
+	int64 Itemid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Qty", Category="Beam")
-	int64 Qty;
+	int64 Qty = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Itemstatus", Category="Beam")
-	FString Itemstatus;
+	FString Itemstatus = {};
 
 	
 

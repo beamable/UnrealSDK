@@ -17,8 +17,8 @@ public:
 	static FString GroupUserToJsonString(const UGroupUser* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GroupUser", meta=(DefaultToSelf="Outer", AdvancedDisplay="InFlight, Scores, Outer", NativeMakeFunc))
-	static UGroupUser* Make(int64 GamerTag, int64 Updated, TArray<UGroupUserMember*> AllGroups, TMap<FString, FArrayOfString> Member, FOptionalArrayOfInFlightMessage InFlight, FOptionalArrayOfGroupScoreBinding Scores, UObject* Outer);
+	static UGroupUser* Make(int64 GamerTag, int64 Updated, UGroupMemberInfo* Member, TArray<UGroupUserMember*> AllGroups, FOptionalArrayOfInFlightMessage InFlight, FOptionalArrayOfGroupScoreBinding Scores, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GroupUser", meta=(NativeBreakFunc))
-	static void Break(const UGroupUser* Serializable, int64& GamerTag, int64& Updated, TArray<UGroupUserMember*>& AllGroups, TMap<FString, FArrayOfString>& Member, FOptionalArrayOfInFlightMessage& InFlight, FOptionalArrayOfGroupScoreBinding& Scores);
+	static void Break(const UGroupUser* Serializable, int64& GamerTag, int64& Updated, UGroupMemberInfo*& Member, TArray<UGroupUserMember*>& AllGroups, FOptionalArrayOfInFlightMessage& InFlight, FOptionalArrayOfGroupScoreBinding& Scores);
 };

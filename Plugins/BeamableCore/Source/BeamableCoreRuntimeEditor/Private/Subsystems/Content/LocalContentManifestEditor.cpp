@@ -297,7 +297,7 @@ void ULocalContentManifestEditorState::DownloadButtonClicked()
 	FBeamOperationEventHandlerCode EventHandler;
 	EventHandler.BindLambda([this](const TArray<FUserSlot>&, FBeamOperationEvent OperationEvent)
 		{
-			if (OperationEvent.EventType == SUCCESS)
+			if (OperationEvent.EventType == OET_SUCCESS)
 			{
 				// Handle Final Success Event
 				if (OperationEvent.EventSubTypeCode == 0)
@@ -361,7 +361,7 @@ void ULocalContentManifestEditorState::DownloadButtonClicked()
 				}
 			}
 
-			if (OperationEvent.EventType == ERROR)
+			if (OperationEvent.EventType == OET_ERROR)
 			{
 				const auto Title = LOCTEXT("DownloadFailed", "Download Failed");
 				const auto Msg = FText::FromString(FString::Format(
@@ -398,7 +398,7 @@ void ULocalContentManifestEditorState::OnPublishEvent(const TArray<FUserSlot>& U
 
 	PublishingWindow->RequestDestroyWindow();
 
-	if (OperationEvent.EventType == SUCCESS)
+	if (OperationEvent.EventType == OET_SUCCESS)
 	{
 		// If it is the final success event (as in, the operation completed successfully)
 		if (OperationEvent.EventSubTypeCode == 0)
@@ -413,7 +413,7 @@ void ULocalContentManifestEditorState::OnPublishEvent(const TArray<FUserSlot>& U
 
 		UE_LOG(LogBeamContent, Display, TEXT("Content Publish sucessfull!\n%s"), *OperationEvent.EventData);
 	}
-	else if (OperationEvent.EventType == ERROR)
+	else if (OperationEvent.EventType == OET_ERROR)
 	{
 		const auto Title = LOCTEXT("PublishSuccessful", "Publish Failed");
 		const auto Msg = FText::FromString(FString::Format(

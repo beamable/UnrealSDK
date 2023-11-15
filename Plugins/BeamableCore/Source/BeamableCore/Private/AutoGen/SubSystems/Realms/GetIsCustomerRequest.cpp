@@ -23,9 +23,10 @@ void UGetIsCustomerRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetIsCustomerRequest* UGetIsCustomerRequest::Make(UObject* RequestOwner)
+UGetIsCustomerRequest* UGetIsCustomerRequest::Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetIsCustomerRequest* Req = NewObject<UGetIsCustomerRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

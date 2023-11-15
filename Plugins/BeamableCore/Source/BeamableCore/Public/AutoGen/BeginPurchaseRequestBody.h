@@ -8,17 +8,17 @@
 #include "BeginPurchaseRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UBeginPurchaseRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UBeginPurchaseRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Purchase Id", Category="Beam")
-	FString PurchaseId;
+	FString PurchaseId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Language", Category="Beam")
-	FOptionalString Language;
+	FOptionalString Language = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Time", Category="Beam")
-	FOptionalString Time;
+	FOptionalString Time = {};
 
 	
 

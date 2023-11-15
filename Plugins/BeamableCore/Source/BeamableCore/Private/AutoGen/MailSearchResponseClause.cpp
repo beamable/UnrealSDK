@@ -9,21 +9,21 @@ void UMailSearchResponseClause::BeamSerializeProperties(TUnrealJsonSerializer& S
 {
 	Serializer->WriteValue(TEXT("name"), Name);
 	Serializer->WriteValue(TEXT("count"), Count);
-	UBeamJsonUtils::SerializeOptional<TArray<UMailObjectMessage*>, UMailObjectMessage*>(TEXT("content"), &Content, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<UMessage*>, UMessage*>(TEXT("content"), &Content, Serializer);
 }
 
 void UMailSearchResponseClause::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("name"), Name);
 	Serializer->WriteValue(TEXT("count"), Count);
-	UBeamJsonUtils::SerializeOptional<TArray<UMailObjectMessage*>, UMailObjectMessage*>(TEXT("content"), &Content, Serializer);		
+	UBeamJsonUtils::SerializeOptional<TArray<UMessage*>, UMessage*>(TEXT("content"), &Content, Serializer);		
 }
 
 void UMailSearchResponseClause::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Name = Bag->GetStringField(TEXT("name"));
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("count")), Count);
-	UBeamJsonUtils::DeserializeOptional<TArray<UMailObjectMessage*>, UMailObjectMessage*>("content", Bag, Content, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TArray<UMessage*>, UMessage*>("content", Bag, Content, OuterOwner);
 }
 
 

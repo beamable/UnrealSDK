@@ -22,7 +22,7 @@ FString UCloudsavingBasicManifestLibrary::CloudsavingBasicManifestToJsonString(c
 	return Result;
 }	
 
-UCloudsavingBasicManifest* UCloudsavingBasicManifestLibrary::Make(bool bReplacement, FString Id, int64 Created, TArray<UReference*> Manifest, UObject* Outer)
+UCloudsavingBasicManifest* UCloudsavingBasicManifestLibrary::Make(bool bReplacement, FString Id, int64 Created, TArray<UCloudsavingBasicReference*> Manifest, UObject* Outer)
 {
 	auto Serializable = NewObject<UCloudsavingBasicManifest>(Outer);
 	Serializable->bReplacement = bReplacement;
@@ -33,7 +33,7 @@ UCloudsavingBasicManifest* UCloudsavingBasicManifestLibrary::Make(bool bReplacem
 	return Serializable;
 }
 
-void UCloudsavingBasicManifestLibrary::Break(const UCloudsavingBasicManifest* Serializable, bool& bReplacement, FString& Id, int64& Created, TArray<UReference*>& Manifest)
+void UCloudsavingBasicManifestLibrary::Break(const UCloudsavingBasicManifest* Serializable, bool& bReplacement, FString& Id, int64& Created, TArray<UCloudsavingBasicReference*>& Manifest)
 {
 	bReplacement = Serializable->bReplacement;
 	Id = Serializable->Id;

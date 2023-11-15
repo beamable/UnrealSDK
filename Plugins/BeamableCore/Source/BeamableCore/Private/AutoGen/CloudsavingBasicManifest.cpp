@@ -15,7 +15,7 @@ void UCloudsavingBasicManifest::BeamSerializeProperties(TUnrealJsonSerializer& S
 	Serializer->WriteValue(TEXT("replacement"), bReplacement);
 	Serializer->WriteValue(TEXT("id"), Id);
 	Serializer->WriteValue(TEXT("created"), Created);
-	UBeamJsonUtils::SerializeArray<UReference*>(TEXT("manifest"), Manifest, Serializer);
+	UBeamJsonUtils::SerializeArray<UCloudsavingBasicReference*>(TEXT("manifest"), Manifest, Serializer);
 }
 
 void UCloudsavingBasicManifest::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
@@ -23,7 +23,7 @@ void UCloudsavingBasicManifest::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 	Serializer->WriteValue(TEXT("replacement"), bReplacement);
 	Serializer->WriteValue(TEXT("id"), Id);
 	Serializer->WriteValue(TEXT("created"), Created);
-	UBeamJsonUtils::SerializeArray<UReference*>(TEXT("manifest"), Manifest, Serializer);		
+	UBeamJsonUtils::SerializeArray<UCloudsavingBasicReference*>(TEXT("manifest"), Manifest, Serializer);		
 }
 
 void UCloudsavingBasicManifest::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
@@ -31,7 +31,7 @@ void UCloudsavingBasicManifest::BeamDeserializeProperties(const TSharedPtr<FJson
 	bReplacement = Bag->GetBoolField(TEXT("replacement"));
 	Id = Bag->GetStringField(TEXT("id"));
 	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("created")), Created);
-	UBeamJsonUtils::DeserializeArray<UReference*>(Bag->GetArrayField(TEXT("manifest")), Manifest, OuterOwner);
+	UBeamJsonUtils::DeserializeArray<UCloudsavingBasicReference*>(Bag->GetArrayField(TEXT("manifest")), Manifest, OuterOwner);
 }
 
 

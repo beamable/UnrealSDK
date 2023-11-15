@@ -10,21 +10,21 @@
 #include "MatchType.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UMatchType : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UMatchType : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FOptionalBeamContentId Id;
+	FOptionalBeamContentId Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Wait After Min Reached Secs", Category="Beam")
-	FOptionalInt32 WaitAfterMinReachedSecs;
+	FOptionalInt32 WaitAfterMinReachedSecs = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Wait Duration Secs", Category="Beam")
-	FOptionalInt32 MaxWaitDurationSecs;
+	FOptionalInt32 MaxWaitDurationSecs = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Matching Interval Secs", Category="Beam")
-	FOptionalInt32 MatchingIntervalSecs;
+	FOptionalInt32 MatchingIntervalSecs = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Teams", Category="Beam")
-	FOptionalArrayOfTeamContentProto Teams;
+	FOptionalArrayOfTeamContentProto Teams = {};
 
 	
 

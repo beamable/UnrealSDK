@@ -8,19 +8,19 @@
 #include "CompletePurchaseRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UCompletePurchaseRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UCompletePurchaseRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Txid", Category="Beam")
-	int64 Txid;
+	int64 Txid = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Receipt", Category="Beam")
-	FString Receipt;
+	FString Receipt = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Price In Local Currency", Category="Beam")
-	FString PriceInLocalCurrency;
+	FString PriceInLocalCurrency = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Iso Currency Symbol", Category="Beam")
-	FString IsoCurrencySymbol;
+	FString IsoCurrencySymbol = {};
 
 	
 

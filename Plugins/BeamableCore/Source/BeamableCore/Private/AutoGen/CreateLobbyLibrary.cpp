@@ -22,9 +22,10 @@ FString UCreateLobbyLibrary::CreateLobbyToJsonString(const UCreateLobby* Seriali
 	return Result;
 }	
 
-UCreateLobby* UCreateLobbyLibrary::Make(FOptionalString Name, FOptionalString Description, FOptionalString Restriction, FOptionalBeamContentId MatchType, FOptionalInt32 PasscodeLength, FOptionalInt32 MaxPlayers, FOptionalArrayOfTag PlayerTags, UObject* Outer)
+UCreateLobby* UCreateLobbyLibrary::Make(FOptionalBool bHasRestriction, FOptionalString Name, FOptionalString Description, FOptionalLobbyRestriction Restriction, FOptionalBeamContentId MatchType, FOptionalInt32 PasscodeLength, FOptionalInt32 MaxPlayers, FOptionalArrayOfTag PlayerTags, UObject* Outer)
 {
 	auto Serializable = NewObject<UCreateLobby>(Outer);
+	Serializable->bHasRestriction = bHasRestriction;
 	Serializable->Name = Name;
 	Serializable->Description = Description;
 	Serializable->Restriction = Restriction;
@@ -36,8 +37,9 @@ UCreateLobby* UCreateLobbyLibrary::Make(FOptionalString Name, FOptionalString De
 	return Serializable;
 }
 
-void UCreateLobbyLibrary::Break(const UCreateLobby* Serializable, FOptionalString& Name, FOptionalString& Description, FOptionalString& Restriction, FOptionalBeamContentId& MatchType, FOptionalInt32& PasscodeLength, FOptionalInt32& MaxPlayers, FOptionalArrayOfTag& PlayerTags)
+void UCreateLobbyLibrary::Break(const UCreateLobby* Serializable, FOptionalBool& bHasRestriction, FOptionalString& Name, FOptionalString& Description, FOptionalLobbyRestriction& Restriction, FOptionalBeamContentId& MatchType, FOptionalInt32& PasscodeLength, FOptionalInt32& MaxPlayers, FOptionalArrayOfTag& PlayerTags)
 {
+	bHasRestriction = Serializable->bHasRestriction;
 	Name = Serializable->Name;
 	Description = Serializable->Description;
 	Restriction = Serializable->Restriction;

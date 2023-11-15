@@ -27,7 +27,6 @@ protected:
 
 	virtual void Tick(float DeltaTime) override
 	{
-		
 	}
 
 	virtual bool IsAllowedToTick() const override
@@ -40,7 +39,6 @@ protected:
 		RETURN_QUICK_DECLARE_CYCLE_STAT(UBeamRuntimeSubsystem, STATGROUP_Tickables);
 	}
 
-
 public:
 	UPROPERTY()
 	UBeamRuntime* Runtime;
@@ -52,7 +50,7 @@ public:
 	 */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsStarted = false;
-	
+
 	/**
 	 * @brief This is just a flag that informs the caller on whether or not this specific subsystem has finished it's initialization flow.
 	 * This should never be set before OnBeamableReady has been called. This may be called at some later point if this subsystem's initialization flow needs to kick-off Operations
@@ -61,55 +59,71 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool bIsReady = false;
 
-	UFUNCTION(Category="Beam")
-	virtual FBeamOperationHandle InitializeWhenUnrealReady();
+	/**
+	 * This is called after unreal is fully initialized but Beamable is not. Basically, this runs after all Engine and GameInstance Subsystems have
+	 * completed running their Initialize function. This callback is useful for reading cached local state and local configuration files.  
+	 */
+	UFUNCTION(BlueprintNativeEvent, Category="Beam")
+	void InitializeWhenUnrealReady(FBeamOperationHandle& ResultOp);
+	virtual void InitializeWhenUnrealReady_Implementation(FBeamOperationHandle& ResultOp);
+
+	/**
+	 * @brief UBeamRuntime::OnStarted runs after all these callbacks have completed. At this point, you can make any non-authenticated request to beamable.
+	 * For example, downloading content at the start of a player session (see UBeamContentSubsystem for an example).
+	 * This is guaranteed to run only once per game-client/server session. Also, for UBeamRuntimeSubsystems running in dedicated servers, this is the last of the callbacks here that will actually run.
+	 * After this runs, UBeamRuntime::OnStarted is invoked and user-level code can run to make non-authenticated requests to beamable (ie: game-specific signup/login flows). 
+	 */
+	UFUNCTION(BlueprintNativeEvent, Category="Beam")
+	void         OnBeamableStarting(FBeamOperationHandle& ResultOp);
+	virtual void OnBeamableStarting_Implementation(FBeamOperationHandle& ResultOp);
 
 	/**
 	 * @brief Called whenever a user authenticates into a user slot.
 	 * The returned operation is added to a list of operations containing all other subsystem's OnUserSignedIn operation.
 	 * We wait for this list of operations to finish and then call OnPostUserSignedIn.
 	 */
-	virtual FBeamOperationHandle OnUserSignedIn(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsFirstAuth);
+	UFUNCTION(BlueprintNativeEvent, Category="Beam")
+	void OnUserSignedIn(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp);
+	virtual void OnUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp);
 	/**
 	 * @brief Called whenever a user signs out of a user slot.
 	 * The returned operation is added to a list of operations containing all other subsystem's OnUserSignedOut operation.
 	 * We wait for this list of operations to finish and then call OnPostUserSignedOut.
 	 */
-	virtual FBeamOperationHandle OnUserSignedOut(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason,
-	                                             const FBeamRealmUser& BeamRealmUser);
+	UFUNCTION(BlueprintNativeEvent, Category="Beam")
+	void OnUserSignedOut(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp);
+	virtual void OnUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp);
 
 	/**
-	 * @brief Called on each BeamRuntimeSubsystem after the OnUserSignedIn operations of ALL BeamRuntimeSubsystems have run to completion (success or otherwise). 
+	 * @brief Called on each BeamRuntimeSubsystem after the OnUserSignedIn operations of ALL BeamRuntimeSubsystems have run to completion (success or otherwise).	 
 	 */
-	UFUNCTION(BlueprintNativeEvent)
-	void OnPostUserSignedIn(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser);
-	virtual void OnPostUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser);
+	UFUNCTION(BlueprintNativeEvent, Category="Beam")
+	void OnPostUserSignedIn(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp);
+	virtual void OnPostUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp);
 
 	/**
 	 * @brief Called on each BeamRuntimeSubsystem after the OnUserSignedOut operations of ALL BeamRuntimeSubsystems have run to completion (success or otherwise). 
 	 */
-	UFUNCTION(BlueprintNativeEvent)
-	void OnPostUserSignedOut(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason,
-	                         const FBeamRealmUser& BeamRealmUser);
-	virtual void OnPostUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason,
-	                                                const FBeamRealmUser& BeamRealmUser);
+	UFUNCTION(BlueprintNativeEvent, Category="Beam")
+	void OnPostUserSignedOut(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle&   ResultOp);
+	virtual void OnPostUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp);
 
+	
+	/**
+	 * @brief Called whenever UBeamRuntime fails its frictionless authentication flow. This is only called if you have automatic frictionless authentication set up.
+	 * By default, this is called after the OnBeamableStarted step ONLY IF we fail to authenticate.
+	 */
+	UFUNCTION(BlueprintNativeEvent, Category="Beam")
+	void         OnFailedUserAuth(const FUserSlot& UserSlot);
+	virtual void OnFailedUserAuth_Implementation(const FUserSlot& UserSlot);
 
 	/**
-	 * @brief Called whenever UBeamRuntime is fully initialized. You can think of this as OnBeginPlay, but for use with Beamable.
+	 * @brief Called whenever a user's websocket connection is lost. This either means that either the Beamable service is unavailable (or had a problem with this particular user's socket)
+	 * OR the player has lost internet access. We don't give you By default, this is called after the OnBeamableStarted step ONLY IF we fail to authenticate.
 	 */
-	UFUNCTION(BlueprintNativeEvent)
-	FBeamOperationHandle OnBeamableReady();
-	virtual FBeamOperationHandle OnBeamableReady_Implementation();
-
-	/**
-	 * @brief Called whenever UBeamRuntime is ready for users to be authenticated into Beamable. This is only called if you disable automatic frictionless authentication in order to control
-	 * when the owner player signs into Beamable in your game. By default, sign in is automatic and you can expect OnBeamableReady to be called when the current local user is signed in and
-	 * ready to make requests to Beamable.
-	 */
-	UFUNCTION(BlueprintNativeEvent)
-	FBeamOperationHandle OnBeamableStarted();
-	virtual FBeamOperationHandle OnBeamableStarted_Implementation();	
+	UFUNCTION(BlueprintNativeEvent, Category="Beam")
+	void         OnUserConnectionLost(const FUserSlot& UserSlot);
+	virtual void OnUserConnectionLost_Implementation(const FUserSlot& UserSlot);
 };
 
 
@@ -131,9 +145,9 @@ class BEAMABLECORERUNTIME_API UBeamRuntimeBlueprintSubsystems : public UGameInst
 		Super::Initialize(Collection);
 		const auto RuntimeSettings = GetDefault<UBeamRuntimeSettings>();
 		for (const auto SubsystemBlueprint : RuntimeSettings->RuntimeSubsystemBlueprints)
-		{						
-			Collection.InitializeDependency(SubsystemBlueprint);			
-		}		
+		{
+			Collection.InitializeDependency(SubsystemBlueprint);
+		}
 
 		if (IsRunningDedicatedServer())
 		{

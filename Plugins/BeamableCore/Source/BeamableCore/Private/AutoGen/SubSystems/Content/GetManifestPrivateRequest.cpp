@@ -28,9 +28,10 @@ void UGetManifestPrivateRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetManifestPrivateRequest* UGetManifestPrivateRequest::Make(FOptionalBeamContentManifestId _Id, UObject* RequestOwner)
+UGetManifestPrivateRequest* UGetManifestPrivateRequest::Make(FOptionalBeamContentManifestId _Id, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetManifestPrivateRequest* Req = NewObject<UGetManifestPrivateRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Id = _Id;

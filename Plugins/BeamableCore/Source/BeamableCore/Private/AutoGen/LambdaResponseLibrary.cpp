@@ -1,0 +1,40 @@
+
+#include "BeamableCore/Public/AutoGen/LambdaResponseLibrary.h"
+
+#include "CoreMinimal.h"
+
+
+FString ULambdaResponseLibrary::LambdaResponseToJsonString(const ULambdaResponse* Serializable, const bool Pretty)
+{
+	FString Result = FString{};
+	if(Pretty)
+	{
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();
+	}
+	else
+	{
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		Serializable->BeamSerialize(JsonSerializer);
+		JsonSerializer->Close();			
+	}
+	return Result;
+}	
+
+ULambdaResponse* ULambdaResponseLibrary::Make(int32 StatusCode, FOptionalString Body, UObject* Outer)
+{
+	auto Serializable = NewObject<ULambdaResponse>(Outer);
+	Serializable->StatusCode = StatusCode;
+	Serializable->Body = Body;
+	
+	return Serializable;
+}
+
+void ULambdaResponseLibrary::Break(const ULambdaResponse* Serializable, int32& StatusCode, FOptionalString& Body)
+{
+	StatusCode = Serializable->StatusCode;
+	Body = Serializable->Body;
+		
+}
+

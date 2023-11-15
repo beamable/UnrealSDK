@@ -29,21 +29,21 @@ void FContentRefreshNotificationMessage::BeamSerializeProperties(TUnrealJsonSeri
 {
 	UBeamJsonUtils::SerializeArray<FString, FString>(TEXT("scopes"), Scopes, Serializer);
 	Serializer->WriteValue(TEXT("delay"), Delay);
-	UBeamJsonUtils::SerializeUObject<FContentRefreshManifest>(TEXT("manifest"), Manifest, Serializer);
+	UBeamJsonUtils::SerializeUStruct<FContentRefreshManifest>(TEXT("manifest"), Manifest, Serializer);
 }
 
 void FContentRefreshNotificationMessage::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeArray<FString, FString>(TEXT("scopes"), Scopes, Serializer);
 	Serializer->WriteValue(TEXT("delay"), Delay);
-	UBeamJsonUtils::SerializeUObject<FContentRefreshManifest>(TEXT("manifest"), Manifest, Serializer);
+	UBeamJsonUtils::SerializeUStruct<FContentRefreshManifest>(TEXT("manifest"), Manifest, Serializer);
 }
 
 void FContentRefreshNotificationMessage::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeArray<FString, FString>(Bag->GetArrayField(TEXT("scopes")), Scopes, OuterOwner);
 	Delay = Bag->GetIntegerField(TEXT("delay"));
-	UBeamJsonUtils::DeserializeUObject(TEXT("manifest"), Bag, Manifest, OuterOwner);
+	UBeamJsonUtils::DeserializeUStruct(TEXT("manifest"), Bag, Manifest, OuterOwner);
 }
 
 void UBeamContentNotifications::Initialize(FSubsystemCollectionBase& Collection)

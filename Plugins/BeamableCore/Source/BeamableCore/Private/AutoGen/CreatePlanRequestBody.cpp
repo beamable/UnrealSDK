@@ -14,6 +14,7 @@ void UCreatePlanRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Seri
 	Serializer->WriteValue(TEXT("platformJBDC"), PlatformJBDC);
 	Serializer->WriteValue(TEXT("mongoHosts"), MongoHosts);
 	UBeamJsonUtils::SerializeArray<URedisShardRequestBody*>(TEXT("redisShards"), RedisShards, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("mongoSrvAddress"), &MongoSrvAddress, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("messageBusAnalytics"), &MessageBusAnalytics, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("messageBusCommon"), &MessageBusCommon, Serializer);
 }
@@ -27,6 +28,7 @@ void UCreatePlanRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 	Serializer->WriteValue(TEXT("platformJBDC"), PlatformJBDC);
 	Serializer->WriteValue(TEXT("mongoHosts"), MongoHosts);
 	UBeamJsonUtils::SerializeArray<URedisShardRequestBody*>(TEXT("redisShards"), RedisShards, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("mongoSrvAddress"), &MongoSrvAddress, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("messageBusAnalytics"), &MessageBusAnalytics, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("messageBusCommon"), &MessageBusCommon, Serializer);		
 }
@@ -40,6 +42,7 @@ void UCreatePlanRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObj
 	PlatformJBDC = Bag->GetStringField(TEXT("platformJBDC"));
 	MongoHosts = Bag->GetStringField(TEXT("mongoHosts"));
 	UBeamJsonUtils::DeserializeArray<URedisShardRequestBody*>(Bag->GetArrayField(TEXT("redisShards")), RedisShards, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FString>("mongoSrvAddress", Bag, MongoSrvAddress, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("messageBusAnalytics", Bag, MessageBusAnalytics, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("messageBusCommon", Bag, MessageBusCommon, OuterOwner);
 }

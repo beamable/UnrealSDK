@@ -27,9 +27,10 @@ void UPutPasscodeRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutPasscodeRequest* UPutPasscodeRequest::Make(FOptionalString _Passcode, FOptionalArrayOfTag _Tags, UObject* RequestOwner)
+UPutPasscodeRequest* UPutPasscodeRequest::Make(FOptionalString _Passcode, FOptionalArrayOfTag _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutPasscodeRequest* Req = NewObject<UPutPasscodeRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

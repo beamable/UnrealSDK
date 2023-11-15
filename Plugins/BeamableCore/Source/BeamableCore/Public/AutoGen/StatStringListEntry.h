@@ -8,15 +8,15 @@
 #include "StatStringListEntry.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UStatStringListEntry : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UStatStringListEntry : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="K", Category="Beam")
-	FString K;
+	FString K = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="V", Category="Beam")
-	FString V;
+	FString V = {};
 
 	
 

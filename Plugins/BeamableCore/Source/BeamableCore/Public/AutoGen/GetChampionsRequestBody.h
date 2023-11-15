@@ -8,15 +8,15 @@
 #include "GetChampionsRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGetChampionsRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGetChampionsRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id", Category="Beam")
-	FString TournamentId;
+	FString TournamentId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cycles", Category="Beam")
-	int32 Cycles;
+	int32 Cycles = {};
 
 	
 

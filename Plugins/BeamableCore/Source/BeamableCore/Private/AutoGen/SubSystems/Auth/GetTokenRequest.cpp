@@ -26,9 +26,10 @@ void UGetTokenRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetTokenRequest* UGetTokenRequest::Make(FString _Token, UObject* RequestOwner)
+UGetTokenRequest* UGetTokenRequest::Make(FString _Token, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetTokenRequest* Req = NewObject<UGetTokenRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Token = _Token;

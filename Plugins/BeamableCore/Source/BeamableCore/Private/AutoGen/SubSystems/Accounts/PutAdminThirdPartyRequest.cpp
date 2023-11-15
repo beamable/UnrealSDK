@@ -27,9 +27,10 @@ void UPutAdminThirdPartyRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutAdminThirdPartyRequest* UPutAdminThirdPartyRequest::Make(FBeamAccountId _ObjectId, int64 _FromAccountId, UThirdPartyAssociation* _ThirdParty, UObject* RequestOwner)
+UPutAdminThirdPartyRequest* UPutAdminThirdPartyRequest::Make(FBeamAccountId _ObjectId, int64 _FromAccountId, UThirdPartyAssociation* _ThirdParty, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutAdminThirdPartyRequest* Req = NewObject<UPutAdminThirdPartyRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

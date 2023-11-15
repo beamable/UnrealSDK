@@ -12,45 +12,45 @@
 #include "TokenRequestWrapper.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UTokenRequestWrapper : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UTokenRequestWrapper : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Grant Type", Category="Beam")
-	FString GrantType;
+	FString GrantType = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Customer Scoped", Category="Beam")
-	FOptionalBool bCustomerScoped;
+	FOptionalBool bCustomerScoped = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Device Id", Category="Beam")
-	FOptionalString DeviceId;
+	FOptionalString DeviceId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Provider Service", Category="Beam")
-	FOptionalString ProviderService;
+	FOptionalString ProviderService = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Token", Category="Beam")
-	FOptionalString Token;
+	FOptionalString Token = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Code", Category="Beam")
-	FOptionalString Code;
+	FOptionalString Code = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="External Token", Category="Beam")
-	FOptionalString ExternalToken;
+	FOptionalString ExternalToken = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Challenge Solution", Category="Beam")
-	FOptionalChallengeSolution ChallengeSolution;
+	FOptionalChallengeSolution ChallengeSolution = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Provider Namespace", Category="Beam")
-	FOptionalString ProviderNamespace;
+	FOptionalString ProviderNamespace = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Redirect Uri", Category="Beam")
-	FOptionalString RedirectUri;
+	FOptionalString RedirectUri = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Third Party", Category="Beam")
-	FOptionalString ThirdParty;
+	FOptionalString ThirdParty = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Context", Category="Beam")
-	FOptionalContextInfo Context;
+	FOptionalContextInfo Context = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Refresh Token", Category="Beam")
-	FOptionalString RefreshToken;
+	FOptionalString RefreshToken = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Username", Category="Beam")
-	FOptionalString Username;
+	FOptionalString Username = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Client Id", Category="Beam")
-	FOptionalString ClientId;
+	FOptionalString ClientId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Password", Category="Beam")
-	FOptionalString Password;
+	FOptionalString Password = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scope", Category="Beam")
-	FOptionalArrayOfString Scope;
+	FOptionalArrayOfString Scope = {};
 
 	
 

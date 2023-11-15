@@ -26,9 +26,10 @@ void UBasicMailGetMailRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UBasicMailGetMailRequest* UBasicMailGetMailRequest::Make(int64 _Mid, UObject* RequestOwner)
+UBasicMailGetMailRequest* UBasicMailGetMailRequest::Make(int64 _Mid, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBasicMailGetMailRequest* Req = NewObject<UBasicMailGetMailRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Mid = _Mid;

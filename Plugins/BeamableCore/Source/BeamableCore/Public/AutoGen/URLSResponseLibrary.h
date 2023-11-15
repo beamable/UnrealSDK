@@ -17,8 +17,8 @@ public:
 	static FString URLSResponseToJsonString(const UURLSResponse* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make URLSResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UURLSResponse* Make(TArray<UURLResponse*> Response, UObject* Outer);
+	static UURLSResponse* Make(TArray<UCloudsavingBasicURLResponse*> Response, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break URLSResponse", meta=(NativeBreakFunc))
-	static void Break(const UURLSResponse* Serializable, TArray<UURLResponse*>& Response);
+	static void Break(const UURLSResponse* Serializable, TArray<UCloudsavingBasicURLResponse*>& Response);
 };

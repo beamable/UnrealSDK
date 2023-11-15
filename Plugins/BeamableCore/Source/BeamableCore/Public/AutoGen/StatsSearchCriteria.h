@@ -8,17 +8,17 @@
 #include "StatsSearchCriteria.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UStatsSearchCriteria : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UStatsSearchCriteria : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stat", Category="Beam")
-	FString Stat;
+	FString Stat = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Rel", Category="Beam")
-	FString Rel;
+	FString Rel = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Value", Category="Beam")
-	FOptionalString Value;
+	FOptionalString Value = {};
 
 	
 

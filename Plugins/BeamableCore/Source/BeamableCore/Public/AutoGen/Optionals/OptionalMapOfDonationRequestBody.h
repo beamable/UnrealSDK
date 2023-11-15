@@ -8,12 +8,12 @@
 
 // Has Native Make/Break require static blueprint pure functions to present as nodes that
 // don't require an execution pin connection. This is super relevant for Blueprint UX. 
-USTRUCT(BlueprintType, meta=(HasNativeMake="BeamableCore.OptionalMapOfDonationRequestBodyLibrary.MakeOptional", BeamOptionalType="TMap<FString, UDonationRequestBody*>"))
+USTRUCT(BlueprintType, meta=(HasNativeMake="/Script/BeamableCore.OptionalMapOfDonationRequestBodyLibrary.MakeOptional", BeamOptionalType="TMap<FString, UDonationRequestBody*>"))
 struct BEAMABLECORE_API FOptionalMapOfDonationRequestBody : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TMap<FString, UDonationRequestBody*> Val;
 
 	FOptionalMapOfDonationRequestBody();

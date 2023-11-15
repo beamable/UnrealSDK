@@ -8,17 +8,17 @@
 #include "PasswordUpdateConfirmation.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UPasswordUpdateConfirmation : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UPasswordUpdateConfirmation : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Code", Category="Beam")
-	FString Code;
+	FString Code = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="New Password", Category="Beam")
-	FString NewPassword;
+	FString NewPassword = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Email", Category="Beam")
-	FOptionalString Email;
+	FOptionalString Email = {};
 
 	
 

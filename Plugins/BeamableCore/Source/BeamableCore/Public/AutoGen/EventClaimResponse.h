@@ -8,15 +8,15 @@
 #include "EventClaimResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UEventClaimResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API UEventClaimResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="View", Category="Beam")
-	UEventPlayerStateView* View;
+	UEventPlayerStateView* View = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Game Rsp Json", Category="Beam")
-	FString GameRspJson;
+	FString GameRspJson = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

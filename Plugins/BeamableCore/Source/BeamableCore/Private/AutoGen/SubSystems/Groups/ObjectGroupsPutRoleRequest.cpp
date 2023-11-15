@@ -27,9 +27,10 @@ void UObjectGroupsPutRoleRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UObjectGroupsPutRoleRequest* UObjectGroupsPutRoleRequest::Make(int64 _ObjectId, int64 _GamerTag, FString _Role, FOptionalInt64 _SubGroup, UObject* RequestOwner)
+UObjectGroupsPutRoleRequest* UObjectGroupsPutRoleRequest::Make(int64 _ObjectId, int64 _GamerTag, FString _Role, FOptionalInt64 _SubGroup, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UObjectGroupsPutRoleRequest* Req = NewObject<UObjectGroupsPutRoleRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

@@ -8,17 +8,17 @@
 #include "DatabaseMeasurement.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UDatabaseMeasurement : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UDatabaseMeasurement : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
-	FString Name;
+	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Units", Category="Beam")
-	FString Units;
+	FString Units = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Data Points", Category="Beam")
-	TArray<UDataPoint*> DataPoints;
+	TArray<UDataPoint*> DataPoints = {};
 
 	
 

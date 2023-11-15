@@ -27,9 +27,10 @@ void UPostQueryLogsResultRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostQueryLogsResultRequest* UPostQueryLogsResultRequest::Make(FString _QueryId, UObject* RequestOwner)
+UPostQueryLogsResultRequest* UPostQueryLogsResultRequest::Make(FString _QueryId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostQueryLogsResultRequest* Req = NewObject<UPostQueryLogsResultRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

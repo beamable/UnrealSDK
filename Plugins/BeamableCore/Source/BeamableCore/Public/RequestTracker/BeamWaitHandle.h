@@ -36,7 +36,7 @@ struct FBeamWaitHandle
 	UBeamBackend* BeamBackend = nullptr;
 
 	EWaitHandleMode Mode;
-	EBeamRequestStatus Status;
+	EBeamAsyncStatus Status;
 
 	friend bool operator==(const FBeamWaitHandle& Lhs, const FBeamWaitHandle& RHS)
 	{

@@ -8,13 +8,13 @@
 #include "LeaderboardMembershipRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API ULeaderboardMembershipRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API ULeaderboardMembershipRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
-	int64 PlayerId;
+	int64 PlayerId = {};
 
 	
 

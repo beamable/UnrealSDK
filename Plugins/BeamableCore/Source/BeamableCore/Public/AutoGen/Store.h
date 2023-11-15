@@ -11,25 +11,25 @@
 #include "Store.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UStore : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UStore : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
-	FString Symbol;
+	FString Symbol = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Listings", Category="Beam")
-	TArray<UListing*> Listings;
+	TArray<UListing*> Listings = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Show Inactive Listings", Category="Beam")
-	FOptionalBool bShowInactiveListings;
+	FOptionalBool bShowInactiveListings = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Active Listing Limit", Category="Beam")
-	FOptionalInt32 ActiveListingLimit;
+	FOptionalInt32 ActiveListingLimit = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Choose", Category="Beam")
-	FOptionalInt32 Choose;
+	FOptionalInt32 Choose = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Refresh Time", Category="Beam")
-	FOptionalInt32 RefreshTime;
+	FOptionalInt32 RefreshTime = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Title", Category="Beam")
-	FOptionalString Title;
+	FOptionalString Title = {};
 
 	
 

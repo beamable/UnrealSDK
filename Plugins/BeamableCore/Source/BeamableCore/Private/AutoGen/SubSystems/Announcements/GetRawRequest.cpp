@@ -23,9 +23,10 @@ void UGetRawRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetRawRequest* UGetRawRequest::Make(int64 _ObjectId, UObject* RequestOwner)
+UGetRawRequest* UGetRawRequest::Make(int64 _ObjectId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetRawRequest* Req = NewObject<UGetRawRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

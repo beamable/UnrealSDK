@@ -27,9 +27,10 @@ void UPostCouponPurchaseVerifyRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostCouponPurchaseVerifyRequest* UPostCouponPurchaseVerifyRequest::Make(FString _Receipt, UObject* RequestOwner)
+UPostCouponPurchaseVerifyRequest* UPostCouponPurchaseVerifyRequest::Make(FString _Receipt, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostCouponPurchaseVerifyRequest* Req = NewObject<UPostCouponPurchaseVerifyRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	

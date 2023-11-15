@@ -28,9 +28,10 @@ void UGetAnnouncementsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetAnnouncementsRequest* UGetAnnouncementsRequest::Make(int64 _ObjectId, FOptionalBool _bIncludeDeleted, UObject* RequestOwner)
+UGetAnnouncementsRequest* UGetAnnouncementsRequest::Make(int64 _ObjectId, FOptionalBool _bIncludeDeleted, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetAnnouncementsRequest* Req = NewObject<UGetAnnouncementsRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->ObjectId = _ObjectId;

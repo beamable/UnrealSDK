@@ -12,7 +12,7 @@ END_DEFINE_SPEC(FBeamJsonUtilsSpec)
 
 void FBeamJsonUtilsSpec::Define()
 {
-	struct FTestInt : public FBeamJsonSerializable
+	struct FTestInt : public FBeamJsonSerializableUStruct
 	{
 		int a;
 
@@ -151,7 +151,7 @@ void FBeamJsonUtilsSpec::Define()
 
 			FString OutJson;
 			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
-			UBeamJsonUtils::SerializeUObject<FTestInt>(Int, JsonSerializer);
+			UBeamJsonUtils::SerializeUStruct<FTestInt>(Int, JsonSerializer);
 			JsonSerializer->Close();
 
 			// Get a condensed string so we can easily compare with the condensed string we generate.
@@ -210,7 +210,7 @@ void FBeamJsonUtilsSpec::Define()
 
 			FString OutJson;
 			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
-			asd->BeamSerialize(JsonSerializer);
+			UBeamJsonUtils::SerializeUObject(asd, JsonSerializer);
 			JsonSerializer->Close();
 
 			// Get a condensed string so we can easily compare with the condensed string we generate.
@@ -245,8 +245,8 @@ void FBeamJsonUtilsSpec::Define()
 
 			FString OutJson;
 			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
-			asd->BeamSerialize(JsonSerializer);
-			JsonSerializer->Close();
+			UBeamJsonUtils::SerializeUObject(asd, JsonSerializer);
+			JsonSerializer->Close();			
 
 			// Get a condensed string so we can easily compare with the condensed string we generate.
 			const FString ExpectedTemp =
@@ -366,7 +366,7 @@ void FBeamJsonUtilsSpec::Define()
 
 		It("should output a regular JSON Field (Optional FBeamJsonSerializable with Value)", [this]()
 		{
-			struct FTest : FBeamJsonSerializable
+			struct FTest : FBeamJsonSerializableUStruct
 			{
 				int a;
 				FString b;
@@ -475,7 +475,7 @@ void FBeamJsonUtilsSpec::Define()
 
 			// Test array with BeamJsonSerializable
 			{
-				struct FTest : FBeamJsonSerializable
+				struct FTest : FBeamJsonSerializableUStruct
 				{
 					int a;
 					FString b;
@@ -657,7 +657,7 @@ void FBeamJsonUtilsSpec::Define()
 
 		It("should output a serialized JSON Object with an Array of FBeamJsonSerializable", [this]()
 		{
-			struct FTest : FBeamJsonSerializable
+			struct FTest : FBeamJsonSerializableUStruct
 			{
 				int a;
 				FString b;
@@ -807,7 +807,7 @@ void FBeamJsonUtilsSpec::Define()
 
 		It("should output a serialized JSON Map of FBeamJsonSerializable", [this]()
 		{
-			struct FTest : FBeamJsonSerializable
+			struct FTest : FBeamJsonSerializableUStruct
 			{
 				int a;
 				FString b;
@@ -860,7 +860,7 @@ void FBeamJsonUtilsSpec::Define()
 
 		It("should output a serialized JSON Map of FBeamJsonSerializable with an Array in it", [this]()
 		{
-			struct FTest : FBeamJsonSerializable
+			struct FTest : FBeamJsonSerializableUStruct
 			{
 				int a;
 				FString b;
@@ -1103,7 +1103,7 @@ void FBeamJsonUtilsSpec::Define()
 
 		It("should deserialize a JSON Object as an Optional UObject with nested properties", [this]()
 		{
-			struct FTest : FBeamJsonSerializable
+			struct FTest : FBeamJsonSerializableUStruct
 			{
 				FOptionalMockNestedJsonSerializable opt;
 
@@ -1163,7 +1163,7 @@ void FBeamJsonUtilsSpec::Define()
 				}
 			};
 
-			struct FTest : FBeamJsonSerializable
+			struct FTest : FBeamJsonSerializableUStruct
 			{
 				FTestOptionalInt a;
 
@@ -1186,7 +1186,7 @@ void FBeamJsonUtilsSpec::Define()
 				}
 			};
 
-			struct FTestBeamCid : FBeamJsonSerializable
+			struct FTestBeamCid : FBeamJsonSerializableUStruct
 			{
 				FTestOptionalBeamCid a;
 
@@ -1228,7 +1228,7 @@ void FBeamJsonUtilsSpec::Define()
 				}
 			};
 
-			struct FTest : FBeamJsonSerializable
+			struct FTest : FBeamJsonSerializableUStruct
 			{
 				FTestOptionalInt a;
 
@@ -1251,7 +1251,7 @@ void FBeamJsonUtilsSpec::Define()
 				}
 			};
 
-			struct FTestBeamCid : FBeamJsonSerializable
+			struct FTestBeamCid : FBeamJsonSerializableUStruct
 			{
 				FTestOptionalBeamCid a;
 
@@ -1283,7 +1283,7 @@ void FBeamJsonUtilsSpec::Define()
 
 		It("should deserialize a JSON Object as an Optional FBeamJsonSerializable with Set Value", [this]()
 		{
-			struct FTestData : FBeamJsonSerializable
+			struct FTestData : FBeamJsonSerializableUStruct
 			{
 				int a;
 				FString b;
@@ -1323,7 +1323,7 @@ void FBeamJsonUtilsSpec::Define()
 				}
 			};
 
-			struct FTest : FBeamJsonSerializable
+			struct FTest : FBeamJsonSerializableUStruct
 			{
 				FTestOptional a;
 
@@ -1367,7 +1367,7 @@ void FBeamJsonUtilsSpec::Define()
 					}
 				};
 
-				struct FTest : FBeamJsonSerializable
+				struct FTest : FBeamJsonSerializableUStruct
 				{
 					FOptionalArrayInt a;
 
@@ -1407,7 +1407,7 @@ void FBeamJsonUtilsSpec::Define()
 					}
 				};
 
-				struct FTestBeamCid : FBeamJsonSerializable
+				struct FTestBeamCid : FBeamJsonSerializableUStruct
 				{
 					FOptionalArrayBeamCid a;
 
@@ -1434,7 +1434,7 @@ void FBeamJsonUtilsSpec::Define()
 
 			// Test deserialize optional TArray<FBeamJsonSerializable>
 			{
-				struct FTestData : FBeamJsonSerializable
+				struct FTestData : FBeamJsonSerializableUStruct
 				{
 					int a;
 					FString b;
@@ -1474,7 +1474,7 @@ void FBeamJsonUtilsSpec::Define()
 					}
 				};
 
-				struct FTest : FBeamJsonSerializable
+				struct FTest : FBeamJsonSerializableUStruct
 				{
 					FTestOptional a;
 
@@ -1527,7 +1527,7 @@ void FBeamJsonUtilsSpec::Define()
 					}
 				};
 
-				struct FTest : FBeamJsonSerializable
+				struct FTest : FBeamJsonSerializableUStruct
 				{
 					FOptionalMapOfInt a;
 
@@ -1571,7 +1571,7 @@ void FBeamJsonUtilsSpec::Define()
 					}
 				};
 
-				struct FTest : FBeamJsonSerializable
+				struct FTest : FBeamJsonSerializableUStruct
 				{
 					FOptionalMapOfBeamCid a;
 
@@ -1602,7 +1602,7 @@ void FBeamJsonUtilsSpec::Define()
 
 			// Test deserialize optional TArray<FBeamJsonSerializable>
 			{
-				struct FTestData : FBeamJsonSerializable
+				struct FTestData : FBeamJsonSerializableUStruct
 				{
 					int a;
 					FString b;
@@ -1642,7 +1642,7 @@ void FBeamJsonUtilsSpec::Define()
 					}
 				};
 
-				struct FTest : FBeamJsonSerializable
+				struct FTest : FBeamJsonSerializableUStruct
 				{
 					FTestOptional a;
 
@@ -1902,7 +1902,7 @@ void FBeamJsonUtilsSpec::Define()
 
 		It("should deserialize a JSON Array as an TArray<> of primitives or semantic types", [this]()
 		{
-			struct FTest : FBeamJsonSerializable
+			struct FTest : FBeamJsonSerializableUStruct
 			{
 				TArray<int> a;
 
@@ -1924,7 +1924,7 @@ void FBeamJsonUtilsSpec::Define()
 			TestTrue("Deserialized idx 1 of Int-Array correctly", TestOut.a[1] == -1);
 			TestTrue("Deserialized idx 2 of Int-Array correctly", TestOut.a[2] == 0);
 
-			struct FTestBeamCid : FBeamJsonSerializable
+			struct FTestBeamCid : FBeamJsonSerializableUStruct
 			{
 				TArray<FBeamCid> a;
 
@@ -1944,7 +1944,7 @@ void FBeamJsonUtilsSpec::Define()
 
 		It("should deserialize a JSON Array as an TArray<> of FBeamJsonSerializable", [this]()
 		{
-			struct FTestData : FBeamJsonSerializable
+			struct FTestData : FBeamJsonSerializableUStruct
 			{
 				int a;
 				FString b;
@@ -1964,7 +1964,7 @@ void FBeamJsonUtilsSpec::Define()
 				}
 			};
 
-			struct FTest : FBeamJsonSerializable
+			struct FTest : FBeamJsonSerializableUStruct
 			{
 				TArray<FTestData> a;
 
@@ -2009,7 +2009,7 @@ void FBeamJsonUtilsSpec::Define()
 				};
 
 
-				struct FTest : FBeamJsonSerializable
+				struct FTest : FBeamJsonSerializableUStruct
 				{
 					TArray<FBeamArrayOfInt> a;
 
@@ -2033,7 +2033,7 @@ void FBeamJsonUtilsSpec::Define()
 
 			// Test with wrapped array of semantic types
 			{
-				struct FTest : FBeamJsonSerializable
+				struct FTest : FBeamJsonSerializableUStruct
 				{
 					TArray<FBeamArrayOfBeamCid> a;
 
@@ -2057,7 +2057,7 @@ void FBeamJsonUtilsSpec::Define()
 
 			// Test with wrapped array of non-primitives
 			{
-				struct FTestData : public FBeamJsonSerializable
+				struct FTestData : public FBeamJsonSerializableUStruct
 				{
 					int a;
 
@@ -2078,7 +2078,7 @@ void FBeamJsonUtilsSpec::Define()
 				};
 
 
-				struct FTest : FBeamJsonSerializable
+				struct FTest : FBeamJsonSerializableUStruct
 				{
 					TArray<FBeamArrayOfTestData> a;
 
@@ -2112,7 +2112,7 @@ void FBeamJsonUtilsSpec::Define()
 		{
 			// Test with wrapped array of primitives
 			{
-				struct FTest : FBeamJsonSerializable
+				struct FTest : FBeamJsonSerializableUStruct
 				{
 					TArray<FBeamMapOfInt> a;
 
@@ -2136,7 +2136,7 @@ void FBeamJsonUtilsSpec::Define()
 
 			// Test with wrapped array of semantic types
 			{
-				struct FTest : FBeamJsonSerializable
+				struct FTest : FBeamJsonSerializableUStruct
 				{
 					TArray<FBeamMapOfBeamCid> a;
 
@@ -2160,7 +2160,7 @@ void FBeamJsonUtilsSpec::Define()
 
 			// Test with wrapped array of non-primitives
 			{
-				struct FTestData : public FBeamJsonSerializable
+				struct FTestData : public FBeamJsonSerializableUStruct
 				{
 					int a;
 
@@ -2201,7 +2201,7 @@ void FBeamJsonUtilsSpec::Define()
 				};
 
 
-				struct FTest : FBeamJsonSerializable
+				struct FTest : FBeamJsonSerializableUStruct
 				{
 					TArray<FBeamMapOfTestData> a;
 
@@ -2239,7 +2239,7 @@ void FBeamJsonUtilsSpec::Define()
 
 		It("should deserialize a JSON Object as an TMap<FString,> of primitives or semantic types", [this]()
 		{
-			struct FTest : FBeamJsonSerializable
+			struct FTest : FBeamJsonSerializableUStruct
 			{
 				TMap<FString, int> a;
 				TMap<FString, FString> b;
@@ -2291,7 +2291,7 @@ void FBeamJsonUtilsSpec::Define()
 		{
 			// Test primitives
 			{
-				struct FTest : FBeamJsonSerializable
+				struct FTest : FBeamJsonSerializableUStruct
 				{
 					TMap<FString, FBeamArrayOfInt> a;
 
@@ -2321,7 +2321,7 @@ void FBeamJsonUtilsSpec::Define()
 
 			// Test semantic types
 			{
-				struct FTest : FBeamJsonSerializable
+				struct FTest : FBeamJsonSerializableUStruct
 				{
 					TMap<FString, FBeamArrayOfBeamCid> a;
 
@@ -2361,7 +2361,7 @@ void FBeamJsonUtilsSpec::Define()
 					}
 				};
 
-				struct FTest : public FBeamJsonSerializable
+				struct FTest : public FBeamJsonSerializableUStruct
 				{
 					TMap<FString, FBeamArrayOfTestData> a;
 
@@ -2400,7 +2400,7 @@ void FBeamJsonUtilsSpec::Define()
 		{
 			// Test primitives
 			{
-				struct FTestMapOfInt : FBeamJsonSerializable
+				struct FTestMapOfInt : FBeamJsonSerializableUStruct
 				{
 					TMap<FString, FBeamMapOfInt> a;
 
@@ -2430,7 +2430,7 @@ void FBeamJsonUtilsSpec::Define()
 
 			// Test semantic types
 			{
-				struct FTestMapOfInt : FBeamJsonSerializable
+				struct FTestMapOfInt : FBeamJsonSerializableUStruct
 				{
 					TMap<FString, FBeamMapOfBeamCid> a;
 
@@ -2480,7 +2480,7 @@ void FBeamJsonUtilsSpec::Define()
 					}
 				};
 
-				struct FTestMapOfTestInt : public FBeamJsonSerializable
+				struct FTestMapOfTestInt : public FBeamJsonSerializableUStruct
 				{
 					TMap<FString, FBeamMapOfTestInt> a;
 
@@ -2528,7 +2528,7 @@ void FBeamJsonUtilsSpec::Define()
 		{
 			// Test with non-primitives
 			{
-				struct FTestData : FBeamJsonSerializable
+				struct FTestData : FBeamJsonSerializableUStruct
 				{
 					int a;
 					FString b;
@@ -2550,7 +2550,7 @@ void FBeamJsonUtilsSpec::Define()
 					}
 				};
 
-				struct FTest : FBeamJsonSerializable
+				struct FTest : FBeamJsonSerializableUStruct
 				{
 					TMap<FString, int> a;
 					TMap<FString, FString> b;

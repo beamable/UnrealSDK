@@ -8,17 +8,17 @@
 #include "LeaderboardListResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API ULeaderboardListResponse : public UObject, public FBeamJsonSerializable, public IBeamBaseResponseBodyInterface
+class BEAMABLECORE_API ULeaderboardListResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Total", Category="Beam")
-	int32 Total;
+	int32 Total = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Offset", Category="Beam")
-	int32 Offset;
+	int32 Offset = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name List", Category="Beam")
-	TArray<FString> NameList;
+	TArray<FString> NameList = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

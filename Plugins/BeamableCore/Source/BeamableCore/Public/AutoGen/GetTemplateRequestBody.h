@@ -8,15 +8,15 @@
 #include "GetTemplateRequestBody.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLECORE_API UGetTemplateRequestBody : public UObject, public FBeamJsonSerializable
+class BEAMABLECORE_API UGetTemplateRequestBody : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Template Name", Category="Beam")
-	FString TemplateName;
+	FString TemplateName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Gamer Tag", Category="Beam")
-	int64 GamerTag;
+	int64 GamerTag = {};
 
 	
 

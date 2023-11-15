@@ -27,9 +27,10 @@ void UPostSteamPurchaseCancelRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostSteamPurchaseCancelRequest* UPostSteamPurchaseCancelRequest::Make(int64 _Txid, UObject* RequestOwner)
+UPostSteamPurchaseCancelRequest* UPostSteamPurchaseCancelRequest::Make(int64 _Txid, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostSteamPurchaseCancelRequest* Req = NewObject<UPostSteamPurchaseCancelRequest>(RequestOwner);
+	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	
