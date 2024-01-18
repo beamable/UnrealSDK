@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "..\..\..\..\BeamableCore\Public\Content\BeamContentCache.h"
+#include "../../../../BeamableCore/Public/Content/BeamContentCache.h"
 #include "AutoGen/SubSystems/BeamContentApi.h"
 #include "Content/BeamContentObject.h"
 #include "GameFramework/SaveGame.h"
@@ -45,6 +45,9 @@ class BEAMABLECORERUNTIME_API UBeamContentSubsystem : public UBeamRuntimeSubsyst
 
 	UPROPERTY()
 	TArray<UClass*> AllContentTypes;
+
+	UPROPERTY()
+	TMap<FString, UClass*> ContentTypeStringToContentClass;
 
 public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;

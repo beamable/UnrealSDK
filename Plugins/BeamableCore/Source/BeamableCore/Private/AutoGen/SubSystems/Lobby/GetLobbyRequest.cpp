@@ -9,7 +9,7 @@ void UGetLobbyRequest::BuildVerb(FString& VerbString) const
 void UGetLobbyRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/api/lobbies/{id}");
-	Route = Route.Replace(TEXT("{id}"), *Id.ToString(EGuidFormats::DigitsLower));
+	Route = Route.Replace(TEXT("{id}"), *Id.ToString(EGuidFormats::DigitsWithHyphensLower));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);

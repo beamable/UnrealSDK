@@ -9,20 +9,20 @@ FString UTicketLibrary::TicketToJsonString(const UTicket* Serializable, const bo
 	FString Result = FString{};
 	if(Pretty)
 	{
-		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();
 	}
 	else
 	{
-		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();			
 	}
 	return Result;
 }	
 
-UTicket* UTicketLibrary::Make(FOptionalBool bWatchOnlineStatus, FOptionalString TicketId, FOptionalString Status, FOptionalString Created, FOptionalString Expires, FOptionalBeamContentId MatchType, FOptionalString MatchId, FOptionalString Team, FOptionalInt32 Priority, FOptionalString PartyId, FOptionalArrayOfString Players, FOptionalMapOfString StringProperties, FOptionalMapOfDouble NumberProperties, UObject* Outer)
+UTicket* UTicketLibrary::Make(FOptionalBool bWatchOnlineStatus, FOptionalString TicketId, FOptionalString Status, FOptionalString Created, FOptionalString Expires, FOptionalBeamContentId MatchType, FOptionalString MatchId, FOptionalString Team, FOptionalInt32 Priority, FOptionalString PartyId, FOptionalArrayOfBeamGamerTag Players, FOptionalMapOfString StringProperties, FOptionalMapOfDouble NumberProperties, UObject* Outer)
 {
 	auto Serializable = NewObject<UTicket>(Outer);
 	Serializable->bWatchOnlineStatus = bWatchOnlineStatus;
@@ -42,7 +42,7 @@ UTicket* UTicketLibrary::Make(FOptionalBool bWatchOnlineStatus, FOptionalString 
 	return Serializable;
 }
 
-void UTicketLibrary::Break(const UTicket* Serializable, FOptionalBool& bWatchOnlineStatus, FOptionalString& TicketId, FOptionalString& Status, FOptionalString& Created, FOptionalString& Expires, FOptionalBeamContentId& MatchType, FOptionalString& MatchId, FOptionalString& Team, FOptionalInt32& Priority, FOptionalString& PartyId, FOptionalArrayOfString& Players, FOptionalMapOfString& StringProperties, FOptionalMapOfDouble& NumberProperties)
+void UTicketLibrary::Break(const UTicket* Serializable, FOptionalBool& bWatchOnlineStatus, FOptionalString& TicketId, FOptionalString& Status, FOptionalString& Created, FOptionalString& Expires, FOptionalBeamContentId& MatchType, FOptionalString& MatchId, FOptionalString& Team, FOptionalInt32& Priority, FOptionalString& PartyId, FOptionalArrayOfBeamGamerTag& Players, FOptionalMapOfString& StringProperties, FOptionalMapOfDouble& NumberProperties)
 {
 	bWatchOnlineStatus = Serializable->bWatchOnlineStatus;
 	TicketId = Serializable->TicketId;

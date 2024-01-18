@@ -9,20 +9,20 @@ FString UTeamLibrary::TeamToJsonString(const UTeam* Serializable, const bool Pre
 	FString Result = FString{};
 	if(Pretty)
 	{
-		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();
 	}
 	else
 	{
-		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();			
 	}
 	return Result;
 }	
 
-UTeam* UTeamLibrary::Make(FOptionalString Name, FOptionalArrayOfString Players, UObject* Outer)
+UTeam* UTeamLibrary::Make(FOptionalString Name, FOptionalArrayOfBeamGamerTag Players, UObject* Outer)
 {
 	auto Serializable = NewObject<UTeam>(Outer);
 	Serializable->Name = Name;
@@ -31,7 +31,7 @@ UTeam* UTeamLibrary::Make(FOptionalString Name, FOptionalArrayOfString Players, 
 	return Serializable;
 }
 
-void UTeamLibrary::Break(const UTeam* Serializable, FOptionalString& Name, FOptionalArrayOfString& Players)
+void UTeamLibrary::Break(const UTeam* Serializable, FOptionalString& Name, FOptionalArrayOfBeamGamerTag& Players)
 {
 	Name = Serializable->Name;
 	Players = Serializable->Players;

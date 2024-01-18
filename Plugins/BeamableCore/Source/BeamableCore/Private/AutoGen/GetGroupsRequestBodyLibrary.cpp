@@ -9,20 +9,20 @@ FString UGetGroupsRequestBodyLibrary::GetGroupsRequestBodyToJsonString(const UGe
 	FString Result = FString{};
 	if(Pretty)
 	{
-		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();
 	}
 	else
 	{
-		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();			
 	}
 	return Result;
 }	
 
-UGetGroupsRequestBody* UGetGroupsRequestBodyLibrary::Make(FString TournamentId, FOptionalInt32 Max, FOptionalInt64 Focus, FOptionalInt32 Cycle, FOptionalInt32 From, UObject* Outer)
+UGetGroupsRequestBody* UGetGroupsRequestBodyLibrary::Make(FString TournamentId, FOptionalInt32 Max, FOptionalInt64 Focus, FOptionalInt32 Cycle, FOptionalInt32 From, FOptionalString ContentId, UObject* Outer)
 {
 	auto Serializable = NewObject<UGetGroupsRequestBody>(Outer);
 	Serializable->TournamentId = TournamentId;
@@ -30,17 +30,19 @@ UGetGroupsRequestBody* UGetGroupsRequestBodyLibrary::Make(FString TournamentId, 
 	Serializable->Focus = Focus;
 	Serializable->Cycle = Cycle;
 	Serializable->From = From;
+	Serializable->ContentId = ContentId;
 	
 	return Serializable;
 }
 
-void UGetGroupsRequestBodyLibrary::Break(const UGetGroupsRequestBody* Serializable, FString& TournamentId, FOptionalInt32& Max, FOptionalInt64& Focus, FOptionalInt32& Cycle, FOptionalInt32& From)
+void UGetGroupsRequestBodyLibrary::Break(const UGetGroupsRequestBody* Serializable, FString& TournamentId, FOptionalInt32& Max, FOptionalInt64& Focus, FOptionalInt32& Cycle, FOptionalInt32& From, FOptionalString& ContentId)
 {
 	TournamentId = Serializable->TournamentId;
 	Max = Serializable->Max;
 	Focus = Serializable->Focus;
 	Cycle = Serializable->Cycle;
 	From = Serializable->From;
+	ContentId = Serializable->ContentId;
 		
 }
 

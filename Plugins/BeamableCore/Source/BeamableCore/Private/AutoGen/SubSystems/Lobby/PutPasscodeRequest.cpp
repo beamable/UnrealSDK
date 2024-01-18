@@ -22,12 +22,12 @@ void UPutPasscodeRequest::BuildBody(FString& BodyString) const
 {
 	ensureAlways(Body);
 
-	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&BodyString);
+	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&BodyString);
 	Body->BeamSerialize(JsonSerializer);
 	JsonSerializer->Close();
 }
 
-UPutPasscodeRequest* UPutPasscodeRequest::Make(FOptionalString _Passcode, FOptionalArrayOfTag _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPutPasscodeRequest* UPutPasscodeRequest::Make(FOptionalString _Passcode, FOptionalArrayOfBeamTag _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutPasscodeRequest* Req = NewObject<UPutPasscodeRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};

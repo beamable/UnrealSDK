@@ -89,9 +89,10 @@ struct FUserSlotAccountData
 UENUM(BlueprintType)
 enum EUserSlotClearedReason
 {
-	Manual,
-	FailedAuthentication,
-	ExitPIE,
+	USCR_Manual,
+	USCR_FailedAuthentication,
+	USCR_ExitPIE,
+	USCR_OnlineSubsystem_NoLocalPlayer,
 };
 
 DECLARE_MULTICAST_DELEGATE_FourParams(FUserSlotClearedCodeHandler, const EUserSlotClearedReason&, const FUserSlot&, const FBeamRealmUser&, const UObject*);
@@ -142,7 +143,7 @@ private:
 	 * 
 	 * @return A namespaced Slot ID that takes into account the fact that there might be multiple PIE instances running at the same time.
 	 */
-	static FString GetNamespacedSlotId(FUserSlot SlotId, const UObject* CallingContext = nullptr);
+	static FString GetNamespacedSlotId(FUserSlot SlotId, const UObject* CallingContext);
 
 
 	/**
@@ -161,9 +162,9 @@ public:
 
 	/** Cleans up the system.  */
 	virtual void Deinitialize() override;
-	
 
-	static FString      GetSavedSlotsDirectory();
+
+	static FString GetSavedSlotsDirectory();
 	/**
 		 * @brief Gets a FUserSlot from a NamespacedSlotId.
 		 */
@@ -172,7 +173,7 @@ public:
 	 * @brief Gets the file path for the serialized account data of the given user slot.
 	 * To be used by other systems when saving data related to a slot.
 	 */
-	static FString GetSlotDataSavedFilePath(FString SlotDataType, FUserSlot SlotId, const UObject* CallingContext = nullptr);
+	static FString GetSlotDataSavedFilePath(FString SlotDataType, FUserSlot SlotId, const UObject* CallingContext);
 
 	/**
 	 * @brief Checks to see an object is owned by a PIE instance.	  
@@ -186,14 +187,14 @@ public:
 	 * @see GetNamespacedSlotId 	 
 	 */
 	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf="SlotAContext, SlotBContext", ExpandBoolAsExecs="ReturnValue"))
-	static bool IsSameSlot(FUserSlot SlotA, FUserSlot SlotB, const UObject* SlotAContext = nullptr, const UObject* SlotBContext = nullptr);
+	static bool IsSameSlot(FUserSlot SlotA, FUserSlot SlotB, const UObject* SlotAContext, const UObject* SlotBContext);
 
 	/**
 	 * @brief Tries to get the user currently  mapped to the given slot.	  
 	 * @return True, if there is a user mapped. False, if no user mapped was found. 
 	 */
 	UFUNCTION(BlueprintPure, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	bool GetUserDataAtSlot(FUserSlot SlotId, FBeamRealmUser& OutUserData, const UObject* CallingContext = nullptr) const;
+	bool GetUserDataAtSlot(FUserSlot SlotId, FBeamRealmUser& OutUserData, const UObject* CallingContext) const;
 
 	/**
 	 * @brief Tries to find the a FUserSlot, and its data, that contains the user with the given FBeamGamerTag.	  
@@ -221,15 +222,14 @@ public:
 	 * THIS DOES NOT SERIALIZE THE USER INTO THAT SLOT --- IT'LL BE VALID ONLY FOR THE CURRENT SESSION'S DURATION.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AutoCreateRefTerm="Cid,Pid", AdvancedDisplay="CallingContext"))
-	void SetAuthenticationDataAtSlot(FUserSlot       SlotId, const FString& AccessToken, const FString& RefreshToken, const int64& IssuedAt, const int64& ExpiresIn, const FBeamCid& Cid,
-	                                 const FBeamPid& Pid, const UObject*    CallingContext = nullptr);
+	void SetAuthenticationDataAtSlot(FUserSlot SlotId, const FString& AccessToken, const FString& RefreshToken, const int64& IssuedAt, const int64& ExpiresIn, const FBeamCid& Cid, const FBeamPid& Pid, const UObject* CallingContext);
 
 	/**
 	 * @brief Sets, without saving, the given GamerTag of the user into this slot. Must always be called on a user slot that has authentication data.
 	 * This is because you need to be authenticated in order to get the user's gamer tag.	  	 
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="GamerTag", DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	void SetGamerTagAtSlot(FUserSlot SlotId, const FBeamGamerTag& GamerTag, const UObject* CallingContext = nullptr);
+	void SetGamerTagAtSlot(FUserSlot SlotId, const FBeamGamerTag& GamerTag, const UObject* CallingContext);
 
 
 	/**
@@ -237,32 +237,32 @@ public:
 	 * This is because you need to be authenticated in order to get the user's gamer tag.	  	 
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="AccountId", DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	void SetAccountIdAtSlot(FUserSlot SlotId, const FBeamAccountId& AccountId, const UObject* CallingContext = nullptr);
+	void SetAccountIdAtSlot(FUserSlot SlotId, const FBeamAccountId& AccountId, const UObject* CallingContext);
 
 	/**
 	 * @brief Sets the email to the account data of an authenticated user slot. If it's not authenticated, the email information isn't stored.	  
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="Email", DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	void SetEmailAtSlot(FUserSlot SlotId, const FString& Email, const UObject* CallingContext = nullptr);
+	void SetEmailAtSlot(FUserSlot SlotId, const FString& Email, const UObject* CallingContext);
 
 	/**
 	 * @brief Sets, without saving, the given PID into the auth data for this slot. If it's not authenticated, the PID is not set (use SetAuthenticationDataAtSlot instead).
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="Pid", DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	void SetPIDAtSlot(FUserSlot SlotId, const FBeamPid& Pid, const UObject* CallingContext = nullptr);
+	void SetPIDAtSlot(FUserSlot SlotId, const FBeamPid& Pid, const UObject* CallingContext);
 
 	/**
 	 * @brief Sets the email to the account data of an authenticated user slot. If it's not authenticated, the email information isn't stored.	  
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="Pid", DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	void SetExternalIdsAtSlot(const FUserSlot& SlotId, const TArray<FBeamExternalIdentity> ExternalIdentities, const UObject* CallingContext = nullptr);
-	
+	void SetExternalIdsAtSlot(const FUserSlot& SlotId, const TArray<FBeamExternalIdentity> ExternalIdentities, const UObject* CallingContext);
+
 	/**
 	 * @brief Invokes the global callback for when a user is authenticated. Used by BPs SignIn/Up/Out Flows in both editor and runtime.
 	 * This means that it is ready to make authenticated requests as well as any request that requires a user's gamer tag.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	void TriggerUserAuthenticatedIntoSlot(FUserSlot SlotId, const UObject* CallingContext = nullptr);
+	void TriggerUserAuthenticatedIntoSlot(FUserSlot SlotId, const UObject* CallingContext);
 
 
 	/**
@@ -270,16 +270,16 @@ public:
 	 * @returns TRUE, if the UserSlot was authenticated. FALSE, otherwise.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	bool SaveSlot(FUserSlot SlotId, const UObject* CallingContext = nullptr);
+	bool SaveSlot(FUserSlot SlotId, const UObject* CallingContext);
 
 
 	/**
 	 * @brief Clears the user and realm data at the give slot id.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	void ClearUserAtSlot(FUserSlot SlotId, const EUserSlotClearedReason& Reason = Manual, const bool& bShouldRemoveSavedData = false, const UObject* CallingContext = nullptr);
+	void ClearUserAtSlot(FUserSlot SlotId, const EUserSlotClearedReason& Reason = USCR_Manual, const bool& bShouldRemoveSavedData = false, const UObject* CallingContext = nullptr);
 
-	UFUNCTION(BlueprintCallable, Category="Beam")	
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void ClearAllCachedUserDataAtSlot(FUserSlot SlotId);
 
 	/**
@@ -287,7 +287,7 @@ public:
 		 * @return True, if there was a user authenticated at that slot. False, if no serialized user slot file was found or if the file does not contain a refresh token.  
 		 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
-	bool IsUserSlotAuthenticated(FUserSlot SlotId, const UObject* CallingContext = nullptr);
+	bool IsUserSlotAuthenticated(FUserSlot SlotId, const UObject* CallingContext);
 
 	/**
 	 * @brief Attempts to load data locally stored in association to a given slot by another subsystem. T must be a UStruct	  
@@ -323,7 +323,7 @@ public:
 	 * @return True, if there was a user authenticated at that slot. False, if no serialized user slot file was found or if the file does not contain a refresh token.  
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
-	int32 TryLoadSavedUserAtSlot(FUserSlot SlotId, UObject* CallingContext = nullptr);
+	int32 TryLoadSavedUserAtSlot(FUserSlot SlotId, UObject* CallingContext);
 
 
 	/**

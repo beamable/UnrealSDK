@@ -17,8 +17,8 @@ public:
 	static FString SubscriberDetailsResponseToJsonString(const USubscriberDetailsResponse* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make SubscriberDetailsResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="GameGlobalNotificationChannel, Outer", NativeMakeFunc))
-	static USubscriberDetailsResponse* Make(FString CustomChannelPrefix, FString PlayerForRealmChannel, FString AuthenticationKey, FString GameNotificationChannel, FString SubscribeKey, FString PlayerChannel, FOptionalString GameGlobalNotificationChannel, UObject* Outer);
+	static USubscriberDetailsResponse* Make(FString CustomChannelPrefix, FString PlayerForRealmChannel, FString AuthenticationKey, FString GameNotificationChannel, FString SubscribeKey, FString PlayerChannel, TArray<FString> PlayerChannels, FOptionalString GameGlobalNotificationChannel, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break SubscriberDetailsResponse", meta=(NativeBreakFunc))
-	static void Break(const USubscriberDetailsResponse* Serializable, FString& CustomChannelPrefix, FString& PlayerForRealmChannel, FString& AuthenticationKey, FString& GameNotificationChannel, FString& SubscribeKey, FString& PlayerChannel, FOptionalString& GameGlobalNotificationChannel);
+	static void Break(const USubscriberDetailsResponse* Serializable, FString& CustomChannelPrefix, FString& PlayerForRealmChannel, FString& AuthenticationKey, FString& GameNotificationChannel, FString& SubscribeKey, FString& PlayerChannel, TArray<FString>& PlayerChannels, FOptionalString& GameGlobalNotificationChannel);
 };

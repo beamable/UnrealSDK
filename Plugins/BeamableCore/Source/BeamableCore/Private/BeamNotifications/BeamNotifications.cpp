@@ -18,7 +18,7 @@ void UBeamNotifications::Deinitialize()
 
 bool UBeamNotifications::TryConnect(const FUserSlot& Slot, const FName& SocketName, const FString& Uri, const TMap<FString, FString>& ExtraHeaders, const FOnNotificationEvent& ConnectionEventHandler, FBeamWebSocketHandle& OutHandle, UObject* ContextObject)
 {
-	if (FBeamRealmUser UserData; UserSlots->GetUserDataAtSlot(Slot, UserData))
+	if (FBeamRealmUser UserData; UserSlots->GetUserDataAtSlot(Slot, UserData, ContextObject))
 	{
 		Connect(Slot, UserData, SocketName, Uri, ExtraHeaders, ConnectionEventHandler, OutHandle, ContextObject);
 		return true;
@@ -220,7 +220,7 @@ void UBeamNotifications::CloseSocketsForSlot(const FUserSlot& Slot)
 {
 	if (const auto Slots = OpenSockets.Find(Slot))
 	{
-		for (const auto WebSocket : *Slots)
+		for (const auto& WebSocket : *Slots)
 		{
 			WebSocket.Value->Close(1000, TEXT("User signed out"));
 		}

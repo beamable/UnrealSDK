@@ -6,6 +6,7 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamContentId.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfTeamContentProto.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "MatchType.generated.h"
 
@@ -23,6 +24,8 @@ public:
 	FOptionalInt32 MaxWaitDurationSecs = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Matching Interval Secs", Category="Beam")
 	FOptionalInt32 MatchingIntervalSecs = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Federated Game Server Namespace", Category="Beam")
+	FOptionalString FederatedGameServerNamespace = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Teams", Category="Beam")
 	FOptionalArrayOfTeamContentProto Teams = {};
 

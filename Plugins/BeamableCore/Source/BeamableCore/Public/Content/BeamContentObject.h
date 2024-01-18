@@ -22,10 +22,6 @@ class BEAMABLECORE_API UBeamContentObject : public UObject
 	GENERATED_BODY()
 
 public:
-	inline static const FString Beam_Tag_Type = FString(TEXT("beam-type-"));
-	inline static const FString Beam_Tag_TypeFmt = FString(TEXT("beam-type-{0}"));
-	static FString GetTypeClassNameFromTypeTag(const FString& TypeTag);
-
 	FString Id;
 	FString Version;
 	TArray<FString> Tags;
@@ -35,11 +31,11 @@ public:
 
 	/**
 	 * @brief Called on each row of the manifest whenever it changes so that we can verify that the content object is configured correctly in the manifest. 
-	 * @param TypeTagVal The type of the content object.
+	 * @param ContentTypeIdVal The type of the content object.
 	 * @param Row The Manifest Row we are validating.
 	 * @return An error code that specifies what is the problem
 	 */
-	virtual int IsValidRowForType(const FString& TypeTagVal, FLocalContentManifestRow& Row)
+	virtual int IsValidRowForType(const FString& ContentTypeIdVal, FLocalContentManifestRow& Row)
 	{
 		return 0;
 	}

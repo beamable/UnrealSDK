@@ -25,7 +25,7 @@ enum class EBeamStatCompareOperation
 };
 
 UCLASS(BlueprintType, DefaultToInstanced, EditInlineNew)
-class UBeamStatComparisonRule : public UObject, public IBeamJsonSerializableUObject 
+class UBeamStatComparisonRule : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
@@ -250,11 +250,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FOptionalInt32 MaxWaitDurationSecs;
 
-	/// <summary>
-	/// The length of time to wait for players to enqueue before matching.
-	/// </summary>
+	/**
+	 * The length of time to wait for players to enqueue before matching.
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FOptionalInt32 MatchingIntervalSecs;
+
+	/**
+	 * If you have a C#MS implementing IFederatedGameServer, use the UniqueName of its associated IThirdPartyCloudIdentity here so that Beamable knows which microservice to call to provision a GameServer for this type.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Federated Game Server", meta=(ToolTip="If you have a C#MS implementing IFederatedGameServer, use the UniqueName of its associated IThirdPartyCloudIdentity so that Beamable knows which microservice to call to provision a GameServer for this type."))
+	FOptionalString FederatedGameServerNamespace;
 };
 
 DEFINE_CONTENT_TYPE_NAME(UBeamGameTypeContent, "game_types")

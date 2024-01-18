@@ -9,7 +9,7 @@ void UGetPartyRequest::BuildVerb(FString& VerbString) const
 void UGetPartyRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/api/parties/{id}");
-	Route = Route.Replace(TEXT("{id}"), *Id.ToString(EGuidFormats::DigitsLower));
+	Route = Route.Replace(TEXT("{id}"), *Id.ToString(EGuidFormats::DigitsWithHyphensLower));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);

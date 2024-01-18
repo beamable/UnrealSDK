@@ -6,7 +6,7 @@
 #include "SSimpleButton.h"
 #include "Dialog/SCustomDialog.h"
 #include "Subsystems/Content/BeamEditorContent.h"
-#include "EditorScriptingUtilities/Public/EditorDialogLibrary.h"
+#include "EditorDialogLibrary.h"
 #include "Subsystems/BeamEditor.h"
 
 #define LOCTEXT_NAMESPACE "ULocalContentManifestEditorState"
@@ -47,7 +47,7 @@ void ULocalContentManifestEditorState::PrepareEditingUI()
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::Get().GetModuleChecked<FPropertyEditorModule>(
 		"PropertyEditor");
 	FDetailsViewArgs DetailsViewArgs;
-	DetailsViewArgs.NameAreaSettings = FDetailsViewArgs::ENameAreaSettings::HideNameArea;
+	DetailsViewArgs.NameAreaSettings  = FDetailsViewArgs::ENameAreaSettings::HideNameArea;
 	DetailsViewArgs.bHideSelectionTip = true;
 
 	EditingObjectDetailsPanel = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
@@ -55,7 +55,7 @@ void ULocalContentManifestEditorState::PrepareEditingUI()
 }
 
 
-void ULocalContentManifestEditorState::PreChange(const UDataTable* Changed,
+void ULocalContentManifestEditorState::PreChange(const UDataTable*                           Changed,
                                                  FDataTableEditorUtils::EDataTableChangeInfo ChangedType)
 {
 	// Things that implement FDataTableEditorUtils::FDataTableEditorManager::ListenerType get instantiated automagically by
@@ -65,7 +65,7 @@ void ULocalContentManifestEditorState::PreChange(const UDataTable* Changed,
 
 	// We also early out if the selection was changed in a data table that is not the one being managed by this editor.
 	FBeamContentManifestId ContentManifestId;
-	UDataTable* Table;
+	UDataTable*            Table;
 	if (!EditorContentSystem->GetChangingManifest(Changed, ContentManifestId, Table)) return;
 }
 
@@ -78,7 +78,7 @@ void ULocalContentManifestEditorState::PostChange(const UDataTable* Changed, FDa
 
 	// We also early out if the selection was changed in a data table that is not the one being managed by this editor.
 	FBeamContentManifestId ContentManifestId;
-	UDataTable* Table;
+	UDataTable*            Table;
 	if (!EditorContentSystem->GetChangingManifest(Changed, ContentManifestId, Table)) return;
 
 	// INFO: For now, we'll rebuild and revalidate the entire table on each change to it... This won't scale, but we'll need epic to trigger the callbacks correctly so that we can avoid this.	
@@ -98,7 +98,7 @@ void ULocalContentManifestEditorState::SelectionChange(const UDataTable* DataTab
 
 	// We also early out if the selection was changed in a data table that is not the one being managed by this editor.
 	FBeamContentManifestId ContentManifestId;
-	UDataTable* Table;
+	UDataTable*            Table;
 	if (!EditorContentSystem->GetChangingManifest(DataTable, ContentManifestId, Table)) return;
 
 	const auto Selected = EditingTableContentNames.FindLastByPredicate([RowName](TSharedPtr<FName> R)
@@ -175,14 +175,14 @@ void ULocalContentManifestEditorState::EditContentButtonClicked()
 	if (SelectedContentIdx == 0)
 	{
 		const auto ErrTitle = LOCTEXT("NonExistentContentObject", "Error - Non-Existent Content Object");
-		const auto ErrMsg = FText::FromString(TEXT(
+		const auto ErrMsg   = FText::FromString(TEXT(
 			"Trying to load a content object that doesn't exist.\nPlease select a valid content from the dropdown."));
 		UEditorDialogLibrary::ShowMessage(ErrTitle, ErrMsg, EAppMsgType::Ok, EAppReturnType::Ok);
 		return;
 	}
 
 	const auto SelectedRow = EditingTable->GetRowNames()[SelectedContentIdx - 1];
-	EditingObjectId = SelectedRow;
+	EditingObjectId        = SelectedRow;
 
 	// Prepare and show the editing window.
 	if (FString ErrMsg; !EditorContentSystem->GetContentForEditing(ManifestId, EditingObjectId, EditingObject, ErrMsg))
@@ -229,14 +229,14 @@ void ULocalContentManifestEditorState::EditContentButtonClicked()
 
 void ULocalContentManifestEditorState::PublishButtonClicked()
 {
-	const auto CoreSettings = GetDefault<UBeamCoreSettings>();
+	const auto CoreSettings   = GetDefault<UBeamCoreSettings>();
 	const auto TargetRealmPid = CoreSettings->TargetRealm.Pid;
-	const auto Settings = GetDefault<UBeamEditorSettings>();
+	const auto Settings       = GetDefault<UBeamEditorSettings>();
 
 	// Find the name of the realm we published to.
 	FString RealmName;
 	{
-		const auto EditorSlot = EditorContentSystem->Editor->GetMainEditorSlot();
+		const auto                    EditorSlot  = EditorContentSystem->Editor->GetMainEditorSlot();
 		TArray<FBeamProjectRealmData> KnownRealms = Settings->PerSlotDeveloperProjectData.FindChecked(EditorSlot.Name).
 		                                                      AllRealms;
 		for (const auto& Realm : KnownRealms)
@@ -267,7 +267,7 @@ void ULocalContentManifestEditorState::PublishButtonClicked()
 				PublishingWindow->DestroyWindowImmediately();
 
 				const auto Title = LOCTEXT("PublishingWait", "Waiting for Publish");
-				const auto Msg = FText::FromString(FString::Format(TEXT("Uploading content and manifest to Current Target Realm={0}."), {ManifestId.AsString, RealmName}));
+				const auto Msg   = FText::FromString(FString::Format(TEXT("Uploading content and manifest to Current Target Realm={0}."), {ManifestId.AsString, RealmName}));
 				PublishingWindow = SNew(SWindow)
 				.Title(Title)
 				.ClientSize({512.0f, 128.0f})
@@ -282,8 +282,8 @@ void ULocalContentManifestEditorState::PublishButtonClicked()
 
 				// Show it as a modal of the DataTable editor.
 				FSlateApplication::Get().AddModalWindow(PublishingWindow.ToSharedRef(),
-					FSlateApplication::Get().GetActiveTopLevelWindow(),
-					true);
+				                                        FSlateApplication::Get().GetActiveTopLevelWindow(),
+				                                        true);
 				PublishingWindow->ShowWindow();
 			}))
 		});
@@ -294,13 +294,13 @@ void ULocalContentManifestEditorState::PublishButtonClicked()
 
 void ULocalContentManifestEditorState::DownloadButtonClicked()
 {
-	FBeamOperationEventHandlerCode EventHandler;
-	EventHandler.BindLambda([this](const TArray<FUserSlot>&, FBeamOperationEvent OperationEvent)
+	FBeamOperationEventHandlerCode                     EventHandler;
+	EventHandler.BindLambda([this](FBeamOperationEvent OperationEvent)
 		{
 			if (OperationEvent.EventType == OET_SUCCESS)
 			{
 				// Handle Final Success Event
-				if (OperationEvent.EventSubTypeCode == 0)
+				if (OperationEvent.EventCode == NAME_None)
 				{
 					// Notify the data table editor that this table has changed (it's the only way to get it to redraw)	
 					FDataTableEditorUtils::BroadcastPostChange(
@@ -308,11 +308,11 @@ void ULocalContentManifestEditorState::DownloadButtonClicked()
 				}
 
 				// Handle Sub-Event for when the Manifest Changes is ready
-				if (OperationEvent.EventSubTypeCode == 1)
+				if (OperationEvent.EventCode == FName("MANIFEST_CHANGE_READY"))
 				{
 					// Show changes in a dialog and ask for confirmation, then call ContentSystem apply.
-					const auto WorkingDownloadState = EditorContentSystem->WorkingDownloadStates[ManifestId];
-					TSharedRef<SVerticalBox> Panel = SNew(SVerticalBox);
+					const auto               WorkingDownloadState = EditorContentSystem->WorkingDownloadStates[ManifestId];
+					TSharedRef<SVerticalBox> Panel                = SNew(SVerticalBox);
 
 					Panel->AddSlot()[
 						SNew(STextBlock).Text(FText::FromString("New Items")).Font(
@@ -364,7 +364,7 @@ void ULocalContentManifestEditorState::DownloadButtonClicked()
 			if (OperationEvent.EventType == OET_ERROR)
 			{
 				const auto Title = LOCTEXT("DownloadFailed", "Download Failed");
-				const auto Msg = FText::FromString(FString::Format(
+				const auto Msg   = FText::FromString(FString::Format(
 					TEXT("Manifest failed to download content.\nError={1}"),
 					{OperationEvent.EventData}));
 
@@ -377,17 +377,16 @@ void ULocalContentManifestEditorState::DownloadButtonClicked()
 	EditorContentSystem->DownloadManifest(ManifestId, EventHandler);
 }
 
-void ULocalContentManifestEditorState::OnPublishEvent(const TArray<FUserSlot>& UserSlots,
-                                                      FBeamOperationEvent OperationEvent) const
+void ULocalContentManifestEditorState::OnPublishEvent(FBeamOperationEvent OperationEvent) const
 {
-	const auto CoreSettings = GetDefault<UBeamCoreSettings>();
+	const auto CoreSettings   = GetDefault<UBeamCoreSettings>();
 	const auto TargetRealmPid = CoreSettings->TargetRealm.Pid;
-	const auto Settings = GetDefault<UBeamEditorSettings>();
+	const auto Settings       = GetDefault<UBeamEditorSettings>();
 
 	// Find the name of the realm we published to.
 	FString RealmName;
 	{
-		const auto EditorSlot = UserSlots[0];
+		const auto                    EditorSlot  = UBeamEditor::GetSelf(this)->GetMainEditorSlot();
 		TArray<FBeamProjectRealmData> KnownRealms = Settings->PerSlotDeveloperProjectData.FindChecked(EditorSlot.Name).
 		                                                      AllRealms;
 		for (const auto& Realm : KnownRealms)
@@ -401,13 +400,12 @@ void ULocalContentManifestEditorState::OnPublishEvent(const TArray<FUserSlot>& U
 	if (OperationEvent.EventType == OET_SUCCESS)
 	{
 		// If it is the final success event (as in, the operation completed successfully)
-		if (OperationEvent.EventSubTypeCode == 0)
+		if (OperationEvent.EventCode == NAME_None)
 		{
 			const auto ContentManifestId = OperationEvent.EventData;
 
 			const auto Title = LOCTEXT("PublishSuccessful", "Publish Successful");
-			const auto Msg = FText::FromString(FString::Format(
-				TEXT("Successfully published manifest with Id={0} to Realm={1}."), {ContentManifestId, RealmName}));
+			const auto Msg   = FText::FromString(FString::Format(TEXT("Successfully published manifest with Id={0} to Realm={1}."), {ContentManifestId, RealmName}));
 			UEditorDialogLibrary::ShowMessage(Title, Msg, EAppMsgType::Ok, EAppReturnType::Ok);
 		}
 
@@ -416,9 +414,7 @@ void ULocalContentManifestEditorState::OnPublishEvent(const TArray<FUserSlot>& U
 	else if (OperationEvent.EventType == OET_ERROR)
 	{
 		const auto Title = LOCTEXT("PublishSuccessful", "Publish Failed");
-		const auto Msg = FText::FromString(FString::Format(
-			TEXT("Manifest failed to be published manifest Realm={0}.\nError={1}"),
-			{RealmName, OperationEvent.EventData}));
+		const auto Msg   = FText::FromString(FString::Format(TEXT("Manifest failed to be published manifest Realm={0}.\nError={1}"), {RealmName, OperationEvent.EventData}));
 		UEditorDialogLibrary::ShowMessage(Title, Msg, EAppMsgType::Ok, EAppReturnType::Ok);
 		UE_LOG(LogBeamContent, Error, TEXT("Content Publish Had error %s."), *OperationEvent.EventData);
 	}

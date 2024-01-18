@@ -9,7 +9,7 @@ void UPutTagsRequest::BuildVerb(FString& VerbString) const
 void UPutTagsRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/api/lobbies/{id}/tags");
-	Route = Route.Replace(TEXT("{id}"), *Id.ToString(EGuidFormats::DigitsLower));
+	Route = Route.Replace(TEXT("{id}"), *Id.ToString(EGuidFormats::DigitsWithHyphensLower));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -22,12 +22,12 @@ void UPutTagsRequest::BuildBody(FString& BodyString) const
 {
 	ensureAlways(Body);
 
-	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&BodyString);
+	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&BodyString);
 	Body->BeamSerialize(JsonSerializer);
 	JsonSerializer->Close();
 }
 
-UPutTagsRequest* UPutTagsRequest::Make(FGuid _Id, FOptionalString _PlayerId, FOptionalBool _bReplace, FOptionalArrayOfTag _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPutTagsRequest* UPutTagsRequest::Make(FGuid _Id, FOptionalBeamGamerTag _PlayerId, FOptionalBool _bReplace, FOptionalArrayOfBeamTag _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutTagsRequest* Req = NewObject<UPutTagsRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};

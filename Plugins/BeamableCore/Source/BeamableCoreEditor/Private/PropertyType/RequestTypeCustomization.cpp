@@ -1,6 +1,7 @@
 ﻿#include "PropertyType/RequestTypeCustomization.h"
 
 #include "DetailWidgetRow.h"
+#include "BeamBackend/BeamBaseRequestInterface.h"
 #include "BeamBackend/RequestType.h"
 
 #define LOCTEXT_NAMESPACE "RequestTypeCustomization"

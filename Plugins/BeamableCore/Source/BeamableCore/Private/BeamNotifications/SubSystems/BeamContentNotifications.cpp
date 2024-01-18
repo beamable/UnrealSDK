@@ -53,16 +53,19 @@ void UBeamContentNotifications::Initialize(FSubsystemCollectionBase& Collection)
 
 void UBeamContentNotifications::SubscribeToContentRefresh(const FUserSlot& Slot, const FName& SocketName, const FOnContentRefreshNotification& Handler) const
 {
-	if (!Notifications->TrySubscribeForMessage<FOnContentRefreshNotification, FContentRefreshNotificationMessage>(Slot, SocketName, CTX_KEY_Content_Refresh, Handler))
+	FDelegateHandle Handle;
+	if (!Notifications->TrySubscribeForMessage<FOnContentRefreshNotification, FContentRefreshNotificationMessage>(Slot, SocketName, CTX_KEY_Content_Refresh, Handler, Handle))
 	{
 		UE_LOG(LogBeamNotifications, Warning, TEXT("Trying to subscribe to a non-existent socket. SLOT=%s, ID=%s"), *Slot.Name, *SocketName.ToString());
 	}
 }
 
-void UBeamContentNotifications::CPP_SubscribeToContentRefresh(const FUserSlot& Slot, const FName& SocketName, const FOnContentRefreshNotificationCode& Handler) const
+FDelegateHandle UBeamContentNotifications::CPP_SubscribeToContentRefresh(const FUserSlot& Slot, const FName& SocketName, const FOnContentRefreshNotificationCode& Handler) const
 {
-	if (!Notifications->TrySubscribeForMessage<FOnContentRefreshNotificationCode, FContentRefreshNotificationMessage>(Slot, SocketName, CTX_KEY_Content_Refresh, Handler))
+	FDelegateHandle Handle;
+	if (!Notifications->TrySubscribeForMessage<FOnContentRefreshNotificationCode, FContentRefreshNotificationMessage>(Slot, SocketName, CTX_KEY_Content_Refresh, Handler, Handle))
 	{
 		UE_LOG(LogBeamNotifications, Warning, TEXT("Trying to subscribe to a non-existent socket. SLOT=%s, ID=%s"), *Slot.Name, *SocketName.ToString());
 	}
+	return Handle;
 }

@@ -68,8 +68,8 @@ UBeamMicroservicesEditor* UBeamMicroservicesEditor::GetSelf(const UObject* Calli
 
 FBeamOperationHandle UBeamMicroservicesEditor::UpdateRemoteMicroserviceStateOperation(const FBeamOperationEventHandler& OnOperationEvent)
 {
-	const auto Slot = Editor->GetMainEditorSlot();
-	const auto Handle = RequestTracker->BeginOperation({Slot}, GetName(), OnOperationEvent);
+	const auto Slot            = Editor->GetMainEditorSlot();
+	const auto Handle          = RequestTracker->BeginOperation({Slot}, GetName(), OnOperationEvent);
 	const auto CompleteHandler = [this](const int& ResultCode, const FBeamOperationHandle& Operation)
 	{
 		if (ResultCode == 0)
@@ -83,8 +83,8 @@ FBeamOperationHandle UBeamMicroservicesEditor::UpdateRemoteMicroserviceStateOper
 
 FBeamOperationHandle UBeamMicroservicesEditor::CPP_UpdateRemoteMicroserviceStateOperation(const FBeamOperationEventHandlerCode& OnOperationEvent)
 {
-	const auto Slot = Editor->GetMainEditorSlot();
-	const auto Handle = RequestTracker->CPP_BeginOperation({Slot}, GetName(), OnOperationEvent);
+	const auto Slot            = Editor->GetMainEditorSlot();
+	const auto Handle          = RequestTracker->CPP_BeginOperation({Slot}, GetName(), OnOperationEvent);
 	const auto CompleteHandler = [this](const int& ResultCode, const FBeamOperationHandle& Operation)
 	{
 		if (ResultCode == 0)
@@ -269,7 +269,7 @@ void UBeamMicroservicesEditor::DeployMicroservices(const TArray<FString>& Enable
 		{
 			FString Json;
 			FJsonObjectConverter::UStructToJsonObjectString(Progress.Last(), Json);
-			RequestTracker->TriggerOperationEvent(Operation, OET_SUCCESS, EDefaultOperationEventSubType::EventA, Json);
+			RequestTracker->TriggerOperationEvent(Operation, OET_SUCCESS, FName("MICROSERVICE_REMOTE_DEPLOY_UPDATE"), Json);
 		};
 
 	// Handle completing the operation

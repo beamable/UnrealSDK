@@ -37,38 +37,6 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 		ToSerialize.BeamSerializeProperties(Serializer);
 	}
 
-
-	template <typename TEnum>
-	static FString _EnumToSerializationName(TEnum Value)
-	{
-		static_assert(TIsUEnumClass<TEnum>::Value);
-
-		const UEnum* Enum = StaticEnum<TEnum>();
-		const int32 NameIndex = Enum->GetIndexByValue(static_cast<int64>(Value));
-		const FString SerializationName = Enum->GetNameStringByIndex(NameIndex);
-
-		// We chop off the first five "BEAM_" characters. 		
-		return SerializationName.RightChop(5);
-	}
-
-	template <typename TEnum>
-	static TEnum _SerializationNameToEnum(FString Value)
-	{
-		static_assert(TIsUEnumClass<TEnum>::Value);
-
-		const UEnum* Enum = StaticEnum<TEnum>();
-		for (int32 NameIndex = 0; NameIndex < Enum->NumEnums() - 1; ++NameIndex)
-		{
-			// We chop off the first five "BEAM_" characters.
-			const FString& SerializationName = Enum->GetNameStringByIndex(NameIndex).RightChop(5);
-			if (Value == SerializationName)
-				return static_cast<TEnum>(Enum->GetValueByIndex(NameIndex));
-		}
-
-		ensureAlways(false); //  This should be impossible!
-		return TEnum();
-	}
-
 	template <typename TOptionalType, typename TDataType, typename TSemanticTypeRepresentation, typename TSerializer>
 	static void _SerializeOptional(const FString& Identifier, const FBeamOptional* ToSerialize, TSerializer Serializer)
 	{
@@ -129,7 +97,7 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				const TDataType* val = &FBeamOptional::GetValue<TDataType>(ToSerialize);
 				if constexpr (TIsUEnumClass<TDataType>::Value)
 				{
-					FString ValStr = _EnumToSerializationName<TDataType>(*val);
+					FString ValStr = EnumToSerializationName<TDataType>(*val);
 					Serializer->WriteValue(Identifier, ValStr);
 				}
 				else
@@ -209,7 +177,7 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 			{
 				if constexpr (TIsUEnumClass<TDataType>::Value)
 				{
-					FString ValStr = _EnumToSerializationName<TDataType>(Value);
+					FString ValStr = EnumToSerializationName<TDataType>(Value);
 					Serializer->WriteValue(ValStr);
 				}
 				else
@@ -300,7 +268,7 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 			{
 				if constexpr (TIsUEnumClass<TDataType>::Value)
 				{
-					FString ValStr = _EnumToSerializationName<TDataType>(Kvp.Value);
+					FString ValStr = EnumToSerializationName<TDataType>(Kvp.Value);
 					Serializer->WriteValue(Kvp.Key, ValStr);
 				}
 				else
@@ -502,6 +470,37 @@ public:
 		Serializer->WriteObjectEnd();
 	}
 
+	
+	template <typename TEnum>
+	static FString EnumToSerializationName(TEnum Value)
+	{
+		static_assert(TIsUEnumClass<TEnum>::Value);
+
+		const UEnum* Enum = StaticEnum<TEnum>();
+		const int32 NameIndex = Enum->GetIndexByValue(static_cast<int64>(Value));
+		const FString SerializationName = Enum->GetNameStringByIndex(NameIndex);
+
+		// We chop off the first five "BEAM_" characters. 		
+		return SerializationName.RightChop(5);
+	}
+
+	template <typename TEnum>
+	static TEnum SerializationNameToEnum(FString Value)
+	{
+		static_assert(TIsUEnumClass<TEnum>::Value);
+
+		const UEnum* Enum = StaticEnum<TEnum>();
+		for (int32 NameIndex = 0; NameIndex < Enum->NumEnums() - 1; ++NameIndex)
+		{
+			// We chop off the first five "BEAM_" characters.
+			const FString& SerializationName = Enum->GetNameStringByIndex(NameIndex).RightChop(5);
+			if (Value == SerializationName)
+				return static_cast<TEnum>(Enum->GetValueByIndex(NameIndex));
+		}
+
+		ensureAlways(false); //  This should be impossible!
+		return TEnum();
+	}
 
 	template <typename TSerializationType>
 	static void DeserializeSemanticType(const TSharedPtr<FJsonValue>& JsonField, FBeamSemanticType& ToDeserialize, TWeakObjectPtr<UObject> OuterOwner = (UObject*)GetTransientPackage())
@@ -640,7 +639,7 @@ public:
 			{
 				static_assert(TIsSecondTemplateParam<TDataType, TOptionalType>::value, "When TOptionalType is a map, TDataType must be the type for that map.");
 				TMap<FString, TDataType> ParsedMap;
-				for (const auto KvP : JsonField->AsObject()->Values)
+				for (const auto& KvP : JsonField->AsObject()->Values)
 				{
 					const auto Key = KvP.Key;
 					const auto Item = KvP.Value;
@@ -691,7 +690,7 @@ public:
 					else if constexpr (TIsUEnumClass<TDataType>::Value)
 					{
 						FString Parsed = Item->AsString();
-						ParsedMap.Add(Key, _SerializationNameToEnum<TDataType>(Parsed));
+						ParsedMap.Add(Key, SerializationNameToEnum<TDataType>(Parsed));
 					}
 					else if constexpr (std::is_same_v<TDataType, int8>)
 					{
@@ -749,7 +748,7 @@ public:
 				static_assert(TIsTemplateParam<TDataType, TOptionalType>::value, "When TOptionalType is an array, TDataType must be the type for that array.");
 
 				TArray<TDataType> ParsedArray;
-				for (const auto ArrayJsonItem : JsonField->AsArray())
+				for (const auto& ArrayJsonItem : JsonField->AsArray())
 				{
 					if constexpr (TIsPointer<TDataType>::Value)
 					{
@@ -798,7 +797,7 @@ public:
 					else if constexpr (TIsUEnumClass<TDataType>::Value)
 					{
 						FString Parsed = ArrayJsonItem->AsString();
-						ParsedArray.Add(_SerializationNameToEnum<TDataType>(Parsed));
+						ParsedArray.Add(SerializationNameToEnum<TDataType>(Parsed));
 					}
 					else if constexpr (std::is_same_v<TDataType, int8>)
 					{
@@ -897,7 +896,7 @@ public:
 				else if constexpr (TIsUEnumClass<TDataType>::Value)
 				{
 					FString Parsed = JsonField->AsString();
-					TDataType ParsedEnum = _SerializationNameToEnum<TDataType>(Parsed);
+					TDataType ParsedEnum = SerializationNameToEnum<TDataType>(Parsed);
 					FBeamOptional::Set(&ToDeserialize, &ParsedEnum);
 				}
 				else if constexpr (std::is_same_v<TDataType, int8>)
@@ -1010,7 +1009,7 @@ public:
 			else if constexpr (TIsUEnumClass<TDataType>::Value)
 			{
 				FString Parsed = JsonValue->AsString();
-				TDataType ParsedEnum = _SerializationNameToEnum<TDataType>(Parsed);
+				TDataType ParsedEnum = SerializationNameToEnum<TDataType>(Parsed);
 				Array.Add(ParsedEnum);
 			}
 			else if constexpr (std::is_same_v<TDataType, int>)
@@ -1049,7 +1048,7 @@ public:
 			}
 			else
 			{
-				static_assert(false);
+				// static_assert(false);
 			}
 		}
 	}
@@ -1122,7 +1121,7 @@ public:
 			else if constexpr (TIsUEnumClass<TMapType>::Value)
 			{
 				FString Parsed = Value.Value->AsString();
-				TMapType ParsedEnum = _SerializationNameToEnum<TDataType>(Parsed);
+				TMapType ParsedEnum = SerializationNameToEnum<TDataType>(Parsed);
 				Map.Add(Key, ParsedEnum);
 			}
 			else if constexpr (std::is_same_v<TMapType, int>)
@@ -1163,7 +1162,7 @@ public:
 			// This is here to help us catch missing compilation cases
 			else
 			{
-				static_assert(false);
+				// static_assert(false);
 			}
 		}
 	}
@@ -1199,7 +1198,7 @@ public:
 		else if constexpr (TIsUEnumClass<TPrimitiveType>::Value)
 		{
 			FString Parsed = JsonField;
-			ToDeserialize = _SerializationNameToEnum<TPrimitiveType>(Parsed);
+			ToDeserialize = SerializationNameToEnum<TPrimitiveType>(Parsed);
 		}
 		else if constexpr (std::is_same_v<TPrimitiveType, int8>)
 		{

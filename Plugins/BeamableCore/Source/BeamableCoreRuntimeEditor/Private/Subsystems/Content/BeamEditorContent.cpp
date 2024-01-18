@@ -35,10 +35,13 @@ void UBeamEditorContent::Initialize(FSubsystemCollectionBase& Collection)
 	{
 		if (It->IsChildOf(UBeamContentObject::StaticClass()) && !It->HasAnyClassFlags(CLASS_Abstract))
 		{
-			UE_LOG(LogTemp, Display, TEXT("Initializing Beam Editor Content System - Found Content Type %s"), *It->GetFName().ToString())
+			FName TypeName = It->GetFName();
+			FString ContentTypeId = It->GetDefaultObject<UBeamContentObject>()->BuildContentTypeString();
 
+			UE_LOG(LogTemp, Display, TEXT("Initializing Beam Editor Content System - TYPE=%s, TYPE_ID=%s"), *TypeName.ToString(), *ContentTypeId);
 			AllContentTypes.Add(*It);
-			AllContentTypeNames.Add(MakeShared<FName>(It->GetFName()));
+			AllContentTypeNames.Add(MakeShared<FName>(TypeName));
+			ContentTypeStringToContentClass.Add(ContentTypeId, *It);						
 		}
 	}
 
@@ -426,10 +429,8 @@ void UBeamEditorContent::PublishManifest_OnGetManifest(FBasicContentGetManifestF
 		for (const auto& ContentId : ContentIds)
 		{
 			const auto& EntryInManifest = *LocalManifestToPublish->FindRow<FLocalContentManifestRow>(ContentId, TEXT(""));
-			const auto TypeTag = EntryInManifest.Tags.FindByPredicate([](FString Tag) { return Tag.StartsWith(UBeamContentObject::Beam_Tag_Type); });
-
 			UBeamContentObject* Obj;
-			if (TryLoadContentObject(ContentManifestId, ContentId, UBeamContentObject::GetTypeClassNameFromTypeTag(*TypeTag), Obj))
+			if (TryLoadContentObject(ContentManifestId, ContentId, Obj))
 			{
 				auto Reference = NewObject<UBaseContentReference>();
 				Reference->Content = NewObject<UContentReference>(Reference);
@@ -444,14 +445,17 @@ void UBeamEditorContent::PublishManifest_OnGetManifest(FBasicContentGetManifestF
 			}
 			else
 			{
-				ensureAlwaysMsgf(false, TEXT("Should never see this! This means you have a content in corrupted state: %s"), *ContentId.ToString());
+				FString TypeId = FBeamContentId{ContentId}.GetTypeId();
+
+				// If we have the content type, it means we failed to load due to malformed content
+				if(FindContentTypeByTypeId(TypeId)) ensureAlwaysMsgf(false, TEXT("Should never see this! This means you have a content in corrupted state. CONTENT_ID=%s"), *ContentId.ToString());
+				// Otherwise, it just means this content was created else where and the Unreal implementation for this content type does not yet exist.
+				else ensureAlwaysMsgf(false, TEXT("This Content does not have a UBeamContentObject implementation matching its type. CONTENT_TYPE_ID=%s, CONTENT_ID=%s"), *TypeId, *ContentId.ToString());
 			}
 		}
-
-		// TODO
+		
 		TArray<UBaseContentReference*> RemoteContentReferences;
 		BuildChangeSetForManifest(LocalContentReferences, RemoteContentReferences, PublishState->CurrentChangeSet);
-
 
 		for (const auto& RemoteContentReference : RemoteContentReferences)
 			PublishState->References.Add(MakePublishKey(RemoteContentReference), RemoteContentReference);
@@ -471,11 +475,8 @@ void UBeamEditorContent::PublishManifest_OnGetManifest(FBasicContentGetManifestF
 			Def->Checksum = Push->Content->Checksum.Val;
 			Def->Tags = FOptionalArrayOfString(Push->Content->Tags);
 
-			const auto& EntryInManifest = *LocalManifestToPublish->FindRow<FLocalContentManifestRow>(FName(ContentId.AsString), TEXT(""));
-			const auto TypeTag = EntryInManifest.Tags.FindByPredicate([](FString Tag) { return Tag.StartsWith(UBeamContentObject::Beam_Tag_Type); });
-
 			UBeamContentObject* Obj;
-			check(TryLoadContentObject(ContentManifestId, Push->Content->Id, UBeamContentObject::GetTypeClassNameFromTypeTag(*TypeTag), Obj))
+			check(TryLoadContentObject(ContentManifestId, Push->Content->Id, Obj))
 			Obj->ToPropertiesJson(Def->SerializedProperties);
 
 			ContentDefinitions.Add(Def);
@@ -487,8 +488,7 @@ void UBeamEditorContent::PublishManifest_OnGetManifest(FBasicContentGetManifestF
 		for (UContentDefinition* ContentDefinition : ContentDefinitions)
 		{
 			FString DefJson;
-			TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<
-				wchar_t>>::Create(&DefJson);
+			TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>::Create(&DefJson);
 			ContentDefinition->BeamSerialize(JsonSerializer);
 			JsonSerializer->Close();
 			Debug.Append(DefJson);
@@ -672,7 +672,7 @@ void UBeamEditorContent::DownloadManifest_OnGetManifest(FBasicContentGetManifest
 
 		// Trigger a sub-event to let the UI react by asking the user whether or not we should continue given the changes that'll happen locally.
 		// We expect the user confirmation to eventually call "DownloadManifest_ApplyUserInput(bool)" with true/false given the user's choice of whether or not to apply the changes  
-		RequestTracker->TriggerOperationEvent(Op, OET_SUCCESS, 1, {});
+		RequestTracker->TriggerOperationEvent(Op, OET_SUCCESS, FName("MANIFEST_CHANGE_READY"), {});
 	}
 }
 
@@ -838,7 +838,12 @@ UClass** UBeamEditorContent::FindContentTypeByName(FString TypeName)
 	return AllContentTypes.FindByPredicate([TypeName](const UClass* Class) { return Class->GetFName().ToString().Equals(TypeName); });
 }
 
-bool UBeamEditorContent::TryLoadContentObject(const FBeamContentManifestId& OwnerManifest, FBeamContentId ContentId, FString TypeName, UBeamContentObject*& OutLoadedContentObject)
+UClass** UBeamEditorContent::FindContentTypeByTypeId(FString TypeId)
+{
+	return ContentTypeStringToContentClass.Find(TypeId);
+}
+
+bool UBeamEditorContent::TryLoadContentObject(const FBeamContentManifestId& OwnerManifest, FBeamContentId ContentId, UBeamContentObject*& OutLoadedContentObject)
 {
 	// Hit the cache first.
 	if (LoadedContentObjects.Contains(ContentId))
@@ -848,7 +853,7 @@ bool UBeamEditorContent::TryLoadContentObject(const FBeamContentManifestId& Owne
 	}
 
 	// Otherwise, find the UClass for the content type. Load the JSON and deserialize it into the UBeamContentObject.
-	if (const auto Type = AllContentTypes.FindByPredicate([TypeName](const UClass* Class) { return Class->GetFName().ToString().Equals(TypeName); }))
+	if (const auto Type = FindContentTypeByTypeId(ContentId.GetTypeId()))
 	{
 		const auto RowName = FName(ContentId.AsString);
 		const auto ManifestRow = LocalManifests[OwnerManifest]->FindRow<FLocalContentManifestRow>(RowName, TEXT("Saving Object"));
@@ -878,11 +883,8 @@ bool UBeamEditorContent::InstantiateContentObject(const UDataTable* Manifest, co
 	const auto ManifestRow = Manifest->FindRow<FLocalContentManifestRow>(FName(ContentId.AsString), TEXT("Saving Object"));
 	if (ManifestRow)
 	{
-		const auto TypeTag = ManifestRow->Tags.FindByPredicate([](FString Tag) { return Tag.StartsWith(UBeamContentObject::Beam_Tag_Type); });
-		const auto TypeName = UBeamContentObject::GetTypeClassNameFromTypeTag(*TypeTag);
-
 		// Otherwise, find the UClass for the content type. Load the JSON and deserialize it into the UBeamContentObject.
-		if (const auto Type = AllContentTypes.FindByPredicate([TypeName](const UClass* Class) { return Class->GetFName().ToString().Equals(TypeName); }))
+		if (const auto Type = FindContentTypeByTypeId(ContentId.GetTypeId()))
 		{
 			const auto FilePath = GetJsonBlobPath(ContentId.AsString, GetManifestIdFromDataTable(Manifest));
 			FString FileContents;
@@ -905,20 +907,27 @@ void UBeamEditorContent::GetContentTypeToIdMaps(TMap<FName, TArray<TSharedPtr<FN
 		const auto Ids = LocalManifest.Value->GetRowNames();
 		for (const auto& Id : Ids)
 		{
-			const auto Row = LocalManifest.Value->FindRow<FLocalContentManifestRow>(Id, TEXT(""));
-			const auto TypeTag = Row->Tags.FindByPredicate([](FString Tag) { return Tag.StartsWith(UBeamContentObject::Beam_Tag_Type); });
-			const auto TypeName = FName(UBeamContentObject::GetTypeClassNameFromTypeTag(*TypeTag));
+			FBeamContentId ContentId{Id.ToString()};
+			FString ContentTypeId = ContentId.GetTypeId();
 
-			if (!Map.Contains(TypeName))
-				Map.Add(TypeName, {});
+			if(const auto ContentType = ContentTypeStringToContentClass.Find(ContentTypeId))
+			{
+				const auto TypeName = (*ContentType)->GetFName();
+				if (!Map.Contains(TypeName))
+					Map.Add(TypeName, {});
 
-			if (!Map[TypeName].ContainsByPredicate([Id](TSharedPtr<FName> N)
-			{
-				return N->ToString().Equals(Id.ToString());
-			}))
-			{
-				Map[TypeName].Add(MakeShareable(new FName(Id)));
+				if (!Map[TypeName].ContainsByPredicate([Id](TSharedPtr<FName> N)
+				{
+					return N->ToString().Equals(Id.ToString());
+				}))
+				{
+					Map[TypeName].Add(MakeShareable(new FName(Id)));
+				}			
 			}
+			else
+			{
+				UE_LOG(LogBeamContent, Warning, TEXT("Unreal UBeamContentObject implementation not found for content of given type. CONTENT_TYPE_ID=%s, CONTENT_ID=%s"), *ContentTypeId, *ContentId.AsString);
+			}			
 		}
 	}
 }
@@ -931,9 +940,11 @@ bool UBeamEditorContent::GetContentTypeFromId(FBeamContentId Id, FString& TypeNa
 		const auto Row = LocalManifest.Value->FindRow<FLocalContentManifestRow>(FName(IdStr), TEXT("Context"));
 		if (Row)
 		{
-			const auto TypeTag = Row->Tags.FindByPredicate([](FString Tag) { return Tag.StartsWith(UBeamContentObject::Beam_Tag_Type); });
-			TypeName = UBeamContentObject::GetTypeClassNameFromTypeTag(*TypeTag);
-			return true;
+			if(const auto Type = FindContentTypeByTypeId(Id.GetTypeId()))
+			{
+				TypeName = (*Type)->GetFName().ToString();
+				return true;
+			}			
 		}
 	}
 	TypeName = TEXT("");
@@ -1108,21 +1119,16 @@ void UBeamEditorContent::PostChange(const UDataTable* Changed, FDataTableEditorU
 		}
 	}
 
-	TArray<FString> MissingTypeTags;
+	TArray<FString> MissingUnrealTypes;
 	for (int i = 0; i < Rows.Num(); i++)
 	{
 		FString Row = Rows[i].ToString();
-		auto EntryInManifest = EditingTable->FindRow<FLocalContentManifestRow>(FName(Row),
-		                                                                       TEXT("Validating Manifest"));
+		auto EntryInManifest = EditingTable->FindRow<FLocalContentManifestRow>(FName(Row), TEXT("Validating Manifest"));
+		FString RowContentTypeId = FBeamContentId{Row}.GetTypeId(); 
 
-		// Handle case where we are missing the type tag value (which is what tells us what type to deserialize into)
-		auto TypeTag = EntryInManifest->Tags.FindByPredicate([](FString Tag)
+		if(const auto ContentType = FindContentTypeByTypeId(RowContentTypeId); !ContentType)
 		{
-			return Tag.StartsWith(UBeamContentObject::Beam_Tag_Type);
-		});
-		if (!TypeTag)
-		{
-			MissingTypeTags.Add(Row);
+			MissingUnrealTypes.Add(RowContentTypeId);
 		}
 		else
 		{
@@ -1133,11 +1139,9 @@ void UBeamEditorContent::PostChange(const UDataTable* Changed, FDataTableEditorU
 			{
 				FString OldName = PrevName, Discard;
 				OldName.Split(".", &OldName, &Discard, ESearchCase::CaseSensitive, ESearchDir::FromEnd);
-
-				const auto TypeName = UBeamContentObject::GetTypeClassNameFromTypeTag(*TypeTag);
+				
 				UBeamContentObject* Obj;
-				if (TryLoadContentObject(ManifestId, OldName, TypeName, Obj) ||
-					TryLoadContentObject(ManifestId, Row, TypeName, Obj))
+				if (TryLoadContentObject(ManifestId, OldName, Obj) || TryLoadContentObject(ManifestId, Row, Obj))
 				{
 					const auto TypePrefix = Obj->BuildContentTypeString();
 					if (!Row.StartsWith(TypePrefix))
@@ -1189,8 +1193,7 @@ void UBeamEditorContent::PostChange(const UDataTable* Changed, FDataTableEditorU
 								EditingTable->AddRow(FixedName, *UserInputNewNameRow);
 								EditingTable->RemoveRow(FName(Row));
 								Row = FixedName.ToString();
-								EntryInManifest = EditingTable->FindRow<FLocalContentManifestRow>(FixedName, "");
-								TypeTag = EntryInManifest->Tags.FindByPredicate([](FString Tag) { return Tag.StartsWith(UBeamContentObject::Beam_Tag_Type); });
+								EntryInManifest = EditingTable->FindRow<FLocalContentManifestRow>(FixedName, "");								
 								EditorAssetSubsystem->SaveLoadedAsset(EditingTable);
 								bWasRenamed = true;
 							}
@@ -1223,10 +1226,9 @@ void UBeamEditorContent::PostChange(const UDataTable* Changed, FDataTableEditorU
 				}
 			}
 
-			// Handle custom validation case
-			const auto TypeName = UBeamContentObject::GetTypeClassNameFromTypeTag(*TypeTag);
+			// Handle custom validation case			
 			UBeamContentObject* Obj;
-			if (!TryLoadContentObject(ManifestId, Row, TypeName, Obj))
+			if (!TryLoadContentObject(ManifestId, Row, Obj))
 			{
 				const auto ErrMsg = FString::Format(TEXT("Trying to load a content object that doesn't exist {0}"), {Row});
 				UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
@@ -1246,8 +1248,7 @@ void UBeamEditorContent::PostChange(const UDataTable* Changed, FDataTableEditorU
 					}
 				}
 
-				if (const auto ValidationErrorCode = Obj->IsValidRowForType(*TypeTag, *EntryInManifest);
-					ValidationErrorCode)
+				if (const auto ValidationErrorCode = Obj->IsValidRowForType(*RowContentTypeId, *EntryInManifest); ValidationErrorCode)
 				{
 					Obj->FixManifestRowForType(ValidationErrorCode, *EntryInManifest);
 				}
@@ -1255,10 +1256,10 @@ void UBeamEditorContent::PostChange(const UDataTable* Changed, FDataTableEditorU
 		}
 	}
 
-	if (MissingTypeTags.Num() > 0)
+	if (MissingUnrealTypes.Num() > 0)
 	{
-		const auto ErrMsg = FString::Format(TEXT("Found a content object that doesn't have a type tag. Please add a type tag in the format of \"{0}ConcreteContentTypeName\" to the manifest row: {1}."),
-		                                    {UBeamContentObject::Beam_Tag_Type, FString::Join(MissingTypeTags, TEXT(", "))});
+		const auto ErrMsg = FString::Format(TEXT("Found a content object that doesn't have a matching Unreal type. Please implement an UBeamContentObject subclass for them. MISSING_TYPES={0}."),
+			{FString::Join(MissingUnrealTypes, TEXT(", "))});
 		UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
 	}
 }
@@ -1280,8 +1281,7 @@ bool UBeamEditorContent::CreateNewContent(const FBeamContentManifestId& Manifest
 	ContentObject = NewObject<UBeamContentObject>(this, ContentObjectSubType.Get());
 
 	// We add it to the object and to the local manifest.
-	const auto TypeName = ContentObject->GetClass()->GetFName().ToString();
-	const auto TypeTagVal = FString::Format(*UBeamContentObject::Beam_Tag_TypeFmt, {TypeName});
+	const auto TypeName = ContentObject->GetClass()->GetFName().ToString();	
 
 	auto RepeatedNameCount = 0;
 	auto RowName = ContentName.IsEmpty() ? FString::Format(TEXT("{0}.New_{1}_{2}"), {ContentObject->BuildContentTypeString(), TypeName, RepeatedNameCount}) : FString::Format(TEXT("{0}.{1}"), {ContentObject->BuildContentTypeString(), ContentName});
@@ -1295,8 +1295,7 @@ bool UBeamEditorContent::CreateNewContent(const FBeamContentManifestId& Manifest
 
 	// Initialize the editing Object
 	FLocalContentManifestRow EntryInManifest;
-	EntryInManifest.OwnerManifestId = ManifestId;
-	EntryInManifest.Tags.Add(TypeTagVal);
+	EntryInManifest.OwnerManifestId = ManifestId;	
 
 	// Sets the ID and Tags based on the manifest row.
 	ContentObject->Id = RowName;
@@ -1356,26 +1355,19 @@ bool UBeamEditorContent::GetContentForEditing(const FBeamContentManifestId& Mani
 	const auto Entry = EditingTable->FindRow<FLocalContentManifestRow>(FName(EditObjectId.AsString), TEXT("Edit Content Start"));
 	if (!Entry)
 	{
-		ErrMsg = FString::Format(TEXT("Trying to load a content object that doesn't exist in this manifest."), {UBeamContentObject::Beam_Tag_Type, EditObjectId.AsString});
+		ErrMsg = FString::Format(TEXT("Trying to load a content object that doesn't exist in this manifest. CONTENT_ID={0}"), {EditObjectId.AsString});
 		UE_LOG(LogBeamContent, Warning, TEXT("%s"), *ErrMsg);
 		return false;
 	}
-
-	const auto& EntryInManifest = *Entry;
-
-	const auto TypeTag = EntryInManifest.Tags.FindByPredicate([](FString Tag)
+	
+	if (!FindContentTypeByTypeId(EditObjectId.GetTypeId()))
 	{
-		return Tag.StartsWith(UBeamContentObject::Beam_Tag_Type);
-	});
-	if (!TypeTag)
-	{
-		ErrMsg = FString::Format(TEXT("Trying to load a content object that doesn't have a type tag. Please add a type tag in the format of \"{0}ConcreteContentTypeName\" to the manifest row: {1}."), {UBeamContentObject::Beam_Tag_Type, EditObjectId.AsString});
+		ErrMsg = FString::Format(TEXT("Trying to load a content object that doesn't have a type in Unreal. Please create a UBeamContentObject subclass for this type of content. CONTENT_ID={0}."), {EditObjectId.AsString});
 		UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
 		return false;
 	}
-
-	const auto TypeName = UBeamContentObject::GetTypeClassNameFromTypeTag(*TypeTag);
-	if (!TryLoadContentObject(ManifestId, EditObjectId, TypeName, ContentObject))
+	
+	if (!TryLoadContentObject(ManifestId, EditObjectId, ContentObject))
 	{
 		ErrMsg = FString::Format(TEXT("Trying to load a content object that doesn't exist {0}"), {EditObjectId.AsString});
 		UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);

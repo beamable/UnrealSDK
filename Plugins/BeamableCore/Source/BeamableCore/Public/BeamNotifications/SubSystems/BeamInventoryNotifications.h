@@ -38,5 +38,5 @@ public:
 	UFUNCTION(BlueprintCallable, DisplayName="Subscribe - Inventory Refresh", Category="Beam")
 	void SubscribeToInventoryRefresh(const FUserSlot& Slot, const FName& SocketName, const FOnInventoryRefreshNotification& Handler) const;
 
-	void CPP_SubscribeToInventoryRefresh(const FUserSlot& Slot, const FName& SocketName, const FOnInventoryRefreshNotificationCode& Handler) const;
+	FDelegateHandle CPP_SubscribeToInventoryRefresh(const FUserSlot& Slot, const FName& SocketName, const FOnInventoryRefreshNotificationCode& Handler) const;
 };

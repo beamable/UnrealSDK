@@ -9,20 +9,20 @@ FString UPromoteNewLeaderLibrary::PromoteNewLeaderToJsonString(const UPromoteNew
 	FString Result = FString{};
 	if(Pretty)
 	{
-		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();
 	}
 	else
 	{
-		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();			
 	}
 	return Result;
 }	
 
-UPromoteNewLeader* UPromoteNewLeaderLibrary::Make(FOptionalString PlayerId, UObject* Outer)
+UPromoteNewLeader* UPromoteNewLeaderLibrary::Make(FOptionalBeamGamerTag PlayerId, UObject* Outer)
 {
 	auto Serializable = NewObject<UPromoteNewLeader>(Outer);
 	Serializable->PlayerId = PlayerId;
@@ -30,7 +30,7 @@ UPromoteNewLeader* UPromoteNewLeaderLibrary::Make(FOptionalString PlayerId, UObj
 	return Serializable;
 }
 
-void UPromoteNewLeaderLibrary::Break(const UPromoteNewLeader* Serializable, FOptionalString& PlayerId)
+void UPromoteNewLeaderLibrary::Break(const UPromoteNewLeader* Serializable, FOptionalBeamGamerTag& PlayerId)
 {
 	PlayerId = Serializable->PlayerId;
 		

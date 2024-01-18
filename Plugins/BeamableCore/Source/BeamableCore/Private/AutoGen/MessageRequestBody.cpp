@@ -10,7 +10,8 @@ void UMessageRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Seriali
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("body"), &Body, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("cid"), &Cid, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("pid"), &Pid, Serializer);
-	UBeamJsonUtils::SerializeOptional<FString>(TEXT("playerId"), &PlayerId, Serializer);
+	UBeamJsonUtils::SerializeOptional<FBeamGamerTag, FString>(TEXT("playerId"), &PlayerId, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("channel"), &Channel, Serializer);
 }
 
 void UMessageRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
@@ -18,7 +19,8 @@ void UMessageRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("body"), &Body, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("cid"), &Cid, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("pid"), &Pid, Serializer);
-	UBeamJsonUtils::SerializeOptional<FString>(TEXT("playerId"), &PlayerId, Serializer);		
+	UBeamJsonUtils::SerializeOptional<FBeamGamerTag, FString>(TEXT("playerId"), &PlayerId, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("channel"), &Channel, Serializer);		
 }
 
 void UMessageRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
@@ -26,7 +28,8 @@ void UMessageRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject
 	UBeamJsonUtils::DeserializeOptional<FString>("body", Bag, Body, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("cid", Bag, Cid, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("pid", Bag, Pid, OuterOwner);
-	UBeamJsonUtils::DeserializeOptional<FString>("playerId", Bag, PlayerId, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FBeamGamerTag, FString>("playerId", Bag, PlayerId, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FString>("channel", Bag, Channel, OuterOwner);
 }
 
 

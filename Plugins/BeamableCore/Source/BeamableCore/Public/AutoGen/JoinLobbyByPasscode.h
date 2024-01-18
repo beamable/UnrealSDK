@@ -4,7 +4,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfTag.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfBeamTag.h"
 
 #include "JoinLobbyByPasscode.generated.h"
 
@@ -17,7 +17,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Passcode", Category="Beam")
 	FOptionalString Passcode = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
-	FOptionalArrayOfTag Tags = {};
+	FOptionalArrayOfBeamTag Tags = {};
 
 	
 

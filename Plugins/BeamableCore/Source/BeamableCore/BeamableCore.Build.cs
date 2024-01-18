@@ -8,7 +8,6 @@ public class BeamableCore : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-
 		PublicIncludePaths.AddRange(
 			new string[]
 			{

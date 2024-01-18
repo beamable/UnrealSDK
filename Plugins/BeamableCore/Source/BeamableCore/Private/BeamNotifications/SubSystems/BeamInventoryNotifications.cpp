@@ -26,16 +26,19 @@ void UBeamInventoryNotifications::Initialize(FSubsystemCollectionBase& Collectio
 
 void UBeamInventoryNotifications::SubscribeToInventoryRefresh(const FUserSlot& Slot, const FName& SocketName, const FOnInventoryRefreshNotification& Handler) const
 {
-	if (!Notifications->TrySubscribeForMessage<FOnInventoryRefreshNotification, FInventoryRefreshNotificationMessage>(Slot, SocketName, CTX_KEY_Inventory_Refresh, Handler))
+	FDelegateHandle Handle;
+	if (!Notifications->TrySubscribeForMessage<FOnInventoryRefreshNotification, FInventoryRefreshNotificationMessage>(Slot, SocketName, CTX_KEY_Inventory_Refresh, Handler, Handle))
 	{
 		UE_LOG(LogBeamNotifications, Warning, TEXT("Trying to subscribe to a non-existent socket. SLOT=%s, ID=%s"), *Slot.Name, *SocketName.ToString());
 	}
 }
 
-void UBeamInventoryNotifications::CPP_SubscribeToInventoryRefresh(const FUserSlot& Slot, const FName& SocketName, const FOnInventoryRefreshNotificationCode& Handler) const
+FDelegateHandle UBeamInventoryNotifications::CPP_SubscribeToInventoryRefresh(const FUserSlot& Slot, const FName& SocketName, const FOnInventoryRefreshNotificationCode& Handler) const
 {
-	if (!Notifications->TrySubscribeForMessage<FOnInventoryRefreshNotificationCode, FInventoryRefreshNotificationMessage>(Slot, SocketName, CTX_KEY_Inventory_Refresh, Handler))
+	FDelegateHandle Handle;
+	if (!Notifications->TrySubscribeForMessage<FOnInventoryRefreshNotificationCode, FInventoryRefreshNotificationMessage>(Slot, SocketName, CTX_KEY_Inventory_Refresh, Handler, Handle))
 	{
 		UE_LOG(LogBeamNotifications, Warning, TEXT("Trying to subscribe to a non-existent socket. SLOT=%s, ID=%s"), *Slot.Name, *SocketName.ToString());
 	}
+	return Handle;
 }

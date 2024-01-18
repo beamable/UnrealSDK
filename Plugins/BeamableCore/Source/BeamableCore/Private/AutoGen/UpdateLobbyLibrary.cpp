@@ -9,20 +9,20 @@ FString UUpdateLobbyLibrary::UpdateLobbyToJsonString(const UUpdateLobby* Seriali
 	FString Result = FString{};
 	if(Pretty)
 	{
-		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();
 	}
 	else
 	{
-		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();			
 	}
 	return Result;
 }	
 
-UUpdateLobby* UUpdateLobbyLibrary::Make(FOptionalString Name, FOptionalString Description, FOptionalString Restriction, FOptionalBeamContentId MatchType, FOptionalInt32 MaxPlayers, FOptionalString NewHost, UObject* Outer)
+UUpdateLobby* UUpdateLobbyLibrary::Make(FOptionalString Name, FOptionalString Description, FOptionalLobbyRestriction Restriction, FOptionalBeamContentId MatchType, FOptionalInt32 MaxPlayers, FOptionalString NewHost, FOptionalUpdateData Data, UObject* Outer)
 {
 	auto Serializable = NewObject<UUpdateLobby>(Outer);
 	Serializable->Name = Name;
@@ -31,11 +31,12 @@ UUpdateLobby* UUpdateLobbyLibrary::Make(FOptionalString Name, FOptionalString De
 	Serializable->MatchType = MatchType;
 	Serializable->MaxPlayers = MaxPlayers;
 	Serializable->NewHost = NewHost;
+	Serializable->Data = Data;
 	
 	return Serializable;
 }
 
-void UUpdateLobbyLibrary::Break(const UUpdateLobby* Serializable, FOptionalString& Name, FOptionalString& Description, FOptionalString& Restriction, FOptionalBeamContentId& MatchType, FOptionalInt32& MaxPlayers, FOptionalString& NewHost)
+void UUpdateLobbyLibrary::Break(const UUpdateLobby* Serializable, FOptionalString& Name, FOptionalString& Description, FOptionalLobbyRestriction& Restriction, FOptionalBeamContentId& MatchType, FOptionalInt32& MaxPlayers, FOptionalString& NewHost, FOptionalUpdateData& Data)
 {
 	Name = Serializable->Name;
 	Description = Serializable->Description;
@@ -43,6 +44,7 @@ void UUpdateLobbyLibrary::Break(const UUpdateLobby* Serializable, FOptionalStrin
 	MatchType = Serializable->MatchType;
 	MaxPlayers = Serializable->MaxPlayers;
 	NewHost = Serializable->NewHost;
+	Data = Serializable->Data;
 		
 }
 

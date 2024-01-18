@@ -42,7 +42,7 @@ public:
 		
 		const auto Slot = FUserSlot{TEXT("Player0")};
 
-		const auto OpHandler = FBeamOperationEventHandlerCode::CreateLambda([](const TArray<FUserSlot>&, FBeamOperationEvent Evt)
+		const auto OpHandler = FBeamOperationEventHandlerCode::CreateLambda([](FBeamOperationEvent Evt)
 		{						
 		});
 		const auto Op = RequestTracker->CPP_BeginOperation({Slot}, GetName(), OpHandler);

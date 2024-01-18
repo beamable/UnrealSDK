@@ -82,3 +82,6 @@ struct BEAMABLECORE_API FBeamGamerTag : public FBeamSemanticType
 		return -1;
 	}
 };
+
+FORCEINLINE uint32 GetTypeHash(const FBeamGamerTag& WaitHandle) { return GetTypeHash(WaitHandle.AsLong); }
+

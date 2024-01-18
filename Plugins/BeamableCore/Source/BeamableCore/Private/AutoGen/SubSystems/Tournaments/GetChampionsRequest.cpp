@@ -22,6 +22,12 @@ void UGetChampionsRequest::BuildRoute(FString& RouteString) const
 	QueryParams.Appendf(TEXT("%s=%s"), TEXT("cycles"), *FString::FromInt(Cycles));
 	bIsFirstQueryParam = false;
 	
+	if(ContentId.IsSet){
+		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("contentId"), *ContentId.Val);
+		bIsFirstQueryParam = false;
+	}
+
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
 }
 
@@ -30,7 +36,7 @@ void UGetChampionsRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetChampionsRequest* UGetChampionsRequest::Make(FString _TournamentId, int32 _Cycles, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UGetChampionsRequest* UGetChampionsRequest::Make(FString _TournamentId, int32 _Cycles, FOptionalString _ContentId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetChampionsRequest* Req = NewObject<UGetChampionsRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -38,6 +44,7 @@ UGetChampionsRequest* UGetChampionsRequest::Make(FString _TournamentId, int32 _C
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->TournamentId = _TournamentId;
 	Req->Cycles = _Cycles;
+	Req->ContentId = _ContentId;
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)

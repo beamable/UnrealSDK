@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamGamerTag.h"
 
 #include "LeaveParty.generated.h"
 
@@ -14,7 +14,7 @@ class BEAMABLECORE_API ULeaveParty : public UObject, public IBeamJsonSerializabl
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
-	FOptionalString PlayerId = {};
+	FOptionalBeamGamerTag PlayerId = {};
 
 	
 

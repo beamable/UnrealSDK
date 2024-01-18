@@ -23,7 +23,7 @@ struct BEAMABLECORE_API FMatchmakingUpdateNotificationMessage : public FBeamJson
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FString Expires;
-	
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	TArray<FString> Players;
 
@@ -32,7 +32,7 @@ struct BEAMABLECORE_API FMatchmakingUpdateNotificationMessage : public FBeamJson
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FString MatchId;
-	
+
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override;
@@ -65,7 +65,7 @@ class BEAMABLECORE_API UBeamMatchmakingNotifications : public UEngineSubsystem
 {
 	GENERATED_BODY()
 
-	static const inline FString CTX_KEY_Matchmaking_Update = TEXT("matchmaking.update.{0}");
+	static const inline FString CTX_KEY_Matchmaking_Update  = TEXT("matchmaking.update.{0}");
 	static const inline FString CTX_KEY_Matchmaking_Timeout = TEXT("matchmaking.timeout.{0}");
 
 	UPROPERTY()
@@ -75,12 +75,12 @@ class BEAMABLECORE_API UBeamMatchmakingNotifications : public UEngineSubsystem
 
 public:
 	UFUNCTION(BlueprintCallable, DisplayName="Subscribe - Matchmaking Update", Category="Beam")
-	void SubscribeToMatchmakingUpdate(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingUpdateNotification& Handler) const;
+	void SubscribeToMatchmakingUpdate(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingUpdateNotification& Handler);
 
-	void CPP_SubscribeToMatchmakingUpdate(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingUpdateNotificationCode& Handler) const;
+	FDelegateHandle CPP_SubscribeToMatchmakingUpdate(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingUpdateNotificationCode& Handler) const;
 
 	UFUNCTION(BlueprintCallable, DisplayName="Subscribe - Matchmaking Timeout", Category="Beam")
-	void SubscribeToMatchmakingTimeout(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingTimeoutNotification& Handler) const;
+	void SubscribeToMatchmakingTimeout(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingTimeoutNotification& Handler);
 
-	void CPP_SubscribeToMatchmakingTimeout(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingTimeoutNotificationCode& Handler) const;
+	FDelegateHandle CPP_SubscribeToMatchmakingTimeout(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingTimeoutNotificationCode& Handler) const;
 };

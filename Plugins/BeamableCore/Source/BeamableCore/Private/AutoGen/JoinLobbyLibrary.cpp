@@ -9,20 +9,20 @@ FString UJoinLobbyLibrary::JoinLobbyToJsonString(const UJoinLobby* Serializable,
 	FString Result = FString{};
 	if(Pretty)
 	{
-		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();
 	}
 	else
 	{
-		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();			
 	}
 	return Result;
 }	
 
-UJoinLobby* UJoinLobbyLibrary::Make(FOptionalArrayOfTag Tags, UObject* Outer)
+UJoinLobby* UJoinLobbyLibrary::Make(FOptionalArrayOfBeamTag Tags, UObject* Outer)
 {
 	auto Serializable = NewObject<UJoinLobby>(Outer);
 	Serializable->Tags = Tags;
@@ -30,7 +30,7 @@ UJoinLobby* UJoinLobbyLibrary::Make(FOptionalArrayOfTag Tags, UObject* Outer)
 	return Serializable;
 }
 
-void UJoinLobbyLibrary::Break(const UJoinLobby* Serializable, FOptionalArrayOfTag& Tags)
+void UJoinLobbyLibrary::Break(const UJoinLobby* Serializable, FOptionalArrayOfBeamTag& Tags)
 {
 	Tags = Serializable->Tags;
 		

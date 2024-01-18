@@ -17,8 +17,8 @@ public:
 	static FString JoinLobbyToJsonString(const UJoinLobby* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make JoinLobby", meta=(DefaultToSelf="Outer", AdvancedDisplay="Tags, Outer", NativeMakeFunc))
-	static UJoinLobby* Make(FOptionalArrayOfTag Tags, UObject* Outer);
+	static UJoinLobby* Make(FOptionalArrayOfBeamTag Tags, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break JoinLobby", meta=(NativeBreakFunc))
-	static void Break(const UJoinLobby* Serializable, FOptionalArrayOfTag& Tags);
+	static void Break(const UJoinLobby* Serializable, FOptionalArrayOfBeamTag& Tags);
 };

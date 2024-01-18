@@ -4,7 +4,7 @@
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfBeamGamerTag.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamContentId.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfDouble.h"
@@ -40,7 +40,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Party Id", Category="Beam")
 	FOptionalString PartyId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Players", Category="Beam")
-	FOptionalArrayOfString Players = {};
+	FOptionalArrayOfBeamGamerTag Players = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="String Properties", Category="Beam")
 	FOptionalMapOfString StringProperties = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Number Properties", Category="Beam")

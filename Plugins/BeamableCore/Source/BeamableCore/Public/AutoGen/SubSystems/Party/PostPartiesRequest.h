@@ -37,7 +37,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Party", DisplayName="Beam - Make PostParties",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Restriction,_Leader,_MaxSize,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UPostPartiesRequest* Make(FOptionalString _Restriction, FOptionalString _Leader, FOptionalInt32 _MaxSize, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	static UPostPartiesRequest* Make(FOptionalString _Restriction, FOptionalBeamGamerTag _Leader, FOptionalInt32 _MaxSize, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

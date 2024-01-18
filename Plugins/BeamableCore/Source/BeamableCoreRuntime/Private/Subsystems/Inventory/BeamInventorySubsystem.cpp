@@ -51,7 +51,7 @@ bool FBeamInventoryState::TryGetCurrencyAmount(const FBeamContentId& CurrencyId,
 
 void FBeamInventoryState::GetAllCurrencies(TArray<FBeamPlayerCurrency>& OutCurrencies)
 {
-	for (const auto Currency : Currencies)
+	for (const auto& Currency : Currencies)
 	{
 		TMap<FString, FString> Properties = {};
 		if (CurrencyProperties.Contains(Currency.Key))
@@ -133,7 +133,7 @@ bool FBeamInventoryUpdateCommand::ApplyToState(FBeamInventoryState& State)
 			State.Currencies.Add(CurrencyId, CurrencyMod);
 	}
 
-	for (const auto CreatedItem : CreatedItems)
+	for (const auto& CreatedItem : CreatedItems)
 	{
 		const auto Ids        = CreatedItem.Key;
 		const auto Properties = CreatedItem.Value;
@@ -165,7 +165,7 @@ bool FBeamInventoryUpdateCommand::ApplyToState(FBeamInventoryState& State)
 		}
 	}
 
-	for (const auto RemovedItem : RemovedItems)
+	for (const auto& RemovedItem : RemovedItems)
 	{
 		const auto ContentId  = RemovedItem.Key;
 		const auto InstanceId = RemovedItem.Value;
@@ -181,7 +181,7 @@ bool FBeamInventoryUpdateCommand::ApplyToState(FBeamInventoryState& State)
 		}
 	}
 
-	for (const auto ChangedItem : ChangedItems)
+	for (const auto& ChangedItem : ChangedItems)
 	{
 		const auto Ids        = ChangedItem.Key;
 		const auto Properties = ChangedItem.Value;
@@ -224,7 +224,7 @@ void FBeamInventoryUpdateCommand::GetAllDeletedItems(FOptionalArrayOfItemDeleteR
 	}
 
 	TArray<UItemDeleteRequestBody*> DeleteRequests;
-	for (const auto RemovedItem : RemovedItems)
+	for (const auto& RemovedItem : RemovedItems)
 	{
 		UItemDeleteRequestBody* Deletion = NewObject<UItemDeleteRequestBody>(Owner);
 		Deletion->ContentId              = RemovedItem.Key.AsString;
@@ -245,7 +245,7 @@ void FBeamInventoryUpdateCommand::GetAllUpdatedItems(FOptionalArrayOfItemUpdateR
 	}
 
 	TArray<UItemUpdateRequestBody*> UpdateRequests;
-	for (const auto ChangedItem : ChangedItems)
+	for (const auto& ChangedItem : ChangedItems)
 	{
 		UItemUpdateRequestBody* Update = NewObject<UItemUpdateRequestBody>(Owner);
 		Update->ContentId              = ChangedItem.Key.Key.AsString;
@@ -276,7 +276,7 @@ void FBeamInventoryUpdateCommand::GetAllCreatedItems(FOptionalArrayOfItemCreateR
 	}
 
 	TArray<UItemCreateRequestBody*> CreateRequests;
-	for (const auto CreatedItem : CreatedItems)
+	for (const auto& CreatedItem : CreatedItems)
 	{
 		UItemCreateRequestBody* Create = NewObject<UItemCreateRequestBody>(Owner);
 		Create->ContentId              = CreatedItem.Key.Key.AsString;
@@ -303,7 +303,7 @@ void UBeamInventorySubsystem::InitializeWhenUnrealReady_Implementation(FBeamOper
 
 	ContentSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamContentSubsystem>();
 
-	for (const auto RuntimeUserSlot : GetDefault<UBeamCoreSettings>()->RuntimeUserSlots)
+	for (const auto& RuntimeUserSlot : GetDefault<UBeamCoreSettings>()->RuntimeUserSlots)
 	{
 		const auto UserSlot = FUserSlot{RuntimeUserSlot};
 		Inventories.Add(UserSlot, FBeamInventoryState{UserSlot, {}, {}, {}, {}});
@@ -330,7 +330,7 @@ void UBeamInventorySubsystem::OnUserSignedIn_Implementation(const FUserSlot& Use
 {
 	// Fetch the inventory
 	FBeamOperationHandle Op = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetName(), {});
-	FetchAllInventory(UserSlot, Op, this);
+	FetchAllInventory(UserSlot, Op);
 
 	// We also set up the inventory refresh notification here.
 	const FOnInventoryRefreshNotificationCode NotificationHandler = FOnInventoryRefreshNotificationCode::CreateLambda([this, UserSlot, BeamRealmUser](const FInventoryRefreshNotificationMessage& InventoryRefreshNotificationMessage)
@@ -351,35 +351,35 @@ void UBeamInventorySubsystem::OnUserSignedIn_Implementation(const FUserSlot& Use
 	ResultOp = Op;
 }
 
-FBeamOperationHandle UBeamInventorySubsystem::FetchAllInventoryOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext)
+FBeamOperationHandle UBeamInventorySubsystem::FetchAllInventoryOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	FetchAllInventory(UserSlot, Handle, CallingContext);
+	FetchAllInventory(UserSlot, Handle);
 	return Handle;
 }
 
-FBeamOperationHandle UBeamInventorySubsystem::CPP_FetchAllInventoryOperation(FUserSlot Player, FBeamOperationEventHandlerCode OnOperationEvent, UObject* CallingContext)
+FBeamOperationHandle UBeamInventorySubsystem::CPP_FetchAllInventoryOperation(FUserSlot Player, FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({Player}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	FetchAllInventory(Player, Handle, CallingContext);
+	FetchAllInventory(Player, Handle);
 	return Handle;
 }
 
-FBeamOperationHandle UBeamInventorySubsystem::CommitInventoryUpdateOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext)
+FBeamOperationHandle UBeamInventorySubsystem::CommitInventoryUpdateOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	CommitInventoryUpdate(UserSlot, Handle, CallingContext);
+	CommitInventoryUpdate(UserSlot, Handle);
 	return Handle;
 }
 
-FBeamOperationHandle UBeamInventorySubsystem::CPP_CommitInventoryUpdateOperation(FUserSlot Player, FBeamOperationEventHandlerCode OnOperationEvent, UObject* CallingContext)
+FBeamOperationHandle UBeamInventorySubsystem::CPP_CommitInventoryUpdateOperation(FUserSlot Player, FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({Player}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	CommitInventoryUpdate(Player, Handle, CallingContext);
+	CommitInventoryUpdate(Player, Handle);
 	return Handle;
 }
 
-FBeamOperationHandle UBeamInventorySubsystem::ModifyCurrenciesOperation(FUserSlot Player, TMap<FBeamContentId, int64> CurrencyChanges, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext)
+FBeamOperationHandle UBeamInventorySubsystem::ModifyCurrenciesOperation(FUserSlot Player, TMap<FBeamContentId, int64> CurrencyChanges, FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({Player}, GetClass()->GetFName().ToString(), OnOperationEvent);
 
@@ -388,12 +388,12 @@ FBeamOperationHandle UBeamInventorySubsystem::ModifyCurrenciesOperation(FUserSlo
 	for (const auto& CurrencyChange : CurrencyChanges)
 		PrepareModifyCurrency(Player, CurrencyChange.Key, CurrencyChange.Value);
 
-	CommitInventoryUpdate(Player, Handle, CallingContext);
+	CommitInventoryUpdate(Player, Handle);
 
 	return Handle;
 }
 
-FBeamOperationHandle UBeamInventorySubsystem::CPP_ModifyCurrenciesOperation(FUserSlot Player, TMap<FBeamContentId, int64> CurrencyChanges, FBeamOperationEventHandlerCode OnOperationEvent, UObject* CallingContext)
+FBeamOperationHandle UBeamInventorySubsystem::CPP_ModifyCurrenciesOperation(FUserSlot Player, TMap<FBeamContentId, int64> CurrencyChanges, FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({Player}, GetClass()->GetFName().ToString(), OnOperationEvent);
 
@@ -402,7 +402,7 @@ FBeamOperationHandle UBeamInventorySubsystem::CPP_ModifyCurrenciesOperation(FUse
 	for (const auto& CurrencyChange : CurrencyChanges)
 		PrepareModifyCurrency(Player, CurrencyChange.Key, CurrencyChange.Value);
 
-	CommitInventoryUpdate(Player, Handle, CallingContext);
+	CommitInventoryUpdate(Player, Handle);
 	return Handle;
 }
 
@@ -432,7 +432,7 @@ bool UBeamInventorySubsystem::TryGetAllItems(FUserSlot Player, TArray<FBeamItemS
 		return false;
 
 	const auto inventory = Inventories.FindRef(Player);
-	for (const auto Item : inventory.Items)
+	for (const auto& Item : inventory.Items)
 		ItemStates.Append(Item.Value);
 
 	return true;
@@ -538,7 +538,7 @@ void UBeamInventorySubsystem::PrepareModifyItemById(FUserSlot Player, FBeamConte
 	}
 }
 
-bool UBeamInventorySubsystem::FetchAllInventory(FUserSlot Player, FBeamOperationHandle Op, UObject* CallingContext)
+bool UBeamInventorySubsystem::FetchAllInventory(FUserSlot Player, FBeamOperationHandle Op)
 {
 	FBeamRealmUser UserData;
 	Runtime->UserSlotSystem->GetUserDataAtSlot(Player, UserData, this);
@@ -547,44 +547,8 @@ bool UBeamInventorySubsystem::FetchAllInventory(FUserSlot Player, FBeamOperation
 	{
 		if (Response.State == RS_Success)
 		{
-			FBeamInventoryState& Inventory = *Inventories.Find(Response.Context.UserSlot);
-
-			const auto InventoryView = Response.SuccessData;
-			for (const auto Currency : InventoryView->Currencies)
-			{
-				const auto CurrencyContentId = FBeamContentId{Currency->Id};
-				if (Inventory.Currencies.Contains(CurrencyContentId))
-				{
-					Inventory.Currencies[CurrencyContentId] = Currency->Amount;
-				}
-				else
-				{
-					Inventory.Currencies.Add(CurrencyContentId, Currency->Amount);
-				}
-			}
-
-			for (const auto PerItemIdGroup : InventoryView->Items)
-			{
-				const auto ItemContentId = FBeamContentId{PerItemIdGroup->Id};
-
-				if (!Inventory.Items.Contains(ItemContentId))
-					Inventory.Items.Add(ItemContentId, {});
-
-				auto& ItemsState = *Inventory.Items.Find(ItemContentId);
-				for (UItem* Item : PerItemIdGroup->Items)
-				{
-					FBeamItemState State;
-					State.ContentId   = ItemContentId;
-					State.InstanceId  = Item->Id;
-					State.CreatedAt   = Item->CreatedAt.IsSet ? FDateTime::FromUnixTimestamp(Item->CreatedAt.Val) : FDateTime::UtcNow();
-					State.UpdatedAt   = Item->UpdatedAt.IsSet ? FDateTime::FromUnixTimestamp(Item->UpdatedAt.Val) : FDateTime::UtcNow();
-					State.FederatedId = Item->ProxyId.IsSet ? Item->ProxyId.Val : TEXT("");
-					for (const auto Property : Item->Properties) State.Properties.Add(Property->Name, Property->Value);
-
-					ItemsState.Add(State);
-				}
-			}
-
+			FBeamInventoryState& Inventory = *Inventories.Find(Response.Context.UserSlot);			
+			MergeInventoryViewIntoState(Response.SuccessData, Inventory);		
 			Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
 			return;
 		}
@@ -594,12 +558,12 @@ bool UBeamInventorySubsystem::FetchAllInventory(FUserSlot Player, FBeamOperation
 	// Make the request
 	FBeamRequestContext         Ctx;
 	UGetInventoryRequest* const GetInventoryReq = UGetInventoryRequest::Make(UserData.GamerTag, {}, GetTransientPackage(), {});
-	InventoryApi->CPP_GetInventory(Player, GetInventoryReq, GetInventoryHandler, Ctx, Op, CallingContext);
+	InventoryApi->CPP_GetInventory(Player, GetInventoryReq, GetInventoryHandler, Ctx, Op, this);
 	return true;
 }
 
 
-bool UBeamInventorySubsystem::CommitInventoryUpdate(FUserSlot Player, FBeamOperationHandle Op, UObject* CallingContext)
+bool UBeamInventorySubsystem::CommitInventoryUpdate(FUserSlot Player, FBeamOperationHandle Op)
 {
 	const auto InventoryUpdateCmdPtr = UpdateCommands.Find(Player);
 	if (!InventoryUpdateCmdPtr)
@@ -611,7 +575,7 @@ bool UBeamInventorySubsystem::CommitInventoryUpdate(FUserSlot Player, FBeamOpera
 	const auto& Commands = *InventoryUpdateCmdPtr;
 
 	FBeamRealmUser UserData;
-	Runtime->UserSlotSystem->GetUserDataAtSlot(Commands.OwnerSlot, UserData, CallingContext);
+	Runtime->UserSlotSystem->GetUserDataAtSlot(Commands.OwnerSlot, UserData, this);
 
 	const auto          GamerTag = UserData.GamerTag;
 	TArray<FString>     CurrencyIds;
@@ -660,7 +624,7 @@ bool UBeamInventorySubsystem::CommitInventoryUpdate(FUserSlot Player, FBeamOpera
 	                                                                 GetTransientPackage(), {});
 
 	FBeamRequestContext Ctx;
-	InventoryApi->CPP_PutInventory(Player, Request, Handler, Ctx, Op, CallingContext);
+	InventoryApi->CPP_PutInventory(Player, Request, Handler, Ctx, Op, this);
 	return true;
 }
 
@@ -697,6 +661,8 @@ void UBeamInventorySubsystem::MergeInventoryViewIntoState(const UInventoryView* 
 			State.FederatedId = Item->ProxyId.IsSet ? Item->ProxyId.Val : TEXT("");
 			for (const auto Property : Item->Properties) State.Properties.Add(Property->Name, Property->Value);
 
+			// Swap whatever exists there with the same id we just received.
+			ItemsState.Remove(State);
 			ItemsState.Add(State);
 		}
 	}

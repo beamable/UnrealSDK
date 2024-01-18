@@ -9,20 +9,20 @@ FString URemoveFromLobbyLibrary::RemoveFromLobbyToJsonString(const URemoveFromLo
 	FString Result = FString{};
 	if(Pretty)
 	{
-		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();
 	}
 	else
 	{
-		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();			
 	}
 	return Result;
 }	
 
-URemoveFromLobby* URemoveFromLobbyLibrary::Make(FOptionalString PlayerId, UObject* Outer)
+URemoveFromLobby* URemoveFromLobbyLibrary::Make(FOptionalBeamGamerTag PlayerId, UObject* Outer)
 {
 	auto Serializable = NewObject<URemoveFromLobby>(Outer);
 	Serializable->PlayerId = PlayerId;
@@ -30,7 +30,7 @@ URemoveFromLobby* URemoveFromLobbyLibrary::Make(FOptionalString PlayerId, UObjec
 	return Serializable;
 }
 
-void URemoveFromLobbyLibrary::Break(const URemoveFromLobby* Serializable, FOptionalString& PlayerId)
+void URemoveFromLobbyLibrary::Break(const URemoveFromLobby* Serializable, FOptionalBeamGamerTag& PlayerId)
 {
 	PlayerId = Serializable->PlayerId;
 		

@@ -7,6 +7,7 @@
 UENUM(BlueprintType, Category="Beam|Enums")
 enum class ELobbyRestriction : uint8
 {
+	BEAM_Null UMETA(DisplayName="Null"),
 	BEAM_Closed UMETA(DisplayName="Closed"),
 	BEAM_Open UMETA(DisplayName="Open")		
 };

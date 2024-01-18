@@ -1,20 +1,20 @@
 ﻿#pragma once
 
-#include "Json/Public/Serialization/JsonWriter.h"
-#include "Json/Public/Policies/CondensedJsonPrintPolicy.h"
-#include "Json/Public/Policies/PrettyJsonPrintPolicy.h"
+#include "Serialization/JsonWriter.h"
+#include "Policies/CondensedJsonPrintPolicy.h"
+#include "Policies/PrettyJsonPrintPolicy.h"
 
 #include "BeamJsonSerializable.generated.h"
 
 /**
  * @brief Shorter name for the default Unreal Json Writer.
  */
-typedef TSharedRef<TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>> TUnrealJsonSerializer;
+typedef TSharedRef<TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>> TUnrealJsonSerializer;
 
 /**
  * @brief Shorter name for the pretty Unreal Json Writer.
  */
-typedef TSharedRef<TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>> TUnrealPrettyJsonSerializer;
+typedef TSharedRef<TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>> TUnrealPrettyJsonSerializer;
 
 
 /**

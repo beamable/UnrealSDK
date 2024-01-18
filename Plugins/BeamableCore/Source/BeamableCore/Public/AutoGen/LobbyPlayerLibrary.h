@@ -17,8 +17,8 @@ public:
 	static FString LobbyPlayerToJsonString(const ULobbyPlayer* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make LobbyPlayer", meta=(DefaultToSelf="Outer", AdvancedDisplay="PlayerId, Joined, Tags, Outer", NativeMakeFunc))
-	static ULobbyPlayer* Make(FOptionalString PlayerId, FOptionalString Joined, FOptionalArrayOfTag Tags, UObject* Outer);
+	static ULobbyPlayer* Make(FOptionalBeamGamerTag PlayerId, FOptionalString Joined, FOptionalArrayOfBeamTag Tags, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break LobbyPlayer", meta=(NativeBreakFunc))
-	static void Break(const ULobbyPlayer* Serializable, FOptionalString& PlayerId, FOptionalString& Joined, FOptionalArrayOfTag& Tags);
+	static void Break(const ULobbyPlayer* Serializable, FOptionalBeamGamerTag& PlayerId, FOptionalString& Joined, FOptionalArrayOfBeamTag& Tags);
 };

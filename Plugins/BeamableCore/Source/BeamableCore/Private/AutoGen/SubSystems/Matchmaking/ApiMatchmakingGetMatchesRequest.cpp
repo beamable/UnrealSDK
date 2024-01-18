@@ -9,7 +9,7 @@ void UApiMatchmakingGetMatchesRequest::BuildVerb(FString& VerbString) const
 void UApiMatchmakingGetMatchesRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/api/matchmaking/matches/{id}");
-	Route = Route.Replace(TEXT("{id}"), *Id.ToString(EGuidFormats::DigitsLower));
+	Route = Route.Replace(TEXT("{id}"), *Id.ToString(EGuidFormats::DigitsWithHyphensLower));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);

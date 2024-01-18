@@ -8,12 +8,16 @@
 #include "AutoGen/SubSystems/Realms/GetClientDefaultsRequest.h"
 #include "BeamNotifications/BeamNotifications.h"
 
-#include "RequestTracker/BeamOperation.h"
+#include "UserSlots/BeamUserSlots.h"
+
+#include "RequestTracker/BeamWaitHandle.h"
 #include "RequestTracker/BeamOperationHandle.h"
+#include "RequestTracker/BeamOperation.h"
 #include "RequestTracker/BeamRequestTracker.h"
+
 #include "Serialization/ObjectReader.h"
 #include "Serialization/ObjectWriter.h"
-#include "UserSlots/BeamUserSlots.h"
+
 #include "BeamRuntime.generated.h"
 
 class UBeamRuntimeSubsystem;
@@ -29,9 +33,9 @@ class UBeamNotifications;
 UENUM()
 enum EBeamRuntimeConnectivityState
 {
-	Offline,
-	Fixup,
-	Online,
+	CONN_Offline,
+	CONN_Fixup,
+	CONN_Online,
 };
 
 /**
@@ -102,17 +106,17 @@ public:
 	/**
 	 * @return Whether or not the slot this manager is associated with is authenticated AND if we are offline. The common case being: frictionless auth is disabled.
 	 */
-	bool IsUnauthenticatedOfflineUser() const { return !IsAuthenticated() && CurrentState == Offline; }
+	bool IsUnauthenticatedOfflineUser() const { return !IsAuthenticated() && CurrentState == CONN_Offline; }
 
 	/**
 	 * @return If we are authenticated, but have failed to connect the websocket during the auth flow. 
 	 */
-	bool HasNeverConnectedThisSession() const { return IsAuthenticated() && CurrentState == Offline && !ConnectionLostCountInSession; }
+	bool HasNeverConnectedThisSession() const { return IsAuthenticated() && CurrentState == CONN_Offline && !ConnectionLostCountInSession; }
 
 	/**
 	 * @return If we are authenticated and were connected at some point and the connection was lost. 
 	 */
-	bool IsDisconnected() const { return IsAuthenticated() && CurrentState == Offline && ConnectionLostCountInSession; }
+	bool IsDisconnected() const { return IsAuthenticated() && CurrentState == CONN_Offline && ConnectionLostCountInSession; }
 
 	/**
 	 * TODO: After we've reconnected with the websocket, kick-off the fixup process.
@@ -121,11 +125,11 @@ public:
 	{
 		if (!CurrentFixupOperationCount)
 		{
-			CurrentState = Online;
+			CurrentState = CONN_Online;
 			return;
 		}
 
-		CurrentState = Fixup;
+		CurrentState = CONN_Fixup;
 		// TODO: configure chain of operations for each DAG layer passing them along to UBeamRuntimeSubsystems then waiting on them to finish.
 	}
 
@@ -136,7 +140,7 @@ public:
 	{
 		// Just do nothing if we haven't lost connection or if we are not Offline.
 		if (!ConnectionLostCountInSession) return;
-		if (CurrentState != Offline) return;
+		if (CurrentState != CONN_Offline) return;
 
 		// TODO: call try connect on Notification system again
 		// TODO: figure out a way to keep 
@@ -145,8 +149,10 @@ public:
 
 
 DECLARE_DYNAMIC_DELEGATE(FRuntimeStateChangedHandler);
+DECLARE_DELEGATE(FRuntimeStateChangedHandlerCode);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRuntimeStateChangedEvent);
+DECLARE_MULTICAST_DELEGATE(FRuntimeStateChangedEventCode);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUserStateChangedEvent, const FUserSlot&, Slot);
 
@@ -174,11 +180,11 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	/**
 	 * @brief This gets called after all runtime systems had the opportunity to get ready for authentication to happen.
 	 */
-	void TriggerOnBeamableStarting(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&, const TArray<FBeamErrorResponse>&);
+	void TriggerOnBeamableStarting(FBeamWaitCompleteEvent);
 	/**
 	 * @brief This gets called after all runtime subsystems have been initialized, but before the Owner Player's auth has been made.
 	 */
-	void TriggerOnStartedAndFrictionlessAuth(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&, const TArray<FBeamErrorResponse>&);
+	void TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent);
 
 	/**
 	 * Manages connectivity and recovery for every user slot.
@@ -202,7 +208,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	/**
 	 * @brief 
 	 */
-	void TriggerSubsystemPostUserSignIn(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&, const TArray<FBeamErrorResponse>&, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser);
+	void TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser);
 
 	/**
 	 * @brief Callback added to the UserSlot global callback so that we can respond to users signing out. 
@@ -213,7 +219,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	/**
 	 * @brief After all subsystems have finished their respective handling of UserSlot sign-out, we give them all a chance to respond to that. 
 	 */
-	void TriggerPostUserSignedOut(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&, const TArray<FBeamErrorResponse>&, FUserSlot UserSlot, EUserSlotClearedReason Reason, FBeamRealmUser BeamRealmUser);
+	void TriggerPostUserSignedOut(FBeamWaitCompleteEvent, FUserSlot UserSlot, EUserSlotClearedReason Reason, FBeamRealmUser BeamRealmUser);
 
 	/** Cleans up the system.  */
 	virtual void Deinitialize() override;
@@ -233,15 +239,13 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 * They return operation handles that we wait on. When done, these subsystems are be ready to make unauthenticated requests to the Beamable backend.
 	 */
 	TArray<FBeamOperationHandle> InitializeWhenUnrealReadyOps = {};
-	FBeamWaitHandle              OnInitializeWhenUnrealReadyWait;
-	FOnWaitCompleteCode          OnInitializeWhenUnrealReadyCompleted;
+	FBeamWaitHandle              OnInitializeWhenUnrealReadyWait;	
 
 	/**
 	 * @brief After beamable has finished it's initialization but has yet to attempt its frictionless auth	 
 	 */
 	TArray<FBeamOperationHandle> OnBeamableStartedOps = {};
-	FBeamWaitHandle              OnBeamableStartedWait;
-	FOnWaitCompleteCode          OnBeamableStartedCompleted;
+	FBeamWaitHandle              OnBeamableStartedWait;	
 
 	/**
 	 * @brief So that actors and components can react to beamable's initialization flow being finished.
@@ -256,8 +260,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 * We also give them the list of currently authenticated UserSlots (so that they can tell if the user that just signed in is the last one for example).
 	 */
 	TMap<FUserSlot, TArray<FBeamOperationHandle>> OnUserSignedInOps = {};
-	TMap<FUserSlot, FBeamWaitHandle>              OnUserSignedInWaits;
-	TMap<FUserSlot, FOnWaitCompleteCode>          OnUserSignedInCompleted;
+	TMap<FUserSlot, FBeamWaitHandle>              OnUserSignedInWaits;	
 
 	/**
 	 * @brief After Beamable all UBeamRuntimeSubsystem::OnUserSignedIn operations have finished.
@@ -265,8 +268,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 * to depend on data from our own SDK systems implementations.
 	 */
 	TMap<FUserSlot, TArray<FBeamOperationHandle>> OnPostUserSignedInOps = {};
-	TMap<FUserSlot, FBeamWaitHandle>              OnPostUserSignedInWaits;
-	TMap<FUserSlot, FOnWaitCompleteCode>          OnPostUserSignedInCompleted;
+	TMap<FUserSlot, FBeamWaitHandle>              OnPostUserSignedInWaits;	
 
 	/**
 	 * @brief So that actors and components can react to failures in the user authentication flow.
@@ -286,13 +288,14 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	UPROPERTY()
 	FRuntimeStateChangedEvent OnReady;
 
+	FRuntimeStateChangedEventCode OnReadyCode;
+
 	/**
 	 * @brief Every time a user signs out of beamable we give each subsystem the ability to run an operation for that user.
 	 * We also give them the list of currently authenticated User Slots and the reason for the sign out so that they can correctly decide what to do in each instance.
 	 */
 	TMap<FUserSlot, TArray<FBeamOperationHandle>> OnUserSignedOutOps = {};
 	TMap<FUserSlot, FBeamWaitHandle>              OnUserSignedOutWaits;
-	TMap<FUserSlot, FOnWaitCompleteCode>          OnUserSignedOutCompleted;
 
 	/**
 	 * @brief After Beamable all UBeamRuntimeSubsystem::OnUserSignedOut operations have finished.
@@ -301,7 +304,6 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 */
 	TMap<FUserSlot, TArray<FBeamOperationHandle>> OnPostUserSignedOutOps = {};
 	TMap<FUserSlot, FBeamWaitHandle>              OnPostUserSignedOutWaits;
-	TMap<FUserSlot, FOnWaitCompleteCode>          OnPostUserSignedOutCompleted;
 
 	/**
 	 * @brief For each user slot, we automatically open and connect to the beamable notification service
@@ -426,6 +428,18 @@ public:
 			OnReady.Remove(Handler);
 	}
 
+	FDelegateHandle CPP_RegisterOnReady(FRuntimeStateChangedHandlerCode Handler)
+	{
+		if (bDidFirstAuthRun) const auto _ = Handler.ExecuteIfBound();
+		return OnReadyCode.Add(Handler);
+	}
+
+	FDelegateHandle CPP_RegisterOnReady_NoExecute(FRuntimeStateChangedHandlerCode Handler) { return OnReadyCode.Add(Handler); }
+
+	void CPP_UnregisterOnReady(FDelegateHandle Handle)
+	{
+		OnReadyCode.Remove(Handle);
+	}
 
 	/**
 	 * @brief An operation that will authenticate a user with the beamable and persist that authentication locally.
@@ -502,7 +516,23 @@ public:
 	 */
 	FBeamOperationHandle CPP_SignUpEmailAndPasswordOperation(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationEventHandlerCode OnOperationEvent);
 
+	/**	 
+	 * If a user is logged into the given slot, we sign out (waiting for all systems to sign out) and then we trigger the operation's success.   
+	 * If no user is in the given slot, we fail this operation.
+	 *
+	 * When invoking this manually in your game, always pass in USCR_Manual as your reason.
+	 */
+	FBeamOperationHandle LogoutOperation(FUserSlot UserSlot, EUserSlotClearedReason Reason, bool bRemoveLocalData, FBeamOperationEventHandler OnOperationEvent);
+
+	/**	 
+	 * If a user is logged into the given slot, we sign out (waiting for all systems to sign out) and then we trigger the operation's success. 
+	 * If no user is in the given slot, we fail this operation.
+	 *
+	 * When invoking this manually in your game, always pass in USCR_Manual as your reason.
+	 */
+	FBeamOperationHandle CPP_LogoutOperation(FUserSlot UserSlot, EUserSlotClearedReason Reason, bool bRemoveLocalData, FBeamOperationEventHandlerCode OnOperationEvent);
 private:
+	
 	// Hard-coded special case auth flow	
 	UFUNCTION(BlueprintCallable)
 	void FrictionlessLoginIntoSlot(const FUserSlot& UserSlot);
@@ -515,6 +545,7 @@ private:
 	void AttachEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op);
 	void SignUpExternalIdentity(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, FBeamOperationHandle Op);
 	void SignUpEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op);
+	void Logout(FUserSlot UserSlot, EUserSlotClearedReason Reason, bool bRemoveLocalData, FBeamOperationHandle Op);
 
 
 	// Reusable Operation Callbacks
@@ -525,12 +556,12 @@ private:
 	void RunPostAuthenticationSetup_PrepareNotificationService(FGetClientDefaultsFullResponse Resp, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op);
 
 	// Reusable API Calls
-	void LoginGuest(FUserSlot UserSlot, FBeamOperationHandle Op, FDelayedOperation OnBeforePostAuthentication = {});
-	void CheckExternalIdentityAvailable(FString ExternalService, FString ExternalNamespace, FString ExternalUserId, FBeamOperationHandle Op, FOnGetAvailableExternalIdentityFullResponse Handler) const;
-	void CheckEmailAvailable(FString Email, FBeamOperationHandle Op, FOnGetAvailableFullResponse Handler) const;
-	void AttachIdentityToUser(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op, FOnPostExternalIdentityFullResponse Handler) const;
-	void AttachEmailAndPasswordToUser(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op, FOnBasicAccountsPostRegisterFullResponse Handler) const;
-	void RemoveIdentityFromUser(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op, FOnDeleteExternalIdentityFullResponse Handler) const;
+	FBeamRequestContext LoginGuest(FUserSlot UserSlot, FBeamOperationHandle Op, FDelayedOperation OnBeforePostAuthentication = {});
+	FBeamRequestContext CheckExternalIdentityAvailable(FString ExternalService, FString ExternalNamespace, FString ExternalUserId, FBeamOperationHandle Op, FOnGetAvailableExternalIdentityFullResponse Handler) const;
+	FBeamRequestContext CheckEmailAvailable(FString Email, FBeamOperationHandle Op, FOnGetAvailableFullResponse Handler) const;
+	FBeamRequestContext AttachIdentityToUser(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op, FOnPostExternalIdentityFullResponse Handler) const;
+	FBeamRequestContext AttachEmailAndPasswordToUser(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op, FOnBasicAccountsPostRegisterFullResponse Handler) const;
+	FBeamRequestContext RemoveIdentityFromUser(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op, FOnDeleteExternalIdentityFullResponse Handler) const;
 
 	// Runtime Notification Configuration and Automated Session Tracking 
 	static inline FString BEAM_SESSION_HEADER_PLATFORM = FString(TEXT("X-BEAM-SESSION-PLATFORM"));

@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "UserSlots/UserSlot.h"
 #include "BeamOperationHandle.generated.h"
 
 /**
@@ -41,46 +40,3 @@ struct BEAMABLECORE_API FBeamOperationHandle
 FORCEINLINE uint32 GetTypeHash(const FBeamOperationHandle& OperationHandle) { return GetTypeHash(OperationHandle.OperationId); }
 
 
-/**
- * @brief The current state of an operation: it tracks its request dependencies, its participants and the expected number of requests.
- */
-USTRUCT(BlueprintType)
-struct FBeamOperationState
-{
-	GENERATED_BODY()
-
-	static const int ONGOING = 0;
-	static const int COMPLETE = 1;
-	static const int CANCELED = 2;
-
-	
-	/**
-	 * @brief Whether or not this operation is ongoing, complete or cancelled.
-	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	int Status = ONGOING;
-
-	/**
-	 * @brief The name of subsystem that owns this operation. Mostly for debugging purposes. 
-	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	FString CallingSystem;
-	
-	/**
-	 * @brief The list of requests that were made during this operation.
-	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TArray<int64> DependentRequests;
-
-	/**
-	 * @brief The list of user slots that are participating in this operation.
-	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TArray<FUserSlot> DependentUserSlots;
-
-	/**
-	 * @brief The maximum number of Request Ids.
-	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	int32 MaximumRequestCount = -1;
-};

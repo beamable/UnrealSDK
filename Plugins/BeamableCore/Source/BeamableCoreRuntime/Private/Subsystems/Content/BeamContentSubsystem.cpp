@@ -27,8 +27,12 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 	{
 		if (It->IsChildOf(UBeamContentObject::StaticClass()) && !It->HasAnyClassFlags(CLASS_Abstract))
 		{
-			UE_LOG(LogTemp, Display, TEXT("Initializing Beam Runtime Content System - Found Content Type %s"), *It->GetFName().ToString())
+			FString TypeName = It->GetFName().ToString();
+			FString ContentTypeId = It->GetDefaultObject<UBeamContentObject>()->BuildContentTypeString();
+
+			UE_LOG(LogTemp, Display, TEXT("Initializing Beam Runtime Content System - TYPE=%s, TYPE_ID=%s"), *TypeName, *ContentTypeId);
 			AllContentTypes.Add(*It);
+			ContentTypeStringToContentClass.Add(ContentTypeId, *It);
 		}
 	}
 
@@ -65,7 +69,7 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 void UBeamContentSubsystem::OnBeamableStarting_Implementation(FBeamOperationHandle& ResultOp)
 {
 	FBeamOperationEventHandlerCode                                        OpHandler;
-	OpHandler.BindLambda([](const TArray<FUserSlot>&, FBeamOperationEvent OpEvent)
+	OpHandler.BindLambda([](FBeamOperationEvent OpEvent)
 	{
 		if (OpEvent.EventType == OET_ERROR)
 		{
@@ -96,7 +100,7 @@ void UBeamContentSubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserS
 		FTimerHandle H;
 		GetWorld()->GetTimerManager().SetTimer(H, FTimerDelegate().CreateLambda([this, ContentRefreshNotificationMessage]
 		{
-			const auto DelayedFetchAllOpHandler = FBeamOperationEventHandlerCode::CreateLambda([](const TArray<FUserSlot>&, FBeamOperationEvent OpEvent)
+			const auto DelayedFetchAllOpHandler = FBeamOperationEventHandlerCode::CreateLambda([](FBeamOperationEvent OpEvent)
 			{
 				if (OpEvent.EventType == OET_ERROR)
 				{
@@ -186,8 +190,10 @@ void UBeamContentSubsystem::DownloadLiveContentObjectsData(const FBeamContentMan
 					return;
 #endif
 				if (HttpResponse->GetResponseCode() == 200)
-				{
-					UpdateDownloadedContent(HttpResponse->GetContentAsString(), DownloadContentOperation);
+				{					
+					auto Body = FString();
+					Body = Body + HttpResponse->GetContentAsString();
+					UpdateDownloadedContent(Body, DownloadContentOperation);
 				}
 
 				bool bAreAllFinished = true;
@@ -228,24 +234,29 @@ void UBeamContentSubsystem::UpdateDownloadedContent(FString UriResponse, FDownlo
 {
 	// We create the object from the downloaded JSON and store it in the created cache.
 	const auto ContentId        = FBeamContentId(DownloadState.Id);
-	const auto LiveContentCache = LiveContent.FindChecked(DownloadState.ManifestId);
-
-	const auto TypeTag = DownloadState.Tags.FindByPredicate([](FString Tag) { return Tag.StartsWith(UBeamContentObject::Beam_Tag_Type); });
-	checkf(TypeTag, TEXT("Missing content tag that informs the correct type. ManifestId=%s, ContentId=%s"), *DownloadState.ManifestId.AsString, *ContentId.AsString)
-
-	const auto TypeName = UBeamContentObject::GetTypeClassNameFromTypeTag(*TypeTag);
+	const auto ContentTypeId = ContentId.GetTypeId();
+	const auto LiveContentCache = LiveContent.FindChecked(DownloadState.ManifestId);		
 
 	// Otherwise, find the UClass for the content type. Load the JSON and deserialize it into the UBeamContentObject.
-	const auto Type = AllContentTypes.FindByPredicate([TypeName](const UClass* Class) { return Class->GetFName().ToString().Equals(TypeName); });
-	checkf(Type, TEXT("TypeTag for entry did not match any of the existing classes. ManifestId=%s, ContentId=%s"), *DownloadState.ManifestId.AsString, *ContentId.AsString)
+	const auto Type = ContentTypeStringToContentClass.Find(ContentTypeId);
+	checkf(Type, TEXT("ContentTypeId for entry did not match any of the existing classes. ManifestId=%s, ContentId=%s"), *DownloadState.ManifestId.AsString, *ContentId.AsString)
 
+	// TODO: Remove this when epic fixes their nonsense...	
+	auto TestUriResponse = UriResponse;
+	TestUriResponse.ReplaceInline(TEXT("\":true"), TEXT("\":True"));
+	TestUriResponse.ReplaceInline(TEXT("\":false"), TEXT("\":False"));
+	TestUriResponse.ReplaceInline(TEXT("\":null"), TEXT("\":Null"));
+	
 	const auto ContentObject = NewObject<UBeamContentObject>(GetTransientPackage(), *Type);
-	ContentObject->FromBasicJson(UriResponse);
+	UE_LOG(LogBeamContent, Warning, TEXT("Downloaded content with id=%s and json=%s"), *ContentId.AsString, *TestUriResponse)
+	ContentObject->FromBasicJson(TestUriResponse);
 	ContentObject->Tags = DownloadState.Tags;
-
-
+	
+	checkf(ContentObject, TEXT("ContentObject was not created successfully. ManifestId=%s, ContentId=%s"), *DownloadState.ManifestId.AsString, *ContentId.AsString)
+	
+	const auto PropertyHash = ContentObject->CreatePropertiesHash();
 	LiveContentCache->Cache.Add(ContentId, ContentObject);
-	LiveContentCache->Hashes.Add(ContentId, ContentObject->CreatePropertiesHash());
+	LiveContentCache->Hashes.Add(ContentId, PropertyHash);
 
 	UE_LOG(LogBeamContent, Warning, TEXT("Downloaded content with id=%s and hash=%s, from manifest=%s"), *ContentId.AsString, *LiveContentCache->Hashes.FindChecked(ContentId), *DownloadState.ManifestId.AsString)
 }

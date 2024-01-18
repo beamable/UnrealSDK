@@ -65,5 +65,5 @@ public:
 	UFUNCTION(BlueprintCallable, DisplayName="Subscribe - Content Refresh", Category="Beam")
 	void SubscribeToContentRefresh(const FUserSlot& Slot, const FName& SocketName, const FOnContentRefreshNotification& Handler) const;
 
-	void CPP_SubscribeToContentRefresh(const FUserSlot& Slot, const FName& SocketName, const FOnContentRefreshNotificationCode& Handler) const;
+	FDelegateHandle CPP_SubscribeToContentRefresh(const FUserSlot& Slot, const FName& SocketName, const FOnContentRefreshNotificationCode& Handler) const;
 };

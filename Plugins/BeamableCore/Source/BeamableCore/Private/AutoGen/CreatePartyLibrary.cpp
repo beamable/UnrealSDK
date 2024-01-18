@@ -9,20 +9,20 @@ FString UCreatePartyLibrary::CreatePartyToJsonString(const UCreateParty* Seriali
 	FString Result = FString{};
 	if(Pretty)
 	{
-		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();
 	}
 	else
 	{
-		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();			
 	}
 	return Result;
 }	
 
-UCreateParty* UCreatePartyLibrary::Make(FOptionalString Restriction, FOptionalString Leader, FOptionalInt32 MaxSize, UObject* Outer)
+UCreateParty* UCreatePartyLibrary::Make(FOptionalString Restriction, FOptionalBeamGamerTag Leader, FOptionalInt32 MaxSize, UObject* Outer)
 {
 	auto Serializable = NewObject<UCreateParty>(Outer);
 	Serializable->Restriction = Restriction;
@@ -32,7 +32,7 @@ UCreateParty* UCreatePartyLibrary::Make(FOptionalString Restriction, FOptionalSt
 	return Serializable;
 }
 
-void UCreatePartyLibrary::Break(const UCreateParty* Serializable, FOptionalString& Restriction, FOptionalString& Leader, FOptionalInt32& MaxSize)
+void UCreatePartyLibrary::Break(const UCreateParty* Serializable, FOptionalString& Restriction, FOptionalBeamGamerTag& Leader, FOptionalInt32& MaxSize)
 {
 	Restriction = Serializable->Restriction;
 	Leader = Serializable->Leader;

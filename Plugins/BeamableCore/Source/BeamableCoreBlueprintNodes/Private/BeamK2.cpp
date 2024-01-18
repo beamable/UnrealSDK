@@ -6,6 +6,8 @@
 #include "K2Node_EnumEquality.h"
 #include "K2Node_GetArrayItem.h"
 #include "K2Node_MakeArray.h"
+#include "K2Node_SwitchInteger.h"
+#include "K2Node_SwitchString.h"
 #include "KismetCompiler.h"
 
 #define BEAM_K2_LOG_VERBOSITY Verbose
@@ -87,7 +89,7 @@ void BeamK2::GetPerBeamFlowNodes(const FKismetCompilerContext& CompilerContext, 
 					const auto AsCallFunctionNode = Cast<UK2Node_CallFunction>(P->GetOwningNode());
 
 					const auto bIsRelevantInputPin = P->Direction == EGPD_Input &&
-						P->PinType.PinCategory == UEdGraphSchema_K2::PC_Delegate || P->PinType.PinCategory == UEdGraphSchema_K2::PC_MCDelegate;
+						(P->PinType.PinCategory == UEdGraphSchema_K2::PC_Delegate || P->PinType.PinCategory == UEdGraphSchema_K2::PC_MCDelegate);
 
 					if (!AsCallFunctionNode || !AsCallFunctionNode->GetTargetFunction())
 						return false;
@@ -415,6 +417,22 @@ UK2Node_SwitchEnum* BeamK2::CreateSwitchEnumNode(UEdGraphNode* CustomNode, FKism
 	K2Schema->TryCreateConnection(SwitchEnum->GetSelectionPin(), SwitchOnValuePin);
 	K2Schema->TryCreateConnection(ExecFlowPin, SwitchEnum->GetExecPin());
 	return SwitchEnum;
+}
+
+UK2Node_SwitchString* BeamK2::CreateSwitchNameNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema, TArray<FName> const StringOptions,
+												 UEdGraphPin* ExecFlowPin, UEdGraphPin* SwitchOnValuePin)
+{
+	UK2Node_SwitchString* Switch = CompilerContext.SpawnIntermediateNode<UK2Node_SwitchString>(CustomNode, SourceGraph);
+	
+	// This is the equivalent of the SetEnum call --- we can't use it since it's not exposed for other modules. It seems unclear as to why that wouldn't be accessible... 
+	Switch->PinNames         = StringOptions;
+	Switch->bHasDefaultPin   = true;
+	Switch->bIsCaseSensitive = false;
+	
+	Switch->AllocateDefaultPins();
+	K2Schema->TryCreateConnection(Switch->GetSelectionPin(), SwitchOnValuePin);
+	K2Schema->TryCreateConnection(ExecFlowPin, Switch->GetExecPin());
+	return Switch;
 }
 
 UK2Node_EnumEquality* BeamK2::CreateEnumEqualityAgainstDefault(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 
 #include "Engine/DataAsset.h"
-#include "Json/Public/Serialization/JsonSerializerMacros.h"
+#include "Serialization/JsonSerializerMacros.h"
 #include "Subsystems/EngineSubsystem.h"
 #include "BeamEnvironment.generated.h"
 
@@ -73,6 +73,10 @@ class BEAMABLECORE_API UBeamEnvironmentData : public UDataAsset, public FJsonSer
 	GENERATED_BODY()
 
 public:
+	
+	using UDataAsset::Serialize; // Bring Serialize from UDataAsset into scope
+	using FJsonSerializable::Serialize; // Bring Serialize from FJsonSerializable into scope
+	
 	UPROPERTY(EditAnywhere)
 	FString Environment;
 	UPROPERTY(EditAnywhere)

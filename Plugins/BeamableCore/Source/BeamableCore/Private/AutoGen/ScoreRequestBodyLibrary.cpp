@@ -9,37 +9,39 @@ FString UScoreRequestBodyLibrary::ScoreRequestBodyToJsonString(const UScoreReque
 	FString Result = FString{};
 	if(Pretty)
 	{
-		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();
 	}
 	else
 	{
-		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();			
 	}
 	return Result;
 }	
 
-UScoreRequestBody* UScoreRequestBodyLibrary::Make(FString TournamentId, double Score, int64 PlayerId, FOptionalBool bIncrement, FOptionalMapOfString Stats, UObject* Outer)
+UScoreRequestBody* UScoreRequestBodyLibrary::Make(FString TournamentId, double Score, int64 PlayerId, FOptionalBool bIncrement, FOptionalString ContentId, FOptionalMapOfString Stats, UObject* Outer)
 {
 	auto Serializable = NewObject<UScoreRequestBody>(Outer);
 	Serializable->TournamentId = TournamentId;
 	Serializable->Score = Score;
 	Serializable->PlayerId = PlayerId;
 	Serializable->bIncrement = bIncrement;
+	Serializable->ContentId = ContentId;
 	Serializable->Stats = Stats;
 	
 	return Serializable;
 }
 
-void UScoreRequestBodyLibrary::Break(const UScoreRequestBody* Serializable, FString& TournamentId, double& Score, int64& PlayerId, FOptionalBool& bIncrement, FOptionalMapOfString& Stats)
+void UScoreRequestBodyLibrary::Break(const UScoreRequestBody* Serializable, FString& TournamentId, double& Score, int64& PlayerId, FOptionalBool& bIncrement, FOptionalString& ContentId, FOptionalMapOfString& Stats)
 {
 	TournamentId = Serializable->TournamentId;
 	Score = Serializable->Score;
 	PlayerId = Serializable->PlayerId;
 	bIncrement = Serializable->bIncrement;
+	ContentId = Serializable->ContentId;
 	Stats = Serializable->Stats;
 		
 }

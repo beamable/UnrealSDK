@@ -52,41 +52,48 @@ void FMatchmakingTimeoutNotificationMessage::BeamDeserializeProperties(const TSh
 
 void UBeamMatchmakingNotifications::Initialize(FSubsystemCollectionBase& Collection)
 {
+	Super::Initialize(Collection);
 	Notifications = Collection.InitializeDependency<UBeamNotifications>();
 }
 
-void UBeamMatchmakingNotifications::SubscribeToMatchmakingUpdate(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingUpdateNotification& Handler) const
+void UBeamMatchmakingNotifications::SubscribeToMatchmakingUpdate(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingUpdateNotification& Handler)
 {
-	const auto Key = FString::Format(*CTX_KEY_Matchmaking_Update, {GameType.AsString});
-	if (!Notifications->TrySubscribeForMessage<FOnMatchmakingUpdateNotification, FMatchmakingUpdateNotificationMessage>(Slot, SocketName, Key, Handler))
+	FDelegateHandle Handle;
+	const auto      Key = FString::Format(*CTX_KEY_Matchmaking_Update, {GameType.AsString});
+	if (!Notifications->TrySubscribeForMessage<FOnMatchmakingUpdateNotification, FMatchmakingUpdateNotificationMessage>(Slot, SocketName, Key, Handler, Handle))
 	{
 		UE_LOG(LogBeamNotifications, Warning, TEXT("Trying to subscribe to a non-existent socket. SLOT=%s, ID=%s"), *Slot.Name, *SocketName.ToString());
 	}
 }
 
-void UBeamMatchmakingNotifications::CPP_SubscribeToMatchmakingUpdate(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingUpdateNotificationCode& Handler) const
+FDelegateHandle UBeamMatchmakingNotifications::CPP_SubscribeToMatchmakingUpdate(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingUpdateNotificationCode& Handler) const
 {
-	const auto Key = FString::Format(*CTX_KEY_Matchmaking_Update, {GameType.AsString});
-	if (!Notifications->TrySubscribeForMessage<FOnMatchmakingUpdateNotificationCode, FMatchmakingUpdateNotificationMessage>(Slot, SocketName, Key, Handler))
+	FDelegateHandle Handle;
+	const auto      Key = FString::Format(*CTX_KEY_Matchmaking_Update, {GameType.AsString});
+	if (!Notifications->TrySubscribeForMessage<FOnMatchmakingUpdateNotificationCode, FMatchmakingUpdateNotificationMessage>(Slot, SocketName, Key, Handler, Handle))
 	{
 		UE_LOG(LogBeamNotifications, Warning, TEXT("Trying to subscribe to a non-existent socket. SLOT=%s, ID=%s"), *Slot.Name, *SocketName.ToString());
-	}	
+	}
+	return Handle;
 }
 
-void UBeamMatchmakingNotifications::SubscribeToMatchmakingTimeout(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingTimeoutNotification& Handler) const
+void UBeamMatchmakingNotifications::SubscribeToMatchmakingTimeout(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingTimeoutNotification& Handler)
 {
-	const auto Key = FString::Format(*CTX_KEY_Matchmaking_Timeout, {GameType.AsString});
-	if (!Notifications->TrySubscribeForMessage<FOnMatchmakingTimeoutNotification, FMatchmakingTimeoutNotificationMessage>(Slot, SocketName, Key, Handler))
+	FDelegateHandle Handle;
+	const auto      Key = FString::Format(*CTX_KEY_Matchmaking_Timeout, {GameType.AsString});
+	if (!Notifications->TrySubscribeForMessage<FOnMatchmakingTimeoutNotification, FMatchmakingTimeoutNotificationMessage>(Slot, SocketName, Key, Handler, Handle))
 	{
 		UE_LOG(LogBeamNotifications, Warning, TEXT("Trying to subscribe to a non-existent socket. SLOT=%s, ID=%s"), *Slot.Name, *SocketName.ToString());
 	}
 }
 
-void UBeamMatchmakingNotifications::CPP_SubscribeToMatchmakingTimeout(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingTimeoutNotificationCode& Handler) const
+FDelegateHandle UBeamMatchmakingNotifications::CPP_SubscribeToMatchmakingTimeout(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingTimeoutNotificationCode& Handler) const
 {
-	const auto Key = FString::Format(*CTX_KEY_Matchmaking_Timeout, {GameType.AsString});
-	if (!Notifications->TrySubscribeForMessage<FOnMatchmakingTimeoutNotificationCode, FMatchmakingTimeoutNotificationMessage>(Slot, SocketName, Key, Handler))
+	FDelegateHandle Handle;
+	const auto      Key = FString::Format(*CTX_KEY_Matchmaking_Timeout, {GameType.AsString});
+	if (!Notifications->TrySubscribeForMessage<FOnMatchmakingTimeoutNotificationCode, FMatchmakingTimeoutNotificationMessage>(Slot, SocketName, Key, Handler, Handle))
 	{
 		UE_LOG(LogBeamNotifications, Warning, TEXT("Trying to subscribe to a non-existent socket. SLOT=%s, ID=%s"), *Slot.Name, *SocketName.ToString());
 	}
+	return Handle;
 }

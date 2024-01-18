@@ -21,30 +21,6 @@ class UK2BeamNode_Operation_CommitInventoryUpdate : public UK2BeamNode_Operation
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamInventorySubsystem::StaticClass(); }
 
-	virtual UEnum* GetOperationSubTypeEnum() const override { return StaticEnum<EDefaultOperationEventSubType>(); }
-
-	virtual TMap<uint8, UScriptStruct*> GetOperationSubTypeUStructs() const override
-	{
-		TMap<uint8, UScriptStruct*> SubEventToDataType;
-		SubEventToDataType.Add(static_cast<EDefaultOperationEventSubType>(0), nullptr);
-		return SubEventToDataType;
-	}
-
-	virtual TMap<uint8, UClass*> GetOperationSubTypeConversionFunctionClass() const override
-	{
-		TMap<uint8, UClass*> SubEventToConversionClass;
-		SubEventToConversionClass.Add(static_cast<EDefaultOperationEventSubType>(0), nullptr);
-		return SubEventToConversionClass;
-	}
-
-	virtual TMap<uint8, FName> GetOperationSubTypeConversionFunctionName() const override
-	{
-		// Use this macro to point to the conversion function and map it to the sub-event type.
-		// GET_FUNCTION_NAME_CHECKED_OneParam(USubTypeConversionFunctionClass, ConversionFunction, FString))	
-		TMap<uint8, FName> SubEventToConversionClass;
-		SubEventToConversionClass.Add(static_cast<EDefaultOperationEventSubType>(0), TEXT(""));
-		return SubEventToConversionClass;
-	}
 };
 
 #undef LOCTEXT_NAMESPACE
@@ -62,32 +38,7 @@ class UK2BeamNode_Operation_ModifyCurrencies : public UK2BeamNode_Operation
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamInventorySubsystem, ModifyCurrenciesOperation); }
 
-	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamInventorySubsystem::StaticClass(); }
-
-	virtual UEnum* GetOperationSubTypeEnum() const override { return StaticEnum<EDefaultOperationEventSubType>(); }
-
-	virtual TMap<uint8, UScriptStruct*> GetOperationSubTypeUStructs() const override
-	{
-		TMap<uint8, UScriptStruct*> SubEventToDataType;
-		SubEventToDataType.Add(static_cast<EDefaultOperationEventSubType>(0), nullptr);
-		return SubEventToDataType;
-	}
-
-	virtual TMap<uint8, UClass*> GetOperationSubTypeConversionFunctionClass() const override
-	{
-		TMap<uint8, UClass*> SubEventToConversionClass;
-		SubEventToConversionClass.Add(static_cast<EDefaultOperationEventSubType>(0), nullptr);
-		return SubEventToConversionClass;
-	}
-
-	virtual TMap<uint8, FName> GetOperationSubTypeConversionFunctionName() const override
-	{
-		// Use this macro to point to the conversion function and map it to the sub-event type.
-		// GET_FUNCTION_NAME_CHECKED_OneParam(USubTypeConversionFunctionClass, ConversionFunction, FString))	
-		TMap<uint8, FName> SubEventToConversionClass;
-		SubEventToConversionClass.Add(static_cast<EDefaultOperationEventSubType>(0), TEXT(""));
-		return SubEventToConversionClass;
-	}
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamInventorySubsystem::StaticClass(); }	
 };
 
 #undef LOCTEXT_NAMESPACE
@@ -106,31 +57,7 @@ class UK2BeamNode_Operation_FetchAllInventory : public UK2BeamNode_Operation
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamInventorySubsystem, FetchAllInventoryOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamInventorySubsystem::StaticClass(); }
-
-	virtual UEnum* GetOperationSubTypeEnum() const override { return StaticEnum<EDefaultOperationEventSubType>(); }
-
-	virtual TMap<uint8, UScriptStruct*> GetOperationSubTypeUStructs() const override
-	{
-		TMap<uint8, UScriptStruct*> SubEventToDataType;
-		SubEventToDataType.Add(static_cast<EDefaultOperationEventSubType>(0), nullptr);
-		return SubEventToDataType;
-	}
-
-	virtual TMap<uint8, UClass*> GetOperationSubTypeConversionFunctionClass() const override
-	{
-		TMap<uint8, UClass*> SubEventToConversionClass;
-		SubEventToConversionClass.Add(static_cast<EDefaultOperationEventSubType>(0), nullptr);
-		return SubEventToConversionClass;
-	}
-
-	virtual TMap<uint8, FName> GetOperationSubTypeConversionFunctionName() const override
-	{
-		// Use this macro to point to the conversion function and map it to the sub-event type.
-		// GET_FUNCTION_NAME_CHECKED_OneParam(USubTypeConversionFunctionClass, ConversionFunction, FString))	
-		TMap<uint8, FName> SubEventToConversionClass;
-		SubEventToConversionClass.Add(static_cast<EDefaultOperationEventSubType>(0), TEXT(""));
-		return SubEventToConversionClass;
-	}
+	
 };
 
 #undef LOCTEXT_NAMESPACE

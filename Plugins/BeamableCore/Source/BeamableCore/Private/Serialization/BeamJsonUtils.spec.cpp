@@ -150,7 +150,7 @@ void FBeamJsonUtilsSpec::Define()
 			Int.a = Val;
 
 			FString OutJson;
-			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 			UBeamJsonUtils::SerializeUStruct<FTestInt>(Int, JsonSerializer);
 			JsonSerializer->Close();
 
@@ -185,7 +185,7 @@ void FBeamJsonUtilsSpec::Define()
 			FBeamOptional::Reset<int>(&OptionalInt);
 
 			FString OutJson;
-			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 			JsonSerializer->WriteObjectStart();
 			UBeamJsonUtils::SerializeOptional<int>(TEXT("a"), &OptionalInt, JsonSerializer);
 			JsonSerializer->WriteObjectEnd();
@@ -209,7 +209,7 @@ void FBeamJsonUtilsSpec::Define()
 			asd->a = 5;
 
 			FString OutJson;
-			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 			UBeamJsonUtils::SerializeUObject(asd, JsonSerializer);
 			JsonSerializer->Close();
 
@@ -244,7 +244,7 @@ void FBeamJsonUtilsSpec::Define()
 			asd->c.FindRef("c2")->a = 5;
 
 			FString OutJson;
-			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 			UBeamJsonUtils::SerializeUObject(asd, JsonSerializer);
 			JsonSerializer->Close();			
 
@@ -296,7 +296,7 @@ void FBeamJsonUtilsSpec::Define()
 			FBeamOptional::Set<int>(&OptionalInt, &Val);
 
 			FString OutJson;
-			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 			JsonSerializer->WriteObjectStart();
 			UBeamJsonUtils::SerializeOptional<int>(TEXT("a"), &OptionalInt, JsonSerializer);
 			JsonSerializer->WriteObjectEnd();
@@ -323,7 +323,7 @@ void FBeamJsonUtilsSpec::Define()
 
 			{
 				FString OutJson;
-				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 				JsonSerializer->WriteObjectStart();
 				UBeamJsonUtils::SerializeOptional<FBeamCid, FString>(TEXT("cid"), &Optional, JsonSerializer);
 				JsonSerializer->WriteObjectEnd();
@@ -344,7 +344,7 @@ void FBeamJsonUtilsSpec::Define()
 
 			{
 				FString OutJson;
-				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 				JsonSerializer->WriteObjectStart();
 				UBeamJsonUtils::SerializeOptional<FBeamCid, int64>(TEXT("cid"), &Optional, JsonSerializer);
 				JsonSerializer->WriteObjectEnd();
@@ -407,7 +407,7 @@ void FBeamJsonUtilsSpec::Define()
 			FBeamOptional::Set<FTest>(&OptionalTest, &Val);
 
 			FString OutJson;
-			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 			JsonSerializer->WriteObjectStart();
 			UBeamJsonUtils::SerializeOptional<FTest>(TEXT("a1"), &OptionalTest, JsonSerializer);
 			JsonSerializer->WriteObjectEnd();
@@ -454,7 +454,7 @@ void FBeamJsonUtilsSpec::Define()
 				FBeamOptional::Set<TArray<int>>(&OptionalInt, &Array);
 
 				FString OutJson;
-				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 				JsonSerializer->WriteObjectStart();
 				UBeamJsonUtils::SerializeOptional<TArray<int>, int>(TEXT("a"), &OptionalInt, JsonSerializer);
 				JsonSerializer->WriteObjectEnd();
@@ -515,7 +515,7 @@ void FBeamJsonUtilsSpec::Define()
 				FBeamOptional::Set<TArray<FTest>>(&OptionalTest, &Array);
 
 				FString OutJson;
-				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 				JsonSerializer->WriteObjectStart();
 				UBeamJsonUtils::SerializeOptional<TArray<FTest>, FTest>(TEXT("a1"), &OptionalTest, JsonSerializer);
 				JsonSerializer->WriteObjectEnd();
@@ -565,7 +565,7 @@ void FBeamJsonUtilsSpec::Define()
 				FBeamOptional::Set<TArray<FBeamCid>>(&OptionalTest, &Array);
 
 				FString OutJson;
-				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 				JsonSerializer->WriteObjectStart();
 				UBeamJsonUtils::SerializeOptional<TArray<FBeamCid>, FBeamCid, int64>(TEXT("cids"), &OptionalTest, JsonSerializer);
 				JsonSerializer->WriteObjectEnd();
@@ -588,7 +588,7 @@ void FBeamJsonUtilsSpec::Define()
 		It("should output a serialized raw JSON Array of primitives", [this]()
 		{
 			FString OutJson;
-			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 
 			TArray<int> a;
 			a.Add(1);
@@ -606,7 +606,7 @@ void FBeamJsonUtilsSpec::Define()
 		It("should output a serialized raw JSON Object of primitives", [this]()
 		{
 			FString OutJson;
-			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 
 			TMap<FString, int> a;
 			a.Add("a", 1);
@@ -629,7 +629,7 @@ void FBeamJsonUtilsSpec::Define()
 		It("should output a serialized JSON Object with an Array of primitives", [this]()
 		{
 			FString OutJson;
-			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 
 			TArray<int> a;
 			a.Add(1);
@@ -676,7 +676,7 @@ void FBeamJsonUtilsSpec::Define()
 			};
 
 			FString OutJson;
-			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 
 			TArray<FTest> array;
 			array.Add(FTest{0, TEXT("b1")});
@@ -712,7 +712,7 @@ void FBeamJsonUtilsSpec::Define()
 			// TMap<FString, int>
 			{
 				FString OutJson;
-				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 
 				TMap<FString, int> map;
 				map.Add("a1", 0);
@@ -743,7 +743,7 @@ void FBeamJsonUtilsSpec::Define()
 			// TMap<FString, FString>
 			{
 				FString OutJson;
-				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 
 				TMap<FString, FString> map;
 				map.Add("a1", "b1");
@@ -775,7 +775,7 @@ void FBeamJsonUtilsSpec::Define()
 			// TMap<FString, FBeamCid>
 			{
 				FString OutJson;
-				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 
 				TMap<FString, FBeamCid> map;
 				map.Add("a1", 0);
@@ -826,7 +826,7 @@ void FBeamJsonUtilsSpec::Define()
 			};
 
 			FString OutJson;
-			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 
 			TMap<FString, FTest> Map;
 			Map.Add("a1", FTest{0, TEXT("b1")});
@@ -882,7 +882,7 @@ void FBeamJsonUtilsSpec::Define()
 			};
 
 			FString OutJson;
-			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 
 			TArray<int> c1, c2;
 			c1.Add(1);
@@ -926,7 +926,7 @@ void FBeamJsonUtilsSpec::Define()
 		{
 			{
 				FString OutJson;
-				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 
 				TMap<FString, FBeamArrayOfInt> Map;
 				Map.Add("a", FBeamArrayOfInt(TArray<int>{0, 10}));
@@ -953,7 +953,7 @@ void FBeamJsonUtilsSpec::Define()
 
 			{
 				FString OutJson;
-				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 
 				TMap<FString, FBeamArrayOfBeamCid> Map;
 				Map.Add("a", FBeamArrayOfBeamCid(TArray<FBeamCid>{0, 10}));
@@ -983,7 +983,7 @@ void FBeamJsonUtilsSpec::Define()
 		{
 			{
 				FString OutJson;
-				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 
 				TMap<FString, FBeamMapOfInt> Map;
 				Map.Add("a", FBeamMapOfInt(TMap<FString, int>{{TEXT("a"), 0}, {TEXT("b"), 10}}));
@@ -1016,7 +1016,7 @@ void FBeamJsonUtilsSpec::Define()
 
 			{
 				FString OutJson;
-				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&OutJson);
+				TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 
 				TMap<FString, FBeamMapOfBeamCid> Map;
 				Map.Add("a", FBeamMapOfBeamCid(TMap<FString, FBeamCid>{{TEXT("a"), 0}, {TEXT("b"), 10}}));

@@ -55,6 +55,13 @@ struct BEAMABLECORE_API FBeamContentId : public FBeamSemanticType
 			AsString = ContentId;
 		}
 	}
+
+	FString GetTypeId() const
+	{
+		int32 LastDotIdx;
+		AsString.FindLastChar('.', LastDotIdx);
+		return AsString.Left(LastDotIdx);
+	}
 };
 
 FORCEINLINE uint32 GetTypeHash(const FBeamContentId& ContentId) { return GetTypeHash(ContentId.AsString); }

@@ -17,8 +17,8 @@ public:
 	static FString JoinLobbyByPasscodeToJsonString(const UJoinLobbyByPasscode* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make JoinLobbyByPasscode", meta=(DefaultToSelf="Outer", AdvancedDisplay="Passcode, Tags, Outer", NativeMakeFunc))
-	static UJoinLobbyByPasscode* Make(FOptionalString Passcode, FOptionalArrayOfTag Tags, UObject* Outer);
+	static UJoinLobbyByPasscode* Make(FOptionalString Passcode, FOptionalArrayOfBeamTag Tags, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break JoinLobbyByPasscode", meta=(NativeBreakFunc))
-	static void Break(const UJoinLobbyByPasscode* Serializable, FOptionalString& Passcode, FOptionalArrayOfTag& Tags);
+	static void Break(const UJoinLobbyByPasscode* Serializable, FOptionalString& Passcode, FOptionalArrayOfBeamTag& Tags);
 };

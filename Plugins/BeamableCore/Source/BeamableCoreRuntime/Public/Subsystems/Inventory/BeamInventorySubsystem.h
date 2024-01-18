@@ -53,6 +53,16 @@ struct FBeamItemState
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FDateTime UpdatedAt;
+
+	friend bool operator==(const FBeamItemState& Lhs, const FBeamItemState& RHS)
+	{
+		return Lhs.InstanceId == RHS.InstanceId;
+	}
+
+	friend bool operator!=(const FBeamItemState& Lhs, const FBeamItemState& RHS)
+	{
+		return !(Lhs == RHS);
+	}
 };
 
 
@@ -170,35 +180,35 @@ public:
 	 * @brief Gets the list of all inventory items and currencies from the backend and updates the local inventory state.  
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Inventory", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle FetchAllInventoryOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext);
+	FBeamOperationHandle FetchAllInventoryOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc FetchAllInventoryOperation 
 	 */
-	FBeamOperationHandle CPP_FetchAllInventoryOperation(FUserSlot Player, FBeamOperationEventHandlerCode OnOperationEvent, UObject* CallingContext);
+	FBeamOperationHandle CPP_FetchAllInventoryOperation(FUserSlot Player, FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * @brief Commits the prepared FBeamInventoryUpdateCommand for the requesting player (see BeginInventoryUpdate and Prepare_____ functions).  
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Inventory", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle CommitInventoryUpdateOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext);
+	FBeamOperationHandle CommitInventoryUpdateOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc CommitInventoryUpdateOperation 
 	 */
-	FBeamOperationHandle CPP_CommitInventoryUpdateOperation(FUserSlot Player, FBeamOperationEventHandlerCode OnOperationEvent, UObject* CallingContext);
+	FBeamOperationHandle CPP_CommitInventoryUpdateOperation(FUserSlot Player, FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * @brief Takes a map of currency (and their deltas), prepare the FBeamInventoryUpdate and then Commits the update operation.
 	 * Its a shorthand for BeginInventoryUpdate => PrepareModifyCurrency (N times) => CommitInventoryUpdateOperation.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Inventory", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle ModifyCurrenciesOperation(FUserSlot Player, TMap<FBeamContentId, int64> CurrencyChanges, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext);
+	FBeamOperationHandle ModifyCurrenciesOperation(FUserSlot Player, TMap<FBeamContentId, int64> CurrencyChanges, FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc ModifyCurrenciesOperation 
 	 */
-	FBeamOperationHandle CPP_ModifyCurrenciesOperation(FUserSlot Player, TMap<FBeamContentId, int64> CurrencyChanges, FBeamOperationEventHandlerCode OnOperationEvent, UObject* CallingContext);
+	FBeamOperationHandle CPP_ModifyCurrenciesOperation(FUserSlot Player, TMap<FBeamContentId, int64> CurrencyChanges, FBeamOperationEventHandlerCode OnOperationEvent);
 
 
 	/**
@@ -216,7 +226,7 @@ public:
 	/**
 	 * @brief Gets all items for the given player. 
 	 */
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue", AutoCreateRefTerm="ItemStates"))
 	bool TryGetAllItems(FUserSlot Player, TArray<FBeamItemState>& ItemStates);
 
 	/**
@@ -280,10 +290,10 @@ public:
 
 private:
 	UFUNCTION()
-	bool FetchAllInventory(FUserSlot Player, FBeamOperationHandle Op, UObject* CallingContext);	
+	bool FetchAllInventory(FUserSlot Player, FBeamOperationHandle Op);	
 
 	UFUNCTION()
-	bool CommitInventoryUpdate(FUserSlot Player, FBeamOperationHandle Op, UObject* CallingContext);
+	bool CommitInventoryUpdate(FUserSlot Player, FBeamOperationHandle Op);
 
 	UFUNCTION()
 	void MergeInventoryViewIntoState(const UInventoryView* InventoryView, FBeamInventoryState& Inventory);

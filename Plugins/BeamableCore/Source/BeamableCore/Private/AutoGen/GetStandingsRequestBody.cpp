@@ -12,6 +12,7 @@ void UGetStandingsRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Se
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("focus"), &Focus, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("cycle"), &Cycle, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("from"), &From, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("contentId"), &ContentId, Serializer);
 }
 
 void UGetStandingsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
@@ -20,7 +21,8 @@ void UGetStandingsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("max"), &Max, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("focus"), &Focus, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("cycle"), &Cycle, Serializer);
-	UBeamJsonUtils::SerializeOptional<int32>(TEXT("from"), &From, Serializer);		
+	UBeamJsonUtils::SerializeOptional<int32>(TEXT("from"), &From, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("contentId"), &ContentId, Serializer);		
 }
 
 void UGetStandingsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
@@ -30,6 +32,7 @@ void UGetStandingsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonO
 	UBeamJsonUtils::DeserializeOptional<int64>("focus", Bag, Focus, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("cycle", Bag, Cycle, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("from", Bag, From, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FString>("contentId", Bag, ContentId, OuterOwner);
 }
 
 

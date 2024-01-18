@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfTag.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfBeamTag.h"
 
 #include "JoinLobby.generated.h"
 
@@ -14,7 +14,7 @@ class BEAMABLECORE_API UJoinLobby : public UObject, public IBeamJsonSerializable
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
-	FOptionalArrayOfTag Tags = {};
+	FOptionalArrayOfBeamTag Tags = {};
 
 	
 

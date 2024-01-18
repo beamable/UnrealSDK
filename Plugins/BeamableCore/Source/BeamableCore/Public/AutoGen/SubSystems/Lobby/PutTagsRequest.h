@@ -39,7 +39,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Lobby", DisplayName="Beam - Make PutTags",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_PlayerId,_bReplace,_Tags,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UPutTagsRequest* Make(FGuid _Id, FOptionalString _PlayerId, FOptionalBool _bReplace, FOptionalArrayOfTag _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	static UPutTagsRequest* Make(FGuid _Id, FOptionalBeamGamerTag _PlayerId, FOptionalBool _bReplace, FOptionalArrayOfBeamTag _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

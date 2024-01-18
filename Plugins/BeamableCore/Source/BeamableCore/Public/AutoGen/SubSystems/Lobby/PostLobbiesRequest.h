@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Lobby", DisplayName="Beam - Make PostLobbies",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bHasRestriction,_Name,_Description,_Restriction,_MatchType,_PasscodeLength,_MaxPlayers,_PlayerTags,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UPostLobbiesRequest* Make(FOptionalBool _bHasRestriction, FOptionalString _Name, FOptionalString _Description, FOptionalLobbyRestriction _Restriction, FOptionalBeamContentId _MatchType, FOptionalInt32 _PasscodeLength, FOptionalInt32 _MaxPlayers, FOptionalArrayOfTag _PlayerTags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Lobby", DisplayName="Beam - Make PostLobbies",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Name,_Description,_Restriction,_MatchType,_PasscodeLength,_MaxPlayers,_PlayerTags,_Data,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPostLobbiesRequest* Make(FOptionalString _Name, FOptionalString _Description, FOptionalLobbyRestriction _Restriction, FOptionalBeamContentId _MatchType, FOptionalInt32 _PasscodeLength, FOptionalInt32 _MaxPlayers, FOptionalArrayOfBeamTag _PlayerTags, FOptionalMapOfString _Data, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

@@ -42,6 +42,12 @@ void UGetStandingsGroupRequest::BuildRoute(FString& RouteString) const
 		bIsFirstQueryParam = false;
 	}
 
+	if(ContentId.IsSet){
+		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("contentId"), *ContentId.Val);
+		bIsFirstQueryParam = false;
+	}
+
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
 }
 
@@ -50,7 +56,7 @@ void UGetStandingsGroupRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetStandingsGroupRequest* UGetStandingsGroupRequest::Make(FString _TournamentId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalInt32 _Cycle, FOptionalInt32 _From, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UGetStandingsGroupRequest* UGetStandingsGroupRequest::Make(FString _TournamentId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalInt32 _Cycle, FOptionalInt32 _From, FOptionalString _ContentId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetStandingsGroupRequest* Req = NewObject<UGetStandingsGroupRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -61,6 +67,7 @@ UGetStandingsGroupRequest* UGetStandingsGroupRequest::Make(FString _TournamentId
 	Req->Focus = _Focus;
 	Req->Cycle = _Cycle;
 	Req->From = _From;
+	Req->ContentId = _ContentId;
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)

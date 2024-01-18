@@ -22,12 +22,12 @@ void UPostLobbiesRequest::BuildBody(FString& BodyString) const
 {
 	ensureAlways(Body);
 
-	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&BodyString);
+	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&BodyString);
 	Body->BeamSerialize(JsonSerializer);
 	JsonSerializer->Close();
 }
 
-UPostLobbiesRequest* UPostLobbiesRequest::Make(FOptionalBool _bHasRestriction, FOptionalString _Name, FOptionalString _Description, FOptionalLobbyRestriction _Restriction, FOptionalBeamContentId _MatchType, FOptionalInt32 _PasscodeLength, FOptionalInt32 _MaxPlayers, FOptionalArrayOfTag _PlayerTags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPostLobbiesRequest* UPostLobbiesRequest::Make(FOptionalString _Name, FOptionalString _Description, FOptionalLobbyRestriction _Restriction, FOptionalBeamContentId _MatchType, FOptionalInt32 _PasscodeLength, FOptionalInt32 _MaxPlayers, FOptionalArrayOfBeamTag _PlayerTags, FOptionalMapOfString _Data, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostLobbiesRequest* Req = NewObject<UPostLobbiesRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -37,7 +37,6 @@ UPostLobbiesRequest* UPostLobbiesRequest::Make(FOptionalBool _bHasRestriction, F
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
 	Req->Body = NewObject<UCreateLobby>(Req);
-	Req->Body->bHasRestriction = _bHasRestriction;
 	Req->Body->Name = _Name;
 	Req->Body->Description = _Description;
 	Req->Body->Restriction = _Restriction;
@@ -45,6 +44,7 @@ UPostLobbiesRequest* UPostLobbiesRequest::Make(FOptionalBool _bHasRestriction, F
 	Req->Body->PasscodeLength = _PasscodeLength;
 	Req->Body->MaxPlayers = _MaxPlayers;
 	Req->Body->PlayerTags = _PlayerTags;
+	Req->Body->Data = _Data;
 	
 
 	return Req;

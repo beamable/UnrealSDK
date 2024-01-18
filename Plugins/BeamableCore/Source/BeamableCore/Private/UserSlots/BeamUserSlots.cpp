@@ -116,7 +116,7 @@ bool UBeamUserSlots::GetUserDataAtSlot(FUserSlot SlotId, FBeamRealmUser& OutUser
 	OutUserData.GamerTag = -1;
 	OutUserData.Email = TEXT("");
 	OutUserData.AuthToken = FBeamAuthToken{TEXT(""), TEXT(""), 0};
-	OutUserData.RealmHandle = FBeamRealmHandle{TEXT(""), TEXT("")};
+	OutUserData.RealmHandle = FBeamRealmHandle{FString(""), FString("")};
 
 	return false;
 }
@@ -139,7 +139,7 @@ bool UBeamUserSlots::GetUserDataWithGamerTag(const FBeamGamerTag& GamerTag, FBea
 	OutUserData.GamerTag = -1;
 	OutUserData.Email = TEXT("");
 	OutUserData.AuthToken = FBeamAuthToken{TEXT(""), TEXT(""), 0};
-	OutUserData.RealmHandle = FBeamRealmHandle{TEXT(""), TEXT("")};
+	OutUserData.RealmHandle = FBeamRealmHandle{FString(""), FString("")};
 
 	OutUserSlot.Name = TEXT("");
 	return false;
@@ -163,7 +163,7 @@ bool UBeamUserSlots::GetUserDataWithRefreshTokenAndPid(const FString& RefreshTok
 	OutUserData.GamerTag = -1;
 	OutUserData.Email = TEXT("");
 	OutUserData.AuthToken = FBeamAuthToken{TEXT(""), TEXT(""), 0};
-	OutUserData.RealmHandle = FBeamRealmHandle{TEXT(""), TEXT("")};
+	OutUserData.RealmHandle = FBeamRealmHandle{FString(""), FString("")};
 
 	OutUserSlot.Name = TEXT("");
 	return false;
@@ -362,7 +362,7 @@ void UBeamUserSlots::ClearUserAtSlot(FUserSlot SlotId, const EUserSlotClearedRea
 		{
 			// Save the User's Auth data to the slot.
 			const auto SavedUserAuthDataPath = GetSavedSlotAuthFilePath(NamespacedSlotId);
-			const auto AuthDataForSlot = FUserSlotAuthData{TEXT(""), TEXT(""), 0, 0,TEXT(""),TEXT("")};
+			const auto AuthDataForSlot = FUserSlotAuthData{TEXT(""), TEXT(""), 0, 0,FString(""),FString("")};
 			FString JsonSerializedAuthData;
 			ensureAlways(FJsonObjectConverter::UStructToJsonObjectString(AuthDataForSlot, JsonSerializedAuthData));
 
@@ -428,7 +428,7 @@ void UBeamUserSlots::ClearAllCachedUserDataAtSlot(FUserSlot SlotId)
 		{
 			// Save the User's Auth data to the slot.
 			const auto SavedUserAuthDataPath = GetSavedSlotsDirectory() / CachedUserSlotDataFile;
-			const auto AuthDataForSlot = FUserSlotAuthData{TEXT(""), TEXT(""), 0, 0,TEXT(""),TEXT("")};
+			const auto AuthDataForSlot = FUserSlotAuthData{TEXT(""), TEXT(""), 0, 0,FString(""),FString("")};
 			FString JsonSerializedAuthData;
 			ensureAlways(FJsonObjectConverter::UStructToJsonObjectString(AuthDataForSlot, JsonSerializedAuthData));
 
@@ -566,7 +566,7 @@ bool UBeamUserSlots::SaveSlotData(FString SlotDataTypeName, FUserSlot SlotId, T 
 	const auto bWasAuthenticated = GetUserDataAtSlot(SlotId, User, CallingContext);
 
 #if !WITH_EDITOR
-		ensureAlwaysMsgf(!User.RealmHandle.Pid.AsString.IsEmpty(), TEXT("Customer-Scoped Tokens are not allowed in builds! If should never be seeing this!"))
+		ensureAlwaysMsgf(!User.RealmHandle.Pid.AsString.IsEmpty(), TEXT("Customer-Scoped Tokens are not allowed in builds! If should never be seeing this!"));
 #endif
 
 	// Save the User's Auth data to the slot.

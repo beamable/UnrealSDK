@@ -3,8 +3,7 @@
 #include "DetailWidgetRow.h"
 #include "SNameComboBox.h"
 #include "AutoGen/Optionals/OptionalInt32.h"
-#include "PropertyEditor/Private/PropertyNode.h"
-#include "PropertyEditor/Public/IPropertyTypeCustomization.h"
+#include "IPropertyTypeCustomization.h"
 #include "Serialization/BeamOptional.h"
 #include "Widgets/Input/SNumericEntryBox.h"
 

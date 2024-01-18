@@ -5,10 +5,10 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalLobbyRestriction.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamContentId.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfTag.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfBeamTag.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
 
 #include "CreateLobby.generated.h"
 
@@ -18,8 +18,6 @@ class BEAMABLECORE_API UCreateLobby : public UObject, public IBeamJsonSerializab
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Has Restriction", Category="Beam")
-	FOptionalBool bHasRestriction = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
 	FOptionalString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Description", Category="Beam")
@@ -33,7 +31,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Players", Category="Beam")
 	FOptionalInt32 MaxPlayers = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Tags", Category="Beam")
-	FOptionalArrayOfTag PlayerTags = {};
+	FOptionalArrayOfBeamTag PlayerTags = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Data", Category="Beam")
+	FOptionalMapOfString Data = {};
 
 	
 

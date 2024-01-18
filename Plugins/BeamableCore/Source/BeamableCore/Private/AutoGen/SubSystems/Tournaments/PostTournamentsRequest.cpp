@@ -22,12 +22,12 @@ void UPostTournamentsRequest::BuildBody(FString& BodyString) const
 {
 	ensureAlways(Body);
 
-	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&BodyString);
+	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&BodyString);
 	Body->BeamSerialize(JsonSerializer);
 	JsonSerializer->Close();
 }
 
-UPostTournamentsRequest* UPostTournamentsRequest::Make(FString _TournamentId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPostTournamentsRequest* UPostTournamentsRequest::Make(FString _TournamentId, FOptionalString _ContentId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostTournamentsRequest* Req = NewObject<UPostTournamentsRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -38,6 +38,7 @@ UPostTournamentsRequest* UPostTournamentsRequest::Make(FString _TournamentId, UO
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
 	Req->Body = NewObject<UJoinRequestBody>(Req);
 	Req->Body->TournamentId = _TournamentId;
+	Req->Body->ContentId = _ContentId;
 	
 
 	return Req;

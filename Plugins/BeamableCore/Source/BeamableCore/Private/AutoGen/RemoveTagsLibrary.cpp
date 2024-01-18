@@ -9,20 +9,20 @@ FString URemoveTagsLibrary::RemoveTagsToJsonString(const URemoveTags* Serializab
 	FString Result = FString{};
 	if(Pretty)
 	{
-		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();
 	}
 	else
 	{
-		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();			
 	}
 	return Result;
 }	
 
-URemoveTags* URemoveTagsLibrary::Make(FOptionalString PlayerId, FOptionalArrayOfString Tags, UObject* Outer)
+URemoveTags* URemoveTagsLibrary::Make(FOptionalBeamGamerTag PlayerId, FOptionalArrayOfString Tags, UObject* Outer)
 {
 	auto Serializable = NewObject<URemoveTags>(Outer);
 	Serializable->PlayerId = PlayerId;
@@ -31,7 +31,7 @@ URemoveTags* URemoveTagsLibrary::Make(FOptionalString PlayerId, FOptionalArrayOf
 	return Serializable;
 }
 
-void URemoveTagsLibrary::Break(const URemoveTags* Serializable, FOptionalString& PlayerId, FOptionalArrayOfString& Tags)
+void URemoveTagsLibrary::Break(const URemoveTags* Serializable, FOptionalBeamGamerTag& PlayerId, FOptionalArrayOfString& Tags)
 {
 	PlayerId = Serializable->PlayerId;
 	Tags = Serializable->Tags;

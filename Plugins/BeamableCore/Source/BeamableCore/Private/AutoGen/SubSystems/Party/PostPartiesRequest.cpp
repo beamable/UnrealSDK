@@ -22,12 +22,12 @@ void UPostPartiesRequest::BuildBody(FString& BodyString) const
 {
 	ensureAlways(Body);
 
-	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&BodyString);
+	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&BodyString);
 	Body->BeamSerialize(JsonSerializer);
 	JsonSerializer->Close();
 }
 
-UPostPartiesRequest* UPostPartiesRequest::Make(FOptionalString _Restriction, FOptionalString _Leader, FOptionalInt32 _MaxSize, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPostPartiesRequest* UPostPartiesRequest::Make(FOptionalString _Restriction, FOptionalBeamGamerTag _Leader, FOptionalInt32 _MaxSize, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostPartiesRequest* Req = NewObject<UPostPartiesRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};

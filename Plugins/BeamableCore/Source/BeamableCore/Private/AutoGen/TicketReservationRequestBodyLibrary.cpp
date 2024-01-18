@@ -9,20 +9,20 @@ FString UTicketReservationRequestBodyLibrary::TicketReservationRequestBodyToJson
 	FString Result = FString{};
 	if(Pretty)
 	{
-		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();
 	}
 	else
 	{
-		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();			
 	}
 	return Result;
 }	
 
-UTicketReservationRequestBody* UTicketReservationRequestBodyLibrary::Make(FOptionalBool bWatchOnlineStatus, FOptionalInt32 MaxWaitDurationSecs, FOptionalString Team, FOptionalArrayOfString Players, FOptionalArrayOfBeamContentId MatchTypes, UObject* Outer)
+UTicketReservationRequestBody* UTicketReservationRequestBodyLibrary::Make(FOptionalBool bWatchOnlineStatus, FOptionalInt32 MaxWaitDurationSecs, FOptionalString Team, FOptionalArrayOfBeamGamerTag Players, FOptionalArrayOfBeamContentId MatchTypes, UObject* Outer)
 {
 	auto Serializable = NewObject<UTicketReservationRequestBody>(Outer);
 	Serializable->bWatchOnlineStatus = bWatchOnlineStatus;
@@ -34,7 +34,7 @@ UTicketReservationRequestBody* UTicketReservationRequestBodyLibrary::Make(FOptio
 	return Serializable;
 }
 
-void UTicketReservationRequestBodyLibrary::Break(const UTicketReservationRequestBody* Serializable, FOptionalBool& bWatchOnlineStatus, FOptionalInt32& MaxWaitDurationSecs, FOptionalString& Team, FOptionalArrayOfString& Players, FOptionalArrayOfBeamContentId& MatchTypes)
+void UTicketReservationRequestBodyLibrary::Break(const UTicketReservationRequestBody* Serializable, FOptionalBool& bWatchOnlineStatus, FOptionalInt32& MaxWaitDurationSecs, FOptionalString& Team, FOptionalArrayOfBeamGamerTag& Players, FOptionalArrayOfBeamContentId& MatchTypes)
 {
 	bWatchOnlineStatus = Serializable->bWatchOnlineStatus;
 	MaxWaitDurationSecs = Serializable->MaxWaitDurationSecs;

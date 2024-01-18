@@ -59,3 +59,5 @@ struct BEAMABLECORE_API FBeamStatsType : public FBeamSemanticType
 		}
 	}
 };
+
+FORCEINLINE uint32 GetTypeHash(const FBeamStatsType& StatsType) { return GetTypeHash(StatsType.AsString); }

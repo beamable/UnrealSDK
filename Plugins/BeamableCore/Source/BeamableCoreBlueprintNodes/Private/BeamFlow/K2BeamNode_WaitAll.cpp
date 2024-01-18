@@ -31,10 +31,7 @@ const FName UK2BeamNode_WaitAll::P_CompleteCallback = FName("OnComplete");
 const FName UK2BeamNode_WaitAll::P_RequestContexts = FName("RequestContexts");
 const FName UK2BeamNode_WaitAll::P_Operations = FName("Operations");
 const FName UK2BeamNode_WaitAll::P_Waits = FName("Waits");
-const FName UK2BeamNode_WaitAll::P_Contexts = FName("Contexts");
-const FName UK2BeamNode_WaitAll::P_Requests = FName("Requests");
-const FName UK2BeamNode_WaitAll::P_Responses = FName("Responses");
-const FName UK2BeamNode_WaitAll::P_Errors = FName("Errors");
+const FName UK2BeamNode_WaitAll::P_Evt = FName("Evt");
 
 FText UK2BeamNode_WaitAll::GetMenuCategory() const
 {
@@ -240,10 +237,7 @@ void UK2BeamNode_WaitAll::ExpandNode(FKismetCompilerContext& CompilerContext, UE
 
 		// Get all the pins we have on this custom node
 		const auto OnCompleteFlowPin = FindPin(P_CompleteCallback);
-		const auto ContextsPin = FindPinChecked(P_Contexts);
-		const auto RequestsPin = FindPinChecked(P_Requests);
-		const auto ResponsesPin = FindPinChecked(P_Responses);
-		const auto ErrorsPin = FindPinChecked(P_Errors);
+		const auto EventPin = FindPinChecked(P_Evt);		
 
 		const TArray<UEdGraphPin*> StartingGraphs{OnCompleteFlowPin,};
 		const TArray<FName> RelevantEventSpawningFunctionNames{GET_FUNCTION_NAME_CHECKED(UBeamRequestTracker, WaitAll)};
@@ -255,15 +249,12 @@ void UK2BeamNode_WaitAll::ExpandNode(FKismetCompilerContext& CompilerContext, UE
 
 		const auto CompleteEventNodeExecPin = CompleteEventNode->FindPin(UEdGraphSchema_K2::PN_Then);
 		const auto CompleteEventDelegatePin = CompleteEventNode->FindPinChecked(CompleteEventNode->DelegateOutputName);
-		const auto CompleteEventContextsPin = CompleteEventNode->FindPinChecked(P_Contexts);
-		const auto CompleteEventRequestsPin = CompleteEventNode->FindPinChecked(P_Requests);
-		const auto CompleteEventResponsesPin = CompleteEventNode->FindPinChecked(P_Responses);
-		const auto CompleteEventErrorsPin = CompleteEventNode->FindPinChecked(P_Errors);
+		const auto CompleteEventContextsPin = CompleteEventNode->FindPinChecked(P_Evt);		
 
 
 		// Replace the connections of any of the nodes' pins with any matching pin in the first list with its corresponding pin in the second list.		
-		const TArray<UEdGraphPin*> CompletePins{ContextsPin, RequestsPin, ResponsesPin, ErrorsPin};
-		const TArray<UEdGraphPin*> CompleteEventPins{CompleteEventContextsPin, CompleteEventRequestsPin, CompleteEventResponsesPin, CompleteEventErrorsPin};
+		const TArray<UEdGraphPin*> CompletePins{EventPin,};
+		const TArray<UEdGraphPin*> CompleteEventPins{CompleteEventContextsPin,};
 		ReplaceConnectionsOnBeamFlow(OutPerFlowNodes[0], CompletePins, CompleteEventPins);
 		ReplaceConnectionsOnBeamFlow(OutPerEventFlowNodes[0], CompletePins, CompleteEventPins);
 
@@ -381,14 +372,8 @@ void UK2BeamNode_WaitAll::PropagatePinType(UEdGraphPin* const& Pin) const
 
 void UK2BeamNode_WaitAll::CreateBeamFlowModePins()
 {
-	FCreatePinParams PinParams;
-	PinParams.ContainerType = EPinContainerType::Array;
-
 	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, P_CompleteCallback);
-	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Struct, FBeamRequestContext::StaticStruct(), P_Contexts, PinParams);
-	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Interface, UBeamBaseRequestInterface::StaticClass(), P_Requests, PinParams);
-	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Object, UObject::StaticClass(), P_Responses, PinParams);
-	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Struct, FBeamErrorResponse::StaticStruct(), P_Errors, PinParams);
+	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Struct, FBeamWaitCompleteEvent::StaticStruct(), P_Evt);	
 }
 
 void UK2BeamNode_WaitAll::EnterBeamFlowModeImpl()
@@ -400,7 +385,7 @@ void UK2BeamNode_WaitAll::EnterBeamFlowModeImpl()
 void UK2BeamNode_WaitAll::ExitBeamFlowModeImpl()
 {
 	const auto WaitAll = FindFunctionByName<UBeamBackend>(WaitAllFunctionName);
-	RemoveAllPins(this, {P_CompleteCallback, P_Contexts, P_Requests, P_Responses, P_Errors});
+	RemoveAllPins(this, {P_CompleteCallback, P_Evt});
 	ParseFunctionForNodeInputPins(this, WaitAll, {P_CompleteCallback}, true);
 }
 

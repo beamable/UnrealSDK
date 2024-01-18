@@ -13,7 +13,7 @@ void FBeamResponseCacheSpec::Define()
 {
 	Describe("Cache Hits", [this]()
 	{
-		const FBeamRealmHandle FakeRealmHandle{"000000000000", "DE_000000000000"};
+		const FBeamRealmHandle FakeRealmHandle{FString("000000000000"), FString("DE_000000000000")};
 		const FBeamRetryConfig FakeNoRetryConfig{{}, {}, 10, TArray<float>{0.5, 1}, 0};
 
 		BeforeEach([this]()
@@ -24,7 +24,7 @@ void FBeamResponseCacheSpec::Define()
 			BeamResponseCache->ClearNonGlobalConfigs();
 		});
 
-		It("should not hit cache if cache was never updated.", [=, this]()
+		It("should not hit cache if cache was never updated.", [this, FakeRealmHandle, FakeNoRetryConfig]()
 		{
 			UBeamMockGetRequest* FakeGetRequest = NewObject<UBeamMockGetRequest>();
 
@@ -40,7 +40,7 @@ void FBeamResponseCacheSpec::Define()
 			FakeGetRequest->MarkAsGarbage();
 		});
 
-		It("should update and then retrieve the cache for this request type.", [=, this]()
+		It("should update and then retrieve the cache for this request type.", [this, FakeRealmHandle, FakeNoRetryConfig]()
 		{
 			UBeamMockGetRequest* FakeGetRequest = NewObject<UBeamMockGetRequest>();
 
@@ -61,7 +61,7 @@ void FBeamResponseCacheSpec::Define()
 			FakeGetRequest->MarkAsGarbage();
 		});
 
-		It("should update the cache for this request type, but fail to retrieve it when hitting a different layer of the hierarchy.", [=, this]()
+		It("should update the cache for this request type, but fail to retrieve it when hitting a different layer of the hierarchy.", [this, FakeRealmHandle, FakeNoRetryConfig]()
 		{
 			UBeamMockGetRequest* FakeGetRequest = NewObject<UBeamMockGetRequest>();
 

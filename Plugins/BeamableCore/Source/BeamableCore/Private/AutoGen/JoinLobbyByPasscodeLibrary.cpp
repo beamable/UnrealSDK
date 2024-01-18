@@ -9,20 +9,20 @@ FString UJoinLobbyByPasscodeLibrary::JoinLobbyByPasscodeToJsonString(const UJoin
 	FString Result = FString{};
 	if(Pretty)
 	{
-		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();
 	}
 	else
 	{
-		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();			
 	}
 	return Result;
 }	
 
-UJoinLobbyByPasscode* UJoinLobbyByPasscodeLibrary::Make(FOptionalString Passcode, FOptionalArrayOfTag Tags, UObject* Outer)
+UJoinLobbyByPasscode* UJoinLobbyByPasscodeLibrary::Make(FOptionalString Passcode, FOptionalArrayOfBeamTag Tags, UObject* Outer)
 {
 	auto Serializable = NewObject<UJoinLobbyByPasscode>(Outer);
 	Serializable->Passcode = Passcode;
@@ -31,7 +31,7 @@ UJoinLobbyByPasscode* UJoinLobbyByPasscodeLibrary::Make(FOptionalString Passcode
 	return Serializable;
 }
 
-void UJoinLobbyByPasscodeLibrary::Break(const UJoinLobbyByPasscode* Serializable, FOptionalString& Passcode, FOptionalArrayOfTag& Tags)
+void UJoinLobbyByPasscodeLibrary::Break(const UJoinLobbyByPasscode* Serializable, FOptionalString& Passcode, FOptionalArrayOfBeamTag& Tags)
 {
 	Passcode = Serializable->Passcode;
 	Tags = Serializable->Tags;

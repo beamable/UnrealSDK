@@ -60,9 +60,25 @@ public:
 
 		// Gets the string to the left of the index after the last dot's index.
 		const FString WithoutGamerTag = StatType.Left(Idx + 1);
-		FString WithNewGamerTag = WithoutGamerTag + GamerTag.AsString;
+		const FString WithNewGamerTag = WithoutGamerTag + GamerTag.AsString;
 
-		return FBeamStatsType(WithoutGamerTag);
+		return FBeamStatsType(WithNewGamerTag);
 		
+	}
+
+	/**
+	 * @brief Builds a stats type handle for the given GamerTag, Domain and with the given Visibility level.	 
+	 */
+	UFUNCTION(BlueprintPure, Category="Beam|Semantic Types", meta = (DisplayName = "Beam - Get GamerTag"))
+	static FBeamGamerTag GetGamerTag(const FBeamStatsType StatsType)
+	{
+		const auto StatType = StatsType.AsString;
+
+		// Finds the last dot in  "domain.visibility.type.gamerTag".
+		int32 Idx;
+		StatType.FindLastChar('.', Idx);
+
+		// Gets the string to the right of the index after the last dot's index.
+		return StatType.Right(StatType.Len() - Idx - 1);		
 	}
 };

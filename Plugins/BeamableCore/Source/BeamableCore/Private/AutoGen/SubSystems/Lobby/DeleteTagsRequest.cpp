@@ -9,7 +9,7 @@ void UDeleteTagsRequest::BuildVerb(FString& VerbString) const
 void UDeleteTagsRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/api/lobbies/{id}/tags");
-	Route = Route.Replace(TEXT("{id}"), *Id.ToString(EGuidFormats::DigitsLower));
+	Route = Route.Replace(TEXT("{id}"), *Id.ToString(EGuidFormats::DigitsWithHyphensLower));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -22,12 +22,12 @@ void UDeleteTagsRequest::BuildBody(FString& BodyString) const
 {
 	ensureAlways(Body);
 
-	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&BodyString);
+	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&BodyString);
 	Body->BeamSerialize(JsonSerializer);
 	JsonSerializer->Close();
 }
 
-UDeleteTagsRequest* UDeleteTagsRequest::Make(FGuid _Id, FOptionalString _PlayerId, FOptionalArrayOfString _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UDeleteTagsRequest* UDeleteTagsRequest::Make(FGuid _Id, FOptionalBeamGamerTag _PlayerId, FOptionalArrayOfString _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UDeleteTagsRequest* Req = NewObject<UDeleteTagsRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};

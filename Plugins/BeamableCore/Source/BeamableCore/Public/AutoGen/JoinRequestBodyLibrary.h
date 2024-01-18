@@ -16,9 +16,9 @@ public:
 	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - JoinRequestBody To JSON String")
 	static FString JoinRequestBodyToJsonString(const UJoinRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make JoinRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UJoinRequestBody* Make(FString TournamentId, UObject* Outer);
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make JoinRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="ContentId, Outer", NativeMakeFunc))
+	static UJoinRequestBody* Make(FString TournamentId, FOptionalString ContentId, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break JoinRequestBody", meta=(NativeBreakFunc))
-	static void Break(const UJoinRequestBody* Serializable, FString& TournamentId);
+	static void Break(const UJoinRequestBody* Serializable, FString& TournamentId, FOptionalString& ContentId);
 };

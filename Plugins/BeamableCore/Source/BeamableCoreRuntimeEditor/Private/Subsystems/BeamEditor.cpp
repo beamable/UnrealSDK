@@ -12,7 +12,7 @@
 
 #include "Subsystems/BeamEditorSubsystem.h"
 
-const FBeamRealmHandle UBeamEditor::Signed_Out_Realm_Handle = FBeamRealmHandle{TEXT(""), TEXT("")};
+const FBeamRealmHandle UBeamEditor::Signed_Out_Realm_Handle = FBeamRealmHandle{FString(""), FString("")};
 
 UBeamEditor* UBeamEditor::GetSelf(const UObject* CallingContext)
 {
@@ -98,8 +98,8 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 		BeamEditor->InitializeAfterEditorReadyOps.Add(Handle);
 	}
 
-	BeamEditor->OnInitializedAfterEditorReadyChange = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditorBootstrapper, Run_TrySignIntoMainEditorSlot));
-	BeamEditor->OnInitializedAfterEditorReadyWait = RequestTracker->CPP_WaitAll({}, BeamEditor->InitializeAfterEditorReadyOps, {}, BeamEditor->OnInitializedAfterEditorReadyChange);
+	const auto OnCompleteCode = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditorBootstrapper, Run_TrySignIntoMainEditorSlot));
+	BeamEditor->OnInitializedAfterEditorReadyWait = RequestTracker->CPP_WaitAll({}, BeamEditor->InitializeAfterEditorReadyOps, {}, OnCompleteCode);
 }
 
 void UBeamEditorBootstrapper::Run_TrySignIntoMainEditorSlot()
@@ -124,11 +124,11 @@ void UBeamEditorBootstrapper::Run_TrySignIntoMainEditorSlot()
 
 		BeamEditor->SetActiveTargetRealmUnsafe({});
 		TArray<FUserSlot> SlotsStub;
-		Run_EditorReady(SlotsStub, {});
+		Run_EditorReady({});
 	}
 }
 
-void UBeamEditorBootstrapper::Run_EditorReady(TArray<FUserSlot>& UserSlots, FBeamOperationEvent OperationEvent)
+void UBeamEditorBootstrapper::Run_EditorReady(FBeamOperationEvent OperationEvent)
 {
 	const auto BeamEditor = GEditor->GetEditorSubsystem<UBeamEditor>();
 	BeamEditor->bEditorReady = true;
@@ -138,21 +138,21 @@ void UBeamEditorBootstrapper::Run_EditorReady(TArray<FUserSlot>& UserSlots, FBea
 FUserSlot UBeamEditor::GetMainEditorSlot(FBeamRealmUser& UserData) const
 {
 	const auto MainSlot = GetDefault<UBeamCoreSettings>()->DeveloperUserSlots[MainEditorSlotIdx];
-	ensureAlwaysMsgf(UserSlots->GetUserDataAtSlot(MainSlot, UserData), TEXT("No developer signed into the MainEditorDeveloper UserSlot! Please call UserSlot->SetAuthenticationData before this."));
+	ensureAlwaysMsgf(UserSlots->GetUserDataAtSlot(MainSlot, UserData, nullptr), TEXT("No developer signed into the MainEditorDeveloper UserSlot! Please call UserSlot->SetAuthenticationData before this."));
 	return MainSlot;
 }
 
 bool UBeamEditor::TryGetMainEditorSlot(FUserSlot& Slot, FBeamRealmUser& UserData)
 {
 	Slot = GetDefault<UBeamCoreSettings>()->DeveloperUserSlots[MainEditorSlotIdx];
-	return UserSlots->GetUserDataAtSlot(Slot, UserData);;
+	return UserSlots->GetUserDataAtSlot(Slot, UserData, nullptr);
 }
 
 FUserSlot UBeamEditor::GetMainEditorSlot() const
 {
 	FBeamRealmUser UserData;
 	const auto MainSlot = GetDefault<UBeamCoreSettings>()->DeveloperUserSlots[MainEditorSlotIdx];
-	UserSlots->GetUserDataAtSlot(MainSlot, UserData);
+	UserSlots->GetUserDataAtSlot(MainSlot, UserData, nullptr);
 	return MainSlot;
 }
 
@@ -184,13 +184,13 @@ bool UBeamEditor::GetActiveProjectAndRealmData(FBeamCustomerProjectData& Project
 void UBeamEditor::SignOut()
 {
 	UserSlotClearedHandler = UserSlots->GlobalUserSlotClearedCodeHandler.AddUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, OnUserSlotCleared));
-	UserSlots->ClearUserAtSlot(GetMainEditorSlot(), Manual, true);
+	UserSlots->ClearUserAtSlot(GetMainEditorSlot(), USCR_Manual, true);
 }
 
 void UBeamEditor::OnUserSlotCleared(const EUserSlotClearedReason& Reason, const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const UObject* Context)
 {
 	const auto SlotId = GetMainEditorSlot();
-	if (Reason == Manual || Reason == FailedAuthentication)
+	if (Reason == USCR_Manual || Reason == USCR_FailedAuthentication)
 	{
 		if (UserSlot.Name.Equals(SlotId.Name))
 		{
@@ -390,12 +390,11 @@ void UBeamEditor::SelectRealm(const FBeamRealmHandle& NewRealmHandle, const FBea
 		const auto Handle = Subsystem->PrepareForRealmChange(LeavingRealm, NewRealmHandle);
 		PrepareForRealmChangeOps.Add(Handle);
 	}
-	OnReadyForRealmChange = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, SelectRealm_OnReadyForChange), NewRealmHandle, Op);
-	OnReadyForRealmChangeWait = RequestTracker->CPP_WaitAll({}, PrepareForRealmChangeOps, {}, OnReadyForRealmChange);
+	const auto OnCompleteCode = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, SelectRealm_OnReadyForChange), NewRealmHandle, Op);
+	OnReadyForRealmChangeWait = RequestTracker->CPP_WaitAll({}, PrepareForRealmChangeOps, {}, OnCompleteCode);
 }
 
-void UBeamEditor::SelectRealm_OnReadyForChange(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&,
-                                               const TArray<FBeamErrorResponse>&, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op)
+void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op)
 {
 	// TODO: Expose error handling for BeamErrorResponses that happen in the PrepareRealmChange operations
 	SetActiveTargetRealmUnsafe(NewRealmHandle);
@@ -408,12 +407,11 @@ void UBeamEditor::SelectRealm_OnReadyForChange(const TArray<FBeamRequestContext>
 		const auto Handle = Subsystem->InitializeFromRealm(NewRealmHandle);
 		InitalizeFromRealmOps.Add(Handle);
 	}
-	InitializedFromRealmHandler = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, SelectRealm_OnSystemsReady), NewRealmHandle, Op);
-	InitializeFromRealmsWait = RequestTracker->CPP_WaitAll({}, InitalizeFromRealmOps, {}, InitializedFromRealmHandler);
+	const auto OnCompleteCode = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, SelectRealm_OnSystemsReady), NewRealmHandle, Op);
+	InitializeFromRealmsWait = RequestTracker->CPP_WaitAll({}, InitalizeFromRealmOps, {}, OnCompleteCode);
 }
 
-void UBeamEditor::SelectRealm_OnSystemsReady(const TArray<FBeamRequestContext>&, const TArray<TScriptInterface<IBeamBaseRequestInterface>>&, const TArray<UObject*>&, const TArray<FBeamErrorResponse>&,
-                                             FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op) const
+void UBeamEditor::SelectRealm_OnSystemsReady(FBeamWaitCompleteEvent, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op) const
 {
 	// TODO: Expose error handling for BeamErrorResponses that happen in the InitializeFromRealm operations
 
@@ -557,7 +555,7 @@ void UBeamEditor::UpdateSignedInUserData_OnGetRealms(const FGetGamesFullResponse
 			SetActiveTargetRealmUnsafe(FBeamRealmHandle{Cid, Pid});
 
 
-			UserSlots->SetPIDAtSlot(GetMainEditorSlot(), Pid);
+			UserSlots->SetPIDAtSlot(GetMainEditorSlot(), Pid, nullptr);
 
 			// Now, we need to get the admin me data so we can know all the projects/realms associated with this CID
 			const auto AccountApi = GEngine->GetEngineSubsystem<UBeamAccountsApi>();
@@ -651,7 +649,7 @@ void UBeamEditor::UpdateSignedInUserData_OnFetchProjectDataForSlot(FGetCustomerF
 	}
 }
 
-void UBeamEditor::UpdateSignedInUserData_OnRealmSelected(const TArray<FUserSlot>&, FBeamOperationEvent, FBeamOperationHandle SignInOperation) const
+void UBeamEditor::UpdateSignedInUserData_OnRealmSelected(FBeamOperationEvent, FBeamOperationHandle SignInOperation) const
 {
 	// If we are the main editor developer, we now have everything we need to create the editor flows.
 	RequestTracker->TriggerOperationSuccess(SignInOperation, TEXT(""));

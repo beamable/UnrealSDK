@@ -9,6 +9,7 @@
 
 #include "BeamEnvironment.h"
 #include "BeamLogging.h"
+#include "BeamableDefines.h"
 
 #include "BeamBackend/RequestType.h"
 #include "BeamBackend/BeamFullResponse.h"
@@ -41,13 +42,6 @@ struct FBeamConnectivity
 	UPROPERTY(BlueprintReadOnly)
 	int64 LastTimeSinceSuccessfulRequest = 0;
 };
-
-/**
- * @brief Semantic separation for longs representing a Beamable Request Id.
- * Every request sent out from any of the UBeam***Api subsystems gets one of these.
- */
-typedef int64 FBeamRequestId;
-
 
 /**
  * @brief Shorter name for Unreal's HttpRequest struct.
@@ -192,7 +186,7 @@ private:
 	/**
 	 * @brief  Just an Auto-Increment ID of each running request.
 	 */
-	long volatile* InFlightRequestId;
+	std::atomic<long> InFlightRequestId;
 
 	/**
 	 * @brief Delegate handle to the tick function of the UBeamBackend sub-system used to update and handle retry requests.
@@ -221,16 +215,14 @@ private:
 	template <class TRequestData>
 	static void StaticCheckForRequestType()
 	{
-		static_assert(TIsDerivedFrom<TRequestData, IBeamBaseRequestInterface>::Value,
-		              "TRequestData must be a IBeamBaseRequestInterface type.");
+		static_assert(TIsDerivedFrom<TRequestData, IBeamBaseRequestInterface>::Value, "TRequestData must be a IBeamBaseRequestInterface type.");
 		static_assert(TIsDerivedFrom<TRequestData, UObject>::Value, "TRequestData must be a UObject type.");
 	}
 
 	template <class TResponseData>
 	static void StaticCheckForResponseType()
 	{
-		static_assert(TIsDerivedFrom<TResponseData, IBeamBaseResponseBodyInterface>::Value,
-		              "TResponseData must be a IBeamBaseResponseBodyInterface type.");
+		static_assert(TIsDerivedFrom<TResponseData, IBeamBaseResponseBodyInterface>::Value, "TResponseData must be a IBeamBaseResponseBodyInterface type.");
 		static_assert(TIsDerivedFrom<TResponseData, UObject>::Value, "TResponseData must be a UObject type.");
 	}
 
@@ -380,11 +372,10 @@ public:
 
 	/**
 	 * @brief When we create a new request, authenticated or otherwise, we store it's deserialized response object here.
-	 * When it and WaitHandles that depend on it are completed, we remove it from here.
-	 * TODO: Code gen all possible responses with this interface (IBeamBaseResponseBodyInterface) being implemented and then change it here.
+	 * When it and WaitHandles that depend on it are completed, we remove it from here.	 
 	 */
 	UPROPERTY(BlueprintReadOnly, Category="Beam")
-	TMap<FBeamRequestContext, UObject*> InFlightResponseBodyData;
+	TMap<FBeamRequestContext, TScriptInterface<IBeamBaseResponseBodyInterface>> InFlightResponseBodyData;	
 
 	/**
 	 * @brief When we create a new request, authenticated or otherwise, we store it's deserialized error object here.
@@ -412,6 +403,12 @@ public:
 	 */
 	UFUNCTION()
 	void DefaultExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity);
+
+	/**
+	 * Takes in a fully formed URL from a TUnrealRequest (ie: https://dev.api.beamable.com/object/stats/game.public.player.1595037680985091/) and generates the correct form of it for the signature.
+	 */
+	void ExtractUrlForSignature(const FString& FullUrl, FString& Url);
+	
 	/**
 	 * @brief Used as delegate set in ExecuteRequestDelegate when running as a dedicated server. 
 	 */
@@ -802,22 +799,24 @@ public:
 			{
 				if(HandlePIESessionRequestGuard(Request, RequestId))
 					return;
+
+				const auto RequestType = RequestData->GetRequestType();
 				
 				if (!Response.IsValid())
 				{
-					UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"), RequestId);
+					UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld, REQUEST_TYPE=%s"), RequestId, *RequestType.Name);
 					return;
 				}
-				UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld"), RequestId);
+				UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld, REQUEST_TYPE=%s"), RequestId, *RequestType.Name);
 
 				// Get the response contents
 				const auto ResponseCode = Response->GetResponseCode();
 				const auto ContentAsString = Response->GetContentAsString();
 				const auto RequestStatus = Request->GetStatus();
-				const auto RequestType = RequestData->GetRequestType();
+				
 
 				// If it was a success, we try to cache the response.
-				if (ResponseCode == 200)
+				if (IsSuccessfulResponse(ResponseCode))
 					UpdateResponseCache(RequestType, CallingContext, Request, ContentAsString);
 
 
@@ -925,7 +924,7 @@ public:
 			// We only log the response if no callsite is given or if we are configured to always run it.
 			if (AlwaysLogSuccessResponses || !ExecutedCallsiteHandler)
 			{
-				const auto RequestType = FRequestType{TRequestData::StaticClass()->GetName()};
+				const auto RequestType = RequestData->GetRequestType();
 				UE_LOG(LogBeamBackend, Display,
 				       TEXT(
 					       "Beamable Request Successfull | REQUEST_ID=%lld, REQUEST_TYPE=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
@@ -966,7 +965,7 @@ public:
 
 			// We fallback to global handler only if we didn't run the callsite one OR if we are configured to always run it.
 			bool bExecutedGlobalHandler = false;
-			if (AlwaysRunGlobalHandlers || !ExecutedCallsiteHandler && (GlobalRequestErrorHandler.IsBound() ||
+			if ((AlwaysRunGlobalHandlers || !ExecutedCallsiteHandler) && (GlobalRequestErrorHandler.IsBound() ||
 				GlobalRequestErrorCodeHandler.IsBound()))
 			{
 				GlobalRequestErrorHandler.Broadcast(*Context, ErrorData);
@@ -976,7 +975,7 @@ public:
 			}
 
 			// We log the error only if neither callback was set OR if we are configured to do so.
-			if (AlwaysLogErrorResponses || !bExecutedGlobalHandler && !ExecutedCallsiteHandler)
+			if (AlwaysLogErrorResponses || (!bExecutedGlobalHandler && !ExecutedCallsiteHandler))
 			{
 				UE_LOG(LogBeamBackend, Error,
 				       TEXT(
@@ -1195,7 +1194,7 @@ public:
 			// We only log the response if no callsite is given or if we are configured to always run it.
 			if (AlwaysLogSuccessResponses || !ExecutedCallsiteHandler)
 			{
-				const auto RequestType = FRequestType{TRequestData::StaticClass()->GetName()};
+				const auto RequestType = RequestData->GetRequestType();
 				UE_LOG(LogBeamBackend, Display,
 				       TEXT(
 					       "Beamable Request Successfull | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
@@ -1246,7 +1245,7 @@ public:
 
 				// We fallback to global handler only if we didn't run the callsite one OR if we are configured to always run it.
 				bool bExecutedGlobalHandler = false;
-				if (AlwaysRunGlobalHandlers || !ExecutedCallsiteHandler && (GlobalRequestErrorHandler.IsBound() ||
+				if ((AlwaysRunGlobalHandlers || !ExecutedCallsiteHandler) && (GlobalRequestErrorHandler.IsBound() ||
 					GlobalRequestErrorCodeHandler.IsBound()))
 				{
 					GlobalRequestErrorHandler.Broadcast(*Context, ErrorData);
@@ -1256,7 +1255,7 @@ public:
 				}
 
 				// We log the error only if neither callback was set OR if we are configured to do so.
-				if (AlwaysLogErrorResponses || !bExecutedGlobalHandler && !ExecutedCallsiteHandler)
+				if (AlwaysLogErrorResponses || (!bExecutedGlobalHandler && !ExecutedCallsiteHandler))
 				{
 					UE_LOG(LogBeamBackend, Error,
 					       TEXT(
@@ -1326,18 +1325,18 @@ public:
 				if(HandlePIESessionRequestGuard(Request, RequestId))
 					return;
 				
+				const auto RequestType = RequestData->GetRequestType();
 				if (!Response.IsValid())
 				{
-					UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"),
-					       RequestId);
+					UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld, REQUEST_TYPE=%s"),
+					       RequestId, *RequestType.Name);
 					return;
 				}
-				UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld"), RequestId);
+				UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld, REQUEST_TYPE=%s"), RequestId, *RequestType.Name);
 
 				const auto ResponseCode = Response->GetResponseCode();
 				const auto ContentAsString = Response->GetContentAsString();
 				const auto RequestStatus = Request->GetStatus();
-				const auto RequestType = RequestData->GetRequestType();
 
 				// If it was a success, we try to cache the response.
 				if (IsSuccessfulResponse(ResponseCode))
@@ -1415,8 +1414,8 @@ public:
 		// Get retry stuff
 		const auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
 		const auto RetryConfig = Context->RetryConfiguration;
-		const auto bShouldRetryIfFail = !bIsCancelled && RetryConfig.RetryMaxAttempt == -1 || RetryConfig.RetryMaxAttempt >
-			CurrFailedCount;
+		const auto bShouldRetryIfFail = !bIsCancelled && (RetryConfig.RetryMaxAttempt == -1 || RetryConfig.RetryMaxAttempt >
+			CurrFailedCount);
 
 
 		// Stores which attempt we are in
@@ -1482,11 +1481,12 @@ public:
 			// We log if we are configured to do so or as a fallback if no handler is configured
 			if (AlwaysLogErrorResponses || (!bExecutedCallsiteHandler && !bRanGlobalHandlers))
 			{
+				const auto RequestType = RequestData->GetRequestType();
 				UE_LOG(LogBeamBackend, Error,
 				       TEXT(
-					       "Beamable Request Failed - Retrying | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"
+					       "Beamable Request Failed - Retrying | REQUEST_ID=%lld, REQUEST_TYPE=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"
 				       ),
-				       RequestId, ResponseCode, CurrFailedCount, bWillRetry ? TEXT("true") : TEXT("false"),
+				       RequestId, *RequestType.Name, ResponseCode, CurrFailedCount, bWillRetry ? TEXT("true") : TEXT("false"),
 				       *ContentAsString);
 			}
 		}
@@ -1494,7 +1494,7 @@ public:
 		else
 		{
 			// Update Connectivity Status
-			const auto RequestType = FRequestType{TRequestData::StaticClass()->GetName()};
+			const auto RequestType = RequestData->GetRequestType();
 			UpdateConnectivity(FullResponse.Context, RequestStatus, FRequestType{RequestType});
 
 			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
@@ -1514,23 +1514,23 @@ public:
 				{
 					UE_LOG(LogBeamBackend, Error,
 					       TEXT(
-						       "Beamable Request Failed | REQUEST_ID=%lld, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
+						       "Beamable Request Failed | REQUEST_ID=%lld, REQUEST_TYPE=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
 					       ),
-					       RequestId, ResponseCode, CurrFailedCount, *ContentAsString);
+					       RequestId, *RequestType.Name, ResponseCode, CurrFailedCount, *ContentAsString);
 				}
 
 				const auto bWasSuccess = FullResponse.State == RS_Success;
 				if (FullResponse.State == RS_Cancelled)
 				{
 					UE_LOG(LogBeamBackend, Display,
-					       TEXT("Beamable Request Canceled | REQUEST_ID=%lld, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
-					       RequestId, bWasSuccess ? TEXT("true") : TEXT("false"), InFlightFailureCount.FindRef(RequestId));
+					       TEXT("Beamable Request Canceled | REQUEST_ID=%lld, REQUEST_TYPE=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
+					       RequestId, *RequestType.Name, bWasSuccess ? TEXT("true") : TEXT("false"), InFlightFailureCount.FindRef(RequestId));
 				}
 				else
 				{
 					UE_LOG(LogBeamBackend, Display,
-					       TEXT("Beamable Request Completed | REQUEST_ID=%lld, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
-					       RequestId, bWasSuccess ? TEXT("true") : TEXT("false"), InFlightFailureCount.FindRef(RequestId));
+					       TEXT("Beamable Request Completed | REQUEST_ID=%lld, REQUEST_TYPE=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
+					       RequestId, *RequestType.Name, bWasSuccess ? TEXT("true") : TEXT("false"), InFlightFailureCount.FindRef(RequestId));
 				}
 			}
 
@@ -1578,18 +1578,20 @@ public:
 			{
 				if(HandlePIESessionRequestGuard(Request, RequestId))
 					return;
+
+				const auto RequestType = RequestData->GetRequestType();
+
 				if (!Response.IsValid())
 				{
-					UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld"),
-					       RequestId);
+					UE_LOG(LogBeamBackend, Error, TEXT("Beamable Request Failed Parsing Response | REQUEST_ID=%lld, REQUEST_TYPE=%s"),
+					       RequestId, *RequestType.Name);
 					return;
 				}
-				UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld"), RequestId);
+				UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Parsed Response | REQUEST_ID=%lld, REQUEST_TYPE=%s"), RequestId, *RequestType.Name);
 
 				const auto ResponseCode = Response->GetResponseCode();
 				const auto ContentAsString = Response->GetContentAsString();
 				const auto RequestStatus = Request->GetStatus();
-				const auto RequestType = RequestData->GetRequestType();
 
 				// If it was a success, we try to cache the response.
 				if (IsSuccessfulResponse(ResponseCode))
@@ -1676,8 +1678,8 @@ public:
 
 		const auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
 		const auto RetryConfig = Context->RetryConfiguration;
-		const auto bShouldRetryIfFail = !bIsCancelled && RetryConfig.RetryMaxAttempt == -1 || RetryConfig.RetryMaxAttempt >
-			CurrFailedCount;
+		const auto bShouldRetryIfFail = !bIsCancelled && (RetryConfig.RetryMaxAttempt == -1 || RetryConfig.RetryMaxAttempt >
+			CurrFailedCount);
 
 
 		// Stores which attempt we are in
@@ -1756,11 +1758,12 @@ public:
 				// We log if we are configured to do so or as a fallback if no handler is configured
 				if (AlwaysLogErrorResponses || (!bExecutedCallsiteHandler && !bRanGlobalHandlers))
 				{
+					const auto RequestType = RequestData->GetRequestType();
 					UE_LOG(LogBeamBackend, Error,
 					       TEXT(
-						       "Beamable Request Failed - Retrying | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"
+						       "Beamable Request Failed - Retrying | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"
 					       ),
-					       RequestId, *UserSlotLog, ResponseCode, CurrFailedCount,
+					       RequestId, *RequestType.Name, *UserSlotLog, ResponseCode, CurrFailedCount,
 					       bWillRetry ? TEXT("true") : TEXT("false"),
 					       *ContentAsString);
 				}
@@ -1770,7 +1773,7 @@ public:
 		else
 		{
 			// Update Connectivity Status
-			const auto RequestType = FRequestType{TRequestData::StaticClass()->GetName()};
+			const auto RequestType = RequestData->GetRequestType();
 			UpdateConnectivity(FullResponse.Context, RequestStatus, FRequestType{RequestType});
 
 			const auto bExecutedCallsiteHandler = ResponseHandler.ExecuteIfBound(FullResponse);
@@ -1781,7 +1784,7 @@ public:
 				{
 					UE_LOG(LogBeamBackend, Display,
 					       TEXT(
-						       "Beamable Request Successfull | REQUEST_ID=%lld, REQUEST_TYPE=%s USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
+						       "Beamable Request Successfull | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
 					       ),
 					       RequestId, *RequestType.Name, *UserSlotLog, ResponseCode, CurrFailedCount, *ContentAsString);
 				}
@@ -1791,9 +1794,9 @@ public:
 				{
 					UE_LOG(LogBeamBackend, Error,
 					       TEXT(
-						       "Beamable Request Failed | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"
+						       "Beamable Request Failed | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s"
 					       ),
-					       RequestId, *UserSlotLog, ResponseCode, CurrFailedCount,
+					       RequestId, *RequestType.Name, *UserSlotLog, ResponseCode, CurrFailedCount,
 					       bWillRetry ? TEXT("true") : TEXT("false"), *ContentAsString);
 				}
 
@@ -1801,18 +1804,18 @@ public:
 				if (FullResponse.State == RS_Cancelled)
 				{
 					UE_LOG(LogBeamBackend, Display,
-					       TEXT("Beamable Request Canceled | REQUEST_ID=%lld, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"
+					       TEXT("Beamable Request Canceled | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"
 					       ),
-					       RequestId, *UserSlotLog, bWasSuccess ? TEXT("true") : TEXT("false"),
+					       RequestId, *RequestType.Name, *UserSlotLog, bWasSuccess ? TEXT("true") : TEXT("false"),
 					       InFlightFailureCount.FindRef(RequestId));
 				}
 				else
 				{
 					UE_LOG(LogBeamBackend, Display,
 					       TEXT(
-						       "Beamable Request Completed | REQUEST_ID=%lld, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"
+						       "Beamable Request Completed | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"
 					       ),
-					       RequestId, *UserSlotLog, bWasSuccess ? TEXT("true") : TEXT("false"),
+					       RequestId, *RequestType.Name, *UserSlotLog, bWasSuccess ? TEXT("true") : TEXT("false"),
 					       InFlightFailureCount.FindRef(RequestId));
 				}
 			}
@@ -1821,11 +1824,12 @@ public:
 			Context->BeamStatus = AS_Completed;
 		}
 	}
+	
+	static bool IsSuccessfulResponse(int32 ResponseCode);
 
 private:
 	void UpdateResponseCache(const FRequestType& RequestType, const UObject* CallingContext, const FHttpRequestPtr& Request, const FString& Content);
 
-	static bool IsSuccessfulResponse(int32 ResponseCode);
 
 public:
 	/*

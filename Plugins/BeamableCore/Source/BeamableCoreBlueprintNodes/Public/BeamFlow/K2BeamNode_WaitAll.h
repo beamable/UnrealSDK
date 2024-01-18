@@ -20,10 +20,7 @@ public:
 	static const FName P_RequestContexts;
 	static const FName P_Operations;
 	static const FName P_Waits;
-	static const FName P_Contexts;
-	static const FName P_Requests;
-	static const FName P_Responses;
-	static const FName P_Errors;
+	static const FName P_Evt;	
 
 	UPROPERTY()
 	TArray<FString> WrappedWaitAllFunctionPinNames;

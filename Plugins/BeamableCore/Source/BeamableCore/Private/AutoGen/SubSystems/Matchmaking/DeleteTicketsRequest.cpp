@@ -9,7 +9,7 @@ void UDeleteTicketsRequest::BuildVerb(FString& VerbString) const
 void UDeleteTicketsRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/api/matchmaking/tickets/{id}");
-	Route = Route.Replace(TEXT("{id}"), *Id.ToString(EGuidFormats::DigitsLower));
+	Route = Route.Replace(TEXT("{id}"), *Id.ToString(EGuidFormats::DigitsWithHyphensLower));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);

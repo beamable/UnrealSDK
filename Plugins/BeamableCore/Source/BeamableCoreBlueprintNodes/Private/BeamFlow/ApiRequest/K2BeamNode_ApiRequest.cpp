@@ -265,7 +265,7 @@ void UK2BeamNode_ApiRequest::SetUpInputPinsForMakeAndRequestNodes(FKismetCompile
 
 
 	// We start by moving all the input pins that this custom node takes in into the "Make ____ Request" node's ones.		
-	for (const auto WrappedFunctionPin : WrappedMakeFunctionPinNames)
+	for (const auto& WrappedFunctionPin : WrappedMakeFunctionPinNames)
 	{
 		if (const auto FunctionPin = CallMakeFunction->FindPin(WrappedFunctionPin))
 		{
@@ -286,7 +286,7 @@ void UK2BeamNode_ApiRequest::SetUpInputPinsForMakeAndRequestNodes(FKismetCompile
 	check(bConnectedMakeReturnToRequestInput)
 
 	// Finally, we move all the rest of the parameters into 
-	for (const auto WrappedFunctionPin : WrappedRequestFunctionPinNames)
+	for (const auto& WrappedFunctionPin : WrappedRequestFunctionPinNames)
 	{
 		if (const auto FunctionPin = CallRequestFunction->FindPin(WrappedFunctionPin))
 		{

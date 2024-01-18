@@ -8,7 +8,7 @@
 #include "Serialization/BeamJsonUtils.h"
 #include "Subsystems/EngineSubsystem.h"
 #include "UserSlots/UserSlot.h"
-#include "WebSockets/Public/IWebSocket.h"
+#include "IWebSocket.h"
 
 #include "BeamNotifications.generated.h"
 
@@ -248,16 +248,12 @@ public:
 	void ClearPIESockets();
 
 	template <typename THandler, typename TMessage>
-	bool TrySubscribeForMessage(const FUserSlot& Slot, const FName& SocketName, const FString& ContextKey, THandler Handler)
+	bool TrySubscribeForMessage(const FUserSlot& Slot, const FName& SocketName, const FString& ContextKey, THandler Handler, FDelegateHandle& OutHandle)
 	{
 		if (OpenSockets.Contains(Slot))
 		{
 			if (const auto& UserSockets = OpenSockets.FindChecked(Slot); UserSockets.Contains(SocketName))
 			{
-				// Make sure the Handler is an actual delegate
-				static_assert(TIsDerivedFrom<THandler, TDelegate<void(TMessage)>>::Value ||
-					TIsDerivedFrom<THandler, TBaseDynamicDelegate<FWeakObjectPtr, void, TMessage>>::Value);
-
 				// Make sure the Message type is a FBeamJsonSerializable
 				static_assert(TIsDerivedFrom<TMessage, FBeamJsonSerializableUStruct>::Value);
 
@@ -273,7 +269,13 @@ public:
 					ensureAlwaysMsgf(bDidRun, TEXT("The notification message handler was not bound. SLOT=%s, ID=%s, CONTEXT=%s"), *Slot.Name, *SocketName.ToString(), *ContextKey);
 				});
 
-				MessageEventHandlers.Add(FBeamWebSocketHandle(Slot, SocketName, this), {ContextKey, EventHandler});
+				OutHandle = EventHandler.GetHandle();
+
+				FNotificationMessageEventHandler MessageEventHandler;
+				MessageEventHandler.ContextKey = ContextKey,
+				MessageEventHandler.Handler = EventHandler;
+				
+				MessageEventHandlers.Add(FBeamWebSocketHandle(Slot, SocketName, this), MessageEventHandler);
 				return true;
 			}
 		}
@@ -322,6 +324,32 @@ public:
 			}
 		}
 
+		return false;
+	}
+
+	bool TryUnsubscribeFromMessage(const FUserSlot& Slot, const FName& SocketName, const FString& ContextKey, const FDelegateHandle& Handle)
+	{
+		if (OpenSockets.Contains(Slot))
+		{
+			if (const auto& UserSockets = OpenSockets.FindChecked(Slot); UserSockets.Contains(SocketName))
+			{
+				const FBeamWebSocketHandle Key(Slot, SocketName, this);
+
+				TArray<FNotificationMessageEventHandler> Handlers;
+				MessageEventHandlers.MultiFind(Key, Handlers);
+				for (const auto& NotificationMessageEventHandler : Handlers)
+				{
+					if (NotificationMessageEventHandler.ContextKey.Equals(ContextKey))
+					{
+						if(NotificationMessageEventHandler.Handler.GetHandle() == Handle)
+						{
+							MessageEventHandlers.RemoveSingle(Key, NotificationMessageEventHandler);
+							return true;
+						}
+					}						
+				}				
+			}
+		}
 		return false;
 	}
 };
