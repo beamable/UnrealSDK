@@ -1,11 +1,7 @@
 ﻿#pragma once
 
 #include "DetailWidgetRow.h"
-#include "SNameComboBox.h"
-#include "AutoGen/Optionals/OptionalInt32.h"
 #include "IPropertyTypeCustomization.h"
-#include "Serialization/BeamOptional.h"
-#include "Widgets/Input/SNumericEntryBox.h"
 
 
 template <typename T>

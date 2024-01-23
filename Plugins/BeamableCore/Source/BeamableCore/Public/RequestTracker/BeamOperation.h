@@ -134,6 +134,9 @@ public:
 	 */	
 	FBeamOperationEventHandlerCode CodeHandler;
 
+	/**
+	 * List of events that were triggered by this operation.
+	 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TArray<FBeamOperationEvent> TriggeredEvents;
 };

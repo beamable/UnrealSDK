@@ -9,7 +9,7 @@
 
 void FBeamUserSlotsSpec::Define()
 {
-	Describe("Manipulating User Slots Data", [this]()
+	Describe("Manipulating User Slots Data", [=, this]()
 	{
 		const FUserSlot TestSlot{"Automated_Test_Slot"};
 
@@ -19,7 +19,7 @@ void FBeamUserSlotsSpec::Define()
 		
 		const int64 &FakeExpiresIn{1234}, FakeGamerTag{0000001};
 
-		BeforeEach([this]()
+		BeforeEach([=, this]()
 		{
 			BeamUserSlots = GEngine->GetEngineSubsystem<UBeamUserSlots>();
 
@@ -29,7 +29,7 @@ void FBeamUserSlotsSpec::Define()
 			Callbacks->Spec = this;
 		});
 
-		AfterEach([this, TestSlot]()
+		AfterEach([=, this]()
 		{
 			// We clean up the registered UObject functions for the test
 			for (const auto& AddedUObjectTestHandler : AddedUObjectTestHandlers)
@@ -51,7 +51,7 @@ void FBeamUserSlotsSpec::Define()
 		});
 
 
-		It("should set and get the user data at the Test Slot", [this, TestSlot, FakeAccessToken, FakeRefreshToken, FakeExpiresIn, FakeCid, FakePid]()
+		It("should set and get the user data at the Test Slot", [=, this]()
 		{
 			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, FakeAccessToken, FakeRefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), FakeExpiresIn, FakeCid, FakePid, nullptr);
 			FBeamRealmUser RealmUser;
@@ -78,7 +78,7 @@ void FBeamUserSlotsSpec::Define()
 			TestTrue("added correct user data to slot", RealmUser.RealmHandle.Pid == FakePid);
 		});
 
-		It("should find the user slot with the given refresh token and pid", [this, FakeExpiresIn, FakeCid, FakePid, TestSlot, FakeAccessToken, FakeRefreshToken]()
+		It("should find the user slot with the given refresh token and pid", [=, this]()
 		{
 			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, FakeAccessToken, FakeRefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), FakeExpiresIn, FakeCid, FakePid, nullptr);
 
@@ -109,7 +109,7 @@ void FBeamUserSlotsSpec::Define()
 			TestTrue("found correct user based on refresh token and pid", RealmUser.RealmHandle.Pid == FakePid);
 		});
 
-		It("should set the user slot AND save its file to disk then reload the saved user at that slot", [this, TestSlot, FakeAccessToken, FakeRefreshToken, FakeExpiresIn, FakeCid, FakePid, FakeGamerTag]()
+		It("should set the user slot AND save its file to disk then reload the saved user at that slot", [=, this]()
 		{
 			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, FakeAccessToken, FakeRefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), FakeExpiresIn, FakeCid, FakePid, nullptr);
 			BeamUserSlots->SetGamerTagAtSlot(TestSlot, FakeGamerTag, nullptr);
@@ -142,14 +142,14 @@ void FBeamUserSlotsSpec::Define()
 			TestTrue("added correct user data to slot", RealmUser.RealmHandle.Pid == FakePid);
 		});
 
-		It("should fail gracefully when trying to load an unsaved UserSlot", [this, TestSlot]()
+		It("should fail gracefully when trying to load an unsaved UserSlot", [=, this]()
 		{
 			// Tries to load the user from a non-existing Saved UserSlot and sees if it gracefully returns false.
 			const auto bLoaded = BeamUserSlots->TryLoadSavedUserAtSlot(TestSlot, nullptr);
 			TestTrue("failed to add user to slot since no saved user existed at that slot", !bLoaded);
 		});
 
-		It("should save a user and then clear them BUT don't clear the saved user", [this, TestSlot, FakeAccessToken, FakeRefreshToken, FakeExpiresIn, FakeCid, FakePid, FakeGamerTag]()
+		It("should save a user and then clear them BUT don't clear the saved user", [=, this]()
 		{
 			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, FakeAccessToken, FakeRefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), FakeExpiresIn, FakeCid, FakePid, nullptr);
 			BeamUserSlots->SetGamerTagAtSlot(TestSlot, FakeGamerTag, nullptr);
@@ -160,7 +160,7 @@ void FBeamUserSlotsSpec::Define()
 			const auto bFound = BeamUserSlots->GetUserDataAtSlot(TestSlot, RealmUser, nullptr);
 			TestTrue("found user", bFound);
 
-			const auto Handle = BeamUserSlots->GlobalUserSlotClearedCodeHandler.AddLambda([this, TestSlot, FakeAccessToken, FakeRefreshToken, FakeExpiresIn, FakeCid, FakePid, FakeGamerTag]
+			const auto Handle = BeamUserSlots->GlobalUserSlotClearedCodeHandler.AddLambda([=, this]
 			(const EUserSlotClearedReason& UserSlotClearedReason, const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const UObject* Context)
 				{
 					FBeamRealmUser RealmUserAfterClear;
@@ -201,7 +201,7 @@ void FBeamUserSlotsSpec::Define()
 			TestTrue("added correct user data to slot", RealmUser.RealmHandle.Pid == FakePid);
 		});
 
-		It("should save a user and then clear them AND clear the saved used", [this, TestSlot, FakeAccessToken, FakeRefreshToken, FakeExpiresIn, FakeCid, FakePid, FakeGamerTag]()
+		It("should save a user and then clear them AND clear the saved used", [=, this]()
 		{
 			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, FakeAccessToken, FakeRefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), FakeExpiresIn, FakeCid, FakePid, nullptr);
 			BeamUserSlots->SetGamerTagAtSlot(TestSlot, FakeGamerTag, nullptr);
@@ -212,7 +212,7 @@ void FBeamUserSlotsSpec::Define()
 			const auto bFound = BeamUserSlots->GetUserDataAtSlot(TestSlot, RealmUser, nullptr);
 			TestTrue("found user", bFound);
 
-			const auto Handle = BeamUserSlots->GlobalUserSlotClearedCodeHandler.AddLambda([this, TestSlot, FakeAccessToken, FakeRefreshToken, FakeExpiresIn, FakeCid, FakePid, FakeGamerTag]
+			const auto Handle = BeamUserSlots->GlobalUserSlotClearedCodeHandler.AddLambda([=, this]
 			(const EUserSlotClearedReason& UserSlotClearedReason, const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const UObject* Context)
 				{
 					FBeamRealmUser RealmUserAfterClear;

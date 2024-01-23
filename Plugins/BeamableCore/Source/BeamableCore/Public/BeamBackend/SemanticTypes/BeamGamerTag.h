@@ -35,8 +35,7 @@ struct BEAMABLECORE_API FBeamGamerTag : public FBeamSemanticType
 
 	friend bool operator==(const FBeamGamerTag& Lhs, const FBeamGamerTag& RHS)
 	{
-		return Lhs.AsString.Equals(RHS.AsString)
-			&& Lhs.AsLong == RHS.AsLong;
+		return Lhs.AsString.Equals(RHS.AsString) && Lhs.AsLong == RHS.AsLong;
 	}
 
 	friend bool operator!=(const FBeamGamerTag& Lhs, const FBeamGamerTag& RHS)
@@ -83,5 +82,5 @@ struct BEAMABLECORE_API FBeamGamerTag : public FBeamSemanticType
 	}
 };
 
-FORCEINLINE uint32 GetTypeHash(const FBeamGamerTag& WaitHandle) { return GetTypeHash(WaitHandle.AsLong); }
+FORCEINLINE uint32 GetTypeHash(const FBeamGamerTag& GamerTag) { return GetTypeHash(GamerTag.AsString); }
 

@@ -11,7 +11,7 @@
 
 void FBeamBackendSpec::Define()
 {
-	Describe("Request/Response", [this]()
+	Describe("Request/Response", [=, this]()
 	{
 		const FBeamRealmHandle FakeRealmHandle{FString("000000000000"), FString("DE_000000000000")};
 		const FBeamRetryConfig FakeNoRetryConfig{{}, {}, 10, TArray<float>{0.5, 1}, 0};
@@ -973,7 +973,7 @@ void FBeamBackendSpec::Define()
 		});
 	});
 
-	Describe("Retry Configurations", [this]()
+	Describe("Retry Configurations", [=, this]()
 	{
 		const FUserSlot TestUserSlot{"TestSlot"};
 		const FRequestType RequestType{ULoginRefreshTokenRequest::StaticClass()->GetName()};
@@ -1052,7 +1052,7 @@ void FBeamBackendSpec::Define()
 		});
 	});
 
-	Describe("Retry Logic", [this]()
+	Describe("Retry Logic", [=, this]()
 	{
 		const FBeamRealmHandle FakeRealmHandle{FString("TEST_CID"), FString("TEST_PID")};
 		const FBeamRetryConfig FakeResponseCodeRetryConfig{{503}, {}, 10, TArray<float>{0.5, 1}, 1};
@@ -1226,7 +1226,7 @@ void FBeamBackendSpec::Define()
 		});
 	});
 
-	Describe("Connectivity", [this]()
+	Describe("Connectivity", [=, this]()
 	{
 		BeforeEach([this]()
 		{
@@ -1343,7 +1343,7 @@ void FBeamBackendSpec::Define()
 		});
 	});
 
-	Describe("Dedicated Servers", [this]()
+	Describe("Dedicated Servers", [=, this]()
 	{		
 		BeforeEach([this]()
 		{						

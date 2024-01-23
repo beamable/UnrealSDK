@@ -70,11 +70,34 @@ void UBeamLobbySubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserSlo
 	// 	FString Res = StaticEnum<EBeamOperationEventType>()->GetValueAsString(Evt.EventType);
 	// 	UE_LOG(LogBeamLobby, Warning, TEXT("Lobby Create Operation %s"), *Res);
 	//
-	// 	CPP_LeaveLobbyOperation(UserSlot, FBeamOperationEventHandlerCode::CreateLambda([this, UserSlot](FBeamOperationEvent EvtLeave)
+	// 	CPP_UpdateSlotPlayerDataOperation(UserSlot, {FBeamTag("Test", "Val")}, FBeamOperationEventHandlerCode::CreateLambda([this, UserSlot](FBeamOperationEvent EvtPlayerUpdate)
 	// 	{
-	// 		FString Res = StaticEnum<EBeamOperationEventType>()->GetValueAsString(EvtLeave.EventType);
-	// 		UE_LOG(LogBeamLobby, Warning, TEXT("Lobby Leave Operation %s"), *Res);
+	// 		UE_LOG(LogBeamLobby, Warning, TEXT("Lobby Updated My Own Tags"));
+	// 		CPP_DeleteSlotPlayerDataOperation(UserSlot, {FBeamTag("Test", "")}, FBeamOperationEventHandlerCode::CreateLambda([this, UserSlot](FBeamOperationEvent EvtPlayerDel)
+	// 		{
+	// 			UE_LOG(LogBeamLobby, Warning, TEXT("Lobby Delete My Own Tags"));
+	// 		}));
 	// 	}));
+	//
+	// 	if (TryBeginUpdateLobbyData(UserSlot, true))
+	// 	{
+	// 		PrepareUpdateName(UserSlot, FString("Potato"));
+	// 		PrepareUpdateGlobalData(UserSlot, {{FString("Global1"), FString("Global1Val")}});
+	// 		PrepareUpdateGlobalData(UserSlot, {{FString("Global2Val"), FString("Global2Val")}});
+	//
+	// 		CPP_CommitLobbyUpdateOperation(UserSlot, FBeamOperationEventHandlerCode::CreateLambda([this, UserSlot](FBeamOperationEvent EvtCommit)
+	// 		{
+	// 			UE_LOG(LogBeamLobby, Warning, TEXT("Lobby Update Global Data"));
+	// 			if (TryBeginUpdateLobbyData(UserSlot, false))
+	// 			{
+	// 				PrepareDeleteGlobalData(UserSlot, {FString("Global1"), FString("Global2")});
+	// 				CPP_CommitLobbyUpdateOperation(UserSlot, FBeamOperationEventHandlerCode::CreateLambda([this, UserSlot](FBeamOperationEvent EvtCommit2)
+	// 				{
+	// 					UE_LOG(LogBeamLobby, Warning, TEXT("Lobby Delete Global Data"));
+	// 				}));
+	// 			}
+	// 		}));
+	// 	}
 	// }), FString("TestLobby"), FString(), FBeamContentId());
 
 	Super::OnUserSignedIn_Implementation(UserSlot, BeamRealmUser, bIsOwnerUserAuth, ResultOp);
@@ -102,7 +125,7 @@ ULobby* UBeamLobbySubsystem::GetCurrentLobby(const FUserSlot& UserSlot)
 	return nullptr;
 }
 
-UBeamLocalPlayerLobbyInfo* UBeamLobbySubsystem::GetCurrentSlotLobbyState(FUserSlot Slot)
+UBeamLobbyState* UBeamLobbySubsystem::GetCurrentSlotLobbyState(FUserSlot Slot)
 {
 #if WITH_TESTS
 	if (Slot.Name.Contains("Test"))
@@ -114,11 +137,11 @@ UBeamLocalPlayerLobbyInfo* UBeamLobbySubsystem::GetCurrentSlotLobbyState(FUserSl
 		}
 	}
 #endif
-	UBeamLocalPlayerLobbyInfo* Lobby = LocalPlayerLobbyInfo.FindChecked(Slot);
+	UBeamLobbyState* Lobby = LocalPlayerLobbyInfo.FindChecked(Slot);
 	return Lobby;
 }
 
-bool UBeamLobbySubsystem::TryGetLobby(FGuid LobbyId, ULobby*& Lobby)
+bool UBeamLobbySubsystem::TryGetLobbyById(FGuid LobbyId, ULobby*& Lobby)
 {
 	if (const auto ExistingLobbyIdx = KnownLobbies.IndexOfByPredicate([LobbyId](const ULobby* Lob) { return Lob->LobbyId.Val == LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower); });
 		ExistingLobbyIdx != INDEX_NONE)
@@ -130,12 +153,144 @@ bool UBeamLobbySubsystem::TryGetLobby(FGuid LobbyId, ULobby*& Lobby)
 	return false;
 }
 
+bool UBeamLobbySubsystem::TryGetCurrentLobby(FUserSlot Slot, ULobby*& Lobby)
+{
+	UBeamLobbyState* LobbyState;
+	if (TryGetCurrentLobbyState(Slot, LobbyState))
+	{
+		Lobby = GetCurrentLobby(Slot);
+		return true;
+	}
+
+	Lobby = nullptr;
+	return false;
+}
+
+bool UBeamLobbySubsystem::TryGetCurrentLobbyState(FUserSlot Slot, UBeamLobbyState*& Lobby)
+{
+#if WITH_TESTS
+	if (Slot.Name.Contains("Test"))
+	{
+		FBeamRealmUser RealmUser;
+		if (UserSlots->GetUserDataAtSlot(Slot, RealmUser, this))
+		{
+			InitializeLobbyInfoForSlot(Slot, RealmUser);
+		}
+	}
+#endif
+	Lobby = LocalPlayerLobbyInfo.FindChecked(Slot);
+	if (Lobby->LobbyId.IsValid()) return true;
+	return false;
+}
+
 bool UBeamLobbySubsystem::TryGetDedicatedServerInstanceLobby(ULobby*& Lobby)
 {
 	check(IsRunningDedicatedServer());
 	check(DedicatedServerInstanceLobbyId.IsValid())
 
-	return TryGetLobby(DedicatedServerInstanceLobbyId, Lobby);
+	return TryGetLobbyById(DedicatedServerInstanceLobbyId, Lobby);
+}
+
+bool UBeamLobbySubsystem::TryBeginUpdateLobby(FUserSlot Slot, bool bForce)
+{
+	UBeamLobbyState* LobbyState;
+	if (!TryGetCurrentLobbyState(Slot, LobbyState))
+	{
+		UE_LOG(LogBeamLobby, Error, TEXT("User at this slot is not in a lobby (locally). USER_SLOT=%s"), *Slot.Name)
+		return false;
+	}
+
+	if (UpdateCommands.Contains(Slot) && !bForce)
+	{
+		UE_LOG(LogBeamLobby, Verbose, TEXT("User at this slot is not in a lobby (locally). USER_SLOT=%s"), *Slot.Name)
+		return false;
+	}
+
+	UpdateCommands.Add(Slot, NewObject<UBeamLobbyUpdateCommand>());
+	UpdateCommands[Slot]->OwnerUserSlot = Slot;
+	UpdateCommands[Slot]->LobbyId = LobbyState->LobbyId;
+	UE_LOG(LogBeamLobby, Verbose, TEXT("User at this slot started building a set of updates to the game lobby. USER_SLOT=%s"), *Slot.Name)
+	return true;
+}
+
+void UBeamLobbySubsystem::PrepareUpdateName(const FUserSlot& Slot, const FString& NewName)
+{
+	UBeamLobbyState* LobbyState;
+	if (!GuardSlotIsInLobby(Slot, LobbyState)) return;
+	if (!GuardUpdateCommandBegun(Slot)) return;
+	if (!GuardIsLobbyOwner(Slot, LobbyState)) return;
+
+	UpdateCommands[Slot]->NewLobbyName = FOptionalString(NewName);
+}
+
+void UBeamLobbySubsystem::PrepareUpdateDescription(const FUserSlot& Slot, const FString& NewDesc)
+{
+	UBeamLobbyState* LobbyState;
+	if (!GuardSlotIsInLobby(Slot, LobbyState)) return;
+	if (!GuardUpdateCommandBegun(Slot)) return;
+	if (!GuardIsLobbyOwner(Slot, LobbyState)) return;
+
+	UpdateCommands[Slot]->NewLobbyDescription = FOptionalString(NewDesc);
+}
+
+void UBeamLobbySubsystem::PrepareUpdateRestriction(const FUserSlot& Slot, const ELobbyRestriction& NewLobbyRestriction)
+{
+	UBeamLobbyState* LobbyState;
+	if (!GuardSlotIsInLobby(Slot, LobbyState)) return;
+	if (!GuardUpdateCommandBegun(Slot)) return;
+	if (!GuardIsLobbyOwner(Slot, LobbyState)) return;
+
+	UpdateCommands[Slot]->NewRestriction = FOptionalLobbyRestriction(NewLobbyRestriction);
+}
+
+void UBeamLobbySubsystem::PrepareUpdateGameType(const FUserSlot& Slot, const FBeamContentId& NewGameType)
+{
+	UBeamLobbyState* LobbyState;
+	if (!GuardSlotIsInLobby(Slot, LobbyState)) return;
+	if (!GuardUpdateCommandBegun(Slot)) return;
+	if (!GuardIsLobbyOwner(Slot, LobbyState)) return;
+
+	UpdateCommands[Slot]->NewGameType = FOptionalBeamContentId(NewGameType);
+}
+
+void UBeamLobbySubsystem::PrepareUpdateHost(const FUserSlot& Slot, const FBeamGamerTag& NewHost)
+{
+	UBeamLobbyState* LobbyState;
+	if (!GuardSlotIsInLobby(Slot, LobbyState)) return;
+	if (!GuardUpdateCommandBegun(Slot)) return;
+	if (!GuardIsLobbyOwner(Slot, LobbyState)) return;
+
+	UpdateCommands[Slot]->NewHost = FOptionalBeamGamerTag(NewHost);
+}
+
+void UBeamLobbySubsystem::PrepareUpdateMaxPlayers(const FUserSlot& Slot, const int32& NewMaxPlayers)
+{
+	UBeamLobbyState* LobbyState;
+	if (!GuardSlotIsInLobby(Slot, LobbyState)) return;
+	if (!GuardUpdateCommandBegun(Slot)) return;
+	if (!GuardIsLobbyOwner(Slot, LobbyState)) return;
+
+	UpdateCommands[Slot]->NewMaxPlayers = FOptionalInt32(NewMaxPlayers);
+}
+
+void UBeamLobbySubsystem::PrepareUpdateGlobalData(const FUserSlot& Slot, const TMap<FString, FString>& UpdatedGlobalData)
+{
+	UBeamLobbyState* LobbyState;
+	if (!GuardSlotIsInLobby(Slot, LobbyState)) return;
+	if (!GuardUpdateCommandBegun(Slot)) return;
+	if (!GuardIsLobbyOwner(Slot, LobbyState)) return;
+
+	UpdateCommands[Slot]->GlobalDataUpdates = FOptionalMapOfString(UpdatedGlobalData);
+}
+
+void UBeamLobbySubsystem::PrepareDeleteGlobalData(const FUserSlot& Slot, const TArray<FString>& GlobalDataToRemove)
+{
+	UBeamLobbyState* LobbyState;
+	if (!GuardSlotIsInLobby(Slot, LobbyState)) return;
+	if (!GuardUpdateCommandBegun(Slot)) return;
+	if (!GuardIsLobbyOwner(Slot, LobbyState)) return;
+
+	UpdateCommands[Slot]->GlobalDataDeletes = FOptionalArrayOfString(GlobalDataToRemove);
 }
 
 
@@ -258,6 +413,142 @@ FBeamOperationHandle UBeamLobbySubsystem::CPP_KickPlayerOperation(FUserSlot User
 	return Handle;
 }
 
+FBeamOperationHandle UBeamLobbySubsystem::CommitLobbyUpdateOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	CommitLobbyUpdate(UserSlot, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamLobbySubsystem::CPP_CommitLobbyUpdateOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	CommitLobbyUpdate(UserSlot, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamLobbySubsystem::UpdatePlayerDataOperation(FUserSlot UserSlot, FBeamGamerTag TargetPlayer, TArray<FBeamTag> Tags, FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+
+
+	UpdatePlayerTags(UserSlot, TargetPlayer, Tags, true, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamLobbySubsystem::CPP_UpdatePlayerDataOperation(FUserSlot UserSlot, FBeamGamerTag TargetPlayer, TArray<FBeamTag> Tags, FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	UpdatePlayerTags(UserSlot, TargetPlayer, Tags, true, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamLobbySubsystem::UpdateSlotPlayerDataOperation(FUserSlot UserSlot, TArray<FBeamTag> Tags, FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	FBeamRealmUser SlotUser;
+	if (UserSlots->GetUserDataAtSlot(UserSlot, SlotUser, this))
+	{
+		UpdatePlayerTags(UserSlot, SlotUser.GamerTag, Tags, true, Handle);
+	}
+	else
+	{
+		RequestTracker->TriggerOperationError(Handle, FString("NOT_SIGNED_IN"));
+	}
+	return Handle;
+}
+
+FBeamOperationHandle UBeamLobbySubsystem::CPP_UpdateSlotPlayerDataOperation(FUserSlot UserSlot, TArray<FBeamTag> Tags, FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	FBeamRealmUser SlotUser;
+	if (UserSlots->GetUserDataAtSlot(UserSlot, SlotUser, this))
+	{
+		UpdatePlayerTags(UserSlot, SlotUser.GamerTag, Tags, true, Handle);
+	}
+	else
+	{
+		RequestTracker->TriggerOperationError(Handle, FString("NOT_SIGNED_IN"));
+	}
+	return Handle;
+}
+
+FBeamOperationHandle UBeamLobbySubsystem::DeletePlayerDataOperation(FUserSlot UserSlot, FBeamGamerTag TargetPlayer, TArray<FBeamTag> Tags, FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+
+
+	DeletePlayerTags(UserSlot, TargetPlayer, Tags, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamLobbySubsystem::CPP_DeletePlayerDataOperation(FUserSlot UserSlot, FBeamGamerTag TargetPlayer, TArray<FBeamTag> Tags, FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	DeletePlayerTags(UserSlot, TargetPlayer, Tags, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamLobbySubsystem::DeleteSlotPlayerDataOperation(FUserSlot UserSlot, TArray<FBeamTag> Tags, FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	FBeamRealmUser SlotUser;
+	if (UserSlots->GetUserDataAtSlot(UserSlot, SlotUser, this))
+	{
+		DeletePlayerTags(UserSlot, SlotUser.GamerTag, Tags, Handle);
+	}
+	else
+	{
+		RequestTracker->TriggerOperationError(Handle, FString("NOT_SIGNED_IN"));
+	}
+	return Handle;
+}
+
+FBeamOperationHandle UBeamLobbySubsystem::CPP_DeleteSlotPlayerDataOperation(FUserSlot UserSlot, TArray<FBeamTag> Tags, FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	FBeamRealmUser SlotUser;
+	if (UserSlots->GetUserDataAtSlot(UserSlot, SlotUser, this))
+	{
+		DeletePlayerTags(UserSlot, SlotUser.GamerTag, Tags, Handle);
+	}
+	else
+	{
+		RequestTracker->TriggerOperationError(Handle, FString("NOT_SIGNED_IN"));
+	}
+	return Handle;
+}
+
+FBeamOperationHandle UBeamLobbySubsystem::ProvisionGameServerForLobbyOperation(FUserSlot UserSlot, FOptionalBeamContentId NewGameType, FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	FBeamRealmUser SlotUser;
+	if (UserSlots->GetUserDataAtSlot(UserSlot, SlotUser, this))
+	{
+		ProvisionGameServerForLobby(UserSlot, NewGameType, Handle);
+	}
+	else
+	{
+		RequestTracker->TriggerOperationError(Handle, FString("NOT_SIGNED_IN"));
+	}
+	return Handle;
+}
+
+FBeamOperationHandle UBeamLobbySubsystem::CPP_ProvisionGameServerForLobbyOperation(FUserSlot UserSlot, FOptionalBeamContentId NewGameType, FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	FBeamRealmUser SlotUser;
+	if (UserSlots->GetUserDataAtSlot(UserSlot, SlotUser, this))
+	{
+		ProvisionGameServerForLobby(UserSlot, NewGameType, Handle);
+	}
+	else
+	{
+		RequestTracker->TriggerOperationError(Handle, FString("NOT_SIGNED_IN"));
+	}
+	return Handle;
+}
+
 // OPERATIONS Implementations
 
 void UBeamLobbySubsystem::CreateOpenLobby(FUserSlot UserSlot, FString Name, FString Desc, FBeamContentId MatchType, int32 MaxPlayers, TMap<FString, FString> LobbyData, TArray<FBeamTag> PlayerTags,
@@ -351,7 +642,7 @@ void UBeamLobbySubsystem::RefreshLobbyData(FUserSlot UserSlot, FGuid LobbyId, FB
 			UE_LOG(LogBeamLobby, Verbose, TEXT("Refreshed Lobby Data. LOBBY_ID=%s,HOST_PLAYER_GAMERTAG=%s,GAME_TYPE=%s,PASSCODE=%s"),
 			       *Resp.SuccessData->LobbyId.Val,
 			       *Resp.SuccessData->Host.Val.AsString,
-			       *Resp.SuccessData->MatchType.Val->Id.Val.AsString,
+			       !Resp.SuccessData->MatchType.IsSet ? TEXT("NoGameTypeInLobby") : *Resp.SuccessData->MatchType.Val->Id.Val.AsString,
 			       *Resp.SuccessData->Passcode.Val)
 			RequestTracker->TriggerOperationSuccess(Op, Resp.SuccessData->LobbyId.Val);
 		}
@@ -410,7 +701,7 @@ void UBeamLobbySubsystem::JoinLobby(FUserSlot UserSlot, FGuid LobbyId, TArray<FB
 			UE_LOG(LogBeamLobby, Verbose, TEXT("Joined Open Lobby. LOBBY_ID=%s,HOST_PLAYER_GAMERTAG=%s,GAME_TYPE=%s"),
 			       *Resp.SuccessData->LobbyId.Val,
 			       *Resp.SuccessData->Host.Val.AsString,
-			       *Resp.SuccessData->MatchType.Val->Id.Val.AsString)
+			       !Resp.SuccessData->MatchType.IsSet ? TEXT("NoGameTypeInLobby") : *Resp.SuccessData->MatchType.Val->Id.Val.AsString)
 		}
 	});
 
@@ -437,7 +728,7 @@ void UBeamLobbySubsystem::JoinLobbyByPasscode(FUserSlot UserSlot, FString Passco
 			UE_LOG(LogBeamLobby, Verbose, TEXT("Joined Closed Lobby. LOBBY_ID=%s,HOST_PLAYER_GAMERTAG=%s,GAME_TYPE=%s, PASSCODE=%s"),
 			       *Resp.SuccessData->LobbyId.Val,
 			       *Resp.SuccessData->Host.Val.AsString,
-			       *Resp.SuccessData->MatchType.Val->Id.Val.AsString,
+			       !Resp.SuccessData->MatchType.IsSet ? TEXT("NoGameTypeInLobby") : *Resp.SuccessData->MatchType.Val->Id.Val.AsString,
 			       *Resp.SuccessData->Passcode.Val)
 		}
 	});
@@ -510,16 +801,250 @@ void UBeamLobbySubsystem::KickPlayer(FUserSlot UserSlot, FBeamGamerTag Player, F
 		else
 		{
 			UE_LOG(LogBeamLobby, Verbose, TEXT("Successfully kicked player from lobby. LOBBY_ID=%s,HOST_PLAYER_GAMERTAG=%s,GAME_TYPE=%s,GAMERTAG=%s"),
-			   *LobbyData->LobbyId.Val,
-			   *LobbyData->Host.Val.AsString,
-			   *LobbyData->MatchType.Val->Id.Val.AsString,			   
-			   *Player.AsString)
+			       *LobbyData->LobbyId.Val,
+			       *LobbyData->Host.Val.AsString,
+			       *LobbyData->MatchType.Val->Id.Val.AsString,
+			       *Player.AsString)
 			RequestTracker->TriggerOperationSuccess(Op, "");
 		}
 	});
 
 	// Get the player's GamerTag and leave the lobby they are in.	
 	FBeamRequestContext Ctx = RequestRemoveFromLobby(UserSlot, JoinedLobbyState->LobbyId, Player, Op, Handler);
+}
+
+void UBeamLobbySubsystem::CommitLobbyUpdate(const FUserSlot& Slot, FBeamOperationHandle Op)
+{
+	UBeamLobbyState* LobbyState;
+	if (!GuardSlotIsInLobby(Slot, LobbyState))
+	{
+		RequestTracker->TriggerOperationError(Op, FString("NOT_IN_LOBBY"));
+		return;
+	}
+
+	if (!GuardUpdateCommandBegun(Slot))
+	{
+		RequestTracker->TriggerOperationError(Op, FString("NO_LOBBY_UPDATE_PREPARED"));
+		return;
+	}
+
+	const auto UpdateCmd = UpdateCommands[Slot];
+	const auto LobbyId = UpdateCmd->LobbyId;
+
+	// If we don't actually have any update, we just trigger the success without making any requests.
+	if (!UpdateCmd->HasGlobalDataUpdate())
+	{
+		RequestTracker->TriggerOperationSuccess(Op, LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower));
+		return;
+	}
+
+	// If we do have an update... we make the request to update it.
+	const auto NewName = UpdateCmd->NewLobbyName;
+	const auto NewDesc = UpdateCmd->NewLobbyDescription;
+	const auto NewRestriction = UpdateCmd->NewRestriction;
+	const auto NewGameType = UpdateCmd->NewGameType;
+	const auto NewHost = UpdateCmd->NewHost;
+	const auto NewMaxPlayers = UpdateCmd->NewMaxPlayers;
+	const auto GlobalDataUpdates = UpdateCmd->GlobalDataUpdates;
+	const auto GlobalDataDeletes = UpdateCmd->GlobalDataDeletes;
+
+	const auto Handler = FOnApiLobbyPutMetadataFullResponse::CreateLambda([this, Slot, Op, LobbyId, GlobalDataUpdates, GlobalDataDeletes](FApiLobbyPutMetadataFullResponse Resp)
+	{
+		if (Resp.State != RS_Success)
+		{
+			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.message);
+			return;
+		}
+
+		ReplaceOrAddKnownLobbyData(Resp.SuccessData);
+		UpdateCommands.Remove(Slot);
+
+		auto AddedOrUpdatedGlobalDataLog = FString("");
+		auto RemovedGlobalDataLog = FString("");
+
+		if (GlobalDataUpdates.IsSet)
+		{
+			for (auto Val : GlobalDataUpdates.Val)
+				AddedOrUpdatedGlobalDataLog += FString::Printf(TEXT("(%s,%s), "), *Val.Key, *Val.Value);
+		}
+
+		if (GlobalDataDeletes.IsSet)
+		{
+			for (auto Val : GlobalDataDeletes.Val)
+				RemovedGlobalDataLog += FString::Printf(TEXT("%s, "), *Val);
+		}
+
+		RequestTracker->TriggerOperationSuccess(Op, LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower));
+
+		UE_LOG(LogBeamLobby, Verbose, TEXT("Successfully updated data for the lobby. LOBBY_ID=%s,HOST_PLAYER_GAMERTAG=%s,GAME_TYPE=%s,GLOBAL_DATA_ADDED=%s,GLOBAL_DATA_REMOVED=%s"),
+		       *Resp.SuccessData->LobbyId.Val,
+		       *Resp.SuccessData->Host.Val.AsString,
+		       !Resp.SuccessData->MatchType.IsSet ? TEXT("NoGameTypeInLobby") : *Resp.SuccessData->MatchType.Val->Id.Val.AsString,
+		       *AddedOrUpdatedGlobalDataLog,
+		       *RemovedGlobalDataLog)
+	});
+	auto _ = RequestUpdateLobbyMetadata(Slot, LobbyId, NewName, NewDesc, NewRestriction, NewGameType, NewHost, NewMaxPlayers, GlobalDataUpdates, GlobalDataDeletes, Op, Handler);
+}
+
+void UBeamLobbySubsystem::UpdatePlayerTags(const FUserSlot& Slot, FBeamGamerTag TargetPlayer, TArray<FBeamTag> Tags, bool bShouldReplaceRepeatedTags, FBeamOperationHandle Op)
+{
+	UBeamLobbyState* LobbyState;
+	if (!GuardSlotIsInLobby(Slot, LobbyState))
+	{
+		RequestTracker->TriggerOperationError(Op, FString("NOT_IN_LOBBY"));
+		return;
+	}
+
+	// If the target player is not in the lobby, we fail the operation.
+	const auto Lobby = GetCurrentLobby(Slot);
+	if (!Lobby->Players.Val.ContainsByPredicate([TargetPlayer](const ULobbyPlayer* P) { return P->PlayerId.Val == TargetPlayer; }))
+	{
+		RequestTracker->TriggerOperationError(Op, FString("TARGET_PLAYER_NOT_IN_LOBBY"));
+		return;
+	}
+
+	// If we are not the owner, we can only change our own tags.
+	if (!LobbyState->bIsLobbyOwner)
+	{
+		FBeamRealmUser RequestingUser;
+		UserSlots->GetUserDataAtSlot(Slot, RequestingUser, this);
+		if (RequestingUser.GamerTag != TargetPlayer)
+		{
+			RequestTracker->TriggerOperationError(Op, FString("CANNOT_MODIFY_OTHER_PLAYER_TAGS_IF_NOT_HOST"));
+			return;
+		}
+	}
+
+	// Make the request.
+	const auto LobbyId = LobbyState->LobbyId;
+	const auto Handler = FOnPutTagsFullResponse::CreateLambda([this, Slot, Op, LobbyId, TargetPlayer, Tags](FPutTagsFullResponse Resp)
+	{
+		if (Resp.State != RS_Success)
+		{
+			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.message);
+			return;
+		}
+
+		ReplaceOrAddKnownLobbyData(Resp.SuccessData);
+		auto AddedOrUpdatedTags = FString("");
+		for (auto Val : Tags)
+			AddedOrUpdatedTags += FString::Printf(TEXT("(%s,%s), "), *Val.Name.Val, *Val.Value.Val);
+		RequestTracker->TriggerOperationSuccess(Op, LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower));
+
+		UE_LOG(LogBeamLobby, Verbose, TEXT("Successfully updated data for the lobby. REQUESTING_SLOT=%s, LOBBY_ID=%s,MODIFIED_PLAYER_GAMERTAG=%s,PLAYER_TAGS=%s"),
+		       *Slot.Name,
+		       *Resp.SuccessData->LobbyId.Val,
+		       *TargetPlayer.AsString,
+		       *AddedOrUpdatedTags)
+	});
+
+	auto _ = RequestUpdatePlayerTag(Slot, LobbyId, TargetPlayer, Tags, bShouldReplaceRepeatedTags, Op, Handler);
+}
+
+void UBeamLobbySubsystem::DeletePlayerTags(const FUserSlot& Slot, FBeamGamerTag TargetPlayer, TArray<FBeamTag> Tags, FBeamOperationHandle Op)
+{
+	UBeamLobbyState* LobbyState;
+	if (!GuardSlotIsInLobby(Slot, LobbyState))
+	{
+		RequestTracker->TriggerOperationError(Op, FString("NOT_IN_LOBBY"));
+		return;
+	}
+
+	// If the target player is not in the lobby, we fail the operation.
+	const auto Lobby = GetCurrentLobby(Slot);
+	const auto LobbyId = LobbyState->LobbyId;
+	if (!Lobby->Players.Val.ContainsByPredicate([TargetPlayer](const ULobbyPlayer* P) { return P->PlayerId.Val == TargetPlayer; }))
+	{
+		RequestTracker->TriggerOperationError(Op, FString("TARGET_PLAYER_NOT_IN_LOBBY"));
+		return;
+	}
+
+	// If we are not the owner, we can only change our own tags.
+	if (!LobbyState->bIsLobbyOwner)
+	{
+		FBeamRealmUser RequestingUser;
+		UserSlots->GetUserDataAtSlot(Slot, RequestingUser, this);
+		if (RequestingUser.GamerTag != TargetPlayer)
+		{
+			RequestTracker->TriggerOperationError(Op, FString("CANNOT_MODIFY_OTHER_PLAYER_TAGS_IF_NOT_HOST"));
+			return;
+		}
+	}
+
+	// Make sure no accidental unset tag is being given
+	TArray<FBeamTag> TagsToRemove;
+	for (FBeamTag Tag : Tags)
+	{
+		if (Tag.Name.IsSet)
+		{
+			TagsToRemove.Add(Tag);
+		}
+		else
+		{
+			UE_LOG(LogBeamLobby, Verbose, TEXT("Skipping tag with no name set when trying to update the tags for this player. REQUESTING_SLOT=%s, LOBBY_ID=%s,MODIFIED_PLAYER_GAMERTAG=%s"),
+			       *Slot.Name,
+			       *LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower),
+			       *TargetPlayer.AsString)
+		}
+	}
+
+	// Make the request.
+	const auto Handler = FOnDeleteTagsFullResponse::CreateLambda([this, Slot, Op, LobbyId, TargetPlayer, TagsToRemove](FDeleteTagsFullResponse Resp)
+	{
+		if (Resp.State != RS_Success)
+		{
+			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.message);
+			return;
+		}
+
+		ReplaceOrAddKnownLobbyData(Resp.SuccessData);
+		auto DeletedTags = FString("");
+		for (auto Val : TagsToRemove)
+			DeletedTags += FString::Printf(TEXT("(%s,%s), "), *Val.Name.Val, *Val.Value.Val);
+		RequestTracker->TriggerOperationSuccess(Op, LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower));
+
+		UE_LOG(LogBeamLobby, Verbose, TEXT("Successfully updated data for the lobby. REQUESTING_SLOT=%s, LOBBY_ID=%s,MODIFIED_PLAYER_GAMERTAG=%s,PLAYER_TAGS=%s"),
+		       *Slot.Name,
+		       *Resp.SuccessData->LobbyId.Val,
+		       *TargetPlayer.AsString,
+		       *DeletedTags)
+	});
+
+	auto _ = RequestDeletePlayerTags(Slot, LobbyId, TargetPlayer, TagsToRemove, Op, Handler);
+}
+
+void UBeamLobbySubsystem::ProvisionGameServerForLobby(const FUserSlot& Slot, FOptionalBeamContentId NewGameContent, FBeamOperationHandle Op)
+{
+	UBeamLobbyState* LobbyState;
+	if (!GuardSlotIsInLobby(Slot, LobbyState))
+	{
+		RequestTracker->TriggerOperationError(Op, FString("NOT_IN_LOBBY"));
+		return;
+	}
+
+	// If we are not the owner, we can only change our own tags.
+	if(!GuardIsLobbyOwner(Slot, LobbyState))
+	{
+		RequestTracker->TriggerOperationError(Op, FString("NOT_LOBBY_OWNER"));
+		return;
+	}
+
+	auto Handler = FOnApiLobbyPostServerFullResponse::CreateLambda([this, Slot, Op, LobbyState](FApiLobbyPostServerFullResponse Resp)
+	{
+		if(Resp.State != RS_Success)
+		{
+			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.message);
+			return;	
+		}
+
+		UE_LOG(LogBeamLobby, Verbose,
+			TEXT("Successfully provisioned a server. Now, on LobbyUpdated event, code should be extracting connection parameters from ULobby::Data. REQUESTING_SLOT=%s, LOBBY_ID=%s"),
+			*Slot.Name,
+			*LobbyState->LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower))
+		RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
+	});
+
+	auto _ = RequestPostServer(Slot, LobbyState->LobbyId, NewGameContent, Op, Handler);
 }
 
 // REQUEST HELPERS
@@ -609,22 +1134,23 @@ FBeamRequestContext UBeamLobbySubsystem::RequestRemoveFromLobby(const FUserSlot&
 	return Ctx;
 }
 
-FBeamRequestContext UBeamLobbySubsystem::RequestUpdateLobbyMetadata(const FUserSlot& UserSlot, FGuid LobbyId, FString LobbyName, FString LobbyDescription, ELobbyRestriction Restriction,
-                                                                    FBeamContentId MatchType, FBeamGamerTag NewHost, int32 MaxPlayers, 
-                                                                    TMap<FString, FString> GlobalDataUpdates, TArray<FString> GlobalDataRemove, FBeamOperationHandle Op,
+FBeamRequestContext UBeamLobbySubsystem::RequestUpdateLobbyMetadata(const FUserSlot& UserSlot, FGuid LobbyId, FOptionalString LobbyName, FOptionalString LobbyDescription,
+                                                                    FOptionalLobbyRestriction Restriction,
+                                                                    FOptionalBeamContentId MatchType, FOptionalBeamGamerTag NewHost, FOptionalInt32 MaxPlayers,
+                                                                    FOptionalMapOfString GlobalDataUpdates, FOptionalArrayOfString GlobalDataDeletes, FBeamOperationHandle Op,
                                                                     FOnApiLobbyPutMetadataFullResponse Handler) const
 {
 	FOptionalUpdateData OptionalUpdateData = FOptionalUpdateData(NewObject<UUpdateData>());
-	OptionalUpdateData.Val->Updates = GlobalDataUpdates.IsEmpty()? FOptionalMapOfString() : FOptionalMapOfString(GlobalDataUpdates);
-	OptionalUpdateData.Val->Deletes = GlobalDataRemove.IsEmpty() ? FOptionalArrayOfString() : FOptionalArrayOfString(GlobalDataRemove);
-	
+	OptionalUpdateData.Val->Updates = GlobalDataUpdates;
+	OptionalUpdateData.Val->Deletes = GlobalDataDeletes;
+
 	const auto Req = UApiLobbyPutMetadataRequest::Make(LobbyId,
-	                                                   FOptionalString{LobbyName},
-	                                                   FOptionalString(LobbyDescription),
-	                                                   FOptionalLobbyRestriction(Restriction),
-	                                                   !MatchType.AsString.IsEmpty() ? FOptionalBeamContentId(MatchType) : FOptionalBeamContentId(),
-	                                                   MaxPlayers ? FOptionalInt32(MaxPlayers) : FOptionalInt32(),
-	                                                   !NewHost.AsString.IsEmpty() ? FOptionalString(NewHost.AsString) : FOptionalString(),
+	                                                   LobbyName,
+	                                                   LobbyDescription,
+	                                                   Restriction,
+	                                                   MatchType,
+	                                                   MaxPlayers,
+	                                                   NewHost.IsSet ? FOptionalString(NewHost.Val.AsString) : FOptionalString(),
 	                                                   OptionalUpdateData,
 	                                                   GetTransientPackage(), {});
 
@@ -649,19 +1175,52 @@ FBeamRequestContext UBeamLobbySubsystem::RequestUpdatePlayerTag(const FUserSlot&
 	return Ctx;
 }
 
+FBeamRequestContext UBeamLobbySubsystem::RequestDeletePlayerTags(const FUserSlot& UserSlot, FGuid LobbyId, FBeamGamerTag PlayerId, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op,
+                                                                 FOnDeleteTagsFullResponse Handler) const
+{
+	TArray<FString> TagsToRemove;
+	for (FBeamTag PlayerTag : PlayerTags)
+	{
+		TagsToRemove.Add(PlayerTag.Name.Val);
+	}
+	const auto Req = UDeleteTagsRequest::Make(LobbyId,
+	                                          FOptionalBeamGamerTag(PlayerId),
+	                                          FOptionalArrayOfString(TagsToRemove),
+	                                          GetTransientPackage(), {});
+
+	// Make the request
+	FBeamRequestContext Ctx;
+	LobbyApi->CPP_DeleteTags(UserSlot, Req, Handler, Ctx, Op, this);
+	return Ctx;
+}
+
+FBeamRequestContext UBeamLobbySubsystem::RequestPostServer(const FUserSlot& UserSlot, FGuid LobbyId, FOptionalBeamContentId SelectedMatchType, FBeamOperationHandle Op,
+	FOnApiLobbyPostServerFullResponse Handler) const
+{
+	const auto Req = UApiLobbyPostServerRequest::Make(LobbyId,
+												SelectedMatchType,
+												GetTransientPackage(),
+												{});
+
+	// Make the request
+	FBeamRequestContext Ctx;
+	LobbyApi->CPP_PostServer(UserSlot, Req, Handler, Ctx, Op, this);
+	return Ctx;
+}
+
 // NOTIFICATION HANDLERS
 
 void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage Msg, FUserSlot Slot)
 {
 	if (Msg.Type == EBeamLobbyEvent::BEAM_LobbyDisbanded)
 	{
-		if (UBeamLocalPlayerLobbyInfo** Info = LocalPlayerLobbyInfo.Find(Slot))
+		if (UBeamLobbyState** Info = LocalPlayerLobbyInfo.Find(Slot))
 		{
-			UBeamLocalPlayerLobbyInfo* Lobby = *Info;
+			UBeamLobbyState* Lobby = *Info;
 			const auto OldId = Lobby->LobbyId;
 
 			ULobby* LobbyData;
-			if (TryGetLobby(OldId, LobbyData))
+			if (TryGetLobbyById(OldId, LobbyData))
 			{
 				Lobby->OnLobbyDisbandedCode.Broadcast(Slot, LobbyData, Msg);
 				Lobby->OnLobbyDisbanded.Broadcast(Slot, LobbyData, Msg);
@@ -677,7 +1236,7 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 
 	if (Msg.Type == EBeamLobbyEvent::BEAM_DataChanged || Msg.Type == EBeamLobbyEvent::BEAM_PlayerJoined || Msg.Type == EBeamLobbyEvent::BEAM_LobbyCreated)
 	{
-		if (UBeamLocalPlayerLobbyInfo** Info = LocalPlayerLobbyInfo.Find(Slot))
+		if (UBeamLobbyState** Info = LocalPlayerLobbyInfo.Find(Slot))
 		{
 			const auto Lobby = *Info;
 			const auto LobbyId = Lobby->LobbyId;
@@ -688,7 +1247,7 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 				if (Evt.EventType == OET_SUCCESS)
 				{
 					ULobby* LobbyData;
-					if (TryGetLobby(LobbyId, LobbyData))
+					if (TryGetLobbyById(LobbyId, LobbyData))
 					{
 						Lobby->OnLobbyUpdatedCode.Broadcast(Slot, LobbyData, Msg);
 						Lobby->OnLobbyUpdated.Broadcast(Slot, LobbyData, Msg);
@@ -706,7 +1265,7 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 
 	if (Msg.Type == EBeamLobbyEvent::BEAM_PlayerKicked)
 	{
-		if (UBeamLocalPlayerLobbyInfo** Info = LocalPlayerLobbyInfo.Find(Slot))
+		if (UBeamLobbyState** Info = LocalPlayerLobbyInfo.Find(Slot))
 		{
 			auto Lobby = *Info;
 			const auto LobbyId = Lobby->LobbyId;
@@ -715,7 +1274,7 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 			if (Lobby->OwnerGamerTag.AsLong == Msg.PlayerKickedData.KickedGamerTag.AsLong)
 			{
 				ULobby* LobbyData;
-				if (TryGetLobby(LobbyId, LobbyData))
+				if (TryGetLobbyById(LobbyId, LobbyData))
 				{
 					Lobby->OnKickedFromLobbyCode.Broadcast(Slot, LobbyData, Msg);
 					Lobby->OnKickedFromLobby.Broadcast(Slot, LobbyData, Msg);
@@ -735,7 +1294,7 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 					if (Evt.EventType == OET_SUCCESS)
 					{
 						ULobby* LobbyData;
-						if (TryGetLobby(LobbyId, LobbyData))
+						if (TryGetLobbyById(LobbyId, LobbyData))
 						{
 							Lobby->OnLobbyUpdatedCode.Broadcast(Slot, LobbyData, Msg);
 							Lobby->OnLobbyUpdated.Broadcast(Slot, LobbyData, Msg);
@@ -753,7 +1312,7 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 
 	if (Msg.Type == EBeamLobbyEvent::BEAM_PlayerLeft)
 	{
-		if (UBeamLocalPlayerLobbyInfo** Info = LocalPlayerLobbyInfo.Find(Slot))
+		if (UBeamLobbyState** Info = LocalPlayerLobbyInfo.Find(Slot))
 		{
 			auto Lobby = *Info;
 			const auto LobbyId = Lobby->LobbyId;
@@ -762,7 +1321,7 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 			if (Lobby->OwnerGamerTag == Msg.PlayerKickedData.KickedGamerTag)
 			{
 				ULobby* LobbyData;
-				if (TryGetLobby(LobbyId, LobbyData))
+				if (TryGetLobbyById(LobbyId, LobbyData))
 				{
 					Lobby->OnLeftLobbyCode.Broadcast(Slot, LobbyData, Msg);
 					Lobby->OnLeftLobby.Broadcast(Slot, LobbyData, Msg);
@@ -782,7 +1341,7 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 					if (Evt.EventType == OET_SUCCESS)
 					{
 						ULobby* LobbyData;
-						if (TryGetLobby(LobbyId, LobbyData))
+						if (TryGetLobbyById(LobbyId, LobbyData))
 						{
 							Lobby->OnLobbyUpdatedCode.Broadcast(Slot, LobbyData, Msg);
 							Lobby->OnLobbyUpdated.Broadcast(Slot, LobbyData, Msg);
@@ -804,7 +1363,7 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 
 	if (Msg.Type == EBeamLobbyEvent::BEAM_HostPlayerChanged)
 	{
-		if (UBeamLocalPlayerLobbyInfo** Info = LocalPlayerLobbyInfo.Find(Slot))
+		if (UBeamLobbyState** Info = LocalPlayerLobbyInfo.Find(Slot))
 		{
 			auto Lobby = *Info;
 			const auto LobbyId = Lobby->LobbyId;
@@ -816,7 +1375,7 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 				{
 					// Get the lobby's data and update whether or not you are still the host
 					ULobby* LobbyData;
-					if (TryGetLobby(LobbyId, LobbyData))
+					if (TryGetLobbyById(LobbyId, LobbyData))
 					{
 						Lobby->bIsLobbyOwner = Lobby->OwnerGamerTag == LobbyData->Host.Val;
 						Lobby->OnHostChangedCode.Broadcast(Slot, LobbyData, Msg);
@@ -838,7 +1397,7 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 // HELPER FUNCTIONS
 void UBeamLobbySubsystem::InitializeLobbyInfoForSlot(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser)
 {
-	LocalPlayerLobbyInfo.Add(UserSlot, NewObject<UBeamLocalPlayerLobbyInfo>());
+	LocalPlayerLobbyInfo.Add(UserSlot, NewObject<UBeamLobbyState>());
 	LocalPlayerLobbyInfo[UserSlot]->LobbyId = FGuid();
 	LocalPlayerLobbyInfo[UserSlot]->bIsLobbyOwner = false;
 	LocalPlayerLobbyInfo[UserSlot]->OwnerUserSlot = UserSlot;
@@ -847,7 +1406,7 @@ void UBeamLobbySubsystem::InitializeLobbyInfoForSlot(const FUserSlot& UserSlot, 
 
 void UBeamLobbySubsystem::UpdateLobbyPlayerInfo(const FUserSlot Slot, const ULobby* LobbyData, FDelegateHandle NewSubscriptionDelegate = {})
 {
-	UBeamLocalPlayerLobbyInfo* LobbyInfo = LocalPlayerLobbyInfo.FindRef(Slot);
+	UBeamLobbyState* LobbyInfo = LocalPlayerLobbyInfo.FindRef(Slot);
 	LobbyInfo->LobbyId = FGuid(LobbyData->LobbyId.Val);
 	LobbyInfo->bIsLobbyOwner = LobbyData->Host.Val == LobbyInfo->OwnerGamerTag;
 
@@ -871,4 +1430,34 @@ void UBeamLobbySubsystem::ClearLobbyForSlot(FUserSlot Slot)
 
 	Lobby->OnLobbyUpdatedCode.Clear();
 	Lobby->OnLobbyUpdated.Clear();
+}
+
+bool UBeamLobbySubsystem::GuardSlotIsInLobby(const FUserSlot& Slot, UBeamLobbyState*& LobbyState)
+{
+	if (!TryGetCurrentLobbyState(Slot, LobbyState))
+	{
+		ensureAlwaysMsgf(false, TEXT("User at this slot is not in a lobby (locally). USER_SLOT=%s"), *Slot.Name);
+		return false;
+	}
+	return true;
+}
+
+bool UBeamLobbySubsystem::GuardIsLobbyOwner(const FUserSlot& Slot, UBeamLobbyState* LobbyState)
+{
+	if (!LobbyState->bIsLobbyOwner)
+	{
+		ensureAlwaysMsgf(false, TEXT("The User at this slot is not lobby owner so it can't change its name. USER_SLOT=%s"), *Slot.Name);
+		return false;
+	}
+	return true;
+}
+
+bool UBeamLobbySubsystem::GuardUpdateCommandBegun(const FUserSlot& Slot)
+{
+	if (!UpdateCommands.Contains(Slot))
+	{
+		ensureAlwaysMsgf(false, TEXT("Please call TryBeginUpdateLobbyData before using the various PrepareUpdate_____ functions. USER_SLOT=%s"), *Slot.Name);
+		return false;
+	}
+	return true;
 }

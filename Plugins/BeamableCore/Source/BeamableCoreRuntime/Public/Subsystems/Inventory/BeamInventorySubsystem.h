@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AutoGen/InventoryView.h"
 #include "Runtime/BeamRuntimeSubsystem.h"
+#include "Subsystems/Content/BeamContentSubsystem.h"
 #include "BeamInventorySubsystem.generated.h"
 
 struct FOptionalMapOfInt64;

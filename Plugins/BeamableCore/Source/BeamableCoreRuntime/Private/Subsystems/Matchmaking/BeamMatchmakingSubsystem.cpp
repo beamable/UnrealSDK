@@ -353,7 +353,7 @@ void UBeamMatchmakingSubsystem::OnMatchmakingUpdateReceived(FMatchmakingUpdateNo
 				if (Evt.EventType == OET_SUCCESS)
 				{
 					ULobby* L;
-					ensureAlways(GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>()->TryGetLobby(T.FoundMatchLobbyId, L));
+					ensureAlways(GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>()->TryGetLobbyById(T.FoundMatchLobbyId, L));
 
 					UE_LOG(LogBeamMatchmaking, Warning, TEXT("Match Lobby Locally Fetched LobbyId=%s"), *L->LobbyId.Val)
 

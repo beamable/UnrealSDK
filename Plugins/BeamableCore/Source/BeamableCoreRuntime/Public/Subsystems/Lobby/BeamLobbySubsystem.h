@@ -2,9 +2,12 @@
 
 #pragma once
 
+#include <AutoGen/SubSystems/Lobby/ApiLobbyPostServerRequest.h>
+
 #include "CoreMinimal.h"
 #include "AutoGen/SubSystems/Lobby/ApiLobbyPutMetadataRequest.h"
 #include "AutoGen/SubSystems/Lobby/DeleteLobbyRequest.h"
+#include "AutoGen/SubSystems/Lobby/DeleteTagsRequest.h"
 #include "AutoGen/SubSystems/Lobby/GetLobbiesRequest.h"
 #include "AutoGen/SubSystems/Lobby/GetLobbyRequest.h"
 #include "AutoGen/SubSystems/Lobby/PostLobbiesRequest.h"
@@ -22,7 +25,7 @@ DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnLobbyEventCode, const FUserSlot&, ULob
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnLobbyEvent, const FUserSlot&, Slot, ULobby*, Lobby, FLobbyUpdateNotificationMessage, RawEvt);
 
 UCLASS(BlueprintType)
-class UBeamLocalPlayerLobbyInfo : public UObject
+class UBeamLobbyState : public UObject
 {
 	GENERATED_BODY()
 
@@ -61,17 +64,17 @@ public:
 	FOnLobbyEvent OnHostChanged;
 	FOnLobbyEventCode OnHostChangedCode;
 
-	friend bool operator==(const ULobby& Lhs, const UBeamLocalPlayerLobbyInfo& RHS)
+	friend bool operator==(const ULobby& Lhs, const UBeamLobbyState& RHS)
 	{
 		return Lhs.LobbyId.Val.Equals(RHS.LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower));
 	}
 
-	friend bool operator==(const UBeamLocalPlayerLobbyInfo& Lhs, const UBeamLocalPlayerLobbyInfo& RHS)
+	friend bool operator==(const UBeamLobbyState& Lhs, const UBeamLobbyState& RHS)
 	{
 		return Lhs.LobbyId == RHS.LobbyId;
 	}
 
-	friend bool operator!=(const UBeamLocalPlayerLobbyInfo& Lhs, const UBeamLocalPlayerLobbyInfo& RHS)
+	friend bool operator!=(const UBeamLobbyState& Lhs, const UBeamLobbyState& RHS)
 	{
 		return !(Lhs == RHS);
 	}
@@ -86,20 +89,30 @@ class UBeamLobbyUpdateCommand : public UObject
 	UBeamLobbySubsystem* StatsSubsystem;
 
 public:
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	FGuid LobbyId;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	FUserSlot OwnerUserSlot;
+
+	FOptionalString NewLobbyName;
+	FOptionalString NewLobbyDescription;
+	FOptionalLobbyRestriction NewRestriction;
+	FOptionalBeamContentId NewGameType;
+	FOptionalBeamGamerTag NewHost;
+	FOptionalInt32 NewMaxPlayers;
+
+	FOptionalMapOfString GlobalDataUpdates;
+	FOptionalArrayOfString GlobalDataDeletes;
+
 	explicit UBeamLobbyUpdateCommand() = default;
+
+	bool HasGlobalDataUpdate() const
+	{
+		return NewLobbyName.IsSet || NewLobbyDescription.IsSet || NewRestriction.IsSet || NewGameType.IsSet || NewHost.IsSet || NewMaxPlayers.IsSet ||
+			(GlobalDataUpdates.IsSet && !GlobalDataUpdates.Val.IsEmpty()) || (GlobalDataDeletes.IsSet && !GlobalDataDeletes.Val.IsEmpty());
+	}
 };
-
-/** Stats Updated ----- Event fired whenever 1+ Stats are updated. **/
-
-USTRUCT(BlueprintType)
-struct FBeamLobbyUpdatedEvent
-{
-	GENERATED_BODY()
-};
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamLobbyUpdated, FBeamLobbyUpdatedEvent, Evt);
-
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnBeamLobbyUpdatedCode, FBeamLobbyUpdatedEvent);
 
 /**
  * 
@@ -129,7 +142,7 @@ public:
 	 * Holds information about which lobby each local player is in. 
 	 */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	TMap<FUserSlot, UBeamLocalPlayerLobbyInfo*> LocalPlayerLobbyInfo;
+	TMap<FUserSlot, UBeamLobbyState*> LocalPlayerLobbyInfo;
 
 	/**
 	 * Holds the Lobby objects.
@@ -172,20 +185,100 @@ public:
 	 * The callbacks exposed here are cleared automatically when you leave a lobby, but not when you join one.
 	 * We also pre-warm these instances for each configured UserSlot; for Test UserSlots, we instantiate them here.
 	 */
-	UBeamLocalPlayerLobbyInfo* GetCurrentSlotLobbyState(FUserSlot Slot);
+	UBeamLobbyState* GetCurrentSlotLobbyState(FUserSlot Slot);
 
 	/**
 	 * Tries to get whatever the current local data for the given lobby id is. If you want a guarantee that this data is up-to-date call, [CPP_]RefreshLobbyOperation first.
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetLobby(FGuid LobbyId, ULobby*& Lobby);
+	bool TryGetLobbyById(FGuid LobbyId, ULobby*& Lobby);
+
+	/**
+	 * Tries to get whatever the current local data for the given user slot's current lobby. If you want a guarantee that this data is up-to-date call, [CPP_]RefreshLobbyOperation first.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetCurrentLobby(FUserSlot Slot, ULobby*& Lobby);
+
+	/**
+	 * Tries to get whatever the current local data for the given user slot's current lobby state. If you want a guarantee that this data is up-to-date call, [CPP_]RefreshLobbyOperation first.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetCurrentLobbyState(FUserSlot Slot, UBeamLobbyState*& Lobby);
 
 	/**
 	 * You should only ever use this if you are running a single Lobby/Match per instance.
 	 * If you are running multiples, call TryGetLobby with the id of the lobby you want.
 	 * 
 	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetDedicatedServerInstanceLobby(ULobby*& Lobby);
+
+	/**
+	 * Call this to begin building a set of batched updates to a lobby the player is in.
+	 * After this call, use the various PrepareUpdate______ functions to build out the update.
+	 * Finally, run the CommitLobbyUpdateOperation to submit the lobby changes.
+	 *
+	 * When bForce is on, it'll discard any update that was previously being constructed before starting a new one. Otherwise, it'll return false. 
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryBeginUpdateLobby(FUserSlot Slot, bool bForce);
+
+	/**
+	 * After calling TryBeginUpdateLobbyData, call this to set the new name for the lobby.
+	 * Will fail if you are not the lobby host.
+	 */
+	UFUNCTION(BlueprintCallable)
+	void PrepareUpdateName(const FUserSlot& Slot, const FString& NewName);
+
+	/**
+	 * After calling TryBeginUpdateLobbyData, call this to set the new description for the lobby.
+	 * Will fail if you are not the lobby host.
+	 */
+	UFUNCTION(BlueprintCallable)
+	void PrepareUpdateDescription(const FUserSlot& Slot, const FString& NewDesc);
+
+	/**
+	 * After calling TryBeginUpdateLobbyData, call this to set the new restriction for the lobby.
+	 * A passcode will be generated by going from Public->Private.
+	 * Will fail if you are not the lobby host.
+	 */
+	UFUNCTION(BlueprintCallable)
+	void PrepareUpdateRestriction(const FUserSlot& Slot, const ELobbyRestriction& NewLobbyRestriction);
+
+	/**
+	 * After calling TryBeginUpdateLobbyData, call this to set the new UBeamGameTypeContent (or subclass) for the lobby.	 
+	 * Will fail if you are not the lobby host.
+	 */
+	UFUNCTION(BlueprintCallable)
+	void PrepareUpdateGameType(const FUserSlot& Slot, const FBeamContentId& NewGameType);
+
+	/**
+	 * After calling TryBeginUpdateLobbyData, call this to set the new host for the lobby. Must be one of the players in the lobby.	 
+	 * Will fail if you are not the lobby host.
+	 */
+	UFUNCTION(BlueprintCallable)
+	void PrepareUpdateHost(const FUserSlot& Slot, const FBeamGamerTag& NewHost);
+
+	/**
+	 * After calling TryBeginUpdateLobbyData, call this to set the new MaxPlayer count for the lobby.	 
+	 * Will fail if you are not the lobby host or if there are more players in the lobby than the new max players.
+	 */
+	UFUNCTION(BlueprintCallable)
+	void PrepareUpdateMaxPlayers(const FUserSlot& Slot, const int32& NewMaxPlayers);
+
+	/**
+	 * After calling TryBeginUpdateLobbyData, call this to set the which entries in ULobby::Data should added or updated in the lobby.	 
+	 * Will fail if you are not the lobby host.
+	 */
+	UFUNCTION(BlueprintCallable)
+	void PrepareUpdateGlobalData(const FUserSlot& Slot, const TMap<FString, FString>& UpdatedGlobalData);
+
+	/**
+	 * After calling TryBeginUpdateLobbyData, call this to set the which entries in ULobby::Data should be removed from the lobby.	 
+	 * Will fail if you are not the lobby host.
+	 */
+	UFUNCTION(BlueprintCallable)
+	void PrepareDeleteGlobalData(const FUserSlot& Slot, const TArray<FString>& GlobalDataToRemove);
 
 
 	// OPERATIONS
@@ -288,6 +381,75 @@ public:
 	 */
 	FBeamOperationHandle CPP_KickPlayerOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent, FBeamGamerTag Player);
 
+	/**
+	 * @brief If you are the host, you are allowed to make changes to the lobby metadata.
+	 *
+	 * You can modify lobby configuration as well as add new global key-value data that'll be propagated to all other clients.
+	 * See TryBeginUpdateLobbyData and other Prepare[Update|Delete] functions
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby")
+	FBeamOperationHandle CommitLobbyUpdateOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc CommitLobbyUpdateOperation 
+	 */
+	FBeamOperationHandle CPP_CommitLobbyUpdateOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent);
+
+	/**
+	 * @brief You can update your own player data when you are inside the lobby. You can update any player's tags if you are the host.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby")
+	FBeamOperationHandle UpdatePlayerDataOperation(FUserSlot UserSlot, FBeamGamerTag TargetPlayer, TArray<FBeamTag> Tags, FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc UpdatePlayerDataOperation 
+	 */
+	FBeamOperationHandle CPP_UpdatePlayerDataOperation(FUserSlot UserSlot, FBeamGamerTag TargetPlayer, TArray<FBeamTag> Tags, FBeamOperationEventHandlerCode OnOperationEvent);
+
+	/**
+	 * @brief You can update your own player data when you are inside the lobby.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby")
+	FBeamOperationHandle UpdateSlotPlayerDataOperation(FUserSlot UserSlot, TArray<FBeamTag> Tags, FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc UpdateSlotPlayerDataOperation 
+	 */
+	FBeamOperationHandle CPP_UpdateSlotPlayerDataOperation(FUserSlot UserSlot, TArray<FBeamTag> Tags, FBeamOperationEventHandlerCode OnOperationEvent);
+
+	/**
+	 * @brief You can delete your own player tags when you are inside the lobby. You can delete any player's tags if you are the host.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby")
+	FBeamOperationHandle DeletePlayerDataOperation(FUserSlot UserSlot, FBeamGamerTag TargetPlayer, TArray<FBeamTag> Tags, FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc DeletePlayerDataOperation 
+	 */
+	FBeamOperationHandle CPP_DeletePlayerDataOperation(FUserSlot UserSlot, FBeamGamerTag TargetPlayer, TArray<FBeamTag> Tags, FBeamOperationEventHandlerCode OnOperationEvent);
+
+	/**
+	 * @brief You can delete your own player tags when you are inside the lobby.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby")
+	FBeamOperationHandle DeleteSlotPlayerDataOperation(FUserSlot UserSlot, TArray<FBeamTag> Tags, FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc DeleteSlotPlayerDataOperation 
+	 */
+	FBeamOperationHandle CPP_DeleteSlotPlayerDataOperation(FUserSlot UserSlot, TArray<FBeamTag> Tags, FBeamOperationEventHandlerCode OnOperationEvent);
+
+	/**
+	 * @brief You can delete your own player tags when you are inside the lobby.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby", meta=(AutoCreateRefTerm="NewGameType"))
+	FBeamOperationHandle ProvisionGameServerForLobbyOperation(FUserSlot UserSlot, FOptionalBeamContentId NewGameType, FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc ProvisionGameServerForLobbyOperation 
+	 */
+	FBeamOperationHandle CPP_ProvisionGameServerForLobbyOperation(FUserSlot UserSlot, FOptionalBeamContentId NewGameType, FBeamOperationEventHandlerCode OnOperationEvent);
+	
 private:
 	// Operation Implementations
 	void CreateOpenLobby(FUserSlot UserSlot, FString Name, FString Desc, FBeamContentId MatchType, int32 MaxPlayers = 32, TMap<FString, FString> LobbyData = {}, TArray<FBeamTag> PlayerTags = {},
@@ -300,8 +462,10 @@ private:
 	void JoinLobbyByPasscode(FUserSlot UserSlot, FString Passcode, TArray<FBeamTag> PlayerTags = {}, FBeamOperationHandle Op = {});
 	void LeaveLobby(FUserSlot UserSlot, FBeamOperationHandle Op);
 	void KickPlayer(FUserSlot UserSlot, FBeamGamerTag Player, FBeamOperationHandle Op);
-
-	// TODO: This needs a ProvisionGamerServerForLobby (or something along these lines) --- fails if lobby does not have a GameType.
+	void CommitLobbyUpdate(const FUserSlot& Slot, FBeamOperationHandle Op);
+	void UpdatePlayerTags(const FUserSlot& Slot, FBeamGamerTag TargetPlayer, TArray<FBeamTag> Tags, bool bShouldReplaceRepeatedTags, FBeamOperationHandle Op);
+	void DeletePlayerTags(const FUserSlot& Slot, FBeamGamerTag TargetPlayer, TArray<FBeamTag> Tags, FBeamOperationHandle Op);
+	void ProvisionGameServerForLobby(const FUserSlot& Slot, FOptionalBeamContentId NewGameContent, FBeamOperationHandle Op);
 
 	// Request Helper Functions
 	FBeamRequestContext RequestJoin(const FUserSlot& UserSlot, FGuid LobbyId, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op, FOnPutLobbyFullResponse Handler) const;
@@ -311,10 +475,14 @@ private:
 	FBeamRequestContext RequestPostLobbies(const FUserSlot& UserSlot, FString LobbyName, FString LobbyDescription, ELobbyRestriction Restriction, FBeamContentId MatchType, int32 PasscodeLength,
 	                                       int32 MaxPlayers, TMap<FString, FString> LobbyData, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op, FOnPostLobbiesFullResponse Handler) const;
 	FBeamRequestContext RequestRemoveFromLobby(const FUserSlot& UserSlot, FGuid LobbyId, FBeamGamerTag GamerTag, FBeamOperationHandle Op, FOnDeleteLobbyFullResponse Handler) const;
-	FBeamRequestContext RequestUpdateLobbyMetadata(const FUserSlot& UserSlot, FGuid LobbyId, FString LobbyName, FString LobbyDescription, ELobbyRestriction Restriction, FBeamContentId MatchType,
-	                                               FBeamGamerTag NewHost, int32 MaxPlayers, TMap<FString, FString> GlobalDataUpdates, TArray<FString> GlobalDataRemove, FBeamOperationHandle Op, FOnApiLobbyPutMetadataFullResponse Handler) const;
+	FBeamRequestContext RequestUpdateLobbyMetadata(const FUserSlot& UserSlot, FGuid LobbyId, FOptionalString LobbyName, FOptionalString LobbyDescription, FOptionalLobbyRestriction Restriction,
+	                                               FOptionalBeamContentId MatchType, FOptionalBeamGamerTag NewHost, FOptionalInt32 MaxPlayers, FOptionalMapOfString GlobalDataUpdates,
+	                                               FOptionalArrayOfString GlobalDataDeletes, FBeamOperationHandle Op, FOnApiLobbyPutMetadataFullResponse Handler) const;
 	FBeamRequestContext RequestUpdatePlayerTag(const FUserSlot& UserSlot, FGuid LobbyId, FBeamGamerTag PlayerId, TArray<FBeamTag> PlayerTags, bool bShouldReplace, FBeamOperationHandle Op,
 	                                           FOnPutTagsFullResponse Handler) const;
+	FBeamRequestContext RequestDeletePlayerTags(const FUserSlot& UserSlot, FGuid LobbyId, FBeamGamerTag PlayerId, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op,
+	                                            FOnDeleteTagsFullResponse Handler) const;
+	FBeamRequestContext RequestPostServer(const FUserSlot& UserSlot, FGuid LobbyId, FOptionalBeamContentId SelectedMatchType, FBeamOperationHandle Op, FOnApiLobbyPostServerFullResponse Handler) const;
 
 
 	// Notification Hooks
@@ -327,4 +495,7 @@ private:
 	void UpdateLobbyPlayerInfo(FUserSlot Slot, const ULobby* LobbyData, FDelegateHandle NewSubscriptionDelegate);
 	void ReplaceOrAddKnownLobbyData(ULobby* LobbyData);
 	void ClearLobbyForSlot(FUserSlot Slot);
+	bool GuardSlotIsInLobby(const FUserSlot& Slot, UBeamLobbyState*& LobbyState);
+	bool GuardIsLobbyOwner(const FUserSlot& Slot, UBeamLobbyState* LobbyState);
+	bool GuardUpdateCommandBegun(const FUserSlot& Slot);
 };

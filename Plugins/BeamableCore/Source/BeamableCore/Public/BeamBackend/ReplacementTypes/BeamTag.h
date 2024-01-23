@@ -21,6 +21,10 @@ struct BEAMABLECORE_API FBeamTag : public FBeamJsonSerializableUStruct
 
 	FBeamTag() = default;
 
+	FBeamTag(FString Name, FString Val) : Name(FOptionalString(Name)), Value(FOptionalString(Val))
+	{
+	}
+
 	friend bool operator==(const FBeamTag& Lhs, const FBeamTag& RHS)
 	{
 		return Lhs.Name.Val.Equals(RHS.Name.Val) && Lhs.Value.Val.Equals(RHS.Value.Val);
@@ -40,7 +44,7 @@ struct BEAMABLECORE_API FBeamTag : public FBeamJsonSerializableUStruct
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
 		UBeamJsonUtils::SerializeOptional<FString>("name", &Name, Serializer);
-		UBeamJsonUtils::SerializeOptional<FString>("value", &Value, Serializer);		
+		UBeamJsonUtils::SerializeOptional<FString>("value", &Value, Serializer);
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override

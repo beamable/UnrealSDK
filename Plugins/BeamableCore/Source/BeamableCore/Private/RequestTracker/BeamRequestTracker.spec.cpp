@@ -4,7 +4,6 @@
 #include "Engine/Engine.h"
 #include "Misc/AutomationTest.h"
 #include "HttpModule.h"
-#include "JsonObjectConverter.h"
 
 #include "BeamBackend/BeamBackend.h"
 #include "BeamBackend/BeamBackendTestCallbacks.h"
@@ -76,7 +75,7 @@ void FBeamRequestTrackerSpec::Define()
 		});
 
 
-		It("should correctly configure WaitAll with Context, Operations and/or WaitHandles", [this, FakeAuthToken, FakeNoRetryConfig, FakeRealmHandle, FakeUserSlot]()
+		It("should correctly configure WaitAll with Context, Operations and/or WaitHandles", [=, this]()
 		{
 			// Try to configure a wait handle with non-existent 
 			{
@@ -112,7 +111,7 @@ void FBeamRequestTrackerSpec::Define()
 			}
 		});
 
-		It("should correctly gather all Request Id dependencies for the given WaitHandles", [this, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken, FakeUserSlot]()
+		It("should correctly gather all Request Id dependencies for the given WaitHandles", [=, this]()
 		{
 			// Try to configure a wait handle with non-existent 
 			{
@@ -172,7 +171,7 @@ void FBeamRequestTrackerSpec::Define()
 			}
 		});
 
-		It("should correctly run the complete callback with correct data", [this, FakeRealmHandle, FakeNoRetryConfig, FakeUserSlot, FakeAuthToken]()
+		It("should correctly run the complete callback with correct data", [=, this]()
 		{
 			// Try to configure a wait handle with non-existent 
 			{
@@ -230,7 +229,7 @@ void FBeamRequestTrackerSpec::Define()
 			}
 		});
 
-		It("should correctly run the complete callback (code) with correct data", [this, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken, FakeUserSlot]()
+		It("should correctly run the complete callback (code) with correct data", [=, this]()
 		{
 			// Try to configure a wait handle with non-existent 
 			{
@@ -344,7 +343,7 @@ void FBeamRequestTrackerSpec::Define()
 			BeamBackendSystem->GlobalRequestErrorCodeHandler.Unbind();
 		});
 
-		It("should begin an operation with the given parameters", [this, FakeUserSlot]()
+		It("should begin an operation with the given parameters", [=, this]()
 		{
 			const FBeamOperationEventHandler Handler;
 			const auto OpHandle = RequestTrackerSystem->BeginOperation({FakeUserSlot}, GetTestName(), Handler);
@@ -357,7 +356,7 @@ void FBeamRequestTrackerSpec::Define()
 			TestTrue("Operation callback was correctly initialized", RequestTrackerSystem->ActiveOperationState.FindRef(OpHandle)->BlueprintHandler == Handler);
 		});
 
-		It("should add an existing request to an operation with the given parameters", [this, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken, FakeUserSlot]()
+		It("should add an existing request to an operation with the given parameters", [=, this]()
 		{
 			UBeamMockGetRequest* FakeGetRequest = NewObject<UBeamMockGetRequest>();
 			int64 ReqId;
@@ -382,7 +381,7 @@ void FBeamRequestTrackerSpec::Define()
 			FakeGetRequest->MarkAsGarbage();
 		});
 
-		It("should trigger the shortcut events for FINAL success/error/cancelled", [this, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken, FakeUserSlot]()
+		It("should trigger the shortcut events for FINAL success/error/cancelled", [=, this]()
 		{
 			// Initialize and trigger the operation's success
 			{
@@ -411,7 +410,7 @@ void FBeamRequestTrackerSpec::Define()
 			}
 		});
 
-		It("should trigger the shortcut events for FINAL error", [this, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken, FakeUserSlot]()
+		It("should trigger the shortcut events for FINAL error", [=, this]()
 		{
 			// Initialize and trigger the operation's success
 			{
@@ -440,7 +439,7 @@ void FBeamRequestTrackerSpec::Define()
 			}
 		});
 
-		It("should trigger the shortcut events for FINAL cancelled", [this, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken, FakeUserSlot]()
+		It("should trigger the shortcut events for FINAL cancelled", [=, this]()
 		{
 			// Initialize and trigger the operation's success
 			{
@@ -469,7 +468,7 @@ void FBeamRequestTrackerSpec::Define()
 			}
 		});
 
-		It("should trigger custom event when requested", [this, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken, FakeUserSlot]()
+		It("should trigger custom event when requested", [=, this]()
 		{
 			// Initialize and trigger the operation's success
 			{
@@ -571,7 +570,7 @@ void FBeamRequestTrackerSpec::Define()
 			BeamBackendSystem->GlobalRequestErrorCodeHandler.Unbind();
 		});
 
-		It("should remove all state associated with any completed operation and return all live ReqIds associated with any operation", [this, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken, FakeUserSlot]()
+		It("should remove all state associated with any completed operation and return all live ReqIds associated with any operation", [=, this]()
 		{
 			// Try to configure a wait handle with non-existent 
 			UBeamMockGetRequest* FakeGetRequest = NewObject<UBeamMockGetRequest>();
@@ -618,7 +617,7 @@ void FBeamRequestTrackerSpec::Define()
 			FakeGetRequest2->MarkAsGarbage();
 		});
 
-		It("should remove all state associated with any completed wait handle and return all live ReqIds associated with any ongoing wait handle", [this, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken]()
+		It("should remove all state associated with any completed wait handle and return all live ReqIds associated with any ongoing wait handle", [=, this]()
 		{
 			// Try to configure a wait handle with non-existent 
 			UBeamMockGetRequest* FakeGetRequest = NewObject<UBeamMockGetRequest>();

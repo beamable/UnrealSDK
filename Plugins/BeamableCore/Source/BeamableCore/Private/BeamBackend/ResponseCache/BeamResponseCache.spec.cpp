@@ -24,7 +24,7 @@ void FBeamResponseCacheSpec::Define()
 			BeamResponseCache->ClearNonGlobalConfigs();
 		});
 
-		It("should not hit cache if cache was never updated.", [this, FakeRealmHandle, FakeNoRetryConfig]()
+		It("should not hit cache if cache was never updated.", [=, this]()
 		{
 			UBeamMockGetRequest* FakeGetRequest = NewObject<UBeamMockGetRequest>();
 
@@ -40,7 +40,7 @@ void FBeamResponseCacheSpec::Define()
 			FakeGetRequest->MarkAsGarbage();
 		});
 
-		It("should update and then retrieve the cache for this request type.", [this, FakeRealmHandle, FakeNoRetryConfig]()
+		It("should update and then retrieve the cache for this request type.", [=, this]()
 		{
 			UBeamMockGetRequest* FakeGetRequest = NewObject<UBeamMockGetRequest>();
 
@@ -61,7 +61,7 @@ void FBeamResponseCacheSpec::Define()
 			FakeGetRequest->MarkAsGarbage();
 		});
 
-		It("should update the cache for this request type, but fail to retrieve it when hitting a different layer of the hierarchy.", [this, FakeRealmHandle, FakeNoRetryConfig]()
+		It("should update the cache for this request type, but fail to retrieve it when hitting a different layer of the hierarchy.", [=, this]()
 		{
 			UBeamMockGetRequest* FakeGetRequest = NewObject<UBeamMockGetRequest>();
 

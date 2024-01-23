@@ -230,14 +230,22 @@ void UBeamStatsSubsystem::RefreshStats(FUserSlot UserSlot, FBeamStatsType Type, 
 {
 	// Ensure we have a user at the given slot.
 	FBeamRealmUser RealmUser;
-	if (!UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
+	if (!IsRunningDedicatedServer())
 	{
-		RequestTracker->TriggerOperationError(Op, TEXT("NO_AUTHENTICATED_USER_AT_SLOT"));
-		return;
+		if (!UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
+		{
+			RequestTracker->TriggerOperationError(Op, TEXT("NO_AUTHENTICATED_USER_AT_SLOT"));
+			return;
+		}		
 	}
 
-	// Get the stat key for this user
-	auto StatType = UBeamStatsTypeLibrary::CopyStatsTypeWithGamerTag(Type, RealmUser.GamerTag);
+	// Get the stat key for this user, if none is provided
+	auto StatType = Type;
+	if(UBeamStatsTypeLibrary::GetGamerTag(Type).AsString.IsEmpty())
+	{
+		StatType = UBeamStatsTypeLibrary::CopyStatsTypeWithGamerTag(Type, RealmUser.GamerTag);
+	}
+	
 	auto Handler  = FOnGetClientFullResponse::CreateLambda([this, Op, UserSlot, StatType](FGetClientFullResponse Resp)
 	{
 		if (Resp.State != RS_Success)
@@ -282,6 +290,7 @@ void UBeamStatsSubsystem::RefreshStats(FUserSlot UserSlot, FBeamStatsType Type, 
 			RequestTracker->TriggerOperationSuccess(Op, {});
 		}
 	});
+	
 	auto Ctx = RequestGetStats(UserSlot, Type, Op, Handler);
 }
 

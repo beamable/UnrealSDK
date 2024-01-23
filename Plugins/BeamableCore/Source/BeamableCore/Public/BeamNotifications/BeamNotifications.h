@@ -186,6 +186,10 @@ struct FNotificationMessageEventHandler
 	GENERATED_BODY()
 
 	FNotificationMessageEventHandler() = default;
+	FNotificationMessageEventHandler(const FString& Key, const FOnNotificationEvent& Delegate) : ContextKey(Key), Handler(Delegate)
+	{
+		
+	}
 
 	friend bool operator==(const FNotificationMessageEventHandler& Lhs, const FNotificationMessageEventHandler& RHS)
 	{
@@ -270,12 +274,7 @@ public:
 				});
 
 				OutHandle = EventHandler.GetHandle();
-
-				FNotificationMessageEventHandler MessageEventHandler;
-				MessageEventHandler.ContextKey = ContextKey,
-				MessageEventHandler.Handler = EventHandler;
-				
-				MessageEventHandlers.Add(FBeamWebSocketHandle(Slot, SocketName, this), MessageEventHandler);
+				MessageEventHandlers.Add(FBeamWebSocketHandle(Slot, SocketName, this), FNotificationMessageEventHandler{ContextKey, EventHandler});
 				return true;
 			}
 		}

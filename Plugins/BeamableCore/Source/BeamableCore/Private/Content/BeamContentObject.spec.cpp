@@ -333,9 +333,9 @@ void FBeamContentObjectSpec::Define()
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢UnrealClassB₢"), *TestUnrealClassB);
 
 
-	Describe("Content Serialization", [this, TestId, TestVersion, TestValueAInt, TestBeamCid, TestValueA, TestValueB, TestSoftObjPath, TestUnrealClassA, TestValueBInt, TestGameplayTagA, TestGameplayTagB, TestUnrealClassB]()
+	Describe("Content Serialization", [=, this]()
 	{
-		BeforeEach([this, TestId, TestVersion, TestValueAInt, TestBeamCid, TestValueA, TestValueB, TestSoftObjPath, TestUnrealClassA, TestGameplayTagA, TestGameplayTagB, TestValueBInt, TestUnrealClassB]()
+		BeforeEach([=, this]()
 		{
 			ContentObject = NewObject<UMockBeamContentObject>();
 			ContentObject->Id = TestId;
@@ -374,12 +374,12 @@ void FBeamContentObjectSpec::Define()
 			ContentObject->UnrealClassMap = TMap<FString, UClass*>{{TEXT("a"), FSoftClassPath{TestUnrealClassA}.ResolveClass()}, {TEXT("b"), FSoftClassPath{TestUnrealClassB}.ResolveClass()}};
 		});
 
-		AfterEach([this]()
+		AfterEach([=, this]()
 		{
 			ContentObject = nullptr;
 		});
 
-		It("should serialize ids and version", [this, TestId, TestVersion]()
+		It("should serialize ids and version", [=, this]()
 		{
 			FString Json = FString{};
 			ContentObject->ToBasicJson(Json);
@@ -392,7 +392,7 @@ void FBeamContentObjectSpec::Define()
 			NewObj = nullptr;
 		});
 
-		It("should serialize primitives properly", [this, TestValueAInt]()
+		It("should serialize primitives properly", [=, this]()
 		{
 			FString Json = FString{};
 			ContentObject->ToBasicJson(Json);
@@ -404,7 +404,7 @@ void FBeamContentObjectSpec::Define()
 			NewObj = nullptr;
 		});
 
-		It("should serialize semantic types properly", [this, TestBeamCid]()
+		It("should serialize semantic types properly", [=, this]()
 		{
 			FString Json = FString{};
 			ContentObject->ToBasicJson(Json);
@@ -416,7 +416,7 @@ void FBeamContentObjectSpec::Define()
 			NewObj = nullptr;
 		});
 
-		It("should serialize gameplay tags properly", [this, TestGameplayTagA, TestGameplayTagB]()
+		It("should serialize gameplay tags properly", [=, this]()
 		{
 			FString Json = FString{};
 			ContentObject->ToBasicJson(Json);
@@ -436,7 +436,7 @@ void FBeamContentObjectSpec::Define()
 			NewObj = nullptr;
 		});
 
-		It("should serialize UClass* properly", [this, TestUnrealClassA, TestUnrealClassB]()
+		It("should serialize UClass* properly", [=, this]()
 		{
 			FString Json = FString{};
 			ContentObject->ToBasicJson(Json);
@@ -456,7 +456,7 @@ void FBeamContentObjectSpec::Define()
 			NewObj = nullptr;
 		});
 
-		It("should serialize FSoftObjectPtr<> types properly", [this, TestSoftObjPath]()
+		It("should serialize FSoftObjectPtr<> types properly", [=, this]()
 		{
 			FString Json = FString{};
 			ContentObject->ToBasicJson(Json);
@@ -468,7 +468,7 @@ void FBeamContentObjectSpec::Define()
 			NewObj = nullptr;
 		});
 
-		It("should serialize TArray<> properly", [this, TestValueBInt, TestValueAInt, TestValueB, TestValueA, TestBeamCid]()
+		It("should serialize TArray<> properly", [=, this]()
 		{
 			FString Json = FString{};
 			ContentObject->ToBasicJson(Json);
@@ -484,7 +484,7 @@ void FBeamContentObjectSpec::Define()
 			TestEqual("String Array serialized correctly", NewObj->ArrayOfBeamCid[0], FBeamCid{TestBeamCid});
 		});
 
-		It("should serialize TMap<FString,> properly", [this, TestValueAInt, TestValueA, TestBeamCid]()
+		It("should serialize TMap<FString,> properly", [=, this]()
 		{
 			FString Json = FString{};
 			ContentObject->ToBasicJson(Json);
@@ -497,7 +497,7 @@ void FBeamContentObjectSpec::Define()
 			TestEqual("String Array serialized correctly", NewObj->MapOfBeamCid.FindRef(TEXT("a")), FBeamCid{TestBeamCid});
 		});
 
-		It("should serialize BeamArrays properly", [this, TestValueA, TestValueB]()
+		It("should serialize BeamArrays properly", [=, this]()
 		{
 			FString Json = FString{};
 			ContentObject->ToBasicJson(Json);
@@ -512,7 +512,7 @@ void FBeamContentObjectSpec::Define()
 			TestEqual("TArray<FMapOfString> deserialized correctly", NewObj->ArrayOfMapOfString[1].Values.FindRef(TEXT("a")), TestValueB);
 		});
 
-		It("should serialize BeamMaps properly", [this, TestValueA, TestValueB]()
+		It("should serialize BeamMaps properly", [=, this]()
 		{
 			FString Json = FString{};
 			ContentObject->ToBasicJson(Json);
@@ -526,7 +526,7 @@ void FBeamContentObjectSpec::Define()
 			TestEqual("TMap<FString, FMapOfString> deserialized correctly", NewObj->MapOfMapOfString.FindRef("a").Values.FindRef("a"), TestValueA);
 		});
 
-		It("should serialize BeamOptionals properly", [this, TestBeamCid, TestValueAInt, TestValueBInt]()
+		It("should serialize BeamOptionals properly", [=, this]()
 		{
 			ContentObject->BeamOptionalBool = FOptionalBool(false);
 			ContentObject->BeamOptionalBeamCid = FOptionalBeamCid(TestBeamCid);
@@ -551,7 +551,7 @@ void FBeamContentObjectSpec::Define()
 			TestEqual("Optional of TArray of Semantic Type deserialized correctly", NewObj->BeamOptionalArrayOfBeamPid.Val[0].AsString, TestBeamCid);
 		});
 
-		It("should deserialize BeamOptionals as unset when they are not in the JSON", [this]()
+		It("should deserialize BeamOptionals as unset when they are not in the JSON", [=, this]()
 		{
 			FString Json = FString{};
 			ContentObject->ToBasicJson(Json);
@@ -567,19 +567,19 @@ void FBeamContentObjectSpec::Define()
 		});
 	});
 
-	Describe("Content Deserialization", [this, FullObject, TestId, TestVersion, TestValueAInt, TestBeamCid, TestGameplayTagA, TestGameplayTagB, TestUnrealClassA, TestUnrealClassB, TestValueBInt, TestValueA, TestValueB, TestSoftObjPath, WithoutOptionals]()
+	Describe("Content Deserialization", [=, this]()
 	{
-		BeforeEach([this]()
+		BeforeEach([=, this]()
 		{
 			ContentObject = NewObject<UMockBeamContentObject>();
 		});
 
-		AfterEach([this]()
+		AfterEach([=, this]()
 		{
 			ContentObject = nullptr;
 		});
 
-		It("should deserialize ids and version properly", [this, FullObject, TestId, TestVersion]()
+		It("should deserialize ids and version properly", [=, this]()
 		{
 			ContentObject->FromBasicJson(FullObject);
 
@@ -587,19 +587,19 @@ void FBeamContentObjectSpec::Define()
 			TestEqual("Version deserialized correctly", ContentObject->Version, TestVersion);
 		});
 
-		It("should deserialize primitives properly", [this, TestValueAInt, FullObject]()
+		It("should deserialize primitives properly", [=, this]()
 		{
 			ContentObject->FromBasicJson(FullObject);
 			TestEqual("Value deserialized correctly", ContentObject->Value, TestValueAInt);
 		});
 
-		It("should deserialize semantic types properly", [this, TestBeamCid, FullObject]()
+		It("should deserialize semantic types properly", [=, this]()
 		{
 			ContentObject->FromBasicJson(FullObject);
 			TestEqual("BeamCid deserialized correctly", ContentObject->BeamCid, FBeamCid{TestBeamCid});
 		});
 
-		It("should deserialize gameplay tags types properly", [this, FullObject, TestGameplayTagA, TestGameplayTagB]()
+		It("should deserialize gameplay tags types properly", [=, this]()
 		{
 			ContentObject->FromBasicJson(FullObject);
 			TestEqual("GameplayTag deserialized correctly", ContentObject->UnrealGameplayTag.ToString(), TestGameplayTagA);
@@ -611,7 +611,7 @@ void FBeamContentObjectSpec::Define()
 			TestEqual("GameplayTag deserialized correctly", ContentObject->GameplayTagsMap.FindRef(TEXT("b")).ToString(), TestGameplayTagB);
 		});
 
-		It("should deserialize UClass tags types properly", [this, TestUnrealClassA, TestUnrealClassB, FullObject]()
+		It("should deserialize UClass tags types properly", [=, this]()
 		{
 			ContentObject->FromBasicJson(FullObject);
 			TestEqual("GameplayTag deserialized correctly", ContentObject->UnrealClass, FSoftClassPath{TestUnrealClassA}.ResolveClass());
@@ -623,13 +623,13 @@ void FBeamContentObjectSpec::Define()
 			TestEqual("GameplayTag deserialized correctly", ContentObject->UnrealClassMap.FindRef(TEXT("b")), FSoftClassPath{TestUnrealClassB}.ResolveClass());
 		});
 
-		It("should deserialize SoftObjectPtr correctly types properly", [this, FullObject, TestSoftObjPath]()
+		It("should deserialize SoftObjectPtr correctly types properly", [=, this]()
 		{
 			ContentObject->FromBasicJson(FullObject);
 			TestEqual("FSoftObjectPtr deserialized correctly", ContentObject->UnrealSoftObjRef, TSoftObjectPtr<UTexture2D>{FSoftObjectPath(TestSoftObjPath)});
 		});
 
-		It("should deserialize TArray<> properly", [this, FullObject, TestValueAInt, TestValueBInt, TestValueA, TestValueB, TestBeamCid]()
+		It("should deserialize TArray<> properly", [=, this]()
 		{
 			ContentObject->FromBasicJson(FullObject);
 			TestEqual("U8 Array deserialized correctly", ContentObject->ArrayOfU8, TArray{static_cast<uint8>(TestValueAInt), static_cast<uint8>(TestValueBInt)});
@@ -637,7 +637,7 @@ void FBeamContentObjectSpec::Define()
 			TestEqual("Semantic Type Array deserialized correctly", ContentObject->ArrayOfBeamCid[0], FBeamCid{TestBeamCid});
 		});
 
-		It("should deserialize TMap<FString,> properly", [this, FullObject, TestValueAInt, TestValueA, TestBeamCid]()
+		It("should deserialize TMap<FString,> properly", [=, this]()
 		{
 			ContentObject->FromBasicJson(FullObject);
 
@@ -646,7 +646,7 @@ void FBeamContentObjectSpec::Define()
 			TestEqual("Semantic Type Map deserialized correctly", ContentObject->MapOfBeamCid.FindRef(TEXT("a")), FBeamCid{TestBeamCid});
 		});
 
-		It("should deserialize BeamArrays properly", [this, FullObject, TestValueA, TestValueB]()
+		It("should deserialize BeamArrays properly", [=, this]()
 		{
 			ContentObject->FromBasicJson(FullObject);
 			TestEqual("FArrayOfString deserialized correctly", ContentObject->BeamArrayOfString.Values[0], TestValueA);
@@ -656,7 +656,7 @@ void FBeamContentObjectSpec::Define()
 			TestEqual("TArray<FMapOfString> deserialized correctly", ContentObject->ArrayOfMapOfString[1].Values.FindRef(TEXT("a")), TestValueB);
 		});
 
-		It("should deserialize BeamMaps properly", [this, FullObject, TestValueA, TestValueB]()
+		It("should deserialize BeamMaps properly", [=, this]()
 		{
 			ContentObject->FromBasicJson(FullObject);
 			TestEqual("FMapOfString deserialized correctly", ContentObject->BeamMapOfString.Values.FindRef(TEXT("a")), TestValueA);
@@ -666,7 +666,7 @@ void FBeamContentObjectSpec::Define()
 		});
 
 
-		It("should deserialize BeamOptionals properly", [this, FullObject, TestBeamCid, TestValueAInt, TestValueBInt]()
+		It("should deserialize BeamOptionals properly", [=, this]()
 		{
 			ContentObject->FromBasicJson(FullObject);
 			TestEqual("Optional of Primitive deserialized correctly", ContentObject->BeamOptionalBool.Val, false);
@@ -680,7 +680,7 @@ void FBeamContentObjectSpec::Define()
 			TestEqual("Optional of TArray of Semantic Type deserialized correctly", ContentObject->BeamOptionalArrayOfBeamPid.Val[0].AsString, TestBeamCid);
 		});
 
-		It("should deserialize BeamOptionals as unset when they are not in the JSON", [this, WithoutOptionals]()
+		It("should deserialize BeamOptionals as unset when they are not in the JSON", [=, this]()
 		{
 			ContentObject->FromBasicJson(WithoutOptionals);
 			TestEqual("Optional of Primitive deserialized correctly", ContentObject->BeamOptionalBool.IsSet, false);

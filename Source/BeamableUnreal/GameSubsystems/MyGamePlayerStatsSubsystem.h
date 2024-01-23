@@ -7,8 +7,6 @@
 #include "AutoGen/SubSystems/BeamStatsApi.h"
 #include "BeamNotifications/BeamNotifications.h"
 #include "BeamBackend/SemanticTypes/BeamStatsTypeLibrary.h"
-#include "BeamNotifications/SubSystems/BeamContentNotifications.h"
-#include "BeamNotifications/SubSystems/BeamInventoryNotifications.h"
 #include "Runtime/BeamRuntimeSubsystem.h"
 #include "MyGamePlayerStatsSubsystem.generated.h"
 
