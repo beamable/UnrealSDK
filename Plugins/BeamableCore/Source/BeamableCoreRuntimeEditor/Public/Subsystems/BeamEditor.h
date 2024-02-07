@@ -253,7 +253,7 @@ private:
 	/**
 	 * @brief Callback for when the new customer is properly created. 
 	 */
-	void SignUp_OnPostCustomer(const FPostCustomerFullResponse Response, const FBeamOperationHandle Op,
+	void SignUp_OnPostCustomer(const FPostCustomerFullResponse Resp, const FBeamOperationHandle Op,
 	                           const FString OrgName, const FString Email, const FString Password);
 
 	/**
@@ -264,22 +264,22 @@ private:
 	/**
 	 * @brief Callback for the resolution of customer alias step of the sign in operation.
 	 */
-	void SignIn_OnGetCustomerAliasAvailable(FGetCustomerAliasAvailableFullResponse Response, FBeamOperationHandle Op,
+	void SignIn_OnGetCustomerAliasAvailable(FGetCustomerAliasAvailableFullResponse Resp, FBeamOperationHandle Op,
 	                                        FString Email, FString Password);
 
 	/**
 	 * @brief Callback for the authentication request in the sign in operation. 
 	 */
-	void SignIn_OnAuthenticate(FAuthenticateFullResponse Response, FBeamOperationHandle Op, FBeamCid Cid);
+	void SignIn_OnAuthenticate(FAuthenticateFullResponse Resp, FBeamOperationHandle Op, FBeamCid Cid);
 	/**
 	 * @brief Callback for the GetGames (get all realms for the authenticated customer) in the sign in operation.  
 	 */
-	void UpdateSignedInUserData_OnGetRealms(FGetGamesFullResponse Response, FBeamOperationHandle Op, FBeamCid Cid);
+	void UpdateSignedInUserData_OnGetRealms(FGetGamesFullResponse Resp, FBeamOperationHandle Op, FBeamCid Cid);
 
 	/**
 	 * @brief Callback for the GetAdminMe callback which is the last step in the sign in operation. 
 	 */
-	void UpdateSignedInUserData_OnGetAdminMe(FBeamFullResponse<UGetAdminMeRequest*, UAccountPortalView*> Response,
+	void UpdateSignedInUserData_OnGetAdminMe(FBeamFullResponse<UGetAdminMeRequest*, UAccountPortalView*> Resp,
 	                                         FBeamOperationHandle Op);
 
 	/**

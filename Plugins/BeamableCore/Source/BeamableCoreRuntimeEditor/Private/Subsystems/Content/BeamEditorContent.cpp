@@ -41,7 +41,7 @@ void UBeamEditorContent::Initialize(FSubsystemCollectionBase& Collection)
 			UE_LOG(LogTemp, Display, TEXT("Initializing Beam Editor Content System - TYPE=%s, TYPE_ID=%s"), *TypeName.ToString(), *ContentTypeId);
 			AllContentTypes.Add(*It);
 			AllContentTypeNames.Add(MakeShared<FName>(TypeName));
-			ContentTypeStringToContentClass.Add(ContentTypeId, *It);						
+			ContentTypeStringToContentClass.Add(ContentTypeId, *It);
 		}
 	}
 
@@ -52,7 +52,7 @@ void UBeamEditorContent::Initialize(FSubsystemCollectionBase& Collection)
 	OnWillEnterPIE = FEditorDelegates::PreBeginPIE.AddLambda([this](bool Cond)
 	{
 		UBeamCoreSettings* EditorSettings = GetMutableDefault<UBeamCoreSettings>();
-		const auto NumBakedContent = EditorSettings->BakedContentManifests.Num(); 
+		const auto NumBakedContent = EditorSettings->BakedContentManifests.Num();
 		for (int i = NumBakedContent - 1; i >= 0; --i)
 		{
 			const auto BeamRuntimeContentCache = EditorSettings->BakedContentManifests[i];
@@ -63,9 +63,9 @@ void UBeamEditorContent::Initialize(FSubsystemCollectionBase& Collection)
 				EditorSettings->BakedContentManifests.RemoveAt(i);
 			}
 		}
-		
-		if(NumBakedContent != EditorSettings->BakedContentManifests.Num())
-			EditorSettings->SaveConfig(CPF_Config, *EditorSettings->GetDefaultConfigFilename());		
+
+		if (NumBakedContent != EditorSettings->BakedContentManifests.Num())
+			EditorSettings->SaveConfig(CPF_Config, *EditorSettings->GetDefaultConfigFilename());
 	});
 }
 
@@ -173,6 +173,8 @@ FBeamOperationHandle UBeamEditorContent::EnsureGlobalManifest()
 
 void UBeamEditorContent::EnsureGlobalManifest_OnGetManifests(FBasicContentGetManifestsFullResponse Response, const FBeamOperationHandle Op)
 {
+	if (Response.State == RS_Retrying) return;
+
 	if (Response.State == RS_Error)
 	{
 		// TODO: Open popup explaining that we failed to get the content manifests and as such the content service is not fine. Have option to try again
@@ -305,6 +307,8 @@ void UBeamEditorContent::EnsureGlobalManifest_OnGetManifests(FBasicContentGetMan
 void UBeamEditorContent::EnsureGlobalManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response,
                                                              const FBeamOperationHandle Op)
 {
+	if (Response.State == RS_Retrying) return;
+
 	if (Response.State == RS_Error)
 	{
 		// TODO: Open popup explaining that we failed to get the content manifests and as such the content service is not fine. Have option to try again			
@@ -412,6 +416,8 @@ void UBeamEditorContent::PublishManifest_OnGetManifest(FBasicContentGetManifestF
                                                        FBeamOperationHandle Op,
                                                        FBeamContentManifestId ContentManifestId)
 {
+	if (Response.State == RS_Retrying) return;
+
 	if (Response.State == RS_Error)
 	{
 		// TODO: Open popup explaining that we failed to get the content manifests and as such the content service is not fine. Have option to try again
@@ -448,12 +454,14 @@ void UBeamEditorContent::PublishManifest_OnGetManifest(FBasicContentGetManifestF
 				FString TypeId = FBeamContentId{ContentId}.GetTypeId();
 
 				// If we have the content type, it means we failed to load due to malformed content
-				if(FindContentTypeByTypeId(TypeId)) ensureAlwaysMsgf(false, TEXT("Should never see this! This means you have a content in corrupted state. CONTENT_ID=%s"), *ContentId.ToString());
-				// Otherwise, it just means this content was created else where and the Unreal implementation for this content type does not yet exist.
-				else ensureAlwaysMsgf(false, TEXT("This Content does not have a UBeamContentObject implementation matching its type. CONTENT_TYPE_ID=%s, CONTENT_ID=%s"), *TypeId, *ContentId.ToString());
+				if (FindContentTypeByTypeId(TypeId))
+					ensureAlwaysMsgf(false, TEXT("Should never see this! This means you have a content in corrupted state. CONTENT_ID=%s"), *ContentId.ToString());
+					// Otherwise, it just means this content was created else where and the Unreal implementation for this content type does not yet exist.
+				else
+					ensureAlwaysMsgf(false, TEXT("This Content does not have a UBeamContentObject implementation matching its type. CONTENT_TYPE_ID=%s, CONTENT_ID=%s"), *TypeId, *ContentId.ToString());
 			}
 		}
-		
+
 		TArray<UBaseContentReference*> RemoteContentReferences;
 		BuildChangeSetForManifest(LocalContentReferences, RemoteContentReferences, PublishState->CurrentChangeSet);
 
@@ -510,6 +518,8 @@ void UBeamEditorContent::PublishManifest_OnGetManifest(FBasicContentGetManifestF
 
 void UBeamEditorContent::PublishManifest_OnPostContent(FPostContentFullResponse Response, FBeamOperationHandle Op, FBeamContentManifestId ContentManifestId)
 {
+	if (Response.State == RS_Retrying) return;
+
 	if (Response.State == RS_Error)
 	{
 		// TODO: Open popup explaining that we failed to get the content manifests and as such the content service is not fine. Have option to try again
@@ -585,6 +595,8 @@ void UBeamEditorContent::PublishManifest_OnPostContent(FPostContentFullResponse 
 
 void UBeamEditorContent::PublishManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response, FBeamOperationHandle Op, FBeamContentManifestId ContentManifestId) const
 {
+	if (Response.State == RS_Retrying) return;
+
 	if (Response.State == RS_Error)
 	{
 		// TODO: Open popup explaining that we failed to get the content manifests and as such the content service is not fine. Have option to try again
@@ -635,6 +647,8 @@ void UBeamEditorContent::DownloadManifest_OnGetManifest(FBasicContentGetManifest
                                                         FBeamOperationHandle Op,
                                                         FBeamContentManifestId ManifestId)
 {
+	if (Response.State == RS_Retrying) return;
+	
 	if (Response.State == RS_Error || Response.State == RS_Cancelled)
 	{
 		RequestTracker->TriggerOperationError(Op, Response.ErrorData.message);
@@ -910,7 +924,7 @@ void UBeamEditorContent::GetContentTypeToIdMaps(TMap<FName, TArray<TSharedPtr<FN
 			FBeamContentId ContentId{Id.ToString()};
 			FString ContentTypeId = ContentId.GetTypeId();
 
-			if(const auto ContentType = ContentTypeStringToContentClass.Find(ContentTypeId))
+			if (const auto ContentType = ContentTypeStringToContentClass.Find(ContentTypeId))
 			{
 				const auto TypeName = (*ContentType)->GetFName();
 				if (!Map.Contains(TypeName))
@@ -922,12 +936,12 @@ void UBeamEditorContent::GetContentTypeToIdMaps(TMap<FName, TArray<TSharedPtr<FN
 				}))
 				{
 					Map[TypeName].Add(MakeShareable(new FName(Id)));
-				}			
+				}
 			}
 			else
 			{
 				UE_LOG(LogBeamContent, Warning, TEXT("Unreal UBeamContentObject implementation not found for content of given type. CONTENT_TYPE_ID=%s, CONTENT_ID=%s"), *ContentTypeId, *ContentId.AsString);
-			}			
+			}
 		}
 	}
 }
@@ -940,11 +954,11 @@ bool UBeamEditorContent::GetContentTypeFromId(FBeamContentId Id, FString& TypeNa
 		const auto Row = LocalManifest.Value->FindRow<FLocalContentManifestRow>(FName(IdStr), TEXT("Context"));
 		if (Row)
 		{
-			if(const auto Type = FindContentTypeByTypeId(Id.GetTypeId()))
+			if (const auto Type = FindContentTypeByTypeId(Id.GetTypeId()))
 			{
 				TypeName = (*Type)->GetFName().ToString();
 				return true;
-			}			
+			}
 		}
 	}
 	TypeName = TEXT("");
@@ -1124,9 +1138,9 @@ void UBeamEditorContent::PostChange(const UDataTable* Changed, FDataTableEditorU
 	{
 		FString Row = Rows[i].ToString();
 		auto EntryInManifest = EditingTable->FindRow<FLocalContentManifestRow>(FName(Row), TEXT("Validating Manifest"));
-		FString RowContentTypeId = FBeamContentId{Row}.GetTypeId(); 
+		FString RowContentTypeId = FBeamContentId{Row}.GetTypeId();
 
-		if(const auto ContentType = FindContentTypeByTypeId(RowContentTypeId); !ContentType)
+		if (const auto ContentType = FindContentTypeByTypeId(RowContentTypeId); !ContentType)
 		{
 			MissingUnrealTypes.Add(RowContentTypeId);
 		}
@@ -1139,7 +1153,7 @@ void UBeamEditorContent::PostChange(const UDataTable* Changed, FDataTableEditorU
 			{
 				FString OldName = PrevName, Discard;
 				OldName.Split(".", &OldName, &Discard, ESearchCase::CaseSensitive, ESearchDir::FromEnd);
-				
+
 				UBeamContentObject* Obj;
 				if (TryLoadContentObject(ManifestId, OldName, Obj) || TryLoadContentObject(ManifestId, Row, Obj))
 				{
@@ -1193,7 +1207,7 @@ void UBeamEditorContent::PostChange(const UDataTable* Changed, FDataTableEditorU
 								EditingTable->AddRow(FixedName, *UserInputNewNameRow);
 								EditingTable->RemoveRow(FName(Row));
 								Row = FixedName.ToString();
-								EntryInManifest = EditingTable->FindRow<FLocalContentManifestRow>(FixedName, "");								
+								EntryInManifest = EditingTable->FindRow<FLocalContentManifestRow>(FixedName, "");
 								EditorAssetSubsystem->SaveLoadedAsset(EditingTable);
 								bWasRenamed = true;
 							}
@@ -1259,7 +1273,7 @@ void UBeamEditorContent::PostChange(const UDataTable* Changed, FDataTableEditorU
 	if (MissingUnrealTypes.Num() > 0)
 	{
 		const auto ErrMsg = FString::Format(TEXT("Found a content object that doesn't have a matching Unreal type. Please implement an UBeamContentObject subclass for them. MISSING_TYPES={0}."),
-			{FString::Join(MissingUnrealTypes, TEXT(", "))});
+		                                    {FString::Join(MissingUnrealTypes, TEXT(", "))});
 		UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
 	}
 }
@@ -1281,7 +1295,7 @@ bool UBeamEditorContent::CreateNewContent(const FBeamContentManifestId& Manifest
 	ContentObject = NewObject<UBeamContentObject>(this, ContentObjectSubType.Get());
 
 	// We add it to the object and to the local manifest.
-	const auto TypeName = ContentObject->GetClass()->GetFName().ToString();	
+	const auto TypeName = ContentObject->GetClass()->GetFName().ToString();
 
 	auto RepeatedNameCount = 0;
 	auto RowName = ContentName.IsEmpty() ? FString::Format(TEXT("{0}.New_{1}_{2}"), {ContentObject->BuildContentTypeString(), TypeName, RepeatedNameCount}) : FString::Format(TEXT("{0}.{1}"), {ContentObject->BuildContentTypeString(), ContentName});
@@ -1290,12 +1304,14 @@ bool UBeamEditorContent::CreateNewContent(const FBeamContentManifestId& Manifest
 	while (EditingTable->FindRow<FLocalContentManifestRow>(FName(RowName), TEXT("Ensure Name is Unique")))
 	{
 		RepeatedNameCount += 1;
-		RowName = ContentName.IsEmpty() ? FString::Format(TEXT("{0}.New_{1}_{2}"), {ContentObject->BuildContentTypeString(), TypeName, RepeatedNameCount}) : FString::Format(TEXT("{0}.{1}_{2}"), {ContentObject->BuildContentTypeString(), ContentName, RepeatedNameCount});
+		RowName = ContentName.IsEmpty()
+			          ? FString::Format(TEXT("{0}.New_{1}_{2}"), {ContentObject->BuildContentTypeString(), TypeName, RepeatedNameCount})
+			          : FString::Format(TEXT("{0}.{1}_{2}"), {ContentObject->BuildContentTypeString(), ContentName, RepeatedNameCount});
 	}
 
 	// Initialize the editing Object
 	FLocalContentManifestRow EntryInManifest;
-	EntryInManifest.OwnerManifestId = ManifestId;	
+	EntryInManifest.OwnerManifestId = ManifestId;
 
 	// Sets the ID and Tags based on the manifest row.
 	ContentObject->Id = RowName;
@@ -1359,14 +1375,14 @@ bool UBeamEditorContent::GetContentForEditing(const FBeamContentManifestId& Mani
 		UE_LOG(LogBeamContent, Warning, TEXT("%s"), *ErrMsg);
 		return false;
 	}
-	
+
 	if (!FindContentTypeByTypeId(EditObjectId.GetTypeId()))
 	{
 		ErrMsg = FString::Format(TEXT("Trying to load a content object that doesn't have a type in Unreal. Please create a UBeamContentObject subclass for this type of content. CONTENT_ID={0}."), {EditObjectId.AsString});
 		UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
 		return false;
 	}
-	
+
 	if (!TryLoadContentObject(ManifestId, EditObjectId, ContentObject))
 	{
 		ErrMsg = FString::Format(TEXT("Trying to load a content object that doesn't exist {0}"), {EditObjectId.AsString});
@@ -1476,7 +1492,7 @@ void UBeamEditorContent::BakeManifest(UDataTable* LocalManifest, UBeamContentCac
 
 				                          // Add it to the BCC_ BeamRuntimeContentCache.
 				                          Cache->Cache.Add(RowName, Content);
-				                          Cache->Hashes.Add(RowName, RowData.Checksum);			                          	
+				                          Cache->Hashes.Add(RowName, RowData.Checksum);
 			                          }
 		                          }));
 

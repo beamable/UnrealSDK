@@ -51,7 +51,7 @@ void UBeamEditor::Initialize(FSubsystemCollectionBase& Collection)
 	const auto DefaultBootstrapper = GetDefault<UBeamEditorBootstrapper>();
 	const auto SoftPathToDefaultBoostrapper = FSoftObjectPath{DefaultBootstrapper->GetPathName()};
 	if (!EditorUtilitySubsystem->StartupObjects.Contains(SoftPathToDefaultBoostrapper))
-		EditorUtilitySubsystem->StartupObjects.Add(SoftPathToDefaultBoostrapper);	
+		EditorUtilitySubsystem->StartupObjects.Add(SoftPathToDefaultBoostrapper);
 }
 
 void UBeamEditor::Deinitialize()
@@ -84,7 +84,7 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 	}
 
 	auto EditorSettings = GetMutableDefault<UBeamEditorSettings>();
-	if(EditorSettings->BeamableMainWindow.IsNull())
+	if (EditorSettings->BeamableMainWindow.IsNull())
 	{
 		EditorSettings->BeamableMainWindow = FSoftObjectPath(TEXT("/Script/Blutility.EditorUtilityWidgetBlueprint'/BeamableCore/Editor/EWBP_BeamableWindow.EWBP_BeamableWindow'"));
 		EditorSettings->SaveConfig(CPF_Config, *EditorSettings->GetDefaultConfigFilename());
@@ -282,23 +282,25 @@ void UBeamEditor::SignUp(FString ProjectName, FString OrgName, FString Email, FS
 	RealmsApi->CPP_PostCustomer(PostCustomerRequest, Handler, Ctx, Op, this);
 }
 
-void UBeamEditor::SignUp_OnPostCustomer(const FPostCustomerFullResponse Response, const FBeamOperationHandle Op, const FString OrgName, const FString Email, const FString Password)
+void UBeamEditor::SignUp_OnPostCustomer(const FPostCustomerFullResponse Resp, const FBeamOperationHandle Op, const FString OrgName, const FString Email, const FString Password)
 {
-	if (Response.State == RS_Error)
+	if (Resp.State == RS_Retrying) return;
+
+	if (Resp.State == RS_Error)
 	{
 		FString Error;
-		FJsonObjectConverter::UStructToJsonObjectString(Response.ErrorData, Error);
-		RequestTracker->TriggerOperationError(Op, Error, Response.Context.RequestId);
+		FJsonObjectConverter::UStructToJsonObjectString(Resp.ErrorData, Error);
+		RequestTracker->TriggerOperationError(Op, Error, Resp.Context.RequestId);
 		return;
 	}
 
-	if (Response.State == RS_Success)
+	if (Resp.State == RS_Success)
 	{
 		SignIn(OrgName, Email, Password, Op);
 		return;
 	}
 
-	RequestTracker->TriggerOperationCancelled(Op, TEXT(""), Response.Context.RequestId);
+	RequestTracker->TriggerOperationCancelled(Op, TEXT(""), Resp.Context.RequestId);
 }
 
 void UBeamEditor::SignIn(FString OrgName, FString Email, FString Password, const FBeamOperationHandle Op)
@@ -313,27 +315,29 @@ void UBeamEditor::SignIn(FString OrgName, FString Email, FString Password, const
 	RealmsApi->CPP_GetCustomerAliasAvailable(CustomerAliasReq, Handler, Ctx, Op, this);
 }
 
-void UBeamEditor::SignIn_OnGetCustomerAliasAvailable(const FGetCustomerAliasAvailableFullResponse Response, const FBeamOperationHandle Op, const FString Email, const FString Password)
+void UBeamEditor::SignIn_OnGetCustomerAliasAvailable(const FGetCustomerAliasAvailableFullResponse Resp, const FBeamOperationHandle Op, const FString Email, const FString Password)
 {
-	if (Response.State == RS_Error)
+	if (Resp.State == RS_Retrying) return;
+
+	if (Resp.State == RS_Error)
 	{
 		FString Error;
-		FJsonObjectConverter::UStructToJsonObjectString(Response.ErrorData, Error);
-		RequestTracker->TriggerOperationError(Op, Error, Response.Context.RequestId);
+		FJsonObjectConverter::UStructToJsonObjectString(Resp.ErrorData, Error);
+		RequestTracker->TriggerOperationError(Op, Error, Resp.Context.RequestId);
 		return;
 	}
 
-	if (Response.State == RS_Success)
+	if (Resp.State == RS_Success)
 	{
 		// If no CID was found for this alias... let the user know.
-		if (!Response.SuccessData->bAvailable)
+		if (!Resp.SuccessData->bAvailable)
 		{
-			RequestTracker->TriggerOperationError(Op, TEXT("Organization not found. If you haven't created an account yet, please Sign Up instead."), Response.Context.RequestId);
+			RequestTracker->TriggerOperationError(Op, TEXT("Organization not found. If you haven't created an account yet, please Sign Up instead."), Resp.Context.RequestId);
 			return;
 		}
 
 		// Update the target realm with just the CID and let the caller respond to this event.
-		const auto Cid = Response.SuccessData->Cid;
+		const auto Cid = Resp.SuccessData->Cid;
 		SetActiveTargetRealmUnsafe(FBeamRealmHandle{Cid});
 
 		// Call authenticate with the rest of the information
@@ -351,30 +355,32 @@ void UBeamEditor::SignIn_OnGetCustomerAliasAvailable(const FGetCustomerAliasAvai
 		return;
 	}
 
-	RequestTracker->TriggerOperationCancelled(Op, TEXT(""), Response.Context.RequestId);
+	RequestTracker->TriggerOperationCancelled(Op, TEXT(""), Resp.Context.RequestId);
 }
 
-void UBeamEditor::SignIn_OnAuthenticate(const FAuthenticateFullResponse Response, const FBeamOperationHandle Op, const FBeamCid Cid)
+void UBeamEditor::SignIn_OnAuthenticate(const FAuthenticateFullResponse Resp, const FBeamOperationHandle Op, const FBeamCid Cid)
 {
-	if (Response.State == RS_Error)
+	if (Resp.State == RS_Retrying) return;
+
+	if (Resp.State == RS_Error)
 	{
 		FString Error;
-		FJsonObjectConverter::UStructToJsonObjectString(Response.ErrorData, Error);
-		RequestTracker->TriggerOperationError(Op, Error, Response.Context.RequestId);
+		FJsonObjectConverter::UStructToJsonObjectString(Resp.ErrorData, Error);
+		RequestTracker->TriggerOperationError(Op, Error, Resp.Context.RequestId);
 		return;
 	}
 
-	if (Response.State == RS_Success)
+	if (Resp.State == RS_Success)
 	{
-		const auto AccessToken = Response.SuccessData->AccessToken.Val;
-		const auto RefreshToken = Response.SuccessData->RefreshToken.Val;
-		const auto ExpiresIn = Response.SuccessData->ExpiresIn;
+		const auto AccessToken = Resp.SuccessData->AccessToken.Val;
+		const auto RefreshToken = Resp.SuccessData->RefreshToken.Val;
+		const auto ExpiresIn = Resp.SuccessData->ExpiresIn;
 
 		UpdateSignedInUserData(Op, Cid, AccessToken, RefreshToken, ExpiresIn);
 		return;
 	}
 
-	RequestTracker->TriggerOperationCancelled(Op, TEXT(""), Response.Context.RequestId);
+	RequestTracker->TriggerOperationCancelled(Op, TEXT(""), Resp.Context.RequestId);
 }
 
 
@@ -433,23 +439,23 @@ void UBeamEditor::SelectRealm_OnSystemsReady(FBeamWaitCompleteEvent, FBeamRealmH
 }
 
 void UBeamEditor::OpenPortalOnCurrentRealm()
-{		
-	FUserSlot      MainEditorSlot;
+{
+	FUserSlot MainEditorSlot;
 	FBeamRealmUser Data;
-	if(TryGetMainEditorSlot(MainEditorSlot, Data))
+	if (TryGetMainEditorSlot(MainEditorSlot, Data))
 	{
 		FBeamCustomerProjectData Proj;
-		FBeamProjectRealmData    RealmData;
+		FBeamProjectRealmData RealmData;
 		GetActiveProjectAndRealmData(Proj, RealmData);
-			
+
 		const auto PortalUrl = GetDefault<UBeamCoreSettings>()->BeamableEnvironment->PortalUrl;
 		const auto Cid = Data.RealmHandle.Cid.AsString;
-		const auto ProductionPid = Proj.AllRealms.FindByPredicate([](FBeamProjectRealmData d) { return !d.ParentPID.IsSet; })->PID.AsString; 
+		const auto ProductionPid = Proj.AllRealms.FindByPredicate([](FBeamProjectRealmData d) { return !d.ParentPID.IsSet; })->PID.AsString;
 		const auto CurrentPid = Data.RealmHandle.Pid.AsString;
 		const auto RefreshToken = Data.AuthToken.RefreshToken;
-			
+
 		const auto URL = FString::Format(TEXT("{0}/{1}/games/{2}/realms/{3}/dashboard?refresh_token={4}"),
-		                                 { PortalUrl, Cid, ProductionPid, CurrentPid, RefreshToken });
+		                                 {PortalUrl, Cid, ProductionPid, CurrentPid, RefreshToken});
 
 		FPlatformProcess::LaunchURL(*URL, nullptr, nullptr);
 	}
@@ -534,19 +540,21 @@ void UBeamEditor::UpdateSignedInUserData(const FBeamOperationHandle Op, const FB
 	RealmsApi->CPP_GetGames(GetMainEditorSlot(), Req, Handler, Ctx, Op, this);
 }
 
-void UBeamEditor::UpdateSignedInUserData_OnGetRealms(const FGetGamesFullResponse Response, const FBeamOperationHandle Op, const FBeamCid Cid)
+void UBeamEditor::UpdateSignedInUserData_OnGetRealms(const FGetGamesFullResponse Resp, const FBeamOperationHandle Op, const FBeamCid Cid)
 {
-	if (Response.State == RS_Error)
+	if (Resp.State == RS_Retrying) return;
+
+	if (Resp.State == RS_Error)
 	{
 		FString Error;
-		FJsonObjectConverter::UStructToJsonObjectString(Response.ErrorData, Error);
-		RequestTracker->TriggerOperationError(Op, Error, Response.Context.RequestId);
+		FJsonObjectConverter::UStructToJsonObjectString(Resp.ErrorData, Error);
+		RequestTracker->TriggerOperationError(Op, Error, Resp.Context.RequestId);
 		return;
 	}
 
-	if (Response.State == RS_Success)
+	if (Resp.State == RS_Success)
 	{
-		const auto Games = Response.SuccessData->Projects;
+		const auto Games = Resp.SuccessData->Projects;
 		// If we only have 1 project (Root PID) associated with this customer, we sign in automatically.				
 		if (Games.Num() > 0)
 		{
@@ -568,26 +576,28 @@ void UBeamEditor::UpdateSignedInUserData_OnGetRealms(const FGetGamesFullResponse
 		return;
 	}
 
-	RequestTracker->TriggerOperationCancelled(Op, TEXT(""), Response.Context.RequestId);
+	RequestTracker->TriggerOperationCancelled(Op, TEXT(""), Resp.Context.RequestId);
 }
 
-void UBeamEditor::UpdateSignedInUserData_OnGetAdminMe(const FBeamFullResponse<UGetAdminMeRequest*, UAccountPortalView*> Response, const FBeamOperationHandle Op)
+void UBeamEditor::UpdateSignedInUserData_OnGetAdminMe(const FBeamFullResponse<UGetAdminMeRequest*, UAccountPortalView*> Resp, const FBeamOperationHandle Op)
 {
-	if (Response.State == RS_Error)
+	if (Resp.State == RS_Retrying) return;
+
+	if (Resp.State == RS_Error)
 	{
 		FString Error;
-		FJsonObjectConverter::UStructToJsonObjectString(Response.ErrorData, Error);
-		RequestTracker->TriggerOperationError(Op, Error, Response.Context.RequestId);
+		FJsonObjectConverter::UStructToJsonObjectString(Resp.ErrorData, Error);
+		RequestTracker->TriggerOperationError(Op, Error, Resp.Context.RequestId);
 		return;
 	}
 
-	if (Response.State == RS_Success)
+	if (Resp.State == RS_Success)
 	{
-		const auto AccountId = Response.SuccessData->Id;
+		const auto AccountId = Resp.SuccessData->Id;
 		bool HadEmail = false;
-		const auto Email = UOptionalStringLibrary::GetOptionalValue(Response.SuccessData->Email, TEXT(""), HadEmail);
+		const auto Email = UOptionalStringLibrary::GetOptionalValue(Resp.SuccessData->Email, TEXT(""), HadEmail);
 		bool HadExternalIds = false;
-		const auto ExternalIds = UOptionalArrayOfBeamExternalIdentityLibrary::GetOptionalValue(Response.SuccessData->External, {}, HadExternalIds);
+		const auto ExternalIds = UOptionalArrayOfBeamExternalIdentityLibrary::GetOptionalValue(Resp.SuccessData->External, {}, HadExternalIds);
 
 		const auto Slot = GetMainEditorSlot();
 		UserSlots->SetEmailAtSlot(Slot, Email, this);
@@ -605,7 +615,7 @@ void UBeamEditor::UpdateSignedInUserData_OnGetAdminMe(const FBeamFullResponse<UG
 		return;
 	}
 
-	RequestTracker->TriggerOperationCancelled(Op, TEXT(""), Response.Context.RequestId);
+	RequestTracker->TriggerOperationCancelled(Op, TEXT(""), Resp.Context.RequestId);
 }
 
 void UBeamEditor::UpdateSignedInUserData_OnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const UObject* Context, const FBeamOperationHandle Op)

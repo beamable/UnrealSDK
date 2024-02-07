@@ -9,6 +9,7 @@
 #include "Subsystems/EngineSubsystem.h"
 #include "UserSlots/UserSlot.h"
 #include "IWebSocket.h"
+#include "UserSlots/BeamUserSlots.h"
 
 #include "BeamNotifications.generated.h"
 
@@ -39,15 +40,15 @@ struct BEAMABLECORE_API FBeamWebSocketHandle
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
-	FUserSlot Slot;
+	FString NamespacedSlot;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FName Id;
 
 	FBeamWebSocketHandle() = default;
 
-	FBeamWebSocketHandle(const FUserSlot& Owner, const FName& Id, UBeamNotifications* Socket)
-		: Slot(Owner),
+	FBeamWebSocketHandle(const FString& Owner, const FName& Id, UBeamNotifications* Socket)
+		: NamespacedSlot(Owner),
 		  Id(Id),
 		  Socket(Socket)
 	{
@@ -55,7 +56,7 @@ struct BEAMABLECORE_API FBeamWebSocketHandle
 
 	friend bool operator==(const FBeamWebSocketHandle& Lhs, const FBeamWebSocketHandle& RHS)
 	{
-		return Lhs.Id == RHS.Id;
+		return Lhs.Id == RHS.Id && Lhs.NamespacedSlot == RHS.NamespacedSlot;
 	}
 
 	friend bool operator!=(const FBeamWebSocketHandle& Lhs, const FBeamWebSocketHandle& RHS)
@@ -68,7 +69,7 @@ private:
 	UBeamNotifications* Socket = nullptr;
 };
 
-FORCEINLINE uint32 GetTypeHash(const FBeamWebSocketHandle& SocketHandle) { return GetTypeHash(SocketHandle.Id); }
+FORCEINLINE uint32 GetTypeHash(const FBeamWebSocketHandle& SocketHandle) { return HashCombine(GetTypeHash(SocketHandle.Id), GetTypeHash(SocketHandle.NamespacedSlot)); }
 
 /**
  * Data struct for the Connected ENotificationMessageType type.
@@ -130,7 +131,7 @@ struct BEAMABLECORE_API FNotificationMessage : public FBeamJsonSerializableUStru
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Context     = Bag->GetStringField(TEXT("context"));
+		Context = Bag->GetStringField(TEXT("context"));
 		MessageFull = Bag->GetStringField(TEXT("messageFull"));
 	}
 };
@@ -186,9 +187,9 @@ struct FNotificationMessageEventHandler
 	GENERATED_BODY()
 
 	FNotificationMessageEventHandler() = default;
+
 	FNotificationMessageEventHandler(const FString& Key, const FOnNotificationEvent& Delegate) : ContextKey(Key), Handler(Delegate)
 	{
-		
 	}
 
 	friend bool operator==(const FNotificationMessageEventHandler& Lhs, const FNotificationMessageEventHandler& RHS)
@@ -202,7 +203,7 @@ struct FNotificationMessageEventHandler
 	}
 
 
-	FString              ContextKey;
+	FString ContextKey;
 	FOnNotificationEvent Handler;
 };
 
@@ -225,11 +226,11 @@ class BEAMABLECORE_API UBeamNotifications : public UEngineSubsystem
 {
 	GENERATED_BODY()
 
-	TMap<FUserSlot, TMap<FName, TSharedPtr<IWebSocket>>> OpenSockets;
+	TMap<FString, TMap<FName, TSharedPtr<IWebSocket>>> OpenSockets;
 
 	TArray<FBeamWebSocketHandle> PlayModeHandles;
 
-	TMap<FBeamWebSocketHandle, FOnNotificationEvent>                  ConnectionEventHandlers;
+	TMap<FBeamWebSocketHandle, FOnNotificationEvent> ConnectionEventHandlers;
 	TMultiMap<FBeamWebSocketHandle, FNotificationMessageEventHandler> MessageEventHandlers;
 
 	UPROPERTY()
@@ -242,21 +243,24 @@ class BEAMABLECORE_API UBeamNotifications : public UEngineSubsystem
 	virtual void Deinitialize() override;
 
 public:
-	bool TryConnect(const FUserSlot& Slot, const FName& SocketName, const FString& Uri, const TMap<FString, FString>& ExtraHeaders, const FOnNotificationEvent& ConnectionEventHandler, FBeamWebSocketHandle& OutHandle, UObject* ContextObject = nullptr);
+	bool TryConnect(const FUserSlot& Slot, const FName& SocketName, const FString& Uri, const TMap<FString, FString>& ExtraHeaders, const FOnNotificationEvent& ConnectionEventHandler,
+	                FBeamWebSocketHandle& OutHandle, UObject* ContextObject);
 
-	void Connect(const FUserSlot& Slot, const FBeamRealmUser& UserData, const FName& SocketName, const FString& Uri, const TMap<FString, FString>& ExtraHeaders, const FOnNotificationEvent& ConnectionEventHandler, FBeamWebSocketHandle& OutHandle, UObject* ContextObject = nullptr);
+	void Connect(const FUserSlot& Slot, const FBeamRealmUser& UserData, const FName& SocketName, const FString& Uri, const TMap<FString, FString>& ExtraHeaders,
+	             const FOnNotificationEvent& ConnectionEventHandler, FBeamWebSocketHandle& OutHandle, UObject* ContextObject);
 
-	bool TryGetHandle(const FUserSlot& Slot, const FName& SocketName, FBeamWebSocketHandle& OutHandle);
-	void CloseSocketsForSlot(const FUserSlot& Slot);
+	bool TryGetHandle(const FUserSlot& Slot, const FName& SocketName, FBeamWebSocketHandle& OutHandle, UObject* ContextObject);
+	void CloseSocketsForSlot(const FUserSlot& Slot, UObject* ContextObject);
 
-	void ClearPIESockets();
+	void ClearPIESockets(UObject* ContextObject);
 
 	template <typename THandler, typename TMessage>
-	bool TrySubscribeForMessage(const FUserSlot& Slot, const FName& SocketName, const FString& ContextKey, THandler Handler, FDelegateHandle& OutHandle)
+	bool TrySubscribeForMessage(const FUserSlot& Slot, const FName& SocketName, const FString& ContextKey, THandler Handler, FDelegateHandle& OutHandle, UObject* ContextObject)
 	{
-		if (OpenSockets.Contains(Slot))
+		auto NamespacedSlot = UBeamUserSlots::GetNamespacedSlotId(Slot, ContextObject);
+		if (OpenSockets.Contains(NamespacedSlot))
 		{
-			if (const auto& UserSockets = OpenSockets.FindChecked(Slot); UserSockets.Contains(SocketName))
+			if (const auto& UserSockets = OpenSockets.FindChecked(NamespacedSlot); UserSockets.Contains(SocketName))
 			{
 				// Make sure the Message type is a FBeamJsonSerializable
 				static_assert(TIsDerivedFrom<TMessage, FBeamJsonSerializableUStruct>::Value);
@@ -274,7 +278,7 @@ public:
 				});
 
 				OutHandle = EventHandler.GetHandle();
-				MessageEventHandlers.Add(FBeamWebSocketHandle(Slot, SocketName, this), FNotificationMessageEventHandler{ContextKey, EventHandler});
+				MessageEventHandlers.Add(FBeamWebSocketHandle(NamespacedSlot, SocketName, this), FNotificationMessageEventHandler{ContextKey, EventHandler});
 				return true;
 			}
 		}
@@ -282,13 +286,14 @@ public:
 		return false;
 	}
 
-	bool TryUnsubscribeAllFromSlot(const FUserSlot& Slot, const FName& SocketName)
+	bool TryUnsubscribeAllFromSlot(const FUserSlot& Slot, const FName& SocketName, UObject* ContextObject)
 	{
-		if (OpenSockets.Contains(Slot))
+		auto NamespacedSlot = UBeamUserSlots::GetNamespacedSlotId(Slot, ContextObject);
+		if (OpenSockets.Contains(NamespacedSlot))
 		{
-			if (const auto& UserSockets = OpenSockets.FindChecked(Slot); UserSockets.Contains(SocketName))
+			if (const auto& UserSockets = OpenSockets.FindChecked(NamespacedSlot); UserSockets.Contains(SocketName))
 			{
-				const FBeamWebSocketHandle Key(Slot, SocketName, this);
+				const FBeamWebSocketHandle Key(NamespacedSlot, SocketName, this);
 
 				TArray<FNotificationMessageEventHandler> Handlers;
 				MessageEventHandlers.MultiFind(Key, Handlers);
@@ -303,13 +308,14 @@ public:
 		return false;
 	}
 
-	bool TryUnsubscribeAllFromMessage(const FUserSlot& Slot, const FName& SocketName, const FString& ContextKey)
+	bool TryUnsubscribeAllFromMessage(const FUserSlot& Slot, const FName& SocketName, const FString& ContextKey, UObject* ContextObject)
 	{
-		if (OpenSockets.Contains(Slot))
+		auto NamespacedSlot = UBeamUserSlots::GetNamespacedSlotId(Slot, ContextObject);
+		if (OpenSockets.Contains(NamespacedSlot))
 		{
-			if (const auto& UserSockets = OpenSockets.FindChecked(Slot); UserSockets.Contains(SocketName))
+			if (const auto& UserSockets = OpenSockets.FindChecked(NamespacedSlot); UserSockets.Contains(SocketName))
 			{
-				const FBeamWebSocketHandle Key(Slot, SocketName, this);
+				const FBeamWebSocketHandle Key(NamespacedSlot, SocketName, this);
 
 				TArray<FNotificationMessageEventHandler> Handlers;
 				MessageEventHandlers.MultiFind(Key, Handlers);
@@ -326,13 +332,14 @@ public:
 		return false;
 	}
 
-	bool TryUnsubscribeFromMessage(const FUserSlot& Slot, const FName& SocketName, const FString& ContextKey, const FDelegateHandle& Handle)
+	bool TryUnsubscribeFromMessage(const FUserSlot& Slot, const FName& SocketName, const FString& ContextKey, const FDelegateHandle& Handle, UObject* ContextObject)
 	{
-		if (OpenSockets.Contains(Slot))
+		auto NamespacedSlot = UBeamUserSlots::GetNamespacedSlotId(Slot, ContextObject);
+		if (OpenSockets.Contains(NamespacedSlot))
 		{
-			if (const auto& UserSockets = OpenSockets.FindChecked(Slot); UserSockets.Contains(SocketName))
+			if (const auto& UserSockets = OpenSockets.FindChecked(NamespacedSlot); UserSockets.Contains(SocketName))
 			{
-				const FBeamWebSocketHandle Key(Slot, SocketName, this);
+				const FBeamWebSocketHandle Key(NamespacedSlot, SocketName, this);
 
 				TArray<FNotificationMessageEventHandler> Handlers;
 				MessageEventHandlers.MultiFind(Key, Handlers);
@@ -340,13 +347,13 @@ public:
 				{
 					if (NotificationMessageEventHandler.ContextKey.Equals(ContextKey))
 					{
-						if(NotificationMessageEventHandler.Handler.GetHandle() == Handle)
+						if (NotificationMessageEventHandler.Handler.GetHandle() == Handle)
 						{
 							MessageEventHandlers.RemoveSingle(Key, NotificationMessageEventHandler);
 							return true;
 						}
-					}						
-				}				
+					}
+				}
 			}
 		}
 		return false;

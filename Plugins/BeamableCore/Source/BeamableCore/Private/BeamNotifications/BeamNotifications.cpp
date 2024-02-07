@@ -9,14 +9,15 @@
 void UBeamNotifications::Initialize(FSubsystemCollectionBase& Collection)
 {
 	UserSlots = Collection.InitializeDependency<UBeamUserSlots>();
-	Backend   = Collection.InitializeDependency<UBeamBackend>();
+	Backend = Collection.InitializeDependency<UBeamBackend>();
 }
 
 void UBeamNotifications::Deinitialize()
 {
 }
 
-bool UBeamNotifications::TryConnect(const FUserSlot& Slot, const FName& SocketName, const FString& Uri, const TMap<FString, FString>& ExtraHeaders, const FOnNotificationEvent& ConnectionEventHandler, FBeamWebSocketHandle& OutHandle, UObject* ContextObject)
+bool UBeamNotifications::TryConnect(const FUserSlot& Slot, const FName& SocketName, const FString& Uri, const TMap<FString, FString>& ExtraHeaders, const FOnNotificationEvent& ConnectionEventHandler,
+                                    FBeamWebSocketHandle& OutHandle, UObject* ContextObject)
 {
 	if (FBeamRealmUser UserData; UserSlots->GetUserDataAtSlot(Slot, UserData, ContextObject))
 	{
@@ -27,10 +28,12 @@ bool UBeamNotifications::TryConnect(const FUserSlot& Slot, const FName& SocketNa
 	return false;
 }
 
-void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& UserData, const FName& SocketName, const FString& Uri, const TMap<FString, FString>& ExtraHeaders, const FOnNotificationEvent& ConnectionEventHandler, FBeamWebSocketHandle& OutHandle, UObject* ContextObject)
+void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& UserData, const FName& SocketName, const FString& Uri, const TMap<FString, FString>& ExtraHeaders,
+                                 const FOnNotificationEvent& ConnectionEventHandler, FBeamWebSocketHandle& OutHandle, UObject* ContextObject)
 {
 	const auto RefreshToken = UserData.AuthToken.AccessToken;
-	auto       Headers      = TMap(ExtraHeaders);
+	auto Headers = TMap(ExtraHeaders);
+	auto NamespacedSlot = UBeamUserSlots::GetNamespacedSlotId(Slot, ContextObject);
 
 
 	const auto AuthTokenHeader = FString::Format(*UBeamBackend::HEADER_VALUE_AUTHORIZATION, {RefreshToken});
@@ -42,41 +45,48 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 	Headers.Add(UBeamBackend::HEADER_REQUEST_SCOPE, ScopeHeader);
 
 
-	OutHandle = FBeamWebSocketHandle(Slot, SocketName, this);
-	UE_LOG(LogBeamNotifications, Verbose, TEXT("Attempting websocket connection. SLOT=%s, ID=%s, URI=%s, TOKEN_HEADER=%s, SCOPE_HEADER=%s"), *Slot.Name, *Uri, *SocketName.ToString(), *AuthTokenHeader, *ScopeHeader)
+	OutHandle = FBeamWebSocketHandle(NamespacedSlot, SocketName, this);
+	UE_LOG(LogBeamNotifications, Verbose, TEXT("Attempting websocket connection. SLOT=%s, ID=%s, URI=%s, TOKEN_HEADER=%s, SCOPE_HEADER=%s"), *NamespacedSlot, *Uri, *SocketName.ToString(),
+	       *AuthTokenHeader,
+	       *ScopeHeader)
 
 	const auto OpenSocket = FWebSocketsModule::Get().CreateWebSocket(Uri + TEXT("?send-session-start=true"), TEXT(""), Headers);
 	OpenSocket->OnConnected().AddLambda([OutHandle, this]
 	{
 		// If this was a PIE socket and we are no longer in PIE when we connect, we should close up this connection.
-		if (!Backend->bIsInPIE && PlayModeHandles.Contains(OutHandle))
+#if WITH_EDITOR
+		Backend->UpdatePieState();
+		if (!Backend->IsInPIE() && PlayModeHandles.Contains(OutHandle))
 		{
-			if (OpenSockets.Contains(OutHandle.Slot))
+			if (OpenSockets.Contains(OutHandle.NamespacedSlot))
 			{
-				OpenSockets[OutHandle.Slot].FindChecked(OutHandle.Id)->Close();
+				OpenSockets[OutHandle.NamespacedSlot].FindChecked(OutHandle.Id)->Close();
 			}
 			return;
 		}
+#endif
 
 		FNotificationEvent Evt;
-		Evt.EventType                     = ENotificationMessageType::Connected;
+		Evt.EventType = ENotificationMessageType::Connected;
 		Evt.ConnectedData.ConnectedHandle = OutHandle;
 
 		const FOnNotificationEvent& EvtHandler = ConnectionEventHandlers.FindChecked(OutHandle);
-		const bool                  bDidRun    = EvtHandler.ExecuteIfBound(Evt);
-		ensureAlwaysMsgf(bDidRun, TEXT("Notification connection handler was not bound correctly! SLOT=%s, ID=%s"), *OutHandle.Slot.Name, *OutHandle.Id.ToString());
+		const bool bDidRun = EvtHandler.ExecuteIfBound(Evt);
+		ensureAlwaysMsgf(bDidRun, TEXT("Notification connection handler was not bound correctly! SLOT=%s, ID=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString());
 
-		UE_LOG(LogBeamNotifications, Verbose, TEXT("Connection Success. SLOT=%s, ID=%s"), *OutHandle.Slot.Name, *OutHandle.Id.ToString());
+		UE_LOG(LogBeamNotifications, Verbose, TEXT("Connection Success. SLOT=%s, ID=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString());
 	});
 
 	OpenSocket->OnConnectionError().AddLambda([OutHandle, this](const FString& Error)
 	{
 		// If this was a PIE socket and we are no longer in PIE when we connect, we should just clean up.
-		if (!Backend->bIsInPIE && PlayModeHandles.Contains(OutHandle))
+#if WITH_EDITOR
+		Backend->UpdatePieState();
+		if (!Backend->IsInPIE() && PlayModeHandles.Contains(OutHandle))
 		{
-			if (OpenSockets.Contains(OutHandle.Slot))
+			if (OpenSockets.Contains(OutHandle.NamespacedSlot))
 			{
-				OpenSockets[OutHandle.Slot].Remove(OutHandle.Id);
+				OpenSockets[OutHandle.NamespacedSlot].Remove(OutHandle.Id);
 				PlayModeHandles.Remove(OutHandle);
 
 				ConnectionEventHandlers.Remove(OutHandle);
@@ -84,38 +94,41 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 			}
 			return;
 		}
+#endif
 
 		// Trigger the event and then remove the connection from the list
 		FNotificationEvent Evt;
-		Evt.EventType                  = ENotificationMessageType::ConnectionFailed;
+		Evt.EventType = ENotificationMessageType::ConnectionFailed;
 		Evt.ConnectionFailedData.Error = Error;
 
 		const FOnNotificationEvent& EvtHandler = ConnectionEventHandlers.FindChecked(OutHandle);
-		const bool                  bDidRun    = EvtHandler.ExecuteIfBound(Evt);
-		ensureAlwaysMsgf(bDidRun, TEXT("Notification connection handler was not bound correctly! SLOT=%s, ID=%s"), *OutHandle.Slot.Name, *OutHandle.Id.ToString());
+		const bool bDidRun = EvtHandler.ExecuteIfBound(Evt);
+		ensureAlwaysMsgf(bDidRun, TEXT("Notification connection handler was not bound correctly! SLOT=%s, ID=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString());
 
 		// If there was an error when we tried to connect, we should just remove the connection.
-		if (OpenSockets.Contains(OutHandle.Slot))
+		if (OpenSockets.Contains(OutHandle.NamespacedSlot))
 		{
-			if (OpenSockets[OutHandle.Slot].Contains(OutHandle.Id))
+			if (OpenSockets[OutHandle.NamespacedSlot].Contains(OutHandle.Id))
 			{
-				OpenSockets[OutHandle.Slot].Remove(OutHandle.Id);
+				OpenSockets[OutHandle.NamespacedSlot].Remove(OutHandle.Id);
 				ConnectionEventHandlers.Remove(OutHandle);
 				MessageEventHandlers.Remove(OutHandle);
 			}
 		}
 
-		UE_LOG(LogBeamNotifications, Error, TEXT("Connection Error. SLOT=%s, ID=%s"), *OutHandle.Slot.Name, *OutHandle.Id.ToString());
+		UE_LOG(LogBeamNotifications, Error, TEXT("Connection Error. SLOT=%s, ID=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString());
 	});
 
 	OpenSocket->OnClosed().AddLambda([OutHandle, this](int32 StatusCode, const FString& Reason, bool bWasClean)
 	{
 		// If this was a PIE socket and we are no longer in PIE when try to close, we should just clean up.
-		if (!Backend->bIsInPIE && PlayModeHandles.Contains(OutHandle))
+#if WITH_EDITOR
+		Backend->UpdatePieState();
+		if (!Backend->IsInPIE() && PlayModeHandles.Contains(OutHandle))
 		{
-			if (OpenSockets.Contains(OutHandle.Slot))
+			if (OpenSockets.Contains(OutHandle.NamespacedSlot))
 			{
-				OpenSockets[OutHandle.Slot].Remove(OutHandle.Id);
+				OpenSockets[OutHandle.NamespacedSlot].Remove(OutHandle.Id);
 				PlayModeHandles.Remove(OutHandle);
 
 				ConnectionEventHandlers.Remove(OutHandle);
@@ -123,43 +136,47 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 			}
 			return;
 		}
+#endif
 
 		// Trigger the event 
 		FNotificationEvent Evt;
-		Evt.EventType             = ENotificationMessageType::Closed;
-		Evt.ClosedData.Reason     = Reason;
+		Evt.EventType = ENotificationMessageType::Closed;
+		Evt.ClosedData.Reason = Reason;
 		Evt.ClosedData.StatusCode = StatusCode;
-		Evt.ClosedData.bWasClean  = bWasClean;
+		Evt.ClosedData.bWasClean = bWasClean;
 
 		const FOnNotificationEvent& EvtHandler = ConnectionEventHandlers.FindChecked(OutHandle);
-		const bool                  bDidRun    = EvtHandler.ExecuteIfBound(Evt);
-		ensureAlwaysMsgf(bDidRun, TEXT("Notification connection handler was not bound correctly! SLOT=%s, ID=%s"), *OutHandle.Slot.Name, *OutHandle.Id.ToString());
+		const bool bDidRun = EvtHandler.ExecuteIfBound(Evt);
+		ensureAlwaysMsgf(bDidRun, TEXT("Notification connection handler was not bound correctly! SLOT=%s, ID=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString());
 
-		if (OpenSockets.Contains(OutHandle.Slot))
+		if (OpenSockets.Contains(OutHandle.NamespacedSlot))
 		{
-			if (OpenSockets[OutHandle.Slot].Contains(OutHandle.Id))
+			if (OpenSockets[OutHandle.NamespacedSlot].Contains(OutHandle.Id))
 			{
-				OpenSockets[OutHandle.Slot].Remove(OutHandle.Id);
+				OpenSockets[OutHandle.NamespacedSlot].Remove(OutHandle.Id);
 				ConnectionEventHandlers.Remove(OutHandle);
 				MessageEventHandlers.Remove(OutHandle);
 				PlayModeHandles.Remove(OutHandle);
 			}
 		}
 
-		UE_LOG(LogBeamNotifications, Verbose, TEXT("Connection Closed. SLOT=%s, ID=%s"), *OutHandle.Slot.Name, *OutHandle.Id.ToString());
+		UE_LOG(LogBeamNotifications, Verbose, TEXT("Connection Closed. SLOT=%s, ID=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString());
 	});
 
 	OpenSocket->OnMessage().AddLambda([OutHandle, this](const FString& Message)
 	{
 		// If this was a PIE socket and we are no longer in PIE when we receive a message, we should close up this connection and not run any message callbacks.
-		if (!Backend->bIsInPIE && PlayModeHandles.Contains(OutHandle))
+#if WITH_EDITOR
+		Backend->UpdatePieState();
+		if (!Backend->IsInPIE() && PlayModeHandles.Contains(OutHandle))
 		{
-			if (OpenSockets.Contains(OutHandle.Slot))
+			if (OpenSockets.Contains(OutHandle.NamespacedSlot))
 			{
-				OpenSockets[OutHandle.Slot].FindChecked(OutHandle.Id)->Close();
+				OpenSockets[OutHandle.NamespacedSlot].FindChecked(OutHandle.Id)->Close();
 			}
 			return;
 		}
+#endif
 
 		FNotificationEvent Evt;
 		Evt.EventType = ENotificationMessageType::Message;
@@ -172,22 +189,23 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 			if (Evt.MessageData.Context.Equals(EvtHandlers[i].ContextKey))
 			{
 				const bool bDidRun = EvtHandlers[i].Handler.ExecuteIfBound(Evt);
-				ensureAlwaysMsgf(bDidRun, TEXT("Notification message handler was not bound correctly! SLOT=%s, ID=%s Message=%s"), *OutHandle.Slot.Name, *OutHandle.Id.ToString(), *Message);
+				ensureAlwaysMsgf(bDidRun, TEXT("Notification message handler was not bound correctly! SLOT=%s, ID=%s Message=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString(), *Message);
 			}
 			else
 			{
-				UE_LOG(LogBeamNotifications, Verbose, TEXT("Skipping handler for this message: Handler doesn't care about this context. SLOT=%s, ID=%s, CONTEXT=%s"), *OutHandle.Slot.Name, *OutHandle.Id.ToString(), *EvtHandlers[i].ContextKey)
+				UE_LOG(LogBeamNotifications, Verbose, TEXT("Skipping handler for this message: Handler doesn't care about this context. SLOT=%s, ID=%s, CONTEXT=%s"), *OutHandle.NamespacedSlot,
+				       *OutHandle.Id.ToString(), *EvtHandlers[i].ContextKey)
 			}
 		}
 
-		UE_LOG(LogBeamNotifications, Verbose, TEXT("Notification message received. SLOT=%s, ID=%s Message=%s"), *OutHandle.Slot.Name, *OutHandle.Id.ToString(), *Message);
+		UE_LOG(LogBeamNotifications, Verbose, TEXT("Notification message received. SLOT=%s, ID=%s Message=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString(), *Message);
 	});
 
 	// Add the socket to the list of open sockets
-	if (OpenSockets.Contains(Slot))
-		OpenSockets.FindChecked(Slot).Add(SocketName, OpenSocket);
+	if (OpenSockets.Contains(NamespacedSlot))
+		OpenSockets.FindChecked(NamespacedSlot).Add(SocketName, OpenSocket);
 	else
-		OpenSockets.Add(Slot, {{SocketName, OpenSocket}});
+		OpenSockets.Add(NamespacedSlot, {{SocketName, OpenSocket}});
 
 	// Keep track of sockets that are opened from PIE sessions
 	if (ContextObject && ContextObject->GetWorld() && ContextObject->GetWorld()->IsPlayInEditor())
@@ -200,14 +218,15 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 	OpenSocket->Connect();
 }
 
-bool UBeamNotifications::TryGetHandle(const FUserSlot& Slot, const FName& SocketName, FBeamWebSocketHandle& OutHandle)
+bool UBeamNotifications::TryGetHandle(const FUserSlot& Slot, const FName& SocketName, FBeamWebSocketHandle& OutHandle, UObject* ContextObject)
 {
-	if (OpenSockets.Contains(Slot))
+	auto NamespacedSlot = UBeamUserSlots::GetNamespacedSlotId(Slot, ContextObject);
+	if (OpenSockets.Contains(NamespacedSlot))
 	{
-		const auto& UserSockets = OpenSockets.FindChecked(Slot);
+		const auto& UserSockets = OpenSockets.FindChecked(NamespacedSlot);
 		if (UserSockets.Contains(SocketName))
 		{
-			OutHandle = FBeamWebSocketHandle(Slot, SocketName, this);
+			OutHandle = FBeamWebSocketHandle(NamespacedSlot, SocketName, this);
 			return true;
 		}
 	}
@@ -216,9 +235,10 @@ bool UBeamNotifications::TryGetHandle(const FUserSlot& Slot, const FName& Socket
 	return false;
 }
 
-void UBeamNotifications::CloseSocketsForSlot(const FUserSlot& Slot)
+void UBeamNotifications::CloseSocketsForSlot(const FUserSlot& Slot, UObject* ContextObject)
 {
-	if (const auto Slots = OpenSockets.Find(Slot))
+	auto NamespacedSlot = UBeamUserSlots::GetNamespacedSlotId(Slot, ContextObject);
+	if (const auto Slots = OpenSockets.Find(NamespacedSlot))
 	{
 		for (const auto& WebSocket : *Slots)
 		{
@@ -228,15 +248,30 @@ void UBeamNotifications::CloseSocketsForSlot(const FUserSlot& Slot)
 	}
 }
 
-void UBeamNotifications::ClearPIESockets()
+void UBeamNotifications::ClearPIESockets(UObject* ContextObject)
 {
+	TArray<FBeamWebSocketHandle> HandlesToClear;
 	for (FBeamWebSocketHandle PlayModeHandle : PlayModeHandles)
 	{
-		if (const auto Slots = OpenSockets.Find(PlayModeHandle.Slot))
+		FUserSlot HandleSlot;
+		if (UBeamUserSlots::GetSlotIdFromNamespacedSlotId(PlayModeHandle.NamespacedSlot, HandleSlot))
+		{
+			FString NamespaceCheck = UBeamUserSlots::GetNamespacedSlotId(HandleSlot, ContextObject);
+			if (NamespaceCheck == PlayModeHandle.NamespacedSlot)
+			{
+				HandlesToClear.Add(PlayModeHandle);
+			}
+		}
+	}
+
+	for (FBeamWebSocketHandle PlayModeHandle : HandlesToClear)
+	{
+		if (const auto Slots = OpenSockets.Find(PlayModeHandle.NamespacedSlot))
 		{
 			if (const auto Socket = Slots->FindRef(PlayModeHandle.Id))
 			{
 				Socket->Close(1000, TEXT("PIE Closed"));
+				UE_LOG(LogBeamNotifications, Verbose, TEXT("Closed runtime websocket for slot. SLOT=%s"), *PlayModeHandle.NamespacedSlot);
 			}
 		}
 	}

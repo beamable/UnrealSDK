@@ -184,12 +184,12 @@ public:
 	 * If the queue type has a single team (FFA, for example), you can leave the team blank. Queue types with no teams are not valid.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Matchmaking", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle TryJoinQueueOperation(FUserSlot UserSlot, FBeamContentId GameTypeQueue, FOptionalString Team, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext);
+	FBeamOperationHandle TryJoinQueueOperation(FUserSlot UserSlot, FBeamContentId GameTypeQueue, FOptionalString Team, FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc TryJoinQueueOperation 
 	 */
-	FBeamOperationHandle CPP_TryJoinQueueOperation(FUserSlot UserSlot, const FBeamContentId& GameTypeQueue, FOptionalString Team, FBeamOperationEventHandlerCode OnOperationEvent, UObject* CallingContext);
+	FBeamOperationHandle CPP_TryJoinQueueOperation(FUserSlot UserSlot, const FBeamContentId& GameTypeQueue, FOptionalString Team, FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * @brief Leaves the given queue. If the user is not in a queue, this fails.
@@ -201,12 +201,12 @@ public:
 	 * If the queue type has a single team (FFA, for example), you can leave the team blank. Queue types with no teams are not valid.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Matchmaking", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle TryLeaveQueueOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext);
+	FBeamOperationHandle TryLeaveQueueOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc TryLeaveQueueOperation 
 	 */
-	FBeamOperationHandle CPP_TryLeaveQueueOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent, UObject* CallingContext);
+	FBeamOperationHandle CPP_TryLeaveQueueOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent);
 
 private:
 	// Operation Implementations

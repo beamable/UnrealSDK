@@ -69,7 +69,7 @@ public:
 	 * Setting more retry attempts than falloff values will default to the last possible falloff value after the attempts exceed the array length.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Request/Response")
-	FBeamRetryConfig FallbackRetryConfiguration{{}, {}, 10, {.5f, 1, 2, 4, 8}, 5};
+	FBeamRetryConfig FallbackRetryConfiguration{{408}, {}, 10, {.5f, 1, 2, 4, 8}, 5};
 
 	/**
 	 * @brief The configuration for cache-ing all requests. Can be overriden via the API in @see UBeamResponseCache.

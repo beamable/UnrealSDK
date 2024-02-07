@@ -62,8 +62,8 @@ class BEAMABLECORE_API UBeamContentNotifications : public UEngineSubsystem
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 public:	
-	UFUNCTION(BlueprintCallable, DisplayName="Subscribe - Content Refresh", Category="Beam")
-	void SubscribeToContentRefresh(const FUserSlot& Slot, const FName& SocketName, const FOnContentRefreshNotification& Handler) const;
+	UFUNCTION(BlueprintCallable, DisplayName="Subscribe - Content Refresh", Category="Beam", meta=(DefaultToSelf="ContextObject"))
+	void SubscribeToContentRefresh(const FUserSlot& Slot, const FName& SocketName, const FOnContentRefreshNotification& Handler, UObject* ContextObject) const;
 
-	FDelegateHandle CPP_SubscribeToContentRefresh(const FUserSlot& Slot, const FName& SocketName, const FOnContentRefreshNotificationCode& Handler) const;
+	FDelegateHandle CPP_SubscribeToContentRefresh(const FUserSlot& Slot, const FName& SocketName, const FOnContentRefreshNotificationCode& Handler, UObject* ContextObject) const;
 };

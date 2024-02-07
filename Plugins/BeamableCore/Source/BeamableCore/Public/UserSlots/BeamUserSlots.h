@@ -62,7 +62,7 @@ struct FUserSlotAuthData
 	 */
 	bool IsExpired() const
 	{
-		const FDateTime Now        = FDateTime::UtcNow();
+		const FDateTime Now = FDateTime::UtcNow();
 		const FDateTime Expiration = FDateTime::FromUnixTimestamp(IssuedAt) + FTimespan::FromMilliseconds(ExpiresIn);
 		return Now >= Expiration;
 	}
@@ -131,19 +131,6 @@ private:
 	 * In our own Editor Module, we have a fixed UserSlot for the current editor session's user: MainDeveloperUser.
 	 */
 	TMap<FString, FBeamUserIdx> AuthenticatedUserMapping;
-
-	/**
-	 * @brief Get's a namespaced ID from the given Slot Id and the calling context.
-	 * 
-	 * @param SlotId The Slot ID you want to namespace.
-	 * 
-	 * @param CallingContext The UObject that is calling this. In the editor, we need this to determine if we are making the call from a PIE-owned UObject or not.
-	 * If we are, we namespace the SlotId with "PIE_{PieInstance}_{SlotId}" so that we can automatically support multiple PIE instances running.
-	 * This can be useful to fully test matchmaking into match flows from within the editor.
-	 * 
-	 * @return A namespaced Slot ID that takes into account the fact that there might be multiple PIE instances running at the same time.
-	 */
-	static FString GetNamespacedSlotId(FUserSlot SlotId, const UObject* CallingContext);
 
 
 	/**
@@ -215,14 +202,16 @@ public:
 	 * Assumes the caller guarantees the given slot is already the correctly namespaced slot name.
 	 */
 	UFUNCTION()
-	void SetAuthenticationDataAtNamespacedSlot(const FString& NamespacedSlotId, const FString& AccessToken, const FString& RefreshToken, const int64& IssuedAt, const int64& ExpiresIn, const FBeamCid& Cid, const FBeamPid& Pid);
+	void SetAuthenticationDataAtNamespacedSlot(const FString& NamespacedSlotId, const FString& AccessToken, const FString& RefreshToken, const int64& IssuedAt, const int64& ExpiresIn,
+	                                           const FBeamCid& Cid, const FBeamPid& Pid);
 
 	/**
 	 * @brief Sets, without saving, the given authentication token + realm data into the given user slot.
 	 * THIS DOES NOT SERIALIZE THE USER INTO THAT SLOT --- IT'LL BE VALID ONLY FOR THE CURRENT SESSION'S DURATION.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AutoCreateRefTerm="Cid,Pid", AdvancedDisplay="CallingContext"))
-	void SetAuthenticationDataAtSlot(FUserSlot SlotId, const FString& AccessToken, const FString& RefreshToken, const int64& IssuedAt, const int64& ExpiresIn, const FBeamCid& Cid, const FBeamPid& Pid, const UObject* CallingContext);
+	void SetAuthenticationDataAtSlot(FUserSlot SlotId, const FString& AccessToken, const FString& RefreshToken, const int64& IssuedAt, const int64& ExpiresIn, const FBeamCid& Cid, const FBeamPid& Pid,
+	                                 const UObject* CallingContext);
 
 	/**
 	 * @brief Sets, without saving, the given GamerTag of the user into this slot. Must always be called on a user slot that has authentication data.
@@ -325,6 +314,32 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
 	int32 TryLoadSavedUserAtSlot(FUserSlot SlotId, UObject* CallingContext);
 
+
+	/**
+	 * @brief Get's a namespaced ID from the given Slot Id and the calling context.
+	 * 
+	 * @param SlotId The Slot ID you want to namespace.
+	 * 
+	 * @param CallingContext The UObject that is calling this. In the editor, we need this to determine if we are making the call from a PIE-owned UObject or not.
+	 * If we are, we namespace the SlotId with "PIE_{PieInstance}_{SlotId}" so that we can automatically support multiple PIE instances running.
+	 * This can be useful to fully test matchmaking into match flows from within the editor.
+	 * 
+	 * @return A namespaced Slot ID that takes into account the fact that there might be multiple PIE instances running at the same time.
+	 */
+	static FString GetNamespacedSlotId(FUserSlot SlotId, const UObject* CallingContext);
+
+	
+#if WITH_EDITOR
+	/**
+	 * Extracts the PIE Prefix (PIE_N_) from any given string. This is used to support Multiplayer PIE modes. 
+	 */
+	static void GetPiePrefix(const FString& Str, FString& PiePrefix);
+
+	/**
+	 * Removes the PIE Prefix (PIE_N_) from any given string. This is used to support Multiplayer PIE modes. 
+	 */
+	static void RemovePiePrefix(const FString& Str, FString& WithoutPiePrefix);
+#endif
 
 	/**
 	 

@@ -65,7 +65,7 @@ class BEAMABLECORE_API UBeamMatchmakingNotifications : public UEngineSubsystem
 {
 	GENERATED_BODY()
 
-	static const inline FString CTX_KEY_Matchmaking_Update  = TEXT("matchmaking.update.{0}");
+	static const inline FString CTX_KEY_Matchmaking_Update = TEXT("matchmaking.update.{0}");
 	static const inline FString CTX_KEY_Matchmaking_Timeout = TEXT("matchmaking.timeout.{0}");
 
 	UPROPERTY()
@@ -74,13 +74,15 @@ class BEAMABLECORE_API UBeamMatchmakingNotifications : public UEngineSubsystem
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 public:
-	UFUNCTION(BlueprintCallable, DisplayName="Subscribe - Matchmaking Update", Category="Beam")
-	void SubscribeToMatchmakingUpdate(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingUpdateNotification& Handler);
+	UFUNCTION(BlueprintCallable, DisplayName="Subscribe - Matchmaking Update", Category="Beam", meta=(DefaultToSelf="ContextObject"))
+	void SubscribeToMatchmakingUpdate(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingUpdateNotification& Handler, UObject* ContextObject);
 
-	FDelegateHandle CPP_SubscribeToMatchmakingUpdate(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingUpdateNotificationCode& Handler) const;
+	FDelegateHandle CPP_SubscribeToMatchmakingUpdate(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingUpdateNotificationCode& Handler,
+	                                                 UObject* ContextObject) const;
 
-	UFUNCTION(BlueprintCallable, DisplayName="Subscribe - Matchmaking Timeout", Category="Beam")
-	void SubscribeToMatchmakingTimeout(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingTimeoutNotification& Handler);
+	UFUNCTION(BlueprintCallable, DisplayName="Subscribe - Matchmaking Timeout", Category="Beam", meta=(DefaultToSelf="ContextObject"))
+	void SubscribeToMatchmakingTimeout(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingTimeoutNotification& Handler, UObject* ContextObject);
 
-	FDelegateHandle CPP_SubscribeToMatchmakingTimeout(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingTimeoutNotificationCode& Handler) const;
+	FDelegateHandle CPP_SubscribeToMatchmakingTimeout(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingTimeoutNotificationCode& Handler,
+	                                                  UObject* ContextObject) const;
 };

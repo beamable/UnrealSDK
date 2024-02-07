@@ -8,7 +8,7 @@ struct FBeamContentId;
 class UBeamNotifications;
 
 UENUM(BlueprintType, Category="Beam")
-enum class EBeamLobbyEvent : uint8 
+enum class EBeamLobbyEvent : uint8
 {
 	BEAM_LobbyCreated,
 	BEAM_LobbyDisbanded,
@@ -26,8 +26,8 @@ UCLASS(BlueprintType, Category="Beam|Enums")
 class BEAMABLECORE_API UBeamLobbyEventLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
-public:		
-	
+
+public:
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "Beam - ContentType To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Enums")
 	static FString ToSerializationName(EBeamLobbyEvent Value)
 	{
@@ -37,7 +37,6 @@ public:
 
 		// We chop off the first five "BEAM_" characters. 		
 		return SerializationName.RightChop(5);
-		
 	}
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "Beam - Serialization Name To ContentType", CompactNodeTitle = "->"), Category="Beam|Enums")
@@ -48,13 +47,13 @@ public:
 		{
 			// We chop off the first five "BEAM_" characters.
 			const FString& SerializationName = Enum->GetNameStringByIndex(NameIndex).RightChop(5);
-			if(Value == SerializationName)
+			if (Value == SerializationName)
 				return static_cast<EBeamLobbyEvent>(Enum->GetValueByIndex(NameIndex));
 		}
-		
+
 		ensureAlways(false); //  This should be impossible!
 		return EBeamLobbyEvent();
-	}	
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -79,7 +78,7 @@ USTRUCT(BlueprintType)
 struct BEAMABLECORE_API FLobbyUpdatePlayerJoinedEvt
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FBeamGamerTag JoinedGamerTag;
 };
@@ -88,7 +87,7 @@ USTRUCT(BlueprintType)
 struct BEAMABLECORE_API FLobbyUpdatePlayerLeftEvt
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FBeamGamerTag LeftGamerTag;
 };
@@ -97,16 +96,16 @@ USTRUCT(BlueprintType)
 struct BEAMABLECORE_API FLobbyUpdatePlayerKickedEvt
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FBeamGamerTag KickedGamerTag;
 };
 
 USTRUCT(BlueprintType)
-struct BEAMABLECORE_API FLobbyUpdateHostPlayerChangedEvt 
+struct BEAMABLECORE_API FLobbyUpdateHostPlayerChangedEvt
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FBeamGamerTag NewHostGamerTag;
 };
@@ -153,7 +152,7 @@ class BEAMABLECORE_API UBeamLobbyNotifications : public UEngineSubsystem
 {
 	GENERATED_BODY()
 
-	static const inline FString CTX_KEY_Lobby_Update  = TEXT("lobbies.update.{0}");	
+	static const inline FString CTX_KEY_Lobby_Update = TEXT("lobbies.update.{0}");
 
 	UPROPERTY()
 	UBeamNotifications* Notifications;
@@ -161,11 +160,10 @@ class BEAMABLECORE_API UBeamLobbyNotifications : public UEngineSubsystem
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 public:
-	
-	UFUNCTION(BlueprintCallable, DisplayName="Subscribe - Lobby Update", Category="Beam")
-	void SubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, FGuid LobbyId, const FOnLobbyUpdateNotification& Handler) const;
+	UFUNCTION(BlueprintCallable, DisplayName="Subscribe - Lobby Update", Category="Beam", meta=(DefaultToSelf="ContextObject"))
+	void SubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, FGuid LobbyId, const FOnLobbyUpdateNotification& Handler, UObject* ContextObject) const;
 
-	FDelegateHandle CPP_SubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, FGuid LobbyId, const FOnLobbyUpdateNotificationCode& Handler) const;
+	FDelegateHandle CPP_SubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, FGuid LobbyId, const FOnLobbyUpdateNotificationCode& Handler, UObject* ContextObject) const;
 
-	FDelegateHandle CPP_UnsubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, FGuid LobbyId, const FDelegateHandle& Handle) const;
+	FDelegateHandle CPP_UnsubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, FGuid LobbyId, const FDelegateHandle& Handle, UObject* ContextObject) const;
 };

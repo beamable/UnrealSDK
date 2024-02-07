@@ -143,11 +143,11 @@ void UBeamLobbyNotifications::Initialize(FSubsystemCollectionBase& Collection)
 	Notifications = Collection.InitializeDependency<UBeamNotifications>();
 }
 
-void UBeamLobbyNotifications::SubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, FGuid LobbyId, const FOnLobbyUpdateNotification& Handler) const
+void UBeamLobbyNotifications::SubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, FGuid LobbyId, const FOnLobbyUpdateNotification& Handler, UObject* ContextObject) const
 {
 	FDelegateHandle Handle;
 	const auto      Key = FString::Format(*CTX_KEY_Lobby_Update, {LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower)});
-	if (!Notifications->TrySubscribeForMessage<FOnLobbyUpdateNotification, FLobbyUpdateNotificationMessage>(Slot, SocketName, Key, Handler, Handle))
+	if (!Notifications->TrySubscribeForMessage<FOnLobbyUpdateNotification, FLobbyUpdateNotificationMessage>(Slot, SocketName, Key, Handler, Handle, ContextObject))
 	{
 		UE_LOG(LogBeamNotifications, Warning, TEXT("Trying to subscribe to a non-existent socket. SLOT=%s, ID=%s, KEY=%s"), *Slot.Name, *SocketName.ToString(), *Key);
 	}
@@ -157,11 +157,11 @@ void UBeamLobbyNotifications::SubscribeToLobbyUpdate(const FUserSlot& Slot, cons
 	}
 }
 
-FDelegateHandle UBeamLobbyNotifications::CPP_SubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, FGuid LobbyId, const FOnLobbyUpdateNotificationCode& Handler) const
+FDelegateHandle UBeamLobbyNotifications::CPP_SubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, FGuid LobbyId, const FOnLobbyUpdateNotificationCode& Handler, UObject* ContextObject) const
 {
 	FDelegateHandle Handle;
 	const auto      Key = FString::Format(*CTX_KEY_Lobby_Update, {LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower)});
-	if (!Notifications->TrySubscribeForMessage<FOnLobbyUpdateNotificationCode, FLobbyUpdateNotificationMessage>(Slot, SocketName, Key, Handler, Handle))
+	if (!Notifications->TrySubscribeForMessage<FOnLobbyUpdateNotificationCode, FLobbyUpdateNotificationMessage>(Slot, SocketName, Key, Handler, Handle, ContextObject))
 	{
 		UE_LOG(LogBeamNotifications, Warning, TEXT("Trying to subscribe to a non-existent socket. SLOT=%s, ID=%s, KEY=%s"), *Slot.Name, *SocketName.ToString(), *Key);
 	}
@@ -172,10 +172,10 @@ FDelegateHandle UBeamLobbyNotifications::CPP_SubscribeToLobbyUpdate(const FUserS
 	return Handle;
 }
 
-FDelegateHandle UBeamLobbyNotifications::CPP_UnsubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, FGuid LobbyId, const FDelegateHandle& Handle) const
+FDelegateHandle UBeamLobbyNotifications::CPP_UnsubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, FGuid LobbyId, const FDelegateHandle& Handle, UObject* ContextObject) const
 {
 	const auto Key = FString::Format(*CTX_KEY_Lobby_Update, {LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower)});
-	if (!Notifications->TryUnsubscribeFromMessage(Slot, SocketName, Key, Handle))
+	if (!Notifications->TryUnsubscribeFromMessage(Slot, SocketName, Key, Handle, ContextObject))
 	{
 		UE_LOG(LogBeamNotifications, Verbose, TEXT("Failed to find the given handle so there was no need to unsubscribe. SLOT=%s, ID=%s, KEY=%s"), *Slot.Name, *SocketName.ToString(), *Key);
 	}

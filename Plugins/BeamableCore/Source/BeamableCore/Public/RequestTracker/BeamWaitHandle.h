@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 
-#include "BeamableDefines.h"
+#include "BeamableOSS.h"
 #include "BeamOperationHandle.h"
 
 #include "BeamBackend/BeamRequestContext.h"

@@ -26,7 +26,7 @@ public:
 };
 
 UCLASS(BlueprintType)
-class UBeamStatUpdateCommand : public UObject
+class BEAMABLECORERUNTIME_API UBeamStatUpdateCommand : public UObject
 {
 	GENERATED_BODY()
 
@@ -158,32 +158,32 @@ public:
 	 * @brief Refreshes the client/public stats the user at the given user slot. 
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Stats", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle RefreshStatsOperation(FUserSlot UserSlot, FBeamStatsType Type, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext);
+	FBeamOperationHandle RefreshStatsOperation(FUserSlot UserSlot, FBeamStatsType Type, FBeamOperationEventHandler OnOperationEvent);
 	/**
 	 * @copydoc RefreshStatsOperation
 	 */
-	FBeamOperationHandle CPP_RefreshStatsOperation(FUserSlot UserSlot, FBeamStatsType Type, FBeamOperationEventHandlerCode OnOperationEvent, UObject* CallingContext);
+	FBeamOperationHandle CPP_RefreshStatsOperation(FUserSlot UserSlot, FBeamStatsType Type, FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * @brief Takes whatever is the current stat update command for the given user slot and submits it to the Beamable backend.
 	 * Call this only after you've called TryCreateUpdateCommand for this slot.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Stats", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle CommitStatsOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext);
+	FBeamOperationHandle CommitStatsOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent);
 	/**
 	 * @copydoc CommitStatsOperation
 	 */
-	FBeamOperationHandle CPP_CommitStatsOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent, UObject* CallingContext);
+	FBeamOperationHandle CPP_CommitStatsOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * @brief Updates a single stat for the calling user slot.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Stats", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle SetStatOperation(FUserSlot UserSlot, FString Key, FString Value, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext);
+	FBeamOperationHandle SetStatOperation(FUserSlot UserSlot, FString Key, FString Value, FBeamOperationEventHandler OnOperationEvent);
 	/**
 	 * @copydoc SetStatOperation
 	 */
-	FBeamOperationHandle CPP_SetStatOperation(FUserSlot UserSlot, const FString& Key, const FString& Value, FBeamOperationEventHandlerCode OnOperationEvent, UObject* CallingContext);
+	FBeamOperationHandle CPP_SetStatOperation(FUserSlot UserSlot, const FString& Key, const FString& Value, FBeamOperationEventHandlerCode OnOperationEvent);
 
 private:
 	// Operation Implementations

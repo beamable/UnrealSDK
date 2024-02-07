@@ -61,7 +61,7 @@ public:
 	 * Only does something on dedicated server builds. Fetches the content manifest and downloads up-to-date content.
 	 */
 	virtual void OnBeamableStarting_Implementation(FBeamOperationHandle& ResultOp) override;
-	
+
 	/**
 	 * If it's the first time this callback is being called (by our automatic auth flows for the owner UserSlot), we pull the latest 'global' manifest (default one) and cache it in-memory (and in a local file).
 	 */
@@ -143,8 +143,8 @@ public:
 	{
 		static_assert(TIsDerivedFrom<TContentType, UBeamContentObject>::Value, "TContentType must be a UBeamContentObject.");
 		UBeamContentObject* Obj;
-		const bool          bFound = TryGetContentFromManifest(ManifestId, ContentId, Obj);
-		OutContent                 = Cast<TContentType>(Obj);
+		const bool bFound = TryGetContentFromManifest(ManifestId, ContentId, Obj);
+		OutContent = Cast<TContentType>(Obj);
 		return bFound && OutContent;
 	}
 
@@ -156,12 +156,7 @@ public:
 	 * @param bDownloadIndividualContent Whether or not we should download the entire manifest.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Content", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle FetchContentManifestOperation(FBeamContentManifestId ManifestId, bool bDownloadIndividualContent, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext)
-	{
-		const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({}, GetClass()->GetFName().ToString(), OnOperationEvent);
-		FetchContentManifest(ManifestId, bDownloadIndividualContent, Handle, CallingContext);
-		return Handle;
-	}
+	FBeamOperationHandle FetchContentManifestOperation(FBeamContentManifestId ManifestId, bool bDownloadIndividualContent, FBeamOperationEventHandler OnOperationEvent);
 
 	/**	 
 	 * @brief Asks the Beamable server for the newest CSV representing the public content manifest with the given Id. Updates the runtime content cache's received manifest, but only downloads each individual content
@@ -170,15 +165,7 @@ public:
 	 * @param ManifestId The ManifestId to fetch. 
 	 * @param bDownloadIndividualContent Whether or not we should download the entire manifest.
 	 */
-	FBeamOperationHandle CPP_FetchContentManifestOperation(FBeamContentManifestId ManifestId, bool bDownloadIndividualContent, FBeamOperationEventHandlerCode OnOperationEvent, UObject* CallingContext)
-	{
-		const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({}, GetClass()->GetFName().ToString(), OnOperationEvent);
-		FetchContentManifest(ManifestId, bDownloadIndividualContent, Handle, CallingContext);
-		return Handle;
-	}
-
-	UFUNCTION()
-	void FetchContentManifest(FBeamContentManifestId ManifestId, bool bDownloadIndividualContent, FBeamOperationHandle Op, UObject* CallingContext);
+	FBeamOperationHandle CPP_FetchContentManifestOperation(FBeamContentManifestId ManifestId, bool bDownloadIndividualContent, FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * @brief Downloads the newest individual content objects of the given manifest.
@@ -187,12 +174,7 @@ public:
 	 * @param ContentToDownload The list of ContentIds, contained in the given manifest, to download the JSON for.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Content", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle FetchIndividualContentBatchOperation(FBeamContentManifestId ManifestId, TArray<FBeamContentId> ContentToDownload, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext)
-	{
-		const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({}, GetClass()->GetFName().ToString(), OnOperationEvent);
-		FetchIndividualContent(ManifestId, ContentToDownload, Handle, CallingContext);
-		return Handle;
-	}
+	FBeamOperationHandle FetchIndividualContentBatchOperation(FBeamContentManifestId ManifestId, TArray<FBeamContentId> ContentToDownload, FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @brief Downloads the newest individual content objects of the given manifest.
@@ -200,12 +182,7 @@ public:
 	 * @param ManifestId The ManifestId for the content manifest containing the given Ids. 
 	 * @param ContentToDownload The list of ContentIds, contained in the given manifest, to download the JSON for.
 	 */
-	FBeamOperationHandle CPP_FetchIndividualContentBatchOperation(FBeamContentManifestId ManifestId, TArray<FBeamContentId> ContentToDownloadFetch, FBeamOperationEventHandlerCode OnOperationEvent, UObject* CallingContext)
-	{
-		const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({}, GetClass()->GetFName().ToString(), OnOperationEvent);
-		FetchIndividualContent(ManifestId, ContentToDownloadFetch, Handle, CallingContext);
-		return Handle;
-	}
+	FBeamOperationHandle CPP_FetchIndividualContentBatchOperation(FBeamContentManifestId ManifestId, TArray<FBeamContentId> ContentToDownloadFetch, FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * @brief Downloads the newest individual content objects of the given manifest.
@@ -214,12 +191,7 @@ public:
 	 * @param ContentToDownload The list of ContentIds, contained in the given manifest, to download the JSON for.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Content", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle FetchIndividualContentOperation(FBeamContentManifestId ManifestId, FBeamContentId ContentToDownload, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext)
-	{
-		const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({}, GetClass()->GetFName().ToString(), OnOperationEvent);
-		FetchIndividualContent(ManifestId, {ContentToDownload}, Handle, CallingContext);
-		return Handle;
-	}
+	FBeamOperationHandle FetchIndividualContentOperation(FBeamContentManifestId ManifestId, FBeamContentId ContentToDownload, FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @brief Downloads the newest individual content objects of the given manifest.
@@ -227,13 +199,12 @@ public:
 	 * @param ManifestId The ManifestId for the content manifest containing the given Ids. 
 	 * @param ContentToDownload The list of ContentIds, contained in the given manifest, to download the JSON for.
 	 */
-	FBeamOperationHandle CPP_FetchIndividualContentOperation(FBeamContentManifestId ManifestId, FBeamContentId ContentToDownload, FBeamOperationEventHandlerCode OnOperationEvent, UObject* CallingContext)
-	{
-		const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({}, GetClass()->GetFName().ToString(), OnOperationEvent);
-		FetchIndividualContent(ManifestId, {ContentToDownload}, Handle, CallingContext);
-		return Handle;
-	}
+	FBeamOperationHandle CPP_FetchIndividualContentOperation(FBeamContentManifestId ManifestId, FBeamContentId ContentToDownload, FBeamOperationEventHandlerCode OnOperationEvent);
+
+	// Operation Definitions
+	UFUNCTION()
+	void FetchContentManifest(FBeamContentManifestId ManifestId, bool bDownloadIndividualContent, FBeamOperationHandle Op);
 
 	UFUNCTION()
-	void FetchIndividualContent(FBeamContentManifestId ManifestId, TArray<FBeamContentId> ContentToDownloadFetch, FBeamOperationHandle Op, UObject* CallingContext);
+	void FetchIndividualContent(FBeamContentManifestId ManifestId, TArray<FBeamContentId> ContentToDownloadFetch, FBeamOperationHandle Op);
 };

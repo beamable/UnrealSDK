@@ -556,6 +556,9 @@ void UBeamLobbySubsystem::CreateOpenLobby(FUserSlot UserSlot, FString Name, FStr
 {
 	const auto Handler = FOnPostLobbiesFullResponse::CreateLambda([this, UserSlot, Op](FPostLobbiesFullResponse Resp)
 	{
+		// If we are invoking this before retrying, we just don't do anything 
+		if (Resp.State == RS_Retrying) return;
+
 		if (Resp.State != RS_Success)
 		{
 			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.error);
@@ -563,7 +566,7 @@ void UBeamLobbySubsystem::CreateOpenLobby(FUserSlot UserSlot, FString Name, FStr
 		else
 		{
 			const auto LobbyUpdateHandler = FOnLobbyUpdateNotificationCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, OnLobbyUpdatedHandler), UserSlot);
-			const auto Handle = LobbyNotification->CPP_SubscribeToLobbyUpdate(UserSlot, Runtime->DefaultNotificationChannel, FGuid(Resp.SuccessData->LobbyId.Val), LobbyUpdateHandler);
+			const auto Handle = LobbyNotification->CPP_SubscribeToLobbyUpdate(UserSlot, Runtime->DefaultNotificationChannel, FGuid(Resp.SuccessData->LobbyId.Val), LobbyUpdateHandler, this);
 
 			UpdateLobbyPlayerInfo(UserSlot, Resp.SuccessData, Handle);
 			ReplaceOrAddKnownLobbyData(Resp.SuccessData);
@@ -581,6 +584,9 @@ void UBeamLobbySubsystem::CreateClosedLobby(FUserSlot UserSlot, FString Name, FS
 {
 	const auto Handler = FOnPostLobbiesFullResponse::CreateLambda([this, UserSlot, Op](FPostLobbiesFullResponse Resp)
 	{
+		// If we are invoking this before retrying, we just don't do anything 
+		if (Resp.State == RS_Retrying) return;
+
 		if (Resp.State != RS_Success)
 		{
 			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.error);
@@ -588,7 +594,7 @@ void UBeamLobbySubsystem::CreateClosedLobby(FUserSlot UserSlot, FString Name, FS
 		else
 		{
 			const auto LobbyUpdateHandler = FOnLobbyUpdateNotificationCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, OnLobbyUpdatedHandler), UserSlot);
-			const auto Handle = LobbyNotification->CPP_SubscribeToLobbyUpdate(UserSlot, Runtime->DefaultNotificationChannel, FGuid(Resp.SuccessData->LobbyId.Val), LobbyUpdateHandler);
+			const auto Handle = LobbyNotification->CPP_SubscribeToLobbyUpdate(UserSlot, Runtime->DefaultNotificationChannel, FGuid(Resp.SuccessData->LobbyId.Val), LobbyUpdateHandler, this);
 
 			UpdateLobbyPlayerInfo(UserSlot, Resp.SuccessData, Handle);
 			ReplaceOrAddKnownLobbyData(Resp.SuccessData);
@@ -607,6 +613,9 @@ void UBeamLobbySubsystem::RefreshLobbyData(FUserSlot UserSlot, FGuid LobbyId, FB
 {
 	const auto Handler = FOnGetLobbyFullResponse::CreateLambda([this, UserSlot, Op](FGetLobbyFullResponse Resp)
 	{
+		// If we are invoking this before retrying, we just don't do anything 
+		if (Resp.State == RS_Retrying) return;
+
 		if (Resp.State != RS_Success)
 		{
 			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.error);
@@ -634,7 +643,7 @@ void UBeamLobbySubsystem::RefreshLobbyData(FUserSlot UserSlot, FGuid LobbyId, FB
 
 						// Register a notification handler and update the LobbyPlayerInfo data with this lobby.
 						const auto LobbyUpdateHandler = FOnLobbyUpdateNotificationCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, OnLobbyUpdatedHandler), UserSlot);
-						const auto Handle = LobbyNotification->CPP_SubscribeToLobbyUpdate(UserSlot, Runtime->DefaultNotificationChannel, FGuid(Resp.SuccessData->LobbyId.Val), LobbyUpdateHandler);
+						const auto Handle = LobbyNotification->CPP_SubscribeToLobbyUpdate(UserSlot, Runtime->DefaultNotificationChannel, FGuid(Resp.SuccessData->LobbyId.Val), LobbyUpdateHandler, this);
 						UpdateLobbyPlayerInfo(Slot, Resp.SuccessData, Handle);
 					}
 				}
@@ -655,6 +664,9 @@ void UBeamLobbySubsystem::RefreshLobbiesData(FUserSlot UserSlot, FBeamContentId 
 {
 	const auto Handler = FOnGetLobbiesFullResponse::CreateLambda([this, UserSlot, Op](FGetLobbiesFullResponse Resp)
 	{
+		// If we are invoking this before retrying, we just don't do anything 
+		if (Resp.State == RS_Retrying) return;
+
 		if (Resp.State != RS_Success)
 		{
 			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.error);
@@ -685,6 +697,9 @@ void UBeamLobbySubsystem::JoinLobby(FUserSlot UserSlot, FGuid LobbyId, TArray<FB
 {
 	const auto Handler = FOnPutLobbyFullResponse::CreateLambda([this, UserSlot, Op](FPutLobbyFullResponse Resp)
 	{
+		// If we are invoking this before retrying, we just don't do anything 
+		if (Resp.State == RS_Retrying) return;
+
 		if (Resp.State != RS_Success)
 		{
 			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.error);
@@ -692,7 +707,7 @@ void UBeamLobbySubsystem::JoinLobby(FUserSlot UserSlot, FGuid LobbyId, TArray<FB
 		else
 		{
 			const auto LobbyUpdateHandler = FOnLobbyUpdateNotificationCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, OnLobbyUpdatedHandler), UserSlot);
-			const auto Handle = LobbyNotification->CPP_SubscribeToLobbyUpdate(UserSlot, Runtime->DefaultNotificationChannel, FGuid(Resp.SuccessData->LobbyId.Val), LobbyUpdateHandler);
+			const auto Handle = LobbyNotification->CPP_SubscribeToLobbyUpdate(UserSlot, Runtime->DefaultNotificationChannel, FGuid(Resp.SuccessData->LobbyId.Val), LobbyUpdateHandler, this);
 
 			UpdateLobbyPlayerInfo(UserSlot, Resp.SuccessData, Handle);
 			ReplaceOrAddKnownLobbyData(Resp.SuccessData);
@@ -712,6 +727,9 @@ void UBeamLobbySubsystem::JoinLobbyByPasscode(FUserSlot UserSlot, FString Passco
 {
 	const auto Handler = FOnPutPasscodeFullResponse::CreateLambda([this, UserSlot, Op](FPutPasscodeFullResponse Resp)
 	{
+		// If we are invoking this before retrying, we just don't do anything 
+		if (Resp.State == RS_Retrying) return;
+
 		if (Resp.State != RS_Success)
 		{
 			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.error);
@@ -719,7 +737,7 @@ void UBeamLobbySubsystem::JoinLobbyByPasscode(FUserSlot UserSlot, FString Passco
 		else
 		{
 			const auto LobbyUpdateHandler = FOnLobbyUpdateNotificationCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, OnLobbyUpdatedHandler), UserSlot);
-			const auto Handle = LobbyNotification->CPP_SubscribeToLobbyUpdate(UserSlot, Runtime->DefaultNotificationChannel, FGuid(Resp.SuccessData->LobbyId.Val), LobbyUpdateHandler);
+			const auto Handle = LobbyNotification->CPP_SubscribeToLobbyUpdate(UserSlot, Runtime->DefaultNotificationChannel, FGuid(Resp.SuccessData->LobbyId.Val), LobbyUpdateHandler, this);
 
 			UpdateLobbyPlayerInfo(UserSlot, Resp.SuccessData, Handle);
 			ReplaceOrAddKnownLobbyData(Resp.SuccessData);
@@ -748,6 +766,9 @@ void UBeamLobbySubsystem::LeaveLobby(FUserSlot UserSlot, FBeamOperationHandle Op
 	const auto LobbyData = GetCurrentLobby(UserSlot);
 	const auto Handler = FOnDeleteLobbyFullResponse::CreateLambda([this, Op, UserSlot, LobbyData](FDeleteLobbyFullResponse Resp)
 	{
+		// If we are invoking this before retrying, we just don't do anything 
+		if (Resp.State == RS_Retrying) return;
+
 		if (Resp.State != RS_Success)
 		{
 			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.error);
@@ -755,7 +776,7 @@ void UBeamLobbySubsystem::LeaveLobby(FUserSlot UserSlot, FBeamOperationHandle Op
 		else
 		{
 			const auto LocalPlayerLobby = LocalPlayerLobbyInfo.FindChecked(UserSlot);
-			LobbyNotification->CPP_UnsubscribeToLobbyUpdate(UserSlot, Runtime->DefaultNotificationChannel, LocalPlayerLobby->LobbyId, LocalPlayerLobby->NotificationSubscriptionHandle);
+			LobbyNotification->CPP_UnsubscribeToLobbyUpdate(UserSlot, Runtime->DefaultNotificationChannel, LocalPlayerLobby->LobbyId, LocalPlayerLobby->NotificationSubscriptionHandle, this);
 			RequestTracker->TriggerOperationSuccess(Op, "");
 			UE_LOG(LogBeamLobby, Verbose, TEXT("Left Lobby. LOBBY_ID=%s,HOST_PLAYER_GAMERTAG=%s,GAME_TYPE=%s, PASSCODE=%s"),
 			       *LobbyData->LobbyId.Val,
@@ -794,6 +815,9 @@ void UBeamLobbySubsystem::KickPlayer(FUserSlot UserSlot, FBeamGamerTag Player, F
 
 	const auto Handler = FOnDeleteLobbyFullResponse::CreateLambda([this, LobbyData, Op, Player](FDeleteLobbyFullResponse Resp)
 	{
+		// If we are invoking this before retrying, we just don't do anything 
+		if (Resp.State == RS_Retrying) return;
+
 		if (Resp.State != RS_Success)
 		{
 			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.error);
@@ -850,6 +874,9 @@ void UBeamLobbySubsystem::CommitLobbyUpdate(const FUserSlot& Slot, FBeamOperatio
 
 	const auto Handler = FOnApiLobbyPutMetadataFullResponse::CreateLambda([this, Slot, Op, LobbyId, GlobalDataUpdates, GlobalDataDeletes](FApiLobbyPutMetadataFullResponse Resp)
 	{
+		// If we are invoking this before retrying, we just don't do anything 
+		if (Resp.State == RS_Retrying) return;
+
 		if (Resp.State != RS_Success)
 		{
 			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.message);
@@ -919,6 +946,9 @@ void UBeamLobbySubsystem::UpdatePlayerTags(const FUserSlot& Slot, FBeamGamerTag 
 	const auto LobbyId = LobbyState->LobbyId;
 	const auto Handler = FOnPutTagsFullResponse::CreateLambda([this, Slot, Op, LobbyId, TargetPlayer, Tags](FPutTagsFullResponse Resp)
 	{
+		// If we are invoking this before retrying, we just don't do anything 
+		if (Resp.State == RS_Retrying) return;
+
 		if (Resp.State != RS_Success)
 		{
 			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.message);
@@ -991,6 +1021,9 @@ void UBeamLobbySubsystem::DeletePlayerTags(const FUserSlot& Slot, FBeamGamerTag 
 	// Make the request.
 	const auto Handler = FOnDeleteTagsFullResponse::CreateLambda([this, Slot, Op, LobbyId, TargetPlayer, TagsToRemove](FDeleteTagsFullResponse Resp)
 	{
+		// If we are invoking this before retrying, we just don't do anything 
+		if (Resp.State == RS_Retrying) return;
+
 		if (Resp.State != RS_Success)
 		{
 			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.message);
@@ -1023,7 +1056,7 @@ void UBeamLobbySubsystem::ProvisionGameServerForLobby(const FUserSlot& Slot, FOp
 	}
 
 	// If we are not the owner, we can only change our own tags.
-	if(!GuardIsLobbyOwner(Slot, LobbyState))
+	if (!GuardIsLobbyOwner(Slot, LobbyState))
 	{
 		RequestTracker->TriggerOperationError(Op, FString("NOT_LOBBY_OWNER"));
 		return;
@@ -1031,16 +1064,19 @@ void UBeamLobbySubsystem::ProvisionGameServerForLobby(const FUserSlot& Slot, FOp
 
 	auto Handler = FOnApiLobbyPostServerFullResponse::CreateLambda([this, Slot, Op, LobbyState](FApiLobbyPostServerFullResponse Resp)
 	{
-		if(Resp.State != RS_Success)
+		// If we are invoking this before retrying, we just don't do anything 
+		if (Resp.State == RS_Retrying) return;
+
+		if (Resp.State != RS_Success)
 		{
 			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.message);
-			return;	
+			return;
 		}
 
 		UE_LOG(LogBeamLobby, Verbose,
-			TEXT("Successfully provisioned a server. Now, on LobbyUpdated event, code should be extracting connection parameters from ULobby::Data. REQUESTING_SLOT=%s, LOBBY_ID=%s"),
-			*Slot.Name,
-			*LobbyState->LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower))
+		       TEXT("Successfully provisioned a server. Now, on LobbyUpdated event, code should be extracting connection parameters from ULobby::Data. REQUESTING_SLOT=%s, LOBBY_ID=%s"),
+		       *Slot.Name,
+		       *LobbyState->LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower))
 		RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 	});
 
@@ -1195,12 +1231,12 @@ FBeamRequestContext UBeamLobbySubsystem::RequestDeletePlayerTags(const FUserSlot
 }
 
 FBeamRequestContext UBeamLobbySubsystem::RequestPostServer(const FUserSlot& UserSlot, FGuid LobbyId, FOptionalBeamContentId SelectedMatchType, FBeamOperationHandle Op,
-	FOnApiLobbyPostServerFullResponse Handler) const
+                                                           FOnApiLobbyPostServerFullResponse Handler) const
 {
 	const auto Req = UApiLobbyPostServerRequest::Make(LobbyId,
-												SelectedMatchType,
-												GetTransientPackage(),
-												{});
+	                                                  SelectedMatchType,
+	                                                  GetTransientPackage(),
+	                                                  {});
 
 	// Make the request
 	FBeamRequestContext Ctx;
@@ -1424,7 +1460,7 @@ void UBeamLobbySubsystem::ReplaceOrAddKnownLobbyData(ULobby* LobbyData)
 void UBeamLobbySubsystem::ClearLobbyForSlot(FUserSlot Slot)
 {
 	const auto Lobby = LocalPlayerLobbyInfo[Slot];
-	LobbyNotification->CPP_UnsubscribeToLobbyUpdate(Slot, Runtime->DefaultNotificationChannel, Lobby->LobbyId, Lobby->NotificationSubscriptionHandle);
+	LobbyNotification->CPP_UnsubscribeToLobbyUpdate(Slot, Runtime->DefaultNotificationChannel, Lobby->LobbyId, Lobby->NotificationSubscriptionHandle, this);
 	Lobby->LobbyId = FGuid();
 	Lobby->bIsLobbyOwner = false;
 
