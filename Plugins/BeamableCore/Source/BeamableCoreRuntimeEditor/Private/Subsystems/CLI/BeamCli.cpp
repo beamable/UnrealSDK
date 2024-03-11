@@ -27,10 +27,10 @@ void UBeamCli::OnRealmInitialized()
 	if (bInstalled)
 	{
 		const auto Cmd = NewObject<UBeamCliInitCommand>();
-		Cmd->OnStreamOutput = [](const TArray<FBeamCliInitStreamData>& Stream, const TArray<int64>&, const FBeamOperationHandle&)
+		Cmd->OnStreamOutput = [](const TArray<UBeamCliInitStreamData*>& Stream, const TArray<int64>&, const FBeamOperationHandle&)
 		{
 			const auto Data = Stream.Last();
-			UE_LOG(LogBeamCli, Display, TEXT("Initialized CLI with Unreal Project: %s %s %s"), *Data.host, *Data.cid, *Data.pid)
+			UE_LOG(LogBeamCli, Display, TEXT("Initialized CLI with Unreal Project: %s %s %s"), *Data->Host, *Data->Cid, *Data->Pid)
 		};
 
 		// Make sure the project is initialized with the locally signed in credentials in UE

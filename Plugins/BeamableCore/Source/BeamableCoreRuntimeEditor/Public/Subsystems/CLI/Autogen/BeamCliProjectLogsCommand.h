@@ -1,26 +1,52 @@
 #pragma once
 
 #include "Subsystems/CLI/BeamCliCommand.h"
+#include "Serialization/BeamJsonUtils.h"
+
 #include "BeamCliProjectLogsCommand.generated.h"
 
 class FMonitoredProcess;
 
 
-USTRUCT()
-struct FBeamCliProjectLogsStreamData
+UCLASS()
+class UBeamCliProjectLogsStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
-	inline static FString StreamTypeName = FString(TEXT("stream"));
+public:	
+	
+	UPROPERTY()
+	FString Raw = {};
+	UPROPERTY()
+	FString LogLevel = {};
+	UPROPERTY()
+	FString Message = {};
+	UPROPERTY()
+	FString TimeStamp = {};
 
-	UPROPERTY()
-	FString timeStamp = {};
-	UPROPERTY()
-	FString message = {};
-	UPROPERTY()
-	FString logLevel = {};
-	UPROPERTY()
-	FString raw = {};	
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+	{
+		Serializer->WriteValue(TEXT("raw"), Raw);
+		Serializer->WriteValue(TEXT("logLevel"), LogLevel);
+		Serializer->WriteValue(TEXT("message"), Message);
+		Serializer->WriteValue(TEXT("timeStamp"), TimeStamp);	
+	}
+
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+	{
+		Serializer->WriteValue(TEXT("raw"), Raw);
+		Serializer->WriteValue(TEXT("logLevel"), LogLevel);
+		Serializer->WriteValue(TEXT("message"), Message);
+		Serializer->WriteValue(TEXT("timeStamp"), TimeStamp);	
+	}
+
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+	{
+		Raw = Bag->GetStringField(TEXT("raw"));
+		LogLevel = Bag->GetStringField(TEXT("logLevel"));
+		Message = Bag->GetStringField(TEXT("message"));
+		TimeStamp = Bag->GetStringField(TEXT("timeStamp"));	
+	}
 };
 
 
@@ -41,8 +67,10 @@ Options:
   --pid <pid>                      Pid to use; will default to whatever is in the file system
   --host <host>                    The host endpoint for beamable
   --refresh-token <refresh-token>  Refresh token to use for the requests
-  --log <log>                      Extra logs gets printed out
+  --log, --logs <log>              Extra logs gets printed out
   --dir <dir>                      Directory to use for configuration
+  --raw                            Output raw JSON to standard out. This happens by default when the command is being piped
+  --pretty                         Output syntax highlighted box text. This happens by default when the command is not piped
   --dotnet-path <dotnet-path>      a custom location for dotnet
   -?, -h, --help                   Show help and usage information
 
@@ -56,9 +84,10 @@ class UBeamCliProjectLogsCommand : public UBeamCliCommand
 	GENERATED_BODY()
 
 public:
-	TArray<FBeamCliProjectLogsStreamData> Stream;
-	TArray<int64> Timestamps;
-	TFunction<void (const TArray<FBeamCliProjectLogsStreamData>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	inline static FString StreamType = FString(TEXT("stream"));
+	UPROPERTY() TArray<UBeamCliProjectLogsStreamData*> Stream;
+	UPROPERTY() TArray<int64> Timestamps;
+	TFunction<void (const TArray<UBeamCliProjectLogsStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual TSharedPtr<FMonitoredProcess> RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {}) override;

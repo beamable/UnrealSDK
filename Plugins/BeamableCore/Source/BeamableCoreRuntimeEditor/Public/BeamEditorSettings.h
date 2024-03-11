@@ -68,7 +68,13 @@ public:
 	 * @brief User-defined path to where LocalContentManifests (UDataTables) that are NOT supposed to be included in the build are stored.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
-	TArray<FDirectoryPath> UncookedManifestsPath;	
+	TArray<FDirectoryPath> UncookedManifestsPath;
+
+	/**
+	 * @brief User-defined path to where LocalContentManifests (UDataTables) that are NOT supposed to be included in the build are stored.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
+	bool bDisableInEngineEditing = false;
 	
 
 	/**

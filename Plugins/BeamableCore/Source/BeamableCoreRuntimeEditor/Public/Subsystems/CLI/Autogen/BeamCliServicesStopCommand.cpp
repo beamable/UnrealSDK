@@ -23,7 +23,7 @@ TSharedPtr<FMonitoredProcess> UBeamCliServicesStopCommand::RunImpl(const TArray<
 		{
 			auto Bag = FJsonDataBag();
 			Bag.FromJson(MessageJson);
-			const auto StreamType = Bag.GetString("type");
+			const auto ReceivedStreamType = Bag.GetString("type");
 			const auto Timestamp = static_cast<int64>(Bag.GetField("ts")->AsNumber());
 			const auto DataJson = Bag.JsonObject->GetObjectField("data").ToSharedRef();
 

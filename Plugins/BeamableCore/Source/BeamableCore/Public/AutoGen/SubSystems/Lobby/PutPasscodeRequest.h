@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/JoinLobbyByPasscode.h"
+#include "BeamableCore/Public/AutoGen/JoinLobby.h"
 #include "BeamableCore/Public/AutoGen/Lobby.h"
 
 #include "PutPasscodeRequest.generated.h"
@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UJoinLobbyByPasscode* Body = {};
+	UJoinLobby* Body = {};
 
 	// Beam Base Request Declaration
 	UPutPasscodeRequest() = default;

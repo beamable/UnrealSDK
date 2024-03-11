@@ -36,7 +36,7 @@ UPutPasscodeRequest* UPutPasscodeRequest::Make(FOptionalString _Passcode, FOptio
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
-	Req->Body = NewObject<UJoinLobbyByPasscode>(Req);
+	Req->Body = NewObject<UJoinLobby>(Req);
 	Req->Body->Passcode = _Passcode;
 	Req->Body->Tags = _Tags;
 	

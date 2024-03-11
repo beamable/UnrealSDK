@@ -23,15 +23,15 @@ TSharedPtr<FMonitoredProcess> UBeamCliServicesRunCommand::RunImpl(const TArray<F
 		{
 			auto Bag = FJsonDataBag();
 			Bag.FromJson(MessageJson);
-			const auto StreamType = Bag.GetString("type");
+			const auto ReceivedStreamType = Bag.GetString("type");
 			const auto Timestamp = static_cast<int64>(Bag.GetField("ts")->AsNumber());
 			const auto DataJson = Bag.JsonObject->GetObjectField("data").ToSharedRef();
 
 			
-			if(StreamType.Equals(FBeamCliServicesRunStreamData::StreamTypeName))
+			if(ReceivedStreamType.Equals(StreamType))
 			{
-				FBeamCliServicesRunStreamData Data;
-				FJsonObjectConverter::JsonObjectToUStruct(DataJson, FBeamCliServicesRunStreamData::StaticStruct(), &Data);
+				UBeamCliServicesRunStreamData* Data = NewObject<UBeamCliServicesRunStreamData>();
+				Data->BeamDeserializeProperties(DataJson);
 
 				Stream.Add(Data);
 				Timestamps.Add(Timestamp);
@@ -44,10 +44,10 @@ TSharedPtr<FMonitoredProcess> UBeamCliServicesRunCommand::RunImpl(const TArray<F
 			}
 
 
-			if(StreamType.Equals(FBeamCliServicesRunLocalProgressStreamData::StreamTypeName))
+			if(ReceivedStreamType.Equals(StreamTypeLocalProgress))
 			{
-				FBeamCliServicesRunLocalProgressStreamData Data;
-				FJsonObjectConverter::JsonObjectToUStruct(DataJson, FBeamCliServicesRunLocalProgressStreamData::StaticStruct(), &Data);
+				UBeamCliServicesRunLocalProgressStreamData* Data = NewObject<UBeamCliServicesRunLocalProgressStreamData>();
+				Data->BeamDeserializeProperties(DataJson);
 
 				LocalProgressStream.Add(Data);
 				LocalProgressTimestamps.Add(Timestamp);

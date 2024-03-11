@@ -23,15 +23,15 @@ TSharedPtr<FMonitoredProcess> UBeamCliServicesDeployCommand::RunImpl(const TArra
 		{
 			auto Bag = FJsonDataBag();
 			Bag.FromJson(MessageJson);
-			const auto StreamType = Bag.GetString("type");
+			const auto ReceivedStreamType = Bag.GetString("type");
 			const auto Timestamp = static_cast<int64>(Bag.GetField("ts")->AsNumber());
 			const auto DataJson = Bag.JsonObject->GetObjectField("data").ToSharedRef();
 
 			
-			if(StreamType.Equals(FBeamCliServicesDeployStreamData::StreamTypeName))
+			if(ReceivedStreamType.Equals(StreamType))
 			{
-				FBeamCliServicesDeployStreamData Data;
-				FJsonObjectConverter::JsonObjectToUStruct(DataJson, FBeamCliServicesDeployStreamData::StaticStruct(), &Data);
+				UBeamCliServicesDeployStreamData* Data = NewObject<UBeamCliServicesDeployStreamData>();
+				Data->BeamDeserializeProperties(DataJson);
 
 				Stream.Add(Data);
 				Timestamps.Add(Timestamp);
@@ -44,10 +44,10 @@ TSharedPtr<FMonitoredProcess> UBeamCliServicesDeployCommand::RunImpl(const TArra
 			}
 
 
-			if(StreamType.Equals(FBeamCliServicesDeployRemoteProgressStreamData::StreamTypeName))
+			if(ReceivedStreamType.Equals(StreamTypeRemoteProgress))
 			{
-				FBeamCliServicesDeployRemoteProgressStreamData Data;
-				FJsonObjectConverter::JsonObjectToUStruct(DataJson, FBeamCliServicesDeployRemoteProgressStreamData::StaticStruct(), &Data);
+				UBeamCliServicesDeployRemoteProgressStreamData* Data = NewObject<UBeamCliServicesDeployRemoteProgressStreamData>();
+				Data->BeamDeserializeProperties(DataJson);
 
 				RemoteProgressStream.Add(Data);
 				RemoteProgressTimestamps.Add(Timestamp);
@@ -56,6 +56,22 @@ TSharedPtr<FMonitoredProcess> UBeamCliServicesDeployCommand::RunImpl(const TArra
 				AsyncTask(ENamedThreads::GameThread, [this, Op]
 				{
 					OnRemoteProgressStreamOutput(RemoteProgressStream, RemoteProgressTimestamps, Op);
+				});				
+			}
+
+
+			if(ReceivedStreamType.Equals(StreamTypeLogs))
+			{
+				UBeamCliServicesDeployLogsStreamData* Data = NewObject<UBeamCliServicesDeployLogsStreamData>();
+				Data->BeamDeserializeProperties(DataJson);
+
+				LogsStream.Add(Data);
+				LogsTimestamps.Add(Timestamp);
+
+				UE_LOG(LogBeamCli, Verbose, TEXT("BeamCliServicesDeploy Command - Message Received: %s"), *MessageJson);
+				AsyncTask(ENamedThreads::GameThread, [this, Op]
+				{
+					OnLogsStreamOutput(LogsStream, LogsTimestamps, Op);
 				});				
 			}
 

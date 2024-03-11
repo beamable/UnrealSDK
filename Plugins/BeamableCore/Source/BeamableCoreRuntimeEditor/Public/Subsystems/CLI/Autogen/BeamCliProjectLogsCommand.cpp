@@ -23,15 +23,15 @@ TSharedPtr<FMonitoredProcess> UBeamCliProjectLogsCommand::RunImpl(const TArray<F
 		{
 			auto Bag = FJsonDataBag();
 			Bag.FromJson(MessageJson);
-			const auto StreamType = Bag.GetString("type");
+			const auto ReceivedStreamType = Bag.GetString("type");
 			const auto Timestamp = static_cast<int64>(Bag.GetField("ts")->AsNumber());
 			const auto DataJson = Bag.JsonObject->GetObjectField("data").ToSharedRef();
 
 			
-			if(StreamType.Equals(FBeamCliProjectLogsStreamData::StreamTypeName))
+			if(ReceivedStreamType.Equals(StreamType))
 			{
-				FBeamCliProjectLogsStreamData Data;
-				FJsonObjectConverter::JsonObjectToUStruct(DataJson, FBeamCliProjectLogsStreamData::StaticStruct(), &Data);
+				UBeamCliProjectLogsStreamData* Data = NewObject<UBeamCliProjectLogsStreamData>();
+				Data->BeamDeserializeProperties(DataJson);
 
 				Stream.Add(Data);
 				Timestamps.Add(Timestamp);

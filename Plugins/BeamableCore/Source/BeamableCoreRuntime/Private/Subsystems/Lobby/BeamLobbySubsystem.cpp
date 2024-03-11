@@ -648,11 +648,16 @@ void UBeamLobbySubsystem::RefreshLobbyData(FUserSlot UserSlot, FGuid LobbyId, FB
 					}
 				}
 			}
-			UE_LOG(LogBeamLobby, Verbose, TEXT("Refreshed Lobby Data. LOBBY_ID=%s,HOST_PLAYER_GAMERTAG=%s,GAME_TYPE=%s,PASSCODE=%s"),
+			TArray<FString> PlayerIds;
+			for (ULobbyPlayer* LobbyPlayer : Resp.SuccessData->Players.Val)
+				PlayerIds.Add(LobbyPlayer->PlayerId.Val.AsString);
+
+			UE_LOG(LogBeamLobby, Verbose, TEXT("Refreshed Lobby Data. LOBBY_ID=%s,HOST_PLAYER_GAMERTAG=%s,GAME_TYPE=%s,PASSCODE=%s,PLAYER_GAMERTAGS=[%s]"),
 			       *Resp.SuccessData->LobbyId.Val,
 			       *Resp.SuccessData->Host.Val.AsString,
 			       !Resp.SuccessData->MatchType.IsSet ? TEXT("NoGameTypeInLobby") : *Resp.SuccessData->MatchType.Val->Id.Val.AsString,
-			       *Resp.SuccessData->Passcode.Val)
+			       *Resp.SuccessData->Passcode.Val,
+			       *FString::Join(PlayerIds, TEXT(",")))
 			RequestTracker->TriggerOperationSuccess(Op, Resp.SuccessData->LobbyId.Val);
 		}
 	});
@@ -679,11 +684,17 @@ void UBeamLobbySubsystem::RefreshLobbiesData(FUserSlot UserSlot, FBeamContentId 
 			for (ULobby* Lobby : Lobbies)
 			{
 				ReplaceOrAddKnownLobbyData(Lobby);
-				UE_LOG(LogBeamLobby, Verbose, TEXT("Refreshed Lobby Data. LOBBY_ID=%s,HOST_PLAYER_GAMERTAG=%s,GAME_TYPE=%s,PASSCODE=%s"),
+
+				TArray<FString> PlayerIds;
+				for (ULobbyPlayer* LobbyPlayer : Lobby->Players.Val)
+					PlayerIds.Add(LobbyPlayer->PlayerId.Val.AsString);
+				
+				UE_LOG(LogBeamLobby, Verbose, TEXT("Refreshed Lobby Data. LOBBY_ID=%s,HOST_PLAYER_GAMERTAG=%s,GAME_TYPE=%s,PASSCODE=%s,PLAYER_GAMERTAGS=[%s]"),
 				       *Lobby->LobbyId.Val,
 				       *Lobby->Host.Val.AsString,
 				       *Lobby->MatchType.Val->Id.Val.AsString,
-				       *Lobby->Passcode.Val)
+				       *Lobby->Passcode.Val,
+				       *FString::Join(PlayerIds, TEXT(",")))
 			}
 
 			RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
@@ -1089,6 +1100,7 @@ FBeamRequestContext UBeamLobbySubsystem::RequestJoin(const FUserSlot& UserSlot, 
 {
 	const auto Req = UPutLobbyRequest::Make(
 		LobbyId,
+		FOptionalString(),
 		PlayerTags.Num() ? FOptionalArrayOfBeamTag(PlayerTags) : FOptionalArrayOfBeamTag(),
 		GetTransientPackage(),
 		{});

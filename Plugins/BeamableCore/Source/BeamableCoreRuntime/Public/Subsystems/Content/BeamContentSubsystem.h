@@ -49,6 +49,12 @@ class BEAMABLECORERUNTIME_API UBeamContentSubsystem : public UBeamRuntimeSubsyst
 	UPROPERTY()
 	TMap<FString, UClass*> ContentTypeStringToContentClass;
 
+
+	TMap<UClass*, TArray<TArray<const FProperty*>>> PathsToContentLinks;
+	TMap<UClass*, TArray<TArray<const FProperty*>>> PathsToRecursiveSelves;
+	TMap<UClass*, TArray<TArray<const FProperty*>>> PathsToRecursiveProperties;
+	TMap<UClass*, TArray<UClass*>> RecursivePropertyTypes;
+
 public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
@@ -72,7 +78,6 @@ private:
 	 * Given a Client CSV (contains public content only) and its id, we make requests to the URLs where the actual content JSON is stored.
 	 * Run OnSuccess if all downloads succeed. OnError, otherwise.
 	 */
-	void DownloadLiveContentObjectsData(const FBeamContentManifestId Id, FSimpleDelegate OnSuccess, FSimpleDelegate OnError);
 	void DownloadLiveContentObjectsData(const FBeamContentManifestId Id, const TArray<FClientContentInfoTableRow*> Rows, const TMap<FBeamContentId, FString> Checksums, FSimpleDelegate OnSuccess, FSimpleDelegate OnError);
 
 	static void PrepareContentDownloadRequest(FBeamContentManifestId ManifestId, FClientContentInfoTableRow* ContentEntry, FDownloadContentState& Item);
@@ -104,6 +109,18 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetContentFromManifest(FBeamContentManifestId ManifestId, FBeamContentId ContentId, UBeamContentObject*& OutContent);
+
+	/**
+	 * Checks if the in-memory content caches of the 'global' manfist have the content with the given id.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool IsLoadedContent(FBeamContentId ContentId);
+
+	/**
+	 * Checks if the in-memory content caches have the content from the given manifest and with the given id.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool IsLoadedContentFromManifest(FBeamContentManifestId ManifestId, FBeamContentId ContentId);
 
 	/**
 	 * Tries to get a UBeamContentObject with the given Id from the 'global' (default) manifest. This will always return the most recent baked content (either the cooked one or a downloaded and saved one). 
@@ -144,7 +161,7 @@ public:
 		static_assert(TIsDerivedFrom<TContentType, UBeamContentObject>::Value, "TContentType must be a UBeamContentObject.");
 		UBeamContentObject* Obj;
 		const bool bFound = TryGetContentFromManifest(ManifestId, ContentId, Obj);
-		OutContent = Cast<TContentType>(Obj);
+		OutContent = bFound ? Cast<TContentType>(Obj) : nullptr;
 		return bFound && OutContent;
 	}
 
@@ -207,4 +224,6 @@ public:
 
 	UFUNCTION()
 	void FetchIndividualContent(FBeamContentManifestId ManifestId, TArray<FBeamContentId> ContentToDownloadFetch, FBeamOperationHandle Op);
+
+	bool EnforceLinks(FBeamContentManifestId ManifestId, TArray<FClientContentInfoTableRow*> ManifestRows, TArray<FBeamContentId>& OutLinksToFetch);
 };

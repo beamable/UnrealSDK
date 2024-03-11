@@ -405,6 +405,18 @@ void UBeamUserSlots::ClearUserAtSlot(FUserSlot SlotId, const EUserSlotClearedRea
 		AuthenticatedUsers.RemoveAt(LoadedAtIdx);
 		AuthenticatedUserMapping.Remove(NamespacedSlotId);
 
+		if (LoadedAtIdx < AuthenticatedUsers.Num())
+		{
+			// We need to update the mapping for all the slots that were loaded after the one we just removed.
+			for (auto& UserMapping : AuthenticatedUserMapping)
+			{
+				if (UserMapping.Value > LoadedAtIdx)
+				{
+					UserMapping.Value--;
+				}
+			}
+		}
+
 		// Broadcast events
 		GlobalUserSlotClearedCodeHandler.Broadcast(Reason, SlotId, ClearedUserData, CallingContext);
 		GlobalUserSlotClearedHandler.Broadcast(Reason, SlotId, ClearedUserData, CallingContext);

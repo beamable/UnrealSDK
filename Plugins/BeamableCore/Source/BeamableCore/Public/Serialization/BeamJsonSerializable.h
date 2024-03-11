@@ -61,6 +61,9 @@ class BEAMABLECORE_API IBeamJsonSerializableUObject
 public:
 	TWeakObjectPtr<UObject> OuterOwner = nullptr;
 
+	void BeamSerializePretty(FString& Result) const;
+	void BeamSerializeCondensed(FString& Result) const;
+	
 	virtual void BeamSerialize(TUnrealJsonSerializer& Serializer) const;
 
 	virtual void BeamSerialize(TUnrealPrettyJsonSerializer& Serializer) const;

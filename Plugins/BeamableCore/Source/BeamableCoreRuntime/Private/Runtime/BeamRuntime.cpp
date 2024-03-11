@@ -3,12 +3,15 @@
 
 #include "Runtime/BeamRuntime.h"
 
+#include "HttpModule.h"
+
 #include "BeamLogging.h"
 #include "AutoGen/SubSystems/BeamRealmsApi.h"
 #include "AutoGen/SubSystems/Realms/GetClientDefaultsRequest.h"
 #include "BeamNotifications/BeamNotifications.h"
 #include "Kismet/GameplayStatics.h"
 #include "Runtime/BeamRuntimeSubsystem.h"
+
 
 #if WITH_EDITOR
 #include "Kismet/KismetSystemLibrary.h"
@@ -189,12 +192,15 @@ void UBeamRuntime::TriggerOnBeamableStarting(FBeamWaitCompleteEvent Evt)
 		if (!FParse::Value(FCommandLine::Get(), TEXT("beamable-realm-secret"), RealmSecret))
 		{
 			RealmSecret = FPlatformMisc::GetEnvironmentVariable(TEXT("BEAMABLE_REALM_SECRET"));
-			checkf(!RealmSecret.IsEmpty(), TEXT("To run a dedicated server that communicates with Beamable, either:\n"
-				       "- Start it with the command line \'-beamable-realm-secret <realm_secret>\'\n"
-				       "- Start it in an environment with the EnvVar \'BEAMABLE_REALM_SECRET\' set to your realm secret.\n"
-				       "To find your realm secret for your realms, look into your Project Settings => Editor => Beamable Editor => PerSlotDeveloperProjectData => All Realms\n"
-				       "Remember to set this command line argument in your Networking settings for playmode in Editor Settings => Level Editor => Play => Multiplayer Options => Server => Additional Server Launch Parameters."
-			       ))
+			if(!GIsEditor)
+			{
+				checkf(!RealmSecret.IsEmpty(), TEXT("To run a dedicated server that communicates with Beamable, either:\n"
+					   "- Start it with the command line \'-beamable-realm-secret <realm_secret>\'\n"
+					   "- Start it in an environment with the EnvVar \'BEAMABLE_REALM_SECRET\' set to your realm secret.\n"
+					   "To find your realm secret for your realms, look into your Project Settings => Editor => Beamable Editor => PerSlotDeveloperProjectData => All Realms\n"
+					   "Remember to set this command line argument in your Networking settings for playmode in Editor Settings => Level Editor => Play => Multiplayer Options => Server => Additional Server Launch Parameters."
+				   ))
+			}
 		}
 		GEngine->GetEngineSubsystem<UBeamBackend>()->RealmSecret = RealmSecret;
 	}
@@ -238,7 +244,8 @@ void UBeamRuntime::TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent Ev
 		return;
 	}
 
-	// Everything is fine so let's continue initializing Beamable by firing off the OnStarted callback.	
+	// Everything is fine so let's continue initializing Beamable by firing off the OnStarted callback.
+	OnStartedCode.Broadcast();
 	OnStarted.Broadcast();
 	bIsBeamableStarted = true;
 
@@ -857,7 +864,7 @@ void UBeamRuntime::SignUpExternalIdentity(FUserSlot UserSlot, FString Microservi
 		[this,UserSlot, Op, MicroserviceName, IdentityNamespace, IdentityUserId, IdentityAuthToken](FGetAvailableExternalIdentityFullResponse Resp)
 		{
 			if (Resp.State == RS_Retrying) return;
-			
+
 			if (Resp.State == RS_Success)
 			{
 				const auto bIsAvailable = Resp.SuccessData->bAvailable;
@@ -1264,5 +1271,99 @@ void UBeamRuntime::FillDefaultSessionHeaders(TMap<FString, FString>& Headers)
 	Headers.Add(BEAM_SESSION_HEADER_SOURCE, TEXT(""));
 	Headers.Add(BEAM_SESSION_HEADER_LOCALE, Locale);
 	Headers.Add(BEAM_SESSION_HEADER_LANGUAGE, FString::Format(TEXT("{0},{1}"), {Locale, TEXT("ISO639")}));
+}
+
+void UBeamRuntime::SendAnalyticsEvent(const FString& EventOpCode, const FString& EventCategory, const FString& EventName, const TArray<TSharedRef<FJsonObject>>& EventParamsObj) const
+{
+	const auto Settings = GetDefault<UBeamCoreSettings>();
+	SendAnalyticsEvent(Settings->GetOwnerPlayerSlot(), EventOpCode, EventCategory, EventName, EventParamsObj);
+}
+
+void UBeamRuntime::SendAnalyticsEvent(const FUserSlot& Slot, const FString& EventOpCode, const FString& EventCategory, const FString& EventName, const TArray<TSharedRef<FJsonObject>>& EventParamsObj) const
+{
+	// Create the request object
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
+
+	// get UBeamRuntime		
+	auto Slots = GEngine->GetEngineSubsystem<UBeamUserSlots>();
+	auto Settings = GetDefault<UBeamCoreSettings>();
+
+	FBeamRealmUser UserData;
+	Slots->GetUserDataAtSlot(Slot, UserData, this);
+
+	const auto AuthToken = UserData.AuthToken;
+
+	const auto AuthTokenHeader = FString::Format(*UBeamBackend::HEADER_VALUE_AUTHORIZATION, {AuthToken.AccessToken});
+	HttpRequest->SetHeader(UBeamBackend::HEADER_AUTHORIZATION, AuthTokenHeader);
+
+	FString Url = FString::Format(TEXT("https://api.beamable.com/report/custom_batch/{0}/{1}/{2}"), {Settings->TargetRealm.Cid.AsString, Settings->TargetRealm.Pid.AsString, UserData.GamerTag.AsString});
+
+	// Set the URL
+	HttpRequest->SetURL(Url);
+
+	// Set the verb to POST
+	HttpRequest->SetVerb(TEXT("POST"));
+
+	// Set the content type header
+	HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+
+	TArray<FString> EventJsons;
+
+	// Build Json for events
+	for (int i = 0; i < EventParamsObj.Num(); ++i)
+	{
+		TSharedPtr<FJsonObject> TopJsonObject = MakeShareable(new FJsonObject);
+
+		TopJsonObject->SetStringField(TEXT("op"), EventOpCode);
+		TopJsonObject->SetStringField(TEXT("category"), EventCategory);
+		TopJsonObject->SetStringField(TEXT("event"), EventName);
+		TopJsonObject->SetObjectField(TEXT("params"), EventParamsObj[i]);
+
+		// Serialize the FJsonObject to a string
+		FString AnalyticsEvent;
+		TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&AnalyticsEvent);
+		if (FJsonSerializer::Serialize(TopJsonObject.ToSharedRef(), Writer))
+		{
+			EventJsons.Add(AnalyticsEvent);
+		}
+		else
+		{
+			UE_LOG(LogBeamRuntime, Warning, TEXT("Failed to serialize analytics event. OP=%s, CATEGORY=%s, EVENT=%s, PARAMS_IDX=%d"), *EventOpCode, *EventCategory, *EventName, i)
+		}
+	}
+
+	// We only send this batch if all of them are working.
+	if (EventJsons.Num())
+	{
+		const auto AnalyticsBatch = "[" + FString::Join(EventJsons, TEXT(", ")) + "]";
+
+		// Convert FString to UTF-8
+		FTCHARToUTF8 Converter(*AnalyticsBatch);
+		// Create a TArray and fill it with the UTF-8 data
+		TArray<uint8> ContentPayload;
+		ContentPayload.Append(reinterpret_cast<const uint8*>(Converter.Get()), Converter.Length());
+
+		// Note: Depending on your use case, you might want to append a null terminator to the array
+		// MyUTF8Array.Add(0);
+
+		// Set the request content
+		HttpRequest->SetContent(ContentPayload);
+
+		// Define the response callback
+		HttpRequest->OnProcessRequestComplete().BindLambda([EventOpCode, EventCategory, EventName, AnalyticsBatch](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+		{
+			if (bWasSuccessful && Response.IsValid())
+			{
+				UE_LOG(LogBeamRuntime, Verbose, TEXT("Analytics event successful. OP=%s, CATEGORY=%s, EVENT=%s, PARAMS=%s"), *EventOpCode, *EventCategory, *EventName, *AnalyticsBatch)
+			}
+			else
+			{
+				UE_LOG(LogBeamRuntime, Warning, TEXT("Analytics event request failed. OP=%s, CATEGORY=%s, EVENT=%s, PARAMS=%s"), *EventOpCode, *EventCategory, *EventName, *AnalyticsBatch)
+			}
+		});
+
+		// Send the request
+		HttpRequest->ProcessRequest();
+	}
 }
 #undef LOCTEXT_NAMESPACE

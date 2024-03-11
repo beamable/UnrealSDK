@@ -23,6 +23,7 @@ void UTicket::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("priority"), &Priority, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("partyId"), &PartyId, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FBeamGamerTag>, FBeamGamerTag, FString>(TEXT("players"), &Players, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<FBeamTag>, FBeamTag>(TEXT("tags"), &Tags, Serializer);
 	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("stringProperties"), &StringProperties, Serializer);
 	UBeamJsonUtils::SerializeOptional<TMap<FString, double>, double>(TEXT("numberProperties"), &NumberProperties, Serializer);
 }
@@ -40,6 +41,7 @@ void UTicket::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) c
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("priority"), &Priority, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("partyId"), &PartyId, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FBeamGamerTag>, FBeamGamerTag, FString>(TEXT("players"), &Players, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<FBeamTag>, FBeamTag>(TEXT("tags"), &Tags, Serializer);
 	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("stringProperties"), &StringProperties, Serializer);
 	UBeamJsonUtils::SerializeOptional<TMap<FString, double>, double>(TEXT("numberProperties"), &NumberProperties, Serializer);		
 }
@@ -57,6 +59,7 @@ void UTicket::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	UBeamJsonUtils::DeserializeOptional<int32>("priority", Bag, Priority, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("partyId", Bag, PartyId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FBeamGamerTag>, FBeamGamerTag, FString>("players", Bag, Players, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TArray<FBeamTag>, FBeamTag>("tags", Bag, Tags, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TMap<FString, FString>, FString>("stringProperties", Bag, StringProperties, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TMap<FString, double>, double>("numberProperties", Bag, NumberProperties, OuterOwner);
 }

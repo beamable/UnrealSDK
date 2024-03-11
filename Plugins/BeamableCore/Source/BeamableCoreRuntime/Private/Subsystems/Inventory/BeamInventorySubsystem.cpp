@@ -303,20 +303,14 @@ void UBeamInventorySubsystem::InitializeWhenUnrealReady_Implementation(FBeamOper
 
 	ContentSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamContentSubsystem>();
 
-	for (const auto& RuntimeUserSlot : GetDefault<UBeamCoreSettings>()->RuntimeUserSlots)
-	{
-		const auto UserSlot = FUserSlot{RuntimeUserSlot};
-		Inventories.Add(UserSlot, FBeamInventoryState{UserSlot, {}, {}, {}, {}});
-	}
-
 	Super::InitializeWhenUnrealReady_Implementation(ResultOp);
 }
 
 void UBeamInventorySubsystem::OnPostUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp)
 {
-	if (Inventories.Contains(UserSlot))
+	if (Inventories.Contains(BeamRealmUser.GamerTag))
 	{
-		FBeamInventoryState& Inventory = *Inventories.Find(UserSlot);
+		FBeamInventoryState& Inventory = *Inventories.Find(BeamRealmUser.GamerTag);
 		Inventory.Currencies.Reset();
 		Inventory.Items.Reset();
 		Inventory.CachedScopes.Reset();
@@ -328,9 +322,11 @@ void UBeamInventorySubsystem::OnPostUserSignedOut_Implementation(const FUserSlot
 
 void UBeamInventorySubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsFirstAuth, FBeamOperationHandle& ResultOp)
 {
+	Inventories.Add(BeamRealmUser.GamerTag, FBeamInventoryState{UserSlot, {}, {}, {}, {}});
+
 	// Fetch the inventory
 	FBeamOperationHandle Op = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetName(), {});
-	FetchAllInventory(UserSlot, Op);
+	FetchInventoryForSlot(UserSlot, Op);	
 
 	// We also set up the inventory refresh notification here.
 	const FOnInventoryRefreshNotificationCode NotificationHandler = FOnInventoryRefreshNotificationCode::CreateLambda(
@@ -340,9 +336,13 @@ void UBeamInventorySubsystem::OnUserSignedIn_Implementation(const FUserSlot& Use
 
 			const FOnPostInventoryFullResponse PostInventoryHandler = FOnPostInventoryFullResponse::CreateLambda([this](const FBeamFullResponse<UPostInventoryRequest*, UInventoryView*>& Resp)
 			{
-				FBeamInventoryState& Inventory = *Inventories.Find(Resp.Context.UserSlot);
-				const UInventoryView* InventoryView = Resp.SuccessData;
-				MergeInventoryViewIntoState(InventoryView, Inventory);
+				FBeamRealmUser RealmUser;
+				if (GEngine->GetEngineSubsystem<UBeamUserSlots>()->GetUserDataAtSlot(Resp.Context.UserSlot, RealmUser, this))
+				{
+					FBeamInventoryState& Inventory = *Inventories.Find(RealmUser.GamerTag);
+					const UInventoryView* InventoryView = Resp.SuccessData;
+					MergeInventoryViewIntoState(InventoryView, Inventory);
+				}
 			});
 			FBeamRequestContext Ctx;
 			InventoryApi->CPP_PostInventory(UserSlot, Req, PostInventoryHandler, Ctx, {}, this);
@@ -355,14 +355,28 @@ void UBeamInventorySubsystem::OnUserSignedIn_Implementation(const FUserSlot& Use
 FBeamOperationHandle UBeamInventorySubsystem::FetchAllInventoryOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	FetchAllInventory(UserSlot, Handle);
+	FetchInventoryForSlot(UserSlot, Handle);
 	return Handle;
 }
 
 FBeamOperationHandle UBeamInventorySubsystem::CPP_FetchAllInventoryOperation(FUserSlot Player, FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({Player}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	FetchAllInventory(Player, Handle);
+	FetchInventoryForSlot(Player, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamInventorySubsystem::FetchPlayerInventoryOperation(FUserSlot UserSlot, FBeamGamerTag GamerTag, FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	FetchInventoryForPlayer(UserSlot, GamerTag, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamInventorySubsystem::CPP_FetchPlayerInventoryOperation(FUserSlot Player, FBeamGamerTag GamerTag, FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({Player}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	FetchInventoryForPlayer(Player, GamerTag, Handle);
 	return Handle;
 }
 
@@ -410,29 +424,44 @@ FBeamOperationHandle UBeamInventorySubsystem::CPP_ModifyCurrenciesOperation(FUse
 bool UBeamInventorySubsystem::TryGetCurrencyAmount(FUserSlot Player, const FBeamContentId& CurrencyId, int64& Amount)
 {
 	Amount = 0;
-	if (!Inventories.Contains(Player))
+
+	FBeamRealmUser RealmUser;
+	if (!GEngine->GetEngineSubsystem<UBeamUserSlots>()->GetUserDataAtSlot(Player, RealmUser, this))
 		return false;
 
-	return Inventories.Find(Player)->TryGetCurrencyAmount(CurrencyId, Amount);
+	if (!Inventories.Contains(RealmUser.GamerTag))
+		return false;
+
+	return Inventories.Find(RealmUser.GamerTag)->TryGetCurrencyAmount(CurrencyId, Amount);
 }
 
 bool UBeamInventorySubsystem::TryGetAllCurrencies(FUserSlot Player, TArray<FBeamPlayerCurrency>& Currencies)
 {
 	Currencies = {};
-	if (!Inventories.Contains(Player))
+
+	FBeamRealmUser RealmUser;
+	if (!GEngine->GetEngineSubsystem<UBeamUserSlots>()->GetUserDataAtSlot(Player, RealmUser, this))
 		return false;
 
-	Inventories.Find(Player)->GetAllCurrencies(Currencies);
+	if (!Inventories.Contains(RealmUser.GamerTag))
+		return false;
+
+	Inventories.Find(RealmUser.GamerTag)->GetAllCurrencies(Currencies);
 	return true;
 }
 
 bool UBeamInventorySubsystem::TryGetAllItems(FUserSlot Player, TArray<FBeamItemState>& ItemStates)
 {
 	ItemStates = {};
-	if (!Inventories.Contains(Player))
+
+	FBeamRealmUser RealmUser;
+	if (!GEngine->GetEngineSubsystem<UBeamUserSlots>()->GetUserDataAtSlot(Player, RealmUser, this))
 		return false;
 
-	const auto inventory = Inventories.FindRef(Player);
+	if (!Inventories.Contains(RealmUser.GamerTag))
+		return false;
+
+	const auto inventory = Inventories.FindRef(RealmUser.GamerTag);
 	for (const auto& Item : inventory.Items)
 		ItemStates.Append(Item.Value);
 
@@ -539,18 +568,18 @@ void UBeamInventorySubsystem::PrepareModifyItemById(FUserSlot Player, FBeamConte
 	}
 }
 
-bool UBeamInventorySubsystem::FetchAllInventory(FUserSlot Player, FBeamOperationHandle Op)
+bool UBeamInventorySubsystem::FetchInventoryForSlot(FUserSlot Player, FBeamOperationHandle Op)
 {
 	FBeamRealmUser UserData;
 	Runtime->UserSlotSystem->GetUserDataAtSlot(Player, UserData, this);
 
-	FOnGetInventoryFullResponse GetInventoryHandler = FOnGetInventoryFullResponse::CreateLambda([this, Op](FBeamFullResponse<UGetInventoryRequest*, UInventoryView*> Resp)
+	FOnGetInventoryFullResponse GetInventoryHandler = FOnGetInventoryFullResponse::CreateLambda([this, Op, UserData](FBeamFullResponse<UGetInventoryRequest*, UInventoryView*> Resp)
 	{
 		if (Resp.State == RS_Retrying) return;
 
 		if (Resp.State == RS_Success)
 		{
-			FBeamInventoryState& Inventory = *Inventories.Find(Resp.Context.UserSlot);
+			FBeamInventoryState& Inventory = *Inventories.Find(UserData.GamerTag);
 			MergeInventoryViewIntoState(Resp.SuccessData, Inventory);
 			Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
 			return;
@@ -562,6 +591,29 @@ bool UBeamInventorySubsystem::FetchAllInventory(FUserSlot Player, FBeamOperation
 	FBeamRequestContext Ctx;
 	UGetInventoryRequest* const GetInventoryReq = UGetInventoryRequest::Make(UserData.GamerTag, {}, GetTransientPackage(), {});
 	InventoryApi->CPP_GetInventory(Player, GetInventoryReq, GetInventoryHandler, Ctx, Op, this);
+	return true;
+}
+
+bool UBeamInventorySubsystem::FetchInventoryForPlayer(FUserSlot RequestingSlot, FBeamGamerTag GamerTag, FBeamOperationHandle Op)
+{
+	FOnGetInventoryFullResponse GetInventoryHandler = FOnGetInventoryFullResponse::CreateLambda([this, Op, GamerTag](FBeamFullResponse<UGetInventoryRequest*, UInventoryView*> Resp)
+	{
+		if (Resp.State == RS_Retrying) return;
+
+		if (Resp.State == RS_Success)
+		{
+			FBeamInventoryState& Inventory = *Inventories.Find(GamerTag);
+			MergeInventoryViewIntoState(Resp.SuccessData, Inventory);
+			Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
+			return;
+		}
+		Runtime->RequestTrackerSystem->TriggerOperationError(Op, TEXT(""));
+	});
+
+	// Make the request
+	FBeamRequestContext Ctx;
+	UGetInventoryRequest* const GetInventoryReq = UGetInventoryRequest::Make(GamerTag, {}, GetTransientPackage(), {});
+	InventoryApi->CPP_GetInventory(RequestingSlot, GetInventoryReq, GetInventoryHandler, Ctx, Op, this);
 	return true;
 }
 
@@ -592,7 +644,7 @@ bool UBeamInventorySubsystem::CommitInventoryUpdate(FUserSlot Player, FBeamOpera
 	Commands.GetAllDeletedItems(DeletedItems);
 	Commands.GetAllUpdatedItems(UpdatedItems);
 
-	FOnPutInventoryFullResponse Handler = FOnPutInventoryFullResponse::CreateLambda([this, Op, Player](const FBeamFullResponse<UPutInventoryRequest*, UCommonResponse*>& Resp)
+	FOnPutInventoryFullResponse Handler = FOnPutInventoryFullResponse::CreateLambda([this, Op, Player, GamerTag](const FBeamFullResponse<UPutInventoryRequest*, UCommonResponse*>& Resp)
 	{
 		if (Resp.State == RS_Retrying) return;
 
@@ -603,7 +655,7 @@ bool UBeamInventorySubsystem::CommitInventoryUpdate(FUserSlot Player, FBeamOpera
 		// Handle success/error/cancellation
 		if (Resp.State == RS_Success)
 		{
-			FBeamInventoryState& State = *Inventories.Find(Player);
+			FBeamInventoryState& State = *Inventories.Find(GamerTag);
 			ensureAlwaysMsgf(Cmd.ApplyToState(State), TEXT("Should never see this. If you do see it, file a bug report."));
 			Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
 			return;

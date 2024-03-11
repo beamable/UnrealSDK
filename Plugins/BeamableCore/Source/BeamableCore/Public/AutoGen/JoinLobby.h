@@ -4,6 +4,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfBeamTag.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "JoinLobby.generated.h"
 
@@ -13,6 +14,8 @@ class BEAMABLECORE_API UJoinLobby : public UObject, public IBeamJsonSerializable
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Passcode", Category="Beam")
+	FOptionalString Passcode = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
 	FOptionalArrayOfBeamTag Tags = {};
 
