@@ -9,23 +9,22 @@ FString UCreateLobbyLibrary::CreateLobbyToJsonString(const UCreateLobby* Seriali
 	FString Result = FString{};
 	if(Pretty)
 	{
-		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();
 	}
 	else
 	{
-		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();			
 	}
 	return Result;
 }	
 
-UCreateLobby* UCreateLobbyLibrary::Make(FOptionalBool bHasRestriction, FOptionalString Name, FOptionalString Description, FOptionalLobbyRestriction Restriction, FOptionalBeamContentId MatchType, FOptionalInt32 PasscodeLength, FOptionalInt32 MaxPlayers, FOptionalArrayOfTag PlayerTags, UObject* Outer)
+UCreateLobby* UCreateLobbyLibrary::Make(FOptionalString Name, FOptionalString Description, FOptionalLobbyRestriction Restriction, FOptionalBeamContentId MatchType, FOptionalInt32 PasscodeLength, FOptionalInt32 MaxPlayers, FOptionalArrayOfBeamTag PlayerTags, FOptionalMapOfString Data, UObject* Outer)
 {
 	auto Serializable = NewObject<UCreateLobby>(Outer);
-	Serializable->bHasRestriction = bHasRestriction;
 	Serializable->Name = Name;
 	Serializable->Description = Description;
 	Serializable->Restriction = Restriction;
@@ -33,13 +32,13 @@ UCreateLobby* UCreateLobbyLibrary::Make(FOptionalBool bHasRestriction, FOptional
 	Serializable->PasscodeLength = PasscodeLength;
 	Serializable->MaxPlayers = MaxPlayers;
 	Serializable->PlayerTags = PlayerTags;
+	Serializable->Data = Data;
 	
 	return Serializable;
 }
 
-void UCreateLobbyLibrary::Break(const UCreateLobby* Serializable, FOptionalBool& bHasRestriction, FOptionalString& Name, FOptionalString& Description, FOptionalLobbyRestriction& Restriction, FOptionalBeamContentId& MatchType, FOptionalInt32& PasscodeLength, FOptionalInt32& MaxPlayers, FOptionalArrayOfTag& PlayerTags)
+void UCreateLobbyLibrary::Break(const UCreateLobby* Serializable, FOptionalString& Name, FOptionalString& Description, FOptionalLobbyRestriction& Restriction, FOptionalBeamContentId& MatchType, FOptionalInt32& PasscodeLength, FOptionalInt32& MaxPlayers, FOptionalArrayOfBeamTag& PlayerTags, FOptionalMapOfString& Data)
 {
-	bHasRestriction = Serializable->bHasRestriction;
 	Name = Serializable->Name;
 	Description = Serializable->Description;
 	Restriction = Serializable->Restriction;
@@ -47,6 +46,7 @@ void UCreateLobbyLibrary::Break(const UCreateLobby* Serializable, FOptionalBool&
 	PasscodeLength = Serializable->PasscodeLength;
 	MaxPlayers = Serializable->MaxPlayers;
 	PlayerTags = Serializable->PlayerTags;
+	Data = Serializable->Data;
 		
 }
 

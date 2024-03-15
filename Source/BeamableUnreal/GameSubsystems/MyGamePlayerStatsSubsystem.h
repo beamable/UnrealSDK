@@ -7,8 +7,6 @@
 #include "AutoGen/SubSystems/BeamStatsApi.h"
 #include "BeamNotifications/BeamNotifications.h"
 #include "BeamBackend/SemanticTypes/BeamStatsTypeLibrary.h"
-#include "BeamNotifications/SubSystems/BeamContentNotifications.h"
-#include "BeamNotifications/SubSystems/BeamInventoryNotifications.h"
 #include "Runtime/BeamRuntimeSubsystem.h"
 #include "MyGamePlayerStatsSubsystem.generated.h"
 
@@ -42,7 +40,7 @@ public:
 		
 		const auto Slot = FUserSlot{TEXT("Player0")};
 
-		const auto OpHandler = FBeamOperationEventHandlerCode::CreateLambda([](const TArray<FUserSlot>&, FBeamOperationEvent Evt)
+		const auto OpHandler = FBeamOperationEventHandlerCode::CreateLambda([](FBeamOperationEvent Evt)
 		{						
 		});
 		const auto Op = RequestTracker->CPP_BeginOperation({Slot}, GetName(), OpHandler);

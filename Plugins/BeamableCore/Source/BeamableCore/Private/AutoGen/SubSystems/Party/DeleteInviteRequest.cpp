@@ -9,7 +9,7 @@ void UDeleteInviteRequest::BuildVerb(FString& VerbString) const
 void UDeleteInviteRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/api/parties/{id}/invite");
-	Route = Route.Replace(TEXT("{id}"), *Id.ToString(EGuidFormats::DigitsLower));
+	Route = Route.Replace(TEXT("{id}"), *Id.ToString(EGuidFormats::DigitsWithHyphensLower));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -22,12 +22,12 @@ void UDeleteInviteRequest::BuildBody(FString& BodyString) const
 {
 	ensureAlways(Body);
 
-	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&BodyString);
+	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&BodyString);
 	Body->BeamSerialize(JsonSerializer);
 	JsonSerializer->Close();
 }
 
-UDeleteInviteRequest* UDeleteInviteRequest::Make(FGuid _Id, FOptionalString _PlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UDeleteInviteRequest* UDeleteInviteRequest::Make(FGuid _Id, FOptionalBeamGamerTag _PlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UDeleteInviteRequest* Req = NewObject<UDeleteInviteRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};

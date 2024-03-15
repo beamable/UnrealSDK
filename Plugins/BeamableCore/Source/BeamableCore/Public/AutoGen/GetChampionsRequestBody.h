@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "GetChampionsRequestBody.generated.h"
 
@@ -17,6 +17,8 @@ public:
 	FString TournamentId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cycles", Category="Beam")
 	int32 Cycles = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id", Category="Beam")
+	FOptionalString ContentId = {};
 
 	
 

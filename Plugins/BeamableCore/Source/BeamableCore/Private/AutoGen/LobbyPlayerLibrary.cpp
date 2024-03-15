@@ -9,20 +9,20 @@ FString ULobbyPlayerLibrary::LobbyPlayerToJsonString(const ULobbyPlayer* Seriali
 	FString Result = FString{};
 	if(Pretty)
 	{
-		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();
 	}
 	else
 	{
-		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();			
 	}
 	return Result;
 }	
 
-ULobbyPlayer* ULobbyPlayerLibrary::Make(FOptionalString PlayerId, FOptionalString Joined, FOptionalArrayOfTag Tags, UObject* Outer)
+ULobbyPlayer* ULobbyPlayerLibrary::Make(FOptionalBeamGamerTag PlayerId, FOptionalString Joined, FOptionalArrayOfBeamTag Tags, UObject* Outer)
 {
 	auto Serializable = NewObject<ULobbyPlayer>(Outer);
 	Serializable->PlayerId = PlayerId;
@@ -32,7 +32,7 @@ ULobbyPlayer* ULobbyPlayerLibrary::Make(FOptionalString PlayerId, FOptionalStrin
 	return Serializable;
 }
 
-void ULobbyPlayerLibrary::Break(const ULobbyPlayer* Serializable, FOptionalString& PlayerId, FOptionalString& Joined, FOptionalArrayOfTag& Tags)
+void ULobbyPlayerLibrary::Break(const ULobbyPlayer* Serializable, FOptionalBeamGamerTag& PlayerId, FOptionalString& Joined, FOptionalArrayOfBeamTag& Tags)
 {
 	PlayerId = Serializable->PlayerId;
 	Joined = Serializable->Joined;

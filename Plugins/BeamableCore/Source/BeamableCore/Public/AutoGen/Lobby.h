@@ -5,9 +5,11 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalMatchType.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamGamerTag.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfLobbyPlayer.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalLobbyRestriction.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
 
 #include "Lobby.generated.h"
 
@@ -28,7 +30,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Description", Category="Beam")
 	FOptionalString Description = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Host", Category="Beam")
-	FOptionalString Host = {};
+	FOptionalBeamGamerTag Host = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Passcode", Category="Beam")
 	FOptionalString Passcode = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Restriction", Category="Beam")
@@ -37,6 +39,8 @@ public:
 	FOptionalInt32 MaxPlayers = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Players", Category="Beam")
 	FOptionalArrayOfLobbyPlayer Players = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Data", Category="Beam")
+	FOptionalMapOfString Data = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

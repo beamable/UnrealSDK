@@ -17,8 +17,8 @@ public:
 	static FString RemoveFromLobbyToJsonString(const URemoveFromLobby* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make RemoveFromLobby", meta=(DefaultToSelf="Outer", AdvancedDisplay="PlayerId, Outer", NativeMakeFunc))
-	static URemoveFromLobby* Make(FOptionalString PlayerId, UObject* Outer);
+	static URemoveFromLobby* Make(FOptionalBeamGamerTag PlayerId, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break RemoveFromLobby", meta=(NativeBreakFunc))
-	static void Break(const URemoveFromLobby* Serializable, FOptionalString& PlayerId);
+	static void Break(const URemoveFromLobby* Serializable, FOptionalBeamGamerTag& PlayerId);
 };

@@ -53,7 +53,7 @@ void UBeamMicroservicesEditor::OnRealmInitialized()
 
 		// Set up a long-running command to get updates from the CLI about the state of microservices running locally. 
 		const auto ListenForStandaloneRunningServicesCommand = NewObject<UBeamCliProjectPsCommand>(this);
-		ListenForStandaloneRunningServicesCommand->OnStreamOutput = [this](const TArray<FBeamCliProjectPsStreamData>& Stream, const TArray<long long>& Array, const FBeamOperationHandle& Op)
+		ListenForStandaloneRunningServicesCommand->OnStreamOutput = [this](const TArray<UBeamCliProjectPsStreamData*>& Stream, const TArray<long long>& Array, const FBeamOperationHandle& Op)
 		{
 			OnUpdateLocalStateReceived(Stream, Array, Op);
 		};
@@ -185,15 +185,15 @@ bool UBeamMicroservicesEditor::OpenSwaggerDocs(FString BeamoId, bool bIsRemote)
 void UBeamMicroservicesEditor::UpdateRemoteMicroserviceState(const TFunction<void(const int& ResCode, const FBeamOperationHandle& Op)>& OnComplete, const FBeamOperationHandle& Op)
 {
 	const auto ServicesPs = NewObject<UBeamCliServicesPsCommand>();
-	ServicesPs->OnStreamOutput = [this](const TArray<FBeamCliServicesPsStreamData>& Data, const TArray<long long>&,
+	ServicesPs->OnStreamOutput = [this](const TArray<UBeamCliServicesPsStreamData*>& Data, const TArray<long long>&,
 	                                    const FBeamOperationHandle&)
 	{
 		const auto ServicesStateData = Data.Last();
-		const auto Count = ServicesStateData.BeamoIds.Num();
+		const auto Count = ServicesStateData->BeamoIds.Num();
 		for (int i = 0; i < Count; ++i)
 		{
-			const auto BeamoId = ServicesStateData.BeamoIds[i];
-			const auto bShouldEnableRemoteOnPublish = ServicesStateData.ShouldBeEnabledOnRemote[i];
+			const auto BeamoId = ServicesStateData->BeamoIds[i];
+			const auto bShouldEnableRemoteOnPublish = ServicesStateData->ShouldBeEnabledOnRemote[i];
 
 
 			const auto RemoteServiceData = FRemoteMicroserviceData{
@@ -222,14 +222,14 @@ void UBeamMicroservicesEditor::UpdateRemoteMicroserviceState(const TFunction<voi
 void UBeamMicroservicesEditor::EnsureExistingServices()
 {
 	const auto ServicesPs = NewObject<UBeamCliServicesPsCommand>();
-	ServicesPs->OnStreamOutput = [this](const TArray<FBeamCliServicesPsStreamData>& Data, const TArray<long long>&, const FBeamOperationHandle&)
+	ServicesPs->OnStreamOutput = [this](const TArray<UBeamCliServicesPsStreamData*>& Data, const TArray<long long>&, const FBeamOperationHandle&)
 	{
 		const auto ServicesStateData = Data.Last();
-		const auto Count = ServicesStateData.BeamoIds.Num();
+		const auto Count = ServicesStateData->BeamoIds.Num();
 		for (int i = 0; i < Count; ++i)
 		{
-			const auto BeamoId = ServicesStateData.BeamoIds[i];
-			const auto bShouldEnableRemoteOnPublish = ServicesStateData.ShouldBeEnabledOnRemote[i];
+			const auto BeamoId = ServicesStateData->BeamoIds[i];
+			const auto bShouldEnableRemoteOnPublish = ServicesStateData->ShouldBeEnabledOnRemote[i];
 
 			const auto RemoteServiceData = FLocalMicroserviceData{
 				BeamoId,
@@ -254,22 +254,23 @@ void UBeamMicroservicesEditor::EnsureExistingServices()
 void UBeamMicroservicesEditor::DeployMicroservices(const TArray<FString>& EnableBeamoIds, const TArray<FString>& DisableBeamoIds, const FBeamOperationHandle& Op) const
 {
 	const auto ServicesDeploy = NewObject<UBeamCliServicesDeployCommand>();
-	ServicesDeploy->OnStreamOutput = [](const TArray<FBeamCliServicesDeployStreamData>& Result,
+	ServicesDeploy->OnStreamOutput = [](const TArray<UBeamCliServicesDeployStreamData*>& Result,
 	                                    const TArray<long long>&, const FBeamOperationHandle&)
 	{
 		FString Json;
-		FJsonObjectConverter::UStructToJsonObjectString(Result.Last(), Json);
+		Result.Last()->BeamSerializePretty(Json);
 		UE_LOG(LogBeamMicroservices, Display, TEXT("%s"), *Json);
 	};
 
 
 	ServicesDeploy->OnRemoteProgressStreamOutput = [this](
-		const TArray<FBeamCliServicesDeployRemoteProgressStreamData>& Progress, const TArray<long long>&,
+		const TArray<UBeamCliServicesDeployRemoteProgressStreamData*>& Progress, const TArray<long long>&,
 		const FBeamOperationHandle& Operation)
 		{
 			FString Json;
-			FJsonObjectConverter::UStructToJsonObjectString(Progress.Last(), Json);
-			RequestTracker->TriggerOperationEvent(Operation, OET_SUCCESS, EDefaultOperationEventSubType::EventA, Json);
+			const auto Last = Progress.Last();
+			Last->BeamSerializePretty(Json);			
+			RequestTracker->TriggerOperationEvent(Operation, OET_SUCCESS, FName("MICROSERVICE_REMOTE_DEPLOY_UPDATE"), Json);
 		};
 
 	// Handle completing the operation
@@ -300,35 +301,35 @@ void UBeamMicroservicesEditor::DeployMicroservices(const TArray<FString>& Enable
 void UBeamMicroservicesEditor::RunDockerMicroservices(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op)
 {
 	const auto ServicesDeploy = NewObject<UBeamCliServicesRunCommand>();
-	ServicesDeploy->OnStreamOutput = [](const TArray<FBeamCliServicesRunStreamData>& Result, const TArray<long long>&, const FBeamOperationHandle&)
+	ServicesDeploy->OnStreamOutput = [](const TArray<UBeamCliServicesRunStreamData*>& Result, const TArray<long long>&, const FBeamOperationHandle&)
 	{
 		FString Json;
-		FJsonObjectConverter::UStructToJsonObjectString(Result.Last(), Json);
+		Result.Last()->BeamSerializePretty(Json);
 		UE_LOG(LogBeamMicroservices, Display, TEXT("%s"), *Json);
 	};
 
 	ServicesDeploy->OnLocalProgressStreamOutput = [this](
-		const TArray<FBeamCliServicesRunLocalProgressStreamData>& Progress, const TArray<long long>&,
+		const TArray<UBeamCliServicesRunLocalProgressStreamData*>& Progress, const TArray<long long>&,
 		const FBeamOperationHandle&)
 		{
 			const auto ProgressData = Progress.Last();
 			FString Json;
 
-			FJsonObjectConverter::UStructToJsonObjectString(ProgressData, Json);
+			ProgressData->BeamSerializePretty(Json);			
 			UE_LOG(LogBeamMicroservices, Display, TEXT("%s"), *Json);
 
 			// Update the local state of microservice data
-			if (FMath::IsNearlyEqual(ProgressData.LocalDeployProgress, 100.0))
+			if (FMath::IsNearlyEqual(ProgressData->LocalDeployProgress, 100.0))
 			{
-				if (LocalMicroserviceData.Contains(ProgressData.BeamoId))
+				if (LocalMicroserviceData.Contains(ProgressData->BeamoId))
 				{
-					LocalMicroserviceData.Find(ProgressData.BeamoId)->RunningState = RunningOnDocker;
+					LocalMicroserviceData.Find(ProgressData->BeamoId)->RunningState = RunningOnDocker;
 				}
 				else
 				{
-					LocalMicroserviceData.Add(ProgressData.BeamoId,
+					LocalMicroserviceData.Add(ProgressData->BeamoId,
 					                          FLocalMicroserviceData{
-						                          ProgressData.BeamoId, RunningOnDocker, false
+						                          ProgressData->BeamoId, RunningOnDocker, false
 					                          });
 				}
 			}
@@ -359,13 +360,13 @@ void UBeamMicroservicesEditor::RunDockerMicroservices(const TArray<FString>& Bea
 void UBeamMicroservicesEditor::StopDockerMicroservices(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op)
 {
 	const auto ServicesDeploy = NewObject<UBeamCliServicesResetCommand>();
-	ServicesDeploy->OnStreamOutput = [this](const TArray<FBeamCliServicesResetStreamData>& Result,
+	ServicesDeploy->OnStreamOutput = [this](const TArray<UBeamCliServicesResetStreamData*>& Result,
 	                                        const TArray<long long>&, const FBeamOperationHandle&)
 	{
 		FString Json;
-		FJsonObjectConverter::UStructToJsonObjectString(Result.Last(), Json);
+		Result.Last()->BeamSerializePretty(Json);
 		UE_LOG(LogBeamMicroservices, Display, TEXT("%s"), *Json);
-		for (const auto& BeamoId : Result.Last().Ids)
+		for (const auto& BeamoId : Result.Last()->Ids)
 		{
 			if (LocalMicroserviceData.Contains(BeamoId))
 			{
@@ -409,16 +410,16 @@ void UBeamMicroservicesEditor::StopDockerMicroservices(const TArray<FString>& Be
 	Cli->RunCommand(ServicesDeploy, Params, Op);
 }
 
-void UBeamMicroservicesEditor::OnUpdateLocalStateReceived(const TArray<FBeamCliProjectPsStreamData>& Stream, const TArray<long long>&, const FBeamOperationHandle&)
+void UBeamMicroservicesEditor::OnUpdateLocalStateReceived(const TArray<UBeamCliProjectPsStreamData*>& Stream, const TArray<long long>&, const FBeamOperationHandle&)
 {
 	const auto ProjectStatusChange = Stream.Last();
-	const auto BeamoId = ProjectStatusChange.service;
+	const auto BeamoId = ProjectStatusChange->Service;
 
-	if (LocalMicroserviceData.Contains(ProjectStatusChange.service))
+	if (LocalMicroserviceData.Contains(ProjectStatusChange->Service))
 	{
-		if (ProjectStatusChange.isRunning)
+		if (ProjectStatusChange->IsRunning)
 		{
-			LocalMicroserviceData.Find(BeamoId)->RunningState = ProjectStatusChange.isContainer ? RunningOnDocker : RunningStandalone;
+			LocalMicroserviceData.Find(BeamoId)->RunningState = ProjectStatusChange->IsContainer ? RunningOnDocker : RunningStandalone;
 		}
 		else
 		{
@@ -427,17 +428,17 @@ void UBeamMicroservicesEditor::OnUpdateLocalStateReceived(const TArray<FBeamCliP
 	}
 	else
 	{
-		if (ProjectStatusChange.isRunning)
+		if (ProjectStatusChange->IsRunning)
 		{
-			LocalMicroserviceData.Add(ProjectStatusChange.service, FLocalMicroserviceData{
+			LocalMicroserviceData.Add(ProjectStatusChange->Service, FLocalMicroserviceData{
 				                          BeamoId,
-				                          ProjectStatusChange.isContainer ? RunningOnDocker : RunningStandalone,
+				                          ProjectStatusChange->IsContainer ? RunningOnDocker : RunningStandalone,
 				                          false
 			                          });
 		}
 		else
 		{
-			LocalMicroserviceData.Add(ProjectStatusChange.service, FLocalMicroserviceData{
+			LocalMicroserviceData.Add(ProjectStatusChange->Service, FLocalMicroserviceData{
 				                          BeamoId,
 				                          Stopped,
 				                          false

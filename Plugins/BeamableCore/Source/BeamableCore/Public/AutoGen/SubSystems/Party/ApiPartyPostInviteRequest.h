@@ -39,7 +39,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Party", DisplayName="Beam - Make ApiPartyPostInvite",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_PlayerId,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UApiPartyPostInviteRequest* Make(FGuid _Id, FOptionalString _PlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	static UApiPartyPostInviteRequest* Make(FGuid _Id, FOptionalBeamGamerTag _PlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

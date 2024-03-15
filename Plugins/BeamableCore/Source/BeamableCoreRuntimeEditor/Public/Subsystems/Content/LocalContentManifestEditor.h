@@ -14,6 +14,7 @@
 #define LOCTEXT_NAMESPACE "ULocalContentManifestEditorState"
 
 
+struct FBeamOperationEvent;
 struct FUserSlot;
 class SNameComboBox;
 class UBeamEditorContent;
@@ -74,7 +75,7 @@ private:
 	void DownloadButtonClicked();
 
 	UFUNCTION()
-	void OnPublishEvent(const TArray<FUserSlot>& UserSlots, FBeamOperationEvent OperationEvent) const;
+	void OnPublishEvent(FBeamOperationEvent OperationEvent) const;
 
 	FString GetJsonBlobPath(FString RowName) const;
 };

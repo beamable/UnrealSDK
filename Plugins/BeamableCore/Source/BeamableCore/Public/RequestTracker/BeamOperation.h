@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "BeamOperationHandle.h"
+#include "BeamWaitHandle.h"
 #include "UserSlots/UserSlot.h"
 
 #include "BeamOperation.generated.h"
@@ -14,36 +15,13 @@
 UENUM(BlueprintType)
 enum EBeamOperationEventType
 {
-	OET_NONE = 0 UMETA(Hidden),
-	OET_SUCCESS = 1 << 0,
-	OET_ERROR = 1 << 1,
+	OET_NONE      = 0 UMETA(Hidden),
+	OET_SUCCESS   = 1 << 0,
+	OET_ERROR     = 1 << 1,
 	OET_CANCELLED = 1 << 2,
 };
 
 BEAMABLECORE_API ENUM_CLASS_FLAGS(EBeamOperationEventType);
-
-/**
- * @brief Every event an Operation trigger has a sub type. The default sub-type is "Final" meaning the operation:
- * completed with a success OR it completed with an error OR it completed because it was cancelled. 
- *
- * This is just a byte in the FBeamOperationEvent struct so you can declare your custom enumerations that are specific to an operation and leverage that instead.
- * If you don't want to specify a custom one, use this one whenever asked for the subtype.
- *
- * Just keep in mind that 0 is a reserved value that means the operation is over. Also, you must add the MetaData flags indicating which SubType values are available for each Type value:
- *  - OperationSuccessSubEvents="Final,OtherSuccessSubEvent" 
- *  - OperationErrorSubEvents="Final,OtherErrorSubEvent"
- *  - OperationCancelledSubEvents="Final,OtherCancelledSubEvent" *
- *
- *  Unless you are making a very specific operation, you can use "EventA,EventB,EventC" declarations for sub-events and map them to their parsed structs.
- */
-UENUM(BlueprintType, meta=(OperationSuccessSubEvents="Final,EventA,EventB,EventC", OperationErrorSubEvents="Final,EventA,EventB,EventC", OperationCancelledSubEvents="Final,EventA,EventB,EventC"))
-enum EDefaultOperationEventSubType
-{
-	Final = 0 UMETA(Tooltip="It is the final event of the operation. No more events will be issued later."),
-	EventA = 1 UMETA(Tooltip="It is another event in the operation. More events can be issued later. Here to make it unnecessary to create enums for operations that want to send unnamed events."),
-	EventB = 2 UMETA(Tooltip="It is another event in the operation. More events can be issued later. Here to make it unnecessary to create enums for operations that want to send unnamed events."),
-	EventC = 3 UMETA(Tooltip="It is another event in the operation. More events can be issued later. Here to make it unnecessary to create enums for operations that want to send unnamed events."),
-};
 
 
 /**
@@ -59,6 +37,11 @@ USTRUCT(BlueprintType)
 struct BEAMABLECORE_API FBeamOperationEvent
 {
 	GENERATED_BODY()
+	/**
+	 * @brief The owner operation. This is mostly here for testing. 
+	 */
+	UPROPERTY(BlueprintReadOnly, AdvancedDisplay)
+	FBeamOperationHandle OwnerHandle;
 
 	/**
 	 * @brief The event type of this event.
@@ -76,7 +59,7 @@ struct BEAMABLECORE_API FBeamOperationEvent
 	 * @brief An code indicating the an operation-specific type of the event that happened. It is the value of an operation-specific Enum.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
-	uint8 EventSubTypeCode = 0;
+	FName EventCode = NAME_None;
 
 	/**
 	 * @brief The Beamable Runtime System where the Operation event originated.
@@ -89,15 +72,71 @@ struct BEAMABLECORE_API FBeamOperationEvent
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	FString EventData;
-
-	/**
-	 * @brief The owner operation. This is mostly here for testing. 
-	 */
-	UPROPERTY(BlueprintReadOnly, AdvancedDisplay)
-	FBeamOperationHandle OwnerHandle;
 };
 
 
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FBeamOperationEventHandler, const TArray<FUserSlot>&, UserSlots, FBeamOperationEvent, OperationEvent);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FBeamOperationEventHandler, FBeamOperationEvent, OperationEvent);
 
-DECLARE_DELEGATE_TwoParams(FBeamOperationEventHandlerCode, const TArray<FUserSlot>&, FBeamOperationEvent);
+DECLARE_DELEGATE_OneParam(FBeamOperationEventHandlerCode, FBeamOperationEvent);
+
+/**
+ * @brief The current state of an operation: it tracks its request dependencies, its participants and the expected number of requests.
+ */
+UCLASS(BlueprintType)
+class BEAMABLECORE_API UBeamOperationState : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	static const int ONGOING  = 0;
+	static const int COMPLETE_SUCCESS = 1;
+	static const int COMPLETE_FAILURE = 2;
+	static const int CANCELLED = 3;
+
+	/**
+	 * @brief Whether or not this operation is ongoing, complete or cancelled.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int Status = ONGOING;
+
+	/**
+	 * @brief The name of subsystem that owns this operation. Mostly for debugging purposes. 
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FString CallingSystem;
+
+	/**
+	 * @brief The list of requests that were made during this operation.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<int64> DependentRequests;
+
+	/**
+	 * @brief The list of user slots that are participating in this operation.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<FUserSlot> DependentUserSlots;
+
+	/**
+	 * @brief The list of user slots that are participating in this operation.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<FBeamWaitHandle> WaitedBy;
+	
+	/**
+	 * @brief The Blueprint-based Handler for this Operation's Events.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FBeamOperationEventHandler BlueprintHandler;
+
+	/**
+	 * @brief The Code-based Handler for this Operation's Events.
+	 */	
+	FBeamOperationEventHandlerCode CodeHandler;
+
+	/**
+	 * List of events that were triggered by this operation.
+	 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<FBeamOperationEvent> TriggeredEvents;
+};

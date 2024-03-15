@@ -9,13 +9,13 @@ FString UStatSubscriptionNotificationLibrary::StatSubscriptionNotificationToJson
 	FString Result = FString{};
 	if(Pretty)
 	{
-		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();
 	}
 	else
 	{
-		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();			
 	}

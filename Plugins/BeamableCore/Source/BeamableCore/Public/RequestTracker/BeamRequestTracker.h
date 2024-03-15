@@ -5,14 +5,11 @@
 #include "CoreMinimal.h"
 #include "BeamOperation.h"
 #include "BeamBackend/BeamBackend.h"
-#include "Chaos/AABB.h"
 #include "RequestTracker/BeamWaitHandle.h"
 #include "RequestTracker/BeamOperationHandle.h"
 
 #include "BeamRequestTracker.generated.h"
 
-typedef int64 FBeamOperationId;
-typedef int64 FBeamWaitHandleId;
 
 // If we have the default one, let's pass along '-1' only if there were no dependent requests. If there, were assume it's a sequential chain and we are being called in the latest request's handler.
 // As such, we pass in the last dependent request id added.
@@ -20,7 +17,17 @@ typedef int64 FBeamWaitHandleId;
 
 // Used by our systems when we want to allow for one operation from a known set of operations to be executed in the middle of a predefined operation.
 // Ie.: UBeamRuntime's Authentication flows have varying things they want to do based on the type of operation before they notify UBeamRuntimeSubsystems and/or Project-Level code that the user has signed in.
+#define EXPAND(x) x
 DECLARE_DELEGATE_RetVal(FBeamOperationHandle, FDelayedOperation)
+#define DEFINE_BEAM_OPERATION_HOOK_OneParam(HookName, ...) EXPAND(DECLARE_DELEGATE_RetVal_OneParam(FBeamOperationHandle, HookName, __VA_ARGS__))
+#define DEFINE_BEAM_OPERATION_HOOK_TwoParams(HookName, ...) EXPAND(DECLARE_DELEGATE_RetVal_TwoParams(FBeamOperationHandle, HookName, __VA_ARGS__))
+#define DEFINE_BEAM_OPERATION_HOOK_ThreeParams(HookName, ...) EXPAND(DECLARE_DELEGATE_RetVal_ThreeParams(FBeamOperationHandle, HookName, __VA_ARGS__))
+#define DEFINE_BEAM_OPERATION_HOOK_FourParams(HookName, ...) EXPAND(DECLARE_DELEGATE_RetVal_FourParams(FBeamOperationHandle, HookName, __VA_ARGS__))
+#define DEFINE_BEAM_OPERATION_HOOK_FiveParams(HookName, ...) EXPAND(DECLARE_DELEGATE_RetVal_FiveParams(FBeamOperationHandle, HookName, __VA_ARGS__))
+#define DEFINE_BEAM_OPERATION_HOOK_SixParams(HookName, ...) EXPAND(DECLARE_DELEGATE_RetVal_SixParams(FBeamOperationHandle, HookName, __VA_ARGS__))
+#define DEFINE_BEAM_OPERATION_HOOK_SevenParams(HookName, ...) EXPAND(DECLARE_DELEGATE_RetVal_SevenParams(FBeamOperationHandle, HookName, __VA_ARGS__))
+#define DEFINE_BEAM_OPERATION_HOOK_EightParams(HookName, ...) EXPAND(DECLARE_DELEGATE_RetVal_EightParams(FBeamOperationHandle, HookName, __VA_ARGS__))
+
 
 UCLASS(BlueprintType, NotBlueprintable)
 class BEAMABLECORE_API UBeamRequestTracker : public UEngineSubsystem
@@ -33,13 +40,12 @@ private:
 	/**
 	 * @brief  Just an Auto-Increment ID of each running request.
 	 */
-	long volatile* WaitHandleId;
+	std::atomic<long> WaitHandleId;
 
 	/**
 	 * @brief  Just an Auto-Increment ID of each running request.
 	 */
-	long volatile* OperationHandleId;
-
+	std::atomic<long> OperationHandleId;
 
 	UPROPERTY()
 	UBeamBackend* Backend;
@@ -70,7 +76,8 @@ private:
 	 * @param Handle The wait handle whose request dependencies you wish to get.
 	 * @param DependedOnRequests The dependent RequestIds for the given wait handle.
 	 */
-	void GatherRequestIdsFromWaitHandle(const FBeamWaitHandle Handle, TArray<FBeamRequestId>& DependedOnRequests, TArray<FBeamOperationId>& DependedOnOperations) const;
+	void GatherRequestIdsFromWaitHandle(const FBeamWaitHandle Handle, TArray<FBeamRequestId>& DependedOnRequests,
+	                                    TArray<FBeamOperationHandle>& DependedOnOperations) const;
 
 	/**
 	 * @brief This is bound to UBeamBackend's request complete delegate.
@@ -107,36 +114,26 @@ public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly)
 	static UBeamRequestTracker* GetSelf() { return GEngine->GetEngineSubsystem<UBeamRequestTracker>(); }
 
+
+	/***
+	 *     _       __      _ __      
+	 *    | |     / /___ _(_) /______
+	 *    | | /| / / __ `/ / __/ ___/
+	 *    | |/ |/ / /_/ / / /_(__  ) 
+	 *    |__/|__/\__,_/_/\__/____/  
+	 *                               
+	 */
+
 	/**
 	 * @brief List of wait handles that are currently being waited on.
 	 */
 	TArray<FBeamWaitHandle> ActiveWaitHandles;
 
-
 	/**
-	 * @brief Maps all Active WaitHandles to the RequestIds that are being waited on.
+	 * @brief List of the data for each wait handles that are currently being waited on.
 	 */
-	TMultiMap<FBeamWaitHandle, FBeamRequestId> ActiveRequestsForWaitHandles;
-
-	/**
-	 * @brief Maps all Active WaitHandles to the OperationIds that are being waited on.
-	 */
-	TMultiMap<FBeamWaitHandle, FBeamOperationId> ActiveOperationsForWaitHandles;
-
-	/**
-	 * @brief Maps all Active WaitHandles to the WaitHandleIds that are being waited on.
-	 */
-	TMultiMap<FBeamWaitHandle, FBeamWaitHandleId> ActiveWaitHandlesForWaitHandles;
-
-	/**
-	 * @brief Maps each WaitHandle to their WaitComplete callback.
-	 */
-	TMap<FBeamWaitHandle, FOnWaitComplete> ActiveWaitHandleCallbacks;
-
-	/**
-	 * @brief Maps each WaitHandle to their WaitComplete code callback.
-	 */
-	TMap<FBeamWaitHandle, FOnWaitCompleteCode> ActiveWaitHandleCodeCallbacks;
+	UPROPERTY()
+	TMap<FBeamWaitHandle, UBeamWaitState*> ActiveWaitStates;
 
 	/**
 	 * @brief Given a set of contexts, waits until the frame they are all done and then calls OnComplete. 
@@ -146,11 +143,101 @@ public:
 	 * @param OnComplete What to do when all those requests/operations are 100% done.
 	 * @return A Wait Handle identifying this wait all command.
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="RequestContexts,Operations,Waits", BeamFlowFunction))
-	FBeamWaitHandle WaitAll(const TArray<FBeamRequestContext>& RequestContexts, const TArray<FBeamOperationHandle>& Operations, const TArray<FBeamWaitHandle>& Waits, FOnWaitComplete OnComplete);
+	UFUNCTION(BlueprintCallable, Category="Beam|Waits",
+		meta=(AutoCreateRefTerm="RequestContexts,Operations,Waits", BeamFlowFunction))
+	FBeamWaitHandle WaitAll(const TArray<FBeamRequestContext>& RequestContexts,
+	                        const TArray<FBeamOperationHandle>& Operations, const TArray<FBeamWaitHandle>& Waits,
+	                        FOnWaitComplete OnComplete);
 
-	FBeamWaitHandle CPP_WaitAll(const TArray<FBeamRequestContext>& RequestContexts, const TArray<FBeamOperationHandle>& Operations, const TArray<FBeamWaitHandle>& Waits,
+	/**
+	 * @copybrief WaitAll
+	 */
+	FBeamWaitHandle CPP_WaitAll(const TArray<FBeamRequestContext>& RequestContexts,
+	                            const TArray<FBeamOperationHandle>& Operations, const TArray<FBeamWaitHandle>& Waits,
 	                            FOnWaitCompleteCode OnCompleteCode);
+
+	/**
+	 * Returns TRUE if ALL of the Requests, Operations or Waits it depends on Succeeded.
+	 * Cancelled operations do not make this return true.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Waits")
+	bool IsWaitSuccessful(const FBeamWaitCompleteEvent& Evt) const;
+
+	/**
+	 * Returns TRUE if any of the Requests, Operations or Waits it depends on Failed.
+	 * Cancelled operations do not make this return true.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Waits")
+	bool IsWaitFailed(const FBeamWaitCompleteEvent& Evt, TArray<FString>& Errors) const;
+
+	/**
+	 * Returns TRUE if any of the Requests, Operations or Waits it depends on were cancelled.	 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Waits")
+	bool IsAnyWaitCancelled(const FBeamWaitCompleteEvent& Evt) const;
+
+
+	/**
+	 * This will invoke a single hook --- returns false if the hook was not bound.
+	 */
+	template <typename FHook, typename... Args>
+	bool InvokeAndWaitForHooks(FBeamWaitHandle& OutWaitHandle, FHook Hooks, FOnWaitCompleteCode Handler, Args&&... args)
+	{
+		if (Hooks.IsBound()) return InvokeAndWaitForHooks(OutWaitHandle, TArray<FHook>{Hooks}, Handler, std::forward<Args>(args)...);
+		return InvokeAndWaitForHooks(OutWaitHandle, TArray<FHook>{}, Handler, std::forward<Args>(args)...);
+	}
+
+	/**
+	 * Returns false if a hook was not bound or if no hooks were present. True if all present hooks were correctly bound.   
+	 */
+	template <typename FHook, typename... Args>
+	bool InvokeAndWaitForHooks(FBeamWaitHandle& OutWaitHandle, TArray<FHook> Hooks, FOnWaitCompleteCode Handler, Args&&... args)
+	{
+		static_assert(std::is_same_v<typename FHook::RetValType, FBeamOperationHandle>, TEXT("This FHook does not return an FBeamOperationHandle. You can't wait on it."));
+
+		// Since hooks are optional by default, if there are none we just do nothing.
+		if (!Hooks.Num())
+		{
+			OutWaitHandle = GetSelf()->CPP_WaitAll({}, {}, {}, Handler);
+			return true;
+		}
+
+		bool bShouldRun = true;
+		FString Error = FString(TEXT("Unbound hook detected! All hooks in the array must be bound to something. "));
+		for (int i = 0; i < Hooks.Num(); ++i)
+		{
+			const FHook& Hook = Hooks[i];
+			const bool bIsBound = Hook.IsBound();
+			bShouldRun &= bIsBound;
+			Error.Append(bIsBound ? "" : "Hook at idx=%d is not bound, ");
+		}
+
+		if (bShouldRun)
+		{
+			TArray<FBeamOperationHandle> Handles;
+			Handles.AddUninitialized(Hooks.Num());
+			for (int i = 0; i < Hooks.Num(); ++i)
+			{
+				const FHook& Hook = Hooks[i];
+				Handles[i] = Hook.Execute(std::forward<Args>(args)...);
+			}
+			OutWaitHandle = GetSelf()->CPP_WaitAll({}, Handles, {}, Handler);
+			return true;
+		}
+
+		UE_LOG(LogBeamRequestTracker, Error, TEXT("%s"), *Error);
+		return false;
+	}
+
+
+	/***
+	 *       ____                        __  _                 
+	 *      / __ \____  ___  _________ _/ /_(_)___  ____  _____
+	 *     / / / / __ \/ _ \/ ___/ __ `/ __/ / __ \/ __ \/ ___/
+	 *    / /_/ / /_/ /  __/ /  / /_/ / /_/ / /_/ / / / (__  ) 
+	 *    \____/ .___/\___/_/   \__,_/\__/_/\____/_/ /_/____/  
+	 *        /_/                                              
+	 */
 
 	/**
 	 * @brief List of all active operations. See BeginOperation and MarkOperation____ functions.
@@ -160,44 +247,29 @@ public:
 	/**
 	 * @brief Current state of each operation --- keeps track of the maximum number of requests we can expect, current list of requests we depend on and the Status of the operation.
 	 */
-	TMap<FBeamOperationHandle, FBeamOperationState> ActiveOperationState;
-
-	/**
-	 * @brief Dynamic event handlers associated with each running Operation.
-	 */
-	TMap<FBeamOperationHandle, FBeamOperationEventHandler> ActiveOperationEventHandlers;
-
-	/**
-	* @brief Event handlers associated with each running Operation. (Can bind lambdas to these)
-	 */
-	TMap<FBeamOperationHandle, FBeamOperationEventHandlerCode> ActiveOperationEventHandlersCode;
-
-	/**
-	 * @brief Maps all Operations to WaitHandles that are waiting on them to complete.
-	 */
-	TMultiMap<FBeamOperationHandle, FBeamWaitHandle> WaitHandlesForActiveOperations;
-
+	UPROPERTY()
+	TMap<FBeamOperationHandle, UBeamOperationState*> ActiveOperationState;
 
 	/**
 	 * @brief This begins an Operation.
 	 * The returning OperationWaitHandle can be used to Wait on an entire chain of requests.
 	 * @param Participants The list of all potential user slots that are participating in this operation.
-	 * @param OnEvent An event handler to handle all potential events of this operation.
-	 * @param MaxRequestsInOperation This is the expected number of requests in the operation. -1, to ignore this. 
+	 * @param OnEvent An event handler to handle all potential events of this operation. 
 	 * @return An Operation Handle you can use to enable callers to wait on the operation. 
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(AutoCreateRefTerm="CallingSystem"))
-	FBeamOperationHandle BeginOperation(const TArray<FUserSlot>& Participants, const FString& CallingSystem, FBeamOperationEventHandler OnEvent, int MaxRequestsInOperation = -1);
+	FBeamOperationHandle BeginOperation(const TArray<FUserSlot>& Participants, const FString& CallingSystem,
+	                                    FBeamOperationEventHandler OnEvent);
 
 	/**
 	 * @brief This begins an Operation.
 	 * The returning OperationWaitHandle can be used to Wait on an entire chain of requests.
 	 * @param Participants The list of all potential user slots that are participating in this operation.
-	 * @param OnEvent An event handler to handle all potential events of this operation.
-	 * @param MaxRequestsInOperation This is the expected number of requests in the operation. -1, to ignore this. 
+	 * @param OnEvent An event handler to handle all potential events of this operation. 
 	 * @return An Operation Handle you can use to enable callers to wait on the operation. 
 	 */
-	FBeamOperationHandle CPP_BeginOperation(const TArray<FUserSlot>& Participants, const FString& CallingSystem, FBeamOperationEventHandlerCode OnEvent, int MaxRequestsInOperation = -1);
+	FBeamOperationHandle CPP_BeginOperation(const TArray<FUserSlot>& Participants, const FString& CallingSystem,
+	                                        FBeamOperationEventHandlerCode OnEvent);
 
 	/**
 	 * @brief Adds a request to this transaction. This means that every WaitHandle that is waiting on this Operation will now be waiting on this request still.
@@ -213,20 +285,26 @@ public:
 	/**
 	 * @brief Call only within OnSuccess/OnError/OnComplete or FullResponse handlers when the operation is completed and ended with success. 	 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(AdvancedDisplay="RequestId", AutoCreateRefTerm="RequestId"))
-	void TriggerOperationSuccess(const FBeamOperationHandle& Op, const FString& EventData, const int64& RequestId = -1000);
+	UFUNCTION(BlueprintCallable, Category="Beam|Operations",
+		meta=(AdvancedDisplay="RequestId", AutoCreateRefTerm="RequestId"))
+	void TriggerOperationSuccess(const FBeamOperationHandle& Op, const FString& EventData,
+	                             const int64& RequestId = -1000);
 
 	/**
 	 * @brief Call only within OnSuccess/OnError/OnComplete or FullResponse handlers when the operation is completed and ended with an error. 	 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(AdvancedDisplay="RequestId", AutoCreateRefTerm="RequestId"))
-	void TriggerOperationError(const FBeamOperationHandle& Op, const FString& EventData, const int64& RequestId = -1000);
+	UFUNCTION(BlueprintCallable, Category="Beam|Operations",
+		meta=(AdvancedDisplay="RequestId", AutoCreateRefTerm="RequestId"))
+	void TriggerOperationError(const FBeamOperationHandle& Op, const FString& EventData,
+	                           const int64& RequestId = -1000);
 
 	/**
 	 * @brief Call only within OnSuccess/OnError/OnComplete or FullResponse handlers when the operation is completed and was cancelled by the user.
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(AdvancedDisplay="RequestId", AutoCreateRefTerm="RequestId"))
-	void TriggerOperationCancelled(const FBeamOperationHandle& Op, const FString& EventData, const int64& RequestId = -1000);
+	UFUNCTION(BlueprintCallable, Category="Beam|Operations",
+		meta=(AdvancedDisplay="RequestId", AutoCreateRefTerm="RequestId"))
+	void TriggerOperationCancelled(const FBeamOperationHandle& Op, const FString& EventData,
+	                               const int64& RequestId = -1000);
 
 
 	/**
@@ -236,8 +314,10 @@ public:
 	 * @param SubEvent The type of the sub-event being triggered.	 
 	 * @param EventData Arbitrary data for the event.	 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(AdvancedDisplay="RequestId", AutoCreateRefTerm="RequestId"))
-	void TriggerOperationEvent(const FBeamOperationHandle& Op, const EBeamOperationEventType Type, uint8 SubEvent, const FString& EventData, const int64& RequestId = -1000);
+	UFUNCTION(BlueprintCallable, Category="Beam|Operations",
+		meta=(AdvancedDisplay="RequestId", AutoCreateRefTerm="RequestId"))
+	void TriggerOperationEvent(const FBeamOperationHandle& Op, const EBeamOperationEventType Type, FName SubEvent,
+	                           const FString& EventData, const int64& RequestId = -1000);
 
 	/**
 	 * @brief Triggers an operation event with the given parameters. 
@@ -249,6 +329,19 @@ public:
 	 * @param CallingSystem The name of the system triggering the event.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operations")
-	void TriggerOperationEventFull(const FBeamOperationHandle& Op, const EBeamOperationEventType Type, uint8 SubEvent, const TArray<FUserSlot>& UserSlots, const FString& EventData,
+	void TriggerOperationEventFull(const FBeamOperationHandle& Op, const EBeamOperationEventType Type, FName SubEvent,
+	                               const TArray<FUserSlot>& UserSlots, const FString& EventData,
 	                               const FString& CallingSystem, const int64 RequestId = -1);
+
+
+	/**
+	 * Shortcut function call that returns an empty operation that is completed with success. 
+	 */
+	FBeamOperationHandle CPP_BeginSuccessfulOperation(const TArray<FUserSlot>& Participants, const FString& CallingSystem, FString Success, FBeamOperationEventHandlerCode OnEvent);
+
+	/**
+	 * Shortcut function call that returns an empty operation completed with an error error. 
+	 */
+	FBeamOperationHandle CPP_BeginErrorOperation(const TArray<FUserSlot>& Participants, const FString& CallingSystem, FString Error, FBeamOperationEventHandlerCode OnEvent);
+	
 };

@@ -9,20 +9,20 @@ FString UAddTagsLibrary::AddTagsToJsonString(const UAddTags* Serializable, const
 	FString Result = FString{};
 	if(Pretty)
 	{
-		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();
 	}
 	else
 	{
-		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();			
 	}
 	return Result;
 }	
 
-UAddTags* UAddTagsLibrary::Make(FOptionalString PlayerId, FOptionalBool bReplace, FOptionalArrayOfTag Tags, UObject* Outer)
+UAddTags* UAddTagsLibrary::Make(FOptionalBeamGamerTag PlayerId, FOptionalBool bReplace, FOptionalArrayOfBeamTag Tags, UObject* Outer)
 {
 	auto Serializable = NewObject<UAddTags>(Outer);
 	Serializable->PlayerId = PlayerId;
@@ -32,7 +32,7 @@ UAddTags* UAddTagsLibrary::Make(FOptionalString PlayerId, FOptionalBool bReplace
 	return Serializable;
 }
 
-void UAddTagsLibrary::Break(const UAddTags* Serializable, FOptionalString& PlayerId, FOptionalBool& bReplace, FOptionalArrayOfTag& Tags)
+void UAddTagsLibrary::Break(const UAddTags* Serializable, FOptionalBeamGamerTag& PlayerId, FOptionalBool& bReplace, FOptionalArrayOfBeamTag& Tags)
 {
 	PlayerId = Serializable->PlayerId;
 	bReplace = Serializable->bReplace;

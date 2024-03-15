@@ -22,7 +22,7 @@ void ULoginRefreshTokenRequest::BuildRoute(FString& RouteString) const { RouteSt
 
 void ULoginRefreshTokenRequest::BuildBody(FString& BodyString) const
 {
-	TUnrealJsonSerializer Serializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&BodyString);
+	TUnrealJsonSerializer Serializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&BodyString);
 	Serializer->WriteObjectStart();
 	Serializer->WriteValue(TEXT("grant_type"), GrantType);
 	Serializer->WriteValue(TEXT("refresh_token"), RefreshToken);

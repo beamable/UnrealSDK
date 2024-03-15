@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "SNameComboBox.h"
-#include "PropertyEditor/Public/IPropertyTypeCustomization.h"
+#include "IPropertyTypeCustomization.h"
 
 class FRequestTypeCustomization : public IPropertyTypeCustomization
 {

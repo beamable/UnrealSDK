@@ -14,7 +14,8 @@ void UCreateLobby::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) co
 	UBeamJsonUtils::SerializeOptional<FBeamContentId, FString>(TEXT("matchType"), &MatchType, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("passcodeLength"), &PasscodeLength, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("maxPlayers"), &MaxPlayers, Serializer);
-	UBeamJsonUtils::SerializeOptional<TArray<UTag*>, UTag*>(TEXT("playerTags"), &PlayerTags, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<FBeamTag>, FBeamTag>(TEXT("playerTags"), &PlayerTags, Serializer);
+	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("data"), &Data, Serializer);
 }
 
 void UCreateLobby::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
@@ -26,7 +27,8 @@ void UCreateLobby::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 	UBeamJsonUtils::SerializeOptional<FBeamContentId, FString>(TEXT("matchType"), &MatchType, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("passcodeLength"), &PasscodeLength, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("maxPlayers"), &MaxPlayers, Serializer);
-	UBeamJsonUtils::SerializeOptional<TArray<UTag*>, UTag*>(TEXT("playerTags"), &PlayerTags, Serializer);		
+	UBeamJsonUtils::SerializeOptional<TArray<FBeamTag>, FBeamTag>(TEXT("playerTags"), &PlayerTags, Serializer);
+	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("data"), &Data, Serializer);		
 }
 
 void UCreateLobby::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
@@ -38,7 +40,8 @@ void UCreateLobby::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	UBeamJsonUtils::DeserializeOptional<FBeamContentId, FString>("matchType", Bag, MatchType, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("passcodeLength", Bag, PasscodeLength, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("maxPlayers", Bag, MaxPlayers, OuterOwner);
-	UBeamJsonUtils::DeserializeOptional<TArray<UTag*>, UTag*>("playerTags", Bag, PlayerTags, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TArray<FBeamTag>, FBeamTag>("playerTags", Bag, PlayerTags, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TMap<FString, FString>, FString>("data", Bag, Data, OuterOwner);
 }
 
 

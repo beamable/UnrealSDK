@@ -3,8 +3,8 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfTag.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamGamerTag.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfBeamTag.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 
 #include "AddTags.generated.h"
@@ -16,11 +16,11 @@ class BEAMABLECORE_API UAddTags : public UObject, public IBeamJsonSerializableUO
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
-	FOptionalString PlayerId = {};
+	FOptionalBeamGamerTag PlayerId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Replace", Category="Beam")
 	FOptionalBool bReplace = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
-	FOptionalArrayOfTag Tags = {};
+	FOptionalArrayOfBeamTag Tags = {};
 
 	
 

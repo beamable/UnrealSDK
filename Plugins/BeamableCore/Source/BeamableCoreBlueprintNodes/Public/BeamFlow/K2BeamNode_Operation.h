@@ -6,6 +6,7 @@
 #include "K2BeamNode_BeamFlow.h"
 #include "K2Node_BreakStruct.h"
 #include "K2Node_CallFunction.h"
+#include "RequestTracker/BeamOperation.h"
 #include "K2BeamNode_Operation.generated.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_Operation"
@@ -35,12 +36,10 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 	const FName OP_Operation_UserSlots = FName("UserSlots");
 	const FName OP_Operation_Event = FName("OperationEvent");
 
-
-	const FName OP_Operation_Expanded_RequestId = FName(TEXT("RequestId"));
-	const FName OP_Operation_Expanded_ErrorData = FName(TEXT("Error"));
+	const FName OP_Operation_Expanded_ErrorData = FName(TEXT("ErrorData"));
 	const FName OP_Operation_Expanded_SuccessData = FName(TEXT("SuccessData"));
 	const FName OP_Operation_Expanded_CancelledData = FName(TEXT("CancelledData"));
-	const FName OP_Operation_Expanded_Data = FName(TEXT("Data"));
+	const FName OP_Operation_Expanded_EventData = FName(TEXT("EventData"));
 
 	const FName OP_Operation_Expanded_OnSuccess = FName(TEXT("OnSuccess"));
 	const FName OP_Operation_Expanded_OnError = FName(TEXT("OnError"));
@@ -55,14 +54,12 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 	const FString Operation_UserSlotsPinInSynchronousFlowMessage = FString::Format(*Operation_InvalidPinInFlowMessage,
 	                                                                               {TEXT("Synchronous"), *OP_Operation_UserSlots.ToString(), TEXT("Non-Synchronous")});
 	const FString Operation_ResultPinInSynchronousFlowMessage = FString::Format(*Operation_InvalidPinInFlowMessage,
-	                                                                            {TEXT("Synchronous"), *OP_Operation_Event.ToString(), TEXT("the OnComplete")});
-	const FString Operation_RequestIdPinInSynchronousFlowMessage = FString::Format(*Operation_InvalidPinInFlowMessage,
-	                                                                               {TEXT("Synchronous"), *OP_Operation_Expanded_RequestId.ToString(), TEXT("Non-Synchronous")});
+	                                                                            {TEXT("Synchronous"), *OP_Operation_Event.ToString(), TEXT("the OnComplete")});	
 	const FString Operation_ErrorPinInSynchronousFlowMessage = FString::Format(*Operation_InvalidPinInFlowMessage,
 	                                                                           {TEXT("Synchronous"), *OP_Operation_Expanded_ErrorData.ToString(), TEXT("any Error")});
 
 	const FString Operation_DataPinInSynchronousFlowMessage = FString::Format(*Operation_InvalidPinInFlowMessage,
-	                                                                          {TEXT("Synchronous"), *OP_Operation_Expanded_Data.ToString(), TEXT("any Non-Synchronous")});
+	                                                                          {TEXT("Synchronous"), *OP_Operation_Expanded_EventData.ToString(), TEXT("any Non-Synchronous")});
 
 	
 
@@ -81,30 +78,30 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 	 * All cases that you don't explicitly care about when you declare your own operation-specific enum are handled by a catch-all "others" flow.	 
 	 */
 	UPROPERTY(EditAnywhere, Category="Beam Flow|Operations")
-	TArray<uint8> RelevantSuccessSubEvents{0};
+	TArray<FName> RelevantSuccessEventCodes{NAME_None};
 	UPROPERTY(EditAnywhere, Category="Beam Flow|Operations")
-	TArray<uint8> RelevantErrorSubEvents{0};
+	TArray<FName> RelevantErrorEventCodes{NAME_None};
 	UPROPERTY(EditAnywhere, Category="Beam Flow|Operations")
-	TArray<uint8> RelevantCancelledSubEvents{0};
+	TArray<FName> RelevantCancelledEventCodes{NAME_None};
 	UPROPERTY()
-	TArray<uint8> SuccessSubEventsNotRelevantValues;
+	TArray<FName> IrrelevantSuccessEventCodes;
 	UPROPERTY()
-	TArray<uint8> ErrorSubEventsNotRelevantValues;
+	TArray<FName> IrrelevantErrorEventCodes;
 	UPROPERTY()
-	TArray<uint8> CancelledSubEventsNotRelevantValues;
+	TArray<FName> IrrelevantCancelledEventCodes;
 
 	UPROPERTY()
-	TArray<FName> SuccessSubEventsFlowPinNames;
+	TArray<FName> SuccessEventFlowPinNames;
 	UPROPERTY()
-	TArray<FName> ErrorSubEventsFlowPinNames;
+	TArray<FName> ErrorEventFlowPinNames;
 	UPROPERTY()
-	TArray<FName> CancelledSubEventsFlowPinNames;
+	TArray<FName> CancelledEventFlowPinNames;
 	UPROPERTY()
-	TArray<FName> SuccessSubEventsDataPinNames;
+	TArray<FName> SuccessEventDataPinNames;
 	UPROPERTY()
-	TArray<FName> ErrorSubEventsDataPinNames;
+	TArray<FName> ErrorEventDataPinNames;
 	UPROPERTY()
-	TArray<FName> CancelledSubEventsDataPinNames;
+	TArray<FName> CancelledEventDataPinNames;
 
 	UPROPERTY()
 	TArray<FString> WrappedOperationFunctionInputPinNames;
@@ -141,32 +138,15 @@ protected:
 	virtual UClass* GetRuntimeSubsystemClass() const;
 
 	/**
-	 * @brief If you declared a custom enum to represent the sub-events of your operation, return the type here.
-	 * Otherwise, this should not be overriden (it'll be of this type: EDefaultOperationEventSubType).  
+	 * Returns the list of possible values for FBeamOperationEvent.EventCode given the type of the event (success/error/etc).
+	 * Must always include NAME_None as its first value (the base implementation guarantees this) so call it if you override this to expose other events. 
 	 */
-	virtual UEnum* GetOperationSubTypeEnum() const;
+	virtual TArray<FName>   GetOperationEventCodes(EBeamOperationEventType Type) const;
 
 	/**
-	 * @brief A map that should associate, for every possible value of the Operation SubType enum, a UScriptStruct type.
-	 * If associated as nullptr, the event will take in the raw string event data. 
+	 * Array parallel to the ones returned by GetOperationEventCodes that describes the tooltips for the pins of each individual sub events when in EOperationNodeModes::OnSubEvents mode. 
 	 */
-	virtual TMap<uint8, UScriptStruct*> GetOperationSubTypeUStructs() const;
-
-	/**
-	 * @brief A map that should associate, for every possible value of the Operation SubType enum, a UClass that contains the function that'll convert the EventData string into
-	 * the UScriptStruct type.
-	 */
-	virtual TMap<uint8, UClass*> GetOperationSubTypeConversionFunctionClass() const;
-
-	/**
-	 * @brief A map that should associate, for every possible value of the Operation SubType enum, the name of the function that'll convert the EventData string into
-	 * the UScriptStruct type.
-	 *
-	 * To get the name, you can use this macro: GET_FUNCTION_NAME_CHECKED_OneParam(USubTypeConversionFunctionClass, ConversionFunction, FString)).
-	 *
-	 * The function must take an FString parameter and return a struct of the UScriptStruct type for the associated Operation Event SubType.
-	 */
-	virtual TMap<uint8, FName> GetOperationSubTypeConversionFunctionName() const;
+	virtual TArray<FString> GetOperationEventCodeTooltips(EBeamOperationEventType Type) const;	
 
 	/**
 	 * @brief Map of pin names to tooltip.
@@ -196,28 +176,26 @@ protected:
 	                                    const TArray<UEdGraphNode*>& CompleteFlowNodes, const TArray<UEdGraphNode*>& OutPerFlowEventNodes,
 	                                    UEdGraphPin* CompletePin, UEdGraphPin* ResultPin, UEdGraphPin* UserSlotsPin);
 
-	void SetUpPinsForSuccessNotSuccessBeamFlow(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UK2Node_CallFunction* CallOperationFunction, UEdGraphPin* const SuccessFlowPin,
-	                                           UEdGraphPin* const RequestIdPin, UEdGraphPin* const UserSlotsPin, UEdGraphPin* const OthersFlowPin, TArray<TArray<UEdGraphNode*>> OutPerFlowNodes,
+	void SetUpPinsForSuccessNotSuccessBeamFlow(FKismetCompilerContext&       CompilerContext, UEdGraph*       SourceGraph, const UK2Node_CallFunction*     CallOperationFunction, UEdGraphPin* const SuccessFlowPin,
+	                                           UEdGraphPin* const            UserSlotsPin, UEdGraphPin* const OthersFlowPin, TArray<TArray<UEdGraphNode*>> OutPerFlowNodes,
 	                                           TArray<TArray<UEdGraphNode*>> OutPerFlowEventNodes);
 
-	void SetUpPinsForSuccessErrorCancelledBeamFlow(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UK2Node_CallFunction* CallOperationFunction,
-	                                               UEdGraphPin* const SuccessFlowPin, UEdGraphPin* const RequestIdPin, UEdGraphPin* const UserSlotsPin,
-	                                               UEdGraphPin* const ErrorFlowPin, UEdGraphPin* const ErrorDataPin, TArray<TArray<UEdGraphNode*>> OutPerFlowNodes,
-	                                               TArray<TArray<UEdGraphNode*>> OutPerFlowEventNodes);
+	void SetUpPinsForSuccessErrorCancelledBeamFlow(FKismetCompilerContext&       CompilerContext, UEdGraph*                     SourceGraph, const UK2Node_CallFunction* CallOperationFunction,
+	                                               UEdGraphPin* const            SuccessFlowPin, UEdGraphPin* const             UserSlotsPin,
+	                                               UEdGraphPin* const            ErrorFlowPin, UEdGraphPin* const               EventDataPin, UEdGraphPin* const CancelledFlowPin,
+	                                               TArray<TArray<UEdGraphNode*>> OutPerFlowNodes, TArray<TArray<UEdGraphNode*>> OutPerFlowEventNodes);
 
-	void SetUpPinsForSubEventsBeamFlow(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UK2Node_CallFunction* CallOperationFunction, UEdGraphPin* const RequestIdPin,
-	                                   UEdGraphPin* const UserSlotsPin, UEdGraphPin* const OthersFlowPin, UEdGraphPin* const OthersDataPin, TArray<TArray<UEdGraphNode*>> OutPerFlowNodes,
+	void SetUpPinsForSubEventsBeamFlow(FKismetCompilerContext&       CompilerContext, UEdGraph*       SourceGraph, const UK2Node_CallFunction* CallOperationFunction,
+	                                   UEdGraphPin* const            UserSlotsPin, UEdGraphPin* const OthersFlowPin, UEdGraphPin* const        OthersDataPin, TArray<TArray<UEdGraphNode*>> OutPerFlowNodes,
 	                                   TArray<TArray<UEdGraphNode*>> OutPerFlowEventNodes);
 
-	void ExpandBeamFlowSubEvents(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
+	void ExpandBeamFlowSubEvents(FKismetCompilerContext&                 CompilerContext, UEdGraph*                     SourceGraph, const UEdGraphSchema_K2* K2Schema,
 	                             const TArrayView<TArray<UEdGraphNode*>> Flows, const TArrayView<TArray<UEdGraphNode*>> EventFlows,
-	                             UEdGraphPin* const OthersFlowPin,
-	                             const TArray<FName> SubEventsFlowPins, const TArray<FName> SubEventsDataPins,
-	                             const TArray<uint8> SubEventsRelevantValues,
-	                             const TArray<uint8> SubEventsSkippedValues, UK2Node_BreakStruct* const BreakOperationResultNode,
-	                             UEdGraphPin* const SubEventSwitchExecPin);
-
-	static void GatherSubEventsFromSubTypeEnum(const UEnum* Enum, TArray<FString>& SuccessTypeSubEvents, TArray<FString>& ErrorTypeSubEvents, TArray<FString>& CancelledTypeSubEvents);
+	                             UEdGraphPin* const                      OthersFlowPin,
+	                             const TArray<FName>&                    EventsFlowPinNames,
+	                             const TArray<FName>&                    EventsDataPinNames, const TArray<FName>&         RelevantEventCodes,
+	                             const TArray<FName>&                    IrrelevantEventCodes, UK2Node_BreakStruct* const BreakOperationResultNode, UEdGraphPin* const SubEventSwitchExecPin);
+	
 };
 
 #undef LOCTEXT_NAMESPACE

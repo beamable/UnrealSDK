@@ -9,20 +9,20 @@ FString UOnlineStatusLibrary::OnlineStatusToJsonString(const UOnlineStatus* Seri
 	FString Result = FString{};
 	if(Pretty)
 	{
-		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();
 	}
 	else
 	{
-		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();			
 	}
 	return Result;
 }	
 
-UOnlineStatus* UOnlineStatusLibrary::Make(FOptionalString LastOnline, FOptionalBool bOnline, FOptionalString PlayerId, FOptionalPresenceStatus Status, FOptionalString Description, UObject* Outer)
+UOnlineStatus* UOnlineStatusLibrary::Make(FOptionalString LastOnline, FOptionalBool bOnline, FOptionalBeamGamerTag PlayerId, FOptionalPresenceStatus Status, FOptionalString Description, UObject* Outer)
 {
 	auto Serializable = NewObject<UOnlineStatus>(Outer);
 	Serializable->LastOnline = LastOnline;
@@ -34,7 +34,7 @@ UOnlineStatus* UOnlineStatusLibrary::Make(FOptionalString LastOnline, FOptionalB
 	return Serializable;
 }
 
-void UOnlineStatusLibrary::Break(const UOnlineStatus* Serializable, FOptionalString& LastOnline, FOptionalBool& bOnline, FOptionalString& PlayerId, FOptionalPresenceStatus& Status, FOptionalString& Description)
+void UOnlineStatusLibrary::Break(const UOnlineStatus* Serializable, FOptionalString& LastOnline, FOptionalBool& bOnline, FOptionalBeamGamerTag& PlayerId, FOptionalPresenceStatus& Status, FOptionalString& Description)
 {
 	LastOnline = Serializable->LastOnline;
 	bOnline = Serializable->bOnline;

@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Lobby", DisplayName="Beam - Make ApiLobbyPutMetadata",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Name,_Description,_Restriction,_MatchType,_MaxPlayers,_NewHost,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UApiLobbyPutMetadataRequest* Make(FGuid _Id, FOptionalString _Name, FOptionalString _Description, FOptionalString _Restriction, FOptionalBeamContentId _MatchType, FOptionalInt32 _MaxPlayers, FOptionalString _NewHost, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Lobby", DisplayName="Beam - Make ApiLobbyPutMetadata",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Name,_Description,_Restriction,_MatchType,_MaxPlayers,_NewHost,_Data,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UApiLobbyPutMetadataRequest* Make(FGuid _Id, FOptionalString _Name, FOptionalString _Description, FOptionalLobbyRestriction _Restriction, FOptionalBeamContentId _MatchType, FOptionalInt32 _MaxPlayers, FOptionalString _NewHost, FOptionalUpdateData _Data, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

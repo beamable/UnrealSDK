@@ -333,7 +333,7 @@ void FBeamContentObjectSpec::Define()
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢UnrealClassB₢"), *TestUnrealClassB);
 
 
-	Describe("Content Serialization", [=]()
+	Describe("Content Serialization", [=, this]()
 	{
 		BeforeEach([=, this]()
 		{
@@ -567,7 +567,7 @@ void FBeamContentObjectSpec::Define()
 		});
 	});
 
-	Describe("Content Deserialization", [=]()
+	Describe("Content Deserialization", [=, this]()
 	{
 		BeforeEach([=, this]()
 		{

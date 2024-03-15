@@ -155,5 +155,5 @@ protected:
 	void StopDockerMicroservices(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op);
 
 	// This is how we actually keep Local Microservice State in sync
-	void OnUpdateLocalStateReceived(const TArray<FBeamCliProjectPsStreamData>& Stream, const TArray<long long>&, const FBeamOperationHandle&);
+	void OnUpdateLocalStateReceived(const TArray<UBeamCliProjectPsStreamData*>& Stream, const TArray<long long>&, const FBeamOperationHandle&);
 };

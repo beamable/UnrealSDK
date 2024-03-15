@@ -114,6 +114,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TArray<UClass*> AllContentTypes;
 
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	TMap<FString, UClass*> ContentTypeStringToContentClass;
+
 
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
@@ -127,10 +130,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetLocalManifestById(const FBeamContentManifestId& Id, UDataTable*& Manifest);
 
-
 	UClass** FindContentTypeByName(FString TypeName);
+	UClass** FindContentTypeByTypeId(FString TypeId);
 
-	bool TryLoadContentObject(const FBeamContentManifestId& OwnerManifest, FBeamContentId ContentId, FString TypeName, UBeamContentObject*& OutLoadedContentObject);
+	bool TryLoadContentObject(const FBeamContentManifestId& OwnerManifest, FBeamContentId ContentId, UBeamContentObject*& OutLoadedContentObject);
 
 	bool InstantiateContentObject(const UDataTable* Manifest, const FBeamContentId& ContentId, UBeamContentObject*& OutNewContentObject, UObject* Outer);
 

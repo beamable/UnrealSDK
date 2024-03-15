@@ -4,6 +4,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "LeaderboardListRequestBody.generated.h"
 
@@ -17,6 +18,8 @@ public:
 	FOptionalInt32 Skip = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit", Category="Beam")
 	FOptionalInt32 Limit = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Prefix", Category="Beam")
+	FOptionalString Prefix = {};
 
 	
 

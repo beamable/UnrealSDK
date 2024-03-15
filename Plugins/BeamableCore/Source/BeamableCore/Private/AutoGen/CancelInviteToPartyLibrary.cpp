@@ -9,20 +9,20 @@ FString UCancelInviteToPartyLibrary::CancelInviteToPartyToJsonString(const UCanc
 	FString Result = FString{};
 	if(Pretty)
 	{
-		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();
 	}
 	else
 	{
-		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();			
 	}
 	return Result;
 }	
 
-UCancelInviteToParty* UCancelInviteToPartyLibrary::Make(FOptionalString PlayerId, UObject* Outer)
+UCancelInviteToParty* UCancelInviteToPartyLibrary::Make(FOptionalBeamGamerTag PlayerId, UObject* Outer)
 {
 	auto Serializable = NewObject<UCancelInviteToParty>(Outer);
 	Serializable->PlayerId = PlayerId;
@@ -30,7 +30,7 @@ UCancelInviteToParty* UCancelInviteToPartyLibrary::Make(FOptionalString PlayerId
 	return Serializable;
 }
 
-void UCancelInviteToPartyLibrary::Break(const UCancelInviteToParty* Serializable, FOptionalString& PlayerId)
+void UCancelInviteToPartyLibrary::Break(const UCancelInviteToParty* Serializable, FOptionalBeamGamerTag& PlayerId)
 {
 	PlayerId = Serializable->PlayerId;
 		

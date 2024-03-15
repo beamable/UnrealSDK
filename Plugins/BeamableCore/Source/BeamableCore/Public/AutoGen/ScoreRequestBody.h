@@ -4,6 +4,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 
 #include "ScoreRequestBody.generated.h"
@@ -22,6 +23,8 @@ public:
 	int64 PlayerId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Increment", Category="Beam")
 	FOptionalBool bIncrement = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id", Category="Beam")
+	FOptionalString ContentId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Stats", Category="Beam")
 	FOptionalMapOfString Stats = {};
 

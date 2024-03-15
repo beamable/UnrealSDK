@@ -6,7 +6,7 @@
 #include "SSimpleButton.h"
 #include "Dialog/SCustomDialog.h"
 #include "Subsystems/Content/BeamEditorContent.h"
-#include "EditorScriptingUtilities/Public/EditorDialogLibrary.h"
+#include "EditorDialogLibrary.h"
 #include "Subsystems/BeamEditor.h"
 
 #define LOCTEXT_NAMESPACE "ULocalContentManifestEditorState"
@@ -119,38 +119,43 @@ void ULocalContentManifestEditorState::RebuildContentNamesForTable()
 
 void ULocalContentManifestEditorState::AddDataTableToolbarExtension(FToolBarBuilder& Builder)
 {
-	SAssignNew(SelectedTypeComboBox, SNameComboBox)
-	.InitiallySelectedItem(EditorContentSystem->AllContentTypeNames[SelectedTypeIdx])
-	.OptionsSource(&EditorContentSystem->AllContentTypeNames)
-	.OnSelectionChanged_Lambda([this](TSharedPtr<FName, ESPMode::ThreadSafe> Name, ESelectInfo::Type T)
-	                                               {
-		                                               SelectedTypeIdx = EditorContentSystem->AllContentTypeNames.
-		                                                                                      FindLast(Name);
-	                                               });
+	// We only add these buttons if this project allows editing content objects in the engine.
+	// This is here to satisfy teams that build their own content editing tools and, therefore, want a way to enforce that people cannot edit content outside of that custom pipeline.
+	if (!GetDefault<UBeamEditorSettings>()->bDisableInEngineEditing)
+	{
+		SAssignNew(SelectedTypeComboBox, SNameComboBox)
+		.InitiallySelectedItem(EditorContentSystem->AllContentTypeNames[SelectedTypeIdx])
+		.OptionsSource(&EditorContentSystem->AllContentTypeNames)
+		.OnSelectionChanged_Lambda([this](TSharedPtr<FName, ESPMode::ThreadSafe> Name, ESelectInfo::Type T)
+		                                               {
+			                                               SelectedTypeIdx = EditorContentSystem->AllContentTypeNames.
+			                                                                                      FindLast(Name);
+		                                               });
 
-	Builder.AddSeparator();
-	Builder.AddToolBarButton(FBeamableCoreEditorCommands::Get().CreateContentObjectInLocalManifest, NAME_None,
-	                         LOCTEXT("CreateContentButtonTxt", "Create Content of Type: "));
-	Builder.AddWidget(SelectedTypeComboBox.ToSharedRef());
+		Builder.AddSeparator();
+		Builder.AddToolBarButton(FBeamableCoreEditorCommands::Get().CreateContentObjectInLocalManifest, NAME_None,
+		                         LOCTEXT("CreateContentButtonTxt", "Create Content of Type: "));
+		Builder.AddWidget(SelectedTypeComboBox.ToSharedRef());
 
 
-	// Add Edit / Select Content Dropdown / Remove Buttons
-	Builder.AddToolBarButton(FBeamableCoreEditorCommands::Get().EditContentObjectInLocalManifest, NAME_None,
-	                         LOCTEXT("EditContentButtonTxt", "Edit Content: "));
+		// Add Edit / Select Content Dropdown / Remove Buttons
+		Builder.AddToolBarButton(FBeamableCoreEditorCommands::Get().EditContentObjectInLocalManifest, NAME_None,
+		                         LOCTEXT("EditContentButtonTxt", "Edit Content: "));
 
-	// Fill out the content names for the current editing table
-	RebuildContentNamesForTable();
+		// Fill out the content names for the current editing table
+		RebuildContentNamesForTable();
 
-	// Prepare the content combo box TODO: Change this once UE fixes/exposes callbacks so that we can hook into the DataTable's own select/rename/duplicate row callbacks.
-	SAssignNew(SelectedContentComboBox, SNameComboBox)
-	.InitiallySelectedItem(SelectedContentIdx >= 0 ? EditingTableContentNames[SelectedContentIdx] : nullptr)
-	.OptionsSource(&EditingTableContentNames)
-	.OnSelectionChanged_Lambda([this](TSharedPtr<FName, ESPMode::ThreadSafe> Name, ESelectInfo::Type T)
-	                                                  {
-		                                                  SelectedContentIdx = EditingTableContentNames.FindLast(Name);
-	                                                  });
+		// Prepare the content combo box TODO: Change this once UE fixes/exposes callbacks so that we can hook into the DataTable's own select/rename/duplicate row callbacks.
+		SAssignNew(SelectedContentComboBox, SNameComboBox)
+		.InitiallySelectedItem(SelectedContentIdx >= 0 ? EditingTableContentNames[SelectedContentIdx] : nullptr)
+		.OptionsSource(&EditingTableContentNames)
+		.OnSelectionChanged_Lambda([this](TSharedPtr<FName, ESPMode::ThreadSafe> Name, ESelectInfo::Type T)
+		                                                  {
+			                                                  SelectedContentIdx = EditingTableContentNames.FindLast(Name);
+		                                                  });
 
-	Builder.AddWidget(SelectedContentComboBox.ToSharedRef());
+		Builder.AddWidget(SelectedContentComboBox.ToSharedRef());
+	}
 
 	Builder.AddToolBarButton(FBeamableCoreEditorCommands::Get().PublishManifest, NAME_None,
 	                         LOCTEXT("PublishButtonTxt", "Publish"));
@@ -282,8 +287,8 @@ void ULocalContentManifestEditorState::PublishButtonClicked()
 
 				// Show it as a modal of the DataTable editor.
 				FSlateApplication::Get().AddModalWindow(PublishingWindow.ToSharedRef(),
-					FSlateApplication::Get().GetActiveTopLevelWindow(),
-					true);
+				                                        FSlateApplication::Get().GetActiveTopLevelWindow(),
+				                                        true);
 				PublishingWindow->ShowWindow();
 			}))
 		});
@@ -295,12 +300,12 @@ void ULocalContentManifestEditorState::PublishButtonClicked()
 void ULocalContentManifestEditorState::DownloadButtonClicked()
 {
 	FBeamOperationEventHandlerCode EventHandler;
-	EventHandler.BindLambda([this](const TArray<FUserSlot>&, FBeamOperationEvent OperationEvent)
+	EventHandler.BindLambda([this](FBeamOperationEvent OperationEvent)
 		{
 			if (OperationEvent.EventType == OET_SUCCESS)
 			{
 				// Handle Final Success Event
-				if (OperationEvent.EventSubTypeCode == 0)
+				if (OperationEvent.EventCode == NAME_None)
 				{
 					// Notify the data table editor that this table has changed (it's the only way to get it to redraw)	
 					FDataTableEditorUtils::BroadcastPostChange(
@@ -308,7 +313,7 @@ void ULocalContentManifestEditorState::DownloadButtonClicked()
 				}
 
 				// Handle Sub-Event for when the Manifest Changes is ready
-				if (OperationEvent.EventSubTypeCode == 1)
+				if (OperationEvent.EventCode == FName("MANIFEST_CHANGE_READY"))
 				{
 					// Show changes in a dialog and ask for confirmation, then call ContentSystem apply.
 					const auto WorkingDownloadState = EditorContentSystem->WorkingDownloadStates[ManifestId];
@@ -377,8 +382,7 @@ void ULocalContentManifestEditorState::DownloadButtonClicked()
 	EditorContentSystem->DownloadManifest(ManifestId, EventHandler);
 }
 
-void ULocalContentManifestEditorState::OnPublishEvent(const TArray<FUserSlot>& UserSlots,
-                                                      FBeamOperationEvent OperationEvent) const
+void ULocalContentManifestEditorState::OnPublishEvent(FBeamOperationEvent OperationEvent) const
 {
 	const auto CoreSettings = GetDefault<UBeamCoreSettings>();
 	const auto TargetRealmPid = CoreSettings->TargetRealm.Pid;
@@ -387,7 +391,7 @@ void ULocalContentManifestEditorState::OnPublishEvent(const TArray<FUserSlot>& U
 	// Find the name of the realm we published to.
 	FString RealmName;
 	{
-		const auto EditorSlot = UserSlots[0];
+		const auto EditorSlot = UBeamEditor::GetSelf(this)->GetMainEditorSlot();
 		TArray<FBeamProjectRealmData> KnownRealms = Settings->PerSlotDeveloperProjectData.FindChecked(EditorSlot.Name).
 		                                                      AllRealms;
 		for (const auto& Realm : KnownRealms)
@@ -401,13 +405,12 @@ void ULocalContentManifestEditorState::OnPublishEvent(const TArray<FUserSlot>& U
 	if (OperationEvent.EventType == OET_SUCCESS)
 	{
 		// If it is the final success event (as in, the operation completed successfully)
-		if (OperationEvent.EventSubTypeCode == 0)
+		if (OperationEvent.EventCode == NAME_None)
 		{
 			const auto ContentManifestId = OperationEvent.EventData;
 
 			const auto Title = LOCTEXT("PublishSuccessful", "Publish Successful");
-			const auto Msg = FText::FromString(FString::Format(
-				TEXT("Successfully published manifest with Id={0} to Realm={1}."), {ContentManifestId, RealmName}));
+			const auto Msg = FText::FromString(FString::Format(TEXT("Successfully published manifest with Id={0} to Realm={1}."), {ContentManifestId, RealmName}));
 			UEditorDialogLibrary::ShowMessage(Title, Msg, EAppMsgType::Ok, EAppReturnType::Ok);
 		}
 
@@ -416,9 +419,7 @@ void ULocalContentManifestEditorState::OnPublishEvent(const TArray<FUserSlot>& U
 	else if (OperationEvent.EventType == OET_ERROR)
 	{
 		const auto Title = LOCTEXT("PublishSuccessful", "Publish Failed");
-		const auto Msg = FText::FromString(FString::Format(
-			TEXT("Manifest failed to be published manifest Realm={0}.\nError={1}"),
-			{RealmName, OperationEvent.EventData}));
+		const auto Msg = FText::FromString(FString::Format(TEXT("Manifest failed to be published manifest Realm={0}.\nError={1}"), {RealmName, OperationEvent.EventData}));
 		UEditorDialogLibrary::ShowMessage(Title, Msg, EAppMsgType::Ok, EAppReturnType::Ok);
 		UE_LOG(LogBeamContent, Error, TEXT("Content Publish Had error %s."), *OperationEvent.EventData);
 	}

@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "JoinRequestBody.generated.h"
 
@@ -15,6 +15,8 @@ class BEAMABLECORE_API UJoinRequestBody : public UObject, public IBeamJsonSerial
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tournament Id", Category="Beam")
 	FString TournamentId = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id", Category="Beam")
+	FOptionalString ContentId = {};
 
 	
 

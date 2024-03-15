@@ -8,7 +8,6 @@ public class BeamableCore : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-
 		PublicIncludePaths.AddRange(
 			new string[]
 			{
@@ -40,7 +39,8 @@ public class BeamableCore : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore"
+				"SlateCore",
+				"OnlineSubsystem"
 				// ... add private dependencies that you statically link with here ...	
 			}
 		);

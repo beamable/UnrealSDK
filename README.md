@@ -1,4 +1,4 @@
-# Unreal SDK - EARLY PREVIEW
+# Unreal SDK - BETA
 
 This repository contains a single-branch early preview of the Beamable Unreal SDK. It tries to remain as stable as
 possible, but with no hard guarantees about it. It also does NOT currently provide any backward compatibility guarantees

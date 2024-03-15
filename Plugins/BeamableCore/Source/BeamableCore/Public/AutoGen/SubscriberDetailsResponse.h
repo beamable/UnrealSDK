@@ -25,6 +25,8 @@ public:
 	FString SubscribeKey = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Channel", Category="Beam")
 	FString PlayerChannel = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Channels", Category="Beam")
+	TArray<FString> PlayerChannels = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Game Global Notification Channel", Category="Beam")
 	FOptionalString GameGlobalNotificationChannel = {};
 

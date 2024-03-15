@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/JoinLobbyByPasscode.h"
+#include "BeamableCore/Public/AutoGen/JoinLobby.h"
 #include "BeamableCore/Public/AutoGen/Lobby.h"
 
 #include "PutPasscodeRequest.generated.h"
@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UJoinLobbyByPasscode* Body = {};
+	UJoinLobby* Body = {};
 
 	// Beam Base Request Declaration
 	UPutPasscodeRequest() = default;
@@ -37,7 +37,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Lobby", DisplayName="Beam - Make PutPasscode",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Passcode,_Tags,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UPutPasscodeRequest* Make(FOptionalString _Passcode, FOptionalArrayOfTag _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	static UPutPasscodeRequest* Make(FOptionalString _Passcode, FOptionalArrayOfBeamTag _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

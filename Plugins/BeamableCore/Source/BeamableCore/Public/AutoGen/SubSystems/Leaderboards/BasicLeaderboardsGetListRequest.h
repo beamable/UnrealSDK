@@ -8,6 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/LeaderboardListResponse.h"
 
 #include "BasicLeaderboardsGetListRequest.generated.h"
@@ -27,6 +28,8 @@ public:
 	FOptionalInt32 Skip = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit", Category="Beam")
 	FOptionalInt32 Limit = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Prefix", Category="Beam")
+	FOptionalString Prefix = {};
 
 	// Body Params
 	
@@ -38,8 +41,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make BasicLeaderboardsGetList",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Skip,_Limit,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UBasicLeaderboardsGetListRequest* Make(FOptionalInt32 _Skip, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make BasicLeaderboardsGetList",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Skip,_Limit,_Prefix,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UBasicLeaderboardsGetListRequest* Make(FOptionalInt32 _Skip, FOptionalInt32 _Limit, FOptionalString _Prefix, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

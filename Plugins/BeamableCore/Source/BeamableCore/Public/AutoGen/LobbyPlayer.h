@@ -3,8 +3,9 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamGamerTag.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfBeamTag.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfTag.h"
 
 #include "LobbyPlayer.generated.h"
 
@@ -15,11 +16,11 @@ class BEAMABLECORE_API ULobbyPlayer : public UObject, public IBeamJsonSerializab
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
-	FOptionalString PlayerId = {};
+	FOptionalBeamGamerTag PlayerId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Joined", Category="Beam")
 	FOptionalString Joined = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
-	FOptionalArrayOfTag Tags = {};
+	FOptionalArrayOfBeamTag Tags = {};
 
 	
 

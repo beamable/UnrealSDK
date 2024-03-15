@@ -9,7 +9,7 @@ void UApiLobbyPutMetadataRequest::BuildVerb(FString& VerbString) const
 void UApiLobbyPutMetadataRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/api/lobbies/{id}/metadata");
-	Route = Route.Replace(TEXT("{id}"), *Id.ToString(EGuidFormats::DigitsLower));
+	Route = Route.Replace(TEXT("{id}"), *Id.ToString(EGuidFormats::DigitsWithHyphensLower));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -22,12 +22,12 @@ void UApiLobbyPutMetadataRequest::BuildBody(FString& BodyString) const
 {
 	ensureAlways(Body);
 
-	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&BodyString);
+	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&BodyString);
 	Body->BeamSerialize(JsonSerializer);
 	JsonSerializer->Close();
 }
 
-UApiLobbyPutMetadataRequest* UApiLobbyPutMetadataRequest::Make(FGuid _Id, FOptionalString _Name, FOptionalString _Description, FOptionalString _Restriction, FOptionalBeamContentId _MatchType, FOptionalInt32 _MaxPlayers, FOptionalString _NewHost, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UApiLobbyPutMetadataRequest* UApiLobbyPutMetadataRequest::Make(FGuid _Id, FOptionalString _Name, FOptionalString _Description, FOptionalLobbyRestriction _Restriction, FOptionalBeamContentId _MatchType, FOptionalInt32 _MaxPlayers, FOptionalString _NewHost, FOptionalUpdateData _Data, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UApiLobbyPutMetadataRequest* Req = NewObject<UApiLobbyPutMetadataRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -44,6 +44,7 @@ UApiLobbyPutMetadataRequest* UApiLobbyPutMetadataRequest::Make(FGuid _Id, FOptio
 	Req->Body->MatchType = _MatchType;
 	Req->Body->MaxPlayers = _MaxPlayers;
 	Req->Body->NewHost = _NewHost;
+	Req->Body->Data = _Data;
 	
 
 	return Req;

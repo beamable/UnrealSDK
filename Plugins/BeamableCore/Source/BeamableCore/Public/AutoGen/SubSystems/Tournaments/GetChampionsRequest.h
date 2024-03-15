@@ -9,6 +9,7 @@
 
 
 
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/GetChampionsResponse.h"
 
 #include "GetChampionsRequest.generated.h"
@@ -28,6 +29,8 @@ public:
 	FString TournamentId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Cycles", Category="Beam")
 	int32 Cycles = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Content Id", Category="Beam")
+	FOptionalString ContentId = {};
 
 	// Body Params
 	
@@ -39,8 +42,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", DisplayName="Beam - Make GetChampions",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UGetChampionsRequest* Make(FString _TournamentId, int32 _Cycles, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Tournaments", DisplayName="Beam - Make GetChampions",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_ContentId,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UGetChampionsRequest* Make(FString _TournamentId, int32 _Cycles, FOptionalString _ContentId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

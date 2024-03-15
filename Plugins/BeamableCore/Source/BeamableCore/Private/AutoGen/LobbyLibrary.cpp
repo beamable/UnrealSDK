@@ -9,20 +9,20 @@ FString ULobbyLibrary::LobbyToJsonString(const ULobby* Serializable, const bool 
 	FString Result = FString{};
 	if(Pretty)
 	{
-		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();
 	}
 	else
 	{
-		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&Result);
+		TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&Result);
 		Serializable->BeamSerialize(JsonSerializer);
 		JsonSerializer->Close();			
 	}
 	return Result;
 }	
 
-ULobby* ULobbyLibrary::Make(FOptionalString LobbyId, FOptionalMatchType MatchType, FOptionalString Created, FOptionalString Name, FOptionalString Description, FOptionalString Host, FOptionalString Passcode, FOptionalLobbyRestriction Restriction, FOptionalInt32 MaxPlayers, FOptionalArrayOfLobbyPlayer Players, UObject* Outer)
+ULobby* ULobbyLibrary::Make(FOptionalString LobbyId, FOptionalMatchType MatchType, FOptionalString Created, FOptionalString Name, FOptionalString Description, FOptionalBeamGamerTag Host, FOptionalString Passcode, FOptionalLobbyRestriction Restriction, FOptionalInt32 MaxPlayers, FOptionalArrayOfLobbyPlayer Players, FOptionalMapOfString Data, UObject* Outer)
 {
 	auto Serializable = NewObject<ULobby>(Outer);
 	Serializable->LobbyId = LobbyId;
@@ -35,11 +35,12 @@ ULobby* ULobbyLibrary::Make(FOptionalString LobbyId, FOptionalMatchType MatchTyp
 	Serializable->Restriction = Restriction;
 	Serializable->MaxPlayers = MaxPlayers;
 	Serializable->Players = Players;
+	Serializable->Data = Data;
 	
 	return Serializable;
 }
 
-void ULobbyLibrary::Break(const ULobby* Serializable, FOptionalString& LobbyId, FOptionalMatchType& MatchType, FOptionalString& Created, FOptionalString& Name, FOptionalString& Description, FOptionalString& Host, FOptionalString& Passcode, FOptionalLobbyRestriction& Restriction, FOptionalInt32& MaxPlayers, FOptionalArrayOfLobbyPlayer& Players)
+void ULobbyLibrary::Break(const ULobby* Serializable, FOptionalString& LobbyId, FOptionalMatchType& MatchType, FOptionalString& Created, FOptionalString& Name, FOptionalString& Description, FOptionalBeamGamerTag& Host, FOptionalString& Passcode, FOptionalLobbyRestriction& Restriction, FOptionalInt32& MaxPlayers, FOptionalArrayOfLobbyPlayer& Players, FOptionalMapOfString& Data)
 {
 	LobbyId = Serializable->LobbyId;
 	MatchType = Serializable->MatchType;
@@ -51,6 +52,7 @@ void ULobbyLibrary::Break(const ULobby* Serializable, FOptionalString& LobbyId, 
 	Restriction = Serializable->Restriction;
 	MaxPlayers = Serializable->MaxPlayers;
 	Players = Serializable->Players;
+	Data = Serializable->Data;
 		
 }
 

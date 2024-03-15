@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AutoGen/InventoryView.h"
 #include "Runtime/BeamRuntimeSubsystem.h"
+#include "Subsystems/Content/BeamContentSubsystem.h"
 #include "BeamInventorySubsystem.generated.h"
 
 struct FOptionalMapOfInt64;
@@ -53,6 +54,16 @@ struct FBeamItemState
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FDateTime UpdatedAt;
+
+	friend bool operator==(const FBeamItemState& Lhs, const FBeamItemState& RHS)
+	{
+		return Lhs.InstanceId == RHS.InstanceId;
+	}
+
+	friend bool operator!=(const FBeamItemState& Lhs, const FBeamItemState& RHS)
+	{
+		return !(Lhs == RHS);
+	}
 };
 
 
@@ -64,7 +75,7 @@ struct FBeamInventoryState
 	FUserSlot OwnerPlayer;
 
 
-	TMap<FBeamContentId, int64>                  Currencies;
+	TMap<FBeamContentId, int64> Currencies;
 	TMap<FBeamContentId, TMap<FString, FString>> CurrencyProperties;
 
 	TMap<FBeamContentId, TArray<FBeamItemState>> Items;
@@ -94,7 +105,7 @@ struct FBeamInventoryUpdateCommand
 	int64 CreateItemCount;
 
 	TMap<TTuple<FBeamContentId, int64>, TMap<FString, FString>> CreatedItems;
-	TArray<TTuple<FBeamContentId, int64>>                       RemovedItems;
+	TArray<TTuple<FBeamContentId, int64>> RemovedItems;
 	TMap<TTuple<FBeamContentId, int64>, TMap<FString, FString>> ChangedItems;
 
 
@@ -141,7 +152,7 @@ class BEAMABLECORERUNTIME_API UBeamInventorySubsystem : public UBeamRuntimeSubsy
 {
 	GENERATED_BODY()
 
-	TMap<FUserSlot, FBeamInventoryState> Inventories;
+	TMap<FBeamGamerTag, FBeamInventoryState> Inventories;
 
 	TMap<FUserSlot, FBeamInventoryUpdateCommand> UpdateCommands;
 
@@ -158,8 +169,8 @@ class BEAMABLECORERUNTIME_API UBeamInventorySubsystem : public UBeamRuntimeSubsy
 	virtual void InitializeWhenUnrealReady_Implementation(FBeamOperationHandle& ResultOp) override;
 
 	virtual void OnUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsFirstAuth, FBeamOperationHandle& ResultOp) override;
-	
-	virtual void OnPostUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp) override;	
+
+	virtual void OnPostUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp) override;
 
 public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
@@ -170,35 +181,46 @@ public:
 	 * @brief Gets the list of all inventory items and currencies from the backend and updates the local inventory state.  
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Inventory", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle FetchAllInventoryOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext);
+	FBeamOperationHandle FetchAllInventoryOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc FetchAllInventoryOperation 
 	 */
-	FBeamOperationHandle CPP_FetchAllInventoryOperation(FUserSlot Player, FBeamOperationEventHandlerCode OnOperationEvent, UObject* CallingContext);
+	FBeamOperationHandle CPP_FetchAllInventoryOperation(FUserSlot Player, FBeamOperationEventHandlerCode OnOperationEvent);
+
+	/**
+	 * @brief Gets the list of all inventory items and currencies from the backend and updates the local inventory state for the given GamerTag.  
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Inventory", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle FetchPlayerInventoryOperation(FUserSlot UserSlot, FBeamGamerTag GamerTag, FBeamOperationEventHandler OnOperationEvent);
+	
+	/**
+	 * @copydoc FetchPlayerInventoryOperation 
+	 */
+	FBeamOperationHandle CPP_FetchPlayerInventoryOperation(FUserSlot Player, FBeamGamerTag GamerTag, FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * @brief Commits the prepared FBeamInventoryUpdateCommand for the requesting player (see BeginInventoryUpdate and Prepare_____ functions).  
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Inventory", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle CommitInventoryUpdateOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext);
+	FBeamOperationHandle CommitInventoryUpdateOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc CommitInventoryUpdateOperation 
 	 */
-	FBeamOperationHandle CPP_CommitInventoryUpdateOperation(FUserSlot Player, FBeamOperationEventHandlerCode OnOperationEvent, UObject* CallingContext);
+	FBeamOperationHandle CPP_CommitInventoryUpdateOperation(FUserSlot Player, FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * @brief Takes a map of currency (and their deltas), prepare the FBeamInventoryUpdate and then Commits the update operation.
 	 * Its a shorthand for BeginInventoryUpdate => PrepareModifyCurrency (N times) => CommitInventoryUpdateOperation.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Inventory", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle ModifyCurrenciesOperation(FUserSlot Player, TMap<FBeamContentId, int64> CurrencyChanges, FBeamOperationEventHandler OnOperationEvent, UObject* CallingContext);
+	FBeamOperationHandle ModifyCurrenciesOperation(FUserSlot Player, TMap<FBeamContentId, int64> CurrencyChanges, FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc ModifyCurrenciesOperation 
 	 */
-	FBeamOperationHandle CPP_ModifyCurrenciesOperation(FUserSlot Player, TMap<FBeamContentId, int64> CurrencyChanges, FBeamOperationEventHandlerCode OnOperationEvent, UObject* CallingContext);
+	FBeamOperationHandle CPP_ModifyCurrenciesOperation(FUserSlot Player, TMap<FBeamContentId, int64> CurrencyChanges, FBeamOperationEventHandlerCode OnOperationEvent);
 
 
 	/**
@@ -216,7 +238,7 @@ public:
 	/**
 	 * @brief Gets all items for the given player. 
 	 */
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue", AutoCreateRefTerm="ItemStates"))
 	bool TryGetAllItems(FUserSlot Player, TArray<FBeamItemState>& ItemStates);
 
 	/**
@@ -280,10 +302,13 @@ public:
 
 private:
 	UFUNCTION()
-	bool FetchAllInventory(FUserSlot Player, FBeamOperationHandle Op, UObject* CallingContext);	
+	bool FetchInventoryForSlot(FUserSlot Player, FBeamOperationHandle Op);
 
 	UFUNCTION()
-	bool CommitInventoryUpdate(FUserSlot Player, FBeamOperationHandle Op, UObject* CallingContext);
+	bool FetchInventoryForPlayer(FUserSlot RequestingSlot, FBeamGamerTag GamerTag, FBeamOperationHandle Op);
+
+	UFUNCTION()
+	bool CommitInventoryUpdate(FUserSlot Player, FBeamOperationHandle Op);
 
 	UFUNCTION()
 	void MergeInventoryViewIntoState(const UInventoryView* InventoryView, FBeamInventoryState& Inventory);

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Subsystems/CLI/BeamCliCommand.h"
+#include "Serialization/BeamJsonUtils.h"
+
 #include "BeamCliServicesSetLocalManifestCommand.generated.h"
 
 class FMonitoredProcess;
@@ -15,18 +17,21 @@ Usage:
   Beamable.Tools services set-local-manifest [options]
 
 Options:
-  --local-http-names <local-http-names>                Local http service names
-  --local-http-contexts <local-http-contexts>          Local http service docker build contexts
-  --local-http-docker-files <local-http-docker-files>  Local http service relative docker file paths
-  --dryrun                                             Should any networking happen?
-  --cid <cid>                                          Cid to use; will default to whatever is in the file system
-  --pid <pid>                                          Pid to use; will default to whatever is in the file system
-  --host <host>                                        The host endpoint for beamable
-  --refresh-token <refresh-token>                      Refresh token to use for the requests
-  --log <log>                                          Extra logs gets printed out
-  --dir <dir>                                          Directory to use for configuration
-  --dotnet-path <dotnet-path>                          a custom location for dotnet
-  -?, -h, --help                                       Show help and usage information
+  --services <services>                    Local http services paths
+  --storage-paths <storage-paths>          Local storages paths
+  --storage-names <storage-names>          Local storages names
+  --disabled-services <disabled-services>  Names of the services that should be disabled on remote
+  --dryrun                                 Should any networking happen?
+  --cid <cid>                              Cid to use; will default to whatever is in the file system
+  --pid <pid>                              Pid to use; will default to whatever is in the file system
+  --host <host>                            The host endpoint for beamable
+  --refresh-token <refresh-token>          Refresh token to use for the requests
+  --log, --logs <log>                      Extra logs gets printed out
+  --dir <dir>                              Directory to use for configuration
+  --raw                                    Output raw JSON to standard out. This happens by default when the command is being piped
+  --pretty                                 Output syntax highlighted box text. This happens by default when the command is not piped
+  --dotnet-path <dotnet-path>              a custom location for dotnet
+  -?, -h, --help                           Show help and usage information
 
 
 

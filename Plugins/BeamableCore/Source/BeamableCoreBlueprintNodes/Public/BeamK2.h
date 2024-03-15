@@ -9,6 +9,8 @@
 
 #define LOCTEXT_NAMESPACE "BeamK2"
 
+class UK2Node_SwitchString;
+
 namespace BeamK2
 {
 	const FName MD_BeamFlowNode = FName(TEXT("BeamFlowNode"));
@@ -62,6 +64,12 @@ namespace BeamK2
 	 */
 	UK2Node_SwitchEnum* CreateSwitchEnumNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema, UEnum* const Enum,
 	                                                UEdGraphPin* ExecFlowPin, UEdGraphPin* SwitchOnValuePin);
+
+	/**
+	 * @brief Utility that creates a correctly configured SwitchString node following the given "ExecFlowPin" and switching on the given "SwitchOnValuePin".
+	 */
+	UK2Node_SwitchString* CreateSwitchNameNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema, TArray<FName> const StringOptions,
+												 UEdGraphPin* ExecFlowPin, UEdGraphPin* SwitchOnValuePin);
 
 	/**
 	 * @brief Utility that creates and configures an EnumEquality node of the given "EnumToCompareType" to compare "EnumToCompareAgainst" against "CompareAgainstPin".

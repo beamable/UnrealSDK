@@ -23,50 +23,19 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 	{
 		static_assert(std::is_same_v<TSerializer, TUnrealPrettyJsonSerializer> || std::is_same_v<TSerializer, TUnrealJsonSerializer>, "Serializer must be one of these!");
 
-		static_assert (TIsPointer<TDataType>::Value);
+		static_assert(TIsPointer<TDataType>::Value);
 		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, IBeamJsonSerializableUObject>::Value);
 		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, UObject>::Value);
 
 		ToSerialize->BeamSerializeProperties(Serializer);
 	}
+
 	template <typename TDataType, typename TSerializer>
 	static void _SerializeUStruct(const TDataType ToSerialize, TSerializer Serializer)
 	{
 		static_assert(std::is_same_v<TSerializer, TUnrealPrettyJsonSerializer> || std::is_same_v<TSerializer, TUnrealJsonSerializer>, "Serializer must be one of these!");
 		static_assert(TIsDerivedFrom<TDataType, FBeamJsonSerializableUStruct>::Value);
 		ToSerialize.BeamSerializeProperties(Serializer);
-	}
-
-
-	template <typename TEnum>
-	static FString _EnumToSerializationName(TEnum Value)
-	{
-		static_assert(TIsUEnumClass<TEnum>::Value);
-
-		const UEnum* Enum = StaticEnum<TEnum>();
-		const int32 NameIndex = Enum->GetIndexByValue(static_cast<int64>(Value));
-		const FString SerializationName = Enum->GetNameStringByIndex(NameIndex);
-
-		// We chop off the first five "BEAM_" characters. 		
-		return SerializationName.RightChop(5);
-	}
-
-	template <typename TEnum>
-	static TEnum _SerializationNameToEnum(FString Value)
-	{
-		static_assert(TIsUEnumClass<TEnum>::Value);
-
-		const UEnum* Enum = StaticEnum<TEnum>();
-		for (int32 NameIndex = 0; NameIndex < Enum->NumEnums() - 1; ++NameIndex)
-		{
-			// We chop off the first five "BEAM_" characters.
-			const FString& SerializationName = Enum->GetNameStringByIndex(NameIndex).RightChop(5);
-			if (Value == SerializationName)
-				return static_cast<TEnum>(Enum->GetValueByIndex(NameIndex));
-		}
-
-		ensureAlways(false); //  This should be impossible!
-		return TEnum();
 	}
 
 	template <typename TOptionalType, typename TDataType, typename TSemanticTypeRepresentation, typename TSerializer>
@@ -129,7 +98,7 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				const TDataType* val = &FBeamOptional::GetValue<TDataType>(ToSerialize);
 				if constexpr (TIsUEnumClass<TDataType>::Value)
 				{
-					FString ValStr = _EnumToSerializationName<TDataType>(*val);
+					FString ValStr = EnumToSerializationName<TDataType>(*val);
 					Serializer->WriteValue(Identifier, ValStr);
 				}
 				else
@@ -148,7 +117,7 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 		if constexpr (TIsPointer<TDataType>::Value)
 		{
 			static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, UObject>::Value);
-			static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, IBeamJsonSerializableUObject>::Value);			
+			static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, IBeamJsonSerializableUObject>::Value);
 			for (const auto& Value : Array)
 			{
 				Serializer->WriteObjectStart();
@@ -209,7 +178,7 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 			{
 				if constexpr (TIsUEnumClass<TDataType>::Value)
 				{
-					FString ValStr = _EnumToSerializationName<TDataType>(Value);
+					FString ValStr = EnumToSerializationName<TDataType>(Value);
 					Serializer->WriteValue(ValStr);
 				}
 				else
@@ -300,7 +269,7 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 			{
 				if constexpr (TIsUEnumClass<TDataType>::Value)
 				{
-					FString ValStr = _EnumToSerializationName<TDataType>(Kvp.Value);
+					FString ValStr = EnumToSerializationName<TDataType>(Kvp.Value);
 					Serializer->WriteValue(Kvp.Key, ValStr);
 				}
 				else
@@ -356,49 +325,77 @@ public:
 
 	template <typename TDataType>
 	static void SerializeUObject(const TDataType& ToSerialize, TUnrealJsonSerializer& Serializer)
-	{		
+	{
 		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, IBeamJsonSerializableUObject>::Value);
 
-		Serializer->WriteObjectStart();
-		_SerializeUObject<TDataType, TUnrealJsonSerializer>(ToSerialize, Serializer);
-		Serializer->WriteObjectEnd();
+		if (ToSerialize)
+		{
+			Serializer->WriteObjectStart();
+			_SerializeUObject<TDataType, TUnrealJsonSerializer>(ToSerialize, Serializer);
+			Serializer->WriteObjectEnd();
+		}
+		else
+		{
+			Serializer->WriteNull();
+		}
 	}
 
 	template <typename TDataType>
 	static void SerializeUObject(const TDataType& ToSerialize, TUnrealPrettyJsonSerializer& Serializer)
-	{		
-		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, IBeamJsonSerializableUObject>::Value);		
+	{
+		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, IBeamJsonSerializableUObject>::Value);
 
-		Serializer->WriteObjectStart();
-		_SerializeUObject<TDataType, TUnrealPrettyJsonSerializer>(ToSerialize, Serializer);
-		Serializer->WriteObjectEnd();
+		if (ToSerialize)
+		{
+			Serializer->WriteObjectStart();
+			_SerializeUObject<TDataType, TUnrealPrettyJsonSerializer>(ToSerialize, Serializer);
+			Serializer->WriteObjectEnd();
+		}
+		else
+		{
+			Serializer->WriteNull();
+		}
 	}
 
 
 	template <typename TDataType>
 	static void SerializeUObject(const FString& Identifier, const TDataType& ToSerialize, TUnrealJsonSerializer& Serializer)
-	{		
+	{
 		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, IBeamJsonSerializableUObject>::Value);
 
-		Serializer->WriteObjectStart(Identifier);
-		_SerializeUObject<TDataType, TUnrealJsonSerializer>(ToSerialize, Serializer);
-		Serializer->WriteObjectEnd();
+		if (ToSerialize)
+		{
+			Serializer->WriteObjectStart(Identifier);
+			_SerializeUObject<TDataType, TUnrealJsonSerializer>(ToSerialize, Serializer);
+			Serializer->WriteObjectEnd();
+		}
+		else
+		{
+			Serializer->WriteNull(Identifier);
+		}
 	}
 
 	template <typename TDataType>
 	static void SerializeUObject(const FString& Identifier, const TDataType& ToSerialize, TUnrealPrettyJsonSerializer& Serializer)
-	{		
-		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, IBeamJsonSerializableUObject>::Value);		
+	{
+		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, IBeamJsonSerializableUObject>::Value);
 
-		Serializer->WriteObjectStart(Identifier);
-		_SerializeUObject<TDataType, TUnrealPrettyJsonSerializer>(ToSerialize, Serializer);
-		Serializer->WriteObjectEnd();
+		if (ToSerialize)
+		{
+			Serializer->WriteObjectStart(Identifier);
+			_SerializeUObject<TDataType, TUnrealPrettyJsonSerializer>(ToSerialize, Serializer);
+			Serializer->WriteObjectEnd();
+		}
+		else
+		{
+			Serializer->WriteNull(Identifier);
+		}
 	}
 
 
 	template <typename TDataType>
 	static void SerializeUStruct(const TDataType& ToSerialize, TUnrealJsonSerializer& Serializer)
-	{		
+	{
 		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, FBeamJsonSerializableUStruct>::Value);
 
 		Serializer->WriteObjectStart();
@@ -408,17 +405,17 @@ public:
 
 	template <typename TDataType>
 	static void SerializeUStruct(const TDataType& ToSerialize, TUnrealPrettyJsonSerializer& Serializer)
-	{		
-		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, FBeamJsonSerializableUStruct>::Value);		
+	{
+		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, FBeamJsonSerializableUStruct>::Value);
 
 		Serializer->WriteObjectStart();
 		_SerializeUStruct<TDataType, TUnrealPrettyJsonSerializer>(ToSerialize, Serializer);
 		Serializer->WriteObjectEnd();
 	}
-	
+
 	template <typename TDataType>
 	static void SerializeUStruct(const FString& Identifier, const TDataType& ToSerialize, TUnrealJsonSerializer& Serializer)
-	{		
+	{
 		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, FBeamJsonSerializableUStruct>::Value);
 
 		Serializer->WriteObjectStart(Identifier);
@@ -428,8 +425,8 @@ public:
 
 	template <typename TDataType>
 	static void SerializeUStruct(const FString& Identifier, const TDataType& ToSerialize, TUnrealPrettyJsonSerializer& Serializer)
-	{		
-		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, FBeamJsonSerializableUStruct>::Value);		
+	{
+		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, FBeamJsonSerializableUStruct>::Value);
 
 		Serializer->WriteObjectStart(Identifier);
 		_SerializeUStruct<TDataType, TUnrealPrettyJsonSerializer>(ToSerialize, Serializer);
@@ -502,6 +499,37 @@ public:
 		Serializer->WriteObjectEnd();
 	}
 
+
+	template <typename TEnum>
+	static FString EnumToSerializationName(TEnum Value)
+	{
+		static_assert(TIsUEnumClass<TEnum>::Value);
+
+		const UEnum* Enum = StaticEnum<TEnum>();
+		const int32 NameIndex = Enum->GetIndexByValue(static_cast<int64>(Value));
+		const FString SerializationName = Enum->GetNameStringByIndex(NameIndex);
+
+		// We chop off the first five "BEAM_" characters. 		
+		return SerializationName.RightChop(5);
+	}
+
+	template <typename TEnum>
+	static TEnum SerializationNameToEnum(FString Value)
+	{
+		static_assert(TIsUEnumClass<TEnum>::Value);
+
+		const UEnum* Enum = StaticEnum<TEnum>();
+		for (int32 NameIndex = 0; NameIndex < Enum->NumEnums() - 1; ++NameIndex)
+		{
+			// We chop off the first five "BEAM_" characters.
+			const FString& SerializationName = Enum->GetNameStringByIndex(NameIndex).RightChop(5);
+			if (Value == SerializationName)
+				return static_cast<TEnum>(Enum->GetValueByIndex(NameIndex));
+		}
+
+		ensureAlways(false); //  This should be impossible!
+		return TEnum();
+	}
 
 	template <typename TSerializationType>
 	static void DeserializeSemanticType(const TSharedPtr<FJsonValue>& JsonField, FBeamSemanticType& ToDeserialize, TWeakObjectPtr<UObject> OuterOwner = (UObject*)GetTransientPackage())
@@ -583,7 +611,7 @@ public:
 	template <typename TDataType>
 	static void DeserializeUObject(const FString& Identifier, const TSharedPtr<FJsonObject>& OwnerBag, TDataType& ToDeserialize, TWeakObjectPtr<UObject> OuterOwner = (UObject*)GetTransientPackage())
 	{
-		static_assert (TIsPointer<TDataType>::Value);
+		static_assert(TIsPointer<TDataType>::Value);
 		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, UObject>::Value);
 		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, IBeamJsonSerializableUObject>::Value);
 		static_assert(!TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, FBeamJsonSerializableUStruct>::Value); // UObjects must implement IBeamJsonSerializableUObject instead		
@@ -598,7 +626,13 @@ public:
 			// If the OwnerBag has the field, we deserialize it into the object.
 			// Most of the time, this affects polymorphic response types as means we won't deserialize it 
 		else if (OwnerBag->HasField(Identifier))
-			ToDeserialize->BeamDeserializeProperties(OwnerBag->GetObjectField(Identifier));
+		{
+			const TSharedPtr<FJsonObject>* JsonObject;
+			if (OwnerBag->TryGetObjectField(Identifier, JsonObject))
+				ToDeserialize->BeamDeserializeProperties(*JsonObject);
+			else
+				ToDeserialize = nullptr;
+		}
 	}
 
 	template <typename TDataType>
@@ -606,9 +640,9 @@ public:
 	{
 		static_assert(!TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, UObject>::Value);
 		static_assert(!TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, IBeamJsonSerializableUObject>::Value); // Non-UObjects must implement FBeamJsonSerializableUStruct instead
-		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, FBeamJsonSerializableUStruct>::Value);					
+		static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, FBeamJsonSerializableUStruct>::Value);
 
-		ToDeserialize            = TDataType{};
+		ToDeserialize = TDataType{};
 		ToDeserialize.OuterOwner = OuterOwner;
 
 		if (Identifier.IsEmpty())
@@ -640,7 +674,7 @@ public:
 			{
 				static_assert(TIsSecondTemplateParam<TDataType, TOptionalType>::value, "When TOptionalType is a map, TDataType must be the type for that map.");
 				TMap<FString, TDataType> ParsedMap;
-				for (const auto KvP : JsonField->AsObject()->Values)
+				for (const auto& KvP : JsonField->AsObject()->Values)
 				{
 					const auto Key = KvP.Key;
 					const auto Item = KvP.Value;
@@ -650,7 +684,7 @@ public:
 						static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, UObject>::Value);
 						static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, IBeamJsonSerializableUObject>::Value);
 						static_assert(!TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, FBeamJsonSerializableUStruct>::Value); // UObjects must implement IBeamJsonSerializableUObject instead
-						
+
 						TDataType Parsed = NewObject<typename TRemovePointer<TDataType>::Type>(OwnerOuter.GetEvenIfUnreachable());
 						Parsed->OuterOwner = OwnerOuter;
 						Parsed->BeamDeserializeProperties(Item->AsObject());
@@ -682,8 +716,8 @@ public:
 					else if constexpr (TIsDerivedFrom<TDataType, FBeamJsonSerializableUStruct>::Value)
 					{
 						// Ensure this is not a UObject that implements IBeamJsonSerializableUObject
-						static_assert(!TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, UObject>::Value);					
-						
+						static_assert(!TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, UObject>::Value);
+
 						TDataType Parsed;
 						Parsed.BeamDeserializeProperties(Item->AsObject());
 						ParsedMap.Add(Key, Parsed);
@@ -691,7 +725,7 @@ public:
 					else if constexpr (TIsUEnumClass<TDataType>::Value)
 					{
 						FString Parsed = Item->AsString();
-						ParsedMap.Add(Key, _SerializationNameToEnum<TDataType>(Parsed));
+						ParsedMap.Add(Key, SerializationNameToEnum<TDataType>(Parsed));
 					}
 					else if constexpr (std::is_same_v<TDataType, int8>)
 					{
@@ -749,7 +783,7 @@ public:
 				static_assert(TIsTemplateParam<TDataType, TOptionalType>::value, "When TOptionalType is an array, TDataType must be the type for that array.");
 
 				TArray<TDataType> ParsedArray;
-				for (const auto ArrayJsonItem : JsonField->AsArray())
+				for (const auto& ArrayJsonItem : JsonField->AsArray())
 				{
 					if constexpr (TIsPointer<TDataType>::Value)
 					{
@@ -757,7 +791,7 @@ public:
 						static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, UObject>::Value);
 						static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, IBeamJsonSerializableUObject>::Value);
 						static_assert(!TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, FBeamJsonSerializableUStruct>::Value); // UObjects must implement IBeamJsonSerializableUObject instead
-						
+
 						TDataType Parsed = NewObject<typename TRemovePointer<TDataType>::Type>(OwnerOuter.GetEvenIfUnreachable());
 						Parsed->OuterOwner = OwnerOuter;
 						Parsed->BeamDeserializeProperties(ArrayJsonItem->AsObject());
@@ -789,8 +823,8 @@ public:
 					else if constexpr (TIsDerivedFrom<TDataType, FBeamJsonSerializableUStruct>::Value)
 					{
 						// Ensure this is not a UObject as UStructs
-						static_assert(!TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, UObject>::Value);						
-						
+						static_assert(!TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, UObject>::Value);
+
 						TDataType Parsed;
 						Parsed.BeamDeserializeProperties(ArrayJsonItem->AsObject());
 						ParsedArray.Add(Parsed);
@@ -798,7 +832,7 @@ public:
 					else if constexpr (TIsUEnumClass<TDataType>::Value)
 					{
 						FString Parsed = ArrayJsonItem->AsString();
-						ParsedArray.Add(_SerializationNameToEnum<TDataType>(Parsed));
+						ParsedArray.Add(SerializationNameToEnum<TDataType>(Parsed));
 					}
 					else if constexpr (std::is_same_v<TDataType, int8>)
 					{
@@ -859,7 +893,7 @@ public:
 					static_assert(TIsDerivedFrom<typename TRemovePointer<TOptionalType>::Type, UObject>::Value);
 					static_assert(TIsDerivedFrom<typename TRemovePointer<TOptionalType>::Type, IBeamJsonSerializableUObject>::Value);
 					static_assert(!TIsDerivedFrom<typename TRemovePointer<TOptionalType>::Type, FBeamJsonSerializableUStruct>::Value); // UObjects must implement IBeamJsonSerializableUObject instead
-					
+
 					TOptionalType Parsed = NewObject<typename TRemovePointer<TOptionalType>::Type>(OwnerOuter.GetEvenIfUnreachable());
 					Parsed->OuterOwner = OwnerOuter;
 					Parsed->BeamDeserializeProperties(JsonField->AsObject());
@@ -897,7 +931,7 @@ public:
 				else if constexpr (TIsUEnumClass<TDataType>::Value)
 				{
 					FString Parsed = JsonField->AsString();
-					TDataType ParsedEnum = _SerializationNameToEnum<TDataType>(Parsed);
+					TDataType ParsedEnum = SerializationNameToEnum<TDataType>(Parsed);
 					FBeamOptional::Set(&ToDeserialize, &ParsedEnum);
 				}
 				else if constexpr (std::is_same_v<TDataType, int8>)
@@ -968,7 +1002,7 @@ public:
 			{
 				const FString val = JsonValue->AsString();
 				const FSoftObjectPath SoftObjectPath = FSoftObjectPath(val);
-				TSoftObjectPtr<TSemanticTypeRepresentation> Parsed(SoftObjectPath);				
+				TSoftObjectPtr<TSemanticTypeRepresentation> Parsed(SoftObjectPath);
 				Array.Add(Parsed);
 			}
 			else if constexpr (TIsDerivedFrom<TDataType, FBeamSemanticType>::Value)
@@ -988,15 +1022,15 @@ public:
 				TDataType Parsed;
 				Parsed.BeamDeserializeElements(JsonValue->AsArray());
 				Array.Add(Parsed);
-			}			
+			}
 			else if constexpr (TIsPointer<TDataType>::Value)
 			{
 				// Ensure this is a UObject that implements IBeamJsonSerializableUObject
 				static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, UObject>::Value);
 				static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, IBeamJsonSerializableUObject>::Value);
 				static_assert(!TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, FBeamJsonSerializableUStruct>::Value); // UObjects must implement IBeamJsonSerializableUObject instead
-				
-				TDataType Parsed = NewObject<typename TRemovePointer<TDataType>::Type>(OwnerOuter.GetEvenIfUnreachable());				
+
+				TDataType Parsed = NewObject<typename TRemovePointer<TDataType>::Type>(OwnerOuter.GetEvenIfUnreachable());
 				Parsed->OuterOwner = OwnerOuter;
 				Parsed->BeamDeserializeProperties(JsonValue->AsObject());
 				Array.Add(Parsed);
@@ -1010,7 +1044,7 @@ public:
 			else if constexpr (TIsUEnumClass<TDataType>::Value)
 			{
 				FString Parsed = JsonValue->AsString();
-				TDataType ParsedEnum = _SerializationNameToEnum<TDataType>(Parsed);
+				TDataType ParsedEnum = SerializationNameToEnum<TDataType>(Parsed);
 				Array.Add(ParsedEnum);
 			}
 			else if constexpr (std::is_same_v<TDataType, int>)
@@ -1049,7 +1083,7 @@ public:
 			}
 			else
 			{
-				static_assert(false);
+				// static_assert(false);
 			}
 		}
 	}
@@ -1107,7 +1141,7 @@ public:
 				static_assert(TIsDerivedFrom<typename TRemovePointer<TMapType>::Type, UObject>::Value);
 				static_assert(TIsDerivedFrom<typename TRemovePointer<TMapType>::Type, IBeamJsonSerializableUObject>::Value);
 				static_assert(!TIsDerivedFrom<typename TRemovePointer<TMapType>::Type, FBeamJsonSerializableUStruct>::Value); // UObjects must implement IBeamJsonSerializableUObject instead
-				
+
 				TMapType Parsed = NewObject<typename TRemovePointer<TMapType>::Type>(OwnerOuter.GetEvenIfUnreachable());
 				Parsed->OuterOwner = OwnerOuter;
 				Parsed->BeamDeserializeProperties(JsonValue->AsObject());
@@ -1122,7 +1156,7 @@ public:
 			else if constexpr (TIsUEnumClass<TMapType>::Value)
 			{
 				FString Parsed = Value.Value->AsString();
-				TMapType ParsedEnum = _SerializationNameToEnum<TDataType>(Parsed);
+				TMapType ParsedEnum = SerializationNameToEnum<TDataType>(Parsed);
 				Map.Add(Key, ParsedEnum);
 			}
 			else if constexpr (std::is_same_v<TMapType, int>)
@@ -1163,7 +1197,7 @@ public:
 			// This is here to help us catch missing compilation cases
 			else
 			{
-				static_assert(false);
+				// static_assert(false);
 			}
 		}
 	}
@@ -1199,7 +1233,7 @@ public:
 		else if constexpr (TIsUEnumClass<TPrimitiveType>::Value)
 		{
 			FString Parsed = JsonField;
-			ToDeserialize = _SerializationNameToEnum<TPrimitiveType>(Parsed);
+			ToDeserialize = SerializationNameToEnum<TPrimitiveType>(Parsed);
 		}
 		else if constexpr (std::is_same_v<TPrimitiveType, int8>)
 		{

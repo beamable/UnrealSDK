@@ -14,18 +14,6 @@
 #include "Serialization/BeamOptional.h"
 #include "Serialization/BeamSemanticType.h"
 
-FString UBeamContentObject::GetTypeClassNameFromTypeTag(const FString& TypeTag)
-{
-	FStringView ViewOverTypeTag(TypeTag);
-	int DashIdx;
-	ViewOverTypeTag.FindChar('-', DashIdx);
-	ViewOverTypeTag.RightChopInline(DashIdx + 1);
-	ViewOverTypeTag.FindChar('-', DashIdx);
-	ViewOverTypeTag.RightChopInline(DashIdx + 1);
-	return FString(ViewOverTypeTag);
-}
-
-
 void UBeamContentObject::BuildContentDefinitionJsonObject(FJsonDomBuilder::FObject& OutContentDefinition)
 {
 	OutContentDefinition.Set("id", Id);
@@ -44,15 +32,15 @@ void UBeamContentObject::BuildContentDefinitionJsonObject(FJsonDomBuilder::FObje
 
 FString UBeamContentObject::CreatePropertiesHash()
 {
-	FJsonDomBuilder::FObject Json;
+	FJsonDomBuilder::FObject Json = FJsonDomBuilder::FObject{};
 	BuildPropertiesJsonObject(Json);
 
 	const FString PropertiesJson = Json.ToString<TCondensedJsonPrintPolicy>();
 
 	// UTF-8 Byte Array of the String
 	const FTCHARToUTF8 StringConversion(*PropertiesJson);
-	const FSHAHash     Sha1Hash = FSHA1::HashBuffer(StringConversion.Get(), StringConversion.Length());
-	
+	const FSHAHash Sha1Hash = FSHA1::HashBuffer(StringConversion.Get(), StringConversion.Length());
+
 	FString Hash = Sha1Hash.ToString();
 
 	// We are doing this for legacy reasons (in our Unity SDK, we do the same) 
@@ -103,22 +91,28 @@ FString UBeamContentObject::BuildContentTypeString()
 // Add default functionality here for any IBeamContentObject functions that are not pure virtual.
 void UBeamContentObject::ToBasicJson_Implementation(FString& Serialized)
 {
-	FJsonDomBuilder::FObject ContentObjJson;
+	FJsonDomBuilder::FObject ContentObjJson = FJsonDomBuilder::FObject{};
 	BuildBasicJsonObject(ContentObjJson);
 	Serialized = ContentObjJson.ToString<TCondensedJsonPrintPolicy>();
 }
 
 void UBeamContentObject::FromBasicJson_Implementation(const FString& Json)
 {
-	auto Bag = FJsonDataBag();
-	Bag.FromJson(Json);
-	ParseBasicJsonObject(Bag.JsonObject);
+	if (auto Bag = FJsonDataBag(); Bag.FromJson(*Json))
+	{
+		UE_LOG(LogBeamContent, Verbose, TEXT("Parsing Content Object: %s"), *Json);
+		ParseBasicJsonObject(Bag.JsonObject);
+	}
+	else
+	{
+		UE_LOG(LogBeamContent, Error, TEXT("Failed to Parse Content Object - Unreal Failed to Deserialize this Json: %s"), *Json);
+	}
 }
 
 
 void UBeamContentObject::ToPropertiesJson(FString& Serialized)
 {
-	FJsonDomBuilder::FObject ContentObjJson;
+	FJsonDomBuilder::FObject ContentObjJson = FJsonDomBuilder::FObject{};
 	BuildPropertiesJsonObject(ContentObjJson);
 	Serialized = ContentObjJson.ToString<TCondensedJsonPrintPolicy>();
 }
@@ -135,7 +129,7 @@ void UBeamContentObject::BuildBasicJsonObject(FJsonDomBuilder::FObject& Output)
 	Output.Set(TEXT("id"), Id);
 	Output.Set(TEXT("version"), Version);
 
-	FJsonDomBuilder::FObject Properties;
+	FJsonDomBuilder::FObject Properties = FJsonDomBuilder::FObject{};
 	BuildPropertiesJsonObject(Properties);
 
 	Output.Set(TEXT("properties"), Properties);
@@ -143,203 +137,228 @@ void UBeamContentObject::BuildBasicJsonObject(FJsonDomBuilder::FObject& Output)
 
 void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Properties)
 {
-	const auto SelfClass = GetClass();	
+	const auto SelfClass = GetClass();
+	UE_LOG(LogBeamContent, Verbose, TEXT("BuildPropertiesJsonObject - Parsing Class: %s"), *SelfClass->GetName());
 	for (TFieldIterator<FProperty> It(SelfClass); It; ++It)
 	{
-		FJsonDomBuilder::FObject CurrProp;
+		FJsonDomBuilder::FObject CurrProp = FJsonDomBuilder::FObject{};
 		FString CurrPropName = It->GetName();
-
+		UE_LOG(LogBeamContent, Verbose, TEXT("BuildPropertiesJsonObject - Parsing Prop: %s"), *CurrPropName);
 
 		auto ShouldAddToJson = true;
 		if (const auto SoftObjectProperty = CastField<FSoftObjectProperty>(*It))
 		{
 			const auto Val = SoftObjectProperty->ContainerPtrToValuePtr<FSoftObjectPtr>(this);
-			if(Val->IsNull())
-				CurrProp.Set("data", nullptr);
-			else
-				CurrProp.Set("data", Val->ToSoftObjectPath().ToString());
+			if (Val->IsNull()) CurrProp.Set("data", nullptr);
+			else CurrProp.Set("data", Val->ToSoftObjectPath().ToString());
 		}
 		else if (const auto StructProperty = CastField<FStructProperty>(*It))
 		{
 			const auto ScriptStruct = StructProperty->Struct;
 			if (ScriptStruct && ScriptStruct->IsChildOf(FBeamOptional::StaticStruct()))
 			{
+				UE_LOG(LogBeamContent, Verbose, TEXT("BuildPropertiesJsonObject - Prop %s is FBeamOptional"), *CurrPropName);
+
 				const FBeamOptional* Data = StructProperty->ContainerPtrToValuePtr<FBeamOptional>(this);
 				ShouldAddToJson = Data->IsSet;
 
-				FProperty* ValueProp = nullptr;
-				for (TFieldIterator<FProperty> OptIt(ScriptStruct); OptIt; ++OptIt)
+				if (ShouldAddToJson)
 				{
-					const auto Name = OptIt->NamePrivate;
-					ValueProp = !Name.IsEqual(TEXT("IsSet")) ? *OptIt : ValueProp;
-				}
-
-				if (const auto InnerOptionalSoftObjectProperty = CastField<FSoftObjectProperty>(ValueProp))
-				{					
-					const auto Val = InnerOptionalSoftObjectProperty->ContainerPtrToValuePtr<FSoftObjectPtr>(Data);
-					if(Val->IsNull()) CurrProp.Set("data", nullptr);
-					else CurrProp.Set("data", Val->ToSoftObjectPath().ToString());
-				}
-				else if (const auto InnerOptionalStructProperty = CastField<FStructProperty>(ValueProp))
-				{
-					const auto InnerOptionalStruct = InnerOptionalStructProperty->Struct;
-
-					if (InnerOptionalStruct->IsChildOf(FBeamMap::StaticStruct()))
+					FProperty* ValueProp = nullptr;
+					for (TFieldIterator<FProperty> OptIt(ScriptStruct); OptIt; ++OptIt)
 					{
-						const FBeamMap* BeamMap = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamMap>(Data);
-						FJsonDomBuilder::FObject SubMap;
-						const FMapProperty* InnerMapProperty = nullptr;
-						for (TFieldIterator<FProperty> OptIt(InnerOptionalStruct); OptIt; ++OptIt)
+						const auto Name = OptIt->NamePrivate;
+						ValueProp = !Name.IsEqual(TEXT("IsSet")) ? *OptIt : ValueProp;
+					}
+
+					if (const auto InnerOptionalSoftObjectProperty = CastField<FSoftObjectProperty>(ValueProp))
+					{
+						const auto Val = InnerOptionalSoftObjectProperty->ContainerPtrToValuePtr<FSoftObjectPtr>(Data);
+						if (Val->IsNull()) CurrProp.Set("data", nullptr);
+						else CurrProp.Set("data", Val->ToSoftObjectPath().ToString());
+					}
+					else if (const auto InnerOptionalStructProperty = CastField<FStructProperty>(ValueProp))
+					{
+						const auto InnerOptionalStruct = InnerOptionalStructProperty->Struct;
+
+						if (InnerOptionalStruct->IsChildOf(FBeamMap::StaticStruct()))
 						{
-							InnerMapProperty = CastField<FMapProperty>(*OptIt);
-							if (InnerMapProperty) break;
+							const FBeamMap* BeamMap = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamMap>(Data);
+							FJsonDomBuilder::FObject SubMap = FJsonDomBuilder::FObject{};
+							const FMapProperty* InnerMapProperty = nullptr;
+							for (TFieldIterator<FProperty> OptIt(InnerOptionalStruct); OptIt; ++OptIt)
+							{
+								InnerMapProperty = CastField<FMapProperty>(*OptIt);
+								if (InnerMapProperty) break;
+							}
+
+							SerializeMapProperty(CurrPropName, SubMap, InnerMapProperty, BeamMap);
+							CurrProp.Set("data", SubMap);
 						}
-
-						SerializeMapProperty(CurrPropName, SubMap, InnerMapProperty, BeamMap);
-						CurrProp.Set("data", SubMap);
-					}
-					else if (InnerOptionalStruct->IsChildOf(FBeamArray::StaticStruct()))
-					{
-						const FBeamArray* BeamArray = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamArray>(Data);
-						FJsonDomBuilder::FArray SubArray;
-						const FArrayProperty* InnerArrayProperty = nullptr;
-						for (TFieldIterator<FProperty> OptIt(InnerOptionalStruct); OptIt; ++OptIt)
+						else if (InnerOptionalStruct->IsChildOf(FBeamArray::StaticStruct()))
 						{
-							InnerArrayProperty = CastField<FArrayProperty>(*OptIt);
-							if (InnerArrayProperty) break;
+							const FBeamArray* BeamArray = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamArray>(Data);
+							FJsonDomBuilder::FArray SubArray;
+							const FArrayProperty* InnerArrayProperty = nullptr;
+							for (TFieldIterator<FProperty> OptIt(InnerOptionalStruct); OptIt; ++OptIt)
+							{
+								InnerArrayProperty = CastField<FArrayProperty>(*OptIt);
+								if (InnerArrayProperty) break;
+							}
+
+							SerializeArrayProperty(CurrPropName, SubArray, InnerArrayProperty, BeamArray);
+							CurrProp.Set("data", SubArray);
 						}
-
-						SerializeArrayProperty(CurrPropName, SubArray, InnerArrayProperty, BeamArray);
-						CurrProp.Set("data", SubArray);
-					}
-					else if (InnerOptionalStruct->IsChildOf(FBeamJsonSerializableUStruct::StaticStruct()))
-					{
-						const FBeamJsonSerializableUStruct* BeamJsonSerializable = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamJsonSerializableUStruct>(Data);
-						FString JsonBody;
-						TUnrealJsonSerializer Serializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&JsonBody);
-						BeamJsonSerializable->BeamSerialize(Serializer);
-						Serializer->Close();
-
-						auto Bag = FJsonDataBag{};
-						Bag.FromJson(JsonBody);
-
-						FJsonDomBuilder::FObject JsonObject;
-						JsonObject.CopyIf(*Bag.JsonObject, [](const FString&, const FJsonValue&) { return true; });
-
-						UE_LOG(LogBeamContent, Display, TEXT("FBeamOptional wrapping type %s Field %s=%s is a \n"), *InnerOptionalStruct->GetName(), *It->GetName(), *JsonBody);
-						CurrProp.Set("data", JsonObject);
-					}
-					else if (InnerOptionalStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
-					{
-						const FBeamSemanticType* BeamSemantic = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamSemanticType>(Data);
-						const FString* UnderlyingString = static_cast<const FString*>(BeamSemantic->GetAddr(0));
-						CurrProp.Set("data", *UnderlyingString);
-					}
-					else
-					{
-						UE_LOG(LogBeamContent, Error, TEXT("Field %s's Type is a struct and does not implement FBeamJsonSerializable. It cannot be in a content object unless it does.\n"),
-						       *It->GetName())
-					}
-				}
-				else if (const auto InnerOptionalUObjectProperty = CastField<FObjectProperty>(ValueProp))
-				{
-					const auto InnerOptionalClass = InnerOptionalUObjectProperty->PropertyClass;
-
-					if (InnerOptionalClass->ImplementsInterface(UBeamJsonSerializableUObject::StaticClass()))
-					{
-						if(const IBeamJsonSerializableUObject* BeamJsonSerializable = Cast<IBeamJsonSerializableUObject>(InnerOptionalUObjectProperty->GetObjectPropertyValue(InnerOptionalUObjectProperty->ContainerPtrToValuePtr<void>(Data))))
+						else if (InnerOptionalStruct->IsChildOf(FBeamContentLink::StaticStruct()))
 						{
-							FString                      JsonBody;
-							TUnrealJsonSerializer        Serializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&JsonBody);
+							const FBeamContentLink* ContentLink = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamContentLink>(Data);
+							const FString* UnderlyingString = static_cast<const FString*>(ContentLink->GetAddr(0));
+							CurrProp.Set(TEXT("$link"), *UnderlyingString);
+						}
+						else if (InnerOptionalStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
+						{
+							const FBeamSemanticType* BeamSemantic = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamSemanticType>(Data);
+							const FString* UnderlyingString = static_cast<const FString*>(BeamSemantic->GetAddr(0));
+							CurrProp.Set("data", *UnderlyingString);
+						}
+						else if (InnerOptionalStruct->IsChildOf(FBeamJsonSerializableUStruct::StaticStruct()))
+						{
+							const FBeamJsonSerializableUStruct* BeamJsonSerializable = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamJsonSerializableUStruct>(Data);
+							FString JsonBody;
+							TUnrealJsonSerializer Serializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&JsonBody);
 							BeamJsonSerializable->BeamSerialize(Serializer);
 							Serializer->Close();
 
 							auto Bag = FJsonDataBag{};
 							Bag.FromJson(JsonBody);
 
-							FJsonDomBuilder::FObject JsonObject;
+							FJsonDomBuilder::FObject JsonObject = FJsonDomBuilder::FObject{};
 							JsonObject.CopyIf(*Bag.JsonObject, [](const FString&, const FJsonValue&) { return true; });
 
-							UE_LOG(LogBeamContent, Display, TEXT("FBeamOptional wrapping type %s Field %s=%s is a \n"), *InnerOptionalClass->GetName(), *It->GetName(), *JsonBody);
+							UE_LOG(LogBeamContent, Display, TEXT("FBeamOptional wrapping type %s Field %s=%s is a \n"), *InnerOptionalStruct->GetName(), *It->GetName(), *JsonBody);
 							CurrProp.Set("data", JsonObject);
 						}
 						else
 						{
-							CurrProp.Set("data", nullptr);							
+							UE_LOG(LogBeamContent, Error, TEXT("Field %s's Type is a struct and does not implement FBeamJsonSerializable. It cannot be in a content object unless it does.\n"),
+							       *It->GetName())
 						}
+					}
+					else if (const auto InnerOptionalUObjectProperty = CastField<FObjectProperty>(ValueProp))
+					{
+						const auto InnerOptionalClass = InnerOptionalUObjectProperty->PropertyClass;
+
+						if (InnerOptionalClass->ImplementsInterface(UBeamJsonSerializableUObject::StaticClass()))
+						{
+							if (const IBeamJsonSerializableUObject* BeamJsonSerializable = Cast<IBeamJsonSerializableUObject>(InnerOptionalUObjectProperty->GetObjectPropertyValue(InnerOptionalUObjectProperty->ContainerPtrToValuePtr<void>(Data))))
+							{
+								FString JsonBody;
+								TUnrealJsonSerializer Serializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&JsonBody);
+								BeamJsonSerializable->BeamSerialize(Serializer);
+								Serializer->Close();
+
+								auto Bag = FJsonDataBag{};
+								Bag.FromJson(JsonBody);
+
+								FJsonDomBuilder::FObject JsonObject = FJsonDomBuilder::FObject{};
+								JsonObject.CopyIf(*Bag.JsonObject, [](const FString&, const FJsonValue&) { return true; });
+
+								UE_LOG(LogBeamContent, Display, TEXT("FBeamOptional wrapping type %s Field %s=%s is a \n"), *InnerOptionalClass->GetName(), *It->GetName(), *JsonBody);
+								CurrProp.Set("data", JsonObject);
+							}
+							else
+							{
+								CurrProp.Set("data", nullptr);
+							}
+						}
+						else
+						{
+							UE_LOG(LogBeamContent, Error, TEXT("Field %s's Type is a class and does not implement IBeamJsonSerializableUObject. It cannot be in a content object unless it does.\n"),
+							       *It->GetName())
+						}
+					}
+					else if (const auto MapProperty = CastField<FMapProperty>(ValueProp))
+					{
+						FJsonDomBuilder::FObject MapJson = FJsonDomBuilder::FObject{};
+						SerializeMapProperty(CurrPropName, MapJson, MapProperty, Data);
+						CurrProp.Set("data", MapJson);
+					}
+					else if (const auto ArrayProperty = CastField<FArrayProperty>(ValueProp))
+					{
+						FJsonDomBuilder::FArray ArrayJson;
+						SerializeArrayProperty(CurrPropName, ArrayJson, ArrayProperty, Data);
+						const auto StructProp = CastField<FStructProperty>(ArrayProperty->Inner);
+						if (StructProp && StructProp->Struct->IsChildOf(FBeamContentLink::StaticStruct()))
+							CurrProp.Set("$links", ArrayJson);
+						else
+							CurrProp.Set("data", ArrayJson);
+					}
+					else if (const auto ClassProperty = CastField<FClassProperty>(ValueProp))
+					{
+						const auto Val = ClassProperty->ContainerPtrToValuePtr<UClass>(Data);
+						CurrProp.Set("data", FSoftClassPath(static_cast<UClass*>(ClassProperty->GetPropertyValue(Val))).ToString());
+					}
+					else if (const auto TextProperty = CastField<FTextProperty>(ValueProp))
+					{
+						const auto Val = TextProperty->ContainerPtrToValuePtr<FText>(Data);
+						CurrProp.Set("data", TextProperty->GetPropertyValue(Val).ToString());
+					}
+					else if (const auto NameProperty = CastField<FNameProperty>(ValueProp))
+					{
+						const auto Val = NameProperty->ContainerPtrToValuePtr<FName>(Data);
+						CurrProp.Set("data", NameProperty->GetPropertyValue(Val).ToString());
+					}
+					else if (const auto StrProperty = CastField<FStrProperty>(ValueProp))
+					{
+						const auto Val = StrProperty->ContainerPtrToValuePtr<FString>(Data);
+						CurrProp.Set("data", StrProperty->GetPropertyValue(Val));
+					}
+					else if (const auto BoolProperty = CastField<FBoolProperty>(ValueProp))
+					{
+						const auto Val = BoolProperty->ContainerPtrToValuePtr<bool>(Data);
+						CurrProp.Set("data", BoolProperty->GetPropertyValue(Val));
+					}
+					else if (const auto FloatProperty = CastField<FFloatProperty>(ValueProp))
+					{
+						const auto Val = FloatProperty->ContainerPtrToValuePtr<float>(Data);
+						CurrProp.Set("data", FloatProperty->GetFloatingPointPropertyValue(Val));
+					}
+					else if (const auto DoubleProperty = CastField<FDoubleProperty>(ValueProp))
+					{
+						const auto Val = DoubleProperty->ContainerPtrToValuePtr<double>(Data);
+						CurrProp.Set("data", DoubleProperty->GetFloatingPointPropertyValue(Val));
+					}
+					else if (const auto Int32Property = CastField<FIntProperty>(ValueProp))
+					{
+						const auto Val = Int32Property->ContainerPtrToValuePtr<int32>(Data);
+						CurrProp.Set("data", Int32Property->GetSignedIntPropertyValue(Val));
+					}
+					else if (const auto Int64Property = CastField<FInt64Property>(ValueProp))
+					{
+						const auto Val = Int64Property->ContainerPtrToValuePtr<int64>(Data);
+						CurrProp.Set("data", Int64Property->GetSignedIntPropertyValue(Val));
+					}
+					else if (const auto ByteProperty = CastField<FByteProperty>(ValueProp))
+					{
+						const auto Val = ByteProperty->ContainerPtrToValuePtr<uint8>(Data);
+						CurrProp.Set("data", ByteProperty->GetUnsignedIntPropertyValue(Val));
+					}
+					else if (const auto EnumProperty = CastField<FEnumProperty>(ValueProp))
+					{
+						UEnum* Enum = EnumProperty->GetEnum();
+						void const* EnumValueAddress = EnumProperty->ContainerPtrToValuePtr<void>(Data);
+						int64 EnumValue = EnumProperty->GetUnderlyingProperty()->GetUnsignedIntPropertyValue(EnumValueAddress);
+						CurrProp.Set("data", Enum->GetNameStringByValue(EnumValue));
 					}
 					else
 					{
-						UE_LOG(LogBeamContent, Error, TEXT("Field %s's Type is a class and does not implement IBeamJsonSerializableUObject. It cannot be in a content object unless it does.\n"),
-						       *It->GetName())
+						UE_LOG(LogBeamContent, Error, TEXT("Optional Field %s's underlying Type (%s) is not supported by the Content serialization system.\n"), *It->GetName(),
+						       *ValueProp->GetCPPType())
 					}
-				}
-				else if (const auto MapProperty = CastField<FMapProperty>(ValueProp))
-				{
-					FJsonDomBuilder::FObject MapJson;
-					SerializeMapProperty(CurrPropName, MapJson, MapProperty, Data);
-					CurrProp.Set("data", MapJson);
-				}
-				else if (const auto ArrayProperty = CastField<FArrayProperty>(ValueProp))
-				{
-					FJsonDomBuilder::FArray ArrayJson;
-					SerializeArrayProperty(CurrPropName, ArrayJson, ArrayProperty, Data);
-					CurrProp.Set("data", ArrayJson);
-				}
-				else if (const auto ClassProperty = CastField<FClassProperty>(ValueProp))
-				{
-					const auto Val = ClassProperty->ContainerPtrToValuePtr<UClass>(Data);
-					CurrProp.Set("data", FSoftClassPath(static_cast<UClass*>(ClassProperty->GetPropertyValue(Val))).ToString());
-				}
-				else if (const auto TextProperty = CastField<FTextProperty>(ValueProp))
-				{
-					const auto Val = TextProperty->ContainerPtrToValuePtr<FText>(Data);
-					CurrProp.Set("data", TextProperty->GetPropertyValue(Val).ToString());
-				}
-				else if (const auto NameProperty = CastField<FNameProperty>(ValueProp))
-				{
-					const auto Val = NameProperty->ContainerPtrToValuePtr<FName>(Data);
-					CurrProp.Set("data", NameProperty->GetPropertyValue(Val).ToString());
-				}
-				else if (const auto StrProperty = CastField<FStrProperty>(ValueProp))
-				{
-					const auto Val = StrProperty->ContainerPtrToValuePtr<FString>(Data);
-					CurrProp.Set("data", StrProperty->GetPropertyValue(Val));
-				}
-				else if (const auto BoolProperty = CastField<FBoolProperty>(ValueProp))
-				{
-					const auto Val = BoolProperty->ContainerPtrToValuePtr<bool>(Data);
-					CurrProp.Set("data", BoolProperty->GetPropertyValue(Val));
-				}
-				else if (const auto FloatProperty = CastField<FFloatProperty>(ValueProp))
-				{
-					const auto Val = FloatProperty->ContainerPtrToValuePtr<float>(Data);
-					CurrProp.Set("data", FloatProperty->GetFloatingPointPropertyValue(Val));
-				}
-				else if (const auto DoubleProperty = CastField<FDoubleProperty>(ValueProp))
-				{
-					const auto Val = DoubleProperty->ContainerPtrToValuePtr<double>(Data);
-					CurrProp.Set("data", DoubleProperty->GetFloatingPointPropertyValue(Val));
-				}
-				else if (const auto Int32Property = CastField<FIntProperty>(ValueProp))
-				{
-					const auto Val = Int32Property->ContainerPtrToValuePtr<int32>(Data);
-					CurrProp.Set("data", Int32Property->GetSignedIntPropertyValue(Val));
-				}
-				else if (const auto Int64Property = CastField<FInt64Property>(ValueProp))
-				{
-					const auto Val = Int64Property->ContainerPtrToValuePtr<int64>(Data);
-					CurrProp.Set("data", Int64Property->GetSignedIntPropertyValue(Val));
-				}
-				else if (const auto ByteProperty = CastField<FByteProperty>(ValueProp))
-				{
-					const auto Val = ByteProperty->ContainerPtrToValuePtr<uint8>(Data);
-					CurrProp.Set("data", ByteProperty->GetUnsignedIntPropertyValue(Val));
 				}
 				else
 				{
-					UE_LOG(LogBeamContent, Error, TEXT("Optional Field %s's underlying Type (%s) is not supported by the Content serialization system.\n"), *It->GetName(),
-					       *ValueProp->GetCPPType())
+					UE_LOG(LogBeamContent, Verbose, TEXT("BuildPropertiesJsonObject - Skipping unset optional prop: %s"), *CurrPropName);
 				}
 			}
 			else if (ScriptStruct && ScriptStruct->IsChildOf(FBeamMap::StaticStruct()))
@@ -353,7 +372,7 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 					if (MapProperty) break;
 				}
 
-				FJsonDomBuilder::FObject MapJson;
+				FJsonDomBuilder::FObject MapJson = FJsonDomBuilder::FObject{};
 				SerializeMapProperty(CurrPropName, MapJson, MapProperty, Data);
 				CurrProp.Set("data", MapJson);
 			}
@@ -384,6 +403,12 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 				const FString UnderlyingString = UnrealGameplayTag->ToString();
 				CurrProp.Set("data", UnderlyingString);
 			}
+			else if (ScriptStruct && ScriptStruct->IsChildOf(FBeamContentLink::StaticStruct()))
+			{
+				const FBeamContentLink* ContentLink = StructProperty->ContainerPtrToValuePtr<FBeamContentLink>(this);
+				const FString* UnderlyingString = static_cast<const FString*>(ContentLink->GetAddr(0));
+				CurrProp.Set(TEXT("$link"), *UnderlyingString);
+			}
 			else if (ScriptStruct && ScriptStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
 			{
 				const FBeamSemanticType* BeamSemantic = StructProperty->ContainerPtrToValuePtr<FBeamSemanticType>(this);
@@ -395,14 +420,14 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 				const FBeamJsonSerializableUStruct* BeamJsonSerializable = StructProperty->ContainerPtrToValuePtr<FBeamJsonSerializableUStruct>(this);
 
 				FString JsonBody;
-				TUnrealJsonSerializer Serializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&JsonBody);
+				TUnrealJsonSerializer Serializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&JsonBody);
 				BeamJsonSerializable->BeamSerialize(Serializer);
 				Serializer->Close();
 
 				auto Bag = FJsonDataBag{};
 				Bag.FromJson(JsonBody);
 
-				FJsonDomBuilder::FObject JsonObject;
+				FJsonDomBuilder::FObject JsonObject = FJsonDomBuilder::FObject{};
 				JsonObject.CopyIf(*Bag.JsonObject, [](const FString&, const FJsonValue&) { return true; });
 
 				CurrProp.Set("data", JsonObject);
@@ -414,7 +439,7 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 		}
 		else if (const auto MapProperty = CastField<FMapProperty>(*It))
 		{
-			FJsonDomBuilder::FObject MapJson;
+			FJsonDomBuilder::FObject MapJson = FJsonDomBuilder::FObject{};
 			SerializeMapProperty(CurrPropName, MapJson, MapProperty, this);
 			CurrProp.Set("data", MapJson);
 		}
@@ -422,12 +447,47 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 		{
 			FJsonDomBuilder::FArray ArrayJson;
 			SerializeArrayProperty(CurrPropName, ArrayJson, ArrayProperty, this);
-			CurrProp.Set("data", ArrayJson);
+			const auto StructProp = CastField<FStructProperty>(ArrayProperty->Inner);
+			if (StructProp && StructProp->Struct->IsChildOf(FBeamContentLink::StaticStruct()))
+				CurrProp.Set("$links", ArrayJson);
+			else
+				CurrProp.Set("data", ArrayJson);
 		}
 		else if (const auto ClassProperty = CastField<FClassProperty>(*It))
 		{
 			const auto Val = ClassProperty->ContainerPtrToValuePtr<UClass>(this);
 			CurrProp.Set("data", FSoftClassPath(static_cast<UClass*>(ClassProperty->GetPropertyValue(Val))).ToString());
+		}
+
+		else if (const auto UObjectProperty = CastField<FObjectProperty>(*It))
+		{
+			const auto InnerOptionalClass = UObjectProperty->PropertyClass;
+			if (InnerOptionalClass->ImplementsInterface(UBeamJsonSerializableUObject::StaticClass()))
+			{
+				if (const IBeamJsonSerializableUObject* BeamJsonSerializable = Cast<IBeamJsonSerializableUObject>(UObjectProperty->GetObjectPropertyValue(UObjectProperty->ContainerPtrToValuePtr<void>(this))))
+				{
+					FString JsonBody;
+					TUnrealJsonSerializer Serializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&JsonBody);
+					BeamJsonSerializable->BeamSerialize(Serializer);
+					Serializer->Close();
+
+					auto Bag = FJsonDataBag{};
+					Bag.FromJson(JsonBody);
+
+					FJsonDomBuilder::FObject JsonObject = FJsonDomBuilder::FObject{};
+					JsonObject.CopyIf(*Bag.JsonObject, [](const FString&, const FJsonValue&) { return true; });
+					CurrProp.Set("data", JsonObject);
+				}
+				else
+				{
+					CurrProp.Set("data", nullptr);
+				}
+			}
+			else
+			{
+				UE_LOG(LogBeamContent, Error, TEXT("Field %s's Type is a class and does not implement IBeamJsonSerializableUObject. It cannot be in a content object unless it does.\n"),
+				       *It->GetName())
+			}
 		}
 		else if (const auto TextProperty = CastField<FTextProperty>(*It))
 		{
@@ -474,29 +534,12 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 			const auto Val = ByteProperty->ContainerPtrToValuePtr<uint8>(this);
 			CurrProp.Set("data", ByteProperty->GetUnsignedIntPropertyValue(Val));
 		}
-		else if (const auto UObjectProperty = CastField<FObjectProperty>(*It))
+		else if (const auto EnumProperty = CastField<FEnumProperty>(*It))
 		{
-			const auto InnerOptionalClass = UObjectProperty->PropertyClass;
-			if (InnerOptionalClass->ImplementsInterface(UBeamJsonSerializableUObject::StaticClass()))
-			{
-				const IBeamJsonSerializableUObject* BeamJsonSerializable = Cast<IBeamJsonSerializableUObject>(UObjectProperty->GetObjectPropertyValue(UObjectProperty->ContainerPtrToValuePtr<void>(this)));
-				FString                      JsonBody;
-				TUnrealJsonSerializer        Serializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&JsonBody);
-				BeamJsonSerializable->BeamSerialize(Serializer);
-				Serializer->Close();
-
-				auto Bag = FJsonDataBag{};
-				Bag.FromJson(JsonBody);
-
-				FJsonDomBuilder::FObject JsonObject;
-				JsonObject.CopyIf(*Bag.JsonObject, [](const FString&, const FJsonValue&) { return true; });				
-				CurrProp.Set("data", JsonObject);
-			}
-			else
-			{
-				UE_LOG(LogBeamContent, Error, TEXT("Field %s's Type is a class and does not implement IBeamJsonSerializableUObject. It cannot be in a content object unless it does.\n"),
-					   *It->GetName())
-			}
+			UEnum* Enum = EnumProperty->GetEnum();
+			void const* EnumValueAddress = EnumProperty->ContainerPtrToValuePtr<void>(this);
+			int64 EnumValue = EnumProperty->GetUnderlyingProperty()->GetUnsignedIntPropertyValue(EnumValueAddress);
+			CurrProp.Set("data", Enum->GetNameStringByValue(EnumValue));
 		}
 		else
 		{
@@ -522,14 +565,19 @@ void UBeamContentObject::ParseBasicJsonObject(const TSharedPtr<FJsonObject>& Obj
 void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>& JsonProperties)
 {
 	const auto SelfClass = GetClass();
+	UE_LOG(LogBeamContent, Verbose, TEXT("ParsePropertiesJsonObject - Entry: %s"), *SelfClass->GetName());
+
 	for (TFieldIterator<FProperty> It(SelfClass); It; ++It)
 	{
 		const FString PropName = It->GetName();
+		UE_LOG(LogBeamContent, Verbose, TEXT("ParsePropertiesJsonObject - Parsing Prop: %s"), *PropName);
 		if (const auto SoftObjectProperty = CastField<FSoftObjectProperty>(*It))
 		{
+			FString JsonVal;
+			if (!JsonProperties->GetObjectField(PropName)->TryGetStringField("data", JsonVal))
+				JsonVal = TEXT("None");
+
 			const auto Val = SoftObjectProperty->ContainerPtrToValuePtr<FSoftObjectPtr>(this);
-			auto JsonVal = JsonProperties->GetObjectField(PropName)->GetStringField("data");
-			if(JsonVal.IsEmpty() || JsonVal.Equals("null")) JsonVal = TEXT("None");
 			SoftObjectProperty->SetPropertyValue(Val, FSoftObjectPtr(FSoftObjectPath(JsonVal)));
 		}
 		else if (const auto StructProperty = CastField<FStructProperty>(*It))
@@ -567,6 +615,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 					{
 						const auto BeamMapJson = JsonProperties->GetObjectField(PropName)->GetObjectField("data");
 						FBeamMap* BeamMap = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamMap>(OptionalVal);
+						BeamMap->OuterOwner = this;
 						const FMapProperty* InnerMapProperty = nullptr;
 						for (TFieldIterator<FProperty> OptIt(InnerOptionalStruct); OptIt; ++OptIt)
 						{
@@ -580,6 +629,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 					{
 						const auto BeamArrayJson = JsonProperties->GetObjectField(PropName)->GetArrayField("data");
 						FBeamArray* BeamArray = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamArray>(OptionalVal);
+						BeamArray->OuterOwner = this;
 						const FArrayProperty* InnerArrayProperty = nullptr;
 						for (TFieldIterator<FProperty> OptIt(InnerOptionalStruct); OptIt; ++OptIt)
 						{
@@ -588,6 +638,15 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 						}
 						ParseArrayProperty(PropName, BeamArrayJson, InnerArrayProperty, BeamArray);
 						OptionalVal->Set(BeamArray);
+					}
+					else if (InnerOptionalStruct->IsChildOf(FBeamContentLink::StaticStruct()))
+					{
+						FString SubJsonSemantic;
+						if (!JsonProperties->GetObjectField(PropName)->TryGetStringField(TEXT("$link"), SubJsonSemantic))
+							SubJsonSemantic = JsonProperties->GetObjectField(PropName)->GetStringField(TEXT("link"));
+
+						FBeamContentLink* ValData = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamContentLink>(OptionalVal);
+						ValData->Set(&SubJsonSemantic, ValData->GetSerializationRepresentationName(0));
 					}
 					else if (InnerOptionalStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
 					{
@@ -600,6 +659,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 					{
 						const auto SubJsonSerializable = JsonProperties->GetObjectField(PropName)->GetObjectField("data");
 						FBeamJsonSerializableUStruct* ValData = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamJsonSerializableUStruct>(OptionalVal);
+						ValData->OuterOwner = this;
 						ValData->BeamDeserializeProperties(SubJsonSerializable);
 						OptionalVal->Set(ValData);
 					}
@@ -607,25 +667,6 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 					{
 						UE_LOG(LogBeamContent, Error, TEXT("Field %s's Type is a struct and does not implement FBeamJsonSerializable. It cannot be in a content object unless it does.\n"),
 						       *It->GetName())
-					}
-				}
-				else if (const auto InnerOptionalUObjectProperty = CastField<FObjectProperty>(OptionalValueProp))
-				{
-					const auto InnerOptionalClass = InnerOptionalUObjectProperty->PropertyClass;
-
-					if (InnerOptionalClass->ImplementsInterface(UBeamJsonSerializableUObject::StaticClass()))
-					{
-						const auto SubJsonSerializable = JsonProperties->GetObjectField(PropName)->GetObjectField("data");
-						const auto Val = InnerOptionalUObjectProperty->ContainerPtrToValuePtr<UObject*>(OptionalVal);
-						*Val = NewObject<UObject>(this, InnerOptionalClass);
-						IBeamJsonSerializableUObject* ValData = Cast<IBeamJsonSerializableUObject>(*Val);						
-						ValData->BeamDeserializeProperties(SubJsonSerializable);
-						OptionalVal->Set(Val);
-					}
-					else
-					{
-						UE_LOG(LogBeamContent, Error, TEXT("Field %s's Type is a class and does not implement FBeamJsonSerializable. It cannot be in a content object unless it does.\n"),
-							   *It->GetName())
 					}
 				}
 				else if (const auto MapProperty = CastField<FMapProperty>(OptionalValueProp))
@@ -636,8 +677,20 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 				}
 				else if (const auto ArrayProperty = CastField<FArrayProperty>(OptionalValueProp))
 				{
-					const auto MapJson = JsonProperties->GetObjectField(PropName)->GetArrayField("data");
-					ParseArrayProperty(PropName, MapJson, ArrayProperty, OptionalVal);
+					TArray<TSharedPtr<FJsonValue>> ArrayJson;
+					const auto StructProp = CastField<FStructProperty>(ArrayProperty->Inner);
+					if (StructProp && StructProp->Struct->IsChildOf(FBeamContentLink::StaticStruct()))
+					{
+						const TArray<TSharedPtr<FJsonValue>>* ArrayJsonPtr = &ArrayJson;
+						if (!JsonProperties->GetObjectField(PropName)->TryGetArrayField(TEXT("$links"), ArrayJsonPtr))
+							ArrayJson = JsonProperties->GetObjectField(PropName)->GetArrayField(TEXT("links"));
+					}
+					else
+					{
+						ArrayJson = JsonProperties->GetObjectField(PropName)->GetArrayField("data");
+					}
+
+					ParseArrayProperty(PropName, ArrayJson, ArrayProperty, OptionalVal);
 					OptionalVal->Set(OptionalVal->GetAddr());
 				}
 				else if (const auto ClassProperty = CastField<FClassProperty>(OptionalValueProp))
@@ -646,6 +699,26 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 					const auto Val = ClassProperty->ContainerPtrToValuePtr<UClass>(OptionalVal);
 					ClassProperty->SetPropertyValue(Val, FSoftClassPath{StrVal}.ResolveClass());
 					OptionalVal->Set(OptionalVal->GetAddr());
+				}
+				else if (const auto InnerOptionalUObjectProperty = CastField<FObjectProperty>(OptionalValueProp))
+				{
+					const auto InnerOptionalClass = InnerOptionalUObjectProperty->PropertyClass;
+
+					if (InnerOptionalClass->ImplementsInterface(UBeamJsonSerializableUObject::StaticClass()))
+					{
+						const auto SubJsonSerializable = JsonProperties->GetObjectField(PropName)->GetObjectField("data");
+						const auto Val = InnerOptionalUObjectProperty->ContainerPtrToValuePtr<UObject*>(OptionalVal);
+						*Val = NewObject<UObject>(this, InnerOptionalClass);
+						IBeamJsonSerializableUObject* ValData = Cast<IBeamJsonSerializableUObject>(*Val);
+						ValData->OuterOwner = this;
+						ValData->BeamDeserializeProperties(SubJsonSerializable);
+						OptionalVal->Set(Val);
+					}
+					else
+					{
+						UE_LOG(LogBeamContent, Error, TEXT("Field %s's Type is a class and does not implement FBeamJsonSerializable. It cannot be in a content object unless it does.\n"),
+						       *It->GetName())
+					}
 				}
 				else if (const auto TextProperty = CastField<FTextProperty>(OptionalValueProp))
 				{
@@ -665,7 +738,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 					const auto Val = StrProperty->ContainerPtrToValuePtr<FString>(OptionalVal);
 					StrProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetStringField("data"));
 					OptionalVal->Set(OptionalVal->GetAddr());
-				}				
+				}
 				else if (const auto BoolProperty = CastField<FBoolProperty>(OptionalValueProp))
 				{
 					const auto Val = BoolProperty->ContainerPtrToValuePtr<bool>(OptionalVal);
@@ -702,6 +775,19 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 					ByteProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetIntegerField("data"));
 					OptionalVal->Set(OptionalVal->GetAddr());
 				}
+				else if (const auto EnumProperty = CastField<FEnumProperty>(OptionalValueProp))
+				{
+					const auto Val = StrProperty->ContainerPtrToValuePtr<FString>(OptionalVal);
+					UEnum* Enum = EnumProperty->GetEnum();
+					int64 EnumValue = Enum->GetValueByNameString(*Val);
+
+					if (EnumValue != INDEX_NONE)
+					{
+						void* EnumValueAddress = EnumProperty->ContainerPtrToValuePtr<void>(OptionalVal);
+						EnumProperty->GetUnderlyingProperty()->SetIntPropertyValue(EnumValueAddress, EnumValue);
+						OptionalVal->Set(OptionalVal->GetAddr());
+					}
+				}
 				else
 				{
 					UE_LOG(LogBeamContent, Error, TEXT("Optional Field %s's underlying Type (%s) is not supported by the Content serialization system.\n"), *It->GetName(),
@@ -712,6 +798,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 			{
 				const auto BeamMapJson = JsonProperties->GetObjectField(PropName)->GetObjectField("data");
 				FBeamMap* BeamMap = StructProperty->ContainerPtrToValuePtr<FBeamMap>(this);
+				BeamMap->OuterOwner = this;
 				const FMapProperty* InnerMapProperty = nullptr;
 				for (TFieldIterator<FProperty> OptIt(ScriptStruct); OptIt; ++OptIt)
 				{
@@ -724,6 +811,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 			{
 				const auto BeamArrayJson = JsonProperties->GetObjectField(PropName)->GetArrayField("data");
 				FBeamArray* BeamArray = StructProperty->ContainerPtrToValuePtr<FBeamArray>(this);
+				BeamArray->OuterOwner = this;
 				const FArrayProperty* InnerArrayProperty = nullptr;
 				for (TFieldIterator<FProperty> OptIt(ScriptStruct); OptIt; ++OptIt)
 				{
@@ -745,6 +833,15 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 				FGameplayTagContainer* ValData = StructProperty->ContainerPtrToValuePtr<FGameplayTagContainer>(this);
 				ValData->FromExportString(SubJsonSemantic);
 			}
+			else if (ScriptStruct && ScriptStruct->IsChildOf(FBeamContentLink::StaticStruct()))
+			{
+				FString SubJsonSemantic;
+				if (!JsonProperties->GetObjectField(PropName)->TryGetStringField(TEXT("$link"), SubJsonSemantic))
+					SubJsonSemantic = JsonProperties->GetObjectField(PropName)->GetStringField(TEXT("link"));
+
+				FBeamContentLink* ValData = StructProperty->ContainerPtrToValuePtr<FBeamContentLink>(this);
+				ValData->Set(&SubJsonSemantic, ValData->GetSerializationRepresentationName(0));
+			}
 			else if (ScriptStruct && ScriptStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
 			{
 				const auto SubJsonSemantic = JsonProperties->GetObjectField(PropName)->GetStringField("data");
@@ -755,6 +852,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 			{
 				const auto SubJsonSerializable = JsonProperties->GetObjectField(PropName)->GetObjectField("data");
 				FBeamJsonSerializableUStruct* ValData = StructProperty->ContainerPtrToValuePtr<FBeamJsonSerializableUStruct>(this);
+				ValData->OuterOwner = this;
 				ValData->BeamDeserializeProperties(SubJsonSerializable);
 			}
 			else
@@ -769,14 +867,47 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 		}
 		else if (const auto ArrayProperty = CastField<FArrayProperty>(*It))
 		{
-			const auto Array = JsonProperties->GetObjectField(PropName)->GetArrayField("data");
-			ParseArrayProperty(PropName, Array, ArrayProperty, this);
+			TArray<TSharedPtr<FJsonValue>> ArrayJson;
+			const auto StructProp = CastField<FStructProperty>(ArrayProperty->Inner);
+			if (StructProp && StructProp->Struct->IsChildOf(FBeamContentLink::StaticStruct()))
+			{
+				const TArray<TSharedPtr<FJsonValue>>* ArrayJsonPtr = &ArrayJson;
+				if (!JsonProperties->GetObjectField(PropName)->TryGetArrayField(TEXT("$links"), ArrayJsonPtr))
+					ArrayJson = JsonProperties->GetObjectField(PropName)->GetArrayField(TEXT("links"));
+			}
+			else
+			{
+				ArrayJson = JsonProperties->GetObjectField(PropName)->GetArrayField("data");
+			}
+
+			ParseArrayProperty(PropName, ArrayJson, ArrayProperty, this);
 		}
 		else if (const auto ClassProperty = CastField<FClassProperty>(*It))
 		{
 			const auto Val = ClassProperty->ContainerPtrToValuePtr<UClass>(this);
 			const auto StrVal = JsonProperties->GetObjectField(PropName)->GetStringField("data");
 			ClassProperty->SetPropertyValue(Val, FSoftClassPath{StrVal}.ResolveClass());
+		}
+		else if (const auto UObjectProperty = CastField<FObjectProperty>(*It))
+		{
+			const auto ObjectClass = UObjectProperty->PropertyClass;
+			if (ObjectClass->ImplementsInterface(UBeamJsonSerializableUObject::StaticClass()))
+			{
+				const TSharedPtr<FJsonObject>* JsonObject;
+				if (JsonProperties->GetObjectField(PropName)->TryGetObjectField("data", JsonObject))
+				{
+					UObject* Val = NewObject<UObject>(this, ObjectClass);
+					IBeamJsonSerializableUObject* ValData = Cast<IBeamJsonSerializableUObject>(Val);
+					ValData->OuterOwner = this;
+					ValData->BeamDeserializeProperties(*JsonObject);
+					UObjectProperty->SetObjectPropertyValue(UObjectProperty->ContainerPtrToValuePtr<void>(this), Val);
+				}
+			}
+			else
+			{
+				UE_LOG(LogBeamContent, Error, TEXT("Field %s's Type is a class and does not implement FBeamJsonSerializable. It cannot be in a content object unless it does.\n"),
+				       *It->GetName())
+			}
 		}
 		else if (const auto TextProperty = CastField<FTextProperty>(*It))
 		{
@@ -792,7 +923,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 		{
 			const auto Val = StrProperty->ContainerPtrToValuePtr<FString>(this);
 			StrProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetStringField("data"));
-		}		
+		}
 		else if (const auto BoolProperty = CastField<FBoolProperty>(*It))
 		{
 			const auto Val = BoolProperty->ContainerPtrToValuePtr<bool>(this);
@@ -823,23 +954,20 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 			const auto Val = ByteProperty->ContainerPtrToValuePtr<uint8>(this);
 			ByteProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetIntegerField("data"));
 		}
-		else if (const auto UObjectProperty = CastField<FObjectProperty>(*It))
+		else if (const auto EnumProperty = CastField<FEnumProperty>(*It))
 		{
-			const auto InnerOptionalClass = UObjectProperty->PropertyClass;
-			if (InnerOptionalClass->ImplementsInterface(UBeamJsonSerializableUObject::StaticClass()))
+			UEnum* Enum = EnumProperty->GetEnum();
+			const auto StrVal = JsonProperties->GetObjectField(PropName)->GetStringField("data");
+			int64 EnumValue = Enum->GetValueByNameString(StrVal);
+
+			if (EnumValue != INDEX_NONE)
 			{
-				const auto JsonObject = JsonProperties->GetObjectField(PropName)->GetObjectField("data");
-				UObject* Val = NewObject<UObject>(this, InnerOptionalClass);
-				IBeamJsonSerializableUObject* ValData = Cast<IBeamJsonSerializableUObject>(Val);
-				ValData->BeamDeserializeProperties(JsonObject);
-				UObjectProperty->SetObjectPropertyValue(UObjectProperty->ContainerPtrToValuePtr<void>(this), Val);
-			}
-			else
-			{
-				UE_LOG(LogBeamContent, Error, TEXT("Field %s's Type is a class and does not implement FBeamJsonSerializable. It cannot be in a content object unless it does.\n"),
-					   *It->GetName())
+				// Set the property value
+				void* EnumValueAddress = EnumProperty->ContainerPtrToValuePtr<void>(this);
+				EnumProperty->GetUnderlyingProperty()->SetIntPropertyValue(EnumValueAddress, EnumValue);
 			}
 		}
+
 		else
 		{
 			UE_LOG(LogBeamContent, Error, TEXT("Field %s's Type (%s) is not supported by the Content serialization system.\n"), *It->GetName(), *It->GetCPPType())
@@ -848,8 +976,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 }
 
 
-void UBeamContentObject::SerializeArrayProperty(FString PropName, FJsonDomBuilder::FArray& JsonArray,
-                                                const FArrayProperty* const ArrayProperty, const void* ArrayOwner)
+void UBeamContentObject::SerializeArrayProperty(FString PropName, FJsonDomBuilder::FArray& JsonArray, const FArrayProperty* const ArrayProperty, const void* ArrayOwner)
 {
 	if (CastField<FSoftObjectProperty>(ArrayProperty->Inner))
 	{
@@ -889,7 +1016,7 @@ void UBeamContentObject::SerializeArrayProperty(FString PropName, FJsonDomBuilde
 				{
 					const FBeamMap* Data = reinterpret_cast<const FBeamMap*>(ArrayHelper.GetRawPtr(i));
 
-					FJsonDomBuilder::FObject SubMap;
+					FJsonDomBuilder::FObject SubMap = FJsonDomBuilder::FObject{};
 					SerializeMapProperty(PropName, SubMap, InnerMapProperty, Data);
 					JsonArray.Add(SubMap);
 				}
@@ -943,6 +1070,19 @@ void UBeamContentObject::SerializeArrayProperty(FString PropName, FJsonDomBuilde
 				}
 			}
 		}
+		else if (InnerArrayStruct->IsChildOf(FBeamContentLink::StaticStruct()))
+		{
+			const auto ArrayNum = ArrayHelper.Num();
+			for (auto i = 0; i < ArrayNum; i++)
+			{
+				if (ArrayHelper.IsValidIndex(i))
+				{
+					const FBeamContentLink* Data = reinterpret_cast<const FBeamContentLink*>(ArrayHelper.GetRawPtr(i));
+					const FString* UnderlyingString = static_cast<const FString*>(Data->GetAddr(0));
+					JsonArray.Add(*UnderlyingString);
+				}
+			}
+		}
 		else if (InnerArrayStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
 		{
 			const auto ArrayNum = ArrayHelper.Num();
@@ -966,14 +1106,14 @@ void UBeamContentObject::SerializeArrayProperty(FString PropName, FJsonDomBuilde
 					const FBeamJsonSerializableUStruct* Data = reinterpret_cast<const FBeamJsonSerializableUStruct*>(ArrayHelper.GetRawPtr(i));
 
 					FString JsonBody;
-					TUnrealJsonSerializer Serializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&JsonBody);
+					TUnrealJsonSerializer Serializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&JsonBody);
 					Data->BeamSerialize(Serializer);
 					Serializer->Close();
 
 					auto Bag = FJsonDataBag{};
 					Bag.FromJson(JsonBody);
 
-					FJsonDomBuilder::FObject JsonObject;
+					FJsonDomBuilder::FObject JsonObject = FJsonDomBuilder::FObject{};
 					JsonObject.CopyIf(*Bag.JsonObject, [](const FString&, const FJsonValue&) { return true; });
 
 					JsonArray.Add(JsonObject);
@@ -993,6 +1133,42 @@ void UBeamContentObject::SerializeArrayProperty(FString PropName, FJsonDomBuilde
 		{
 			UClass** Data = (UClass**)(Val->GetData());
 			JsonArray.Add(FSoftClassPath{*(Data + i)}.ToString());
+		}
+	}
+	else if (const auto InnerObjectProp = CastField<FObjectProperty>(ArrayProperty->Inner))
+	{
+		if (InnerObjectProp->PropertyClass->ImplementsInterface(UBeamJsonSerializableUObject::StaticClass()))
+		{
+			const FScriptArray* Val = ArrayProperty->GetPropertyValuePtr(ArrayProperty->ContainerPtrToValuePtr<void>(ArrayOwner));
+			FScriptArrayHelper ArrayHelper(ArrayProperty, Val);
+
+			const int32 ArraySize = ArrayHelper.Num();
+			for (int32 Index = 0; Index < ArraySize; ++Index)
+			{
+				if (UObject* InstancedObject = *reinterpret_cast<UObject**>(ArrayHelper.GetRawPtr(Index)))
+				{
+					if (IBeamJsonSerializableUObject* Data = Cast<IBeamJsonSerializableUObject>(InstancedObject))
+					{
+						FString JsonBody;
+						TUnrealJsonSerializer Serializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&JsonBody);
+						Data->BeamSerialize(Serializer);
+						Serializer->Close();
+
+						auto Bag = FJsonDataBag{};
+						Bag.FromJson(JsonBody);
+
+						FJsonDomBuilder::FObject JsonObject = FJsonDomBuilder::FObject{};
+						JsonObject.CopyIf(*Bag.JsonObject, [](const FString&, const FJsonValue&) { return true; });
+
+						JsonArray.Add(JsonObject);
+					}
+				}
+			}
+		}
+		else
+		{
+			UE_LOG(LogBeamContent, Error, TEXT("Field %s's Type is a class and does not implement IBeamJsonSerializableUObject. It cannot be in a content object unless it does.\n"),
+			       *InnerObjectProp->PropertyClass->GetName())
 		}
 	}
 	else if (CastField<FTextProperty>(ArrayProperty->Inner))
@@ -1044,6 +1220,10 @@ void UBeamContentObject::SerializeArrayProperty(FString PropName, FJsonDomBuilde
 	else if (CastField<FByteProperty>(ArrayProperty->Inner))
 	{
 		BuildArray<uint8>(JsonArray, ArrayProperty, ArrayOwner);
+	}
+	else if (CastField<FEnumProperty>(ArrayProperty->Inner))
+	{
+		BuildArray<FString>(JsonArray, ArrayProperty, ArrayOwner);
 	}
 	else
 	{
@@ -1133,6 +1313,7 @@ void UBeamContentObject::ParseArrayProperty(const FString& PropName, const TArra
 			for (int i = 0; i < JsonArray.Num(); ++i)
 			{
 				FBeamJsonSerializableUStruct* ValData = reinterpret_cast<FBeamJsonSerializableUStruct*>(ArrayHelper.GetRawPtr(i));
+				ValData->OuterOwner = this;
 				ValData->BeamDeserializeProperties(JsonArray[i]->AsObject());
 			}
 		}
@@ -1147,6 +1328,28 @@ void UBeamContentObject::ParseArrayProperty(const FString& PropName, const TArra
 		{
 			const auto ValData = reinterpret_cast<UClass**>(ArrayHelper.GetRawPtr(i));
 			*ValData = FSoftClassPath{JsonArray[i]->AsString()}.ResolveClass();
+		}
+	}
+
+	else if (const auto InnerObjectProp = CastField<FObjectProperty>(ArrayProperty->Inner))
+	{
+		if (InnerObjectProp->PropertyClass->ImplementsInterface(UBeamJsonSerializableUObject::StaticClass()))
+		{
+			for (int i = 0; i < JsonArray.Num(); ++i)
+			{
+				UObject*& ValData = *reinterpret_cast<UObject**>(ArrayHelper.GetRawPtr(i));
+				ValData = NewObject<UObject>(this, InnerObjectProp->PropertyClass);
+				if (IBeamJsonSerializableUObject* Data = Cast<IBeamJsonSerializableUObject>(ValData))
+				{
+					Data->OuterOwner = this;
+					Data->BeamDeserializeProperties(JsonArray[i]->AsObject());
+				}
+			}
+		}
+		else
+		{
+			UE_LOG(LogBeamContent, Error, TEXT("Field %s's Type is a class and does not implement IBeamJsonSerializableUObject. It cannot be in a content object unless it does.\n"),
+			       *InnerObjectProp->PropertyClass->GetName())
 		}
 	}
 	else if (CastField<FTextProperty>(ArrayProperty->Inner))
@@ -1270,7 +1473,7 @@ void UBeamContentObject::SerializeMapProperty(FString PropName, FJsonDomBuilder:
 						const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
 						const FBeamMap* Data = reinterpret_cast<const FBeamMap*>(MapHelper.GetValuePtr(i));
 
-						FJsonDomBuilder::FObject SubMap;
+						FJsonDomBuilder::FObject SubMap = FJsonDomBuilder::FObject{};
 						SerializeMapProperty(PropName, SubMap, InnerMapProperty, Data);
 						JsonMap.Set(Key, SubMap);
 					}
@@ -1352,13 +1555,18 @@ void UBeamContentObject::SerializeMapProperty(FString PropName, FJsonDomBuilder:
 						const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
 						const FBeamJsonSerializableUStruct* Data = reinterpret_cast<const FBeamJsonSerializableUStruct*>(MapHelper.GetValuePtr(i));
 
-						FString JsonObject;
-						TUnrealJsonSerializer Serializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&JsonObject);
+						FString JsonBody;
+						TUnrealJsonSerializer Serializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&JsonBody);
 						Data->BeamSerialize(Serializer);
 						Serializer->Close();
 
+						auto Bag = FJsonDataBag{};
+						Bag.FromJson(JsonBody);
+
+						FJsonDomBuilder::FObject JsonObject = FJsonDomBuilder::FObject{};
+						JsonObject.CopyIf(*Bag.JsonObject, [](const FString&, const FJsonValue&) { return true; });
+
 						JsonMap.Set(Key, JsonObject);
-						UE_LOG(LogBeamContent, Display, TEXT("TArray<%s> Field %s[%d]=%s is a \n"), *InnerMapStruct->GetName(), *PropName, i, *JsonObject);
 					}
 				}
 			}
@@ -1367,6 +1575,7 @@ void UBeamContentObject::SerializeMapProperty(FString PropName, FJsonDomBuilder:
 				UE_LOG(LogBeamContent, Error, TEXT("Field %s's Type is a struct and does not implement FBeamJsonSerializable. It cannot be in a content object unless it does.\n"), *PropName)
 			}
 		}
+
 		else if (CastField<FClassProperty>(MapProperty->ValueProp))
 		{
 			const auto MapNum = MapHelper.Num();
@@ -1379,6 +1588,40 @@ void UBeamContentObject::SerializeMapProperty(FString PropName, FJsonDomBuilder:
 
 					JsonMap.Set(Key, FSoftClassPath(*Data).ToString());
 				}
+			}
+		}
+		else if (const auto InnerObjectProp = CastField<FObjectProperty>(MapProperty->ValueProp))
+		{
+			if (InnerObjectProp->PropertyClass->ImplementsInterface(UBeamJsonSerializableUObject::StaticClass()))
+			{
+				const auto MapNum = MapHelper.Num();
+				for (int i = 0; i < MapNum; ++i)
+				{
+					if (UObject* InstancedObject = *reinterpret_cast<UObject**>(MapHelper.GetValuePtr(i)))
+					{
+						if (IBeamJsonSerializableUObject* Data = Cast<IBeamJsonSerializableUObject>(InstancedObject))
+						{
+							FString JsonBody;
+							TUnrealJsonSerializer Serializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&JsonBody);
+							Data->BeamSerialize(Serializer);
+							Serializer->Close();
+
+							auto Bag = FJsonDataBag{};
+							Bag.FromJson(JsonBody);
+
+							FJsonDomBuilder::FObject JsonObject = FJsonDomBuilder::FObject{};
+							JsonObject.CopyIf(*Bag.JsonObject, [](const FString&, const FJsonValue&) { return true; });
+
+							const FString Key = StrKeyProperty->GetPropertyValue(MapHelper.GetKeyPtr(i));
+							JsonMap.Set(Key, JsonObject);
+						}
+					}
+				}
+			}
+			else
+			{
+				UE_LOG(LogBeamContent, Error, TEXT("Field %s's Type is a class and does not implement IBeamJsonSerializableUObject. It cannot be in a content object unless it does.\n"),
+				       *InnerObjectProp->PropertyClass->GetName())
 			}
 		}
 		else if (CastField<FTextProperty>(MapProperty->ValueProp))
@@ -1569,13 +1812,14 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 			{
 				for (const auto& Value : JsonMap->Values)
 				{
-					const auto Key = Value.Key;
+					const auto Key = FString(Value.Key);
 
 					const auto LastEntryIdx = MapHelper.AddDefaultValue_Invalid_NeedsRehash();
 					auto KeyData = reinterpret_cast<FString*>(MapHelper.GetKeyPtr(LastEntryIdx));
 					*KeyData = Key;
 
 					FBeamJsonSerializableUStruct* ValData = reinterpret_cast<FBeamJsonSerializableUStruct*>(MapHelper.GetValuePtr(LastEntryIdx));
+					ValData->OuterOwner = this;
 					ValData->BeamDeserializeProperties(Value.Value->AsObject());
 				}
 			}
@@ -1595,6 +1839,32 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 
 				auto ValData = reinterpret_cast<UClass**>(MapHelper.GetValuePtr(LastEntryIdx));
 				*ValData = FSoftClassPath{Value.Value->AsString()}.ResolveClass();
+			}
+		}
+		else if (const auto InnerObjectProp = CastField<FObjectProperty>(MapProperty->ValueProp))
+		{
+			if (InnerObjectProp->PropertyClass->ImplementsInterface(UBeamJsonSerializableUObject::StaticClass()))
+			{
+				for (const auto& Value : JsonMap->Values)
+				{
+					const auto LastEntryIdx = MapHelper.AddDefaultValue_Invalid_NeedsRehash();
+
+					auto KeyData = reinterpret_cast<FString*>(MapHelper.GetKeyPtr(LastEntryIdx));
+					*KeyData = Value.Key;
+
+					UObject*& ValData = *reinterpret_cast<UObject**>(MapHelper.GetValuePtr(LastEntryIdx));
+					ValData = NewObject<UObject>(this, InnerObjectProp->PropertyClass);
+					if (IBeamJsonSerializableUObject* Data = Cast<IBeamJsonSerializableUObject>(ValData))
+					{
+						Data->OuterOwner = this;
+						Data->BeamDeserializeProperties(Value.Value->AsObject());
+					}
+				}
+			}
+			else
+			{
+				UE_LOG(LogBeamContent, Error, TEXT("Field %s's Type is a class and does not implement IBeamJsonSerializableUObject. It cannot be in a content object unless it does.\n"),
+				       *InnerObjectProp->PropertyClass->GetName())
 			}
 		}
 		else if (CastField<FTextProperty>(MapProperty->ValueProp))

@@ -4,8 +4,10 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalLobbyRestriction.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamContentId.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalUpdateData.h"
 
 #include "UpdateLobby.generated.h"
 
@@ -20,13 +22,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Description", Category="Beam")
 	FOptionalString Description = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Restriction", Category="Beam")
-	FOptionalString Restriction = {};
+	FOptionalLobbyRestriction Restriction = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Match Type", Category="Beam")
 	FOptionalBeamContentId MatchType = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Max Players", Category="Beam")
 	FOptionalInt32 MaxPlayers = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="New Host", Category="Beam")
 	FOptionalString NewHost = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Data", Category="Beam")
+	FOptionalUpdateData Data = {};
 
 	
 

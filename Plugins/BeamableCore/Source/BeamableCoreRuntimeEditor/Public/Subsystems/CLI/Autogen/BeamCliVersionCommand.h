@@ -1,26 +1,52 @@
 #pragma once
 
 #include "Subsystems/CLI/BeamCliCommand.h"
+#include "Serialization/BeamJsonUtils.h"
+
 #include "BeamCliVersionCommand.generated.h"
 
 class FMonitoredProcess;
 
 
-USTRUCT()
-struct FBeamCliVersionStreamData
+UCLASS()
+class UBeamCliVersionStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
-	inline static FString StreamTypeName = FString(TEXT("stream"));
+public:	
+	
+	UPROPERTY()
+	FString Version = {};
+	UPROPERTY()
+	FString Location = {};
+	UPROPERTY()
+	FString Type = {};
+	UPROPERTY()
+	FString Templates = {};
 
-	UPROPERTY()
-	FString version = {};
-	UPROPERTY()
-	FString location = {};
-	UPROPERTY()
-	FString type = {};
-	UPROPERTY()
-	FString templates = {};	
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+	{
+		Serializer->WriteValue(TEXT("version"), Version);
+		Serializer->WriteValue(TEXT("location"), Location);
+		Serializer->WriteValue(TEXT("type"), Type);
+		Serializer->WriteValue(TEXT("templates"), Templates);	
+	}
+
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+	{
+		Serializer->WriteValue(TEXT("version"), Version);
+		Serializer->WriteValue(TEXT("location"), Location);
+		Serializer->WriteValue(TEXT("type"), Type);
+		Serializer->WriteValue(TEXT("templates"), Templates);	
+	}
+
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+	{
+		Version = Bag->GetStringField(TEXT("version"));
+		Location = Bag->GetStringField(TEXT("location"));
+		Type = Bag->GetStringField(TEXT("type"));
+		Templates = Bag->GetStringField(TEXT("templates"));	
+	}
 };
 
 
@@ -32,24 +58,21 @@ Usage:
   Beamable.Tools version [command] [options]
 
 Options:
-  --show-version                   Displays the executing CLI version [default: True]
-  --show-location                  Displays the executing CLI install location [default: True]
-  --show-templates                 Displays available Beamable template version [default: True]
-  --show-type                      Displays the executing CLI install type [default: True]
-  --output <output>                How to display the information, anything other than log will print straight to console with no labels [default: log]
   --dryrun                         Should any networking happen?
   --cid <cid>                      Cid to use; will default to whatever is in the file system
   --pid <pid>                      Pid to use; will default to whatever is in the file system
   --host <host>                    The host endpoint for beamable
   --refresh-token <refresh-token>  Refresh token to use for the requests
-  --log <log>                      Extra logs gets printed out
+  --log, --logs <log>              Extra logs gets printed out
   --dir <dir>                      Directory to use for configuration
+  --raw                            Output raw JSON to standard out. This happens by default when the command is being piped
+  --pretty                         Output syntax highlighted box text. This happens by default when the command is not piped
   --dotnet-path <dotnet-path>      a custom location for dotnet
   -?, -h, --help                   Show help and usage information
 
 Commands:
-  list, ls           Show the most recent available versions
   install <version>  Install a different version of the CLI [default: latest]
+  list, ls           Show the most recent available versions
 
 
  */
@@ -59,9 +82,10 @@ class UBeamCliVersionCommand : public UBeamCliCommand
 	GENERATED_BODY()
 
 public:
-	TArray<FBeamCliVersionStreamData> Stream;
-	TArray<int64> Timestamps;
-	TFunction<void (const TArray<FBeamCliVersionStreamData>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	inline static FString StreamType = FString(TEXT("stream"));
+	UPROPERTY() TArray<UBeamCliVersionStreamData*> Stream;
+	UPROPERTY() TArray<int64> Timestamps;
+	TFunction<void (const TArray<UBeamCliVersionStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual TSharedPtr<FMonitoredProcess> RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {}) override;

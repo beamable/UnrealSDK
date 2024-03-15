@@ -11,9 +11,9 @@
 
 void FBeamBackendSpec::Define()
 {
-	Describe("Request/Response", [this]()
+	Describe("Request/Response", [=, this]()
 	{
-		const FBeamRealmHandle FakeRealmHandle{"000000000000", "DE_000000000000"};
+		const FBeamRealmHandle FakeRealmHandle{FString("000000000000"), FString("DE_000000000000")};
 		const FBeamRetryConfig FakeNoRetryConfig{{}, {}, 10, TArray<float>{0.5, 1}, 0};
 		const FBeamRetryConfig FakeResponseCodeRetryConfig{{503}, {}, 10, TArray<float>{0.5, 1}, 1};
 		const FBeamRetryConfig FakeErrorCodeRetryConfig{{}, {"ErrorCode"}, 10, TArray<float>{0.5, 1}, 1};
@@ -51,7 +51,7 @@ void FBeamBackendSpec::Define()
 			FHttpModule::Get().ToggleNullHttp(false);
 
 			// Reset the request id counter to 0 and all the state related to InFlight Requests back to initial state
-			*BeamBackendSystem->InFlightRequestId = -1;
+			BeamBackendSystem->InFlightRequestId = -1;
 			BeamBackendSystem->InFlightRequests.Reset();
 			BeamBackendSystem->InFlightFailureCount.Reset();
 			BeamBackendSystem->InFlightRequestContexts.Reset();
@@ -66,7 +66,7 @@ void FBeamBackendSpec::Define()
 			BeamBackendSystem->GlobalRequestErrorCodeHandler.Unbind();
 		});
 
-		It("should create an TUnrealRequestPtr WITHOUT authentication headers, correct parameters and retry configuration then discard it", [=, this]()
+		It("should create an TUnrealRequestPtr WITHOUT authentication headers, correct parameters and retry configuration then discard it", [this, FakeCustomHeader, FakeCustomHeaderValue, FakeRealmHandle, FakeNoRetryConfig]()
 		{
 			// GET REQUESTS
 			{
@@ -78,9 +78,7 @@ void FBeamBackendSpec::Define()
 
 				// Ensure all headers were created correctly
 				TestTrue("Accept Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_ACCEPT) == UBeamBackend::HEADER_VALUE_ACCEPT_CONTENT_TYPE);
-				TestTrue("Content Type Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_CONTENT_TYPE) == UBeamBackend::HEADER_VALUE_ACCEPT_CONTENT_TYPE);
-				TestTrue("Client ID Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_CLIENT_ID) == FakeRealmHandle.Cid);
-				TestTrue("Project ID Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_PROJECT_ID) == FakeRealmHandle.Pid);
+				TestTrue("Content Type Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_CONTENT_TYPE) == UBeamBackend::HEADER_VALUE_ACCEPT_CONTENT_TYPE);				
 				TestTrue("Custom Header was added correctly", Request->GetHeader(FakeCustomHeader) == FakeCustomHeaderValue);
 
 				const auto SetUpRetryConfig = BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).RetryConfiguration;
@@ -112,9 +110,7 @@ void FBeamBackendSpec::Define()
 
 				// Ensure all headers were created correctly
 				TestTrue("Accept Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_ACCEPT) == UBeamBackend::HEADER_VALUE_ACCEPT_CONTENT_TYPE);
-				TestTrue("Content Type Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_CONTENT_TYPE) == UBeamBackend::HEADER_VALUE_ACCEPT_CONTENT_TYPE);
-				TestTrue("Client ID Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_CLIENT_ID) == FakeRealmHandle.Cid);
-				TestTrue("Project ID Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_PROJECT_ID) == FakeRealmHandle.Pid);
+				TestTrue("Content Type Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_CONTENT_TYPE) == UBeamBackend::HEADER_VALUE_ACCEPT_CONTENT_TYPE);				
 
 				const auto SetUpRetryConfig = BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).RetryConfiguration;
 				TestEqual("InFlightRetryConfig was set up correctly for this request", SetUpRetryConfig, FakeNoRetryConfig);
@@ -138,7 +134,7 @@ void FBeamBackendSpec::Define()
 			}
 		});
 
-		It("should create an TUnrealRequestPtr WITH authentication headers, correct parameters and retry configuration then discard it", [=, this]()
+		It("should create an TUnrealRequestPtr WITH authentication headers, correct parameters and retry configuration then discard it", [this, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken]()
 		{
 			// GET REQUESTS
 			{
@@ -154,9 +150,6 @@ void FBeamBackendSpec::Define()
 				         Request->GetHeader(UBeamBackend::HEADER_AUTHORIZATION) == FString::Format(*UBeamBackend::HEADER_VALUE_AUTHORIZATION, {FakeAuthToken.AccessToken}));
 				TestTrue("Request Scope Header is Set correctly",
 				         Request->GetHeader(UBeamBackend::HEADER_REQUEST_SCOPE) == FString::Format(TEXT("{0}.{1}"), {FakeRealmHandle.Cid.AsString, FakeRealmHandle.Pid.AsString}));
-
-				TestTrue("Client ID Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_CLIENT_ID) == FakeRealmHandle.Cid);
-				TestTrue("Project ID Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_PROJECT_ID) == FakeRealmHandle.Pid);
 
 				const auto SetUpRetryConfig = BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).RetryConfiguration;
 				TestTrue("InFlightRetryConfig was set up correctly for this request", SetUpRetryConfig == FakeNoRetryConfig);
@@ -192,9 +185,7 @@ void FBeamBackendSpec::Define()
 				         Request->GetHeader(UBeamBackend::HEADER_AUTHORIZATION) == FString::Format(*UBeamBackend::HEADER_VALUE_AUTHORIZATION, {FakeAuthToken.AccessToken}));
 				TestTrue("Request Scope Header is Set correctly",
 				         Request->GetHeader(UBeamBackend::HEADER_REQUEST_SCOPE) == FString::Format(TEXT("{0}.{1}"), {FakeRealmHandle.Cid.AsString, FakeRealmHandle.Pid.AsString}));
-
-				TestTrue("Client ID Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_CLIENT_ID) == FakeRealmHandle.Cid);
-				TestTrue("Project ID Header is Set correctly", Request->GetHeader(UBeamBackend::HEADER_PROJECT_ID) == FakeRealmHandle.Pid);
+				
 
 				const auto SetUpRetryConfig = BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).RetryConfiguration;
 				TestEqual("InFlightRetryConfig was set up correctly for this request", SetUpRetryConfig, FakeNoRetryConfig);
@@ -217,7 +208,7 @@ void FBeamBackendSpec::Define()
 			}
 		});
 
-		It("should invoke the Success Handlers with the correct data when received a 200 response code", [=, this]()
+		It("should invoke the Success Handlers with the correct data when received a 200 response code", [this, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken]()
 		{
 			UBeamMockGetRequest* FakeRequestData = NewObject<UBeamMockGetRequest>();
 			const int ExpectedFakeInt = 10;
@@ -277,7 +268,7 @@ void FBeamBackendSpec::Define()
 				const auto Request = BeamBackendSystem->CreateRequest(ReqId, FakeRealmHandle, FakeNoRetryConfig, FakeRequestData);
 
 				FOnMockFullResponse ResponseHandler;
-				ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
+				ResponseHandler.BindLambda([this, ReqId](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
 				{
 					TestTrue("State was Success", BeamFullResponse.State == EBeamFullResponseState::RS_Success);
 
@@ -299,7 +290,7 @@ void FBeamBackendSpec::Define()
 				const auto Request = BeamBackendSystem->CreateAuthenticatedRequest(ReqId, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken, FakeRequestData);
 
 				FOnMockFullResponse ResponseHandler;
-				ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
+				ResponseHandler.BindLambda([this, ReqId](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
 				{
 					TestTrue("State was Success", BeamFullResponse.State == EBeamFullResponseState::RS_Success);
 
@@ -321,7 +312,7 @@ void FBeamBackendSpec::Define()
 			FakeRequestData->MarkAsGarbage();
 		});
 
-		It("should invoke the Error Handlers with the correct data when received an error response code", [=, this]()
+		It("should invoke the Error Handlers with the correct data when received an error response code", [this, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken]()
 		{
 			// We expect errors if we are always logging errors --- otherwise, we expect no errors to be logged since we are binding callbacks and logging is a fallback
 			if (BeamBackendSystem->AlwaysLogErrorResponses)
@@ -400,7 +391,7 @@ void FBeamBackendSpec::Define()
 				Callbacks->ExpectedErrorResponseMessage = Error.message;
 
 				FOnMockFullResponse ResponseHandler;
-				ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
+				ResponseHandler.BindLambda([this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
 				{
 					TestTrue("State was Error", BeamFullResponse.State == EBeamFullResponseState::RS_Error);
 					Callbacks->MockErrorCallback_Expected(BeamFullResponse.Context, BeamFullResponse.RequestData, BeamFullResponse.ErrorData);
@@ -424,7 +415,7 @@ void FBeamBackendSpec::Define()
 				Callbacks->ExpectedErrorResponseMessage = Error.message;
 
 				FOnMockFullResponse ResponseHandler;
-				ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
+				ResponseHandler.BindLambda([this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
 				{
 					TestTrue("State was Error", BeamFullResponse.State == EBeamFullResponseState::RS_Error);
 					Callbacks->MockErrorCallback_Expected(BeamFullResponse.Context, BeamFullResponse.RequestData, BeamFullResponse.ErrorData);
@@ -439,7 +430,7 @@ void FBeamBackendSpec::Define()
 			FakeRequest->MarkAsGarbage();
 		});
 
-		It("should invoke the Error Handlers with the correct data when received an error response code AND Enqueue Request for Retry", [=, this]()
+		It("should invoke the Error Handlers with the correct data when received an error response code AND Enqueue Request for Retry", [this, FakeRealmHandle, FakeResponseCodeRetryConfig, FakeAuthToken]()
 		{
 			UBeamMockGetRequest* FakeRequest = NewObject<UBeamMockGetRequest>();
 			const FBeamErrorResponse Error = FBeamErrorResponse{503, TEXT("Internal Server Error"), TEXT("fake basic"), TEXT("Fake Error Message")};
@@ -498,7 +489,7 @@ void FBeamBackendSpec::Define()
 				Callbacks->ExpectedErrorResponseMessage = Error.message;
 
 				FOnMockFullResponse ResponseHandler;
-				ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
+				ResponseHandler.BindLambda([this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
 				{
 					TestTrue("State was Retrying", BeamFullResponse.State == EBeamFullResponseState::RS_Retrying);
 					Callbacks->MockErrorCallback_Expected(BeamFullResponse.Context, BeamFullResponse.RequestData, BeamFullResponse.ErrorData);
@@ -565,7 +556,7 @@ void FBeamBackendSpec::Define()
 				Callbacks->ExpectedErrorResponseMessage = Error.message;
 
 				FOnMockFullResponse ResponseHandler;
-				ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
+				ResponseHandler.BindLambda([this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
 				{
 					TestTrue("State was Retrying", BeamFullResponse.State == EBeamFullResponseState::RS_Retrying);
 					Callbacks->MockErrorCallback_Expected(BeamFullResponse.Context, BeamFullResponse.RequestData, BeamFullResponse.ErrorData);
@@ -588,7 +579,7 @@ void FBeamBackendSpec::Define()
 			FakeRequest->MarkAsGarbage();
 		});
 
-		It("should invoke the Error Handlers with the correct data when received an error response code AND Enqueue Request for Re-Auth based retry", [=, this]()
+		It("should invoke the Error Handlers with the correct data when received an error response code AND Enqueue Request for Re-Auth based retry", [this, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken]()
 		{
 			UBeamMockGetRequest* FakeRequest = NewObject<UBeamMockGetRequest>();
 			const FBeamErrorResponse Error = FBeamErrorResponse{401, UBeamBackend::AUTH_ERROR_CODE_RETRY_ALLOWED[0], TEXT("fake basic"), TEXT("Fake Error Message")};
@@ -648,7 +639,7 @@ void FBeamBackendSpec::Define()
 				Callbacks->ExpectedErrorResponseMessage = Error.message;
 
 				FOnMockFullResponse ResponseHandler;
-				ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
+				ResponseHandler.BindLambda([this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
 				{
 					TestTrue("Callback was not called", false);
 				});
@@ -671,7 +662,7 @@ void FBeamBackendSpec::Define()
 			FakeRequest->MarkAsGarbage();
 		});
 
-		It("should update the connectivity status if we fail with TUnrealRequestStatus::Failed_ConnectionError", [=, this]()
+		It("should update the connectivity status if we fail with TUnrealRequestStatus::Failed_ConnectionError", [this, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken]()
 		{
 			// We expect errors if we are always logging errors --- otherwise, we expect no errors to be logged since we are binding callbacks and logging is a fallback
 			if (BeamBackendSystem->AlwaysLogErrorResponses)
@@ -754,7 +745,7 @@ void FBeamBackendSpec::Define()
 				Callbacks->ExpectedErrorResponseMessage = Error.message;
 
 				FOnMockFullResponse ResponseHandler;
-				ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
+				ResponseHandler.BindLambda([this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
 				{
 					TestTrue("State was Error", BeamFullResponse.State == EBeamFullResponseState::RS_Error);
 					Callbacks->MockErrorCallback_Expected(BeamFullResponse.Context, BeamFullResponse.RequestData, BeamFullResponse.ErrorData);
@@ -779,7 +770,7 @@ void FBeamBackendSpec::Define()
 				Callbacks->ExpectedErrorResponseMessage = Error.message;
 
 				FOnMockFullResponse ResponseHandler;
-				ResponseHandler.BindLambda([=, this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
+				ResponseHandler.BindLambda([this](FBeamFullResponse<UBeamMockGetRequest*, UBeamMockGetRequestResponse*> BeamFullResponse)
 				{
 					TestTrue("State was Error", BeamFullResponse.State == EBeamFullResponseState::RS_Error);
 					Callbacks->MockErrorCallback_Expected(BeamFullResponse.Context, BeamFullResponse.RequestData, BeamFullResponse.ErrorData);
@@ -795,7 +786,7 @@ void FBeamBackendSpec::Define()
 			FakeRequest->MarkAsGarbage();
 		});
 
-		LatentIt("should create and send a BP request, cancel it mid-flight and ignore it's response", [=, this](const FDoneDelegate& Done)
+		LatentIt("should create and send a BP request, cancel it mid-flight and ignore it's response", [this, FakeRealmHandle, FakeNoRetryConfig](const FDoneDelegate& Done)
 		{
 			// We actually need the request to go out
 			FHttpModule::Get().ToggleNullHttp(false);
@@ -830,7 +821,7 @@ void FBeamBackendSpec::Define()
 			BeamBackendSystem->CancelRequest(ReqId);
 		});
 
-		LatentIt("should create and send an Authenticated BP request, cancel it mid-flight and ignore it's response", [=, this](const FDoneDelegate& Done)
+		LatentIt("should create and send an Authenticated BP request, cancel it mid-flight and ignore it's response", [this, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken](const FDoneDelegate& Done)
 		{
 			// We actually need the request to go out
 			FHttpModule::Get().ToggleNullHttp(false);
@@ -864,7 +855,7 @@ void FBeamBackendSpec::Define()
 			BeamBackendSystem->CancelRequest(ReqId);
 		});
 
-		LatentIt("should create and send a Code request, cancel it mid-flight and ignore it's response", [=, this](const FDoneDelegate& Done)
+		LatentIt("should create and send a Code request, cancel it mid-flight and ignore it's response", [this, FakeRealmHandle, FakeNoRetryConfig](const FDoneDelegate& Done)
 		{
 			// We actually need the request to go out
 			FHttpModule::Get().ToggleNullHttp(false);
@@ -898,7 +889,7 @@ void FBeamBackendSpec::Define()
 			BeamBackendSystem->CancelRequest(ReqId);
 		});
 
-		LatentIt("should create and send an Authenticated Code request, cancel it mid-flight and ignore it's response", [=, this](const FDoneDelegate& Done)
+		LatentIt("should create and send an Authenticated Code request, cancel it mid-flight and ignore it's response", [this, FakeRealmHandle, FakeNoRetryConfig, FakeAuthToken](const FDoneDelegate& Done)
 		{
 			// We actually need the request to go out
 			FHttpModule::Get().ToggleNullHttp(false);
@@ -933,7 +924,7 @@ void FBeamBackendSpec::Define()
 		});
 
 
-		It("should clean up requests tagged as completed", [=, this]()
+		It("should clean up requests tagged as completed", [this, FakeRealmHandle, FakeResponseCodeRetryConfig, FakeAuthToken]()
 		{
 			UBeamMockGetRequest* FakeRequest = NewObject<UBeamMockGetRequest>();
 
@@ -982,7 +973,7 @@ void FBeamBackendSpec::Define()
 		});
 	});
 
-	Describe("Retry Configurations", [this]()
+	Describe("Retry Configurations", [=, this]()
 	{
 		const FUserSlot TestUserSlot{"TestSlot"};
 		const FRequestType RequestType{ULoginRefreshTokenRequest::StaticClass()->GetName()};
@@ -992,7 +983,7 @@ void FBeamBackendSpec::Define()
 			BeamBackendSystem = GEngine->GetEngineSubsystem<UBeamBackend>();
 		});
 
-		AfterEach([=, this]()
+		AfterEach([this, RequestType, TestUserSlot]()
 		{
 			// If these aren't working it'll break the tests below, so we don't explicitly test for these.
 			BeamBackendSystem->ResetRetryConfigForRequestType(RequestType);
@@ -1000,7 +991,7 @@ void FBeamBackendSpec::Define()
 			BeamBackendSystem->ResetRetryConfigForUserSlotAndRequestType(TestUserSlot, RequestType);
 		});
 
-		It("should override a specific request type's retry configuration", [=, this]()
+		It("should override a specific request type's retry configuration", [this, RequestType]()
 		{
 			auto ExpectedOverridenConfig = BeamBackendSystem->DefaultRetryConfig;
 			ExpectedOverridenConfig.Timeout = -5;
@@ -1012,7 +1003,7 @@ void FBeamBackendSpec::Define()
 			TestTrue("Overriden Retry Config for Request Type", ExpectedOverridenConfig.Timeout == ActualConfig.Timeout);
 		});
 
-		It("should override a specific user's retry configuration", [=, this]()
+		It("should override a specific user's retry configuration", [this, TestUserSlot]()
 		{
 			auto ExpectedOverridenConfig = BeamBackendSystem->DefaultRetryConfig;
 			ExpectedOverridenConfig.Timeout = -5;
@@ -1024,7 +1015,7 @@ void FBeamBackendSpec::Define()
 			TestTrue("Overriden Retry Config for Request Type", ExpectedOverridenConfig.Timeout == ActualConfig.Timeout);
 		});
 
-		It("should override a specific user specific requests's retry configuration", [=, this]()
+		It("should override a specific user specific requests's retry configuration", [this, TestUserSlot, RequestType]()
 		{
 			auto ExpectedOverridenConfig = BeamBackendSystem->DefaultRetryConfig;
 			ExpectedOverridenConfig.Timeout = -5;
@@ -1036,7 +1027,7 @@ void FBeamBackendSpec::Define()
 			TestTrue("Overriden Retry Config for Request Type", ExpectedOverridenConfig.Timeout == ActualConfig.Timeout);
 		});
 
-		It("should fallback correctly to the request type's retry configuration", [=, this]()
+		It("should fallback correctly to the request type's retry configuration", [this, RequestType, TestUserSlot]()
 		{
 			auto ExpectedOverridenConfig = BeamBackendSystem->DefaultRetryConfig;
 			ExpectedOverridenConfig.Timeout = -5;
@@ -1048,7 +1039,7 @@ void FBeamBackendSpec::Define()
 			TestTrue("Overriden Retry Config for Request Type", ExpectedOverridenConfig.Timeout == ActualConfig.Timeout);
 		});
 
-		It("should fallback correctly to the default retry configuration", [=, this]()
+		It("should fallback correctly to the default retry configuration", [this, RequestType, TestUserSlot]()
 		{
 			const auto ExpectedOverridenConfig = BeamBackendSystem->DefaultRetryConfig;
 
@@ -1061,9 +1052,9 @@ void FBeamBackendSpec::Define()
 		});
 	});
 
-	Describe("Retry Logic", [this]()
+	Describe("Retry Logic", [=, this]()
 	{
-		const FBeamRealmHandle FakeRealmHandle{"TEST_CID", "TEST_PID"};
+		const FBeamRealmHandle FakeRealmHandle{FString("TEST_CID"), FString("TEST_PID")};
 		const FBeamRetryConfig FakeResponseCodeRetryConfig{{503}, {}, 10, TArray<float>{0.5, 1}, 1};
 		const FBeamRetryConfig FakeErrorCodeRetryConfig{{}, {TEXT("ErrorCode")}, 10, TArray<float>{0.5, 1}, 1};
 		const FBeamAuthToken FakeAuthToken{"AUTH_TOKEN", "REFRESH_TOKEN"};
@@ -1082,7 +1073,7 @@ void FBeamBackendSpec::Define()
 			FHttpModule::Get().ToggleNullHttp(false);
 
 			// Reset the request id counter to 0 and all the state related to InFlight Requests back to initial state
-			*BeamBackendSystem->InFlightRequestId = -1;
+			BeamBackendSystem->InFlightRequestId = -1;
 			BeamBackendSystem->InFlightRequests.Reset();
 			BeamBackendSystem->InFlightFailureCount.Reset();
 			BeamBackendSystem->InFlightRequestContexts.Reset();
@@ -1097,7 +1088,7 @@ void FBeamBackendSpec::Define()
 			BeamBackendSystem->GlobalRequestErrorCodeHandler.Unbind();
 		});
 
-		It("should begin processing a request enqueued for retry", [=, this]()
+		It("should begin processing a request enqueued for retry", [this, FakeRealmHandle, FakeResponseCodeRetryConfig, FakeAuthToken, FakeErrorCodeRetryConfig]()
 		{
 			UBeamMockGetRequest* FakeRequest = NewObject<UBeamMockGetRequest>();
 
@@ -1116,7 +1107,7 @@ void FBeamBackendSpec::Define()
 				ResponseCodeReqId, 0, 503, FakeRealmHandle,
 			};
 			const auto ExpectedErrorCodeRetry = FRequestToRetry{
-				ErrorCodeReqId, 0, 504, FakeRealmHandle, TEXT("ErrorCode")
+				ErrorCodeReqId, 0, 504, {FakeRealmHandle}, {FString("ErrorCode")}
 			};
 			BeamBackendSystem->EnqueuedRetries.Enqueue(ExpectedResponseCodeRetry);
 			BeamBackendSystem->EnqueuedRetries.Enqueue(ExpectedErrorCodeRetry);
@@ -1139,7 +1130,7 @@ void FBeamBackendSpec::Define()
 			FakeRequest->MarkAsGarbage();
 		});
 
-		LatentIt("should call the process request when failing a non-authenticated request", [=, this](FDoneDelegate Done)
+		LatentIt("should call the process request when failing a non-authenticated request", [this, FakeRealmHandle, FakeErrorCodeRetryConfig, FakeResponseCodeRetryConfig](FDoneDelegate Done)
 		{
 			// We actually need the request to go out
 			FHttpModule::Get().ToggleNullHttp(false);
@@ -1187,7 +1178,7 @@ void FBeamBackendSpec::Define()
 		});
 
 
-		LatentIt("should call the process request when failing an authenticated request", [=, this](FDoneDelegate Done)
+		LatentIt("should call the process request when failing an authenticated request", [this, FakeRealmHandle, FakeResponseCodeRetryConfig, FakeErrorCodeRetryConfig, FakeAuthToken](FDoneDelegate Done)
 		{
 			// We actually need the request to go out
 			FHttpModule::Get().ToggleNullHttp(false);
@@ -1235,7 +1226,7 @@ void FBeamBackendSpec::Define()
 		});
 	});
 
-	Describe("Connectivity", [this]()
+	Describe("Connectivity", [=, this]()
 	{
 		BeforeEach([this]()
 		{
@@ -1243,7 +1234,7 @@ void FBeamBackendSpec::Define()
 			StatusAtTestRunStart = BeamBackendSystem->CurrentConnectivityStatus;
 		});
 
-		AfterEach([=, this]()
+		AfterEach([this]()
 		{
 			BeamBackendSystem->CurrentConnectivityStatus = StatusAtTestRunStart;
 
@@ -1252,14 +1243,14 @@ void FBeamBackendSpec::Define()
 				BeamBackendSystem->GlobalConnectivityChangedCodeHandler.Remove(RegisteredDelegatesDuringConnectivityTest);
 		});
 
-		It("should turn the connectivity off and call connection changed callback", [=, this]()
+		It("should turn the connectivity off and call connection changed callback", [this]()
 		{
 			constexpr int64 ExpectedRequestId = 10;
 			const FString ExpectedRequestType = UBeamMockGetRequest::StaticClass()->GetName();
 
 
 			const auto Handler = BeamBackendSystem->GlobalConnectivityChangedCodeHandler.AddLambda(
-				[=, this](const FBeamRequestContext& RequestCtx, const FRequestType& RequestType, const bool bConnected)
+				[this, ExpectedRequestType](const FBeamRequestContext& RequestCtx, const FRequestType& RequestType, const bool bConnected)
 				{
 					TestTrue("RequestId was forwarded correctly", RequestCtx.RequestId == ExpectedRequestId);
 					TestTrue("RequestType was forwarded correctly", RequestType == FRequestType{ExpectedRequestType});
@@ -1270,7 +1261,7 @@ void FBeamBackendSpec::Define()
 			BeamBackendSystem->UpdateConnectivity(FBeamRequestContext{ExpectedRequestId}, EHttpRequestStatus::Failed_ConnectionError, FRequestType{ExpectedRequestType});
 		});
 
-		It("should turn the connectivity on when receiving a successful response and call connection changed callback", [=, this]()
+		It("should turn the connectivity on when receiving a successful response and call connection changed callback", [this]()
 		{
 			constexpr int64 ExpectedRequestId = 10;
 			const FString ExpectedRequestType = UBeamMockGetRequest::StaticClass()->GetName();
@@ -1280,7 +1271,7 @@ void FBeamBackendSpec::Define()
 
 			// Set callback to assert that it gets turned back on
 			const auto Handler = BeamBackendSystem->GlobalConnectivityChangedCodeHandler.AddLambda(
-				[=, this](const FBeamRequestContext& RequestCtx, const FRequestType& RequestType, const bool bConnected)
+				[this, ExpectedRequestType](const FBeamRequestContext& RequestCtx, const FRequestType& RequestType, const bool bConnected)
 				{
 					TestTrue("RequestId was forwarded correctly", RequestCtx.RequestId == ExpectedRequestId);
 					TestTrue("RequestType was forwarded correctly", RequestType == FRequestType{ExpectedRequestType});
@@ -1291,7 +1282,7 @@ void FBeamBackendSpec::Define()
 			BeamBackendSystem->UpdateConnectivity(FBeamRequestContext{ExpectedRequestId}, EHttpRequestStatus::Succeeded, FRequestType{ExpectedRequestType});
 		});
 
-		It("should turn the connectivity on when receiving a failed (for non-connection issues) response and call connection changed callback", [=, this]()
+		It("should turn the connectivity on when receiving a failed (for non-connection issues) response and call connection changed callback", [this]()
 		{
 			constexpr int64 ExpectedRequestId = 10;
 			const FString ExpectedRequestType = UBeamMockGetRequest::StaticClass()->GetName();
@@ -1301,7 +1292,7 @@ void FBeamBackendSpec::Define()
 
 			// Set callback to assert that it gets turned back on
 			const auto Handler = BeamBackendSystem->GlobalConnectivityChangedCodeHandler.AddLambda(
-				[=, this](const FBeamRequestContext& RequestCtx, const FRequestType& RequestType, const bool bConnected)
+				[this, ExpectedRequestType](const FBeamRequestContext& RequestCtx, const FRequestType& RequestType, const bool bConnected)
 				{
 					TestTrue("RequestId was forwarded correctly", RequestCtx.RequestId == ExpectedRequestId);
 					TestTrue("RequestType was forwarded correctly", RequestType == FRequestType{ExpectedRequestType});
@@ -1312,7 +1303,7 @@ void FBeamBackendSpec::Define()
 			BeamBackendSystem->UpdateConnectivity(FBeamRequestContext{ExpectedRequestId}, EHttpRequestStatus::Failed, FRequestType{ExpectedRequestType});
 		});
 
-		It("should not call connection changed callback when getting repeated Successfull/Failed errors", [=, this]()
+		It("should not call connection changed callback when getting repeated Successfull/Failed errors", [this]()
 		{
 			constexpr int64 ExpectedRequestId = 10;
 			const FString ExpectedRequestType = UBeamMockGetRequest::StaticClass()->GetName();
@@ -1322,7 +1313,7 @@ void FBeamBackendSpec::Define()
 
 			// Set callback to assert that it gets turned back on
 			const auto Handler = BeamBackendSystem->GlobalConnectivityChangedCodeHandler.AddLambda(
-				[=, this](const FBeamRequestContext& RequestCtx, const FRequestType& RequestType, const bool bConnected)
+				[this](const FBeamRequestContext& RequestCtx, const FRequestType& RequestType, const bool bConnected)
 				{
 					TestTrue("you should not be seeing this", false);
 				});
@@ -1332,7 +1323,7 @@ void FBeamBackendSpec::Define()
 			RegisteredDelegatesDuringConnectivityTests.Add(Handler);
 		});
 
-		It("should not call connection changed callback when getting repeated Failed Connection Errors", [=, this]()
+		It("should not call connection changed callback when getting repeated Failed Connection Errors", [this]()
 		{
 			constexpr int64 ExpectedRequestId = 10;
 			const FString ExpectedRequestType = UBeamMockGetRequest::StaticClass()->GetName();
@@ -1341,7 +1332,7 @@ void FBeamBackendSpec::Define()
 			BeamBackendSystem->UpdateConnectivity(FBeamRequestContext{ExpectedRequestId}, EHttpRequestStatus::Failed_ConnectionError, FRequestType{ExpectedRequestType});
 			// Set callback to assert that if it remains off the callback won't be called
 			const auto Handler = BeamBackendSystem->GlobalConnectivityChangedCodeHandler.AddLambda(
-				[=, this](const FBeamRequestContext& RequestCtx, const FRequestType& RequestType, const bool bConnected)
+				[this](const FBeamRequestContext& RequestCtx, const FRequestType& RequestType, const bool bConnected)
 				{
 					TestTrue("you should not be seeing this", false);
 				});
@@ -1349,6 +1340,37 @@ void FBeamBackendSpec::Define()
 			BeamBackendSystem->UpdateConnectivity(FBeamRequestContext{ExpectedRequestId}, EHttpRequestStatus::Failed_ConnectionError, FRequestType{ExpectedRequestType});
 
 			RegisteredDelegatesDuringConnectivityTests.Add(Handler);
+		});
+	});
+
+	Describe("Dedicated Servers", [=, this]()
+	{		
+		BeforeEach([this]()
+		{						
+			BeamBackendSystem = GEngine->GetEngineSubsystem<UBeamBackend>();
+		});
+
+		AfterEach([this]()
+		{
+		});
+
+		It("should correctly extract URLs for request signing", [this]()
+		{
+			constexpr int64 ExpectedRequestId = 10;
+			const FString ExpectedRequestType = UBeamMockGetRequest::StaticClass()->GetName();
+
+			const FString ScalaUrl = FString(TEXT("https://dev.api.beamable.com/object/stats/game.public.player.1595037680985091/"));
+			const FString CSharpUrl = FString(TEXT("https://dev.api.beamable.com/api/lobbies/7c9f10d1-b16c-46d1-8af1-df76604b1e1b/"));
+
+			FString SigScalaUrl;
+			BeamBackendSystem->ExtractUrlForSignature(ScalaUrl,SigScalaUrl);
+
+			FString SigCSharpUrl;
+			BeamBackendSystem->ExtractUrlForSignature(CSharpUrl,SigCSharpUrl);
+
+			TestEqual("Scala URL extracted correctly", SigScalaUrl, TEXT("/object/stats/game.public.player.1595037680985091/"));
+			TestEqual("CSharp URL extracted correctly", SigCSharpUrl, TEXT("/lobbies/7c9f10d1-b16c-46d1-8af1-df76604b1e1b/"));
+			
 		});
 	});
 }

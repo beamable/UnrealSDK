@@ -7,17 +7,17 @@
 
 void UCancelInviteToParty::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeOptional<FString>(TEXT("playerId"), &PlayerId, Serializer);
+	UBeamJsonUtils::SerializeOptional<FBeamGamerTag, FString>(TEXT("playerId"), &PlayerId, Serializer);
 }
 
 void UCancelInviteToParty::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeOptional<FString>(TEXT("playerId"), &PlayerId, Serializer);		
+	UBeamJsonUtils::SerializeOptional<FBeamGamerTag, FString>(TEXT("playerId"), &PlayerId, Serializer);		
 }
 
 void UCancelInviteToParty::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeOptional<FString>("playerId", Bag, PlayerId, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FBeamGamerTag, FString>("playerId", Bag, PlayerId, OuterOwner);
 }
 
 

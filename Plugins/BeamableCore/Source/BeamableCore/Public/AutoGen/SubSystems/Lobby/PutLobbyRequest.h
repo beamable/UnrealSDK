@@ -38,8 +38,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Lobby", DisplayName="Beam - Make PutLobby",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Tags,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UPutLobbyRequest* Make(FGuid _Id, FOptionalArrayOfTag _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Lobby", DisplayName="Beam - Make PutLobby",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Passcode,_Tags,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPutLobbyRequest* Make(FGuid _Id, FOptionalString _Passcode, FOptionalArrayOfBeamTag _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

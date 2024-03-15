@@ -22,12 +22,12 @@ void UPostPublishRequest::BuildBody(FString& BodyString) const
 {
 	ensureAlways(Body);
 
-	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&BodyString);
+	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&BodyString);
 	Body->BeamSerialize(JsonSerializer);
 	JsonSerializer->Close();
 }
 
-UPostPublishRequest* UPostPublishRequest::Make(FOptionalString _Body, FOptionalString _Cid, FOptionalString _Pid, FOptionalString _PlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPostPublishRequest* UPostPublishRequest::Make(FOptionalString _Body, FOptionalString _Cid, FOptionalString _Pid, FOptionalBeamGamerTag _PlayerId, FOptionalString _Channel, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostPublishRequest* Req = NewObject<UPostPublishRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -41,6 +41,7 @@ UPostPublishRequest* UPostPublishRequest::Make(FOptionalString _Body, FOptionalS
 	Req->Body->Cid = _Cid;
 	Req->Body->Pid = _Pid;
 	Req->Body->PlayerId = _PlayerId;
+	Req->Body->Channel = _Channel;
 	
 
 	return Req;

@@ -37,6 +37,20 @@ void FBeamJsonSerializableUStruct::BeamDeserializeProperties(const TSharedPtr<FJ
 	ensure(false);
 }
 
+void IBeamJsonSerializableUObject::BeamSerializePretty(FString& Result) const
+{
+	TUnrealPrettyJsonSerializer JsonSerializer = TJsonStringWriter<TPrettyJsonPrintPolicy<TCHAR>>::Create(&Result);
+	BeamSerialize(JsonSerializer);
+	JsonSerializer->Close();
+}
+
+void IBeamJsonSerializableUObject::BeamSerializeCondensed(FString& Result) const
+{
+	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&Result);
+	BeamSerialize(JsonSerializer);
+	JsonSerializer->Close();
+}
+
 void IBeamJsonSerializableUObject::BeamSerialize(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteObjectStart();

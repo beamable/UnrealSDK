@@ -22,12 +22,12 @@ void UPostScoreRequest::BuildBody(FString& BodyString) const
 {
 	ensureAlways(Body);
 
-	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&BodyString);
+	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&BodyString);
 	Body->BeamSerialize(JsonSerializer);
 	JsonSerializer->Close();
 }
 
-UPostScoreRequest* UPostScoreRequest::Make(FString _TournamentId, double _Score, int64 _PlayerId, FOptionalBool _bIncrement, FOptionalMapOfString _Stats, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPostScoreRequest* UPostScoreRequest::Make(FString _TournamentId, double _Score, int64 _PlayerId, FOptionalBool _bIncrement, FOptionalString _ContentId, FOptionalMapOfString _Stats, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostScoreRequest* Req = NewObject<UPostScoreRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -41,6 +41,7 @@ UPostScoreRequest* UPostScoreRequest::Make(FString _TournamentId, double _Score,
 	Req->Body->Score = _Score;
 	Req->Body->PlayerId = _PlayerId;
 	Req->Body->bIncrement = _bIncrement;
+	Req->Body->ContentId = _ContentId;
 	Req->Body->Stats = _Stats;
 	
 

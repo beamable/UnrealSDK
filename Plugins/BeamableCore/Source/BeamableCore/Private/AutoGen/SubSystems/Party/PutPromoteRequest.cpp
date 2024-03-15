@@ -9,7 +9,7 @@ void UPutPromoteRequest::BuildVerb(FString& VerbString) const
 void UPutPromoteRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/api/parties/{id}/promote");
-	Route = Route.Replace(TEXT("{id}"), *Id.ToString(EGuidFormats::DigitsLower));
+	Route = Route.Replace(TEXT("{id}"), *Id.ToString(EGuidFormats::DigitsWithHyphensLower));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);
@@ -22,12 +22,12 @@ void UPutPromoteRequest::BuildBody(FString& BodyString) const
 {
 	ensureAlways(Body);
 
-	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<wchar_t>>::Create(&BodyString);
+	TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&BodyString);
 	Body->BeamSerialize(JsonSerializer);
 	JsonSerializer->Close();
 }
 
-UPutPromoteRequest* UPutPromoteRequest::Make(FGuid _Id, FOptionalString _PlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPutPromoteRequest* UPutPromoteRequest::Make(FGuid _Id, FOptionalBeamGamerTag _PlayerId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutPromoteRequest* Req = NewObject<UPutPromoteRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};

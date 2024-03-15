@@ -13,7 +13,7 @@ void FBeamResponseCacheSpec::Define()
 {
 	Describe("Cache Hits", [this]()
 	{
-		const FBeamRealmHandle FakeRealmHandle{"000000000000", "DE_000000000000"};
+		const FBeamRealmHandle FakeRealmHandle{FString("000000000000"), FString("DE_000000000000")};
 		const FBeamRetryConfig FakeNoRetryConfig{{}, {}, 10, TArray<float>{0.5, 1}, 0};
 
 		BeforeEach([this]()

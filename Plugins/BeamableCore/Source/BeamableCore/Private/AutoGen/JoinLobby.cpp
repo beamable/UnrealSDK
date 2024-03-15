@@ -7,17 +7,20 @@
 
 void UJoinLobby::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeOptional<TArray<UTag*>, UTag*>(TEXT("tags"), &Tags, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("passcode"), &Passcode, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<FBeamTag>, FBeamTag>(TEXT("tags"), &Tags, Serializer);
 }
 
 void UJoinLobby::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	UBeamJsonUtils::SerializeOptional<TArray<UTag*>, UTag*>(TEXT("tags"), &Tags, Serializer);		
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("passcode"), &Passcode, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<FBeamTag>, FBeamTag>(TEXT("tags"), &Tags, Serializer);		
 }
 
 void UJoinLobby::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeOptional<TArray<UTag*>, UTag*>("tags", Bag, Tags, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FString>("passcode", Bag, Passcode, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TArray<FBeamTag>, FBeamTag>("tags", Bag, Tags, OuterOwner);
 }
 
 

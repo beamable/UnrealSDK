@@ -35,8 +35,8 @@ class BEAMABLECORE_API UBeamInventoryNotifications : public UEngineSubsystem
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 public:
-	UFUNCTION(BlueprintCallable, DisplayName="Subscribe - Inventory Refresh", Category="Beam")
-	void SubscribeToInventoryRefresh(const FUserSlot& Slot, const FName& SocketName, const FOnInventoryRefreshNotification& Handler) const;
+	UFUNCTION(BlueprintCallable, DisplayName="Subscribe - Inventory Refresh", Category="Beam", meta=(DefaultToSelf="ContextObject"))
+	void SubscribeToInventoryRefresh(const FUserSlot& Slot, const FName& SocketName, const FOnInventoryRefreshNotification& Handler, UObject* ContextObject) const;
 
-	void CPP_SubscribeToInventoryRefresh(const FUserSlot& Slot, const FName& SocketName, const FOnInventoryRefreshNotificationCode& Handler) const;
+	FDelegateHandle CPP_SubscribeToInventoryRefresh(const FUserSlot& Slot, const FName& SocketName, const FOnInventoryRefreshNotificationCode& Handler, UObject* ContextObject) const;
 };

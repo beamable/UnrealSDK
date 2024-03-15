@@ -39,7 +39,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Lobby", DisplayName="Beam - Make DeleteTags",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_PlayerId,_Tags,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UDeleteTagsRequest* Make(FGuid _Id, FOptionalString _PlayerId, FOptionalArrayOfString _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	static UDeleteTagsRequest* Make(FGuid _Id, FOptionalBeamGamerTag _PlayerId, FOptionalArrayOfString _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
