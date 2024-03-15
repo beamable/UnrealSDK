@@ -71,8 +71,8 @@ Options:
   -?, -h, --help                   Show help and usage information
 
 Commands:
-  realm               Get current realm config values
   secret              Get the realm secret
+  realm               Get current realm config values
   set <name> <value>  Set a config value
 
 

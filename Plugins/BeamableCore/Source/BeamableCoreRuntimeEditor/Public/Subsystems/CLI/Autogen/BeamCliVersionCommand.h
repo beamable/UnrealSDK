@@ -71,8 +71,9 @@ Options:
   -?, -h, --help                   Show help and usage information
 
 Commands:
-  install <version>  Install a different version of the CLI [default: latest]
-  list, ls           Show the most recent available versions
+  construct <major> <minor> <patch>  [INTERNAL] constructs a beamable version string with the given configuration
+  list, ls                           Show the most recent available versions
+  install <version>                  Install a different version of the CLI [default: latest]
 
 
  */

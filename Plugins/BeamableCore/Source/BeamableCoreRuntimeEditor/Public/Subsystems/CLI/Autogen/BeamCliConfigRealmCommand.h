@@ -57,8 +57,8 @@ Options:
   -?, -h, --help                   Show help and usage information
 
 Commands:
-  remove  Remove realm config values
   set     Set realm config values
+  remove  Remove realm config values
 
 
  */
