@@ -2,10 +2,10 @@ site_name: Unreal SDK
 theme:
   name: material
   logo: assets/images/logo.png
+  favicon: assets/images/beamable-badge.png
   features:
     - navigation.tabs
     - navigation.sections
-    - toc.integrate
     - navigation.top
     - search.suggest
     - search.highlight
