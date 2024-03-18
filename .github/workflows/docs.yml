@@ -1,8 +1,9 @@
-name: Docs deploy 
+name: Docs deploy
+
 on:
   push:
     branches:
-      - master 
+      - dev
       - main
 permissions:
   contents: write
