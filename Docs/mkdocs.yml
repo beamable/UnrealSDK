@@ -1,7 +1,7 @@
 site_name: Unreal SDK
 theme:
   name: material
-  logo: assets/logo.png
+  logo: assets/images/logo.png
   features:
     - navigation.tabs
     - navigation.sections
