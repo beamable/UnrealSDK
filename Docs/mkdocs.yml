@@ -1,6 +1,7 @@
-site_name: Unreal Beamable SDK
+site_name: Unreal SDK
 theme:
   name: material
+  logo: assets/logo.png
   features:
     - navigation.tabs
     - navigation.sections
@@ -17,15 +18,17 @@ theme:
       toggle:
         icon: material/toggle-switch-off-outline 
         name: Switch to dark mode
-      primary: teal
-      accent: purple 
+      primary: blue
+      accent: blue 
     - scheme: slate 
       toggle:
         icon: material/toggle-switch
         name: Switch to light mode    
-      primary: teal
-      accent: lime
+      primary: blue
+      accent: blue
 
+repo_url: https://github.com/Beamable/UnrealSDK
+repo_name: Beamable/UnrealSDK
 
 markdown_extensions:
   - pymdownx.highlight:
