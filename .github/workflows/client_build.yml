@@ -19,6 +19,10 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
+      - name: Cache Docker images
+        uses: ScribeMD/docker-cache@0.5.0
+        with:
+          key: docker-${{ runner.os }}
       -
         name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -29,5 +33,4 @@ jobs:
       - name: Pull base image
         run: docker pull ghcr.io/epicgames/unreal-engine:dev-5.3.2
       - name: Build the Docker image
-        working-directory: C:\actions-runner
-        run: docker build . --file Dockerfile --tag beamable-unreal-client:$(date +%s)
+        run: docker build .  --progress plain --tag beamable-unreal-client:$(date +%s)
