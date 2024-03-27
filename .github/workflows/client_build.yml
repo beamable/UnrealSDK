@@ -13,20 +13,8 @@ permissions:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-      - name: List some stuff v1
-        run: dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -n | tail -n 100
-      - name: Cleanup some stuff v1
-        run: rm -rf /opt/hostedtoolcache
-      - name: Cleanup some stuff v2
-        run: sudo apt-get remove -y '^dotnet-.*'
-      - name: Cleanup some stuff v3
-        run: sudo apt-get remove -y '^llvm-.*'
-      - name: Cleanup some stuff v4
-        run: sudo apt-get remove -y 'php.*'
-      - name: Cleanup some stuff v5
-        run: sudo apt-get remove -y '^aspnetcore.*'
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -41,4 +29,5 @@ jobs:
       - name: Pull base image
         run: docker pull ghcr.io/epicgames/unreal-engine:dev-5.3.2
       - name: Build the Docker image
+        working-directory: C:\actions-runner
         run: docker build . --file Dockerfile --tag beamable-unreal-client:$(date +%s)
