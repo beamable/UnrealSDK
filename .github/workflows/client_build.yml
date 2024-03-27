@@ -15,6 +15,16 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Cleanup some stuff v1
+        run: sudo apt-get remove -y '^ghc-8.*'
+      - name: Cleanup some stuff v2
+        run: sudo apt-get remove -y '^dotnet-.*'
+      - name: Cleanup some stuff v3
+        run: sudo apt-get remove -y '^llvm-.*'
+      - name: Cleanup some stuff v4
+        run: sudo apt-get remove -y 'php.*'
+      - name: Cleanup some stuff v5
+        run: sudo apt-get remove -y azure-cli google-cloud-sdk hhvm google-chrome-stable firefox powershell mono-devel
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
