@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: unreal-builder
     steps:
       - uses: actions/checkout@v4
         with:
