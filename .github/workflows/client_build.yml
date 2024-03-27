@@ -26,7 +26,9 @@ jobs:
       - name: Cleanup some stuff v4
         run: sudo apt-get remove -y 'php.*'
       - name: Cleanup some stuff v5
-        run: sudo apt-get remove -y azure-cli google-cloud-sdk hhvm google-chrome-stable firefox powershell mono-devel
+        run: sudo apt-get remove -y '^aspnetcore.*'
+      - name: Cleanup some stuff v6
+        run: sudo apt-get remove -y 'gcc.*'
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
