@@ -44,5 +44,14 @@ markdown_extensions:
   - pymdownx.mark
   - attr_list
 
+plugins:
+   - glightbox
+
+nav:  
+  - Use Guide: 
+    - Intro: 'Use Guide/Unreal SDK - Intro.md'
+    - Content: 'Use Guide/Unreal SDK - Content.md'
+  - SDK Development Guide: 'SDK Development Guide/OAPI Code Gen.md'
+
 copyright: |
   &copy; 2024 <a href="https://github.com/Beamable"  target="_blank" rel="noopener">Beamable</a>
