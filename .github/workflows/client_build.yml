@@ -26,8 +26,5 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build
-        uses: docker/build-push-action@v5
-        with:
-          push: false
-          tags: beamable/unrealclient:latest
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
