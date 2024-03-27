@@ -26,5 +26,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Pull base image
+        run: docker pull ghcr.io/epicgames/unreal-engine:dev-5.3.2
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag beamable-unreal-client:$(date +%s)
