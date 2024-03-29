@@ -149,7 +149,7 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 		if (const auto SoftObjectProperty = CastField<FSoftObjectProperty>(*It))
 		{
 			const auto Val = SoftObjectProperty->ContainerPtrToValuePtr<FSoftObjectPtr>(this);
-			if (Val->IsNull()) CurrProp.Set("data", nullptr);
+			if (Val->IsNull()) CurrProp.Set("data", "");
 			else CurrProp.Set("data", Val->ToSoftObjectPath().ToString());
 		}
 		else if (const auto StructProperty = CastField<FStructProperty>(*It))
@@ -174,7 +174,7 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 					if (const auto InnerOptionalSoftObjectProperty = CastField<FSoftObjectProperty>(ValueProp))
 					{
 						const auto Val = InnerOptionalSoftObjectProperty->ContainerPtrToValuePtr<FSoftObjectPtr>(Data);
-						if (Val->IsNull()) CurrProp.Set("data", nullptr);
+						if (Val->IsNull()) CurrProp.Set("data", "");
 						else CurrProp.Set("data", Val->ToSoftObjectPath().ToString());
 					}
 					else if (const auto InnerOptionalStructProperty = CastField<FStructProperty>(ValueProp))
@@ -268,7 +268,7 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 							}
 							else
 							{
-								CurrProp.Set("data", nullptr);
+								CurrProp.Set("data", "");
 							}
 						}
 						else
@@ -480,7 +480,7 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 				}
 				else
 				{
-					CurrProp.Set("data", nullptr);
+					CurrProp.Set("data", "");
 				}
 			}
 			else
