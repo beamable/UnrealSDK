@@ -1,4 +1,6 @@
 pip install mkdocs-material
 pip install mkdocs-glightbox
-cd Docs
-mkdocs serve
+IF "%1"=="serve" ( 
+    cd Docs
+    mkdocs serve
+ )
