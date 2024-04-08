@@ -30,3 +30,14 @@ jobs:
         run: docker pull ghcr.io/epicgames/unreal-engine:dev-5.3.2
       - name: Build the Docker image
         run: docker build .  --progress plain --tag beamable-unreal-client:$(date +%s)
+      - name: Run the docker image
+        run: docker run --name unreal_container -d unrealrun
+      - name: Copy artifacts from the docker image
+        run: docker cp unreal_container:/home/ue4/PackagedProject .
+      - name: Compress Directory
+        run: zip -r artifacts.zip PackagedProject
+      - name: Upload Compressed Folder as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifacts
+          path: artifacts.zip
