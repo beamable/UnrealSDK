@@ -565,7 +565,7 @@ void UBeamStatsSubsystem::IncrementStats(FUserSlot Slot, TMap<FString, int> Stat
 	{
 		UBeamStatsState* UserStatsState = PlayerStatCache.FindOrAdd(Stat, NewObject<UBeamStatsState>());
 		TArray<FString> NonIntegers;
-		for (const auto Increment : StatIncrements)
+		for (const auto& Increment : StatIncrements)
 		{
 			if (FString* ExistingStat = UserStatsState->StringStats.Find(Increment.Key))
 			{
@@ -605,7 +605,7 @@ void UBeamStatsSubsystem::IncrementStats(FUserSlot Slot, TMap<FString, int> Stat
 			UBeamStatsState* State = PlayerStatCache.FindOrAdd(Stat, NewObject<UBeamStatsState>());
 			State->OwnerType = Stat;
 
-			for (const auto StatIncrement : StatIncrements)
+			for (const auto& StatIncrement : StatIncrements)
 			{
 				const FString AsStr = FString::Printf(TEXT("%d"), StatIncrement.Value);
 				if (!State->StringStats.Contains(StatIncrement.Key))
@@ -615,7 +615,7 @@ void UBeamStatsSubsystem::IncrementStats(FUserSlot Slot, TMap<FString, int> Stat
 				else
 				{
 					const FString Curr = State->StringStats[StatIncrement.Key];
-					int32 CurrValue;
+					int32 CurrValue = 0;
 					checkf(FDefaultValueHelper::ParseInt(Curr, CurrValue), TEXT("You should never see this."))
 					CurrValue += StatIncrement.Value;
 					State->StringStats[StatIncrement.Key] = FString::Printf(TEXT("%d"), CurrValue);
@@ -678,7 +678,7 @@ FBeamRequestContext UBeamStatsSubsystem::RequestIncrementStats(const FUserSlot& 
 
 	TMap<FString, FString> Stats;
 	Stats.Reserve(StatsToAdd.Num());
-	for (const auto ToAdd : StatsToAdd)
+	for (const auto& ToAdd : StatsToAdd)
 	{
 		Stats.Add(ToAdd.Key, FString::Printf(TEXT("%d"), ToAdd.Value));
 	}
