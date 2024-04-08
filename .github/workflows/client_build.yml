@@ -31,7 +31,7 @@ jobs:
       - name: Build the Docker image
         run: docker build .  --progress plain --tag beamable-unreal-client:$(date +%s)
       - name: Run the docker image
-        run: docker run --name unreal_container -d unrealrun
+        run: docker run --name unreal_container -d beamable-unreal-client
       - name: Copy artifacts from the docker image
         run: docker cp unreal_container:/home/ue4/PackagedProject .
       - name: Compress Directory
