@@ -7,6 +7,7 @@
 #include "AutoGen/Optionals/OptionalBeamPid.h"
 #include "BeamBackend/SemanticTypes/BeamCid.h"
 #include "BeamBackend/SemanticTypes/BeamPid.h"
+#include "Subsystems/Content/BeamContentLocalView.h"
 #include "BeamEditorSettings.generated.h"
 
 
@@ -14,7 +15,7 @@ USTRUCT(BlueprintType)
 struct FBeamProjectRealmData
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	FBeamCid CID;
 
@@ -31,7 +32,7 @@ struct FBeamProjectRealmData
 	FString RealmName;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	FString RealmSecret;	
+	FString RealmSecret;
 };
 
 USTRUCT(BlueprintType)
@@ -57,6 +58,7 @@ UCLASS(Config=Editor, defaultconfig, meta=(DisplayName="Beamable Editor"))
 class BEAMABLECORERUNTIMEEDITOR_API UBeamEditorSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
+
 public:
 	/**
 	 * @brief User-defined path to where LocalContentManifests (UDataTables) that are supposed to be included in the build are stored.
@@ -68,14 +70,19 @@ public:
 	 * @brief User-defined path to where LocalContentManifests (UDataTables) that are NOT supposed to be included in the build are stored.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
-	TArray<FDirectoryPath> UncookedManifestsPath;
+	bool bDisableInEngineEditing = false;
 
 	/**
-	 * @brief User-defined path to where LocalContentManifests (UDataTables) that are NOT supposed to be included in the build are stored.
+	 * @brief Users can customize how their various subclasses are rendered in the content manager.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
-	bool bDisableInEngineEditing = false;
-	
+	TMap<TSubclassOf<UBeamContentObject>, FBeamContentViewConfig> LocalContentViewConfigs;
+
+	/**
+	 * @brief Users can customize the status icons displayed in the content window.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
+	TMap<TEnumAsByte<EBeamLocalContentStatus>, TSoftObjectPtr<UTexture2D>> LocalContentStatusIcons;
 
 	/**
 	 * @brief Just a view into all the project's data for each signed in User Slot.

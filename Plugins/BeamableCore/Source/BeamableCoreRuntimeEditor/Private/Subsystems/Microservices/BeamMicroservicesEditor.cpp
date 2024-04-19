@@ -68,8 +68,8 @@ UBeamMicroservicesEditor* UBeamMicroservicesEditor::GetSelf(const UObject* Calli
 
 FBeamOperationHandle UBeamMicroservicesEditor::UpdateRemoteMicroserviceStateOperation(const FBeamOperationEventHandler& OnOperationEvent)
 {
-	const auto Slot = Editor->GetMainEditorSlot();
-	const auto Handle = RequestTracker->BeginOperation({Slot}, GetName(), OnOperationEvent);
+	const auto Slot            = Editor->GetMainEditorSlot();
+	const auto Handle          = RequestTracker->BeginOperation({Slot}, GetName(), OnOperationEvent);
 	const auto CompleteHandler = [this](const int& ResultCode, const FBeamOperationHandle& Operation)
 	{
 		if (ResultCode == 0)
@@ -83,8 +83,8 @@ FBeamOperationHandle UBeamMicroservicesEditor::UpdateRemoteMicroserviceStateOper
 
 FBeamOperationHandle UBeamMicroservicesEditor::CPP_UpdateRemoteMicroserviceStateOperation(const FBeamOperationEventHandlerCode& OnOperationEvent)
 {
-	const auto Slot = Editor->GetMainEditorSlot();
-	const auto Handle = RequestTracker->CPP_BeginOperation({Slot}, GetName(), OnOperationEvent);
+	const auto Slot            = Editor->GetMainEditorSlot();
+	const auto Handle          = RequestTracker->CPP_BeginOperation({Slot}, GetName(), OnOperationEvent);
 	const auto CompleteHandler = [this](const int& ResultCode, const FBeamOperationHandle& Operation)
 	{
 		if (ResultCode == 0)
@@ -257,9 +257,7 @@ void UBeamMicroservicesEditor::DeployMicroservices(const TArray<FString>& Enable
 	ServicesDeploy->OnStreamOutput = [](const TArray<UBeamCliServicesDeployStreamData*>& Result,
 	                                    const TArray<long long>&, const FBeamOperationHandle&)
 	{
-		FString Json;
-		Result.Last()->BeamSerializePretty(Json);
-		UE_LOG(LogBeamMicroservices, Display, TEXT("%s"), *Json);
+		
 	};
 
 
@@ -267,10 +265,8 @@ void UBeamMicroservicesEditor::DeployMicroservices(const TArray<FString>& Enable
 		const TArray<UBeamCliServicesDeployRemoteProgressStreamData*>& Progress, const TArray<long long>&,
 		const FBeamOperationHandle& Operation)
 		{
-			FString Json;
-			const auto Last = Progress.Last();
-			Last->BeamSerializePretty(Json);			
-			RequestTracker->TriggerOperationEvent(Operation, OET_SUCCESS, FName("MICROSERVICE_REMOTE_DEPLOY_UPDATE"), Json);
+			UE_LOG(LogBeamMicroservices, Display, TEXT("%s"), *Progress.Last()->BeamoId);
+			RequestTracker->TriggerOperationEvent(Operation, OET_SUCCESS, FName("MICROSERVICE_REMOTE_DEPLOY_UPDATE"), Progress.Last()->BeamoId);
 		};
 
 	// Handle completing the operation
@@ -302,10 +298,8 @@ void UBeamMicroservicesEditor::RunDockerMicroservices(const TArray<FString>& Bea
 {
 	const auto ServicesDeploy = NewObject<UBeamCliServicesRunCommand>();
 	ServicesDeploy->OnStreamOutput = [](const TArray<UBeamCliServicesRunStreamData*>& Result, const TArray<long long>&, const FBeamOperationHandle&)
-	{
-		FString Json;
-		Result.Last()->BeamSerializePretty(Json);
-		UE_LOG(LogBeamMicroservices, Display, TEXT("%s"), *Json);
+	{		
+		UE_LOG(LogBeamMicroservices, Display, TEXT("%s"), Result.Last()->Success ? TEXT("success") : TEXT("failure"));
 	};
 
 	ServicesDeploy->OnLocalProgressStreamOutput = [this](
@@ -313,11 +307,7 @@ void UBeamMicroservicesEditor::RunDockerMicroservices(const TArray<FString>& Bea
 		const FBeamOperationHandle&)
 		{
 			const auto ProgressData = Progress.Last();
-			FString Json;
-
-			ProgressData->BeamSerializePretty(Json);			
-			UE_LOG(LogBeamMicroservices, Display, TEXT("%s"), *Json);
-
+		
 			// Update the local state of microservice data
 			if (FMath::IsNearlyEqual(ProgressData->LocalDeployProgress, 100.0))
 			{
@@ -362,10 +352,7 @@ void UBeamMicroservicesEditor::StopDockerMicroservices(const TArray<FString>& Be
 	const auto ServicesDeploy = NewObject<UBeamCliServicesResetCommand>();
 	ServicesDeploy->OnStreamOutput = [this](const TArray<UBeamCliServicesResetStreamData*>& Result,
 	                                        const TArray<long long>&, const FBeamOperationHandle&)
-	{
-		FString Json;
-		Result.Last()->BeamSerializePretty(Json);
-		UE_LOG(LogBeamMicroservices, Display, TEXT("%s"), *Json);
+	{		
 		for (const auto& BeamoId : Result.Last()->Ids)
 		{
 			if (LocalMicroserviceData.Contains(BeamoId))

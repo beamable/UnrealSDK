@@ -9,7 +9,7 @@ void UGetDetailRequest::BuildVerb(FString& VerbString) const
 void UGetDetailRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/mail/{objectId}/detail");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *FString::Printf(TEXT("%lld"), ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);

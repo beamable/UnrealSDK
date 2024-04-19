@@ -2,18 +2,18 @@
 
 #include "BeamLogging.h"
 #include "Misc/MonitoredProcess.h"
-#include "JsonObjectConverter.h"
 #include "Serialization/JsonSerializerMacros.h"
 		
 TSharedPtr<FMonitoredProcess> UBeamCliProjectGenerateClientCommand::RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op)
 {
-	FString Params = ("project generate-client --reporter-use-fatal");
+	FString Params = ("project generate-client");
 	for (const auto& CommandParam : CommandParams)
 		Params.Appendf(TEXT(" %s"), *CommandParam);
 	Params = PrepareParams(Params);
 	UE_LOG(LogBeamCli, Verbose, TEXT("BeamCliProjectGenerateClient Command - Invocation: %s %s"), *PathToCli, *Params)
 
-	const auto CliProcess = MakeShared<FMonitoredProcess>(PathToCli, Params, FPaths::ProjectDir(), true, true);
+	const auto CliPath = Cli->GetPathToCli();
+	const auto CliProcess = MakeShared<FMonitoredProcess>(CliPath, Params, FPaths::ProjectDir(), true, true);
 	CliProcess->OnOutput().BindLambda([this, Op](const FString& Out)
 	{
 		UE_LOG(LogBeamCli, Verbose, TEXT("BeamCliProjectGenerateClient Command - Std Out: %s"), *Out);
@@ -22,12 +22,18 @@ TSharedPtr<FMonitoredProcess> UBeamCliProjectGenerateClientCommand::RunImpl(cons
 		while (ConsumeMessageFromOutput(OutCopy, MessageJson))
 		{
 			auto Bag = FJsonDataBag();
-			Bag.FromJson(MessageJson);
-			const auto ReceivedStreamType = Bag.GetString("type");
-			const auto Timestamp = static_cast<int64>(Bag.GetField("ts")->AsNumber());
-			const auto DataJson = Bag.JsonObject->GetObjectField("data").ToSharedRef();
-
-			
+			if (Bag.FromJson(MessageJson))
+			{
+				const auto ReceivedStreamType = Bag.GetString("type");
+				const auto Timestamp = static_cast<int64>(Bag.GetField("ts")->AsNumber());
+				const auto DataJson = Bag.JsonObject->GetObjectField("data").ToSharedRef();
+				
+				
+			}
+			else
+			{
+				UE_LOG(LogBeamCli, Verbose, TEXT("BeamCliProjectGenerateClient Command - Skipping non-JSON message: %s"), *MessageJson);
+			}			
 		}
 	});
 	CliProcess->OnCompleted().BindLambda([this, Op](int ResultCode)

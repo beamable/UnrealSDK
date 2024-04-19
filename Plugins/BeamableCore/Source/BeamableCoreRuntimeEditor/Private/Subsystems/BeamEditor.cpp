@@ -138,7 +138,8 @@ void UBeamEditorBootstrapper::Run_EditorReady(FBeamOperationEvent OperationEvent
 FUserSlot UBeamEditor::GetMainEditorSlot(FBeamRealmUser& UserData) const
 {
 	const auto MainSlot = GetDefault<UBeamCoreSettings>()->DeveloperUserSlots[MainEditorSlotIdx];
-	ensureAlwaysMsgf(UserSlots->GetUserDataAtSlot(MainSlot, UserData, nullptr), TEXT("No developer signed into the MainEditorDeveloper UserSlot! Please call UserSlot->SetAuthenticationData before this."));
+	ensureAlwaysMsgf(UserSlots->GetUserDataAtSlot(MainSlot, UserData, nullptr),
+	                 TEXT("No developer signed into the MainEditorDeveloper UserSlot! Please call UserSlot->SetAuthenticationData before this."));
 	return MainSlot;
 }
 
@@ -405,16 +406,38 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 	// TODO: Expose error handling for BeamErrorResponses that happen in the PrepareRealmChange operations
 	SetActiveTargetRealmUnsafe(NewRealmHandle);
 
-	const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
+	// Get the Main Editor Slot and make it point at the new realm
+	FBeamRealmUser UserData;
+	const auto MainEditorSlot = GetMainEditorSlot(UserData);
+	UserSlots->SetPIDAtSlot(MainEditorSlot, NewRealmHandle.Pid, this);
 
-	InitalizeFromRealmOps.Reset(Subsystems.Num());
-	for (auto& Subsystem : Subsystems)
+	// We ensure that the realm is correctly configured to use Beamable's notification system (as opposed to our legacy PubNub-based system that UE doesn't support) 
+	const auto ConfigToEnsure = TMap<FString, FString>{{TEXT("notification|publisher"), TEXT("beamable")}};
+	const auto Req = UPutConfigRequest::Make(ConfigToEnsure, GetTransientPackage(), {});
+	const auto Handler = FOnPutConfigFullResponse::CreateLambda([this, Op, NewRealmHandle](FPutConfigFullResponse Resp)
 	{
-		const auto Handle = Subsystem->InitializeFromRealm(NewRealmHandle);
-		InitalizeFromRealmOps.Add(Handle);
-	}
-	const auto OnCompleteCode = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, SelectRealm_OnSystemsReady), NewRealmHandle, Op);
-	InitializeFromRealmsWait = RequestTracker->CPP_WaitAll({}, InitalizeFromRealmOps, {}, OnCompleteCode);
+		if (Resp.State == RS_Success)
+		{
+			const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
+			InitalizeFromRealmOps.Reset(Subsystems.Num());
+			for (auto& Subsystem : Subsystems)
+			{
+				const auto Handle = Subsystem->InitializeFromRealm(NewRealmHandle);
+				InitalizeFromRealmOps.Add(Handle);
+			}
+			const auto OnCompleteCode = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, SelectRealm_OnSystemsReady), NewRealmHandle, Op);
+			InitializeFromRealmsWait = RequestTracker->CPP_WaitAll({}, InitalizeFromRealmOps, {}, OnCompleteCode);
+			return;
+		}
+
+		if (Resp.State == RS_Retrying)
+			return;
+
+		RequestTracker->TriggerOperationError(Op, Resp.ErrorData.message);
+	});
+
+	FBeamRequestContext Ctx;
+	GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_PutConfig(MainEditorSlot, Req, Handler, Ctx, Op, this);
 }
 
 void UBeamEditor::SelectRealm_OnSystemsReady(FBeamWaitCompleteEvent, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op) const
@@ -426,9 +449,9 @@ void UBeamEditor::SelectRealm_OnSystemsReady(FBeamWaitCompleteEvent, FBeamRealmH
 	const auto MainEditorSlot = GetMainEditorSlot(UserData);
 
 	// Update the PID and change the slot
-	UserSlots->SetPIDAtSlot(MainEditorSlot, NewRealmHandle.Pid, this);
 	UserSlots->SaveSlot(MainEditorSlot, this);
 
+	// Notify all systems that we have successfully initialized the realm
 	const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
 	for (auto& Subsystem : Subsystems)
 	{

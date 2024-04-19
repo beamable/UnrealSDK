@@ -9,7 +9,7 @@ void UPutAcceptManyRequest::BuildVerb(FString& VerbString) const
 void UPutAcceptManyRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/mail/{objectId}/accept/many");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *FString::Printf(TEXT("%lld"), ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);

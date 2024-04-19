@@ -63,6 +63,7 @@ Options:
   --dryrun                         Should any networking happen?
   --cid <cid>                      Cid to use; will default to whatever is in the file system
   --pid <pid>                      Pid to use; will default to whatever is in the file system
+  -q, --quiet                      When true, skip input waiting and use defaults [default: False]
   --host <host>                    The host endpoint for beamable
   --refresh-token <refresh-token>  Refresh token to use for the requests
   --log, --logs <log>              Extra logs gets printed out

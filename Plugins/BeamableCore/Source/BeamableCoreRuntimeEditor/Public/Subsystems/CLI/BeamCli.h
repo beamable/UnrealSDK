@@ -23,11 +23,14 @@ protected:
 	virtual void OnRealmInitialized() override;
 
 	bool bInstalled;
+	bool bInstalledLocally;
+	bool bInstalledGlobally;
 
 	UPROPERTY()
 	TArray<UBeamCliCommand*> RunningProcesses;
 
-	TUniquePtr<FMonitoredProcess> IsInstalledCliProcess;
+	TUniquePtr<FMonitoredProcess> IsLocalCliInstalledProcess;
+	TUniquePtr<FMonitoredProcess> IsGlobalCliInstalledProcess;
 
 public:
 	/**
@@ -51,4 +54,10 @@ public:
 	 */
 	UFUNCTION(BlueprintPure, Category="Beam")
 	bool IsInstalled() const { return bInstalled; }
+
+	/**
+	 * @brief Gets the correct CLI installation to use. 
+	 */
+	UFUNCTION(BlueprintPure, Category="Beam")
+	FString GetPathToCli() const;
 };

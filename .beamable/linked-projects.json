@@ -1,0 +1,16 @@
+{
+  "unityProjectsPaths": [],
+  "unrealProjectsPaths": [
+    {
+      "CoreProjectName": "BeamableUnreal",
+      "BlueprintNodesProjectName": "BeamableUnrealBlueprintNodes",
+      "Path": "",
+      "SourceFilesPath": "Source/",
+      "MsCoreHeaderPath": "BeamableUnreal/",
+      "MsCoreCppPath": "BeamableUnreal/",
+      "MsBlueprintNodesHeaderPath": "BeamableUnrealBlueprintNodes/Public/",
+      "MsBlueprintNodesCppPath": "BeamableUnrealBlueprintNodes/Private/",
+      "BeamableBackendGenerationPassFile": "Plugins/BeamableCore/Source/BeamableCore_GenerationPass.json"
+    }
+  ]
+}

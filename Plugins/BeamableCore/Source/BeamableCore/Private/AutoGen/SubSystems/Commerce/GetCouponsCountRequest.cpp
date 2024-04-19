@@ -9,7 +9,7 @@ void UGetCouponsCountRequest::BuildVerb(FString& VerbString) const
 void UGetCouponsCountRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/commerce/{objectId}/coupons/count");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *FString::Printf(TEXT("%lld"), ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);

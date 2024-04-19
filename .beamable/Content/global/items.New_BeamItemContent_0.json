@@ -1,1 +1,7 @@
-{"id":"items.New_BeamItemContent_0","version":"","properties":{"clientPermission":{"data":{"write_self":true}}}}
+{
+  "clientPermission": {
+    "data": {
+      "write_self": true
+    }
+  }
+}

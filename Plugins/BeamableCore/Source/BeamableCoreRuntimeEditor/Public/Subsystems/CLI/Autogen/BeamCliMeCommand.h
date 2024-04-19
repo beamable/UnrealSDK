@@ -2,7 +2,7 @@
 
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
-#include "Subsystems/CLI/Autogen/StreamData/ExternalIdentityStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/AccountMeExternalIdentityStreamData.h"
 #include "BeamCliMeCommand.generated.h"
 
 class FMonitoredProcess;
@@ -28,7 +28,7 @@ public:
 	UPROPERTY()
 	TArray<FString> DeviceIds = {};
 	UPROPERTY()
-	TArray<UExternalIdentityStreamData*> External = {};
+	TArray<UAccountMeExternalIdentityStreamData*> External = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
@@ -38,7 +38,7 @@ public:
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("scopes"), Scopes, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("thirdPartyAppAssociations"), ThirdPartyAppAssociations, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("deviceIds"), DeviceIds, Serializer);
-		UBeamJsonUtils::SerializeArray<UExternalIdentityStreamData*>(TEXT("external"), External, Serializer);	
+		UBeamJsonUtils::SerializeArray<UAccountMeExternalIdentityStreamData*>(TEXT("external"), External, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
@@ -49,7 +49,7 @@ public:
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("scopes"), Scopes, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("thirdPartyAppAssociations"), ThirdPartyAppAssociations, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("deviceIds"), DeviceIds, Serializer);
-		UBeamJsonUtils::SerializeArray<UExternalIdentityStreamData*>(TEXT("external"), External, Serializer);	
+		UBeamJsonUtils::SerializeArray<UAccountMeExternalIdentityStreamData*>(TEXT("external"), External, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
@@ -60,7 +60,7 @@ public:
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("scopes")), Scopes, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("thirdPartyAppAssociations")), ThirdPartyAppAssociations, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("deviceIds")), DeviceIds, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<UExternalIdentityStreamData*>(Bag->GetArrayField(TEXT("external")), External, OuterOwner);	
+		UBeamJsonUtils::DeserializeArray<UAccountMeExternalIdentityStreamData*>(Bag->GetArrayField(TEXT("external")), External, OuterOwner);	
 	}
 };
 
@@ -76,6 +76,7 @@ Options:
   --dryrun                         Should any networking happen?
   --cid <cid>                      Cid to use; will default to whatever is in the file system
   --pid <pid>                      Pid to use; will default to whatever is in the file system
+  -q, --quiet                      When true, skip input waiting and use defaults [default: False]
   --host <host>                    The host endpoint for beamable
   --refresh-token <refresh-token>  Refresh token to use for the requests
   --log, --logs <log>              Extra logs gets printed out

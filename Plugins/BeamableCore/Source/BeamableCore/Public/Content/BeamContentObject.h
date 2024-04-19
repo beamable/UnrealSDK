@@ -30,21 +30,6 @@ public:
 	FDateTime LastChanged;
 
 	/**
-	 * @brief Called on each row of the manifest whenever it changes so that we can verify that the content object is configured correctly in the manifest. 
-	 * @param ContentTypeIdVal The type of the content object.
-	 * @param Row The Manifest Row we are validating.
-	 * @return An error code that specifies what is the problem
-	 */
-	virtual int IsValidRowForType(const FString& ContentTypeIdVal, FLocalContentManifestRow& Row)
-	{
-		return 0;
-	}
-
-	virtual void FixManifestRowForType(const int ErrorCode, const FLocalContentManifestRow& Row)
-	{
-	}
-
-	/**
 	 * @brief Generates a ContentDefinitionJsonObject. This is used during the publish flow. 
 	 */
 	virtual void BuildContentDefinitionJsonObject(FJsonDomBuilder::FObject& OutContentDefinition);

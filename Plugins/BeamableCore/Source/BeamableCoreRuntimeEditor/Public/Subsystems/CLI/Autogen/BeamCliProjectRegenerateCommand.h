@@ -22,12 +22,12 @@ Arguments:
   <copy-path>  The path to where the files will be copied to []
 
 Options:
-  --skip-common                    If you should create a common library
-  --solution-name <solution-name>  The name of the solution of the new project
-  --version <version>              Specifies version of Beamable project dependencies []
+  --version <version>              Specifies version of Beamable project dependencies. Defaults to the current version of the CLI [default: 0.0.123]
+  --sln <sln>                      Relative path to the .sln file to use for the new project. If the .sln file does not exist, it will be created. By default, when no value is provided, the .sln path will be <name>/<name>.sln []
   --dryrun                         Should any networking happen?
   --cid <cid>                      Cid to use; will default to whatever is in the file system
   --pid <pid>                      Pid to use; will default to whatever is in the file system
+  -q, --quiet                      When true, skip input waiting and use defaults [default: False]
   --host <host>                    The host endpoint for beamable
   --refresh-token <refresh-token>  Refresh token to use for the requests
   --log, --logs <log>              Extra logs gets printed out

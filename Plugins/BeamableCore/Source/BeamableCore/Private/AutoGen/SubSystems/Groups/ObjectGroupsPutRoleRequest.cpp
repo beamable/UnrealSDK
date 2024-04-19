@@ -9,7 +9,7 @@ void UObjectGroupsPutRoleRequest::BuildVerb(FString& VerbString) const
 void UObjectGroupsPutRoleRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/groups/{objectId}/role");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *FString::Printf(TEXT("%lld"), ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);

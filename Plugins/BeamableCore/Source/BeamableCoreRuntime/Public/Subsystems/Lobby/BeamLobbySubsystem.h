@@ -135,7 +135,7 @@ public:
 	/**
 	 * Configuration variable for the size of passcode created by this game.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Config=Game)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Config)
 	int32 PasscodeSize;
 
 	/**

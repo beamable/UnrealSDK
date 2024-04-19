@@ -28,7 +28,11 @@ public:
 	UPROPERTY()
 	bool IsContainer = {};
 	UPROPERTY()
+	FString ServiceType = {};
+	UPROPERTY()
 	int32 HealthPort = {};
+	UPROPERTY()
+	int32 DataPort = {};
 	UPROPERTY()
 	FString ContainerId = {};
 
@@ -40,7 +44,9 @@ public:
 		Serializer->WriteValue(TEXT("service"), Service);
 		Serializer->WriteValue(TEXT("isRunning"), IsRunning);
 		Serializer->WriteValue(TEXT("isContainer"), IsContainer);
+		Serializer->WriteValue(TEXT("serviceType"), ServiceType);
 		Serializer->WriteValue(TEXT("healthPort"), HealthPort);
+		Serializer->WriteValue(TEXT("dataPort"), DataPort);
 		Serializer->WriteValue(TEXT("containerId"), ContainerId);	
 	}
 
@@ -52,7 +58,9 @@ public:
 		Serializer->WriteValue(TEXT("service"), Service);
 		Serializer->WriteValue(TEXT("isRunning"), IsRunning);
 		Serializer->WriteValue(TEXT("isContainer"), IsContainer);
+		Serializer->WriteValue(TEXT("serviceType"), ServiceType);
 		Serializer->WriteValue(TEXT("healthPort"), HealthPort);
+		Serializer->WriteValue(TEXT("dataPort"), DataPort);
 		Serializer->WriteValue(TEXT("containerId"), ContainerId);	
 	}
 
@@ -64,7 +72,9 @@ public:
 		Service = Bag->GetStringField(TEXT("service"));
 		IsRunning = Bag->GetBoolField(TEXT("isRunning"));
 		IsContainer = Bag->GetBoolField(TEXT("isContainer"));
+		ServiceType = Bag->GetStringField(TEXT("serviceType"));
 		HealthPort = Bag->GetIntegerField(TEXT("healthPort"));
+		DataPort = Bag->GetIntegerField(TEXT("dataPort"));
 		ContainerId = Bag->GetStringField(TEXT("containerId"));	
 	}
 };
@@ -82,6 +92,7 @@ Options:
   --dryrun                         Should any networking happen?
   --cid <cid>                      Cid to use; will default to whatever is in the file system
   --pid <pid>                      Pid to use; will default to whatever is in the file system
+  -q, --quiet                      When true, skip input waiting and use defaults [default: False]
   --host <host>                    The host endpoint for beamable
   --refresh-token <refresh-token>  Refresh token to use for the requests
   --log, --logs <log>              Extra logs gets printed out

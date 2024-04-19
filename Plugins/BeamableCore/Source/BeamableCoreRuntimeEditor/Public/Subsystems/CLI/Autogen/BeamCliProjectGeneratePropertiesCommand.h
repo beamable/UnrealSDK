@@ -19,12 +19,16 @@ Usage:
 Arguments:
   <output>        Where the file will be created
   <beam-path>     Beam path to be used
-  <solution-dir>  The solution path to be used
+  <solution-dir>  The solution path to be used. 
+                  The following values have special meaning and are not treated as paths... 
+                  - "DIR.PROPS" = $([System.IO.Path]::GetDirectoryName(`$(DirectoryBuildPropsPath)`))
 
 Options:
+  --build-dir <build-dir>          A path relative to the given solution directory, that will be used to store the projects /bin and /obj directories. Note: the given path will have the project's assembly name and the bin or obj folder appended
   --dryrun                         Should any networking happen?
   --cid <cid>                      Cid to use; will default to whatever is in the file system
   --pid <pid>                      Pid to use; will default to whatever is in the file system
+  -q, --quiet                      When true, skip input waiting and use defaults [default: False]
   --host <host>                    The host endpoint for beamable
   --refresh-token <refresh-token>  Refresh token to use for the requests
   --log, --logs <log>              Extra logs gets printed out

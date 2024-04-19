@@ -9,7 +9,7 @@ void UGetRecommendedRequest::BuildVerb(FString& VerbString) const
 void UGetRecommendedRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/group-users/{objectId}/recommended");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *FString::Printf(TEXT("%lld"), ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);

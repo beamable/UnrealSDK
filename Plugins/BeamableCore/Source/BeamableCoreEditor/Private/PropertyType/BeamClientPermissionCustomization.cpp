@@ -15,7 +15,7 @@ TSharedRef<IPropertyTypeCustomization> FBeamClientPermissionCustomization::MakeI
 
 void FBeamClientPermissionCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s - The header customization is called"), ANSI_TO_TCHAR(__FUNCTION__));
+	//UE_LOG(LogTemp, Warning, TEXT("%s - The header customization is called"), ANSI_TO_TCHAR(__FUNCTION__));
 	// Get the property handler of the type property:
 
 	void* ValuePtr = nullptr;
@@ -40,21 +40,26 @@ void FBeamClientPermissionCustomization::CustomizeHeader(TSharedRef<IPropertyHan
 			[
 				SAssignNew(Checkbox, SCheckBox)
 				.OnCheckStateChanged(FOnCheckStateChanged::CreateLambda(
-					[this, BoolPropertyHandle, StringPropertyHandle, ClientPermissionPtr](ECheckBoxState NewState)
+					[this, StructPropertyHandle, ClientPermissionPtr](ECheckBoxState NewState)
 					{
-						//if (BoolPropertyHandle->IsValidHandle())
-						{
-							const bool bIsChecked = NewState == ECheckBoxState::Checked;
-							ClientPermissionPtr->Set(&bIsChecked, TNameOf<bool>::GetName());
-						}
+						const bool bIsChecked = NewState == ECheckBoxState::Checked;
+
+						StructPropertyHandle->NotifyPreChange();
+						ClientPermissionPtr->Set(&bIsChecked, TNameOf<bool>::GetName());
+						StructPropertyHandle->NotifyPostChange(EPropertyChangeType::ValueSet);
 					}))
 			]
 		];
 
+	StructPropertyHandle->SetOnPropertyResetToDefault(FSimpleDelegate::CreateLambda([this, ClientPermissionPtr]
+	{
+		Checkbox->SetIsChecked(ClientPermissionPtr->AsBool ? ECheckBoxState::Checked : ECheckBoxState::Unchecked);
+	}));
 	Checkbox->SetIsChecked(ClientPermissionPtr->AsBool ? ECheckBoxState::Checked : ECheckBoxState::Unchecked);
 }
 
-void FBeamClientPermissionCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle, IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
+void FBeamClientPermissionCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle, IDetailChildrenBuilder& StructBuilder,
+                                                           IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
 	// Should customize here soon
 }

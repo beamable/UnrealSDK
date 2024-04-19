@@ -9,7 +9,7 @@ void UObjectGroupsGetGroupsRequest::BuildVerb(FString& VerbString) const
 void UObjectGroupsGetGroupsRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/groups/{objectId}/");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *FString::Printf(TEXT("%lld"), ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);

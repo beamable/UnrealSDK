@@ -9,7 +9,7 @@ void UPostApplyRequest::BuildVerb(FString& VerbString) const
 void UPostApplyRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/groups/{objectId}/apply");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *FString::Printf(TEXT("%lld"), ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);

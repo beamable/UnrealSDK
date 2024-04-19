@@ -9,7 +9,7 @@ void UPutPurchaseRequest::BuildVerb(FString& VerbString) const
 void UPutPurchaseRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/commerce/{objectId}/purchase");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *FString::Printf(TEXT("%lld"), ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);

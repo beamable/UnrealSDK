@@ -61,6 +61,7 @@ Options:
   --dryrun                         Should any networking happen?
   --cid <cid>                      Cid to use; will default to whatever is in the file system
   --pid <pid>                      Pid to use; will default to whatever is in the file system
+  -q, --quiet                      When true, skip input waiting and use defaults [default: False]
   --host <host>                    The host endpoint for beamable
   --refresh-token <refresh-token>  Refresh token to use for the requests
   --log, --logs <log>              Extra logs gets printed out
@@ -71,9 +72,9 @@ Options:
   -?, -h, --help                   Show help and usage information
 
 Commands:
-  construct <major> <minor> <patch>  [INTERNAL] constructs a beamable version string with the given configuration
   list, ls                           Show the most recent available versions
-  install <version>                  Install a different version of the CLI [default: latest]
+  install, update <version>          Install a different version of the CLI [default: latest]
+  construct <major> <minor> <patch>  [INTERNAL] constructs a beamable version string with the given configuration
 
 
  */

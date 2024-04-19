@@ -2,11 +2,11 @@
 
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
-#include "Subsystems/CLI/Autogen/StreamData/ServiceManifestStreamData.h"
-#include "Subsystems/CLI/Autogen/StreamData/ServiceReferenceStreamData.h"
-#include "Subsystems/CLI/Autogen/StreamData/ServiceDependencyStreamData.h"
-#include "Subsystems/CLI/Autogen/StreamData/ServiceComponentStreamData.h"
-#include "Subsystems/CLI/Autogen/StreamData/ServiceStorageReferenceStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/CliServiceManifestStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/CliServiceReferenceStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/CliServiceDependencyStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/CliServiceComponentStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/CliServiceStorageReferenceStreamData.h"
 #include "BeamCliServicesManifestsCommand.generated.h"
 
 class FMonitoredProcess;
@@ -20,21 +20,21 @@ class UBeamCliServicesManifestsStreamData : public UObject, public IBeamJsonSeri
 public:	
 	
 	UPROPERTY()
-	TArray<UServiceManifestStreamData*> Manifests = {};
+	TArray<UCliServiceManifestStreamData*> Manifests = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		UBeamJsonUtils::SerializeArray<UServiceManifestStreamData*>(TEXT("manifests"), Manifests, Serializer);	
+		UBeamJsonUtils::SerializeArray<UCliServiceManifestStreamData*>(TEXT("manifests"), Manifests, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		UBeamJsonUtils::SerializeArray<UServiceManifestStreamData*>(TEXT("manifests"), Manifests, Serializer);	
+		UBeamJsonUtils::SerializeArray<UCliServiceManifestStreamData*>(TEXT("manifests"), Manifests, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeArray<UServiceManifestStreamData*>(Bag->GetArrayField(TEXT("manifests")), Manifests, OuterOwner);	
+		UBeamJsonUtils::DeserializeArray<UCliServiceManifestStreamData*>(Bag->GetArrayField(TEXT("manifests")), Manifests, OuterOwner);	
 	}
 };
 
@@ -52,6 +52,7 @@ Options:
   --dryrun                         Should any networking happen?
   --cid <cid>                      Cid to use; will default to whatever is in the file system
   --pid <pid>                      Pid to use; will default to whatever is in the file system
+  -q, --quiet                      When true, skip input waiting and use defaults [default: False]
   --host <host>                    The host endpoint for beamable
   --refresh-token <refresh-token>  Refresh token to use for the requests
   --log, --logs <log>              Extra logs gets printed out

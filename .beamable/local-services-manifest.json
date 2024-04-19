@@ -1,0 +1,42 @@
+{
+  "ServiceDefinitions": [
+    {
+      "BeamoId": "MSPlayground",
+      "Language": 0,
+      "Protocol": 0,
+      "ImageId": "",
+      "ShouldBeEnabledOnRemote": true,
+      "ProjectDirectory": "Microservices/services\\MSPlayground",
+      "TruncImageId": "",
+      "ProjectExtension": "csproj",
+      "SolutionExtension": "sln"
+    }
+  ],
+  "HttpMicroserviceLocalProtocols": {
+    "MSPlayground": {
+      "DockerBuildContextPath": "Microservices/services",
+      "RelativeDockerfilePath": "MSPlayground/Dockerfile",
+      "BindSrcForHotReloading": {
+        "IsReadOnly": true,
+        "LocalPath": "",
+        "InContainerPath": ""
+      },
+      "HotReloadEnabledEndpoint": "",
+      "HotReloadEnabledPort": "",
+      "CustomPortBindings": [],
+      "CustomBindMounts": [],
+      "CustomVolumes": [],
+      "CustomEnvironmentVariables": [],
+      "InstanceCount": 1
+    }
+  },
+  "HttpMicroserviceRemoteProtocols": {
+    "MSPlayground": {
+      "HealthCheckEndpoint": "health",
+      "HealthCheckPort": "6565",
+      "CustomEnvironmentVariables": []
+    }
+  },
+  "EmbeddedMongoDbLocalProtocols": {},
+  "EmbeddedMongoDbRemoteProtocols": {}
+}

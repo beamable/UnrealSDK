@@ -207,8 +207,6 @@ void DescendLookingForContentLinks(const FString& TypeName, const FString& Conte
 
 void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperationHandle& ResultOp)
 {
-	FBeamOperationHandle Op = GEngine->GetEngineSubsystem<UBeamRequestTracker>()->CPP_BeginOperation({}, GetName(), {});
-
 	// Grab all existing ContentObject classes so we can correctly deserialize content we fetch from the content API.
 	for (TObjectIterator<UClass> It; It; ++It)
 	{
@@ -328,6 +326,7 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 	for (const auto& BeamRuntimeContentCache : CoreSettings->BakedContentManifests)
 		BakedContentPaths.Add(BeamRuntimeContentCache.ToSoftObjectPath());
 
+	FBeamOperationHandle Op = GEngine->GetEngineSubsystem<UBeamRequestTracker>()->CPP_BeginOperation({}, GetName(), {});
 	const auto Handle = RuntimeSettings->ContentStreamingManager.RequestAsyncLoad(BakedContentPaths, FStreamableDelegate::CreateLambda([this, Op, BakedContentPaths, RuntimeSettings, CoreSettings]()
 	{
 		for (int i = 0; i < CoreSettings->BakedContentManifests.Num(); ++i)
@@ -531,7 +530,7 @@ void UBeamContentSubsystem::UpdateDownloadedContent(FString UriResponse, FDownlo
 	LiveContentCache->Cache.Add(ContentId, ContentObject);
 	LiveContentCache->Hashes.Add(ContentId, PropertyHash);
 
-	UE_LOG(LogBeamContent, Warning, TEXT("Downloaded and parsed content. CONTENT_ID=%s, HASH=%s, CONTENT_MANIFEST_ID=%s"), *ContentId.AsString, *LiveContentCache->Hashes.FindChecked(ContentId), *DownloadState.ManifestId.AsString)
+	UE_LOG(LogBeamContent, Verbose, TEXT("Downloaded and parsed content. CONTENT_ID=%s, HASH=%s, CONTENT_MANIFEST_ID=%s"), *ContentId.AsString, *LiveContentCache->Hashes.FindChecked(ContentId), *DownloadState.ManifestId.AsString)
 }
 
 
