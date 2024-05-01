@@ -2,14 +2,14 @@
   "unityProjectsPaths": [],
   "unrealProjectsPaths": [
     {
-      "CoreProjectName": "BeamableUnreal",
-      "BlueprintNodesProjectName": "BeamableUnrealBlueprintNodes",
+      "CoreProjectName": "BeamableUnrealMicroserviceClients",
+      "BlueprintNodesProjectName": "BeamableUnrealMicroserviceClientsBp",
       "Path": "",
-      "SourceFilesPath": "Source/",
-      "MsCoreHeaderPath": "BeamableUnreal/",
-      "MsCoreCppPath": "BeamableUnreal/",
-      "MsBlueprintNodesHeaderPath": "BeamableUnrealBlueprintNodes/Public/",
-      "MsBlueprintNodesCppPath": "BeamableUnrealBlueprintNodes/Private/",
+      "SourceFilesPath": "Plugins/BeamableUnrealMicroserviceClients/",
+      "MsCoreHeaderPath": "Source/BeamableUnrealMicroserviceClients/Public/",
+      "MsCoreCppPath": "Source/BeamableUnrealMicroserviceClients/Private/",
+      "MsBlueprintNodesHeaderPath": "Source/BeamableUnrealMicroserviceClientsBp/Public/",
+      "MsBlueprintNodesCppPath": "Source/BeamableUnrealMicroserviceClientsBp/Private/",
       "BeamableBackendGenerationPassFile": "Plugins/BeamableCore/Source/BeamableCore_GenerationPass.json"
     }
   ]

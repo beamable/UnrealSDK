@@ -3,10 +3,10 @@
 
 #include "IRiderLink.hpp"
 
-#include "Model/Library/UE4Library/PlayState.Generated.h"
-#include "Model/Library/UE4Library/RequestFailed.Generated.h"
-#include "Model/Library/UE4Library/RequestSucceed.Generated.h"
-#include "RdEditorModel/RdEditorModel.Generated.h"
+#include "Model/Library/UE4Library/PlayState.Pregenerated.h"
+#include "Model/Library/UE4Library/RequestFailed.Pregenerated.h"
+#include "Model/Library/UE4Library/RequestSucceed.Pregenerated.h"
+#include "RdEditorModel/RdEditorModel.Pregenerated.h"
 
 #include "Async/Async.h"
 #include "Editor/UnrealEdEngine.h"
@@ -28,7 +28,7 @@
 #include "EditorViewportClient.h"
 #endif
 
-#define LOCTEXT_NAMESPACE "RiderLink"
+#define LOCTEXT_NAMESPACE "RiderGameControl"
 
 DEFINE_LOG_CATEGORY(FLogRiderGameControlModule);
 
@@ -289,7 +289,7 @@ void FRiderGameControl::RequestPlayWorldCommand(const FCachedCommandInfo& Comman
         SendRequestFailed(RequestID, NotificationType::Error, Message);
         return;
     }
-    AsyncTask(ENamedThreads::GameThread, [=, this]()
+    AsyncTask(ENamedThreads::GameThread, [this, RequestID, CommandInfo]()
     {
         if (FPlayWorldCommands::GlobalPlayWorldActions->TryExecuteAction(CommandInfo.Command.ToSharedRef()))
         {
@@ -506,3 +506,5 @@ void FRiderGameControlModule::ShutdownModule()
     ActionsCache.Reset();
     UE_LOG(FLogRiderGameControlModule, Verbose, TEXT("SHUTDOWN FINISH"));
 }
+
+#undef LOCTEXT_NAMESPACE

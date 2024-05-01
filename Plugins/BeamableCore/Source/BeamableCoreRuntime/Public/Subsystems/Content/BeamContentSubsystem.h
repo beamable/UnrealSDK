@@ -17,7 +17,7 @@
 class UBeamContentObject;
 class UBeamContentApi;
 
-UCLASS()
+UCLASS(BlueprintType)
 class BEAMABLECORERUNTIME_API ULocalCachedContentSave : public USaveGame
 {
 	GENERATED_BODY()
@@ -25,6 +25,11 @@ class BEAMABLECORERUNTIME_API ULocalCachedContentSave : public USaveGame
 public:
 	UPROPERTY(BlueprintReadOnly, SaveGame)
 	UBeamContentCache* SavedCache;
+
+	/**
+	 * Gets the correct name for the save slot used to store the given manifest's serialized content cache.  
+	 */
+	static FString GetSaveSlotForManifest(FBeamContentManifestId Id) { return FString::Printf(TEXT("BEAM_SAVE_CONTENT_MANIFEST_%s"), *Id.AsString); }
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnContentManifestsUpdated, TArray<FBeamContentManifestId>, UpdatedManifests);
@@ -78,7 +83,8 @@ private:
 	 * Given a Client CSV (contains public content only) and its id, we make requests to the URLs where the actual content JSON is stored.
 	 * Run OnSuccess if all downloads succeed. OnError, otherwise.
 	 */
-	void DownloadLiveContentObjectsData(const FBeamContentManifestId Id, const TArray<FClientContentInfoTableRow*> Rows, const TMap<FBeamContentId, FString> Checksums, FSimpleDelegate OnSuccess, FSimpleDelegate OnError);
+	void DownloadLiveContentObjectsData(const FBeamContentManifestId Id, const TArray<FClientContentInfoTableRow*> Rows, const TMap<FBeamContentId, FString> Checksums, FSimpleDelegate OnSuccess,
+	                                    FSimpleDelegate OnError);
 
 	static void PrepareContentDownloadRequest(FBeamContentManifestId ManifestId, FClientContentInfoTableRow* ContentEntry, FDownloadContentState& Item);
 

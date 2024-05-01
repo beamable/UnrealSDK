@@ -24,7 +24,7 @@ struct FContentLinkWrapperTestStruct : public FBeamJsonSerializableUStruct
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere)
-	int32 SomeOtherProperty;
+	int32 SomeOtherProperty = 0;
 
 	UPROPERTY(EditAnywhere)
 	FBeamContentLink LinkTest;

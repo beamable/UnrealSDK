@@ -26,6 +26,41 @@
 		{
 			"Name": "BeamableCore",
 			"Enabled": true
+		},
+		{
+			"Name": "OnlineSubsystem",
+			"Enabled": false,
+			"Optional": true
+		},
+		{
+			"Name": "OnlineSubsystemUtils",
+			"Enabled": false,
+			"Optional": true
+		},
+		{
+			"Name": "OnlineSubsystemBeamable",
+			"Enabled": false,
+			"Optional": true
+		},
+		{
+			"Name": "HathoraSDK",
+			"Enabled": false,
+			"Optional": true
+		},
+		{
+			"Name": "DiscordSDK",
+			"Enabled": false,
+			"Optional": true
+		},
+		{
+			"Name": "BEAMPROJ_Sandbox",
+			"Enabled": false,
+			"Optional": true
+		},
+		{
+			"Name": "BEAMPROJ_HathoraDemo",
+			"Enabled": false,
+			"Optional": true
 		}
 	]
 }

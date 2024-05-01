@@ -13,7 +13,7 @@
 #include "Toolkits/AssetEditorManager.h"
 #endif
 #include "Kismet2/BlueprintEditorUtils.h"
-#include "Model/RdEditorProtocol/RdEditorModel/RdEditorModel.Generated.h"
+#include "Model/RdEditorProtocol/RdEditorModel/RdEditorModel.Pregenerated.h"
 
 #if ENGINE_MAJOR_VERSION < 5
 #include "AssetData.h"
@@ -66,7 +66,7 @@ void BluePrintProvider::OpenBlueprint(JetBrains::EditorPlugin::BlueprintReferenc
                 UEdGraphNode* EdGraphNode = FBlueprintEditorUtils::GetNodeByGUID(Blueprint, AssetGuid);
                 if(EdGraphNode != nullptr)
                 {
-                    FKismetEditorUtilities::BringKismetToFocusAttentionOnObject(Blueprint); 
+                    FKismetEditorUtilities::BringKismetToFocusAttentionOnObject(EdGraphNode); 
                 }
                 else
                 {

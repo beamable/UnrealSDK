@@ -12,7 +12,6 @@ public class BeamableCoreEditor : ModuleRules
 				"Core",
 				"Engine",
 				"CoreUObject",
-				"BeamableCore",
 				"UnrealEd",
 				"SlateCore",
 				"Slate",
@@ -29,10 +28,12 @@ public class BeamableCoreEditor : ModuleRules
 				"JsonUtilities",
 				"DataTableEditor",
 				"DeveloperToolSettings",
+				"AssetTools",
+				"InputCore",
+
+				"BeamableCore",
 				"BeamableCoreRuntime",
 				"BeamableCoreRuntimeEditor",
-				"AssetTools",
-				"InputCore"
 			}
 		);
 
@@ -49,13 +50,13 @@ public class BeamableCoreEditor : ModuleRules
 				"PropertyEditor",
 				"UMGEditor",
 				"Blutility",
-				"BeamableCoreBlueprintNodes",
 				"DeveloperToolSettings",
 				"UnrealEd",
 				"ToolWidgets",
 				"EditorScriptingUtilities",
 				"HTTP",
-				"InputCore"
+				"InputCore",
+				"BeamableCoreBlueprintNodes",
 			}
 		);
 	}

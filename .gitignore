@@ -76,3 +76,5 @@ DerivedDataCache/*
 
 Docs/venv
 PackagedProject
+
+Plugins/BEAMPROJ_Sandbox/*

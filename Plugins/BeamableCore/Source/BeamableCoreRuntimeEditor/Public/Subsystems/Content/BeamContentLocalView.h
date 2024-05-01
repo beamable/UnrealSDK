@@ -45,7 +45,7 @@ struct BEAMABLECORERUNTIMEEDITOR_API FBeamContentViewConfig
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	FLinearColor BorderColor;
+	FLinearColor BorderColor = FLinearColor::Gray;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSoftObjectPtr<UTexture2D> TypeForContentObject;

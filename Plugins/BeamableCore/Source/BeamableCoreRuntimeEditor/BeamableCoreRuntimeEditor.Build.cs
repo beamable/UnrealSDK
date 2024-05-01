@@ -27,7 +27,6 @@ public class BeamableCoreRuntimeEditor : ModuleRules
             new string[]
             {
                 "BeamableCore",
-                
                 "Core",
                 "Engine",
                 "CoreUObject",
