@@ -13,6 +13,7 @@ void UGetLogsInsightUrlRequestBody::BeamSerializeProperties(TUnrealJsonSerialize
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("endTime"), &EndTime, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("order"), &Order, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("limit"), &Limit, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("filters"), &Filters, Serializer);
 }
 
 void UGetLogsInsightUrlRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
@@ -22,7 +23,8 @@ void UGetLogsInsightUrlRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSer
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("filter"), &Filter, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("endTime"), &EndTime, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("order"), &Order, Serializer);
-	UBeamJsonUtils::SerializeOptional<int32>(TEXT("limit"), &Limit, Serializer);		
+	UBeamJsonUtils::SerializeOptional<int32>(TEXT("limit"), &Limit, Serializer);
+	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("filters"), &Filters, Serializer);		
 }
 
 void UGetLogsInsightUrlRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
@@ -33,6 +35,7 @@ void UGetLogsInsightUrlRequestBody::BeamDeserializeProperties(const TSharedPtr<F
 	UBeamJsonUtils::DeserializeOptional<int64>("endTime", Bag, EndTime, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("order", Bag, Order, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("limit", Bag, Limit, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("filters", Bag, Filters, OuterOwner);
 }
 
 

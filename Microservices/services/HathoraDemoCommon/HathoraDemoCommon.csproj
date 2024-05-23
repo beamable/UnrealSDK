@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <!-- Unity 2021 can handle netstandard2.1 libraries -->
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <!--  Settings for Beamable Build  -->
+    <PropertyGroup>
+        <!-- The tool path for the beamCLI. "dotnet beam" will refer to the local project tool, and "beam" would install to a globally installed tool -->
+        <BeamableTool>$(BEAM_PATH)</BeamableTool>
+        <BeamableTool Condition="'$(BeamableTool)' == ''">beam</BeamableTool>
+
+        <!-- When "true", this will copy the built project and associated dependencies to linked Unity projects -->
+        <CopyToLinkedProjects>true</CopyToLinkedProjects>
+    </PropertyGroup>
+
+    <!-- Make sure that the built dlls and their dependencies are in the output directory -->
+    <PropertyGroup>
+        <ProduceReferenceAssemblyInOutDir>true</ProduceReferenceAssemblyInOutDir>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <PublishDocumentationFile>true</PublishDocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- 
+        BEAMABLE DEVELOPERS: This is how we reference samples when we are developing them. 
+        This makes it so that, if we have a locally built package set up, we use that one. Otherwise, we use the version below.
+        
+        GAME-MAKERS: You don't need to care about this and if you want to reference packages in your own projects, you can just do it normally.
+        <PackageReference Include="Beamable.Common" Version="2.0.0" />     
+        -->
+        <PackageReference Include="Beamable.Common" Condition="Exists('./../../../BeamableSource/Beamable.Common.0.0.123.nupkg')" Version="0.0.123"/>
+        <PackageReference Include="Beamable.Common" Condition="!Exists('./../../../BeamableSource/Beamable.Common.0.0.123.nupkg')" Version="2.0.0"/>
+    </ItemGroup>
+
+    <!-- Move the built dll to the linked projects -->
+    <Target Name="share-code" AfterTargets="Build" Condition="$(CopyToLinkedProjects)==true AND $(DOTNET_RUNNING_IN_CONTAINER)!=true">
+        <Message Text="Generating code for other projects" Importance="high"/>
+        <Exec Command="$(BeamableTool) project share-code $(OutDir)/$(AssemblyName).dll --dep-prefix-blacklist Newtonsoft,Unity.Beamable,UnityEngine,Unity.Addressables,System"/>
+    </Target>
+
+</Project>

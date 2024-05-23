@@ -33,7 +33,18 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 		//   - If we got an CLI Arg called --beamable-realm-override <Target Realm's PID>, use this argument.
 		//   - If there's no CLI Arg, check for an environment variable called BEAMABLE_REALM_OVERRIDE and use that if it exists.
 		//   - If there's no EnvVar, we'll use whatever was configured in "Config/DefaultEngine.ini" (which is edited by using the "Apply To Build" button).
-		//
+
+		// We do this so game-makers can choose their preferred ways of setting up dedicated server builds and deployments.
+		FString OverridenCustomer;
+		if (!FParse::Value(FCommandLine::Get(), TEXT("beamable-customer-override"), OverridenCustomer))
+		{
+			OverridenCustomer = FPlatformMisc::GetEnvironmentVariable(TEXT("BEAMABLE_CUSTOMER_OVERRIDE"));
+			if (!OverridenCustomer.IsEmpty())
+			{
+				GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Cid = FBeamCid{OverridenCustomer};
+			}
+		}
+		
 		// We do this so game-makers can choose their preferred ways of setting up dedicated server builds and deployments.
 		FString OverridenRealm;
 		if (!FParse::Value(FCommandLine::Get(), TEXT("beamable-realm-override"), OverridenRealm))

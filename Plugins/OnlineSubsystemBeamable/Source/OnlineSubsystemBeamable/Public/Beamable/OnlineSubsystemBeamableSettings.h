@@ -17,7 +17,7 @@ class ONLINESUBSYSTEMBEAMABLE_API UOnlineSubsystemBeamableSettings : public UDev
 
 public:
 	/**
-	 * Whether or not we should automatically try to sign up with persist the Auth data for Runtime User Slots when we are in PIE.
+	 * Whether we should automatically try to sign up with persist the Auth data for Runtime User Slots when we are in PIE.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Identity")
 	bool bAutoSignUpWhenLogin = true;

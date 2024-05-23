@@ -14,7 +14,7 @@ public class BeamableUnrealMicroserviceClients : ModuleRules
 				"Core",
 				"BeamableCore",
 				"BeamableCoreRuntime",
-				
+
 				"Json",
 				"JsonUtilities",
 			});

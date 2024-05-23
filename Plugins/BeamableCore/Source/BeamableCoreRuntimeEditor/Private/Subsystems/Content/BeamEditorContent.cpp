@@ -481,6 +481,12 @@ bool UBeamEditorContent::DeleteContentObject(const FBeamContentManifestId& Manif
 	if (FileManager.Delete(*FilePath))
 		return true;
 
+	LoadedContentObjects.Remove(Id);
+	if(auto ManifestPtr = LocalManifestCache.Find(ManifestId))
+	{
+		auto Manifest = *ManifestPtr;
+		Manifest->Entries.RemoveAll([Id](ULocalContentManifestEntryStreamData* Entry){ return FBeamContentId{Entry->FullId} == Id; });
+	}	
 
 	ErrMsg = FString::Format(TEXT("Failed to save the content object {0}"), {Id.AsString});
 	UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);

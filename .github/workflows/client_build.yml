@@ -37,9 +37,3 @@ jobs:
         with:
           name: artifacts
           path: artifacts.zip
-      - name: Cleanup
-        if: always()  # This ensures the cleanup step runs even if the build fails
-        run: |
-          docker stop unreal_container
-          docker rm unreal_container
-          echo "Cleanup done!"

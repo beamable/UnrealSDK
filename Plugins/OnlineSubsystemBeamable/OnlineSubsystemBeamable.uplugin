@@ -41,6 +41,10 @@
 		{
 			"Name": "HathoraSDK",
 			"Enabled": true
+		},
+		{
+			"Name": "BeamableUnrealMicroserviceClients",
+			"Enabled": true
 		}
 	]
 }

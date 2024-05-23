@@ -25,6 +25,8 @@ Options:
   --service-directory <service-directory>  Relative path to directory where project should be created. Defaults to "SOLUTION_DIR/services"
   --version <version>                      Specifies version of Beamable project dependencies. Defaults to the current version of the CLI [default: 0.0.123]
   --disable                                Created service by default would not be published
+  --generate-common                        If passed, will create a common library for this project
+  --beamable-dev                           INTERNAL This enables a sane workflow for beamable developers to be happy and productive [default: False]
   --dryrun                                 Should any networking happen?
   --cid <cid>                              Cid to use; will default to whatever is in the file system
   --pid <pid>                              Pid to use; will default to whatever is in the file system

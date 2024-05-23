@@ -34,7 +34,7 @@ FBeamOperationHandle FOnlineSubsystemHathoraDemo::HathoraPingsOperation(FUserSlo
 		const FString PingsJson = ConvertHathoraRegionPingsToJson(Result);
 
 		TMap<FString, FString> Stats;
-		Stats.Add("wca.HathoraRegionPings", PingsJson);
+		Stats.Add("hathora_demo.pings", PingsJson);
 
 		auto StatsSubsystem = GetGameInstance()->GetSubsystem<UBeamStatsSubsystem>();
 

@@ -160,21 +160,20 @@ bool FOnlineIdentityBeamable::Login(int32 LocalUserNum, const FOnlineAccountCred
 						{
 							UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Federated Identity] Successfully SignedUp using federated identity %s!"), *FString(ServiceName + "/" + Namespace));
 							OnBeamableLoginOperationComplete(Evt, AccountCredentials);
+							return;
 						}
 
-						if (Evt.EventType == OET_ERROR)
+						// Error Handling
+						if (Evt.EventData.Contains("EXTERNAL_IDENTITY_IN_USE"))
 						{
-							if (Evt.EventData.Contains("EXTERNAL_IDENTITY_IN_USE"))
-							{
-								UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Federated Identity] %s User already associated with beamable account. Logging in instead."),
-								                       *FString(ServiceName + "/" + Namespace));
-								GameInstance->GetSubsystem<UBeamRuntime>()->CPP_LoginExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalToken, LoginHandler);
-							}
-							else
-							{
-								UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Federated Identity] Failed To Sign Up. Reason=%s."), *Evt.EventData);
-								TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdBeamable::EmptyId(), Evt.EventData);
-							}
+							UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Federated Identity] %s User already associated with beamable account. Logging in instead."),
+							                       *FString(ServiceName + "/" + Namespace));
+							GameInstance->GetSubsystem<UBeamRuntime>()->CPP_LoginExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalToken, LoginHandler);
+						}
+						else
+						{
+							UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Federated Identity] Failed To Sign Up. Reason=%s."), *Evt.EventData);
+							TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdBeamable::EmptyId(), Evt.EventData);
 						}
 					});
 				BeamRuntime->CPP_SignUpExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalUserId, ExternalToken, OnSignUpWithDiscord);

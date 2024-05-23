@@ -6,6 +6,7 @@ public class BeamableUnrealServerTarget : TargetRules
 {
 	public BeamableUnrealServerTarget(TargetInfo Target) : base(Target)
 	{
+		bOverrideBuildEnvironment = true;
 		Type = TargetType.Server;
 		DefaultBuildSettings = BuildSettingsVersion.Latest;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
@@ -15,10 +16,6 @@ public class BeamableUnrealServerTarget : TargetRules
 		ExtraModuleNames.AddRange(new string[]
 		{
 			"BeamableUnreal",
-
-			"BeamableCore",
-			"BeamableCoreRuntime",
-
 			// Server specific modules can be added here
 			"OnlineSubsystem", // If using any online subsystem
 			"OnlineSubsystemUtils",

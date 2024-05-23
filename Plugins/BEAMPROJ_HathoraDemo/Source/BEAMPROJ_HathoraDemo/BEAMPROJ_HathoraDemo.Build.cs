@@ -8,27 +8,24 @@ public class BEAMPROJ_HathoraDemo : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
-		PublicIncludePaths.AddRange(
-			new string[] {
-				// ... add public include paths required here ...
-			}
-			);
-				
-		
-		PrivateIncludePaths.AddRange(
-			new string[] {
-				// ... add other private include paths required here ...
-			}
-			);
-			
-		
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
 				"Core",
-				// ... add other public dependencies that you statically link with here ...
-			}
-			);
+				
+				// You only need this to access the BeamOSS namespace that has some utility functions for integrating with OnlineSubsystem...
+				// If you don't want it, you can simply remove it and do what the utility functions do in your own project.
+				"BeamableCore",
+				
+				// We have this here because we use the UBeamLevelSubsystem --- if you wish to depend only on the OnlineSubsystem stuff in your game code, you can just remove this dependency
+				// and make your own UBeamLevelSubsystem-equivalent.
+				"BeamableCoreRuntime",
+				
+				"OnlineSubsystem", 
+				"OnlineSubsystemBeamable",
+				
+				"HathoraSDK"
+			});
 			
 		
 		PrivateDependencyModuleNames.AddRange(
@@ -38,16 +35,6 @@ public class BEAMPROJ_HathoraDemo : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				// ... add private dependencies that you statically link with here ...	
-			}
-			);
-		
-		
-		DynamicallyLoadedModuleNames.AddRange(
-			new string[]
-			{
-				// ... add any modules that your module loads dynamically here ...
-			}
-			);
+			});
 	}
 }

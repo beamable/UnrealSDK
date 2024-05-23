@@ -411,33 +411,51 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 	const auto MainEditorSlot = GetMainEditorSlot(UserData);
 	UserSlots->SetPIDAtSlot(MainEditorSlot, NewRealmHandle.Pid, this);
 
-	// We ensure that the realm is correctly configured to use Beamable's notification system (as opposed to our legacy PubNub-based system that UE doesn't support) 
-	const auto ConfigToEnsure = TMap<FString, FString>{{TEXT("notification|publisher"), TEXT("beamable")}};
-	const auto Req = UPutConfigRequest::Make(ConfigToEnsure, GetTransientPackage(), {});
-	const auto Handler = FOnPutConfigFullResponse::CreateLambda([this, Op, NewRealmHandle](FPutConfigFullResponse Resp)
+	const auto GetConfigReq = UGetConfigRequest::Make(GetTransientPackage(), {});
+	const auto GetConfigReqHandle = FOnGetConfigFullResponse::CreateLambda([this, Op, MainEditorSlot, NewRealmHandle](FGetConfigFullResponse GetResp)
 	{
-		if (Resp.State == RS_Success)
+		if (GetResp.State == RS_Success)
 		{
-			const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
-			InitalizeFromRealmOps.Reset(Subsystems.Num());
-			for (auto& Subsystem : Subsystems)
+			// We ensure that the realm is correctly configured to use Beamable's notification system (as opposed to our legacy PubNub-based system that UE doesn't support)
+			TMap<FString, FString> CurrConfig = TMap<FString, FString>(GetResp.SuccessData->Config);
+			if (CurrConfig.Contains(TEXT("notification|publisher"))) CurrConfig[TEXT("notification|publisher")] = TEXT("beamable");
+			else CurrConfig.Add(TEXT("notification|publisher"), TEXT("beamable"));
+			const auto Req = UPutConfigRequest::Make(CurrConfig, GetTransientPackage(), {});
+			const auto Handler = FOnPutConfigFullResponse::CreateLambda([this, Op, NewRealmHandle](FPutConfigFullResponse PutResp)
 			{
-				const auto Handle = Subsystem->InitializeFromRealm(NewRealmHandle);
-				InitalizeFromRealmOps.Add(Handle);
-			}
-			const auto OnCompleteCode = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, SelectRealm_OnSystemsReady), NewRealmHandle, Op);
-			InitializeFromRealmsWait = RequestTracker->CPP_WaitAll({}, InitalizeFromRealmOps, {}, OnCompleteCode);
+				if (PutResp.State == RS_Success)
+				{
+					const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
+					InitalizeFromRealmOps.Reset(Subsystems.Num());
+					for (auto& Subsystem : Subsystems)
+					{
+						const auto Handle = Subsystem->InitializeFromRealm(NewRealmHandle);
+						InitalizeFromRealmOps.Add(Handle);
+					}
+					const auto OnCompleteCode = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, SelectRealm_OnSystemsReady), NewRealmHandle, Op);
+					InitializeFromRealmsWait = RequestTracker->CPP_WaitAll({}, InitalizeFromRealmOps, {}, OnCompleteCode);
+					return;
+				}
+
+				if (PutResp.State == RS_Retrying)
+					return;
+
+				RequestTracker->TriggerOperationError(Op, PutResp.ErrorData.message);
+			});
+
+			FBeamRequestContext Ctx;
+			GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_PutConfig(MainEditorSlot, Req, Handler, Ctx, Op, this);
 			return;
 		}
 
-		if (Resp.State == RS_Retrying)
+		if (GetResp.State == RS_Retrying)
 			return;
 
-		RequestTracker->TriggerOperationError(Op, Resp.ErrorData.message);
+		RequestTracker->TriggerOperationError(Op, GetResp.ErrorData.message);
 	});
 
 	FBeamRequestContext Ctx;
-	GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_PutConfig(MainEditorSlot, Req, Handler, Ctx, Op, this);
+	GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_GetConfig(MainEditorSlot, GetConfigReq, GetConfigReqHandle, Ctx, Op, this);
 }
 
 void UBeamEditor::SelectRealm_OnSystemsReady(FBeamWaitCompleteEvent, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op) const

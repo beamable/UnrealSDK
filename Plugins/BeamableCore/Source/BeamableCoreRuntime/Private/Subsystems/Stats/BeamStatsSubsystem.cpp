@@ -428,7 +428,9 @@ void UBeamStatsSubsystem::CommitStats(FUserSlot UserSlot, FBeamOperationHandle O
 	checkf(UBeamStatsTypeLibrary::MakeStatsType(Client, Public, RealmUser.GamerTag) == Stat, TEXT("Make sure to call this with the same user slot."))
 
 	// Make the request and update the local cache if successful
-	const auto SetStatHandler = FOnPostClientFullResponse::CreateLambda([this, Op, UserSlot, Stat, CommandBuffer](FPostClientFullResponse Resp)
+	const auto StatNames = TArray<FString>(CommandBuffer->StatNames);
+	const auto StatValues = TArray<FString>(CommandBuffer->StatValues);
+	const auto SetStatHandler = FOnPostClientFullResponse::CreateLambda([this, Op, UserSlot, Stat, StatNames, StatValues](FPostClientFullResponse Resp)
 	{
 		// If we are invoking this before retrying, we just don't do anything 
 		if (Resp.State == RS_Retrying) return;
@@ -446,28 +448,31 @@ void UBeamStatsSubsystem::CommitStats(FUserSlot UserSlot, FBeamOperationHandle O
 			Evt.GamerTag = UBeamStatsTypeLibrary::GetGamerTag(Stat);
 			Evt.LocalSlot = UserSlot;
 
+
 			// Update the local cache from the command buffer.
-			for (int i = 0; i < CommandBuffer->StatNames.Num(); ++i)
+			const auto StatSize = StatNames.Num();
+			for (int i = 0; i < StatSize; ++i)
 			{
-				const FString StatKey = CommandBuffer->StatNames[i];
-				const FString NewStatValue = CommandBuffer->StatValues[i];
+				const FString StatKey = StatNames[i];
+				const FString NewStatValue = StatValues[i];
 
-				FString OldValue;
-				if (UserStatsState->StringStats.Contains(StatKey))
+				if (!StatKey.IsEmpty())
 				{
-					OldValue = UserStatsState->StringStats[StatKey];
-					UserStatsState->StringStats[StatKey] = NewStatValue;
+					FString OldValue;
+					if (UserStatsState->StringStats.Contains(StatKey))
+					{
+						OldValue = UserStatsState->StringStats[StatKey];
+						UserStatsState->StringStats[StatKey] = NewStatValue;
+					}
+					else
+					{
+						OldValue = FString("");
+						UserStatsState->StringStats.Add(StatKey, NewStatValue);
+					}
+					Evt.OldValues.Add(StatKey, OldValue);
+					Evt.NewValues.Add(StatKey, NewStatValue);
 				}
-				else
-				{
-					OldValue = FString("");
-					UserStatsState->StringStats.Add(StatKey, NewStatValue);
-				}
-				Evt.OldValues.Add(StatKey, OldValue);
-				Evt.NewValues.Add(StatKey, NewStatValue);
 			}
-
-			UpdateCommands.Remove(UserSlot);
 
 			OnStatsUpdatedCode.Broadcast(Evt);
 			OnStatsUpdated.Broadcast(Evt);

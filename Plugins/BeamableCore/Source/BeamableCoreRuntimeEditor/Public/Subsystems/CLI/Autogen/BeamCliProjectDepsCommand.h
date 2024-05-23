@@ -31,9 +31,9 @@ Options:
   -?, -h, --help                   Show help and usage information
 
 Commands:
+  remove <microservice> <dependency>  Remove the dependency between the given microservice and storage
   add <microservice> <dependency>     Add a given storage as a dependency of a microservice
   list                                Lists all dependencies of given service, if none then lists all dependencies of all existing services
-  remove <microservice> <dependency>  Remove the dependency between the given microservice and storage
 
 
  */

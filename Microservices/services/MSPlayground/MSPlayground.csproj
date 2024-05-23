@@ -74,7 +74,15 @@
 
     <!-- Nuget references -->
     <ItemGroup>
-        <PackageReference Include="Beamable.Microservice.Runtime" Version="1.19.5-preview.rc2" />
+        <!-- 
+        BEAMABLE DEVELOPERS: This is how we reference samples when we are developing them. 
+        This makes it so that, if we have a locally built package set up, we use that one. Otherwise, we use the version below.
+        
+        GAME-MAKERS: You don't need to care about this and if you want to reference packages in your own projects, you can just do it normally.
+        <PackageReference Include="Beamable.Common" Version="2.0.0" />     
+        -->
+        <PackageReference Include="Beamable.Microservice.Runtime" Condition="Exists('../../../BeamableSource/Beamable.Microservice.Runtime.0.0.123.nupkg')" Version="0.0.123"/>
+        <PackageReference Include="Beamable.Microservice.Runtime" Condition="!Exists('../../../BeamableSource/Beamable.Microservice.Runtime.0.0.123.nupkg')" Version="2.0.0"/>       
         
         <PackageReference Include="EmbedIO" Version="3.4.*" />
         <PackageReference Include="LoxSmoke.DocXml" Version="3.4.*" />

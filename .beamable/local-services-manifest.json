@@ -4,18 +4,45 @@
       "BeamoId": "MSPlayground",
       "Language": 0,
       "Protocol": 0,
-      "ImageId": "",
+      "ImageId": "sha256:e9e636351c1a197ab877ffa5652dcf7b33062ddd0adf9c4b60734bff50159f5b",
       "ShouldBeEnabledOnRemote": true,
       "ProjectDirectory": "Microservices/services\\MSPlayground",
-      "TruncImageId": "",
+      "TruncImageId": "e9e636351c1a",
+      "ProjectExtension": "csproj",
+      "SolutionExtension": "sln"
+    },
+    {
+      "BeamoId": "HathoraDemo",
+      "Language": 0,
+      "Protocol": 0,
+      "ImageId": "sha256:2c0112308a2a42a5bda4c724268828c6635f9e6a165c95ba025b253cd3d52e43",
+      "ShouldBeEnabledOnRemote": true,
+      "ProjectDirectory": "Microservices/services\\HathoraDemo",
+      "TruncImageId": "2c0112308a2a",
       "ProjectExtension": "csproj",
       "SolutionExtension": "sln"
     }
   ],
   "HttpMicroserviceLocalProtocols": {
     "MSPlayground": {
-      "DockerBuildContextPath": "Microservices/services",
-      "RelativeDockerfilePath": "MSPlayground/Dockerfile",
+      "DockerBuildContextPath": ".",
+      "RelativeDockerfilePath": "Microservices/services/MSPlayground/Dockerfile",
+      "BindSrcForHotReloading": {
+        "IsReadOnly": true,
+        "LocalPath": "",
+        "InContainerPath": ""
+      },
+      "HotReloadEnabledEndpoint": "",
+      "HotReloadEnabledPort": "",
+      "CustomPortBindings": [],
+      "CustomBindMounts": [],
+      "CustomVolumes": [],
+      "CustomEnvironmentVariables": [],
+      "InstanceCount": 1
+    },
+    "HathoraDemo": {
+      "DockerBuildContextPath": ".",
+      "RelativeDockerfilePath": "Microservices/services/HathoraDemo/Dockerfile",
       "BindSrcForHotReloading": {
         "IsReadOnly": true,
         "LocalPath": "",
@@ -32,6 +59,11 @@
   },
   "HttpMicroserviceRemoteProtocols": {
     "MSPlayground": {
+      "HealthCheckEndpoint": "health",
+      "HealthCheckPort": "6565",
+      "CustomEnvironmentVariables": []
+    },
+    "HathoraDemo": {
       "HealthCheckEndpoint": "health",
       "HealthCheckPort": "6565",
       "CustomEnvironmentVariables": []

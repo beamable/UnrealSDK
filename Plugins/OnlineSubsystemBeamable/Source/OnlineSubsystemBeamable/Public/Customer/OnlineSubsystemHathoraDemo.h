@@ -85,7 +85,7 @@ public:
 			if (!FModuleManager::Get().IsModuleLoaded("HathoraSDK"))
 				return GetRequestTracker()->CPP_BeginErrorOperation({}, this->GetInstanceName().ToString(), FString("NO_PINGS_FOUND"), {});
 
-			const auto Op = GetRequestTracker()->CPP_BeginOperation({}, TEXT("Timeless Ping Search Hook"), {});
+			const auto Op = GetRequestTracker()->CPP_BeginOperation({}, TEXT("Ping Search Hook"), {});
 			FHathoraSDK::Instance()->GetRegionalPings(FHathoraOnGetRegionalPings::CreateLambda([this, Op](const FHathoraRegionPings& Result)
 			{
 				if (Result.Pings.Num() > 0)
@@ -108,8 +108,8 @@ public:
 		// 	// ensure player has all the things a new player should have
 		//
 		// 	const auto Op = GetRequestTracker()->CPP_BeginOperation({UserSlot}, this->GetInstanceName().ToString(), {});
-		// 	const auto TimelessMsApi = GEngine->GetEngineSubsystem<UBeamTimelessMsApi>();
-		// 	UTimelessMsOnPostLoginRequest* Req = UTimelessMsOnPostLoginRequest::Make(GetTransientPackage(), {});
+		// 	const auto TimelessMsApi = GEngine->GetEngineSubsystem<UBeamTimelessMsApi>();		
+		// UTimelessMsOnPostLoginRequest* Req = UTimelessMsOnPostLoginRequest::Make(GetTransientPackage(), {});
 		// 	const auto Handler = FOnTimelessMsOnPostLoginFullResponse::CreateLambda([this, Op](FTimelessMsOnPostLoginFullResponse Resp)
 		// 	{
 		// 		// If we are invoking this before retrying, we just don't do anything 

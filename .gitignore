@@ -76,5 +76,7 @@ DerivedDataCache/*
 
 Docs/venv
 PackagedProject
+ArchivedBuilds
 
 Plugins/BEAMPROJ_Sandbox/*
+BeamableSource/

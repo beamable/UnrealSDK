@@ -18,7 +18,7 @@ Usage:
 
 Arguments:
   <output>        Where the file will be created
-  <beam-path>     Beam path to be used
+  <beam-path>     Beam path to be used. Use BEAM_SOLUTION_DIR to template in $(SolutionDir)
   <solution-dir>  The solution path to be used. 
                   The following values have special meaning and are not treated as paths... 
                   - "DIR.PROPS" = $([System.IO.Path]::GetDirectoryName(`$(DirectoryBuildPropsPath)`))
