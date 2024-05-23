@@ -18,8 +18,6 @@ WORKDIR C:\\
 COPY --chown=ue4:ue4 . C:\\Project
 WORKDIR C:\\Project
 
-RUN .\clean_project.bat
-
 RUN C:\UnrealEngine\Engine\Binaries\ThirdParty\DotNet\6.0.302\windows\dotnet.exe C:\UnrealEngine\Engine\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.dll -ProjectFiles -UsePrecompiled -Game "C:/Project/BeamableUnreal.uproject"
 
 # RUN .\beam_init_repo.bat

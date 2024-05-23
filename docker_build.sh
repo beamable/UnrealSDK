@@ -9,7 +9,7 @@ else
     docker build --build-arg MAP_ARG=-map=DefaultMap+BeamBackendTests --progress plain -t unrealrunner .
 fi
 
-docker run --name unreal_container -d beamable-unreal-client:latest
+docker run --name unreal_container -d unrealrunner:latest
 docker cp unreal_container:/home/ue4/PackagedProject .
 docker stop unreal_container
 docker rm unreal_container
