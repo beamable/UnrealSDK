@@ -13,3 +13,7 @@ docker run --name unreal_container -d unrealrunner:latest
 docker cp unreal_container:/home/ue4/PackagedProject .
 docker stop unreal_container
 docker rm unreal_container
+
+if [ $argument = "server" ]; then
+    cp Plugins/BEAMPROJ_HathoraDemo/Dockerfile PackagedProject/LinuxServer/Dockerfile
+fi

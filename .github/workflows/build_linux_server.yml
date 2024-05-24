@@ -1,4 +1,4 @@
-name: Client build
+name: Linux Server build
 
 on:
   workflow_dispatch:
@@ -6,7 +6,6 @@ on:
     branches:
       - dev
       - main
-      - testBuild
 
 permissions:
   contents: write
@@ -29,11 +28,11 @@ jobs:
           username: ${{ secrets.GHCR_ACTOR }}
           password: ${{ secrets.GHCR_TOKEN }}
       - name: Pull base image
-        run: bash docker_build.sh
+        run: bash docker_build.sh server
       - name: Compress Directory
-        run: zip -r artifacts.zip PackagedProject
+        run: tar cvzf linux_server.tar.gz PackagedProject/LinuxServer
       - name: Upload Compressed Folder as Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: artifacts
-          path: artifacts.zip
+          name: Linux Server build
+          path: linux_server.tar.gz
