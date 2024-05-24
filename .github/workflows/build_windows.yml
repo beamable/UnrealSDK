@@ -21,9 +21,7 @@ jobs:
       - name: Build image
         run: .\windows_build_project.ps1
       - name: Compress Directory
-        run: powershell Compress-Archive PackagedProject artifacts.zip 
-      - name: Check for artifacts directory
-        run: powershell "Test-Path WinBuild/Windows -PathType Container"
+        run: powershell Compress-Archive PackagedProject artifacts.zip
       - name: Upload Compressed Folder as Artifact
         uses: actions/upload-artifact@v4
         with:

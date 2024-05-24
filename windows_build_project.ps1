@@ -9,3 +9,9 @@ docker run --name unreal-project -d unreal-win64-project
 docker cp unreal-project:C:\Project\PackagedProject .
 docker stop unreal-project
 docker rm unreal-project
+
+$artifacts_exists = Test-Path PackagedProject -PathType Container;
+
+if (!$artifacts_exists) {
+    exit 1
+}
