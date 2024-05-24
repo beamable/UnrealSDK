@@ -17,12 +17,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           lfs: true
+      - run: git clean -fdx
       - name: Build image
         run: .\windows_build_project.ps1
       - name: Compress Directory
         run: powershell Compress-Archive PackagedProject artifacts.zip 
+      - name: Check for artifacts directory
+        run: powershell "Test-Path WinBuild/Windows -PathType Container"
       - name: Upload Compressed Folder as Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: artifacts
           path: artifacts.zip
