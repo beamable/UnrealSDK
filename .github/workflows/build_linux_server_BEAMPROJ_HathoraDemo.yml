@@ -7,7 +7,11 @@ on:
       - dev
       - main
     paths:
+      - '.github/**HathoraDemo.yml'
+      - 'Source/**'
       - 'Plugins/BEAMPROJ_HathoraDemo/**'
+      - 'Plugins/BeamableCore/**'
+      - 'Plugins/OnlineSubsystemBeamable/**'
 
 permissions:
   contents: write
