@@ -1,4 +1,4 @@
-name: Linux Server Build - Hathora Demo
+name: Windows Client Build - Hathora Demo
 
 on:
   workflow_dispatch:
@@ -8,8 +8,8 @@ on:
       - main
     paths:
       - '**.sh'
-      - 'Source/**'
       - '.github/**HathoraDemo.yml'
+      - 'Source/**'      
       - 'Plugins/BEAMPROJ_HathoraDemo/**'
       - 'Plugins/BeamableCore/**'
       - 'Plugins/OnlineSubsystemBeamable/**'
@@ -19,9 +19,6 @@ permissions:
 
 jobs:
   deploy:
-    uses: Beamable/UnrealSDK/.github/workflows/build_linux_server.yml@dev
+    uses: Beamable/UnrealSDK/.github/workflows/build_windows_client.yml@dev
     with:
       beamProj: BEAMPROJ_HathoraDemo
-    secrets:
-      GHCR_ACTOR: ${{ secrets.GHCR_ACTOR }}
-      GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}      

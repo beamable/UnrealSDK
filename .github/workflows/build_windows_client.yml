@@ -1,11 +1,6 @@
 name: Windows Client Build - Template
 
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - dev
-      - main
   workflow_call:
     inputs:
       beamProj:
