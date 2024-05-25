@@ -18,6 +18,8 @@ jobs:
         with:
           lfs: true
       - run: git clean -fdx
+      - name: Prepare Repository for Compilation
+        run: bash init_repo.sh
       - name: Build image
         run: .\windows_build_project.ps1
       - name: Compress Directory
