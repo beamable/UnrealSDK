@@ -9,6 +9,9 @@
 #include "AutoGen/SubSystems/BeamAuthApi.h"
 #include "AutoGen/SubSystems/BeamAccountsApi.h"
 #include "AutoGen/SubSystems/BeamRealmsApi.h"
+#include "Content/BeamContentTypes/BeamCurrencyContent.h"
+#include "Content/BeamContentTypes/BeamItemContent.h"
+#include "Content/BeamContentTypes/BeamGameTypeContent.h"
 
 #include "Subsystems/BeamEditorSubsystem.h"
 
@@ -83,10 +86,52 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 		CoreSettings->SaveConfig(CPF_Config, *CoreSettings->GetDefaultConfigFilename());
 	}
 
+	// Set up the default Editor settings
 	auto EditorSettings = GetMutableDefault<UBeamEditorSettings>();
+	auto bEditorSettingsChanged = false;
 	if (EditorSettings->BeamableMainWindow.IsNull())
 	{
 		EditorSettings->BeamableMainWindow = FSoftObjectPath(TEXT("/Script/Blutility.EditorUtilityWidgetBlueprint'/BeamableCore/Editor/EWBP_BeamableWindow.EWBP_BeamableWindow'"));
+		bEditorSettingsChanged = true;
+	}
+
+	// Set up Status Icons
+	if (EditorSettings->LocalContentStatusIcons.IsEmpty())
+	{
+		const auto CreatedIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconStatus_Added.IconStatus_Added'")));
+		const auto DeletedIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconStatus_Added.IconStatus_Deleted'")));
+		const auto ModifiedIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconStatus_Added.IconStatus_Modified'")));
+		const auto UpToDateIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconStatus_Added.IconStatus_NC'")));
+		EditorSettings->LocalContentStatusIcons.Add(Beam_LocalContentCreated, CreatedIconPath);
+		EditorSettings->LocalContentStatusIcons.Add(Beam_LocalContentDeleted, DeletedIconPath);
+		EditorSettings->LocalContentStatusIcons.Add(Beam_LocalContentModified, ModifiedIconPath);
+		EditorSettings->LocalContentStatusIcons.Add(Beam_LocalContentUpToDate, UpToDateIconPath);
+	}
+
+	// Set up Content Icons
+	if (EditorSettings->LocalContentViewConfigs.IsEmpty())
+	{
+		const auto BeamableColor = FColor::FromHex(TEXT("9176BCFF"));
+		
+		FBeamContentViewConfig ItemConfig;
+		ItemConfig.BorderColor = BeamableColor;
+		ItemConfig.TypeForContentObject = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconBeam_Item.IconBeam_Item'")));
+
+		FBeamContentViewConfig CurrencyConfig;
+		CurrencyConfig.BorderColor = BeamableColor;
+		CurrencyConfig.TypeForContentObject = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconBeam_Currency.IconBeam_Currency'")));
+
+		FBeamContentViewConfig GameTypeConfig;
+		GameTypeConfig.BorderColor = BeamableColor;
+		GameTypeConfig.TypeForContentObject = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconBeam_GameType.IconBeam_GameType'")));		
+
+		EditorSettings->LocalContentViewConfigs.Add(UBeamItemContent::StaticClass(), ItemConfig);
+		EditorSettings->LocalContentViewConfigs.Add(UBeamCurrencyContent::StaticClass(), CurrencyConfig);
+		EditorSettings->LocalContentViewConfigs.Add(UBeamGameTypeContent::StaticClass(), GameTypeConfig);		
+	}
+
+	if (bEditorSettingsChanged)
+	{
 		EditorSettings->SaveConfig(CPF_Config, *EditorSettings->GetDefaultConfigFilename());
 	}
 
@@ -599,10 +644,9 @@ void UBeamEditor::UpdateSignedInUserData_OnGetRealms(const FGetGamesFullResponse
 		// If we only have 1 project (Root PID) associated with this customer, we sign in automatically.				
 		if (Games.Num() > 0)
 		{
-			// We change the editor developer realm automatically to the default Root PID. 
-			const auto Pid = Games[0]->Pid;
+			// We change the editor developer realm automatically to the 2nd child PID (by default, this will be the default realm). 
+			const auto Pid = Games[0]->Children.Val[2];
 			SetActiveTargetRealmUnsafe(FBeamRealmHandle{Cid, Pid});
-
 
 			UserSlots->SetPIDAtSlot(GetMainEditorSlot(), Pid, nullptr);
 

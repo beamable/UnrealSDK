@@ -1,6 +1,6 @@
 ﻿// Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "BEAMPROJSandbox.h"
+#include "BEAMPROJ_Sandbox.h"
 
 #define LOCTEXT_NAMESPACE "FBEAMPROJ_SandboxModule"
 

@@ -206,6 +206,11 @@ void UK2BeamNode_Operation::ExpandNode(FKismetCompilerContext& CompilerContext, 
 	BreakAllNodeLinks();
 }
 
+FName UK2BeamNode_Operation::GetCornerIcon() const
+{
+	return FName("BeamIcon_Operations");
+}
+
 void UK2BeamNode_Operation::EnterBeamFlowModeImpl()
 {
 	EnforceBeamFlowModePins();

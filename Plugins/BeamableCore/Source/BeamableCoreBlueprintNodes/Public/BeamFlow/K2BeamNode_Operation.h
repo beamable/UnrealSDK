@@ -115,6 +115,9 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 
 
 protected:
+
+	virtual FName GetCornerIcon() const override;
+	
 	/**
 	 * @brief The subsystem's GetSelf function name that we can use to call a function on it.
 	 * See default implementation to override it correctly.  

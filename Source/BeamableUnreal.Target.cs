@@ -7,7 +7,7 @@ using System.IO;
 
 public class BeamableUnrealTarget : TargetRules
 {
-	public const string kCurrentBeamProj = kBeamProj_HathoraDemo;
+	public const string kCurrentBeamProj = kBeamProj_Sandbox;
 
 	public BeamableUnrealTarget(TargetInfo Target) : base(Target)
 	{
@@ -121,7 +121,7 @@ public class BeamableUnrealTarget : TargetRules
 	public static void ApplyProjectOverrides(TargetInfo Target, string beamProj)
 	{
 		var overrideFolders = new[] { "Config", ".beamable/content" };
-		
+
 		foreach (var overrideFolder in overrideFolders)
 		{
 			var projRoot = Target.ProjectFile.Directory.ToDirectoryInfo().ToString();
@@ -131,11 +131,11 @@ public class BeamableUnrealTarget : TargetRules
 			{
 				Console.WriteLine($"{beamProj} project does not have Overrides directory for this expected override path. Create one at: {overridesPath}");
 				return;
-			}	
-			
-			if(Directory.Exists(projectPath))
+			}
+
+			if (Directory.Exists(projectPath))
 				Directory.Delete(projectPath, true);
-			
+
 			CopyDirectory(overridesPath, projectPath);
 		}
 
@@ -158,7 +158,7 @@ public class BeamableUnrealTarget : TargetRules
 			foreach (FileInfo file in dir.GetFiles())
 			{
 				string targetFilePath = Path.Combine(destinationDir, file.Name);
-				file.CopyTo(targetFilePath,true);
+				file.CopyTo(targetFilePath, true);
 			}
 
 			foreach (DirectoryInfo subDir in dirs)
@@ -170,25 +170,65 @@ public class BeamableUnrealTarget : TargetRules
 	}
 }
 
-/// BEAMABLE CODE TO COPY PASTE START
+/* BEAMABLE CODE TO COPY PASTE START */
+
+/// <summary>
+/// This is a helper class that contains Beamable-owned code to help you configure the Beamable Modules in your project.
+/// Any change made to this class will requires you, the game-maker, to manually re-add them when updating Beamable SDK versions.   
+/// </summary>
 public static class Beam
 {
+	/// <summary>
+	/// Struct that describes the options for using the OnlineSubsystemBeamable optional Plugin. If you are not using IOnlineSubsystem in your project, you can ignore this.
+	/// </summary>
 	public struct OssConfig
 	{
+		/// <summary>
+		/// Whether or not you are using OnlineSubsystemBeamable as the IOnlineSubsystem for your project.
+		/// </summary>
 		public bool IsEnabled;
+
+		/// <summary>
+		/// Whether or not you want to be able to extend functionality of our implementation of the IOnlineSubsystem.
+		/// </summary>
 		public bool HooksEnabled;
+
+		/// <summary>
+		/// The name of a type inheriting from FOnlineSubsystemBeamable (and living in the `Customer` directory of the OnlineSubsystemBeamable package).
+		/// </summary>
 		public string HookSubsystemImplementation;
+
+		/// <summary>
+		/// The include path of the <see cref="HookSubsystemImplementation"/>, relative to the package root (`Customer/MyCustomizedOnlineSubsystemBeamable.h`).
+		/// </summary>
 		public string HookSubsystemIncludePath;
+
+		/// <summary>
+		/// Any additional Modules you'll like to be added to the `Build.cs` file of the OnlineSubsystemBeamable module.
+		/// The primary case for this is adding third-party SDKs you wish to integrate with Beamable (Discord, Hathora, etc...).
+		/// </summary>
 		public string[] AdditionalHookModules;
 	}
 
 
+	/// <summary>
+	/// This is built by <see cref="Beam.ConfigureGame"/> (and others), so we can pass information down to each of the projects `Build.cs` files through <see cref="TargetRules.AdditionalData"/>.
+	/// See <see cref="Beam.GetOrAddAdditionalData{T}"/> and <see cref="Beam.GetAdditionalData{T}"/>. 
+	/// </summary>
 	public class BeamableAdditionalData
 	{
+		/// <summary>
+		/// Maps to <see cref="OssConfig.AdditionalHookModules"/>.
+		/// </summary>
 		public string[] OssAdditionalModules = Array.Empty<string>();
 	}
 
 
+	/// <summary>
+	/// Call this function in your Editor.Target.cs file (passing in itself) to ensure that your editor Target is correctly set up to compile the Beamable modules.
+	/// </summary>
+	/// <param name="TargetRules">The YourProjectEditor's TargetRules.</param>
+	/// <param name="OssConfig">Your project's <see cref="OssConfig"/>.</param>
 	public static void ConfigureEditor(TargetRules TargetRules, OssConfig OssConfig)
 	{
 		var additionalData = GetOrAddAdditionalData<BeamableAdditionalData>(TargetRules);
@@ -200,6 +240,7 @@ public static class Beam
 			"BeamableCore",
 			"BeamableCoreBlueprintNodes",
 			"BeamableCoreRuntime",
+			"BeamableCoreRuntimeEditor",
 			"BeamableCoreEditor",
 
 			"Json",
@@ -207,6 +248,11 @@ public static class Beam
 		});
 	}
 
+	/// <summary>
+	/// Call this function in your Server.Target.cs file (passing in itself) to ensure that your dedicated server Target is correctly set up to compile the Beamable modules.
+	/// </summary>
+	/// <param name="TargetRules">The YourProjectServer's TargetRules.</param>
+	/// <param name="OssConfig">Your project's <see cref="OssConfig"/>.</param>
 	public static void ConfigureServer(TargetRules TargetRules, OssConfig OssConfig)
 	{
 		var additionalData = GetOrAddAdditionalData<BeamableAdditionalData>(TargetRules);
@@ -223,6 +269,11 @@ public static class Beam
 		});
 	}
 
+	/// <summary>
+	/// Call this function in your .Target.cs file (passing in itself) to ensure that your standalone game client Target is correctly set up to compile the Beamable modules.
+	/// </summary>
+	/// <param name="TargetRules">The YourProject's TargetRules.</param>
+	/// <param name="OssConfig">Your project's <see cref="OssConfig"/>.</param>
 	public static void ConfigureGame(TargetRules TargetRules, OssConfig OssConfig)
 	{
 		var additionalData = GetOrAddAdditionalData<BeamableAdditionalData>(TargetRules);
@@ -233,6 +284,70 @@ public static class Beam
 		{
 			"BeamableCore",
 			"BeamableCoreRuntime",
+
+			"Json",
+			"JsonUtilities",
+		});
+	}
+
+	/// <summary>
+	/// Call this function any non-editor/uncooked-only Module's Build.cs file to add Beamable as a dependency to that module.
+	/// </summary>
+	/// <param name="ModuleRules">The Module's ModuleRules.</param>
+	/// <param name="bIsPrivate">Whether you want this to be a Private/Public dependency.</param>
+	public static void AddRuntimeModuleDependencies(ModuleRules ModuleRules, bool bIsPrivate = false)
+	{
+		var l = bIsPrivate ? ModuleRules.PrivateDependencyModuleNames : ModuleRules.PublicDependencyModuleNames;
+		l.AddRange(new[]
+		{
+			"BeamableCore",
+			"BeamableCoreRuntime",
+
+			"Json",
+			"JsonUtilities",
+		});
+
+		if (ModuleRules.Target.bBuildEditor)
+			l.Add("BeamableCoreRuntimeEditor");
+	}
+
+	/// <summary>
+	/// Call this function any uncooked-only Module's Build.cs file to add Beamable as a dependency to that module.
+	/// </summary>
+	/// <param name="ModuleRules">The Module's ModuleRules.</param>
+	/// <param name="bIsPrivate">Whether you want this to be a Private/Public dependency.</param>
+	public static void AddUncookedOnlyModuleDependencies(ModuleRules ModuleRules, bool bIsPrivate = false)
+	{
+		var l = bIsPrivate ? ModuleRules.PrivateDependencyModuleNames : ModuleRules.PublicDependencyModuleNames;
+		l.AddRange(new[]
+		{
+			"BeamableCore",
+			"BeamableCoreBlueprintNodes",
+			"BeamableCoreRuntime",
+
+			"Json",
+			"JsonUtilities",
+		});
+
+		if (ModuleRules.Target.bBuildEditor)
+			l.Add("BeamableCoreRuntimeEditor");
+	}
+
+	/// <summary>
+	/// Call this function any editor-only Module's Build.cs file to add Beamable as a dependency to that module.
+	/// </summary>
+	/// <param name="ModuleRules">The Module's ModuleRules.</param>
+	/// <param name="bIsPrivate">Whether you want this to be a Private/Public dependency.</param>
+	public static void AddEditorModuleDependencies(ModuleRules ModuleRules, bool bIsPrivate = false)
+	{
+		var l = bIsPrivate ? ModuleRules.PrivateDependencyModuleNames : ModuleRules.PublicDependencyModuleNames;
+		l.AddRange(new[]
+		{
+			"BeamableCore",
+			"BeamableCoreBlueprintNodes",
+			"BeamableCoreRuntime",
+			"BeamableCoreRuntimeEditor",
+			"BeamableCoreEditor",
 
 			"Json",
 			"JsonUtilities",
@@ -314,9 +429,13 @@ public static class Beam
 		}
 	}
 
+	/// <summary>
+	/// Adds some defines that might be generally useful.
+	/// </summary>
 	private static void AddUtilityMacros(TargetRules TargetRules)
 	{
 		TargetRules.ProjectDefinitions.Add("BEAM_STRINGIFY(X)=#X");
 	}
 }
-/// BEAMABLE CODE TO COPY PASTE END
+
+/* BEAMABLE CODE TO COPY PASTE END */

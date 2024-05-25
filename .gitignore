@@ -85,3 +85,4 @@ Builds/**
 # Folders are kept in-sync via BEAMPROJ Overrides
 Config/**/*
 .beamable/content/**/*
+Docs/.obsidian/**/*

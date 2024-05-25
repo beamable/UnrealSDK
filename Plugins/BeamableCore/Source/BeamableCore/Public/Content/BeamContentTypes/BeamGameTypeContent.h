@@ -25,7 +25,7 @@ enum class EBeamStatCompareOperation
 };
 
 UCLASS(BlueprintType, DefaultToInstanced, EditInlineNew)
-class UBeamStatComparisonRule : public UObject, public IBeamJsonSerializableUObject
+class BEAMABLECORE_API UBeamStatComparisonRule : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
@@ -82,7 +82,7 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FBeamMatchmakingTeamsRule : public FBeamJsonSerializableUStruct
+struct BEAMABLECORE_API FBeamMatchmakingTeamsRule : public FBeamJsonSerializableUStruct
 {
 	GENERATED_BODY()
 
@@ -118,7 +118,7 @@ struct FBeamMatchmakingTeamsRule : public FBeamJsonSerializableUStruct
 };
 
 USTRUCT(BlueprintType)
-struct FBeamMatchmakingNumericRule : public FBeamJsonSerializableUStruct
+struct BEAMABLECORE_API FBeamMatchmakingNumericRule : public FBeamJsonSerializableUStruct
 {
 	GENERATED_BODY()
 
@@ -154,7 +154,7 @@ struct FBeamMatchmakingNumericRule : public FBeamJsonSerializableUStruct
 };
 
 USTRUCT(BlueprintType)
-struct FBeamMatchmakingStringRule : public FBeamJsonSerializableUStruct
+struct BEAMABLECORE_API FBeamMatchmakingStringRule : public FBeamJsonSerializableUStruct
 {
 	GENERATED_BODY()
 
@@ -187,7 +187,7 @@ struct FBeamMatchmakingStringRule : public FBeamJsonSerializableUStruct
 // Has Native Make/Break require static blueprint pure functions to present as nodes that
 // don't require an execution pin connection. This is super relevant for Blueprint UX. 
 USTRUCT(BlueprintType, meta=(BeamOptionalType="UBeamStatComparisonRule*"))
-struct FOptionalBeamStatComparisonRule : public FBeamOptional
+struct BEAMABLECORE_API FOptionalBeamStatComparisonRule : public FBeamOptional
 {
 	GENERATED_BODY()
 
@@ -226,7 +226,7 @@ inline void FOptionalBeamStatComparisonRule::Set(const void* Data)
  * 
  */
 UCLASS()
-class BEAMABLECORERUNTIME_API UBeamGameTypeContent : public UBeamContentObject
+class BEAMABLECORE_API UBeamGameTypeContent : public UBeamContentObject
 {
 	GENERATED_BODY()
 

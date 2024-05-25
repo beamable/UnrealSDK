@@ -43,14 +43,23 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.mark
   - attr_list
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
 
 plugins:
    - glightbox
 
 nav:  
   - Use Guide: 
-    - Intro: 'Use Guide/Unreal SDK - Intro.md'
+    - Getting Started: 'Use Guide/Unreal SDK - Intro.md'
+    - Runtime Concepts: 'Use Guide/Unreal SDK - Runtime Concepts.md'
+    - Dedicated Servers: 'Use Guide/Unreal SDK - Dedicated Servers.md'
     - Content: 'Use Guide/Unreal SDK - Content.md'
+    - Microservices: 'Use Guide/Unreal SDK - Microservices.md'
+  - Samples:
+    - Samples Intro: 'Samples/Unreal SDK - Samples Intro'
+    - Hathora Demo: 'Samples/Unreal SDK - Hathora Demo'
   - SDK Development Guide: 'SDK Development Guide/OAPI Code Gen.md'
 
 copyright: |
