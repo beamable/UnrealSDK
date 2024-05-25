@@ -18,7 +18,7 @@ class BEAMABLEUNREALEDITOR_API UBeamProjSyncSubsystem : public UBeamEditorSubsys
 {
 	GENERATED_BODY()
 
-	inline static TArray<FString> OverridenDirectories = {TEXT("Config"), TEXT("./beamable/content")};
+	inline static TArray<FString> OverridenDirectories = {TEXT("Config"), TEXT(".beamable/content")};
 	inline static TArray<FDelegateHandle> OverridenDirectoriesHandlers = {{}, {}};
 
 

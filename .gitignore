@@ -84,4 +84,4 @@ Builds/**
 
 # Folders are kept in-sync via BEAMPROJ Overrides
 Config/**/*
-.beamable/content
+.beamable/content/**/*
