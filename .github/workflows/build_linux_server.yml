@@ -1,11 +1,13 @@
-name: Linux Server build
+name: Linux Server Build - Template
 
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - dev
-      - main
+on:  
+  workflow_call:
+    inputs:
+      beamProj:
+        description: 'The BEAMPROJ we are building. Ie: BEAMPROJ_Sandbox or BEAMPROJ_HathoraDemo.'
+        required: true
+        default: 'BEAMPROJ_Sandbox'
+        type: string
 
 permissions:
   contents: write
@@ -18,10 +20,15 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
+      - name: Prepare Repository for compilation
+        run: bash init_repo.sh
+      - name: Set BeamProjOverride.txt
+        run: |
+          echo ${{ inputs.beamProj }} > BeamProjOverride.txt |
+          cat BeamProjOverride.txt
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      -
-        name: Login to GitHub Container Registry
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
