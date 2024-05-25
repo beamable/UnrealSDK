@@ -21,3 +21,6 @@ jobs:
     uses: Beamable/UnrealSDK/.github/workflows/build_linux_server.yml@dev
     with:
       beamProj: BEAMPROJ_HathoraDemo
+    secrets:
+      GHCR_ACTOR: ${{ secrets.GHCR_ACTOR }}
+      GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}      

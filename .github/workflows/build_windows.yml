@@ -1,4 +1,4 @@
-name: Windows build
+name: Windows Client Build - Template
 
 on:
   workflow_dispatch:
@@ -6,6 +6,13 @@ on:
     branches:
       - dev
       - main
+  workflow_call:
+    inputs:
+      beamProj:
+        description: 'The BEAMPROJ we are building. Ie: BEAMPROJ_Sandbox or BEAMPROJ_HathoraDemo.'
+        required: true
+        default: 'BEAMPROJ_Sandbox'
+        type: string
 
 permissions:
   contents: write
@@ -20,6 +27,10 @@ jobs:
       - run: git clean -fdx
       - name: Prepare Repository for Compilation
         run: bash init_repo.sh
+      - name: Set BeamProjOverride.txt
+        run: |
+          echo ${{ inputs.beamProj }} > BeamProjOverride.txt |
+          cat BeamProjOverride.txt
       - name: Build image
         run: .\windows_build_project.ps1
       - name: Compress Directory

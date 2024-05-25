@@ -8,7 +8,12 @@ on:
         required: true
         default: 'BEAMPROJ_Sandbox'
         type: string
-
+    secrets:
+      GHCR_ACTOR:
+        required: true
+      GHCR_TOKEN:
+        required: true
+      
 permissions:
   contents: write
 

@@ -1,12 +1,16 @@
-name: Docs deploy
+name: Docs - Deploy
 
 on:
   push:
     branches:
       - dev
       - main
+    paths:
+      - Docs/**
+
 permissions:
   contents: write
+  
 jobs:
   deploy:
     runs-on: ubuntu-latest
