@@ -52,7 +52,7 @@ public class BeamableUnrealTarget : TargetRules
 	{
 		if (beamProj == kBeamProj_Sandbox)
 		{
-			var oss = new BeamableModuleUtils.OssConfig()
+			var oss = new Beam.OssConfig()
 			{
 				IsEnabled = false,
 
@@ -65,15 +65,15 @@ public class BeamableUnrealTarget : TargetRules
 
 			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)
 			{
-				BeamableModuleUtils.ConfigureGame(TargetRules, oss);
+				Beam.ConfigureGame(TargetRules, oss);
 			}
 			else if (TargetRules.Type == UnrealBuildTool.TargetType.Editor)
 			{
-				BeamableModuleUtils.ConfigureEditor(TargetRules, oss);
+				Beam.ConfigureEditor(TargetRules, oss);
 			}
 			else if (TargetRules.Type == UnrealBuildTool.TargetType.Server)
 			{
-				BeamableModuleUtils.ConfigureServer(TargetRules, oss);
+				Beam.ConfigureServer(TargetRules, oss);
 			}
 			else
 			{
@@ -88,7 +88,7 @@ public class BeamableUnrealTarget : TargetRules
 	{
 		if (beamProj == kBeamProj_HathoraDemo)
 		{
-			var oss = new BeamableModuleUtils.OssConfig()
+			var oss = new Beam.OssConfig()
 			{
 				IsEnabled = true,
 
@@ -101,15 +101,15 @@ public class BeamableUnrealTarget : TargetRules
 
 			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)
 			{
-				BeamableModuleUtils.ConfigureGame(TargetRules, oss);
+				Beam.ConfigureGame(TargetRules, oss);
 			}
 			else if (TargetRules.Type == UnrealBuildTool.TargetType.Editor)
 			{
-				BeamableModuleUtils.ConfigureEditor(TargetRules, oss);
+				Beam.ConfigureEditor(TargetRules, oss);
 			}
 			else if (TargetRules.Type == UnrealBuildTool.TargetType.Server)
 			{
-				BeamableModuleUtils.ConfigureServer(TargetRules, oss);
+				Beam.ConfigureServer(TargetRules, oss);
 			}
 			else
 			{
@@ -120,15 +120,24 @@ public class BeamableUnrealTarget : TargetRules
 
 	public static void ApplyProjectOverrides(TargetInfo Target, string beamProj)
 	{
-		var projectPath = Target.ProjectFile.Directory.ToDirectoryInfo().ToString();
-		var overrides = Path.Combine(projectPath, "Templates", "BeamProjOverrides", beamProj);
-		if (!Directory.Exists(overrides))
+		var overrideFolders = new[] { "Config", ".beamable/content" };
+		
+		foreach (var overrideFolder in overrideFolders)
 		{
-			Console.WriteLine($"{beamProj} project does not have directory in BeamProjOverrides. Create one at: {overrides}");
-			return;
-		}	
-		CopyDirectory(overrides, projectPath);
-
+			var projRoot = Target.ProjectFile.Directory.ToDirectoryInfo().ToString();
+			var projectPath = Path.Combine(projRoot, overrideFolder);
+			var overridesPath = Path.Combine(projRoot, "Plugins", beamProj, "Overrides", overrideFolder);
+			if (!Directory.Exists(overridesPath))
+			{
+				Console.WriteLine($"{beamProj} project does not have Overrides directory for this expected override path. Create one at: {overridesPath}");
+				return;
+			}	
+			
+			if(Directory.Exists(projectPath))
+				Directory.Delete(projectPath, true);
+			
+			CopyDirectory(overridesPath, projectPath);
+		}
 
 		static void CopyDirectory(string sourceDir, string destinationDir)
 		{
@@ -162,7 +171,7 @@ public class BeamableUnrealTarget : TargetRules
 }
 
 /// BEAMABLE CODE TO COPY PASTE START
-public static class BeamableModuleUtils
+public static class Beam
 {
 	public struct OssConfig
 	{

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class FBEAMPROJSandboxModule : public IModuleInterface
+class FBEAMPROJ_SandboxModule : public IModuleInterface
 {
 public:
 

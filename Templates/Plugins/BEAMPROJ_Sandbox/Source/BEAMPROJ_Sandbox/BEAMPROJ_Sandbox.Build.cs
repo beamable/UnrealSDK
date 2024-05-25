@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class BEAMPROJSandbox : ModuleRules
+public class BEAMPROJ_Sandbox : ModuleRules
 {
-	public BEAMPROJSandbox(ReadOnlyTargetRules Target) : base(Target)
+	public BEAMPROJ_Sandbox(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 

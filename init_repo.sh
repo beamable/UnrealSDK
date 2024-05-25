@@ -15,11 +15,3 @@ TEMPLATE_SANDBOX_PATH="$(pwd)/Templates/Plugins/$SANDBOX_PROJ_NAME"
 
 mkdir -p "$PLUGIN_SANDBOX_PATH"
 cp -r "$TEMPLATE_SANDBOX_PATH"/* "$PLUGIN_SANDBOX_PATH"
-
-
-# Copy the BuildConfiguration.xml into the saved directory so that we correctly generate intellisense data with rider
-BUILD_CONFIG_PATH="$(pwd)/Saved/UnrealBuildTool"
-TEMPLATE_BUILD_CONFIG_PATH="$(pwd)/Templates/Saved/UnrealBuildTool"
-
-mkdir -p "$BUILD_CONFIG_PATH"
-cp -r "$TEMPLATE_BUILD_CONFIG_PATH"/* "$BUILD_CONFIG_PATH"

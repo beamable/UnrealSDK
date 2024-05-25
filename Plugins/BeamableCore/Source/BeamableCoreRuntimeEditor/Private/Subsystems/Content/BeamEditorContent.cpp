@@ -469,6 +469,8 @@ bool UBeamEditorContent::SaveContentObject(const FBeamContentManifestId& Manifes
 	// Just save the properties json blob into the .beamable/content path 
 	if (FFileHelper::SaveStringToFile(PropertiesJsonContent, *GetJsonBlobPath(Id, ManifestId)))
 	{
+		// Trigger a callback saying that a piece of content was modified
+		if (OnContentSaved.IsBound()) OnContentSaved.Broadcast(ManifestId, Id);
 		return true;
 	}
 	return false;
@@ -482,11 +484,11 @@ bool UBeamEditorContent::DeleteContentObject(const FBeamContentManifestId& Manif
 		return true;
 
 	LoadedContentObjects.Remove(Id);
-	if(auto ManifestPtr = LocalManifestCache.Find(ManifestId))
+	if (auto ManifestPtr = LocalManifestCache.Find(ManifestId))
 	{
 		auto Manifest = *ManifestPtr;
-		Manifest->Entries.RemoveAll([Id](ULocalContentManifestEntryStreamData* Entry){ return FBeamContentId{Entry->FullId} == Id; });
-	}	
+		Manifest->Entries.RemoveAll([Id](ULocalContentManifestEntryStreamData* Entry) { return FBeamContentId{Entry->FullId} == Id; });
+	}
 
 	ErrMsg = FString::Format(TEXT("Failed to save the content object {0}"), {Id.AsString});
 	UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);

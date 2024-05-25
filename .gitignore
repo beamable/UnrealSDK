@@ -80,3 +80,8 @@ ArchivedBuilds
 
 Plugins/BEAMPROJ_Sandbox/*
 BeamableSource/
+Builds/**
+
+# Folders are kept in-sync via BEAMPROJ Overrides
+Config/**/*
+.beamable/content

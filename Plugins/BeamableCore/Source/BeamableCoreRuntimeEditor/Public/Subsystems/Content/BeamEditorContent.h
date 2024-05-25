@@ -23,6 +23,7 @@
 
 class IDataTableEditor;
 
+DECLARE_MULTICAST_DELEGATE_TwoParams(FBeamContentModified, FBeamContentManifestId, FBeamContentId);
 
 /**
  * 
@@ -78,6 +79,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TMap<FString, UClass*> ContentTypeStringToContentClass;
 
+	/**
+	 * This is invoked whenever a content is saved. 
+	 */
+	FBeamContentModified OnContentSaved;
 
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;

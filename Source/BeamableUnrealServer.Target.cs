@@ -27,6 +27,6 @@ public class BeamableUnrealServerTarget : TargetRules
 		Console.WriteLine($"Configuring server project as beamproj={samplePluginName}.");
 		BeamableUnrealTarget.ConfigureIfSandbox(this, samplePluginName);
 		BeamableUnrealTarget.ConfigureIfHathoraDemo(this, samplePluginName);
-		
+		BeamableUnrealTarget.ApplyProjectOverrides(Target, samplePluginName);
 	}
 }

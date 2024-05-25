@@ -88,7 +88,7 @@ public partial class OnlineSubsystemBeamable : ModuleRules
 		}
 
 
-		var additionalData = Target.GetAdditionalData<BeamableModuleUtils.BeamableAdditionalData>();
+		var additionalData = Target.GetAdditionalData<Beam.BeamableAdditionalData>();
 		PublicDependencyModuleNames.AddRange(additionalData.OssAdditionalModules);
 		CustomerExtension(Target);
 	}

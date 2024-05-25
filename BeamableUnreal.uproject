@@ -13,6 +13,11 @@
 			"Name": "BeamableUnrealBlueprintNodes",
 			"Type": "UncookedOnly",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "BeamableUnrealEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
