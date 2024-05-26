@@ -29,8 +29,7 @@ jobs:
         with:
          dotnet-version: 8.x            
       - name: Prepare Repository for compilation
-        run: |
-          . init_repo.sh
+        run: bash init_repo.sh
       - name: Set BeamProjOverride.txt
         run: |
           echo ${{ inputs.beamProj }} > BeamProjOverride.txt |

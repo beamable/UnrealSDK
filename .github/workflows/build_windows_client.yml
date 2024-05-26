@@ -24,8 +24,7 @@ jobs:
           dotnet-version: 8.x
       - run: git clean -fdx
       - name: Prepare Repository for Compilation
-        run: |
-          . init_repo.sh
+        run: bash init_repo.sh
       - name: Set BeamProjOverride.txt
         run: |
           echo ${{ inputs.beamProj }} > BeamProjOverride.txt |
