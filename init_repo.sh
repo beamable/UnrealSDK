@@ -38,15 +38,16 @@ fi
 
 # Check if the beam CLI is installed globally
 if ! command -v beam >/dev/null 2>&1; then
-    echo "Beamable CLI is not installed globally. Run the set-packages.sh script OR `dotnet tool install Beamable.Tools --global`."
-    exit 1
+    dotnet tool install Beamable.Tools --global    
 fi
 
+# Create a microservice
 if [ ! -d "Microservices/services/MSPlayground" ]; then
     echo "Creating MSPlayground microservice for local development."
     beam project new service MSPlayground --sln "Microservices/Microservices.sln"
 fi
 
+# Create a microstorage
 if [ ! -d "Microservices/services/DBPlayground" ]; then
     echo "Creating DBPlayground storage for local development."
     beam project new storage DBPlayground --sln "Microservices/Microservices.sln" --link-to MSPlayground

@@ -25,6 +25,10 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
+      - uses: actions/setup-dotnet@v4
+        with:
+         dotnet-version: 6.x
+         cache: true         
       - name: Prepare Repository for compilation
         run: bash init_repo.sh
       - name: Set BeamProjOverride.txt
