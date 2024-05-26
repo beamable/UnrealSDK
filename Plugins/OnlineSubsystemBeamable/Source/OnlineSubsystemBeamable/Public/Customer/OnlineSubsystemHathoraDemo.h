@@ -29,19 +29,20 @@ public:
 		const bool bDidRunCorrectly = FOnlineSubsystemBeamable::Init();
 
 		const auto Sessios = static_cast<FOnlineSessionBeamable*>(GetSessionInterface().Get());
-		Sessios->StartMatchmakingHooks.Add(FPreStartMatchmakingHook::CreateLambda([this](const TArray<FUniqueNetIdRef>& LocalPlayers, FName SessionName, const FOnlineSessionSettings& NewSessionSettings, TSharedRef<FOnlineSessionSearch>& SearchSettings)
-		{
-			// log hook started
-			UE_LOG(LogTemp, Display, TEXT("StartMatchmakingHook started"));
+		Sessios->StartMatchmakingHooks.Add(FPreStartMatchmakingHook::CreateLambda(
+			[this](const TArray<FUniqueNetIdRef>& LocalPlayers, FName SessionName, const FOnlineSessionSettings& NewSessionSettings, TSharedRef<FOnlineSessionSearch>& SearchSettings)
+			{
+				// log hook started
+				UE_LOG(LogTemp, Display, TEXT("StartMatchmakingHook started"));
 
-			auto PlayerAccount = GetAccountForId(*LocalPlayers[0]);
-			auto UserSlot = PlayerAccount->CurrentSlot;
+				auto PlayerAccount = GetAccountForId(*LocalPlayers[0]);
+				auto UserSlot = PlayerAccount->CurrentSlot;
 
-			bool IsHathoraSDKLoaded = FModuleManager::Get().IsModuleLoaded("HathoraSDK");
-			if (IsHathoraSDKLoaded) return HathoraPingsOperation(UserSlot);
+				bool IsHathoraSDKLoaded = FModuleManager::Get().IsModuleLoaded("HathoraSDK");
+				if (IsHathoraSDKLoaded) return HathoraPingsOperation(UserSlot);
 
-			return GetRequestTracker()->CPP_BeginSuccessfulOperation({UserSlot}, this->GetInstanceName().ToString(), FString(""), {});
-		}));
+				return GetRequestTracker()->CPP_BeginSuccessfulOperation({UserSlot}, this->GetInstanceName().ToString(), FString(""), {});
+			}));
 
 		Sessios->PreCreateSessionHooks.Add(FPreCreatedSessionHook::CreateLambda([this](const FUniqueNetId& LocalPlayerId, FName SessionName, const FOnlineSessionSettings& SelectedSession)
 		{
@@ -80,7 +81,7 @@ public:
 		{
 			// log hook started
 			UE_LOG(LogTemp, Display, TEXT("Ping Search Hooks started"));
-			
+
 			// If there's no Hathora SDK, we fail this operation.
 			if (!FModuleManager::Get().IsModuleLoaded("HathoraSDK"))
 				return GetRequestTracker()->CPP_BeginErrorOperation({}, this->GetInstanceName().ToString(), FString("NO_PINGS_FOUND"), {});
@@ -90,7 +91,7 @@ public:
 			{
 				if (Result.Pings.Num() > 0)
 				{
-					FOnlineSessionSearchResult Results;					
+					FOnlineSessionSearchResult Results;
 					GetRequestTracker()->TriggerOperationSuccess(Op, FString(""));
 				}
 				else
@@ -100,49 +101,8 @@ public:
 			}));
 
 			return Op;
-		}));
-
-		// const auto Identity = static_cast<FOnlineIdentityBeamable*>(GetIdentityInterface().Get());
-		// Identity->OnBeamableUserReadyHook.Add(FOnBeamableReadyIdentityHook::CreateLambda([this](FUserSlot UserSlot, TSharedPtr<FUserOnlineAccountBeamable> Account)
-		// {
-		// 	// ensure player has all the things a new player should have
-		//
-		// 	const auto Op = GetRequestTracker()->CPP_BeginOperation({UserSlot}, this->GetInstanceName().ToString(), {});
-		// 	const auto TimelessMsApi = GEngine->GetEngineSubsystem<UBeamTimelessMsApi>();		
-		// UTimelessMsOnPostLoginRequest* Req = UTimelessMsOnPostLoginRequest::Make(GetTransientPackage(), {});
-		// 	const auto Handler = FOnTimelessMsOnPostLoginFullResponse::CreateLambda([this, Op](FTimelessMsOnPostLoginFullResponse Resp)
-		// 	{
-		// 		// If we are invoking this before retrying, we just don't do anything 
-		// 		if (Resp.State == RS_Retrying) return;
-		//
-		// 		if (Resp.State != RS_Success)
-		// 		{
-		// 			GetRequestTracker()->TriggerOperationError(Op, Resp.ErrorData.message);
-		// 			return;
-		// 		}
-		//
-		// 		if (!Resp.SuccessData->bSuccess)
-		// 		{
-		// 			// log error messge
-		// 			UE_LOG(LogTemp, Error, TEXT("POST_LOGIN failed: %s"), *Resp.SuccessData->ErrorMessage);
-		// 		}
-		// 		else
-		// 		{
-		// 			UE_LOG(LogTemp, Warning, TEXT("POST_LOGIN success: %s"), *Resp.SuccessData->ErrorMessage);
-		// 		}
-		//
-		// 		GetRequestTracker()->TriggerOperationSuccess(Op, FString("POST_LOGIN"));
-		// 	});
-		// 	FBeamRequestContext Ctx;
-		// 	TimelessMsApi->CPP_OnPostLogin(UserSlot, Req, Handler, Ctx, Op, GetGameInstance());
-		// 	return Op;
-		// }));
-		//
-		// Identity->OnBeamableUserReadyHook.Add(FOnBeamableReadyIdentityHook::CreateLambda([this](FUserSlot UserSlot, TSharedPtr<FUserOnlineAccountBeamable> Account)
-		// {
-		// 	return GetRequestTracker()->CPP_BeginSuccessfulOperation({}, this->GetInstanceName().ToString(), FString(""), {});
-		// }));
-
+		}));		
+		
 		return true;
 	}
 };
