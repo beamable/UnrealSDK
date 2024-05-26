@@ -25,14 +25,12 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
-      - run: |
-          mkdir --parents $HOME/.dotnet/tools
-          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
       - uses: actions/setup-dotnet@v4
         with:
          dotnet-version: 8.x            
       - name: Prepare Repository for compilation
-        run: bash init_repo.sh
+        run: |
+          . init_repo.sh
       - name: Set BeamProjOverride.txt
         run: |
           echo ${{ inputs.beamProj }} > BeamProjOverride.txt |
