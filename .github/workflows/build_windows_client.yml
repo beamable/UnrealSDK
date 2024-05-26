@@ -21,8 +21,7 @@ jobs:
           lfs: true
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 6.x
-          cache: true
+          dotnet-version: 6.x          
       - run: git clean -fdx
       - name: Prepare Repository for Compilation
         run: bash init_repo.sh
