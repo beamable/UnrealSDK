@@ -8,7 +8,8 @@ on:
       - main
     paths:
       - '**.sh'
-      - '.github/**HathoraDemo.yml'
+      - '.github/build_windows_client.yml'
+      - '.github/build_windows_client_BEAMPROJ_HathoraDemo.yml'
       - 'Source/**'      
       - 'Plugins/BEAMPROJ_HathoraDemo/**'
       - 'Plugins/BeamableCore/**'
