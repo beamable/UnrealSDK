@@ -21,31 +21,48 @@ jobs:
   deploy:
     runs-on: unreal-builder
     steps:
+      # Gets the repo
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           lfs: true
+     
+      # Installs .NET 8 so we can run init_repo.sh
       - uses: actions/setup-dotnet@v4
         with:
          dotnet-version: 8.x            
+      
+      # Run init_repo.sh (needed to setup the project correctly locally)     
       - name: Prepare Repository for compilation
         run: bash init_repo.sh
+      
+      # Sets the BEAMPROJ based on the input to this workflow.      
       - name: Set BeamProjOverride.txt
         run: |
           echo ${{ inputs.beamProj }} > BeamProjOverride.txt |
           cat BeamProjOverride.txt
+      
+      # Set up Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
+      
+      # Login to GitHub docker registry
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ secrets.GHCR_ACTOR }}
           password: ${{ secrets.GHCR_TOKEN }}
-      - name: Pull base image
+      
+      # Pull the base image and build the project
+      - name: Pull base image and build
         run: bash docker_build.sh server
+      
+      # Compress the results      
       - name: Compress Directory
         run: tar cvzf linux_server.tar.gz PackagedProject/LinuxServer
+      
+      # Uploads the artifacts so we can download the build      
       - name: Upload Compressed Folder as Artifact
         uses: actions/upload-artifact@v4
         with:
