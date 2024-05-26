@@ -5,6 +5,7 @@ To look at any given sample, you need to:
 1. Change the contents of the `BeamProjOverride.txt` file to match the `BEAMPROJ_Plugin` of your choice. For example, `BEAMPROJ_HathoraDemo` would configure the repository as the Hathora Demo sample.
 2. Generate Project Files.
 3. Open the solution and do a clean build.
+4. Open `Project Settings -> Beamable Core -> Beamable Environment` and set it to `BeamProdEnv`,
 
 Instructions for seeing each sample can be found in their respective sample docs.
 
