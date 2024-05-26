@@ -19,9 +19,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           lfs: true
+      - run: |
+          mkdir --parents $HOME/.dotnet/tools
+          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.x          
+          dotnet-version: 8.x
       - run: git clean -fdx
       - name: Prepare Repository for Compilation
         run: bash init_repo.sh

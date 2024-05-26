@@ -8,9 +8,7 @@ on:
       - main
     paths:
       - '**.sh'
-      - 'Source/**'
-      - '.github/build_linux_server.yml'
-      - '.github/build_linux_server_BEAMPROJ_HathoraDemo.yml'
+      - 'Source/**'      
       - 'Plugins/BEAMPROJ_HathoraDemo/**'
       - 'Plugins/BeamableCore/**'
       - 'Plugins/OnlineSubsystemBeamable/**'
