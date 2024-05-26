@@ -61,8 +61,8 @@ nav:
     - Operations & Waits: 'Use Guide/Unreal SDK - Operations & Waits.md'
     - Dedicated Servers: 'Use Guide/Unreal SDK - Dedicated Servers.md'
     - Feature Guides:
-      - Content: 'Use Guide/Unreal SDK - Content.md'
-      - Microservices: 'Use Guide/Unreal SDK - Microservices.md'
+      - Content: 'Feature Guides/Unreal SDK - Content.md'
+      - Microservices: 'Feature Guides/Unreal SDK - Microservices.md'
   - Samples:
     - Samples Intro: 'Samples/Unreal SDK - Samples Intro'
     - Hathora Demo: 'Samples/Unreal SDK - Hathora Demo'
