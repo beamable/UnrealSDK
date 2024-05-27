@@ -21,7 +21,8 @@ public class BEAMPROJ_HathoraDemo : ModuleRules
 				// and make your own UBeamLevelSubsystem-equivalent.
 				"BeamableCoreRuntime",
 				
-				"OnlineSubsystem", 
+				"OnlineSubsystem",
+				"OnlineSubsystemUtils",
 				"OnlineSubsystemBeamable",
 				
 				"HathoraSDK"

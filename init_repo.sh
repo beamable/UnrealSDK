@@ -38,7 +38,7 @@ fi
 
 # Check if the beam CLI is installed globally
 if ! command -v beam >/dev/null 2>&1; then
-    dotnet tool install Beamable.Tools --global    
+    dotnet tool install Beamable.Tools --global --version 2.0.0   
 fi
 
 # Create a microservice

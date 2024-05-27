@@ -13,9 +13,11 @@
 #include "Interfaces/OnlineStatsInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Online/OnlineSessionNames.h"
+#include "OnlineSubsystemUtils.h"
 
 #include "Runtime/BeamLevelSubsystem.h"
 #include "Runtime/BeamRuntime.h"
+#include "Runtime/CoreOnline/Private/Online/CoreOnlinePrivate.h"
 
 #include "HathoraDemoMainMenu.generated.h"
 
@@ -100,7 +102,7 @@ protected:
 			UE_LOG(LogTemp, Warning, TEXT("Initializing after beamable started"));
 
 			// Initialize Beamable's OnlineSubsystem
-			OnlineSubsystem = IOnlineSubsystem::Get("BEAMABLE");
+			OnlineSubsystem = Online::GetSubsystem(GetWorld(),"BEAMABLE");			
 			BeamOSS::InitializeOnlineSubsystemBeamable(OnlineSubsystem, GI);
 
 			IdentityInterface = OnlineSubsystem->GetIdentityInterface();

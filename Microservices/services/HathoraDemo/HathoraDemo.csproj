@@ -5,6 +5,8 @@
         <BeamableTool>$(BEAM_PATH)</BeamableTool>
         <BeamableTool Condition="'$(BeamableTool)' == ''">beam</BeamableTool>
 
+        <!-- All Microservices must have the value, "service" -->
+        <BeamProjectType>service</BeamProjectType>
 
         <!-- When "true", this will auto-generate client code to any linked unity projects -->
         <GenerateClientCode>true</GenerateClientCode>
@@ -90,9 +92,6 @@
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22114.*"/>
         <PackageReference Include="System.ServiceModel.Primitives" Version="4.9.*"/>
         <PackageReference Include="System.Threading.RateLimiting" Version="7.0.0"/>
-    </ItemGroup>
-    <ItemGroup>
-        <ProjectReference Include="..\HathoraDemoCommon\HathoraDemoCommon.csproj"/>
     </ItemGroup>
 
 </Project>

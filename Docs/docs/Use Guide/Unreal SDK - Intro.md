@@ -13,8 +13,7 @@ Start by getting our repo, then installing .NET and Docker Dekstop.
  1. Clone [UnrealSDK](https://github.com/beamable/UnrealSDK) repo (make sure you have `git-lfs` installed).
  2. Check out the `latest` (or your preferred version) tagged release.
  3. Run the `init_repo.sh` script.
- 4. Run the `beam_init_game_maker.sh` script.
- 5. Generating Project Files.
+ 4. Generating Project Files.
 
 Next up, install our dependencies.
 

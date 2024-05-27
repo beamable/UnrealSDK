@@ -63,9 +63,9 @@ nav:
     - Feature Guides:
       - Content: 'Feature Guides/Unreal SDK - Content.md'
       - Microservices: 'Feature Guides/Unreal SDK - Microservices.md'
-  - Samples:
-    - Samples Intro: 'Samples/Unreal SDK - Samples Intro'
-    - Hathora Demo: 'Samples/Unreal SDK - Hathora Demo'
+  - Samples: 
+    - Samples Intro: 'Samples/Unreal SDK - Samples Intro.md'
+    - Hathora Demo: 'Samples/Unreal SDK - Hathora Demo.md'
   - SDK Development Guide: 'SDK Development Guide/OAPI Code Gen.md'
 
 copyright: |
