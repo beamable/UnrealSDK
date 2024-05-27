@@ -120,8 +120,7 @@ class BEAMPROJ_HATHORADEMO_API AFirstPersonMapGameMode : public AGameModeBase
 		UE_LOG(LogTemp, Log, TEXT("AFirstPersonMapGameMode::OnBeamableStarted -- Beamable Started"));
 		LobbySubsystem = GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>();
 		StatsSubsystem = GetGameInstance()->GetSubsystem<UBeamStatsSubsystem>();
-		StatsSubsystem->OnStatsUpdatedCode.AddUObject(this, &ThisClass::OnStatsUpdated);
-
+		
 		const auto ProcessId = FPlatformMisc::GetEnvironmentVariable(TEXT("HATHORA_PROCESS_ID"));
 		UE_LOG(LogTemp, Log, TEXT("AFirstPersonMapGameMode::OnBeamableLoginOperationComplete -- Pid: %s"), *ProcessId);
 
@@ -176,13 +175,6 @@ class BEAMPROJ_HATHORADEMO_API AFirstPersonMapGameMode : public AGameModeBase
 		{
 			UE_LOG(LogTemp, Log, TEXT("AFirstPersonMapGameMode::OnGetRoomsForProcessCompleted -- No active rooms found"));			
 		}
-	}
-
-
-	void OnStatsUpdated(FBeamStatsUpdatedEvent Event)
-	{
-		// log OnStatsUpdated
-		UE_LOG(LogTemp, Log, TEXT("AFirstPersonMapGameMode::OnStatsUpdated -- StatsUpdatedEvent: %s"), *Event.GamerTag.AsString);
 	}
 
 

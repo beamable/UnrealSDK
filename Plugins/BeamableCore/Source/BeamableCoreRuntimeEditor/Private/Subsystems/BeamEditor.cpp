@@ -647,7 +647,7 @@ void UBeamEditor::UpdateSignedInUserData_OnGetRealms(const FGetGamesFullResponse
 		if (Games.Num() > 0)
 		{
 			// We change the editor developer realm automatically to the 2nd child PID (by default, this will be the default realm). 
-			const auto Pid = Games[0]->Children.Val[2];
+			const auto Pid = Games[0]->Pid;
 			SetActiveTargetRealmUnsafe(FBeamRealmHandle{Cid, Pid});
 
 			UserSlots->SetPIDAtSlot(GetMainEditorSlot(), Pid, nullptr);

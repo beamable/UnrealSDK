@@ -30,7 +30,7 @@ Since this sample requires several resources, we do not host it ourselves. So, i
 4. Open the `Content Window` -- verify that there are two `game_types`: `solo_queue` and `training`.
 5. Hit `Publish` and wait. Go to the Portal (`Operate -> Content`) and verify that the content is there.
 6. Open a bash terminal at the `BeamableUnreal` root directory.
-7. Make sure Docker is running and then run `dotnet beam services deploy` in that directory to get the microservices to your `hathora-demo` realm.
+7. Make sure Docker is running and then run `beam services deploy` in that directory to get the microservices to your `hathora-demo` realm.
 8. Go to the Portal (`Operate -> Microservices`) and verify that the microservices have initialized.
 9. Go to the Portal (`Account`) and set aside your Customer Id (CID).
 10. Go to the Portal and set aside your realm's PID and Realm Secret (`Games -> YourGame -> hathora-demo`).
@@ -46,7 +46,8 @@ Now, we'll go set up a Hathora account and upload the sample dedicated server bu
 	1. `BEAMABLE_CUSTOMER_OVERRIDE -> Your CustomerId (CID)`
 	2. `BEAMABLE_REALM_OVERRIDE -> Your hathora-demo Realm's PID`
 	3. `BEAMABLE_REALM_SECRET -> You hathora-demo Realm's Secret`
-	4. `HATHORA_DEV_TOKEN -> The game-server dev token`.
+	4. `BEAMABLE_ENVIRONMENT_OVERRIDE -> BeamProdEnv
+	5. `HATHORA_DEV_TOKEN -> The game-server dev token`.
 7. Make sure the `7777` UDP port is exposed.
 8. Make sure that the number of rooms per processes is 1.
 9. Finish the deployment process and verify that the deployment was successful.
@@ -66,11 +67,14 @@ In order to play the sample using a dedicated server in Hathora:
 1. Set your `Multiplayer Options -> NetMode` to `Play as Standalone` and open the `Hathora Demo` map.
 	1. If you can't find it, turn on `Cotent Browser -> Settings -> Show Plugin Content` and look inside the `BEAMPROJ_HathoraDemo` content folder.
 2. Run PIE.
-3. The first time you are running, type in your email/password and hit register. 
-	1. In subsequent runs, hit Login instead.
+3. The first time you are running, type in an email/password and hit register. 
+	1. In subsequent runs OR if you use the same email/password as your Beamable account, hit Login instead.
 4. After you're signed in, hit the `Training` button and observe the logs. If you look at Hathora's Portal, you'll be able to see the server spinning up for you to play in. If you look at the your Microservice logs (`Operate -> Microservice -> HathoraDemo -> Logs`), you'll be able to see its communication with Hathora.
 5. After a while, you'll be placed into a match by yourself. 
 6. Move around a while and then simply PIE.
+
+!!! warning "Cold Starts"
+	The first run of the application might time out due. If that happens, simply wait until you see a log line that says "DeleteTicket" show up and
 
 To test this out with two players (this is max players for this sample):
 
