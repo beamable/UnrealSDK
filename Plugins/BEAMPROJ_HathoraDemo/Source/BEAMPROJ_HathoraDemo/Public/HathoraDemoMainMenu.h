@@ -330,12 +330,9 @@ protected:
 	}
 
 	void TravelToGameServer(const FString& ServerAddress)
-	{
-		// get timeless game instance
+	{		
 		if (bStartedTravel)
-		{
 			return;
-		}
 
 		OnTravelStartedDelegate.Broadcast();
 		bStartedTravel = true;

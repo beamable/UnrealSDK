@@ -49,11 +49,11 @@ jobs:
       
       # Compress the results
       - name: Compress Directory
-        run: powershell Compress-Archive PackagedProject artifacts.zip
+        run: powershell Compress-Archive PackagedProject windows_client_${{ inputs.beamProj }}.zip
       
       # Uploads the artifacts so we can download the build
       - name: Upload Compressed Folder as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: artifacts
-          path: artifacts.zip
+          name: Window Client Build - ${{ inputs.beamProj }}
+          path: windows_client_${{ inputs.beamProj }}.zip

@@ -14,6 +14,7 @@ Start by getting our repo, then installing .NET and Docker Dekstop.
  2. Check out the `latest` (or your preferred version) tagged release.
  3. Run the `init_repo.sh` script.
  4. Generating Project Files.
+ 5. \[Optional] Verify things are working by compiling the editor of our SDK project.
 
 Next up, install our dependencies.
 
@@ -22,7 +23,7 @@ Next up, install our dependencies.
 
 Once you have our repo and dependencies set up in your machine, follow along one of the next section to set up the SDK in your project.
 ### Set up the Beamable SDK - Fast Path
-Setting up the SDK in your project is done by manually copying over a set of files. 
+Setting up the SDK in your project is done by manually copying over a set of files from our **Unreal SDK** repo to your project. 
 
 !!! note "Unreal Project Requirements"
 	Beamable requires your Unreal project to be a C++ project. That being said, we do provide an entire suite of Blueprint nodes that can be used to achieve *most* of the same functionality.
@@ -35,10 +36,11 @@ Please, follow along these instructions:
 4. Open the `UnrealSDK/Source/BeamableUnreal.Target.cs` file and copy the `Beam` class into your `YourGame.Target.cs` file.
 5. Call `Beam.ConfigureGame/Server/Editor` in their corresponding `Target.cs` files.
 6. Call `Beam.AddRuntimeModuleDependencies` and `Beam.AddEditorModuleDependencies` in the corresponding `Build.cs` files.
-7. Run the `YourProject/beam-init-game-maker.sh` script.
+7. Run the `YourProject/beam-init-game-maker.sh` script from inside your project's root directory.
 	1. This will install the version of our CLI tool that your SDK version corresponds to locally in your project.
+	2. Verify that it worked by running `dotnet beam --version` from inside your project root directory.
 8. Generate Project Files.
-9. Open Rider/VS and compile your editor. 
+9. Open Rider/VS and compile your editor.
 #### Making your First Request
 Once your Editor opens, you'll see the Beamable Logo in your upper-right bar, next to the Settings dropdown. This button opens the Beamable window.
 

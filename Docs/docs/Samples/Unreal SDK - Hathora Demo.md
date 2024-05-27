@@ -1,4 +1,18 @@
-This demo show-cases how you can use the **Unreal SDK**, **OnlineSubsystemBeamable** and **Beamable Microservices** to integrate with Hathora (a game server orchestration provider).
+<style>
+img[src*='#center'] { 
+    display: block;
+    margin: auto;
+}
+</style>
+
+This demo, created from UE's FPS Template, show-cases how you can use the **Unreal SDK**, **OnlineSubsystemBeamable** and **Beamable Microservices** to integrate with Hathora (a game server orchestration provider).
+
+Aside from our `BeamableCore` Plugin and assets from the FPS Template, here's what the sample contains:
+
+- **`BEAMPROJ_HathoraDemo` Unreal Plugin.**: Contains the UE implementation for the game-server and client.
+- **`Microservice/HathoraDemo` Microservice**: Microservice containing code that ties Beamable's matchmaking system and Hathora's Game Server Orchestration system.
+- **Pre-Built Linux Dedicated Server Binaries**: Building dedicated servers is time-consuming so... we give you a build that can be configured via Environment Variables so you can test the sample as fast as possible.
+- **`OnlineSubsystemBeamable/Customer/**` Extension**: Code added to the `OnlineSubsystemBeamable` plugin to extend our implementation of `IOnlineSubsystem` interfaces with code specific to the Hathora demo.
 
 To set up this sample you'll need a few things:
 
@@ -11,11 +25,11 @@ To configure the sample, set the `BeamProjOverride.txt` to `BEAMPROJ_HathoraDemo
 Since this sample requires several resources, we do not host it ourselves. So, in order to access the sample you'll need to configure a Beamable realm so you can use it.
 
 1. Go to the Beamable Portal and create a new Beamable realm called `hathora-demo`.
-2. Open the `BeamableUnreal` editor (it'll be configured as the `BEAMPROJ_HathoraDemo`) project.
+2. Compile and open the `BeamableUnreal` editor (it'll be configured as the `BEAMPROJ_HathoraDemo`) project.
 3. Sign into your Beamable account and go to the `hathora-demo` realm.
 4. Open the `Content Window` -- verify that there are two `game_types`: `solo_queue` and `training`.
 5. Hit `Publish` and wait. Go to the Portal (`Operate -> Content`) and verify that the content is there.
-6. Open a bash terminal at the BeamableUnreal root directory.
+6. Open a bash terminal at the `BeamableUnreal` root directory.
 7. Make sure Docker is running and then run `dotnet beam services deploy` in that directory to get the microservices to your `hathora-demo` realm.
 8. Go to the Portal (`Operate -> Microservices`) and verify that the microservices have initialized.
 9. Go to the Portal (`Account`) and set aside your Customer Id (CID).
@@ -60,10 +74,10 @@ In order to play the sample using a dedicated server in Hathora:
 
 To test this out with two players (this is max players for this sample):
 
-1. Set your `Multiplayer Options -> NetMode` to `Play as Standalone` and your `Multiplayer Options -> Number of Players` to `2`.
-2. Sign into different accounts.
-3. Hit the `Solo Queue` button instead of the Training one.
-4. Wait for a bit and you'll be matched with yourself.
+1. Set your `Multiplayer Options -> NetMode` to `Play as Client` and your `Multiplayer Options -> Number of Players` to `2`.
+2. Sign into different accounts in each PIE instance.
+3. Hit the `Solo Queue` button instead of the `Training` one in both PIE instances.
+4. Wait for a bit and both PIE instances will be matched against each other.
 
 #### What can you do with this sample?
 **This sample is NOT a template you can start your own repository from.** 
@@ -75,4 +89,4 @@ However, its Beamable code components are free for you to copy and use in your o
 - Content inside the `BEAMPROJ_HathoraDemo` except things inside a `ThirdParty` directory.
 
 !!! note "Why don't we provide a client build too?"
-	Because clients must be pointed at your `hathora-demo` realm. As such, you'd need to generate the build yourself, which you can simply by packaging it normally for any of our supported platforms.
+	Because clients must be pointed at your `hathora-demo` realm. As such, you'd need to generate the build yourself, which you can do by packaging it normally for any of our supported platforms.

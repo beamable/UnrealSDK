@@ -60,11 +60,13 @@ jobs:
       
       # Compress the results      
       - name: Compress Directory
-        run: tar cvzf linux_server.tar.gz PackagedProject/LinuxServer
+        run: cd PackagedProject/LinuxServer &&
+          tar cvzf ../../linux_server_${{ inputs.beamProj }}.tar.gz * &&
+          cd ../../
       
       # Uploads the artifacts so we can download the build      
       - name: Upload Compressed Folder as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Linux Server build
-          path: linux_server.tar.gz
+          name: Linux Server Build - ${{ inputs.beamProj }}
+          path: linux_server_${{ inputs.beamProj }}.tar.gz

@@ -1,8 +1,14 @@
+<style>
+img[src*='#center'] { 
+    display: block;
+    margin: auto;
+}
+</style>
+
 Beamable Microservices are Beamable's Cloud Code solution. It is a wrapper around a HTTP Server that makes the development process much simpler. 
 
 !!! note "What languages can I write my Microservice in?"
 	At the moment, only `C#` Microservices are supported. But... that is likely to change in the future.
-
 ## Getting Started with C# Microservices
 
 To get started with Microservices in your project, you need a couple of things:
@@ -193,6 +199,16 @@ The key metric you should use to consider creating additional microservices is *
 > Beamable: "You can create add `partial` to your Microservice type and create other parts of it. You can declare utility static functions as well and make most `____Callable` just forward the call along."
 
 We've found these approaches gives you the proper runtime scalability for the lowest cost and provide a simple developer experience.
+
+## The Microservices Window
+This window is a read-only view into the state of your local services. It serves two purposes:
+
+- It shows you which services are currently running locally and which aren't.
+	- In other words, a quick panoramic view of your local microservice state.
+- It allows non-engineers to start up services from a UI window.
+	- This is not a very common workflow as a lot of teams have designers/artists working in dedicated realms.
+
+Here's how it looks:
 
 
 
