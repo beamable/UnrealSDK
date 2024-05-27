@@ -388,7 +388,7 @@ public:
 
 	FDelegateHandle CPP_RegisterOnStarted(FRuntimeStateChangedHandlerCode Handler)
 	{
-		if (bDidFirstAuthRun) const auto _ = Handler.ExecuteIfBound();
+		if (bIsBeamableStarted) const auto _ = Handler.ExecuteIfBound();
 		return OnStartedCode.Add(Handler);
 	}
 

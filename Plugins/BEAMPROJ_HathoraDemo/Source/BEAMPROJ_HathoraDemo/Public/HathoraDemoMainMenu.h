@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DelayAction.h"
 #include "OnlineError.h"
 #include "OnlineSessionSettings.h"
 #include "OnlineSubsystem.h"
@@ -48,11 +49,6 @@ class BEAMPROJ_HATHORADEMO_API UHathoraDemoMainMenu : public UBeamLevelSubsystem
 	bool bStartedTravel;
 
 	/**
-	 * When reloading this level after a match has finished, this is true.
-	 */
-	bool bIsReturningToLevel;
-
-	/**
 	 * Current pending online session.
 	 */
 	FNamedOnlineSession* PendingSession;
@@ -88,22 +84,21 @@ protected:
 
 	virtual FString GetSpecificLevelName() const override { return FString(TEXT("HathoraDemo")); }
 
-
-	virtual void OnWorldBeginPlay(UWorld& InWorld) override
+	UFUNCTION(BlueprintCallable)
+	void InitializeHathoraDemo()
 	{
-		const auto GI = InWorld.GetGameInstance();
+		UE_LOG(LogTemp, Warning, TEXT("Starting Hathora Demo Main Menu"));
+
+		const auto GI = GetWorld()->GetGameInstance();
 		if (GI->IsDedicatedServerInstance())
 			return;
 
+		UE_LOG(LogTemp, Warning, TEXT("Setting OnBeamStarted"));
 		UBeamRuntime* Runtime = GI->GetSubsystem<UBeamRuntime>();
-		bIsReturningToLevel = OnBeamableStarted.IsValid();
-		if (bIsReturningToLevel)
+		OnBeamableStarted = Runtime->CPP_RegisterOnStarted(FRuntimeStateChangedHandlerCode::CreateLambda([this, GI, Runtime]
 		{
-			Runtime->CPP_UnregisterOnStarted(OnBeamableStarted);
-		}
+			UE_LOG(LogTemp, Warning, TEXT("Initializing after beamable started"));
 
-		OnBeamableStarted = Runtime->CPP_RegisterOnStarted(FRuntimeStateChangedHandlerCode::CreateLambda([this, GI]
-		{
 			// Initialize Beamable's OnlineSubsystem
 			OnlineSubsystem = IOnlineSubsystem::Get("BEAMABLE");
 			BeamOSS::InitializeOnlineSubsystemBeamable(OnlineSubsystem, GI);
@@ -115,6 +110,9 @@ protected:
 			// Notify UI that we are ready for logging in.
 			if (OnInitialized.IsBound())
 				OnInitialized.Broadcast();
+
+			// Unregister this after execution so that when we reload this scene we don't have multiple callbacks bound to this.
+			Runtime->CPP_UnregisterOnStarted(OnBeamableStarted);
 		}));
 	}
 
@@ -145,13 +143,13 @@ public:
 	{
 		DoEnterMatchmaking(QueueId, 120);
 	}
-	
+
 	UFUNCTION(BlueprintCallable)
 	void GetOwnerUserProfileData(FString& Id, FString& Email, FString& Alias, FString& DisplayName)
 	{
-		if(!OnlineSubsystem)
+		if (!OnlineSubsystem)
 			return;
-		
+
 		const auto LoggedInUser = IdentityInterface->GetUniquePlayerId(0);
 		if (LoggedInUser)
 		{
@@ -169,7 +167,7 @@ public:
 			else DisplayName = TEXT("");
 		}
 	}
-	
+
 protected:
 	void DoLogIn(const FString& Username, const FString& Password, const FString& Type)
 	{
@@ -191,8 +189,6 @@ protected:
 
 		IdentityInterface->Login(0, Credentials);
 	}
-
-	
 
 
 	void HandleUserLoginCompleted(int32 PlatformUserIndex, bool bWasSuccessful, const FUniqueNetId& NetId, const FString& ErrorString)
@@ -231,7 +227,7 @@ protected:
 
 		FOnlineSessionSettings NewSessionSettings;
 		NewSessionSettings.bIsDedicated = true;
-		NewSessionSettings.bIsLANMatch = false;		
+		NewSessionSettings.bIsLANMatch = false;
 
 		FSessionSettings MemberSettings;
 		NewSessionSettings.MemberSettings.Add(UniqueId.ToSharedRef(), MemberSettings);
