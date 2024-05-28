@@ -7,6 +7,8 @@ public class BeamableUnrealServerTarget : TargetRules
 	public BeamableUnrealServerTarget(TargetInfo Target) : base(Target)
 	{
 		bOverrideBuildEnvironment = true;
+		BuildEnvironment = TargetBuildEnvironment.Unique;
+		bUseLoggingInShipping = true;
 		Type = TargetType.Server;
 		DefaultBuildSettings = BuildSettingsVersion.Latest;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
