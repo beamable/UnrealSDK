@@ -63,9 +63,14 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 			OverridenEnv = FPlatformMisc::GetEnvironmentVariable(TEXT("BEAMABLE_ENVIRONMENT_OVERRIDE"));
 			if (!OverridenEnv.IsEmpty())
 			{
-				const FString Path = FString::Printf(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/%s.%s'"), *OverridenEnv, *OverridenEnv);
-				const FSoftObjectPath SoftPath = FSoftObjectPath{OverridenEnv};
-				GetMutableDefault<UBeamCoreSettings>()->BeamableEnvironment = SoftPath;
+				if(OverridenEnv.Equals(TEXT("BeamProdEnv")))
+					GetMutableDefault<UBeamCoreSettings>()->BeamableEnvironment = GetMutableDefault<UBeamCoreSettings>()->BeamablePossibleEnvironments[0];
+				else if (OverridenEnv.Equals(TEXT("BeamStagingEnv")))
+					GetMutableDefault<UBeamCoreSettings>()->BeamableEnvironment = GetMutableDefault<UBeamCoreSettings>()->BeamablePossibleEnvironments[1];
+				else
+					GetMutableDefault<UBeamCoreSettings>()->BeamableEnvironment = GetMutableDefault<UBeamCoreSettings>()->BeamablePossibleEnvironments[2];
+
+				UE_LOG(LogBeamRuntime, Display, TEXT("Initializing UBeamRuntime Subsystem - Overriden Environment: %s!"), *GetDefault<UBeamCoreSettings>()->BeamableEnvironment.ToString());				
 			}
 		}
 	}

@@ -26,7 +26,7 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General", AdvancedDisplay)
 	TSoftObjectPtr<UBeamEnvironmentData> BeamableEnvironment;
 
-	UPROPERTY(Config, BlueprintReadOnly, Category = "General")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General", AdvancedDisplay)
 	TArray<TSoftObjectPtr<UBeamEnvironmentData>> BeamablePossibleEnvironments;
 	
 	/**
