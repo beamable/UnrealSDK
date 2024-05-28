@@ -25,15 +25,18 @@ To configure the sample, set the `BeamProjOverride.txt` to `BEAMPROJ_HathoraDemo
 Since this sample requires several resources, we do not host it ourselves. So, in order to access the sample you'll need to configure a Beamable realm so you can use it.
 
 1. Go to the Beamable Portal and create a new Beamable realm called `hathora-demo`.
-2. Compile and open the `BeamableUnreal` editor (it'll be configured as the `BEAMPROJ_HathoraDemo`) project.
-3. Sign into your Beamable account and go to the `hathora-demo` realm.
-4. Open the `Content Window` -- verify that there are two `game_types`: `solo_queue` and `training`.
-5. Hit `Publish` and wait. Go to the Portal (`Operate -> Content`) and verify that the content is there.
-6. Open a bash terminal at the `BeamableUnreal` root directory.
-7. Make sure Docker is running and then run `beam services deploy` in that directory to get the microservices to your `hathora-demo` realm.
-8. Go to the Portal (`Operate -> Microservices`) and verify that the microservices have initialized.
-9. Go to the Portal (`Account`) and set aside your Customer Id (CID).
-10. Go to the Portal and set aside your realm's PID and Realm Secret (`Games -> YourGame -> hathora-demo`).
+2. Go to the Portal (`Account`) and set aside your Customer Id (CID).
+3. Go to the Portal and set aside your realm's PID and Realm Secret (`Games -> YourGame -> hathora-demo`).
+4. Compile and open the `BeamableUnreal` editor (it'll be configured as the `BEAMPROJ_HathoraDemo`) project.
+5. Sign into your Beamable account and go to the `hathora-demo` realm.
+	1. Hit `Apply to Build`.
+6. Open the `Content Window` -- verify that there are two `game_types`: `solo_queue` and `training`.
+	1. If you fail to see content here, close the editor and try again. There's a known issue in the UE SDK when accessing content for the first time that may cause them to not appear.
+7. Hit `Publish` and wait. Go to the Portal (`Operate -> Content`) and verify that the content is there.
+8. Open a bash terminal at the `BeamableUnreal` root directory.
+9. Make sure Docker is running and then run `beam services deploy` in that directory to get the microservices to your `hathora-demo` realm.
+10. Go to the Portal (`Operate -> Microservices`) and verify that the microservices have initialized.
+
 
 Now, we'll go set up a Hathora account and upload the sample dedicated server build:
 
@@ -43,13 +46,13 @@ Now, we'll go set up a Hathora account and upload the sample dedicated server bu
 4. Create and set aside two dev-tokens: `game-server` and `matchmaking-server`.
 5. Deploy a new version by uploading the .tar file we provided for the sample.
 6. Set up the following environment variables with the values you set aside:
-	1. `BEAMABLE_CUSTOMER_OVERRIDE -> Your CustomerId (CID)`
-	2. `BEAMABLE_REALM_OVERRIDE -> Your hathora-demo Realm's PID`
-	3. `BEAMABLE_REALM_SECRET -> You hathora-demo Realm's Secret`
-	4. `BEAMABLE_ENVIRONMENT_OVERRIDE -> BeamProdEnv
-	5. `HATHORA_DEV_TOKEN -> The game-server dev token`.
+	1. `BEAMABLE_CUSTOMER_OVERRIDE` = `Your CustomerId (CID)`
+	2. `BEAMABLE_REALM_OVERRIDE` = `Your hathora-demo Realm's PID`
+	3. `BEAMABLE_REALM_SECRET` = `You hathora-demo Realm's Secret`
+	4. `BEAMABLE_ENVIRONMENT_OVERRIDE` = `BeamProdEnv`
+	5. `HATHORA_DEV_TOKEN` = `The game-server dev token`.
 7. Make sure the `7777` UDP port is exposed.
-8. Make sure that the number of rooms per processes is 1.
+8. Make sure that the number of rooms per processes is `1`.
 9. Finish the deployment process and verify that the deployment was successful.
 
 Now that your Hathora account is configured to boot up our provided build, we need to configure the `hathora-demo` realm with the information it needs to correctly provision a server whenever a match is made.
@@ -70,11 +73,11 @@ In order to play the sample using a dedicated server in Hathora:
 3. The first time you are running, type in an email/password and hit register. 
 	1. In subsequent runs OR if you use the same email/password as your Beamable account, hit Login instead.
 4. After you're signed in, hit the `Training` button and observe the logs. If you look at Hathora's Portal, you'll be able to see the server spinning up for you to play in. If you look at the your Microservice logs (`Operate -> Microservice -> HathoraDemo -> Logs`), you'll be able to see its communication with Hathora.
-5. After a while, you'll be placed into a match by yourself. 
+5. After a match is found --- 30 seconds later you'll connect to the actual server and see the match. 
 6. Move around a while and then simply PIE.
 
 !!! warning "Cold Starts"
-	The first run of the application might time out due. If that happens, simply wait until you see a log line that says "DeleteTicket" show up and
+	The first run of the application might time out due. If that happens, simply wait until you see a log line in the UE Log window that says "DeleteTicket" show up and simply re-join the queue.
 
 To test this out with two players (this is max players for this sample):
 

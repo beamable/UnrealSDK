@@ -274,17 +274,14 @@ protected:
 		}
 
 		if (Error.WasSuccessful())
-		{
-			// log session name
+		{			
 			UE_LOG(LogTemp, Display, TEXT("OnMatchmakingComplete -- SessionName: %s"), *SessionName.ToString());
-
 			SessionInterface->GetNamedSession(SessionName);
 
 			if (CurrentSearch->SearchResults.Num() == 0)
 			{
 				UE_LOG(LogTemp, Error, TEXT("OnMatchmakingComplete -- SearchResults is empty"));
-				OnMatchmakingFailureDelegate.Broadcast();
-				//bShouldShowLoadingScreen = false;
+				OnMatchmakingFailureDelegate.Broadcast();				
 				return;
 			}
 			else
@@ -296,8 +293,7 @@ protected:
 			if (!SessionInterface->GetResolvedConnectString(CurrentSearch->SearchResults[0], NAME_GamePort, URL))
 			{
 				UE_LOG(LogTemp, Error, TEXT("OnMatchmakingComplete -- Error resolving connection string"));
-				OnMatchmakingFailureDelegate.Broadcast();
-				//bShouldShowLoadingScreen = false;
+				OnMatchmakingFailureDelegate.Broadcast();				
 				return;
 			}
 
@@ -313,8 +309,6 @@ protected:
 			if (OnMatchmakingFailureDelegate.IsBound())
 			{
 				OnMatchmakingFailureDelegate.Broadcast();
-				// bShouldShowLoadingScreen = false;
-				// GetPlayerState<AWCPlayerStateBase>()->bShouldShowStatusWidget = false;
 			}
 		}
 	}

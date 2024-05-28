@@ -12,6 +12,8 @@ Here's a bit of our philosophy when desing the SDK so you know a bit what to exp
 	- Whenever we ***have to*** make an assumption, we try to be explicit about what it means.
 	- MicroServices/Storages are great ways to "just write what you want instead" when using our default services is not a good fit.
 ### Requirements for Beamable
+Beamable currently supports **Unreal 5.3.2**. It'll release the official SDK 1.0 version with 5.4 support only.
+
 Beamable also has a dependency on  [.NET](https://dotnet.microsoft.com/en-us/download/dotnet/6.0). This is needed for:
 
 - Installing the Beamable CLI (and therefore enabling the various Beamable workflows).

@@ -9,11 +9,13 @@ Unreal Beamable Samples are distributed as a configuration of the Unreal SDK rep
 
 To look at any given sample, you need to:
 
-1. Clone our UnrealSDK repository and run the `init_repo.sh` script.
-2. Change the contents of the `BeamProjOverride.txt` file to match the `BEAMPROJ_Plugin` of your choice. For example, `BEAMPROJ_HathoraDemo` would configure the repository as the Hathora Demo sample.
-3. Generate Project Files.
-4. Open the solution and do a clean build of the editor.
-5. Open the editor and `Project Settings -> Beamable Core -> Beamable Environment` and set it to `BeamProdEnv`.
+1. Have our dependencies installed ( [.NET](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) and [Docker](https://www.docker.com/products/docker-desktop/))
+2. Clone our [UnrealSDK](https://github.com/beamable/UnrealSDK) repository and run the `init_repo.sh` script (we run it through GitBash but any shell should work).
+3. Change the contents of the `BeamProjOverride.txt` file to match the `BEAMPROJ_Plugin` of your choice. 
+	1. For example, `BEAMPROJ_HathoraDemo` sets the repository as the Hathora Demo sample.
+4. Generate Project Files.
+5. Open the solution and do a clean build of the editor.
+6. Open the editor and `Project Settings -> Beamable Core -> Beamable Environment` and set it to `BeamProdEnv` before signing into a Beamable account.
 
 Further instructions for seeing each sample can be found in their respective sample docs.
 

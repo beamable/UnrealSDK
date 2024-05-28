@@ -1,5 +1,7 @@
 $buildType = $args[0]
 
+docker image prune
+
 if ($buildType -eq 'server') {
     docker build --build-arg BUILD_TYPE=-server -t unreal-win64-project -f WinDockerfile .
 } else {

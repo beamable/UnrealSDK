@@ -66,7 +66,6 @@ nav:
   - Samples: 
     - Samples Intro: 'Samples/Unreal SDK - Samples Intro.md'
     - Hathora Demo: 'Samples/Unreal SDK - Hathora Demo.md'
-  - SDK Development Guide: 'SDK Development Guide/OAPI Code Gen.md'
 
 copyright: |
   &copy; 2024 <a href="https://github.com/Beamable"  target="_blank" rel="noopener">Beamable</a>
