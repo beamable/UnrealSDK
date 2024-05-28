@@ -21,10 +21,10 @@ Creating your first microservice will automatically create your solution for you
 
 ```
 /repo-root
-|- MyProject.uproject
-|- MyProject.sln
-|- MyProjectMicroservices/
-|-- MyProjectMicroservices.sln
+|- ProjectName.uproject
+|- ProjectName.sln
+|- ProjectNameMS/
+|-- ProjectNameMS.sln
 |-- services/
 |--- MicroserviceName/
 |---- MicroserviceName.csproj
@@ -41,10 +41,10 @@ beam project add-unreal-project .
 ```
 
 Linking a project informs the Microservice project that, whenever it recompiles the microservices, it 
-should re-generate a `MyProjectMicroserviceClients` UE plugin inside your `Plugins/` directory. 
+should re-generate a `ProjectNameMicroserviceClients` UE plugin inside your `Plugins/` directory. 
 
 >Add this plugin as a dependency to any project/plugin you have from which you want to make calls to your microservices (don't forget to add it to `Target.cs` files as needed).
->Call `MyProjectMicroserviceClients.AddMicroserviceClients(this)` on any of the `Build.cs` files you have.
+>Call `ProjectNameMicroserviceClients.AddMicroserviceClients(this)` on any of the `Build.cs` files you have.
 
 Here are the constraints around these generated clients:
 - They follow the same pattern as our Auto-Generated UE APIs and are generated from the Microservice's OAPI docs. 
@@ -114,7 +114,7 @@ Beamable Microservices allow you to store data in Beamable's own managed service
 
 For those cases, Beamable offers a `MicroStorage`. This is a wrapper around a database that you can write to from your microservices. At the moment, we only support `MongoDB` but that is likely to change in the future as more and more use-cases arise.
 
-To create a `MicroStorage`, simply run the command below.
+To create a `MicroStorage`, run the command below.
 ```
 beam project new storage StorageName --sln ProjectNameMS/ProjectNameMS.sln \
   --link-to MicroserviceName
@@ -155,7 +155,7 @@ Once you're satisfied with your service behavior and verified that its working, 
 !!! info "Which realm?"
 	How you wish to manage realms is a team-specific decision as there are cost implications per-microservice instance running in any realm to consider against how your team likes to work. At Beamable's UE team, we prefer the "team members are responsible not to break other team members environment"-approach so we recommend that you test things thoroughly and then push to your `dev` realm. Another strategy might be to have a `designer-dev` that lives between `staging` and `dev` that should be more stable and then you push to `dev` first and eventually promote it to `designer-dev`. Again, this is for your lead and team to discuss and decide how you wish to work.
 
-To deploy services to a realm, simply run the following command with docker running.
+To deploy services to a realm, run the following command with docker running.
 ```
 beam services deploy
 ```
@@ -207,16 +207,3 @@ This window is a read-only view into the state of your local services. It serves
 	- In other words, a quick panoramic view of your local microservice state.
 - It allows non-engineers to start up services from a UI window.
 	- This is not a very common workflow as a lot of teams have designers/artists working in dedicated realms.
-
-Here's how it looks:
-
-
-
-
-
-
-
-
-
-
-
