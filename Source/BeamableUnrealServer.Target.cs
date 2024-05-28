@@ -8,11 +8,12 @@ public class BeamableUnrealServerTarget : TargetRules
 	public BeamableUnrealServerTarget(TargetInfo Target) : base(Target)
 	{
 		bOverrideBuildEnvironment = true;
-		if (Target.Platform != UnrealTargetPlatform.Linux && IsSelfBuiltUnrealEngine())
+
+		if (IsSelfBuiltUnrealEngine())
 		{
 			BuildEnvironment = TargetBuildEnvironment.Unique;
+			bUseLoggingInShipping = true;
 		}
-		bUseLoggingInShipping = true;
 		Type = TargetType.Server;
 		DefaultBuildSettings = BuildSettingsVersion.Latest;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
@@ -42,7 +43,13 @@ public class BeamableUnrealServerTarget : TargetRules
         string engineSourceDirectory = UnrealBuildBase.Unreal.EngineSourceDirectory.FullName;
         string buildVersionFilePath = Path.Combine(engineSourceDirectory, "Runtime", "Launch", "Resources", "Version.h");
 
-        // Check if Version.h file exists, indicating a self-built Unreal Engine
-        return File.Exists(buildVersionFilePath);
+        // On Linux, also check for common build directories
+        string makefilePath = Path.Combine(engineRootDirectory, "Makefile");
+        string cmakeFilePath = Path.Combine(engineRootDirectory, "CMakeLists.txt");
+
+        // Check if Version.h file or build configuration files exist
+        bool isSelfBuilt = File.Exists(buildVersionFilePath) || File.Exists(makefilePath) || File.Exists(cmakeFilePath);
+
+        return isSelfBuilt;
     }
 }
