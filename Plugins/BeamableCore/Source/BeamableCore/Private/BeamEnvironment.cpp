@@ -30,21 +30,8 @@ FString UBeamEnvironment::GetAPIUrl()
 {
 	if (!Data)
 	{
-		const UBeamCoreSettings* beamCoreSettings = GetDefault<UBeamCoreSettings>();	
-
-		const FString EnvOverride = FGenericPlatformMisc::GetEnvironmentVariable(TEXT("BEAMABLE_ENVIRONMENT_OVERRIDE"));
-		if(EnvOverride.IsEmpty())
-		{
-			Data = beamCoreSettings->BeamableEnvironment.LoadSynchronous();
-		}
-		else
-		{
-			const FString Path = FString::Printf(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/%s.%s'"), *EnvOverride, *EnvOverride);
-			const FSoftObjectPath SoftPath = FSoftObjectPath{Path};
-			TSoftObjectPtr<UBeamEnvironmentData> OverridenPath;
-			OverridenPath = SoftPath;
-			Data = OverridenPath.LoadSynchronous();			 
-		}
+		const UBeamCoreSettings* beamCoreSettings = GetDefault<UBeamCoreSettings>();		
+		Data = beamCoreSettings->BeamableEnvironment.LoadSynchronous();
 	}
 
 	return Data->APIUrl;

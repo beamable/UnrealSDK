@@ -55,6 +55,19 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 				GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Pid = FBeamPid{OverridenRealm};
 			}
 		}
+	
+		// We do this so game-makers can override any builds we provide to point to our BeamProdEnv regardless
+		FString OverridenEnv;
+		if (!FParse::Value(FCommandLine::Get(), TEXT("beamable-environment-override"), OverridenRealm))
+		{
+			OverridenEnv = FPlatformMisc::GetEnvironmentVariable(TEXT("BEAMABLE_ENVIRONMENT_OVERRIDE"));
+			if (!OverridenEnv.IsEmpty())
+			{
+				const FString Path = FString::Printf(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/%s.%s'"), *OverridenEnv, *OverridenEnv);
+				const FSoftObjectPath SoftPath = FSoftObjectPath{OverridenEnv};
+				GetMutableDefault<UBeamCoreSettings>()->BeamableEnvironment = SoftPath;
+			}
+		}
 	}
 
 	// Set us up to handle sign-in/out flows in editor as well as tracking multiple developer user slots.
@@ -133,6 +146,7 @@ void UBeamRuntime::PIEExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivit
 void UBeamRuntime::TriggerInitializeWhenUnrealReady()
 {
 	const FBeamRealmHandle TargetRealm = GetDefault<UBeamCoreSettings>()->TargetRealm;
+	const FString TargetAPIUrl = GEngine->GetEngineSubsystem<UBeamEnvironment>()->GetAPIUrl();
 
 	// Initialize user ConnectivityState for each slot
 	for (FString RuntimeUserSlot : GetDefault<UBeamCoreSettings>()->RuntimeUserSlots)
@@ -166,7 +180,7 @@ void UBeamRuntime::TriggerInitializeWhenUnrealReady()
 	}
 	else
 	{
-		UE_LOG(LogBeamRuntime, Warning, TEXT("Starting configured Target Realm: CID=%s, PID=%s!"), *TargetRealm.Cid.AsString, *TargetRealm.Pid.AsString);
+		UE_LOG(LogBeamRuntime, Warning, TEXT("Starting configured Target Realm: CID=%s, PID=%s, URL=%s!"), *TargetRealm.Cid.AsString, *TargetRealm.Pid.AsString, *TargetAPIUrl);
 
 		UBeamRequestTracker* RequestTracker = RequestTrackerSystem;
 		if (const UWorld* World = GetWorld())

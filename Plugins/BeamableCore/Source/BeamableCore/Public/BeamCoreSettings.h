@@ -26,6 +26,9 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "General", AdvancedDisplay)
 	TSoftObjectPtr<UBeamEnvironmentData> BeamableEnvironment;
 
+	UPROPERTY(Config, BlueprintReadOnly, Category = "General")
+	TArray<TSoftObjectPtr<UBeamEnvironmentData>> BeamablePossibleEnvironments;
+	
 	/**
 	* @brief A RealmHandle struct defining the CustomerID and RealmID (CID, PID) that this build will target.
 	* All authentication and non-authenticated requests are made against this realm.
