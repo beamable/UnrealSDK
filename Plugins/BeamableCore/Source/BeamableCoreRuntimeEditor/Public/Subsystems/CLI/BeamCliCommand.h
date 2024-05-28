@@ -58,11 +58,9 @@ public:
 		return nullptr;
 	};
 
+	const static FString PathToLocalCli;
 	const static FString PathToCli;
-
-	const static FString Pattern;
-	const static FString PatternStart;
-	const static FString PatternEnd;
+		
 
 	bool bIsReceivingMessage;
 	FString MessageBuffer;
@@ -75,10 +73,13 @@ public:
 
 	bool ConsumeMessageFromOutput(FString& StdOutCopy, FString& OutMessageJson)
 	{
-		const auto StreamStartIdx = StdOutCopy.Find(PatternStart);
-		const auto MessageStartIdx = StreamStartIdx >= 0 ? StreamStartIdx + PatternStart.Len() : StreamStartIdx;
-		const auto MessageEndIdx = StdOutCopy.Find(PatternEnd);
+		const auto StreamStartIdx = 0;
+		const auto MessageStartIdx = 0;
+		const auto MessageEndIdx = StdOutCopy.Len();
 
+		// If there's nothing in the buffer, we just skip out.
+		if(StdOutCopy.IsEmpty())
+			return false;
 
 		// Didn't see a message 
 		if (!bIsReceivingMessage && (MessageStartIdx == INDEX_NONE && MessageEndIdx == INDEX_NONE))
@@ -90,8 +91,8 @@ public:
 		// If we are not receiving a message and we receive a full one in a single StdOut call, we parse it out and  
 		if (!bIsReceivingMessage && MessageStartIdx != INDEX_NONE && MessageEndIdx != INDEX_NONE)
 		{
-			OutMessageJson = StdOutCopy.RightChop(StreamStartIdx + PatternStart.Len()).LeftChop(PatternEnd.Len());
-			StdOutCopy = StdOutCopy.RightChop(MessageEndIdx + PatternEnd.Len());			
+			OutMessageJson = StdOutCopy.RightChop(StreamStartIdx);
+			StdOutCopy = StdOutCopy.RightChop(MessageEndIdx);			
 			// This means a message was completely received and is ready to be sent.
 			return true;
 		}
@@ -132,7 +133,7 @@ public:
 
 	static FString PrepareParams(FString Params)
 	{
-		return Params.Append(" --reporter-use-fatal");
+		return Params;//.Append(" --reporter-use-fatal");
 	}
 
 protected:
@@ -142,7 +143,5 @@ protected:
 };
 
 
+inline const FString UBeamCliCommand::PathToLocalCli = FString(TEXT("dotnet beam"));
 inline const FString UBeamCliCommand::PathToCli = FString(TEXT("beam"));
-inline const FString UBeamCliCommand::Pattern = FString(TEXT("__@#!REPORT!#@__"));
-inline const FString UBeamCliCommand::PatternStart = FString(TEXT("<__@#!REPORT!#@__>"));
-inline const FString UBeamCliCommand::PatternEnd = FString(TEXT("</__@#!REPORT!#@__>"));

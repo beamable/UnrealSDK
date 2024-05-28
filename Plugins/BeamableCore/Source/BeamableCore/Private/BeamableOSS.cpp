@@ -3,6 +3,8 @@
 #include "OnlineSubsystem.h"
 #include "UserSlots/BeamUserSlots.h"
 
+#ifdef BEAM_ENABLE_BEAMABLE_OSS
+
 void BeamOSS::InitializeOnlineSubsystemBeamable(IOnlineSubsystem* OnlineSubsystemInterface, UGameInstance* GameInstance)
 {
 	FString RawName = OSS_BEAMABLE_GAME_INSTANCE();
@@ -26,3 +28,4 @@ FString BeamOSS::GetIdentityTypeFederated(FString ServiceName, FString Namespace
 	FString Type = OSS_BEAMABLE_IDENTITY_TYPE_FEDERATED(ServiceName, Namespace);
 	return Type;
 }
+#endif

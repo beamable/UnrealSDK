@@ -30,21 +30,6 @@ public:
 	FDateTime LastChanged;
 
 	/**
-	 * @brief Called on each row of the manifest whenever it changes so that we can verify that the content object is configured correctly in the manifest. 
-	 * @param ContentTypeIdVal The type of the content object.
-	 * @param Row The Manifest Row we are validating.
-	 * @return An error code that specifies what is the problem
-	 */
-	virtual int IsValidRowForType(const FString& ContentTypeIdVal, FLocalContentManifestRow& Row)
-	{
-		return 0;
-	}
-
-	virtual void FixManifestRowForType(const int ErrorCode, const FLocalContentManifestRow& Row)
-	{
-	}
-
-	/**
 	 * @brief Generates a ContentDefinitionJsonObject. This is used during the publish flow. 
 	 */
 	virtual void BuildContentDefinitionJsonObject(FJsonDomBuilder::FObject& OutContentDefinition);
@@ -113,7 +98,7 @@ public:
 	 * @param ArrayProperty The FArrayProperty for the TArray field we want to access.
 	 * @param ArrayOwner Ptr to the struct/object that owns the TArray UProperty.
 	 */
-	static void SerializeArrayProperty(FString PropName, FJsonDomBuilder::FArray& JsonArray, const FArrayProperty* const ArrayProperty, const void* ArrayOwner);
+	void SerializeArrayProperty(FString PropName, FJsonDomBuilder::FArray& JsonArray, const FArrayProperty* const ArrayProperty, const void* ArrayOwner);
 
 	/**
 	 * @brief Deserializes a TArray from a FJsonDomBuilder::FArray.
@@ -122,7 +107,7 @@ public:
 	 * @param ArrayProperty The FArrayProperty for the TArray field we want to write to.
 	 * @param ArrayOwner Ptr to the struct/object that owns the TArray UProperty.
 	 */
-	static void ParseArrayProperty(const FString& PropName, const TArray<TSharedPtr<FJsonValue>>& JsonArray, const FArrayProperty* ArrayProperty, const void* ArrayOwner);
+	void ParseArrayProperty(const FString& PropName, const TArray<TSharedPtr<FJsonValue>>& JsonArray, const FArrayProperty* ArrayProperty, const void* ArrayOwner);
 
 	/**
 	 * @brief Serializes a TMap<FString,> into a FJsonDomBuilder::FObject.
@@ -131,7 +116,7 @@ public:
 	 * @param MapProperty The FMapProperty for the TMap<FString,> field we want to access.
 	 * @param MapOwner Ptr to the struct/object that owns the TMap<FString,> UProperty.
 	 */
-	static void SerializeMapProperty(FString PropName, FJsonDomBuilder::FObject& JsonMap, const FMapProperty* const MapProperty, const void* MapOwner);
+	void SerializeMapProperty(FString PropName, FJsonDomBuilder::FObject& JsonMap, const FMapProperty* const MapProperty, const void* MapOwner);
 
 	/**
 	 * @brief Deserializes a TMap<FString,> from a FJsonDomBuilder::FObject.
@@ -140,7 +125,7 @@ public:
 	 * @param MapProperty The FMapProperty for the TMap<FString,> field we want to access.
 	 * @param MapOwner Ptr to the struct/object that owns the TMap<FString,> UProperty.
 	 */
-	static void ParseMapProperty(const FString& PropName, const TSharedPtr<FJsonObject>& JsonMap, const FMapProperty* MapProperty, void* MapOwner);
+	void ParseMapProperty(const FString& PropName, const TSharedPtr<FJsonObject>& JsonMap, const FMapProperty* MapProperty, void* MapOwner);
 
 	template <typename TInner>
 	static void BuildArray(FJsonDomBuilder::FArray& ArrayToFill, const FArrayProperty* const ArrayProperty, const void* ArrayOwner)

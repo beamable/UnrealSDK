@@ -9,7 +9,7 @@ void UPostStatsUpdateRequest::BuildVerb(FString& VerbString) const
 void UPostStatsUpdateRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/commerce/{objectId}/stats/update");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *FString::Printf(TEXT("%lld"), ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);

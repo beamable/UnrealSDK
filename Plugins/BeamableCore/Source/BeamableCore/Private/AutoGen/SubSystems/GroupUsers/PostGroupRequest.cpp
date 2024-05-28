@@ -9,7 +9,7 @@ void UPostGroupRequest::BuildVerb(FString& VerbString) const
 void UPostGroupRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/group-users/{objectId}/group");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *FString::Printf(TEXT("%lld"), ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);

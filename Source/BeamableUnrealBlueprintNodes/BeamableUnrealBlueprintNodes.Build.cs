@@ -13,6 +13,7 @@ public class BeamableUnrealBlueprintNodes : ModuleRules
             }
         );
 
+        Beam.AddUncookedOnlyModuleDependencies(this, true);
         PrivateDependencyModuleNames.AddRange(
             new string[]
             {
@@ -22,10 +23,6 @@ public class BeamableUnrealBlueprintNodes : ModuleRules
                 "SlateCore",
                 
                 "BeamableUnreal",
-                "BeamableCore",
-                "BeamableCoreBlueprintNodes",
-                "BeamableCoreRuntime",
-                
                 "BlueprintGraph"
             }
         );

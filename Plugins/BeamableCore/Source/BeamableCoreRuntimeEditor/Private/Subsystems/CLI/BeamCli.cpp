@@ -13,11 +13,31 @@
 FBeamOperationHandle UBeamCli::InitializeWhenEditorReady()
 {
 	// Try to run the CLI once just to see if it is installed. If Launch returns "true", that means the CLI was found in this machine's PATH. 
-	IsInstalledCliProcess = MakeUnique<FMonitoredProcess>(UBeamCliCommand::PathToCli, TEXT("--help"), FPaths::ProjectDir(), true, true);
-	IsInstalledCliProcess->OnOutput().BindLambda([](const FString& String)
+	IsLocalCliInstalledProcess = MakeUnique<FMonitoredProcess>(UBeamCliCommand::PathToLocalCli, TEXT("version"), FPaths::ProjectDir(), true, true);
+	IsLocalCliInstalledProcess->OnOutput().BindLambda([](const FString& String)
 	{
+		UE_LOG(LogBeamCli, Display, TEXT("Found Local BeamCLI with version: %s"), *String)
 	});
-	bInstalled = IsInstalledCliProcess->Launch();
+	bInstalledLocally = IsLocalCliInstalledProcess->Launch();
+
+	// Try to run the CLI once just to see if it is installed. If Launch returns "true", that means the CLI was found in this machine's PATH. 
+	IsGlobalCliInstalledProcess = MakeUnique<FMonitoredProcess>(UBeamCliCommand::PathToCli, TEXT("version"), FPaths::ProjectDir(), true, true);
+	IsGlobalCliInstalledProcess->OnOutput().BindLambda([](const FString& String)
+	{
+		UE_LOG(LogBeamCli, Display, TEXT("Found Global BeamCLI with version: %s"), *String)	
+	});
+	bInstalledGlobally = IsGlobalCliInstalledProcess->Launch();
+
+	// If we can or can't use the CLI, regardless of where its installed.
+	bInstalled = bInstalledGlobally || bInstalledLocally;
+
+	// TODO: Check that the installed version is the correct one
+	FString DotnetToolJson;
+	if(FFileHelper::LoadFileToString(DotnetToolJson, TEXT(".config/dotnet-tools.json")))
+	{
+		
+	}
+	
 	return Super::InitializeWhenEditorReady();
 }
 
@@ -27,10 +47,10 @@ void UBeamCli::OnRealmInitialized()
 	if (bInstalled)
 	{
 		const auto Cmd = NewObject<UBeamCliInitCommand>();
-		Cmd->OnStreamOutput = [](const TArray<FBeamCliInitStreamData>& Stream, const TArray<int64>&, const FBeamOperationHandle&)
+		Cmd->OnStreamOutput = [](const TArray<UBeamCliInitStreamData*>& Stream, const TArray<int64>&, const FBeamOperationHandle&)
 		{
 			const auto Data = Stream.Last();
-			UE_LOG(LogBeamCli, Display, TEXT("Initialized CLI with Unreal Project: %s %s %s"), *Data.host, *Data.cid, *Data.pid)
+			UE_LOG(LogBeamCli, Display, TEXT("Initialized CLI with Unreal Project: %s %s %s"), *Data->Host, *Data->Cid, *Data->Pid)
 		};
 
 		// Make sure the project is initialized with the locally signed in credentials in UE
@@ -60,4 +80,10 @@ void UBeamCli::RunCommandSync(UBeamCliCommand* Command, const TArray<FString>& P
 {
 	Command->RunSync(Params);
 	RunningProcesses.Add(Command);
+}
+
+FString UBeamCli::GetPathToCli() const
+{
+	check(IsInstalled())
+	return bInstalledLocally ? UBeamCliCommand::PathToLocalCli : UBeamCliCommand::PathToCli;
 }

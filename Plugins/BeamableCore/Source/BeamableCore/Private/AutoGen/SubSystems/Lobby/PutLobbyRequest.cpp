@@ -27,7 +27,7 @@ void UPutLobbyRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPutLobbyRequest* UPutLobbyRequest::Make(FGuid _Id, FOptionalArrayOfBeamTag _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPutLobbyRequest* UPutLobbyRequest::Make(FGuid _Id, FOptionalString _Passcode, FOptionalArrayOfBeamTag _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPutLobbyRequest* Req = NewObject<UPutLobbyRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -38,6 +38,7 @@ UPutLobbyRequest* UPutLobbyRequest::Make(FGuid _Id, FOptionalArrayOfBeamTag _Tag
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
 	Req->Body = NewObject<UJoinLobby>(Req);
+	Req->Body->Passcode = _Passcode;
 	Req->Body->Tags = _Tags;
 	
 

@@ -9,7 +9,7 @@ void UPutListingsCooldownRequest::BuildVerb(FString& VerbString) const
 void UPutListingsCooldownRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/commerce/{objectId}/listings/cooldown");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *FString::Printf(TEXT("%lld"), ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);

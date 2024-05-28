@@ -13,6 +13,11 @@
 			"Name": "BeamableUnrealBlueprintNodes",
 			"Type": "UncookedOnly",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "BeamableUnrealEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
@@ -26,6 +31,77 @@
 		{
 			"Name": "BeamableCore",
 			"Enabled": true
+		},
+		{
+			"Name": "OnlineSubsystem",
+			"Enabled": false,
+			"Optional": true
+		},
+		{
+			"Name": "OnlineSubsystemUtils",
+			"Enabled": false,
+			"Optional": true
+		},
+		{
+			"Name": "OnlineSubsystemBeamable",
+			"Enabled": false,
+			"Optional": true
+		},
+		{
+			"Name": "HathoraSDK",
+			"Enabled": false,
+			"Optional": true
+		},
+		{
+			"Name": "DiscordSDK",
+			"Enabled": false,
+			"Optional": true
+		},
+		{
+			"Name": "BEAMPROJ_Sandbox",
+			"Enabled": false,
+			"Optional": true
+		},
+		{
+			"Name": "BEAMPROJ_HathoraDemo",
+			"Enabled": false,
+			"Optional": true
+		},
+		{
+			"Name": "OpenImageDenoise",
+			"Enabled": false
+		},
+		{
+			"Name": "AndroidDeviceProfileSelector",
+			"Enabled": false
+		},
+		{
+			"Name": "AndroidMedia",
+			"Enabled": false
+		},
+		{
+			"Name": "AndroidMoviePlayer",
+			"Enabled": false
+		},
+		{
+			"Name": "AndroidFileServer",
+			"Enabled": false
+		},
+		{
+			"Name": "GooglePAD",
+			"Enabled": false
+		},
+		{
+			"Name": "AppleImageUtils",
+			"Enabled": false
+		},
+		{
+			"Name": "AppleMoviePlayer",
+			"Enabled": false
+		},
+		{
+			"Name": "AvfMedia",
+			"Enabled": false
 		}
 	]
 }

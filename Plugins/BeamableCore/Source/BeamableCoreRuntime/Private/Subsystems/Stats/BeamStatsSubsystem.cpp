@@ -195,6 +195,20 @@ FBeamOperationHandle UBeamStatsSubsystem::CPP_RefreshStatsOperation(FUserSlot Us
 	return Handle;
 }
 
+FBeamOperationHandle UBeamStatsSubsystem::RefreshSingleStatOperation(FUserSlot UserSlot, FBeamStatsType Type, FString StatKey, FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	RefreshSingleStat(UserSlot, Type, StatKey, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamStatsSubsystem::CPP_RefreshSingleStatOperation(FUserSlot UserSlot, FBeamStatsType Type, FString StatKey, FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	RefreshSingleStat(UserSlot, Type, StatKey, Handle);
+	return Handle;
+}
+
 FBeamOperationHandle UBeamStatsSubsystem::CommitStatsOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
@@ -220,6 +234,34 @@ FBeamOperationHandle UBeamStatsSubsystem::CPP_SetStatOperation(FUserSlot UserSlo
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
 	SetStat(UserSlot, Key, Value, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamStatsSubsystem::DeleteStatOperation(FUserSlot UserSlot, FString Key, FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	DeleteStat(UserSlot, Key, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamStatsSubsystem::CPP_DeleteStatOperation(FUserSlot UserSlot, const FString& Key, FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	DeleteStat(UserSlot, Key, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamStatsSubsystem::IncrementStatsOperation(FUserSlot UserSlot, const TMap<FString, int32>& Stats, FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	IncrementStats(UserSlot, Stats, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamStatsSubsystem::CPP_IncrementStatsOperation(FUserSlot UserSlot, const TMap<FString, int32>& Stats, FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	IncrementStats(UserSlot, Stats, Handle);
 	return Handle;
 }
 
@@ -297,6 +339,77 @@ void UBeamStatsSubsystem::RefreshStats(FUserSlot UserSlot, FBeamStatsType Type, 
 	auto Ctx = RequestGetStats(UserSlot, Type, Op, Handler);
 }
 
+void UBeamStatsSubsystem::RefreshSingleStat(FUserSlot UserSlot, FBeamStatsType Type, FString StatKey, FBeamOperationHandle Op)
+{
+	// Ensure we have a user at the given slot when running in clients.
+	FBeamRealmUser RealmUser;
+	if (!IsRunningDedicatedServer())
+	{
+		if (!UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
+		{
+			RequestTracker->TriggerOperationError(Op, TEXT("NO_AUTHENTICATED_USER_AT_SLOT"));
+			return;
+		}
+	}
+
+	// Get the stat key for this user, if none is provided
+	auto StatType = Type;
+	if (UBeamStatsTypeLibrary::GetGamerTag(Type).AsString.IsEmpty())
+	{
+		StatType = UBeamStatsTypeLibrary::CopyStatsTypeWithGamerTag(Type, RealmUser.GamerTag);
+	}
+
+	auto Handler = FOnGetClientFullResponse::CreateLambda([this, Op, UserSlot, StatType](FGetClientFullResponse Resp)
+	{
+		// If we are invoking this before retrying, we just don't do anything 
+		if (Resp.State == RS_Retrying) return;
+
+		if (Resp.State != RS_Success)
+		{
+			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.error);
+		}
+		else
+		{
+			UBeamStatsState* UserStatsState = PlayerStatCache.FindOrAdd(StatType, NewObject<UBeamStatsState>());
+			UserStatsState->OwnerType = StatType;
+
+			// Prepare the stats updated event.
+			FBeamStatsUpdatedEvent Evt;
+			Evt.GamerTag = UBeamStatsTypeLibrary::GetGamerTag(StatType);
+			Evt.LocalSlot = UserSlot;
+
+			for (const auto& Stat : Resp.SuccessData->Stats)
+			{
+				const FString StatKey = Stat.Key;
+				const FString NewStatValue = Stat.Value;
+
+				FString OldValue;
+				if (UserStatsState->StringStats.Contains(StatKey))
+				{
+					OldValue = UserStatsState->StringStats[StatKey];
+					UserStatsState->StringStats[StatKey] = NewStatValue;
+				}
+				else
+				{
+					OldValue = FString("");
+					UserStatsState->StringStats.Add(StatKey, NewStatValue);
+				}
+
+				Evt.OldValues.Add(StatKey, OldValue);
+				Evt.NewValues.Add(StatKey, NewStatValue);
+				UE_LOG(LogBeamStats, Verbose, TEXT("Updated Stats. STAT_KEY=%s, OLD=%s, NEW=%s"), *StatKey, *OldValue, *NewStatValue)
+			}
+
+			OnStatsUpdatedCode.Broadcast(Evt);
+			OnStatsUpdated.Broadcast(Evt);
+			UE_LOG(LogBeamStats, Display, TEXT("Updated Stats!"))
+			RequestTracker->TriggerOperationSuccess(Op, {});
+		}
+	});
+
+	auto Ctx = RequestGetSingleStat(UserSlot, Type, StatKey, Op, Handler);
+}
+
 void UBeamStatsSubsystem::CommitStats(FUserSlot UserSlot, FBeamOperationHandle Op)
 {
 	// Ensure we have a user at the given slot.
@@ -315,7 +428,9 @@ void UBeamStatsSubsystem::CommitStats(FUserSlot UserSlot, FBeamOperationHandle O
 	checkf(UBeamStatsTypeLibrary::MakeStatsType(Client, Public, RealmUser.GamerTag) == Stat, TEXT("Make sure to call this with the same user slot."))
 
 	// Make the request and update the local cache if successful
-	const auto SetStatHandler = FOnPostClientFullResponse::CreateLambda([this, Op, UserSlot, Stat, CommandBuffer](FPostClientFullResponse Resp)
+	const auto StatNames = TArray<FString>(CommandBuffer->StatNames);
+	const auto StatValues = TArray<FString>(CommandBuffer->StatValues);
+	const auto SetStatHandler = FOnPostClientFullResponse::CreateLambda([this, Op, UserSlot, Stat, StatNames, StatValues](FPostClientFullResponse Resp)
 	{
 		// If we are invoking this before retrying, we just don't do anything 
 		if (Resp.State == RS_Retrying) return;
@@ -333,28 +448,31 @@ void UBeamStatsSubsystem::CommitStats(FUserSlot UserSlot, FBeamOperationHandle O
 			Evt.GamerTag = UBeamStatsTypeLibrary::GetGamerTag(Stat);
 			Evt.LocalSlot = UserSlot;
 
+
 			// Update the local cache from the command buffer.
-			for (int i = 0; i < CommandBuffer->StatNames.Num(); ++i)
+			const auto StatSize = StatNames.Num();
+			for (int i = 0; i < StatSize; ++i)
 			{
-				const FString StatKey = CommandBuffer->StatNames[i];
-				const FString NewStatValue = CommandBuffer->StatValues[i];
+				const FString StatKey = StatNames[i];
+				const FString NewStatValue = StatValues[i];
 
-				FString OldValue;
-				if (UserStatsState->StringStats.Contains(StatKey))
+				if (!StatKey.IsEmpty())
 				{
-					OldValue = UserStatsState->StringStats[StatKey];
-					UserStatsState->StringStats[StatKey] = NewStatValue;
+					FString OldValue;
+					if (UserStatsState->StringStats.Contains(StatKey))
+					{
+						OldValue = UserStatsState->StringStats[StatKey];
+						UserStatsState->StringStats[StatKey] = NewStatValue;
+					}
+					else
+					{
+						OldValue = FString("");
+						UserStatsState->StringStats.Add(StatKey, NewStatValue);
+					}
+					Evt.OldValues.Add(StatKey, OldValue);
+					Evt.NewValues.Add(StatKey, NewStatValue);
 				}
-				else
-				{
-					OldValue = FString("");
-					UserStatsState->StringStats.Add(StatKey, NewStatValue);
-				}
-				Evt.OldValues.Add(StatKey, OldValue);
-				Evt.NewValues.Add(StatKey, NewStatValue);
 			}
-
-			UpdateCommands.Remove(UserSlot);
 
 			OnStatsUpdatedCode.Broadcast(Evt);
 			OnStatsUpdated.Broadcast(Evt);
@@ -403,6 +521,118 @@ void UBeamStatsSubsystem::SetStat(FUserSlot Slot, FString StatKey, FString StatV
 	FBeamRequestContext Ctx = RequestSetStats(Slot, {{StatKey, StatValue}}, Op, SetStatHandler);
 }
 
+void UBeamStatsSubsystem::DeleteStat(FUserSlot Slot, FString StatKey, FBeamOperationHandle Op)
+{
+	// Ensure we have a user at the given slot.
+	FBeamRealmUser RealmUser;
+	if (!UserSlots->GetUserDataAtSlot(Slot, RealmUser, this))
+	{
+		RequestTracker->TriggerOperationError(Op, TEXT("NO_AUTHENTICATED_USER_AT_SLOT"));
+		return;
+	}
+
+	// Get the stat key for this user
+	auto Stat = UBeamStatsTypeLibrary::MakeStatsType(Client, Public, RealmUser.GamerTag);
+
+	// Make the request and update the local cache if successful
+	const auto SetStatHandler = FOnDeleteStatsFullResponse::CreateLambda([this, Op, Stat, StatKey](FDeleteStatsFullResponse Resp)
+	{
+		if (Resp.State == RS_Success)
+		{
+			UBeamStatsState* UserStatsState = PlayerStatCache.FindOrAdd(Stat, NewObject<UBeamStatsState>());
+			UserStatsState->OwnerType = Stat;
+
+			if (UserStatsState->StringStats.Contains(StatKey))
+				UserStatsState->StringStats.Remove(StatKey);
+
+			RequestTracker->TriggerOperationSuccess(Op, {});
+		}
+		else
+		{
+			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.error);
+		}
+	});
+	FBeamRequestContext Ctx = RequestDeleteStats(Slot, StatKey, Op, SetStatHandler);
+}
+
+void UBeamStatsSubsystem::IncrementStats(FUserSlot Slot, TMap<FString, int> StatIncrements, FBeamOperationHandle Op)
+{
+	// Ensure we have a user at the given slot.
+	FBeamRealmUser RealmUser;
+	if (!UserSlots->GetUserDataAtSlot(Slot, RealmUser, this))
+	{
+		RequestTracker->TriggerOperationError(Op, TEXT("NO_AUTHENTICATED_USER_AT_SLOT"));
+		return;
+	}
+
+	// Check that every one of the given stats are actually int stats	
+	const auto Stat = UBeamStatsTypeLibrary::MakeStatsType(Client, Public, RealmUser.GamerTag);
+	{
+		UBeamStatsState* UserStatsState = PlayerStatCache.FindOrAdd(Stat, NewObject<UBeamStatsState>());
+		TArray<FString> NonIntegers;
+		for (const auto& Increment : StatIncrements)
+		{
+			if (FString* ExistingStat = UserStatsState->StringStats.Find(Increment.Key))
+			{
+				if (!FDefaultValueHelper::IsStringValidInteger(*ExistingStat))
+				{
+					NonIntegers.Add(*ExistingStat);
+				}
+			}
+		}
+
+		// If we found any stat to not be an integer let's error this out. 
+		if (NonIntegers.Num())
+		{
+			RequestTracker->TriggerOperationError(Op, FString::Join(NonIntegers, TEXT(",")));
+			return;
+		}
+	}
+
+	const auto IncrementStatHandler = FOnPostClientFullResponse::CreateLambda([this, Stat, StatIncrements, Op](FPostClientFullResponse Resp)
+	{
+		if (Resp.State == RS_Error)
+		{
+			UE_LOG(LogBeamStats, Error, TEXT("Failed to Increment Stat: %s"), *Resp.ErrorData.message)
+			RequestTracker->TriggerOperationError(Op, TEXT("FAILED_TO_INCREMENT"));
+			return;
+		}
+
+		if (Resp.State == RS_Cancelled)
+		{
+			RequestTracker->TriggerOperationCancelled(Op, TEXT("FAILED_TO_INCREMENT"));
+			return;
+		}
+
+		if (Resp.State == RS_Success)
+		{
+			// Get the stat state for that key
+			UBeamStatsState* State = PlayerStatCache.FindOrAdd(Stat, NewObject<UBeamStatsState>());
+			State->OwnerType = Stat;
+
+			for (const auto& StatIncrement : StatIncrements)
+			{
+				const FString AsStr = FString::Printf(TEXT("%d"), StatIncrement.Value);
+				if (!State->StringStats.Contains(StatIncrement.Key))
+				{
+					State->StringStats.Add(StatIncrement.Key, AsStr);
+				}
+				else
+				{
+					const FString Curr = State->StringStats[StatIncrement.Key];
+					int32 CurrValue = 0;
+					checkf(FDefaultValueHelper::ParseInt(Curr, CurrValue), TEXT("You should never see this."))
+					CurrValue += StatIncrement.Value;
+					State->StringStats[StatIncrement.Key] = FString::Printf(TEXT("%d"), CurrValue);
+				}
+			}
+			RequestTracker->TriggerOperationSuccess(Op, {});
+		}
+	});
+
+	FBeamRequestContext Ctx = RequestIncrementStats(Slot, StatIncrements, Op, IncrementStatHandler);
+}
+
 
 /* * STATS SUBSYSTEM - Request Helper Functions * */
 
@@ -414,7 +644,17 @@ FBeamRequestContext UBeamStatsSubsystem::RequestGetStats(const FUserSlot& UserSl
 	return Ctx;
 }
 
-FBeamRequestContext UBeamStatsSubsystem::RequestGetStats(const FUserSlot& UserSlot, const TEnumAsByte<EBeamStatsDomain>& Domain, const TEnumAsByte<EBeamStatsVisibility>& Visibility, const FBeamGamerTag& GamerTag, const FBeamOperationHandle Op,
+FBeamRequestContext UBeamStatsSubsystem::RequestGetSingleStat(const FUserSlot& UserSlot, FBeamStatsType StatsType, FString StatKey, const FBeamOperationHandle Op,
+                                                              const FOnGetClientFullResponse Handler) const
+{
+	const auto Req = UGetClientRequest::Make(StatsType, FOptionalString(StatKey), GetTransientPackage(), {});
+	FBeamRequestContext Ctx;
+	StatsApi->CPP_GetClient(UserSlot, Req, Handler, Ctx, Op, this);
+	return Ctx;
+}
+
+FBeamRequestContext UBeamStatsSubsystem::RequestGetStats(const FUserSlot& UserSlot, const TEnumAsByte<EBeamStatsDomain>& Domain, const TEnumAsByte<EBeamStatsVisibility>& Visibility,
+                                                         const FBeamGamerTag& GamerTag, const FBeamOperationHandle Op,
                                                          const FOnGetClientFullResponse Handler) const
 {
 	const auto StatsType = UBeamStatsTypeLibrary::MakeStatsType(Domain, Visibility, GamerTag);
@@ -433,5 +673,36 @@ FBeamRequestContext UBeamStatsSubsystem::RequestSetStats(const FUserSlot& UserSl
 	const auto Req = UPostClientRequest::Make(StatsType, FOptionalBool{}, FOptionalBeamStatsType{}, FOptionalMapOfString{Stats}, FOptionalMapOfString{}, GetTransientPackage(), {});
 	FBeamRequestContext Ctx;
 	StatsApi->CPP_PostClient(UserSlot, Req, Handler, Ctx, Op, this);
+	return Ctx;
+}
+
+FBeamRequestContext UBeamStatsSubsystem::RequestIncrementStats(const FUserSlot& UserSlot, TMap<FString, int32> StatsToAdd, const FBeamOperationHandle Op, const FOnPostClientFullResponse Handler) const
+{
+	FBeamRealmUser RealmUser;
+	checkf(UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this), TEXT("You must only call this function with an authenticated UserSlot"));
+
+	TMap<FString, FString> Stats;
+	Stats.Reserve(StatsToAdd.Num());
+	for (const auto& ToAdd : StatsToAdd)
+	{
+		Stats.Add(ToAdd.Key, FString::Printf(TEXT("%d"), ToAdd.Value));
+	}
+
+	const auto StatsType = UBeamStatsTypeLibrary::MakeStatsType(Client, Public, RealmUser.GamerTag);
+	const auto Req = UPostClientRequest::Make(StatsType, FOptionalBool{}, FOptionalBeamStatsType{}, FOptionalMapOfString{}, FOptionalMapOfString{Stats}, GetTransientPackage(), {});
+	FBeamRequestContext Ctx;
+	StatsApi->CPP_PostClient(UserSlot, Req, Handler, Ctx, Op, this);
+	return Ctx;
+}
+
+FBeamRequestContext UBeamStatsSubsystem::RequestDeleteStats(const FUserSlot& UserSlot, FString StatName, const FBeamOperationHandle Op, const FOnDeleteStatsFullResponse Handler) const
+{
+	FBeamRealmUser RealmUser;
+	checkf(UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this), TEXT("You must only call this function with an authenticated UserSlot"));
+
+	const auto StatsType = UBeamStatsTypeLibrary::MakeStatsType(Client, Public, RealmUser.GamerTag);
+	const auto Req = UDeleteStatsRequest::Make(StatsType, FOptionalString{StatName}, GetTransientPackage(), {});
+	FBeamRequestContext Ctx;
+	StatsApi->CPP_DeleteStats(UserSlot, Req, Handler, Ctx, Op, this);
 	return Ctx;
 }

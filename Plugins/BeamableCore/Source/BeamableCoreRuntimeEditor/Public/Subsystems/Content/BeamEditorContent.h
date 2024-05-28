@@ -6,59 +6,30 @@
 #include "AssetToolsModule.h"
 #include "ContentBrowserModule.h"
 #include "DataTableEditorUtils.h"
-#include "LocalContentManifestEditor.h"
 #include "BeamBackend/SemanticTypes/BeamContentManifestId.h"
 #include "AutoGen/SubSystems/BeamContentApi.h"
 #include "Content/BeamContentObject.h"
-#include "Content/LocalContentManifestRow.h"
 #include "Subsystems/BeamEditor.h"
 #include "Subsystems/BeamEditorSubsystem.h"
 #include "Subsystems/EditorAssetSubsystem.h"
 #include "UObject/SavePackage.h"
 #include "Factories/DataTableFactory.h"
 #include "GameDelegates.h"
+#include "Subsystems/CLI/BeamCli.h"
+#include "Subsystems/CLI/Autogen/StreamData/LocalContentManifestStreamData.h"
 #include "BeamEditorContent.generated.h"
 
 #define LOCTEXT_NAMESPACE "FBeamEditorContent"
 
 class IDataTableEditor;
 
-
-UCLASS(BlueprintType)
-class UContentPublishState : public UObject
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY()
-	FManifestChangeSet CurrentChangeSet;
-
-	UPROPERTY()
-	TMap<FString, UBaseContentReference*> References;
-};
-
-UCLASS(BlueprintType)
-class UContentDownloadState : public UObject
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY()
-	FBeamOperationHandle CurrentDownloadHandle;
-
-	UPROPERTY()
-	FManifestChangeSet RemoteToLocalDiff;
-
-	UPROPERTY()
-	UContentBasicManifest* RemoteManifest;
-};
-
+DECLARE_MULTICAST_DELEGATE_TwoParams(FBeamContentModified, FBeamContentManifestId, FBeamContentId);
 
 /**
  * 
  */
 UCLASS(Blueprintable, BlueprintType)
-class BEAMABLECORERUNTIMEEDITOR_API UBeamEditorContent : public UBeamEditorSubsystem, public FDataTableEditorUtils::FDataTableEditorManager::ListenerType
+class BEAMABLECORERUNTIMEEDITOR_API UBeamEditorContent : public UBeamEditorSubsystem
 {
 	GENERATED_BODY()
 
@@ -68,19 +39,13 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamEditorContent : public UBeamEditorSubsy
 	UBeamContentApi* ContentApi;
 
 	UPROPERTY()
+	UBeamCli* Cli;
+
+	UPROPERTY()
 	TArray<FBeamContentManifestId> ManifestIds;
 
-	FDelegateHandle LocalContentManifestDataTableHandler;
-
 	UPROPERTY()
-	TMap<FBeamContentManifestId, ULocalContentManifestEditorState*> EditorStates;
-	UPROPERTY()
-	TMap<FBeamContentManifestId, UDataTable*> LocalManifests;
-	UPROPERTY()
-	TMap<FBeamContentManifestId, UContentPublishState*> WorkingPublishStates;
-	UPROPERTY()
-	TMap<FBeamContentManifestId, UContentDownloadState*> WorkingDownloadStates;
-
+	TMap<FBeamContentManifestId, ULocalContentManifestStreamData*> LocalManifestCache;
 
 	UPROPERTY()
 	TMap<FBeamContentId, UBeamContentObject*> LoadedContentObjects;
@@ -89,11 +54,8 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamEditorContent : public UBeamEditorSubsy
 
 	UPROPERTY()
 	UEditorAssetSubsystem* EditorAssetSubsystem;
-	UPROPERTY()
-	UAssetEditorSubsystem* AssetEditorSubsystem;
-	FAssetToolsModule* AssetToolsModule;
-	FContentBrowserModule* ContentBrowserModule;
-	
+
+
 	FDelegateHandle OnWillEnterPIE;
 
 public:
@@ -117,6 +79,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TMap<FString, UClass*> ContentTypeStringToContentClass;
 
+	/**
+	 * This is invoked whenever a content is saved. 
+	 */
+	FBeamContentModified OnContentSaved;
 
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
@@ -128,34 +94,25 @@ public:
 	void GetLocalManifestIds(TArray<FString>& Keys) const;
 
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetLocalManifestById(const FBeamContentManifestId& Id, UDataTable*& Manifest);
+	bool TryGetLocalManifestById(const FBeamContentManifestId& Id, ULocalContentManifestStreamData*& Manifest);
 
 	UClass** FindContentTypeByName(FString TypeName);
 	UClass** FindContentTypeByTypeId(FString TypeId);
 
 	bool TryLoadContentObject(const FBeamContentManifestId& OwnerManifest, FBeamContentId ContentId, UBeamContentObject*& OutLoadedContentObject);
 
-	bool InstantiateContentObject(const UDataTable* Manifest, const FBeamContentId& ContentId, UBeamContentObject*& OutNewContentObject, UObject* Outer);
+	bool LoadContentObjectInstance(const ULocalContentManifestStreamData* Manifest, const FBeamContentId& ContentId, UBeamContentObject*& OutNewContentObject, UObject* Outer);
 
 	void GetContentTypeToIdMaps(TMap<FName, TArray<TSharedPtr<FName>>>& Map);
 	bool GetContentTypeFromId(FBeamContentId Id, FString& TypeName);
 
-
-	void SynchronizeRemoteManifestWithLocalManifest(const FBeamContentManifestId Id, const UContentBasicManifest* RemoteManifest, UDataTable* LocalManifest, FEditorStateChangedHandlerCode OnSuccess,
-	                                                FEditorStateChangedHandlerCode OnError);
-
-
-	/** Implementation of FDataTableEditorManager::ListenerType --- needed to respond to selection and table data modifications */
-	virtual void PreChange(const UDataTable* Changed, FDataTableEditorUtils::EDataTableChangeInfo ChangedType) override;
-
-	virtual void PostChange(const UDataTable* Changed, FDataTableEditorUtils::EDataTableChangeInfo ChangedType) override;
-
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool GetOrCreateContent(const FBeamContentManifestId& ManifestId, const FString& ContentName, TSubclassOf<UBeamContentObject> ContentObjectSubType, TArray<FString> Tags,
+	                        UBeamContentObject*& ContentObject, FString& ErrMsg);
 
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool GetOrCreateContent(const FBeamContentManifestId& ManifestId, const FString& ContentName, TSubclassOf<UBeamContentObject> ContentObjectSubType, UBeamContentObject*& ContentObject, FString& ErrMsg);
-
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool CreateNewContent(const FBeamContentManifestId& ManifestId, const FString& ContentName, TSubclassOf<UBeamContentObject> ContentObjectSubType, UBeamContentObject*& ContentObject, FString& ErrMsg);
+	bool CreateNewContent(const FBeamContentManifestId& ManifestId, const FString& ContentName, TSubclassOf<UBeamContentObject> ContentObjectSubType, TArray<FString> Tags,
+	                      UBeamContentObject*& ContentObject, FString& ErrMsg);
 
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool GetContent(const FBeamContentManifestId& ManifestId, FBeamContentId ContentId, UBeamContentObject*& ContentObject);
@@ -167,40 +124,60 @@ public:
 	bool SaveContentObject(const FBeamContentManifestId& ManifestId, UBeamContentObject* EditingObject, FString& ErrMsg);
 
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool CreateNewContentInManifest(const FBeamContentManifestId& ManifestId, const FString& ContentName, const int& ContentTypeIndex, UBeamContentObject*& ContentObject, FString& ErrMsg);
+	bool DeleteContentObject(const FBeamContentManifestId& ManifestId, FBeamContentId Id, FString& ErrMsg);
+
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool CreateNewContentInManifest(const FBeamContentManifestId& ManifestId, const FString& ContentName, const int& ContentTypeIndex, UBeamContentObject*& ContentObject, TArray<FString> Tags,
+	                                FString& ErrMsg);
+
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryRenameContent(const FBeamContentManifestId& ManifestId, const FBeamContentId& ContentId, const FString& NewContentName, FText& Err);
+
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetFilteredListOfContent(const FBeamContentManifestId ManifestId, const FString& NameFilter, const FString& TypeFilter, const TEnumAsByte<EBeamLocalContentStatus>& ContentStatusFilter,
+	                                 TArray<UBeamContentLocalView*>& FoundLocalContent);
 
 	static FString GetJsonBlobPath(FString RowName, FBeamContentManifestId ManifestId);
 	static FString GetManifestDataTableName(FBeamContentManifestId Id);
 	static FBeamContentManifestId GetManifestIdFromDataTable(const UDataTable* Table);
 
 	UFUNCTION(BlueprintCallable)
-	void BakeManifest(UDataTable* LocalManifest, UBeamContentCache* Cache);
-
-private:
-	FBeamOperationHandle EnsureGlobalManifest();
-	void EnsureGlobalManifest_OnGetManifests(FBasicContentGetManifestsFullResponse Response, const FBeamOperationHandle Op);
-	void EnsureGlobalManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response, const FBeamOperationHandle Op);
-
-	FBeamOperationHandle PublishManifest(FBeamContentManifestId ContentManifestId, FBeamOperationEventHandler Handler);
-	void PublishManifest_OnGetManifest(FBasicContentGetManifestFullResponse Response, FBeamOperationHandle Op, FBeamContentManifestId ContentManifestId);
-	void PublishManifest_OnPostContent(FPostContentFullResponse Response, FBeamOperationHandle Op, FBeamContentManifestId ContentManifestId);
-	void PublishManifest_OnPostManifest(FBasicContentPostManifestFullResponse Response, FBeamOperationHandle Op, FBeamContentManifestId ContentManifestId) const;
-
-
-	FBeamOperationHandle DownloadManifest(FBeamContentManifestId ContentManifestId, FBeamOperationEventHandlerCode Handler);
-	void DownloadManifest_OnGetManifest(FBasicContentGetManifestFullResponse Response, FBeamOperationHandle Op, FBeamContentManifestId ManifestId);
-	void DownloadManifest_ApplyUserInput(FBeamContentManifestId ManifestId, bool AcceptCurrentChanges);
-
-	static void BuildChangeSetForManifest(TArray<UBaseContentReference*> LocalReferences, TArray<UBaseContentReference*> RemoteReferences, FManifestChangeSet& ChangeSet);
-	static FString MakePublishKey(const UBaseContentReference* Ref, FString Visibility = {});
-
-
-	void HandleAssetOpenedInEditor(UObject* Object, IAssetEditorInstance* AssetEditor);
+	void BakeManifest(ULocalContentManifestStreamData* LocalManifest, UBeamContentCache* Cache);
 
 	/**
-	 * @brief Compares and finds the manifest ID for the data table instance that is being modified --- if it cannot find it among the loaded manifests, we return false.
+	 * @brief Downloads the remote manifest and content objects to the local cache. This destroys all local changes. 
 	 */
-	bool GetChangingManifest(const UDataTable* Changed, FBeamContentManifestId& ManifestId, UDataTable*& EditingTable) const;
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Content", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle RefreshLocalManifestOperation(FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc RefreshLocalManifestOperation
+	 */
+	FBeamOperationHandle CPP_RefreshLocalManifestOperation(FBeamOperationEventHandlerCode OnOperationEvent);
+
+
+	/**
+	 * @brief Downloads the remote manifest and content objects to the local cache. This destroys all local changes. 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Content", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool PublishManifest(FBeamContentManifestId ContentManifestId, FString& Err);
+
+	/**
+	 * @brief Downloads the remote manifest and content objects to the local cache. This destroys all local changes. 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Content", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool DownloadManifest(FBeamContentManifestId ContentManifestId, FString& Err);
+
+	/**
+	 * @brief Fetches the local content manifest from the CLI synchronously. 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Content", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool RefreshLocalManifests(FString& Err);
+
+private:
+	FBeamOperationHandle RefreshLocalManifests(FBeamOperationHandle Op);
+
+	void UpdateLocalManifestCache(const TArray<ULocalContentManifestStreamData*>& Data);
 };
 
 #undef LOCTEXT_NAMESPACE

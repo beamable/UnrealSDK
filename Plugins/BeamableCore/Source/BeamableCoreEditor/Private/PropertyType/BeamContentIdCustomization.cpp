@@ -21,7 +21,16 @@ void FBeamContentIdCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 {
 	//UE_LOG(LogTemp, Warning, TEXT("%s - The header customization is called"), ANSI_TO_TCHAR(__FUNCTION__));
 	// Get the property handler of the type property:
-	const TSharedPtr<IPropertyHandle> AsStringPropertyHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBeamContentId, AsString));
+	TSharedPtr<IPropertyHandle> AsStringPropertyHandle;
+	if (const auto StructProp = CastField<FStructProperty>(StructPropertyHandle->GetProperty()))
+	{
+		if (StructProp->Struct == FBeamContentId::StaticStruct())
+			AsStringPropertyHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBeamContentId, AsString));
+
+		if (StructProp->Struct == FBeamContentLink::StaticStruct())
+			AsStringPropertyHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FBeamContentLink, AsString));
+	}
+
 	check(AsStringPropertyHandle.IsValid());
 
 
@@ -49,12 +58,12 @@ void FBeamContentIdCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 		TSharedPtr<FName> SelectedIdName = TSharedPtr<FName>{};
 		if (const auto NewIds = ContentTypeToIdsMap.Find(*SelectedTypeName); NewIds && (NewIds->Num() > 0))
 		{
-			if(Id.IsEmpty())
+			if (Id.IsEmpty())
 			{
 				AsStringPropertyHandle->SetValue((*NewIds)[0]->ToString());
 				Id = (*NewIds)[0]->ToString();
 			}
-			
+
 			this->Ids = TArray(*NewIds);
 
 			const auto FoundIds = ContentTypeToIdsMap.Find(*SelectedTypeName);

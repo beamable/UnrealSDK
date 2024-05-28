@@ -116,7 +116,7 @@ struct BEAMABLECORE_API FLobbyUpdateNotificationMessage : public FBeamJsonSerial
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
-	EBeamLobbyEvent Type;
+	EBeamLobbyEvent Type = EBeamLobbyEvent::BEAM_LobbyCreated;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam", meta=(PinHiddenByDefault))
 	FLobbyUpdateCreatedEvt CreatedData;

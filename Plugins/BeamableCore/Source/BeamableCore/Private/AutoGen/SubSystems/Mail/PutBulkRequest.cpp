@@ -9,7 +9,7 @@ void UPutBulkRequest::BuildVerb(FString& VerbString) const
 void UPutBulkRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/mail/{objectId}/bulk");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *FString::Printf(TEXT("%lld"), ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);

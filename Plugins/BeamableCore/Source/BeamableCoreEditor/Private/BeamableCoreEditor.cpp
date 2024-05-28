@@ -84,13 +84,20 @@ void FBeamableCoreEditorModule::StartupModule()
 			FBeamContentId::StaticStruct()->GetFName(),
 			// this is where our MakeInstance() method is useful
 			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamContentIdCustomization::MakeInstance));
-		
+
+		// to register our custom property
+		PropertyModule.RegisterCustomPropertyTypeLayout(
+			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
+			FBeamContentLink::StaticStruct()->GetFName(),
+			// this is where our MakeInstance() method is useful
+			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamContentIdCustomization::MakeInstance));
+
 		PropertyModule.RegisterCustomPropertyTypeLayout(
 			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
 			FOptionalString::StaticStruct()->GetFName(),
 			// this is where our MakeInstance() method is useful
 			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamOptionalCustomization<FOptionalString>::MakeInstance));
-		
+
 		PropertyModule.RegisterCustomPropertyTypeLayout(
 			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
 			FOptionalInt32::StaticStruct()->GetFName(),
@@ -99,10 +106,10 @@ void FBeamableCoreEditorModule::StartupModule()
 
 		PropertyModule.RegisterCustomPropertyTypeLayout(
 			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
-			FOptionalInt32::StaticStruct()->GetFName(),
+			FOptionalInt64::StaticStruct()->GetFName(),
 			// this is where our MakeInstance() method is useful
-			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamOptionalCustomization<FOptionalInt32>::MakeInstance));
-		
+			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamOptionalCustomization<FOptionalInt64>::MakeInstance));
+
 		PropertyModule.NotifyCustomizationModuleChanged();
 	}
 
@@ -167,7 +174,7 @@ void FBeamableCoreEditorModule::AddBeamableButtons(FToolBarBuilder& Builder)
 {
 	Builder.AddToolBarButton(FBeamableCoreEditorCommands::Get().OpenBeamableWindowCommand, NAME_None,
 	                         LOCTEXT("Beamable", "Beamable"), LOCTEXT("BeamableTooltip", "Opens the Beamable Window"),
-	                         FSlateIcon(FName(TEXT("BeamableCore")), FName(TEXT("BeamIconSpaceship"))));
+	                         FSlateIcon(FName(TEXT("BeamableCore")), FName(TEXT("BeamIcon"))));
 }
 
 void FBeamableCoreEditorModule::OpenMainBeamableWindow() const

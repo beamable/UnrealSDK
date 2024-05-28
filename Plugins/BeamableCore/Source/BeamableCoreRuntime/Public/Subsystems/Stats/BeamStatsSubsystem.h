@@ -155,7 +155,7 @@ public:
 
 	// Operations
 	/**
-	 * @brief Refreshes the client/public stats the user at the given user slot. 
+	 * @brief Refreshes the stats the user at the given user slot. 
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Stats", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle RefreshStatsOperation(FUserSlot UserSlot, FBeamStatsType Type, FBeamOperationEventHandler OnOperationEvent);
@@ -163,6 +163,16 @@ public:
 	 * @copydoc RefreshStatsOperation
 	 */
 	FBeamOperationHandle CPP_RefreshStatsOperation(FUserSlot UserSlot, FBeamStatsType Type, FBeamOperationEventHandlerCode OnOperationEvent);
+
+	/**
+	 * @brief Refreshes the given stat for the user at the given user slot. 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Stats", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle RefreshSingleStatOperation(FUserSlot UserSlot, FBeamStatsType Type, FString StatKey, FBeamOperationEventHandler OnOperationEvent);
+	/**
+	 * @copydoc RefreshSingleStatOperation
+	 */
+	FBeamOperationHandle CPP_RefreshSingleStatOperation(FUserSlot UserSlot, FBeamStatsType Type, FString StatKey, FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * @brief Takes whatever is the current stat update command for the given user slot and submits it to the Beamable backend.
@@ -185,14 +195,42 @@ public:
 	 */
 	FBeamOperationHandle CPP_SetStatOperation(FUserSlot UserSlot, const FString& Key, const FString& Value, FBeamOperationEventHandlerCode OnOperationEvent);
 
+	/**
+	 * @brief Removes a single stat for the calling user slot.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Stats", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle DeleteStatOperation(FUserSlot UserSlot, FString Key, FBeamOperationEventHandler OnOperationEvent);
+	/**
+	 * @copydoc DeleteStatOperation
+	 */
+	FBeamOperationHandle CPP_DeleteStatOperation(FUserSlot UserSlot, const FString& Key, FBeamOperationEventHandlerCode OnOperationEvent);
+
+
+	/**
+	 * @brief Increments any integer stat by some amount for the calling user slot.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Stats", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle IncrementStatsOperation(FUserSlot UserSlot, const TMap<FString, int32>& Stats, FBeamOperationEventHandler OnOperationEvent);
+	/**
+	 * @copydoc IncrementStatsOperation
+	 */
+	FBeamOperationHandle CPP_IncrementStatsOperation(FUserSlot UserSlot, const TMap<FString, int32>& Stats, FBeamOperationEventHandlerCode OnOperationEvent);
+	
 private:
 	// Operation Implementations
 	void RefreshStats(FUserSlot UserSlot, FBeamStatsType Type, FBeamOperationHandle Op);
+	void RefreshSingleStat(FUserSlot UserSlot, FBeamStatsType Type, FString StatKey, FBeamOperationHandle Op);	
 	void CommitStats(FUserSlot UserSlot, FBeamOperationHandle Op);
-	void SetStat(FUserSlot Slot, FString StatKey, FString StatValue, FBeamOperationHandle Op);
+	void SetStat(FUserSlot Slot, FString StatKey, FString StatValue, FBeamOperationHandle Op);	
+	void DeleteStat(FUserSlot Slot, FString StatKey, FBeamOperationHandle Op);
+	void IncrementStats(FUserSlot Slot, TMap<FString, int> StatIncrements, FBeamOperationHandle Op);
 
 	// Request Helper Functions
 	FBeamRequestContext RequestGetStats(const FUserSlot& UserSlot, FBeamStatsType StatsType, FBeamOperationHandle Op, FOnGetClientFullResponse Handler) const;
-	FBeamRequestContext RequestGetStats(const FUserSlot& UserSlot, const TEnumAsByte<EBeamStatsDomain>& Domain, const TEnumAsByte<EBeamStatsVisibility>& Visibility, const FBeamGamerTag& GamerTag, const FBeamOperationHandle Op, const FOnGetClientFullResponse Handler) const;
+	FBeamRequestContext RequestGetSingleStat(const FUserSlot& UserSlot, FBeamStatsType StatsType, FString StatKey, FBeamOperationHandle Op, FOnGetClientFullResponse Handler) const;
+	FBeamRequestContext RequestGetStats(const FUserSlot& UserSlot, const TEnumAsByte<EBeamStatsDomain>& Domain, const TEnumAsByte<EBeamStatsVisibility>& Visibility, const FBeamGamerTag& GamerTag, const FBeamOperationHandle Op,
+	                                    const FOnGetClientFullResponse Handler) const;
 	FBeamRequestContext RequestSetStats(const FUserSlot& UserSlot, TMap<FString, FString> Stats, const FBeamOperationHandle Op, const FOnPostClientFullResponse Handler) const;
+	FBeamRequestContext RequestIncrementStats(const FUserSlot& UserSlot, TMap<FString, int32> StatsToAdd, const FBeamOperationHandle Op, const FOnPostClientFullResponse Handler) const;
+	FBeamRequestContext RequestDeleteStats(const FUserSlot& UserSlot, FString StatName, FBeamOperationHandle Op, FOnDeleteStatsFullResponse Handler) const;
 };

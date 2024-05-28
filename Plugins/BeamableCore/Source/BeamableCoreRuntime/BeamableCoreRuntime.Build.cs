@@ -11,8 +11,11 @@ public class BeamableCoreRuntime : ModuleRules
 			{
 				"BeamableCore",
 				"Core",
-				"CoreUObject", "Engine", "InputCore",
-				"HeadMountedDisplay", "Json",
+				"CoreUObject",
+				"Engine",
+				"InputCore",
+				"HeadMountedDisplay",
+				"Json",
 				"JsonUtilities",
 				"DeveloperSettings",
 				"HTTP"
@@ -54,7 +57,8 @@ public class BeamableCoreRuntime : ModuleRules
 					"JsonUtilities",
 					"DataTableEditor",
 					"DeveloperToolSettings",
-					"AssetTools"
+					"AssetTools",
+					"BeamableCoreRuntimeEditor",
 				}
 			);
 
@@ -78,10 +82,6 @@ public class BeamableCoreRuntime : ModuleRules
 					"HTTP",
 				}
 			);
-			PublicDependencyModuleNames.AddRange(new[]
-			{
-				"BeamableCoreRuntimeEditor",
-			});
 		}
 	}
 }

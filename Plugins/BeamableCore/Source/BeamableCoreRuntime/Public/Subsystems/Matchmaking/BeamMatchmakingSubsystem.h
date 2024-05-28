@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamGameTypeContent.h"
+#include "Content/BeamContentTypes/BeamGameTypeContent.h"
 #include "AutoGen/SubSystems/BeamMatchmakingApi.h"
 #include "BeamBackend/SemanticTypes/BeamStatsType.h"
 #include "BeamNotifications/SubSystems/BeamMatchmakingNotifications.h"

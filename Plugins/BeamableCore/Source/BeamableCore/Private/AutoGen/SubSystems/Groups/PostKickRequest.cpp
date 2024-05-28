@@ -9,7 +9,7 @@ void UPostKickRequest::BuildVerb(FString& VerbString) const
 void UPostKickRequest::BuildRoute(FString& RouteString) const
 {
 	FString Route = TEXT("/object/groups/{objectId}/kick");
-	Route = Route.Replace(TEXT("{objectId}"), *FString::FromInt(ObjectId));
+	Route = Route.Replace(TEXT("{objectId}"), *FString::Printf(TEXT("%lld"), ObjectId));
 	
 	FString QueryParams = TEXT("");
 	QueryParams.Reserve(1024);

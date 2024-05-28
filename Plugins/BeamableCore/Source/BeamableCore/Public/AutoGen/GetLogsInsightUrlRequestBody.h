@@ -5,6 +5,7 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
 
 #include "GetLogsInsightUrlRequestBody.generated.h"
@@ -27,6 +28,8 @@ public:
 	FOptionalString Order = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit", Category="Beam")
 	FOptionalInt32 Limit = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Filters", Category="Beam")
+	FOptionalArrayOfString Filters = {};
 
 	
 

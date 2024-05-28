@@ -736,9 +736,18 @@ public:
 		FString Route = TEXT(""), Verb = TEXT(""), Body = TEXT("");
 
 		// Build Route --- Microservice requests return a string in the following format: 'micro_{servicename}/{endpoint}'
-		RequestData->BuildRoute(Route);
-		Route = TargetBeamableUrl + FString::Format(TEXT("/basic/{0}.{1}.{2}{3}"),
-		                                            {RealmHandle.Cid.AsString, RealmHandle.Pid.AsString, Prefix, Route});
+		if (!IsRunningDedicatedServer())
+		{
+			RequestData->BuildRoute(Route);
+			Route = TargetBeamableUrl + FString::Format(TEXT("/basic/{0}.{1}.{2}{3}"), {RealmHandle.Cid.AsString, RealmHandle.Pid.AsString, Prefix, Route});
+		}
+		// For dedicated servers, we always use the TargetRealm
+		else
+		{
+			const auto DedicatedServerRealm = GetDefault<UBeamCoreSettings>()->TargetRealm;
+			RequestData->BuildRoute(Route);
+			Route = TargetBeamableUrl + FString::Format(TEXT("/basic/{0}.{1}.{2}{3}"), {DedicatedServerRealm.Cid.AsString, DedicatedServerRealm.Pid.AsString, Prefix, Route});
+		}
 
 		// Build verb --- this is always POST in the case of a Microservice
 		RequestData->BuildVerb(Verb);
@@ -1776,7 +1785,7 @@ public:
 			// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
 			Context->BeamStatus = AS_Completed;
 		}
-	}	
+	}
 
 	UFUNCTION(BlueprintCallable, Category="Beam|Requests", DisplayName="Beam - Did Timeout", meta=(ExpandBoolAsExecs="ReturnValue"))
 	static bool IsRetryingTimeout(FBeamRequestContext Ctx);

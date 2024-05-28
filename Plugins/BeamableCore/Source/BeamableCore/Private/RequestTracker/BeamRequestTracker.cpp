@@ -81,9 +81,11 @@ void UBeamRequestTracker::GatherRequestIdsFromWaitHandle(const FBeamWaitHandle H
 
 void UBeamRequestTracker::CheckAndCompleteWaitHandles(int64)
 {
-	bool bDidCompleteAtLeastOneWait = false;
 	// Go through all active wait handles and figure out which of them have been completed.
 	// If they have, we run their register FOnWaitCompleted callback.
+	// Also, gets list of completed wait handles that are just awaiting clean up
+	TArray<FString> AwaitingCleanupHandles;
+	bool bDidCompleteAtLeastOneWait = false;
 	for (int i = ActiveWaitHandles.Num() - 1; i >= 0; --i)
 	{
 		// Get the handle
@@ -91,9 +93,11 @@ void UBeamRequestTracker::CheckAndCompleteWaitHandles(int64)
 
 		// Get the state for this wait handle
 		auto ActiveWaitState = ActiveWaitStates.FindChecked(ActiveWaitHandle);
+
+		// Skip if it is already completed and just awaiting
 		if (ActiveWaitState->Status == AS_Completed)
 		{
-			UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Beamable WaitHandle | WaitHandle is already completed and awaiting clean up. WAIT_HANDLE=%llu"), ActiveWaitHandle.WaitHandleId);
+			AwaitingCleanupHandles.Add(FString::Printf(TEXT("%llu"), ActiveWaitHandle.WaitHandleId));
 			continue;
 		}
 
@@ -176,6 +180,10 @@ void UBeamRequestTracker::CheckAndCompleteWaitHandles(int64)
 		}
 	}
 
+	// Log out handles that are waiting clean up.
+	if (AwaitingCleanupHandles.Num())
+		UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Beamable WaitHandle | WaitHandles awaiting clean up. WAIT_HANDLE=%s"), *FString::Join(AwaitingCleanupHandles, TEXT(",")));
+
 	// We re-run the check if at least one wait handle was completed.
 	if (bDidCompleteAtLeastOneWait) CheckAndCompleteWaitHandles(-1);
 }
@@ -183,6 +191,7 @@ void UBeamRequestTracker::CheckAndCompleteWaitHandles(int64)
 
 void UBeamRequestTracker::CleanUpWaitHandles()
 {
+	TArray<FString> CleanedUpHandles;
 	// Go through all active wait handles and figure out which of them have been completed.
 	// If they have, we run their register FOnWaitCompleted callback.
 	for (int i = ActiveWaitHandles.Num() - 1; i >= 0; --i)
@@ -203,16 +212,21 @@ void UBeamRequestTracker::CleanUpWaitHandles()
 			}
 
 			// Clear the handle from active ones
-			UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Beamable CleanUp | Cleaning Up Data associated with WaitHandle. WAIT_HANDLE_ID=%llu"), ActiveWaitHandle.WaitHandleId);
+			CleanedUpHandles.Add(FString::Printf(TEXT("%llu"), ActiveWaitHandle.WaitHandleId));
 			ActiveWaitHandles.RemoveAt(i);
 			ActiveWaitStates.Remove(ActiveWaitHandle);
 		}
 	}
+
+	if (CleanedUpHandles.Num())
+		UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Beamable WaitHandle | Cleaned Up Data associated with WaitHandle. WAIT_HANDLE=%s"), *FString::Join(CleanedUpHandles, TEXT(",")));
 }
 
 
 void UBeamRequestTracker::CleanUpOperations()
 {
+	TArray<FString> OngoingOperations;
+	TArray<FString> CleanedUpOperations;
 	// Go through all active wait handles and figure out which of them have been completed.
 	// If they have, we run their register FOnWaitCompleted callback.
 	for (int i = ActiveOperations.Num() - 1; i >= 0; --i)
@@ -222,7 +236,7 @@ void UBeamRequestTracker::CleanUpOperations()
 		// We skip all non-completed operations
 		if (const auto& Op = ActiveOperationState[OpId]; Op->Status == UBeamOperationState::ONGOING)
 		{
-			UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Beamable Operations | Operation is ongoing so we won't clean it up. OP_ID=%llu"), OpId.OperationId);
+			OngoingOperations.Add(FString::Printf(TEXT("%llu"), OpId.OperationId));
 			continue;
 		}
 
@@ -243,11 +257,17 @@ void UBeamRequestTracker::CleanUpOperations()
 		// If the operation is done and no wait handle depends on it, just clean it up.
 		if (bDependenciesAreFinished)
 		{
-			UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Beamable CleanUp | Cleaning Up Operation. OP_ID=%llu"), OpId.OperationId);
+			CleanedUpOperations.Add(FString::Printf(TEXT("%llu"), OpId.OperationId));
 			ActiveOperations.RemoveAt(i);
 			ActiveOperationState.Remove(OpId);
 		}
 	}
+
+	if (OngoingOperations.Num())
+		UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Beamable CleanUp | Operation is ongoing so we won't clean it up. OP_IDS=%s"), *FString::Join(OngoingOperations, TEXT(", ")));
+
+	if (CleanedUpOperations.Num())
+		UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Beamable CleanUp | Cleaning Up Operation. OP_IDS=%s"), *FString::Join(CleanedUpOperations, TEXT(", ")));
 }
 
 void UBeamRequestTracker::HandleBackendCleanUp(TArray<int64>& OutUsingRequestIds)
@@ -433,7 +453,7 @@ bool UBeamRequestTracker::IsWaitFailed(const FBeamWaitCompleteEvent& Evt, TArray
 		const auto Context = Backend->InFlightRequestContexts.FindChecked(RequestId);
 		const auto bDidError = !Backend->IsSuccessfulResponse(Context.ResponseCode);
 		bDidFail |= bDidError;
-		if(bDidError) Errors.Add(Backend->InFlightResponseErrorData[Context].message);
+		if (bDidError) Errors.Add(Backend->InFlightResponseErrorData[Context].message);
 	}
 
 	for (const FBeamOperationHandle& Operation : Evt.Operations)
@@ -441,18 +461,18 @@ bool UBeamRequestTracker::IsWaitFailed(const FBeamWaitCompleteEvent& Evt, TArray
 		const UBeamOperationState* OpState = ActiveOperationState.FindChecked(Operation);
 		const auto bDidError = OpState->Status == UBeamOperationState::COMPLETE_FAILURE;
 		bDidFail |= bDidError;
-		if(bDidError)
+		if (bDidError)
 		{
 			for (FBeamOperationEvent TriggeredEvent : OpState->TriggeredEvents)
 			{
-				if(TriggeredEvent.EventType == OET_ERROR)
+				if (TriggeredEvent.EventType == OET_ERROR)
 					Errors.Add(TriggeredEvent.EventData);
 			}
-		} 
+		}
 	}
 
 	for (const FBeamWaitHandle& WaitDependency : State->WaitDependencies)
-	{		
+	{
 		bDidFail |= IsWaitFailed(FBeamWaitCompleteEvent{WaitDependency}, Errors);
 	}
 
@@ -579,22 +599,22 @@ void UBeamRequestTracker::TriggerOperationEventFull(const FBeamOperationHandle& 
 	State->TriggeredEvents.Add(Result);
 	if (State->CodeHandler.ExecuteIfBound(Result))
 	{
-		UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Called CPP Handler for Operation Event: OPERATION_ID=%lld SLOTS=[%s], EVENT_TYPE=%s, SUB_EVENT=%c, CALLING_SYSTEM=%s, DATA=%s"),
+		UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Called CPP Handler for Operation Event: OPERATION_ID=%lld SLOTS=[%s], EVENT_TYPE=%s, SUB_EVENT=%s, CALLING_SYSTEM=%s, DATA=%s"),
 		       Op.OperationId,
 		       *SlotsJoinedStr,
 		       *StaticEnum<EBeamOperationEventType>()->GetNameStringByValue(static_cast<uint8>(Type)),
-		       SubEvent,
+		       *SubEvent.ToString(),
 		       *CallingSystem,
 		       *EventData);
 	}
 
 	if (State->BlueprintHandler.ExecuteIfBound(Result))
 	{
-		UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Called Dynamic Handler for Operation Event: OPERATION_ID=%lld SLOTS=[%s], EVENT_TYPE=%s, SUB_EVENT=%c, CALLING_SYSTEM=%s, DATA=%s"),
+		UE_LOG(LogBeamRequestTracker, Verbose, TEXT("Called Dynamic Handler for Operation Event: OPERATION_ID=%lld SLOTS=[%s], EVENT_TYPE=%s, SUB_EVENT=%s, CALLING_SYSTEM=%s, DATA=%s"),
 		       Op.OperationId,
 		       *SlotsJoinedStr,
 		       *StaticEnum<EBeamOperationEventType>()->GetNameStringByValue(static_cast<uint8>(Type)),
-		       SubEvent,
+		       *SubEvent.ToString(),
 		       *CallingSystem,
 		       *EventData);
 	}

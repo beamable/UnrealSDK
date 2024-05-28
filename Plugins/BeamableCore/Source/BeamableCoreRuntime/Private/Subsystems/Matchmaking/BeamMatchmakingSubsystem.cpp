@@ -226,7 +226,7 @@ void UBeamMatchmakingSubsystem::TryJoinQueue(FUserSlot Slot, FBeamContentId Game
 	});
 
 	FBeamRequestContext Ctx;
-	const auto Req = UPostTicketsRequest::Make(FOptionalBool{true}, {}, Team, {}, FOptionalArrayOfBeamContentId{{GameTypeQueue}}, GetTransientPackage(), {});
+	const auto Req = UPostTicketsRequest::Make(FOptionalBool{true}, {}, Team, {}, FOptionalArrayOfBeamContentId{{GameTypeQueue}}, {}, GetTransientPackage(), {});
 	MatchmakingApi->CPP_PostTickets(Slot, Req, Handler, Ctx, Op, this);
 }
 

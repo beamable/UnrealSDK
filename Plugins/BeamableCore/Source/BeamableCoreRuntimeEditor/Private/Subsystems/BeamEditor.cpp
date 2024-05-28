@@ -9,6 +9,9 @@
 #include "AutoGen/SubSystems/BeamAuthApi.h"
 #include "AutoGen/SubSystems/BeamAccountsApi.h"
 #include "AutoGen/SubSystems/BeamRealmsApi.h"
+#include "Content/BeamContentTypes/BeamCurrencyContent.h"
+#include "Content/BeamContentTypes/BeamItemContent.h"
+#include "Content/BeamContentTypes/BeamGameTypeContent.h"
 
 #include "Subsystems/BeamEditorSubsystem.h"
 
@@ -80,13 +83,63 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 	if (CoreSettings->BeamableEnvironment.IsNull())
 	{
 		CoreSettings->BeamableEnvironment = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/BeamProdEnv.BeamProdEnv'"));
+		
+		CoreSettings->BeamablePossibleEnvironments.AddDefaulted(3);
+		CoreSettings->BeamablePossibleEnvironments[0] = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/BeamProdEnv.BeamProdEnv'"));
+		CoreSettings->BeamablePossibleEnvironments[1] = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/BeamStagingEnv.BeamStagingEnv'"));
+		CoreSettings->BeamablePossibleEnvironments[2] = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/BeamDevEnv.BeamDevEnv'"));
+		
 		CoreSettings->SaveConfig(CPF_Config, *CoreSettings->GetDefaultConfigFilename());
 	}
 
+	// Set up the default Editor settings
 	auto EditorSettings = GetMutableDefault<UBeamEditorSettings>();
+	auto bEditorSettingsChanged = false;
 	if (EditorSettings->BeamableMainWindow.IsNull())
 	{
 		EditorSettings->BeamableMainWindow = FSoftObjectPath(TEXT("/Script/Blutility.EditorUtilityWidgetBlueprint'/BeamableCore/Editor/EWBP_BeamableWindow.EWBP_BeamableWindow'"));
+		bEditorSettingsChanged = true;
+	}
+
+	// Set up Status Icons
+	if (EditorSettings->LocalContentStatusIcons.IsEmpty())
+	{
+		const auto CreatedIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconStatus_Added.IconStatus_Added'")));
+		const auto DeletedIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconStatus_Deleted.IconStatus_Deleted'")));
+		const auto ModifiedIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconStatus_Modified.IconStatus_Modified'")));
+		const auto UpToDateIconPath = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconStatus_NC.IconStatus_NC'")));
+		EditorSettings->LocalContentStatusIcons.Add(Beam_LocalContentCreated, CreatedIconPath);
+		EditorSettings->LocalContentStatusIcons.Add(Beam_LocalContentDeleted, DeletedIconPath);
+		EditorSettings->LocalContentStatusIcons.Add(Beam_LocalContentModified, ModifiedIconPath);
+		EditorSettings->LocalContentStatusIcons.Add(Beam_LocalContentUpToDate, UpToDateIconPath);
+		bEditorSettingsChanged = true;
+	}
+
+	// Set up Content Icons
+	if (EditorSettings->LocalContentViewConfigs.IsEmpty())
+	{
+		const auto BeamableColor = FColor::FromHex(TEXT("9176BCFF"));
+
+		FBeamContentViewConfig ItemConfig;
+		ItemConfig.BorderColor = BeamableColor;
+		ItemConfig.TypeForContentObject = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconBeam_Item.IconBeam_Item'")));
+
+		FBeamContentViewConfig CurrencyConfig;
+		CurrencyConfig.BorderColor = BeamableColor;
+		CurrencyConfig.TypeForContentObject = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconBeam_Currency.IconBeam_Currency'")));
+
+		FBeamContentViewConfig GameTypeConfig;
+		GameTypeConfig.BorderColor = BeamableColor;
+		GameTypeConfig.TypeForContentObject = TSoftObjectPtr<UTexture2D>(FSoftObjectPath(TEXT("/Script/Engine.Texture2D'/BeamableCore/Editor/Icons/IconBeam_GameType.IconBeam_GameType'")));
+
+		EditorSettings->LocalContentViewConfigs.Add(UBeamItemContent::StaticClass(), ItemConfig);
+		EditorSettings->LocalContentViewConfigs.Add(UBeamCurrencyContent::StaticClass(), CurrencyConfig);
+		EditorSettings->LocalContentViewConfigs.Add(UBeamGameTypeContent::StaticClass(), GameTypeConfig);
+		bEditorSettingsChanged = true;
+	}
+
+	if (bEditorSettingsChanged)
+	{
 		EditorSettings->SaveConfig(CPF_Config, *EditorSettings->GetDefaultConfigFilename());
 	}
 
@@ -138,7 +191,8 @@ void UBeamEditorBootstrapper::Run_EditorReady(FBeamOperationEvent OperationEvent
 FUserSlot UBeamEditor::GetMainEditorSlot(FBeamRealmUser& UserData) const
 {
 	const auto MainSlot = GetDefault<UBeamCoreSettings>()->DeveloperUserSlots[MainEditorSlotIdx];
-	ensureAlwaysMsgf(UserSlots->GetUserDataAtSlot(MainSlot, UserData, nullptr), TEXT("No developer signed into the MainEditorDeveloper UserSlot! Please call UserSlot->SetAuthenticationData before this."));
+	ensureAlwaysMsgf(UserSlots->GetUserDataAtSlot(MainSlot, UserData, nullptr),
+	                 TEXT("No developer signed into the MainEditorDeveloper UserSlot! Please call UserSlot->SetAuthenticationData before this."));
 	return MainSlot;
 }
 
@@ -405,16 +459,56 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 	// TODO: Expose error handling for BeamErrorResponses that happen in the PrepareRealmChange operations
 	SetActiveTargetRealmUnsafe(NewRealmHandle);
 
-	const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
+	// Get the Main Editor Slot and make it point at the new realm
+	FBeamRealmUser UserData;
+	const auto MainEditorSlot = GetMainEditorSlot(UserData);
+	UserSlots->SetPIDAtSlot(MainEditorSlot, NewRealmHandle.Pid, this);
 
-	InitalizeFromRealmOps.Reset(Subsystems.Num());
-	for (auto& Subsystem : Subsystems)
+	const auto GetConfigReq = UGetConfigRequest::Make(GetTransientPackage(), {});
+	const auto GetConfigReqHandle = FOnGetConfigFullResponse::CreateLambda([this, Op, MainEditorSlot, NewRealmHandle](FGetConfigFullResponse GetResp)
 	{
-		const auto Handle = Subsystem->InitializeFromRealm(NewRealmHandle);
-		InitalizeFromRealmOps.Add(Handle);
-	}
-	const auto OnCompleteCode = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, SelectRealm_OnSystemsReady), NewRealmHandle, Op);
-	InitializeFromRealmsWait = RequestTracker->CPP_WaitAll({}, InitalizeFromRealmOps, {}, OnCompleteCode);
+		if (GetResp.State == RS_Success)
+		{
+			// We ensure that the realm is correctly configured to use Beamable's notification system (as opposed to our legacy PubNub-based system that UE doesn't support)
+			TMap<FString, FString> CurrConfig = TMap<FString, FString>(GetResp.SuccessData->Config);
+			if (CurrConfig.Contains(TEXT("notification|publisher"))) CurrConfig[TEXT("notification|publisher")] = TEXT("beamable");
+			else CurrConfig.Add(TEXT("notification|publisher"), TEXT("beamable"));
+			const auto Req = UPutConfigRequest::Make(CurrConfig, GetTransientPackage(), {});
+			const auto Handler = FOnPutConfigFullResponse::CreateLambda([this, Op, NewRealmHandle](FPutConfigFullResponse PutResp)
+			{
+				if (PutResp.State == RS_Success)
+				{
+					const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
+					InitalizeFromRealmOps.Reset(Subsystems.Num());
+					for (auto& Subsystem : Subsystems)
+					{
+						const auto Handle = Subsystem->InitializeFromRealm(NewRealmHandle);
+						InitalizeFromRealmOps.Add(Handle);
+					}
+					const auto OnCompleteCode = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, SelectRealm_OnSystemsReady), NewRealmHandle, Op);
+					InitializeFromRealmsWait = RequestTracker->CPP_WaitAll({}, InitalizeFromRealmOps, {}, OnCompleteCode);
+					return;
+				}
+
+				if (PutResp.State == RS_Retrying)
+					return;
+
+				RequestTracker->TriggerOperationError(Op, PutResp.ErrorData.message);
+			});
+
+			FBeamRequestContext Ctx;
+			GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_PutConfig(MainEditorSlot, Req, Handler, Ctx, Op, this);
+			return;
+		}
+
+		if (GetResp.State == RS_Retrying)
+			return;
+
+		RequestTracker->TriggerOperationError(Op, GetResp.ErrorData.message);
+	});
+
+	FBeamRequestContext Ctx;
+	GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_GetConfig(MainEditorSlot, GetConfigReq, GetConfigReqHandle, Ctx, Op, this);
 }
 
 void UBeamEditor::SelectRealm_OnSystemsReady(FBeamWaitCompleteEvent, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op) const
@@ -426,9 +520,9 @@ void UBeamEditor::SelectRealm_OnSystemsReady(FBeamWaitCompleteEvent, FBeamRealmH
 	const auto MainEditorSlot = GetMainEditorSlot(UserData);
 
 	// Update the PID and change the slot
-	UserSlots->SetPIDAtSlot(MainEditorSlot, NewRealmHandle.Pid, this);
 	UserSlots->SaveSlot(MainEditorSlot, this);
 
+	// Notify all systems that we have successfully initialized the realm
 	const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
 	for (auto& Subsystem : Subsystems)
 	{
@@ -558,10 +652,9 @@ void UBeamEditor::UpdateSignedInUserData_OnGetRealms(const FGetGamesFullResponse
 		// If we only have 1 project (Root PID) associated with this customer, we sign in automatically.				
 		if (Games.Num() > 0)
 		{
-			// We change the editor developer realm automatically to the default Root PID. 
+			// We change the editor developer realm automatically to the 2nd child PID (by default, this will be the default realm). 
 			const auto Pid = Games[0]->Pid;
 			SetActiveTargetRealmUnsafe(FBeamRealmHandle{Cid, Pid});
-
 
 			UserSlots->SetPIDAtSlot(GetMainEditorSlot(), Pid, nullptr);
 

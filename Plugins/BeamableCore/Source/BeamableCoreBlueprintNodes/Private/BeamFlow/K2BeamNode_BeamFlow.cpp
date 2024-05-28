@@ -56,7 +56,7 @@ FSlateIcon UK2BeamNode_BeamFlow::GetIconAndTint(FLinearColor& OutColor) const
 {
 	const auto Icon = Super::GetIconAndTint(OutColor);
 	OutColor = FLinearColor::FromSRGBColor(FColor::FromHex("#826CCF"));
-	return FSlateIcon(TEXT("BeamableCore"), "BeamIcon");
+	return FSlateIcon(TEXT("BeamableCore"), "BeamIconSmall");
 }
 
 FLinearColor UK2BeamNode_BeamFlow::GetNodeTitleColor() const
@@ -66,7 +66,7 @@ FLinearColor UK2BeamNode_BeamFlow::GetNodeTitleColor() const
 
 FName UK2BeamNode_BeamFlow::GetCornerIcon() const
 {
-	return FName("BeamIconSpaceship");
+	return FName("BeamIcon_AutoGenRequests");
 }
 
 void UK2BeamNode_BeamFlow::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const

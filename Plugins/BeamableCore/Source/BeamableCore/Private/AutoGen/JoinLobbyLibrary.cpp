@@ -22,16 +22,18 @@ FString UJoinLobbyLibrary::JoinLobbyToJsonString(const UJoinLobby* Serializable,
 	return Result;
 }	
 
-UJoinLobby* UJoinLobbyLibrary::Make(FOptionalArrayOfBeamTag Tags, UObject* Outer)
+UJoinLobby* UJoinLobbyLibrary::Make(FOptionalString Passcode, FOptionalArrayOfBeamTag Tags, UObject* Outer)
 {
 	auto Serializable = NewObject<UJoinLobby>(Outer);
+	Serializable->Passcode = Passcode;
 	Serializable->Tags = Tags;
 	
 	return Serializable;
 }
 
-void UJoinLobbyLibrary::Break(const UJoinLobby* Serializable, FOptionalArrayOfBeamTag& Tags)
+void UJoinLobbyLibrary::Break(const UJoinLobby* Serializable, FOptionalString& Passcode, FOptionalArrayOfBeamTag& Tags)
 {
+	Passcode = Serializable->Passcode;
 	Tags = Serializable->Tags;
 		
 }

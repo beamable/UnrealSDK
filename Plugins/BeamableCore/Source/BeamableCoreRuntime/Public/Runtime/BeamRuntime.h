@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "HttpModule.h"
 #include "AutoGen/SubSystems/BeamAccountsApi.h"
 #include "AutoGen/SubSystems/BeamAuthApi.h"
 #include "AutoGen/SubSystems/Realms/GetClientDefaultsRequest.h"
@@ -48,8 +49,8 @@ enum EBeamRuntimeConnectivityState
  */
 struct FOfflineOperationData
 {
-	FName          OperationKey;
-	TArray<uint8>  OperationRequestDataBackingArray;
+	FName OperationKey;
+	TArray<uint8> OperationRequestDataBackingArray;
 	FMemoryArchive OperationRequestData;
 };
 
@@ -63,7 +64,7 @@ class URuntimeConnectivityManager : public UObject
 	GENERATED_BODY()
 
 public:
-	FUserSlot                     OwnerSlot;
+	FUserSlot OwnerSlot;
 	EBeamRuntimeConnectivityState CurrentState;
 
 
@@ -93,9 +94,9 @@ public:
 	 * During fixup can be a long running process with multiple operations and Waits, so we track which layer of the FixupOperationDAG we are currently resolving.
 	 * This is so we can correctly react to connection losses mid-fixup.
 	 */
-	int32                        CurrentFixupLayer;
+	int32 CurrentFixupLayer;
 	TArray<FBeamOperationHandle> CurrentFixupLayerOperations;
-	FBeamWaitHandle              CurrentFixupLayerWaitHandle;
+	FBeamWaitHandle CurrentFixupLayerWaitHandle;
 
 
 	/**
@@ -149,9 +150,11 @@ public:
 
 
 DECLARE_DYNAMIC_DELEGATE(FRuntimeStateChangedHandler);
+
 DECLARE_DELEGATE(FRuntimeStateChangedHandlerCode);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRuntimeStateChangedEvent);
+
 DECLARE_MULTICAST_DELEGATE(FRuntimeStateChangedEventCode);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUserStateChangedEvent, const FUserSlot&, Slot);
@@ -239,13 +242,13 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 * They return operation handles that we wait on. When done, these subsystems are be ready to make unauthenticated requests to the Beamable backend.
 	 */
 	TArray<FBeamOperationHandle> InitializeWhenUnrealReadyOps = {};
-	FBeamWaitHandle              OnInitializeWhenUnrealReadyWait;	
+	FBeamWaitHandle OnInitializeWhenUnrealReadyWait;
 
 	/**
 	 * @brief After beamable has finished it's initialization but has yet to attempt its frictionless auth	 
 	 */
 	TArray<FBeamOperationHandle> OnBeamableStartedOps = {};
-	FBeamWaitHandle              OnBeamableStartedWait;	
+	FBeamWaitHandle OnBeamableStartedWait;
 
 	/**
 	 * @brief So that actors and components can react to beamable's initialization flow being finished.
@@ -254,13 +257,14 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 */
 	UPROPERTY()
 	FRuntimeStateChangedEvent OnStarted;
+	FRuntimeStateChangedEventCode OnStartedCode;
 
 	/**
 	 * @brief Every time a user signs into beamable, we give each subsystem the ability to run an operation for that user.
 	 * We also give them the list of currently authenticated UserSlots (so that they can tell if the user that just signed in is the last one for example).
 	 */
 	TMap<FUserSlot, TArray<FBeamOperationHandle>> OnUserSignedInOps = {};
-	TMap<FUserSlot, FBeamWaitHandle>              OnUserSignedInWaits;	
+	TMap<FUserSlot, FBeamWaitHandle> OnUserSignedInWaits;
 
 	/**
 	 * @brief After Beamable all UBeamRuntimeSubsystem::OnUserSignedIn operations have finished.
@@ -268,7 +272,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 * to depend on data from our own SDK systems implementations.
 	 */
 	TMap<FUserSlot, TArray<FBeamOperationHandle>> OnPostUserSignedInOps = {};
-	TMap<FUserSlot, FBeamWaitHandle>              OnPostUserSignedInWaits;	
+	TMap<FUserSlot, FBeamWaitHandle> OnPostUserSignedInWaits;
 
 	/**
 	 * @brief So that actors and components can react to failures in the user authentication flow.
@@ -295,7 +299,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 * We also give them the list of currently authenticated User Slots and the reason for the sign out so that they can correctly decide what to do in each instance.
 	 */
 	TMap<FUserSlot, TArray<FBeamOperationHandle>> OnUserSignedOutOps = {};
-	TMap<FUserSlot, FBeamWaitHandle>              OnUserSignedOutWaits;
+	TMap<FUserSlot, FBeamWaitHandle> OnUserSignedOutWaits;
 
 	/**
 	 * @brief After Beamable all UBeamRuntimeSubsystem::OnUserSignedOut operations have finished.
@@ -303,7 +307,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 * need to perform cleanup after our own SDK systems have finished theirs.
 	 */
 	TMap<FUserSlot, TArray<FBeamOperationHandle>> OnPostUserSignedOutOps = {};
-	TMap<FUserSlot, FBeamWaitHandle>              OnPostUserSignedOutWaits;
+	TMap<FUserSlot, FBeamWaitHandle> OnPostUserSignedOutWaits;
 
 	/**
 	 * @brief For each user slot, we automatically open and connect to the beamable notification service
@@ -381,7 +385,20 @@ public:
 		if (OnStarted.Contains(Handler))
 			OnStarted.Remove(Handler);
 	}
-	
+
+	FDelegateHandle CPP_RegisterOnStarted(FRuntimeStateChangedHandlerCode Handler)
+	{
+		if (bIsBeamableStarted) const auto _ = Handler.ExecuteIfBound();
+		return OnStartedCode.Add(Handler);
+	}
+
+	FDelegateHandle CPP_RegisterOnStarted_NoExecute(FRuntimeStateChangedHandlerCode Handler) { return OnStartedCode.Add(Handler); }
+
+	void CPP_UnregisterOnStarted(FDelegateHandle Handle)
+	{
+		OnStartedCode.Remove(Handle);
+	}
+
 	/**
 	 * @brief So that actors and components can react to user data being ready for a specific user slot. 
 	 *  The event is what game makers should use when registering their actors, systems, etc... if they wish to depend on a specific user slot's data in BeamRuntimeSubsystems.
@@ -389,7 +406,7 @@ public:
 	 *  This runs every time a UserSlot is authenticated into. The first time, it runs after the OnReady global callback. 
 	 */
 	UPROPERTY(BlueprintAssignable)
-	FUserStateChangedEvent     OnUserReady;
+	FUserStateChangedEvent OnUserReady;
 	FUserStateChangedEventCode OnUserReadyCode;
 
 	/**
@@ -399,9 +416,9 @@ public:
 	 *  This runs every time a UserSlot is cleared, after all BeamRuntimeSubsystems have run their SignOut callbacks. 
 	 */
 	UPROPERTY(BlueprintAssignable)
-	FUserStateChangedEvent     OnUserCleared;
+	FUserStateChangedEvent OnUserCleared;
 	FUserStateChangedEventCode OnUserClearedCode;
-	
+
 	/**
 	 * @brief In BP, use this function to bind initialization functions to OnReady. This will execute the delegate if you're already ready before it binds it. 
 	 */
@@ -531,8 +548,8 @@ public:
 	 * When invoking this manually in your game, always pass in USCR_Manual as your reason.
 	 */
 	FBeamOperationHandle CPP_LogoutOperation(FUserSlot UserSlot, EUserSlotClearedReason Reason, bool bRemoveLocalData, FBeamOperationEventHandlerCode OnOperationEvent);
+
 private:
-	
 	// Hard-coded special case auth flow	
 	UFUNCTION(BlueprintCallable)
 	void FrictionlessLoginIntoSlot(const FUserSlot& UserSlot);
@@ -565,9 +582,9 @@ private:
 
 	// Runtime Notification Configuration and Automated Session Tracking 
 	static inline FString BEAM_SESSION_HEADER_PLATFORM = FString(TEXT("X-BEAM-SESSION-PLATFORM"));
-	static inline FString BEAM_SESSION_HEADER_DEVICE   = FString(TEXT("X-BEAM-SESSION-DEVICE"));
-	static inline FString BEAM_SESSION_HEADER_SOURCE   = FString(TEXT("X-BEAM-SESSION-SOURCE"));
-	static inline FString BEAM_SESSION_HEADER_LOCALE   = FString(TEXT("X-BEAM-SESSION-LOCALE"));
+	static inline FString BEAM_SESSION_HEADER_DEVICE = FString(TEXT("X-BEAM-SESSION-DEVICE"));
+	static inline FString BEAM_SESSION_HEADER_SOURCE = FString(TEXT("X-BEAM-SESSION-SOURCE"));
+	static inline FString BEAM_SESSION_HEADER_LOCALE = FString(TEXT("X-BEAM-SESSION-LOCALE"));
 	static inline FString BEAM_SESSION_HEADER_LANGUAGE = FString(TEXT("X-BEAM-SESSION-LANGUAGE"));
 
 	/**
@@ -579,4 +596,15 @@ private:
 	 * Adds the default information session information tracked by the SDK into the given header dictionary. 
 	 */
 	virtual void FillDefaultSessionHeaders(TMap<FString, FString>& Headers);
+
+public:
+	/**
+	 * Sends analytics events to Beamable as the owner user. 
+	 */
+	void SendAnalyticsEvent(const FString& EventOpCode, const FString& EventCategory, const FString& EventName, const TArray<TSharedRef<FJsonObject>>& EventParamsObj) const;
+
+	/**
+	 * Sends analytics events to Beamable. 
+	 */
+	void SendAnalyticsEvent(const FUserSlot& Slot, const FString& EventOpCode, const FString& EventCategory, const FString& EventName, const TArray<TSharedRef<FJsonObject>>& EventParamsObj) const;
 };

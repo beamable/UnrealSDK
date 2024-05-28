@@ -45,6 +45,11 @@
 		{
 			"Name": "EditorScriptingUtilities",
 			"Enabled": true
+		},
+		{
+			"Name": "OnlineSubsystem",
+			"Enabled": true,
+			"Optional": true
 		}
 	]
 }

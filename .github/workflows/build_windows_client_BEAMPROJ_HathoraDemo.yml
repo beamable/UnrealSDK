@@ -1,0 +1,23 @@
+name: Windows Client Build - Hathora Demo
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dev
+      - main
+    paths:
+      - '**.sh'      
+      - 'Source/**'      
+      - 'Plugins/BEAMPROJ_HathoraDemo/**'
+      - 'Plugins/BeamableCore/**'
+      - 'Plugins/OnlineSubsystemBeamable/**'
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    uses: Beamable/UnrealSDK/.github/workflows/build_windows_client.yml@dev
+    with:
+      beamProj: BEAMPROJ_HathoraDemo

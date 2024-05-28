@@ -27,7 +27,7 @@ void UPostQueryLogsRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostQueryLogsRequest* UPostQueryLogsRequest::Make(FString _ServiceName, FOptionalInt64 _StartTime, FOptionalString _Filter, FOptionalInt64 _EndTime, FOptionalString _Order, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPostQueryLogsRequest* UPostQueryLogsRequest::Make(FString _ServiceName, FOptionalInt64 _StartTime, FOptionalString _Filter, FOptionalInt64 _EndTime, FOptionalString _Order, FOptionalInt32 _Limit, FOptionalArrayOfString _Filters, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostQueryLogsRequest* Req = NewObject<UPostQueryLogsRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -43,6 +43,7 @@ UPostQueryLogsRequest* UPostQueryLogsRequest::Make(FString _ServiceName, FOption
 	Req->Body->EndTime = _EndTime;
 	Req->Body->Order = _Order;
 	Req->Body->Limit = _Limit;
+	Req->Body->Filters = _Filters;
 	
 
 	return Req;

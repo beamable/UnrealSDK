@@ -10,6 +10,7 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfDouble.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfBeamTag.h"
 
 #include "Ticket.generated.h"
 
@@ -41,6 +42,8 @@ public:
 	FOptionalString PartyId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Players", Category="Beam")
 	FOptionalArrayOfBeamGamerTag Players = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
+	FOptionalArrayOfBeamTag Tags = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="String Properties", Category="Beam")
 	FOptionalMapOfString StringProperties = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Number Properties", Category="Beam")

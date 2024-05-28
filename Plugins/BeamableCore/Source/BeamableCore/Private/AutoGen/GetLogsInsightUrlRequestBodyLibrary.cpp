@@ -22,7 +22,7 @@ FString UGetLogsInsightUrlRequestBodyLibrary::GetLogsInsightUrlRequestBodyToJson
 	return Result;
 }	
 
-UGetLogsInsightUrlRequestBody* UGetLogsInsightUrlRequestBodyLibrary::Make(FString ServiceName, FOptionalInt64 StartTime, FOptionalString Filter, FOptionalInt64 EndTime, FOptionalString Order, FOptionalInt32 Limit, UObject* Outer)
+UGetLogsInsightUrlRequestBody* UGetLogsInsightUrlRequestBodyLibrary::Make(FString ServiceName, FOptionalInt64 StartTime, FOptionalString Filter, FOptionalInt64 EndTime, FOptionalString Order, FOptionalInt32 Limit, FOptionalArrayOfString Filters, UObject* Outer)
 {
 	auto Serializable = NewObject<UGetLogsInsightUrlRequestBody>(Outer);
 	Serializable->ServiceName = ServiceName;
@@ -31,11 +31,12 @@ UGetLogsInsightUrlRequestBody* UGetLogsInsightUrlRequestBodyLibrary::Make(FStrin
 	Serializable->EndTime = EndTime;
 	Serializable->Order = Order;
 	Serializable->Limit = Limit;
+	Serializable->Filters = Filters;
 	
 	return Serializable;
 }
 
-void UGetLogsInsightUrlRequestBodyLibrary::Break(const UGetLogsInsightUrlRequestBody* Serializable, FString& ServiceName, FOptionalInt64& StartTime, FOptionalString& Filter, FOptionalInt64& EndTime, FOptionalString& Order, FOptionalInt32& Limit)
+void UGetLogsInsightUrlRequestBodyLibrary::Break(const UGetLogsInsightUrlRequestBody* Serializable, FString& ServiceName, FOptionalInt64& StartTime, FOptionalString& Filter, FOptionalInt64& EndTime, FOptionalString& Order, FOptionalInt32& Limit, FOptionalArrayOfString& Filters)
 {
 	ServiceName = Serializable->ServiceName;
 	StartTime = Serializable->StartTime;
@@ -43,6 +44,7 @@ void UGetLogsInsightUrlRequestBodyLibrary::Break(const UGetLogsInsightUrlRequest
 	EndTime = Serializable->EndTime;
 	Order = Serializable->Order;
 	Limit = Serializable->Limit;
+	Filters = Serializable->Filters;
 		
 }
 
