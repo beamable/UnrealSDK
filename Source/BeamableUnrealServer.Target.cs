@@ -8,7 +8,7 @@ public class BeamableUnrealServerTarget : TargetRules
 	public BeamableUnrealServerTarget(TargetInfo Target) : base(Target)
 	{
 		bOverrideBuildEnvironment = true;
-		if (IsSelfBuiltUnrealEngine())
+		if (Target.Platform != UnrealTargetPlatform.Linux && IsSelfBuiltUnrealEngine())
 		{
 			BuildEnvironment = TargetBuildEnvironment.Unique;
 		}
