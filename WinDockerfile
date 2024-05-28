@@ -11,12 +11,13 @@ ARG CLIENT_CONFIG=Shipping
 ENV CLIENT_CONFIG=${CLIENT_CONFIG}
 ARG SERVER_CONFIG=Shipping
 ENV SERVER_CONFIG=${SERVER_CONFIG}
+ENV UE_SELF_BUILT="1"
 
 WORKDIR C:\\
 
 # Copy your Unreal project files into the Docker image
 COPY --chown=ue4:ue4 . C:\\Project
-WORKDIR C:\\Project
+WORKDIR C:\\project
 
 RUN C:\UnrealEngine\Engine\Binaries\ThirdParty\DotNet\6.0.302\windows\dotnet.exe C:\UnrealEngine\Engine\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.dll -ProjectFiles -UsePrecompiled -Game "C:/Project/BeamableUnreal.uproject"
 

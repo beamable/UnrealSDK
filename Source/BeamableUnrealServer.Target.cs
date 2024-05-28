@@ -36,19 +36,15 @@ public class BeamableUnrealServerTarget : TargetRules
 		BeamableUnrealTarget.ConfigureIfHathoraDemo(this, samplePluginName);
 		BeamableUnrealTarget.ApplyProjectOverrides(Target, samplePluginName);
 	}
-	
-    private static bool IsSelfBuiltUnrealEngine()
+
+
+    private bool IsSelfBuiltUnrealEngine()
     {
-        // Unreal.EngineSourceDirectory points to the Engine/Source directory
-        string engineSourceDirectory = UnrealBuildBase.Unreal.EngineSourceDirectory.FullName;
-        string buildVersionFilePath = Path.Combine(engineSourceDirectory, "Runtime", "Launch", "Resources", "Version.h");
+        // Read environment variable that indicates a self-built Unreal Engine
+        string selfBuiltEnvVar = Environment.GetEnvironmentVariable("UE_SELF_BUILT");
 
-        // On Linux, also check for common build directories
-        string makefilePath = Path.Combine(engineRootDirectory, "Makefile");
-        string cmakeFilePath = Path.Combine(engineRootDirectory, "CMakeLists.txt");
-
-        // Check if Version.h file or build configuration files exist
-        bool isSelfBuilt = File.Exists(buildVersionFilePath) || File.Exists(makefilePath) || File.Exists(cmakeFilePath);
+        // Check if the environment variable is set to "1"
+        bool isSelfBuilt = !string.IsNullOrEmpty(selfBuiltEnvVar) && selfBuiltEnvVar == "1";
 
         return isSelfBuilt;
     }

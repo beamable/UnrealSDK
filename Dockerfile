@@ -8,6 +8,7 @@ ARG BUILD_TYPE=" "
 ARG MAP_ARG=-allmaps
 ARG CLIENT_CONFIG=Shipping
 ARG SERVER_CONFIG=Shipping
+ENV UE_SELF_BUILT="0"
 
 # Copy your Unreal project files into the Docker image
 COPY --chown=ue4 . /home/ue4/project
