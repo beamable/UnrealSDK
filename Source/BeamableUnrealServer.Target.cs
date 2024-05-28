@@ -9,11 +9,6 @@ public class BeamableUnrealServerTarget : TargetRules
 	{
 		bOverrideBuildEnvironment = true;
 
-		if (IsSelfBuiltUnrealEngine())
-		{
-			BuildEnvironment = TargetBuildEnvironment.Unique;
-			bUseLoggingInShipping = true;
-		}
 		Type = TargetType.Server;
 		DefaultBuildSettings = BuildSettingsVersion.Latest;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
@@ -36,16 +31,4 @@ public class BeamableUnrealServerTarget : TargetRules
 		BeamableUnrealTarget.ConfigureIfHathoraDemo(this, samplePluginName);
 		BeamableUnrealTarget.ApplyProjectOverrides(Target, samplePluginName);
 	}
-
-
-    private bool IsSelfBuiltUnrealEngine()
-    {
-        // Read environment variable that indicates a self-built Unreal Engine
-        string selfBuiltEnvVar = Environment.GetEnvironmentVariable("UE_SELF_BUILT");
-
-        // Check if the environment variable is set to "1"
-        bool isSelfBuilt = !string.IsNullOrEmpty(selfBuiltEnvVar) && selfBuiltEnvVar == "1";
-
-        return isSelfBuilt;
-    }
 }
