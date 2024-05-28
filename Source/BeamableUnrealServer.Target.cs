@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using UnrealBuildTool;
 using System.Collections.Generic;
 
@@ -7,7 +8,10 @@ public class BeamableUnrealServerTarget : TargetRules
 	public BeamableUnrealServerTarget(TargetInfo Target) : base(Target)
 	{
 		bOverrideBuildEnvironment = true;
-		BuildEnvironment = TargetBuildEnvironment.Unique;
+		if (IsSelfBuiltUnrealEngine())
+		{
+			BuildEnvironment = TargetBuildEnvironment.Unique;
+		}
 		bUseLoggingInShipping = true;
 		Type = TargetType.Server;
 		DefaultBuildSettings = BuildSettingsVersion.Latest;
@@ -31,4 +35,14 @@ public class BeamableUnrealServerTarget : TargetRules
 		BeamableUnrealTarget.ConfigureIfHathoraDemo(this, samplePluginName);
 		BeamableUnrealTarget.ApplyProjectOverrides(Target, samplePluginName);
 	}
+	
+    private static bool IsSelfBuiltUnrealEngine()
+    {
+        // Unreal.EngineSourceDirectory points to the Engine/Source directory
+        string engineSourceDirectory = UnrealBuildBase.Unreal.EngineSourceDirectory.FullName;
+        string buildVersionFilePath = Path.Combine(engineSourceDirectory, "Runtime", "Launch", "Resources", "Version.h");
+
+        // Check if Version.h file exists, indicating a self-built Unreal Engine
+        return File.Exists(buildVersionFilePath);
+    }
 }
