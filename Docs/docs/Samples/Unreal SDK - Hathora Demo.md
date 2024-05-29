@@ -40,7 +40,7 @@ Since this sample requires several resources, we do not host it ourselves. So, i
 
 Now, we'll go set up a Hathora account and upload the sample dedicated server build:
 
-1. Log into your Hathora account.
+1. Log into your [Hathora](https://console.hathora.dev/) account.
 2. Create an App and set aside its `AppId`.
 3. In the Hathora Portal, go to `Profile -> Settings`.
 4. Create and set aside two dev-tokens: `game-server` and `matchmaking-server`.
@@ -54,6 +54,9 @@ Now, we'll go set up a Hathora account and upload the sample dedicated server bu
 7. Make sure the `7777` UDP port is exposed.
 8. Make sure that the number of rooms per processes is `1`.
 9. Finish the deployment process and verify that the deployment was successful.
+
+!!! note "Realms and Hathora"
+	Hathora recommends users create one Hathora account per dev-environment. In Beamable, that is equivalent of having one Hathora account per Beamable Realm; one for **dev**, another for **staging** and yet another for **prod**. This is so you can have multiple deployments up at the same time for different purposes (the live deployment in **prod** vs a QA-testing build in **staging** and the current stable/nightly in **dev**).
 
 Now that your Hathora account is configured to boot up our provided build, we need to configure the `hathora-demo` realm with the information it needs to correctly provision a server whenever a match is made.
 
