@@ -96,3 +96,4 @@ Docs/.obsidian/**/*
 # (this is an invalid .nupkg file, btw --- its not real and points to nothing, this is just here so Docker's COPY 
 # doesn't fail for the directory not existing).
 !BeamableSource/DONT_MIND_ME.nupkg
+BeamProjOverride.txt
