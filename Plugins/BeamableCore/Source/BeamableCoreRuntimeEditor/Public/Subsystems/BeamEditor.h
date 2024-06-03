@@ -163,6 +163,11 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FEditorStateChangedEvent OnExitingPIE;
 
+	/**
+	 * Called whenever apply to build is pressed. Only use this to bind things that we can't call directly (from other modules).
+	 */	
+	FEditorStateChangedEvent OnAppliedSettingsToBuild;
+	
 
 	/**
 	 * @brief Gets the current authenticated MainEditorUser slot and it's data.

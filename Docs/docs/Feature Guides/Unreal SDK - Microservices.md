@@ -207,3 +207,9 @@ This window is a read-only view into the state of your local services. It serves
 	- In other words, a quick panoramic view of your local microservice state.
 - It allows non-engineers to start up services from a UI window.
 	- This is not a very common workflow as a lot of teams have designers/artists working in dedicated realms.
+
+
+
+
+
+

@@ -29,6 +29,9 @@ FBeamOperationHandle UBeamProjSyncSubsystem::InitializeWhenEditorReady()
 	EditorContent = GEditor->GetEditorSubsystem<UBeamEditorContent>();
 	OnContentSavedHandle = EditorContent->OnContentSaved.AddUObject(this, &ThisClass::OnContentSaved);
 
+	// Listen for realm changes and keep them in-sync	
+	Editor->OnAppliedSettingsToBuild.AddUniqueDynamic(this, &ThisClass::UBeamProjSyncSubsystem::OnAppliedSettingsToBuild);
+
 	// Listen for file-system-level changes in all relevant directories 
 	FDirectoryWatcherModule& DirectoryWatcherModule = FModuleManager::Get().LoadModuleChecked<FDirectoryWatcherModule>(TEXT("DirectoryWatcher"));
 	IDirectoryWatcher* DirectoryWatcher = DirectoryWatcherModule.Get();
@@ -66,6 +69,10 @@ void UBeamProjSyncSubsystem::Deinitialize()
 	if (EditorContent)
 		EditorContent->OnContentSaved.Remove(OnContentSavedHandle);
 
+	// Stop listening to realm changes
+	if(Editor)
+		Editor->OnAppliedSettingsToBuild.RemoveDynamic(this, &ThisClass::OnAppliedSettingsToBuild);
+
 	// Stop listening for changes from the file system
 	FDirectoryWatcherModule& DirectoryWatcherModule = FModuleManager::Get().LoadModuleChecked<FDirectoryWatcherModule>(TEXT("DirectoryWatcher"));
 	IDirectoryWatcher* DirectoryWatcher = DirectoryWatcherModule.Get();
@@ -98,6 +105,16 @@ void UBeamProjSyncSubsystem::OnContentSaved(FBeamContentManifestId ManifestId, F
 {
 	FString WatchDir, AbsWatchDir, TargetDir, AbsTargetDir;
 	GetPaths(BeamableContentDir(), WatchDir, TargetDir, AbsWatchDir, AbsTargetDir);
+
+	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+	PlatformFile.CopyDirectoryTree(*AbsTargetDir, *AbsWatchDir, true);
+	UE_LOG(LogTemp, Display, TEXT("Keeping BEAMPROJ in Sync. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
+}
+
+void UBeamProjSyncSubsystem::OnAppliedSettingsToBuild()
+{
+	FString WatchDir, AbsWatchDir, TargetDir, AbsTargetDir;
+	GetPaths(UnrealConfigDir(), WatchDir, TargetDir, AbsWatchDir, AbsTargetDir);
 
 	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
 	PlatformFile.CopyDirectoryTree(*AbsTargetDir, *AbsWatchDir, true);

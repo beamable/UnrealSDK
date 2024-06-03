@@ -618,6 +618,9 @@ void UBeamEditor::ApplyCurrentSettingsToBuild()
 {
 	auto Settings = GetMutableDefault<UBeamCoreSettings>();
 	Settings->SaveConfig(CPF_Config, *Settings->GetDefaultConfigFilename());
+	
+	// Notify other systems that
+	if(OnAppliedSettingsToBuild.IsBound()) OnAppliedSettingsToBuild.Broadcast();
 }
 
 
