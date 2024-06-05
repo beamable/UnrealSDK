@@ -26,6 +26,14 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
+      - uses: actions/cache@v4
+        continue-on-error: false
+        with:
+          path: |
+            Intermediate/
+            Saved/
+          key: ${{ runner.os }}-${{ inputs.beamProj }}-${{ hashFiles('Source/**') }}
+          restore-keys: ${{ runner.os }}-${{ inputs.beamProj }}-
      
       # Installs .NET 8 so we can run init_repo.sh
       - uses: actions/setup-dotnet@v4

@@ -30,9 +30,6 @@ jobs:
       - run: Add-Content $env:GITHUB_PATH "C:\Program Files\dotnet"
       - run: Add-Content $env:GITHUB_PATH "~\.dotnet\tools"
         
-      # Run a git clean
-      - run: git clean -fdx
-        
       # Run init_repo.sh (needed to setup the project correctly locally)
       - name: Prepare Repository for Compilation        
         run: bash init_repo.sh

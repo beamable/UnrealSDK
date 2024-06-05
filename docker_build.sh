@@ -11,6 +11,13 @@ fi
 
 docker run --name unreal_container -d unrealrunner:latest
 docker cp unreal_container:/home/ue4/PackagedProject .
+
+argument_two=${2:-"nothing"}
+if [ $argument_two = "copy_build" ]; then
+    docker cp unreal_container:/home/ue4/Intermediate .
+    docker cp unreal_container:/home/ue4/Saved .
+fi
+
 docker stop unreal_container
 docker rm unreal_container
 
