@@ -63,7 +63,7 @@ jobs:
       
       # Pull the base image and build the project
       - name: Pull base image and build
-        run: bash docker_build.sh server
+        run: bash docker_build.sh server copy_build
       
       # Compress the results      
       - name: Compress Directory
