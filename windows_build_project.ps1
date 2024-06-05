@@ -9,6 +9,9 @@ if ($buildType -eq 'server') {
 }
 docker run --name unreal-project -d unreal-win64-project
 docker cp unreal-project:C:\Project\PackagedProject .
+docker cp unreal_container:C:\Project\Intermediate .
+docker cp unreal_container:C:\Project\Saved .
+
 docker stop unreal-project
 docker rm unreal-project
 

@@ -29,8 +29,10 @@ docker cp unreal_container:/home/ue4/PackagedProject .
 
 if [ $argument_two = "cache" ]; then
     echo "Copying Intermediate and Saved directories from container"
+    ls -l
     docker cp unreal_container:/home/ue4/project/Intermediate .
     docker cp unreal_container:/home/ue4/project/Saved .
+    ls -l
 fi
 
 docker stop unreal_container

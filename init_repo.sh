@@ -43,16 +43,15 @@ fi
 if ! command -v beam >/dev/null 2>&1; then
     dotnet tool install Beamable.Tools --global --version 2.0.0   
 fi
-exit 0
 
 # Create a microservice
 if [ ! -d "Microservices/services/MSPlayground" ]; then
     echo "Creating MSPlayground microservice for local development."
-    beam project new service MSPlayground --sln "Microservices/Microservices.sln"
+    beam project new service MSPlayground --sln "Microservices/Microservices.sln" --logs v
 fi
 
 # Create a microstorage
 if [ ! -d "Microservices/services/DBPlayground" ]; then
     echo "Creating DBPlayground storage for local development."
-    beam project new storage DBPlayground --sln "Microservices/Microservices.sln" --link-to MSPlayground
+    beam project new storage DBPlayground --sln "Microservices/Microservices.sln" --link-to MSPlayground --logs v
 fi
