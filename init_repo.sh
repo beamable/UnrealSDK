@@ -43,6 +43,7 @@ fi
 if ! command -v beam >/dev/null 2>&1; then
     dotnet tool install Beamable.Tools --global --version 2.0.0   
 fi
+exit 0
 
 # Create a microservice
 if [ ! -d "Microservices/services/MSPlayground" ]; then
