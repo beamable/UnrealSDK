@@ -29,6 +29,15 @@ jobs:
       # Make sure the .NET's paths are added to the shell's path ENV VAR  
       - run: Add-Content $env:GITHUB_PATH "C:\Program Files\dotnet"
       - run: Add-Content $env:GITHUB_PATH "~\.dotnet\tools"
+      - uses: actions/cache@v4
+        continue-on-error: false
+        with:
+          path: |
+            Intermediate/
+            Saved/
+            UnrealSDK.sln
+          key: ${{ runner.os }}-${{ inputs.beamProj }}-${{ hashFiles('Source/**') }}
+          restore-keys: ${{ runner.os }}-${{ inputs.beamProj }}-
         
       # Run init_repo.sh (needed to setup the project correctly locally)
       - name: Prepare Repository for Compilation        

@@ -32,6 +32,7 @@ jobs:
           path: |
             Intermediate/
             Saved/
+            UnrealSDK.sln
           key: ${{ runner.os }}-${{ inputs.beamProj }}-${{ hashFiles('Source/**') }}
           restore-keys: ${{ runner.os }}-${{ inputs.beamProj }}-
      
@@ -51,7 +52,7 @@ jobs:
           cat BeamProjOverride.txt
       # Set up Docker Buildx
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v3
       
       # Login to GitHub docker registry
       - name: Login to GitHub Container Registry
