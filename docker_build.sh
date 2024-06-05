@@ -15,8 +15,8 @@ docker cp unreal_container:/home/ue4/PackagedProject .
 argument_two=${2:-"nothing"}
 if [ $argument_two = "copy_build" ]; then
     echo "Copying Intermediate and Saved directories from container"
-    docker cp unreal_container:/home/ue4/Intermediate .
-    docker cp unreal_container:/home/ue4/Saved .
+    docker cp unreal_container:/home/ue4/project/Intermediate .
+    docker cp unreal_container:/home/ue4/project/Saved .
 fi
 
 docker stop unreal_container
