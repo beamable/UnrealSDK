@@ -5,6 +5,9 @@ if ! command -v dotnet >/dev/null 2>&1; then
     exit 1
 fi
 
+# display how much space is available
+df -h 
+
 # Verify that the dotnet tool is callable by listing installed tools
 if ! dotnet tool list >/dev/null 2>&1; then
     echo "The dotnet tool cannot be called, which may indicate a misconfiguration. Make sure that Dotnet SDK is installed."
