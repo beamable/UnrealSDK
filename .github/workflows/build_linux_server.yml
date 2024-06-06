@@ -33,8 +33,8 @@ jobs:
             Intermediate/
             Saved/
             UnrealSDK.sln
-          key: ${{ runner.os }}-${{ inputs.beamProj }}-${{ hashFiles('Source/**') }}
-          restore-keys: ${{ runner.os }}-${{ inputs.beamProj }}-
+          key: ${{ runner.os }}${{ inputs.beamProj }}${{ hashFiles('Source/**') }}
+          restore-keys: ${{ runner.os }}${{ inputs.beamProj }}
      
       # Installs .NET 8 so we can run init_repo.sh
       - uses: actions/setup-dotnet@v4
