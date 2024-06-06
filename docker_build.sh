@@ -34,7 +34,6 @@ docker run --name unreal_container -v $current_dir:/home/ue4/project $image_name
 
 docker cp unreal_container:/home/ue4/PackagedProject .
 
-
 if [ $argument = "server" ]; then
     cp Plugins/BEAMPROJ_HathoraDemo/Dockerfile PackagedProject/LinuxServer/Dockerfile
 fi
