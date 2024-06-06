@@ -8,8 +8,13 @@ else
     project_id="BEAMPROJ_Sandbox"
 fi
 
+if [[ "$MSYSTEM" == "MINGW64" || "$MSYSTEM" == "MINGW32" ]]; then
+  current_dir="$(pwd -W)"
+else
+  current_dir="$(pwd)"
+fi
+
 argument=${1:-"client"}
-argument_two=${2:-""}
 image_name="$argument"
 image_name+="_"
 image_name+="$project_id"
@@ -24,19 +29,11 @@ else
     docker build --progress plain -t $image_name .
 fi
 
-docker run --name unreal_container -d $image_name:latest
+docker stop unreal_container || true && docker rm unreal_container || true
+docker run --name unreal_container -v $current_dir:/home/ue4/project $image_name:latest
+
 docker cp unreal_container:/home/ue4/PackagedProject .
 
-if [ $argument_two = "cache" ]; then
-    echo "Copying Intermediate and Saved directories from container"
-    ls -l
-    docker cp unreal_container:/home/ue4/project/Intermediate .
-    docker cp unreal_container:/home/ue4/project/Saved .
-    ls -l
-fi
-
-docker stop unreal_container
-docker rm unreal_container
 
 if [ $argument = "server" ]; then
     cp Plugins/BEAMPROJ_HathoraDemo/Dockerfile PackagedProject/LinuxServer/Dockerfile
