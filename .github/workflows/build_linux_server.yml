@@ -68,7 +68,7 @@ jobs:
       
       # Compress the results      
       - name: Compress Directory
-        run: cd PackagedProject/LinuxServer &&
+        run: cd packaged/LinuxServer &&
           tar cvzf ../../linux_server_${{ inputs.beamProj }}.tar.gz * &&
           cd ../../
       
