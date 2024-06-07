@@ -7,8 +7,10 @@ on:
       - dev
       - main
     paths:
-      - '**.sh'      
-      - 'Source/**'      
+      - 'WinDockerfile'
+      - '**.sh'
+      - '**.ps1'
+      - 'Source/**'
       - 'Plugins/BEAMPROJ_HathoraDemo/**'
       - 'Plugins/BeamableCore/**'
       - 'Plugins/OnlineSubsystemBeamable/**'

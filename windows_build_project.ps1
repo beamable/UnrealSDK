@@ -29,9 +29,23 @@ if ($buildType -eq 'server') {
 } else {
     docker build -t $image_name -f WinDockerfile .
 }
+
+$localAppData = [System.Environment]::GetFolderPath('LocalApplicationData')
+
+# Define the full path to the octobuild cache directory
+$octobuildDir = Join-Path -Path $localAppData -ChildPath "octobuild\cache"
+
+# Check if the directory exists, if not, create it
+if (-not (Test-Path -Path $octobuildDir -PathType Container)) {
+    New-Item -Path $octobuildDir -ItemType Directory -Force
+    Write-Output "Directory created: $octobuildDir"
+} else {
+    Write-Output "Directory already exists: $octobuildDir"
+}
+
 $parentDirectory = Split-Path $MyInvocation.MyCommand.Path -Parent
 
-& docker run --name unreal-project -v "${parentDirectory}:C:\Project" "${image_name}:latest"
+& docker run --name unreal-project -v "${parentDirectory}:C:\Project" -v "${octobuildDir}:C:\octobuild_cache" "${image_name}:latest"
 
 docker cp unreal-project:C:\PackagedProject .
 
