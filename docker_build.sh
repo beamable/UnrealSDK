@@ -31,9 +31,8 @@ fi
 
 docker stop unreal_container || true && docker rm unreal_container || true
 docker run --name unreal_container -v $current_dir:/home/ue4/project $image_name:latest
-
-docker cp unreal_container:/home/ue4/PackagedProject .
+docker cp unreal_container:/home/ue4/packaged .
 
 if [ $argument = "server" ]; then
-    cp Plugins/BEAMPROJ_HathoraDemo/Dockerfile PackagedProject/LinuxServer/Dockerfile
+    cp Plugins/BEAMPROJ_HathoraDemo/Dockerfile packaged/LinuxServer/Dockerfile
 fi
