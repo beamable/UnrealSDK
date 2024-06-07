@@ -27,6 +27,7 @@ public class BeamableUnrealTarget : TargetRules
 		Console.WriteLine($"Configuring standalone project as beamproj={samplePluginName}.");
 		ConfigureIfSandbox(this, samplePluginName);
 		ConfigureIfHathoraDemo(this, samplePluginName);
+		ConfigureIfSteamDemo(this, samplePluginName);
 		ApplyProjectOverrides(Target, samplePluginName);
 	}
 
@@ -87,6 +88,42 @@ public class BeamableUnrealTarget : TargetRules
 	public static void ConfigureIfHathoraDemo(TargetRules TargetRules, string beamProj)
 	{
 		if (beamProj == kBeamProj_HathoraDemo)
+		{
+			var oss = new Beam.OssConfig()
+			{
+				IsEnabled = true,
+
+				HooksEnabled = false,
+				HookSubsystemImplementation = "",
+				HookSubsystemIncludePath = "",
+
+				AdditionalHookModules = Array.Empty<string>(),
+			};
+
+			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)
+			{
+				Beam.ConfigureGame(TargetRules, oss);
+			}
+			else if (TargetRules.Type == UnrealBuildTool.TargetType.Editor)
+			{
+				Beam.ConfigureEditor(TargetRules, oss);
+			}
+			else if (TargetRules.Type == UnrealBuildTool.TargetType.Server)
+			{
+				Beam.ConfigureServer(TargetRules, oss);
+			}
+			else
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+		}
+	}
+
+	public const string kBeamProj_SteamDemo = "BEAMPROJ_SteamDemo";
+
+	public static void ConfigureIfSteamDemo(TargetRules TargetRules, string beamProj)
+	{
+		if (beamProj == kBeamProj_SteamDemo)
 		{
 			var oss = new Beam.OssConfig()
 			{

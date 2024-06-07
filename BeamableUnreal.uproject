@@ -63,6 +63,11 @@
 			"Optional": true
 		},
 		{
+			"Name": "BEAMPROJ_SteamDemo",
+			"Enabled": false,
+			"Optional": true
+		},
+		{
 			"Name": "BEAMPROJ_HathoraDemo",
 			"Enabled": false,
 			"Optional": true
