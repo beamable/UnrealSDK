@@ -51,7 +51,7 @@ jobs:
       
       # Builds the image
       - name: Build image
-        run: .\windows_build_project.ps1
+        run: .\docker_run_windows.ps1
       
       # Compress the results
       - name: Compress Directory

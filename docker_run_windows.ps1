@@ -25,9 +25,9 @@ Write-Output "Resulting image: $image_name"
 docker image prune
 
 if ($buildType -eq 'server') {
-    docker build --build-arg BUILD_TYPE=-server -t $image_name -f WinDockerfile .
+    docker build --build-arg BUILD_TYPE=-server -t $image_name -f DockerfileWindows .
 } else {
-    docker build -t $image_name -f WinDockerfile .
+    docker build -t $image_name -f DockerfileWindows .
 }
 
 $localAppData = [System.Environment]::GetFolderPath('LocalApplicationData')

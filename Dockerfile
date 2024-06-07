@@ -13,4 +13,4 @@ ARG SERVER_CONFIG=Shipping
 ENV SERVER_CONFIG=${SERVER_CONFIG}
 ENV UE_SELF_BUILT="0"
 
-CMD ["bash", "/home/ue4/project/docker_build_script.sh" ]
+CMD ["bash", "/home/ue4/project/docker_cmd_linux.sh" ]

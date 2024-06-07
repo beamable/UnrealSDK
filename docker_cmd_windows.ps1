@@ -1,3 +1,6 @@
+
+# Internal command used by the Windows docker image
+
 Set-Item -Path "Env:\UE_SELF_BUILT" -Value "1" -Force
 $parentDirectory = Split-Path $MyInvocation.MyCommand.Path -Parent
 

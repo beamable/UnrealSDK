@@ -1,4 +1,7 @@
 #!/bin/sh
+
+# Internal command used by the Linux docker image
+
 echo "GENERATE PROJECT"
 /home/ue4/UnrealEngine/Engine/Binaries/ThirdParty/DotNet/6.0.302/linux/dotnet /home/ue4/UnrealEngine/Engine/Binaries/DotNET/UnrealBuildTool/UnrealBuildTool.dll -ProjectFiles -UsePrecompiled -Game "/home/ue4/project/BeamableUnreal.uproject"
 
