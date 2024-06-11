@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    
+    <PropertyGroup Label="Beamable Settings">
+        <!-- All Microservices must have the value, "service" -->
+        <BeamProjectType>service</BeamProjectType>
+
+        <!-- When "true", this will auto-generate client code to any linked unity projects -->
+        <GenerateClientCode>true</GenerateClientCode>
+    </PropertyGroup>
+
+    <PropertyGroup Label="Dotnet Settings">
+        <!-- net8.0 is the LTS version until 2026. To update your net version, update the <TargetFramework> when Beamable announces support. -->
+        <TargetFramework>net6.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup Label="Nuget References">
+        <PackageReference Include="Beamable.Microservice.Runtime" Version="2.0.0" />
+    </ItemGroup>
+
+</Project>

@@ -63,8 +63,7 @@ public partial class OnlineSubsystemBeamable : ModuleRules
 				"Engine",
 				"Slate",
 				"Sockets", 
-				"SlateCore", 
-				"DiscordSDK"
+				"SlateCore"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

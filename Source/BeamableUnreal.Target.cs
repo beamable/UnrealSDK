@@ -94,10 +94,10 @@ public class BeamableUnrealTarget : TargetRules
 				IsEnabled = true,
 
 				HooksEnabled = false,
-				HookSubsystemImplementation = "",
-				HookSubsystemIncludePath = "",
+				HookSubsystemImplementation = "FOnlineSubsystemHathoraDemo",
+				HookSubsystemIncludePath = "Customer/OnlineSubsystemHathoraDemo.h",
 
-				AdditionalHookModules = Array.Empty<string>(),
+				AdditionalHookModules = new[] { "HathoraSDK", "DiscordSDK" }
 			};
 
 			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)
@@ -127,14 +127,15 @@ public class BeamableUnrealTarget : TargetRules
 		{
 			var oss = new Beam.OssConfig()
 			{
-				IsEnabled = true,
+				IsEnabled = false,
 
-				HooksEnabled = true,
-				HookSubsystemImplementation = "FOnlineSubsystemHathoraDemo",
-				HookSubsystemIncludePath = "Customer/OnlineSubsystemHathoraDemo.h",
+				HooksEnabled = false,
+				HookSubsystemImplementation = "",
+				HookSubsystemIncludePath = "",
 
-				AdditionalHookModules = new[] { "HathoraSDK", "DiscordSDK" }
+				AdditionalHookModules = Array.Empty<string>(),
 			};
+			TargetRules.bUsesSteam = true;
 
 			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)
 			{
@@ -211,7 +212,7 @@ public class BeamableUnrealTarget : TargetRules
 
 /// <summary>
 /// This is a helper class that contains Beamable-owned code to help you configure the Beamable Modules in your project.
-/// Any change made to this class will requires you, the game-maker, to manually re-add them when updating Beamable SDK versions.   
+/// Any change made to this class will requires you, the game-maker, to manually re-add them when updating Beamable SDK versions.
 /// </summary>
 public static class Beam
 {
@@ -250,7 +251,7 @@ public static class Beam
 
 	/// <summary>
 	/// This is built by <see cref="Beam.ConfigureGame"/> (and others), so we can pass information down to each of the projects `Build.cs` files through <see cref="TargetRules.AdditionalData"/>.
-	/// See <see cref="Beam.GetOrAddAdditionalData{T}"/> and <see cref="Beam.GetAdditionalData{T}"/>. 
+	/// See <see cref="Beam.GetOrAddAdditionalData{T}"/> and <see cref="Beam.GetAdditionalData{T}"/>.
 	/// </summary>
 	public class BeamableAdditionalData
 	{
@@ -442,7 +443,7 @@ public static class Beam
 			"OnlineSubsystemBeamable"
 		});
 
-		// If we are building the editor, we also add the OnlineSubsystemBeamableBp module (which is where your BeamFlow nodes for Microservices live when OSS is enabled) 
+		// If we are building the editor, we also add the OnlineSubsystemBeamableBp module (which is where your BeamFlow nodes for Microservices live when OSS is enabled)
 		if (TargetRules.bBuildEditor)
 		{
 			TargetRules.ExtraModuleNames.AddRange(new[]
@@ -461,7 +462,7 @@ public static class Beam
 			TargetRules.ProjectDefinitions.Add($"BEAM_OSS_SUBSYSTEM_IMPLEMENTATION={OssConfig.HookSubsystemImplementation}");
 			TargetRules.ProjectDefinitions.Add($"BEAM_OSS_SUBSYSTEM_INCLUDE=BEAM_STRINGIFY({OssConfig.HookSubsystemIncludePath})");
 
-			// Pass down, to the OnlineSubsystemBeamable plugin, a list of Module names that it'll also depend on 
+			// Pass down, to the OnlineSubsystemBeamable plugin, a list of Module names that it'll also depend on
 			AdditionalData.OssAdditionalModules = OssConfig.AdditionalHookModules;
 		}
 	}

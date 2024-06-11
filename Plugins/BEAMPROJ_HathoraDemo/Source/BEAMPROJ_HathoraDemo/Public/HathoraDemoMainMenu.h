@@ -136,7 +136,7 @@ public:
 	{
 		if (!IdentityInterface) return false;
 
-		ELoginStatus::Type LoginStatus = IdentityInterface->GetLoginStatus(0);
+		const ELoginStatus::Type LoginStatus = IdentityInterface->GetLoginStatus(0);
 		return LoginStatus == ELoginStatus::Type::LoggedIn;
 	}
 
