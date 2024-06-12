@@ -22,7 +22,6 @@
 #include "AutoGen/LobbyPlayerLibrary.h"
 #include "AutoGen/Optionals/OptionalGamerTag.h"
 #include "AutoGen/SubSystems/BeamMatchmakingApi.h"
-#include "DiscordSDK/Discord/types.h"
 #include "Interfaces/OnlineIdentityInterface.h"
 #include "Interfaces/OnlineStatsInterface.h"
 #include "Online/OnlineSessionNames.h"
