@@ -97,7 +97,7 @@ public class BeamableUnrealTarget : TargetRules
 				HookSubsystemImplementation = "FOnlineSubsystemHathoraDemo",
 				HookSubsystemIncludePath = "Customer/OnlineSubsystemHathoraDemo.h",
 
-				AdditionalHookModules = new[] { "HathoraSDK", "DiscordSDK" }
+				AdditionalHookModules = new[] { "HathoraSDK" }
 			};
 
 			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)

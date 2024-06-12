@@ -36,7 +36,7 @@
 		},
 		{
 			"Name": "DiscordSDK",
-			"Enabled": true
+			"Enabled": false
 		},
 		{
 			"Name": "HathoraSDK",

@@ -62,7 +62,7 @@ public partial class OnlineSubsystemBeamable : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"Sockets", 
+				"Sockets",
 				"SlateCore"
 				// ... add private dependencies that you statically link with here ...	
 			}
