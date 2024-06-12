@@ -5,9 +5,6 @@ if ! command -v dotnet >/dev/null 2>&1; then
     exit 1
 fi
 
-# display how much space is available
-df -h 
-
 # Verify that the dotnet tool is callable by listing installed tools
 if ! dotnet tool list >/dev/null 2>&1; then
     echo "The dotnet tool cannot be called, which may indicate a misconfiguration. Make sure that Dotnet SDK is installed."
@@ -22,7 +19,7 @@ fi
 
 # Copy the Sandbox plugin over to the plugin folder.
 # This is a local-only plugin that you can do whatever you want in.
-# It is not committed to the repo and it is the default plugin configured to load 
+# It is not committed to the repo and it is the default plugin configured to load
 # (this means the repo won't work unless you run this script exactly once first).
 
 BASEDIR=$(dirname "$0")
@@ -41,7 +38,12 @@ fi
 
 # Check if the beam CLI is installed globally
 if ! command -v beam >/dev/null 2>&1; then
-    dotnet tool install Beamable.Tools --global --version 2.0.0   
+    dotnet tool install Beamable.Tools --global --version 2.0.0
+fi
+
+# Skip creating microservices for now
+if  command -v beam >/dev/null 2>&1; then
+    exit 0
 fi
 
 # Create a microservice
