@@ -93,7 +93,7 @@ public class BeamableUnrealTarget : TargetRules
 			{
 				IsEnabled = true,
 
-				HooksEnabled = false,
+				HooksEnabled = true,
 				HookSubsystemImplementation = "FOnlineSubsystemHathoraDemo",
 				HookSubsystemIncludePath = "Customer/OnlineSubsystemHathoraDemo.h",
 
