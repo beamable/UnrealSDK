@@ -22,11 +22,7 @@ public class BEAMPROJ_SteamDemo : ModuleRules
 				"OnlineSubsystemSteam",
 				"Steamworks"
 			}
-		);        
-		// string SteamPath = Path.Combine(EngineDirectory, "Source/ThirdParty/Steamworks", "Steamv153");
-		// SteamPath = Path.Combine(SteamPath, "sdk/public");
-		// Console.WriteLine(SteamPath);
-		// PublicIncludePaths.Add(SteamPath);
+		);
 
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
