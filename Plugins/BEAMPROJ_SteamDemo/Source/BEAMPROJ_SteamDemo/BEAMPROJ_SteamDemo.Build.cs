@@ -18,7 +18,6 @@ public class BEAMPROJ_SteamDemo : ModuleRules
 				"BeamableCoreRuntime",
 				"OnlineSubsystem",
 				"OnlineSubsystemBeamable",
-				"HathoraSDK",//FOR NOW OnlineSubsystemBeamable requires it
 				"OnlineSubsystemUtils",
 				"OnlineSubsystemSteam",
 				"Steamworks"
