@@ -21,7 +21,6 @@ public:
 	virtual bool Init() override
 	{
 		const bool bDidRunCorrectly = FOnlineSubsystemBeamable::Init();
-
 		return true;
 	}
 };

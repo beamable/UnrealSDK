@@ -48,12 +48,17 @@ namespace Beamable.SteamDemo
 		public async Promise<FederatedAuthenticationResponse> Authenticate(string token, string challenge,
 			string solution)
 		{
-			BeamableLogger.Log("Authenticate");
+			BeamableLogger.Log("Authenticate started");
 			var uri = BuildAuthenticateUri(token);
 			var response = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, uri));
-			Debug.Log($"RESPONSE: {response.RequestMessage}");
-			response.EnsureSuccessStatusCode();
-			return new FederatedAuthenticationResponse { user_id = Context.UserId.ToString() };
+			Debug.Log($"RESPONSE {response.StatusCode}: {response.RequestMessage}");
+			if (response.IsSuccessStatusCode)
+			{
+				return new FederatedAuthenticationResponse { user_id = Context.UserId.ToString() };
+			}
+
+			throw new MicroserviceException((int)response.StatusCode, "AuthenticationError",
+				$"Failed to connect to Steam: {response.ReasonPhrase}");
 		}
 
 		private string BuildAuthenticateUri(string ticket)
@@ -64,7 +69,7 @@ namespace Beamable.SteamDemo
 
     public class SteamIdentity : IThirdPartyCloudIdentity
     {
-        public string UniqueName => "steam_federated";
+        public string UniqueName => "federated_steam";
     }
 
 }

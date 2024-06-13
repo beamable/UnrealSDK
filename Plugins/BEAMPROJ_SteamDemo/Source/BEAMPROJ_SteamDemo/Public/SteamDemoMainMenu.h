@@ -96,7 +96,6 @@ protected:
 
 				uint32 TicketSize = 0;
 				uint8 TicketBuffer[1024];
-
 				HAuthTicket AuthTicket = SteamAccount->GetAuthSessionTicket(
 					TicketBuffer, sizeof(TicketBuffer), &TicketSize);
 
@@ -105,7 +104,7 @@ protected:
 					// Handle the error case
 					UE_LOG(LogTemp, Error, TEXT("SteamDemoLogs, Failed to get Steam auth session ticket"));
 				}
-				const auto Namespace = TEXT("steam_federated");
+				const auto Namespace = TEXT("federated_steam");
 				const auto ServiceName = TEXT("SteamDemo");
 				// Successfully obtained the session ticket
 				FString ExternalToken;
@@ -114,6 +113,15 @@ protected:
 					ExternalToken += FString::Printf(TEXT("%02x"), TicketBuffer[i]);
 				}
 				UE_LOG(LogTemp, Warning, TEXT("SteamDemoLogs User HEX Auth ticket: %s"), *ExternalToken);
+				if (IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get())
+				{
+					IOnlineIdentityPtr IdentityInterface = OnlineSubsystem->GetIdentityInterface();
+					if (IdentityInterface.IsValid())
+					{
+						ExternalToken = IdentityInterface->GetAuthToken(0);
+						UE_LOG(LogTemp, Warning, TEXT("SteamDemoLogs IOnlineSubsystem Auth ticket: %s"), *ExternalToken);
+					}
+				}
 				const FBeamOperationEventHandlerCode LoginHandler = FBeamOperationEventHandlerCode::CreateLambda(
 					[this](FBeamOperationEvent Evt)
 					{
@@ -158,8 +166,8 @@ protected:
 							// TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdBeamable::EmptyId(), Evt.EventData);
 						}
 					});
-				Runtime->CPP_AttachExternalIdentityOperation(TargetSlot, ServiceName, Namespace, *ExternalToken,
-				                                             AccountID, OnSignUpWithSteam);
+				Runtime->CPP_AttachExternalIdentityOperation(TargetSlot, ServiceName, Namespace, 
+				                                             AccountID, ExternalToken, OnSignUpWithSteam);
 				// Unregister this after execution so that when we reload this scene we don't have multiple callbacks bound to this.
 				Runtime->CPP_UnregisterOnReady(OnBeamableReady);
 			}));
