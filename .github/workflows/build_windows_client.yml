@@ -4,9 +4,9 @@ on:
   workflow_call:
     inputs:
       beamProj:
-        description: 'The BEAMPROJ we are building. Ie: BEAMPROJ_Sandbox or BEAMPROJ_HathoraDemo.'
+        description: "The BEAMPROJ we are building. Ie: BEAMPROJ_Sandbox or BEAMPROJ_HathoraDemo."
         required: true
-        default: 'BEAMPROJ_Sandbox'
+        default: "BEAMPROJ_Sandbox"
         type: string
 
 permissions:
@@ -20,13 +20,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           lfs: true
-      
+
       # Installs .NET 8 so we can run init_repo.sh
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.x
-          
-      # Make sure the .NET's paths are added to the shell's path ENV VAR  
+
+      # Make sure the .NET's paths are added to the shell's path ENV VAR
       - run: Add-Content $env:GITHUB_PATH "C:\Program Files\dotnet"
       - run: Add-Content $env:GITHUB_PATH "~\.dotnet\tools"
       - uses: actions/cache@v4
@@ -38,25 +38,25 @@ jobs:
             UnrealSDK.sln
           key: ${{ runner.os }}-${{ inputs.beamProj }}-${{ hashFiles('Source/**') }}
           restore-keys: ${{ runner.os }}-${{ inputs.beamProj }}-
-        
+
       # Run init_repo.sh (needed to setup the project correctly locally)
-      - name: Prepare Repository for Compilation        
+      - name: Prepare Repository for Compilation
         run: bash init_repo.sh
-      
+
       # Sets the BEAMPROJ based on the input to this workflow.
       - name: Set BeamProjOverride.txt
         run: |
           echo ${{ inputs.beamProj }} > BeamProjOverride.txt |
           cat BeamProjOverride.txt
-      
+
       # Builds the image
       - name: Build image
         run: .\docker_run_windows.ps1
-      
+
       # Compress the results
       - name: Compress Directory
         run: powershell Compress-Archive PackagedProject windows_client_${{ inputs.beamProj }}.zip
-      
+
       # Uploads the artifacts so we can download the build
       - name: Upload Compressed Folder as Artifact
         uses: actions/upload-artifact@v4

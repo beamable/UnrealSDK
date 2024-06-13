@@ -8,7 +8,6 @@
 #include "Beamable/OnlineSubsystemBeamable.h"
 #include "Interfaces/OnlineStatsInterface.h"
 #include "Subsystems/Stats/BeamStatsSubsystem.h"
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/BeamMSPlaygroundApi.h"
 
 class FOnlineSubsystemHathoraDemo final : public FOnlineSubsystemBeamable
 {

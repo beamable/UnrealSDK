@@ -127,13 +127,13 @@ public class BeamableUnrealTarget : TargetRules
 		{
 			var oss = new Beam.OssConfig()
 			{
-				IsEnabled = false,
+				IsEnabled = true,
 
-				HooksEnabled = false,
-				HookSubsystemImplementation = "",
-				HookSubsystemIncludePath = "",
+				HooksEnabled = true,
+				HookSubsystemImplementation = "FOnlineSubsystemHathoraDemo",
+				HookSubsystemIncludePath = "Customer/OnlineSubsystemHathoraDemo.h",
 
-				AdditionalHookModules = Array.Empty<string>(),
+				AdditionalHookModules = new[] { "HathoraSDK" }
 			};
 			TargetRules.bUsesSteam = true;
 

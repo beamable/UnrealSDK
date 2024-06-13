@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Beamable/FInternetAddressBeamable.h"
-#include "HathoraTypes.h"
 #include "Online/CoreOnline.h"
 #include "Misc/ScopeLock.h"
 #include "OnlineSessionSettings.h"
