@@ -82,7 +82,7 @@ protected:
 				FUserSlot TargetSlot = FUserSlot(TEXT("Player0"));
 				FBeamRealmUser user;
 				const bool userGrabbed = UserSlots->GetUserDataAtSlot(TargetSlot, user, this);
-				if (!userGrabbed) 
+				if (!userGrabbed)
 				{
 					UE_LOG(LogTemp, Error, TEXT("SteamDemoLogs, NO USER!"))
 					return;
@@ -91,6 +91,7 @@ protected:
 				if (!SteamAccount)
 				{
 					UE_LOG(LogTemp, Error, TEXT("SteamDemoLogs, NOT A STEAM USER"))
+					this->OnLoginCompleteDelegate.Broadcast(false,TEXT("NOT A STEAM USER"));
 					return;
 				}
 
@@ -127,14 +128,17 @@ protected:
 					{
 						if (Evt.EventType == OET_SUCCESS)
 						{
+							this->LoggedIn = true;
 							UE_LOG_ONLINE_IDENTITY(
 								Warning,
 								TEXT(
 									"SteamDemoLogs [Federated Identity] Successfully SignedUp using federated identity!"
 								));
+							this->OnLoginCompleteDelegate.Broadcast(true,*Evt.EventData);
 							return;
 						}
 						UE_LOG(LogTemp, Error, TEXT("SteamDemoLogs, FAILED TO LOGIN: %s"), *Evt.EventData);
+						this->OnLoginCompleteDelegate.Broadcast(false,*Evt.EventData);
 					});
 
 				const auto OnSignUpWithSteam = FBeamOperationEventHandlerCode::CreateLambda(
@@ -143,8 +147,10 @@ protected:
 					{
 						if (Evt.EventType == OET_SUCCESS)
 						{
+							this->LoggedIn = true;
 							UE_LOG_ONLINE_IDENTITY(
 								Warning, TEXT("[Federated Identity] Successfully SignedUp using federated identity!"));
+							this->OnLoginCompleteDelegate.Broadcast(true,*Evt.EventData);
 							return;
 						}
 
@@ -158,12 +164,13 @@ protected:
 								));
 							Runtime->CPP_LoginExternalIdentityOperation(TargetSlot, ServiceName, Namespace,
 							                                            ExternalToken, LoginHandler);
+							
 						}
 						else
 						{
 							UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Federated Identity] Failed To Sign Up. Reason=%s."),
 							                       *Evt.EventData);
-							// TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdBeamable::EmptyId(), Evt.EventData);
+							this->OnLoginCompleteDelegate.Broadcast(false,*Evt.EventData);
 						}
 					});
 				Runtime->CPP_AttachExternalIdentityOperation(TargetSlot, ServiceName, Namespace, 
