@@ -14,7 +14,7 @@ namespace Beamable.SteamDemo
 	{
 		private const string BaseUri = "https://partner.steam-api.com";
 		private const string AuthenticateUserTicketUri = BaseUri + "/ISteamUserAuth/AuthenticateUserTicket/v1";
-		
+
 		private readonly HttpClient _client = new HttpClient();
 		private static string _appId;
 		private static string _publisherToken;
@@ -48,7 +48,8 @@ namespace Beamable.SteamDemo
 		public async Promise<FederatedAuthenticationResponse> Authenticate(string token, string challenge,
 			string solution)
 		{
-			BeamableLogger.Log("Authenticate started");
+			BeamableLogger.Log("Request for authentication started");
+			_publisherToken = (await Services.RealmConfig.GetRealmConfigSettings()).GetSetting("steam", "key");
 			var uri = BuildAuthenticateUri(token);
 			var response = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, uri));
 			Debug.Log($"RESPONSE {response.StatusCode}: {response.RequestMessage}");
@@ -67,9 +68,9 @@ namespace Beamable.SteamDemo
 		}
 	}
 
-    public class SteamIdentity : IThirdPartyCloudIdentity
-    {
-        public string UniqueName => "federated_steam";
-    }
+	public class SteamIdentity : IThirdPartyCloudIdentity
+	{
+		public string UniqueName => "federated_steam";
+	}
 
 }
