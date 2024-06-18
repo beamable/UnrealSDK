@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Beamable.Common;
 using Beamable.Server;
 using Beamable.Server.Api.RealmConfig;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Beamable.SteamDemo
@@ -52,11 +53,21 @@ namespace Beamable.SteamDemo
 			_publisherToken = (await Services.RealmConfig.GetRealmConfigSettings()).GetSetting("steam", "key");
 			var uri = BuildAuthenticateUri(token);
 			var response = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, uri));
-			Debug.Log($"RESPONSE {response.StatusCode}: {response.RequestMessage}");
 			if (response.IsSuccessStatusCode)
 			{
-				return new FederatedAuthenticationResponse { user_id = Context.UserId.ToString() };
+				var responseBody = await response.Content.ReadAsStringAsync();
+				try
+				{
+					var ticket = JsonConvert.DeserializeObject<SteamAuthenticateUserTicket>(responseBody);
+					return new FederatedAuthenticationResponse { user_id = ticket.response.ResponseParams.steamid };
+				}
+				catch (Exception)
+				{
+					throw new MicroserviceException(500, "AuthenticationError",
+						"Failed to deserialize response from Steam.");
+				}
 			}
+			Debug.Log($"Failed request, {response.StatusCode}: {response.RequestMessage}");
 
 			throw new MicroserviceException((int)response.StatusCode, "AuthenticationError",
 				$"Failed to connect to Steam: {response.ReasonPhrase}");
@@ -71,6 +82,29 @@ namespace Beamable.SteamDemo
 	public class SteamIdentity : IThirdPartyCloudIdentity
 	{
 		public string UniqueName => "federated_steam";
+	}
+
+	[Serializable]
+	public class SteamAuthenticateUserTicket
+	{
+		public SteamResponse response { get; set; }
+	}
+
+	[Serializable]
+	public class SteamResponse
+	{
+		[JsonProperty(PropertyName = "params")]
+		public SteamResponseParams ResponseParams { get; set; }
+	}
+
+	[Serializable]
+	public class SteamResponseParams
+	{
+		public string result { get; set; }
+		public string steamid { get; set; }
+		public string ownersteamid { get; set; }
+		public bool vacbanned { get; set; }
+		public bool publisherbanned { get; set; }
 	}
 
 }
