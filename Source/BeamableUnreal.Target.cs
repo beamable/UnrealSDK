@@ -53,16 +53,7 @@ public class BeamableUnrealTarget : TargetRules
 	{
 		if (beamProj == kBeamProj_Sandbox)
 		{
-			var oss = new Beam.OssConfig()
-			{
-				IsEnabled = false,
-
-				HooksEnabled = false,
-				HookSubsystemImplementation = "",
-				HookSubsystemIncludePath = "",
-
-				AdditionalHookModules = Array.Empty<string>(),
-			};
+			var oss = Beam.OssConfig.Disabled();
 
 			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)
 			{
@@ -125,16 +116,7 @@ public class BeamableUnrealTarget : TargetRules
 	{
 		if (beamProj == kBeamProj_SteamDemo)
 		{
-			var oss = new Beam.OssConfig()
-			{
-				IsEnabled = true,
-
-				HooksEnabled = true,
-				HookSubsystemImplementation = "FOnlineSubsystemSteamDemo",
-				HookSubsystemIncludePath = "Customer/OnlineSubsystemSteamDemo.h",
-
-				AdditionalHookModules = new[] { "HathoraSDK" }
-			};
+			var oss = Beam.OssConfig.Disabled();
 			TargetRules.bUsesSteam = true;
 
 			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)
@@ -246,6 +228,18 @@ public static class Beam
 		/// The primary case for this is adding third-party SDKs you wish to integrate with Beamable (Discord, Hathora, etc...).
 		/// </summary>
 		public string[] AdditionalHookModules;
+
+		public static OssConfig Disabled()
+		{
+			return new OssConfig()
+			{
+				IsEnabled = false,
+				HooksEnabled = false,
+				HookSubsystemImplementation = string.Empty,
+				HookSubsystemIncludePath = string.Empty,
+				AdditionalHookModules = Array.Empty<string>()
+			};
+		}
 	}
 
 
@@ -432,7 +426,7 @@ public static class Beam
 	/// </summary>
 	private static void ConfigOnlineSubsystem(TargetRules TargetRules, OssConfig OssConfig, BeamableAdditionalData AdditionalData)
 	{
-		// Don't do anything to configure OSS if its not enabled
+		// Don't do anything to configure OSS if it is not enabled
 		if (!OssConfig.IsEnabled) return;
 
 		// Include the OnlineSubsystem modules in the target.

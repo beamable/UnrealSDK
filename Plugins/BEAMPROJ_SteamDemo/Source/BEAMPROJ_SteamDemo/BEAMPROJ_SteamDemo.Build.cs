@@ -17,8 +17,6 @@ public class BEAMPROJ_SteamDemo : ModuleRules
 				"BeamableCore",
 				"BeamableCoreRuntime",
 				"OnlineSubsystem",
-				"OnlineSubsystemBeamable",
-				"OnlineSubsystemUtils",
 				"OnlineSubsystemSteam",
 				"Steamworks"
 			}
