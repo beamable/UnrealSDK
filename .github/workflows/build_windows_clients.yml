@@ -1,4 +1,4 @@
-name: Windows Client Build - Hathora Demo
+name: Windows samples client Builds
 
 on:
   workflow_dispatch:
@@ -12,6 +12,7 @@ on:
       - '**.ps1'
       - 'Source/**'
       - 'Plugins/BEAMPROJ_HathoraDemo/**'
+      - 'Plugins/BEAMPROJ_SteamDemo/**'
       - 'Plugins/BeamableCore/**'
       - 'Plugins/OnlineSubsystemBeamable/**'
 
@@ -22,10 +23,8 @@ jobs:
   deploy:
     uses: Beamable/UnrealSDK/.github/workflows/build_windows_client.yml@dev
     strategy:
-      max-parallel: 1
+      max-parallel: 2
       matrix:
-        beamProj:
-          - BEAMPROJ_HathoraDemo
-          - BEAMPROJ_SteamDemo
+        beamProj: ["BEAMPROJ_HathoraDemo", "BEAMPROJ_SteamDemo"]
     with:
       beamProj: ${{ matrix.beamProj }}

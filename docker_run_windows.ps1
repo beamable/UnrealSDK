@@ -48,7 +48,6 @@ $parentDirectory = Split-Path $MyInvocation.MyCommand.Path -Parent
 & docker run --name unreal-project -v "${parentDirectory}:C:\Project" -v "${octobuildDir}:C:\octobuild_cache" "${image_name}:latest"
 
 docker cp unreal-project:C:\PackagedProject .
-
 docker stop unreal-project
 docker rm unreal-project
 
