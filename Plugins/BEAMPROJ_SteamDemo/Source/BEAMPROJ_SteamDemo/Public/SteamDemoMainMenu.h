@@ -6,14 +6,15 @@
 #include "OnlineSubsystem.h"
 #include "Interfaces/OnlineIdentityInterface.h"
 #include "Interfaces/OnlineSessionInterface.h"
-#include "Interfaces/OnlineStatsInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Online/OnlineSessionNames.h"
 #include "OnlineSubsystemUtils.h"
+#include "AutoGen/SubSystems/BeamStatsApi.h"
 #include "steam/steam_api.h"
 
 #include "Runtime/BeamLevelSubsystem.h"
 #include "Runtime/BeamRuntime.h"
+#include "Subsystems/Stats/BeamStatsSubsystem.h"
 #include "SteamDemoMainMenu.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDelegate_LoginComplete, bool, Success, const FString&, Error);
@@ -33,7 +34,6 @@ class BEAMPROJ_STEAMDEMO_API USteamDemoMainMenu : public UBeamLevelSubsystem
 	/** Cached pointer to owning subsystem */
 	IOnlineSubsystem* OnlineSubsystem;
 	IOnlineSessionPtr SessionInterface;
-	IOnlineStatsPtr StatsInterface;
 	bool LoggedIn;
 
 	FDelegateHandle OnBeamableReady;
@@ -80,14 +80,14 @@ protected:
 			{
 				UE_LOG(LogTemp, Warning, TEXT("SteamDemoLogs Initializing after beamable Ready"));
 				FUserSlot TargetSlot = FUserSlot(TEXT("Player0"));
-				FBeamRealmUser user;
-				const bool userGrabbed = UserSlots->GetUserDataAtSlot(TargetSlot, user, this);
+				FBeamRealmUser User;
+				const bool userGrabbed = UserSlots->GetUserDataAtSlot(TargetSlot, User, this);
 				if (!userGrabbed)
 				{
 					UE_LOG(LogTemp, Error, TEXT("SteamDemoLogs, NO USER!"))
 					return;
 				}
-				const auto AccountID = user.AccountId.AsString;
+				const auto AccountID = User.AccountId.AsString;
 				if (!SteamAccount)
 				{
 					UE_LOG(LogTemp, Error, TEXT("SteamDemoLogs, NOT A STEAM USER"))
@@ -120,11 +120,23 @@ protected:
 					if (IdentityInterface.IsValid())
 					{
 						ExternalToken = IdentityInterface->GetAuthToken(0);
+						FString UserName = IdentityInterface->GetPlayerNickname(0);	
 						UE_LOG(LogTemp, Warning, TEXT("SteamDemoLogs IOnlineSubsystem Auth ticket: %s"), *ExternalToken);
+						UE_LOG(LogTemp, Warning, TEXT("SteamDemoLogs IOnlineSubsystem Username: %s"), *UserName);
+						UBeamStatsSubsystem* Stats = GameInstance->GetSubsystem<UBeamStatsSubsystem>();
+						Stats->CPP_SetStatOperation(TargetSlot, TEXT("SteamUserName"),UserName, FBeamOperationEventHandlerCode::CreateLambda([](FBeamOperationEvent Evt)
+						{
+						if (Evt.EventType == OET_SUCCESS)
+						{
+							UE_LOG(LogTemp, Log, TEXT("Steam username saved to stats"));
+						}else{
+							UE_LOG(LogTemp, Error, TEXT("Failed to save Steam username to stats"));
+						}
+						}));
 					}
 				}
 				const FBeamOperationEventHandlerCode LoginHandler = FBeamOperationEventHandlerCode::CreateLambda(
-					[this](FBeamOperationEvent Evt)
+					[this](const FBeamOperationEvent& Evt)
 					{
 						if (Evt.EventType == OET_SUCCESS)
 						{
@@ -143,7 +155,7 @@ protected:
 
 				const auto OnSignUpWithSteam = FBeamOperationEventHandlerCode::CreateLambda(
 					[this, GameInstance,TargetSlot,Namespace,ServiceName,ExternalToken,LoginHandler,Runtime](
-					FBeamOperationEvent Evt)
+					const FBeamOperationEvent& Evt)
 					{
 						if (Evt.EventType == OET_SUCCESS)
 						{

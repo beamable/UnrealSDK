@@ -46,6 +46,7 @@ namespace Beamable.SteamDemo
 				BeamableLogger.LogError("Service initialization failed. Please fix the issues before using the service.");
 			}
 		}
+
 		public async Promise<FederatedAuthenticationResponse> Authenticate(string token, string challenge,
 			string solution)
 		{
