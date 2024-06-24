@@ -3,57 +3,50 @@
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
 
-#include "BeamCliServicesResetCommand.generated.h"
-
-class FMonitoredProcess;
+#include "BeamCliServicesResetContainerCommand.generated.h"
 
 
 UCLASS()
-class UBeamCliServicesResetStreamData : public UObject, public IBeamJsonSerializableUObject
+class UBeamCliServicesResetContainerStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
 	UPROPERTY()
-	FString Target = {};
+	FString Id = {};
 	UPROPERTY()
-	TArray<FString> Ids = {};
+	FString Message = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("Target"), Target);
-		UBeamJsonUtils::SerializeArray<FString>(TEXT("Ids"), Ids, Serializer);	
+		Serializer->WriteValue(TEXT("id"), Id);
+		Serializer->WriteValue(TEXT("message"), Message);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("Target"), Target);
-		UBeamJsonUtils::SerializeArray<FString>(TEXT("Ids"), Ids, Serializer);	
+		Serializer->WriteValue(TEXT("id"), Id);
+		Serializer->WriteValue(TEXT("message"), Message);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Target = Bag->GetStringField(TEXT("Target"));
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("Ids")), Ids, OuterOwner);	
+		Id = Bag->GetStringField(TEXT("id"));
+		Message = Bag->GetStringField(TEXT("message"));	
 	}
 };
 
 
 /**
  Description:
-  Resets services to default settings and cleans up docker images (if any exist)
+  Delete any containers associated with the given Beamable services
 
 Usage:
-  Beamable.Tools services reset <target> [options]
-
-Arguments:
-  <target>  Either image|container|protocols.'image' will cleanup all your locally built images for the selected Beamo Services.
-            'container' will stop all your locally running containers for the selected Beamo Services.
-            'protocols' will reset all the protocol data for the selected Beamo Services back to default parameters
+  Beamable.Tools services reset container [options]
 
 Options:
-  --ids <ids>                      The ids for the services you wish to reset
+  --ids <ids>                      The list of services to build, defaults to all local services
   --dryrun                         Should any networking happen?
   --cid <cid>                      Cid to use; will default to whatever is in the file system
   --pid <pid>                      Pid to use; will default to whatever is in the file system
@@ -69,19 +62,20 @@ Options:
 
 
 
-
  */
 UCLASS()
-class UBeamCliServicesResetCommand : public UBeamCliCommand
+class UBeamCliServicesResetContainerCommand : public UBeamCliCommand
 {
 	GENERATED_BODY()
 
 public:
 	inline static FString StreamType = FString(TEXT("stream"));
-	UPROPERTY() TArray<UBeamCliServicesResetStreamData*> Stream;
+	UPROPERTY() TArray<UBeamCliServicesResetContainerStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (const TArray<UBeamCliServicesResetStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (const TArray<UBeamCliServicesResetContainerStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
-	virtual TSharedPtr<FMonitoredProcess> RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {}) override;
+	virtual void HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;
+	virtual void HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer) override;
+	virtual FString GetCommand() override;
 };

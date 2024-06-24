@@ -5,8 +5,6 @@
 
 #include "BeamCliServicesStopCommand.generated.h"
 
-class FMonitoredProcess;
-
 
 
 /**
@@ -17,7 +15,7 @@ Usage:
   Beamable.Tools services stop [options]
 
 Options:
-  --ids <ids>                      The ids for the services you wish to stop
+  --ids <ids>                      The list of services to build, defaults to all local services
   --dryrun                         Should any networking happen?
   --cid <cid>                      Cid to use; will default to whatever is in the file system
   --pid <pid>                      Pid to use; will default to whatever is in the file system
@@ -43,5 +41,7 @@ public:
 		
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
-	virtual TSharedPtr<FMonitoredProcess> RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {}) override;
+	virtual void HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;
+	virtual void HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer) override;
+	virtual FString GetCommand() override;
 };

@@ -27,11 +27,11 @@ if [ ! -f ".config/dotnet-tools.json" ]; then
     dotnet new tool-manifest
 fi
 
+# Read out the expected version of the CLI
+CLI_VERSION=0.0.123
+
 # Install Beamable.Tools with optional version
-if [ -z "$1" ]; then
-    dotnet tool install Beamable.Tools --version 2.0.0
-else
-    dotnet tool install Beamable.Tools --version "$1"
-fi
+dotnet tool install Beamable.Tools --version "$CLI_VERSION"
+
 
 echo "Beamable Tools are installed. To call them use `dotnet beam` from any directory under your Unreal project root."

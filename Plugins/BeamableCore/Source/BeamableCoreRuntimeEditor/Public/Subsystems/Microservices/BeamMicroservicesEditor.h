@@ -15,7 +15,6 @@
 #include "Subsystems/CLI/Autogen/BeamCliServicesPsCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliProjectOpenSwaggerCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliServicesDeployCommand.h"
-#include "Subsystems/CLI/Autogen/BeamCliServicesResetCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliServicesRunCommand.h"
 
 #include "BeamMicroservicesEditor.generated.h"

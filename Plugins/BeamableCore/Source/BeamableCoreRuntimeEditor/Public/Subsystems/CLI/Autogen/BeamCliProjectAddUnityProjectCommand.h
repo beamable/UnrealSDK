@@ -5,8 +5,6 @@
 
 #include "BeamCliProjectAddUnityProjectCommand.generated.h"
 
-class FMonitoredProcess;
-
 
 
 /**
@@ -46,5 +44,7 @@ public:
 		
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
-	virtual TSharedPtr<FMonitoredProcess> RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {}) override;
+	virtual void HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;
+	virtual void HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer) override;
+	virtual FString GetCommand() override;
 };

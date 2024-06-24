@@ -83,12 +83,12 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 	if (CoreSettings->BeamableEnvironment.IsNull())
 	{
 		CoreSettings->BeamableEnvironment = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/BeamProdEnv.BeamProdEnv'"));
-		
+
 		CoreSettings->BeamablePossibleEnvironments.AddDefaulted(3);
 		CoreSettings->BeamablePossibleEnvironments[0] = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/BeamProdEnv.BeamProdEnv'"));
 		CoreSettings->BeamablePossibleEnvironments[1] = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/BeamStagingEnv.BeamStagingEnv'"));
 		CoreSettings->BeamablePossibleEnvironments[2] = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/BeamDevEnv.BeamDevEnv'"));
-		
+
 		CoreSettings->SaveConfig(CPF_Config, *CoreSettings->GetDefaultConfigFilename());
 	}
 
@@ -155,8 +155,20 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 	BeamEditor->OnInitializedAfterEditorReadyWait = RequestTracker->CPP_WaitAll({}, BeamEditor->InitializeAfterEditorReadyOps, {}, OnCompleteCode);
 }
 
-void UBeamEditorBootstrapper::Run_TrySignIntoMainEditorSlot()
+void UBeamEditorBootstrapper::Run_TrySignIntoMainEditorSlot(FBeamWaitCompleteEvent Evt)
 {
+	const auto RequestTracker = GEngine->GetEngineSubsystem<UBeamRequestTracker>();
+	TArray<FString> Errs;
+	if (RequestTracker->IsWaitFailed(Evt, Errs))
+	{
+		for (FString Err : Errs)
+		{
+			UE_LOG(LogBeamEditor, Error, TEXT("Error initializing the Beamable SDK: %s"), *Err);
+		}
+		UE_LOG(LogBeamEditor, Error, TEXT("Please restart the editor to try again after fixing whatever issues the errors describe."));
+		return;
+	}
+
 	const auto BeamEditor = GEditor->GetEditorSubsystem<UBeamEditor>();
 	const auto MainEditorSlot = BeamEditor->GetMainEditorSlot();
 	// Tries to load the saved user at a specific slot.
@@ -618,9 +630,9 @@ void UBeamEditor::ApplyCurrentSettingsToBuild()
 {
 	auto Settings = GetMutableDefault<UBeamCoreSettings>();
 	Settings->SaveConfig(CPF_Config, *Settings->GetDefaultConfigFilename());
-	
+
 	// Notify other systems that
-	if(OnAppliedSettingsToBuild.IsBound()) OnAppliedSettingsToBuild.Broadcast();
+	if (OnAppliedSettingsToBuild.IsBound()) OnAppliedSettingsToBuild.Broadcast();
 }
 
 

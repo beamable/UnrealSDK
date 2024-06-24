@@ -3,6 +3,8 @@
 
 #include "Subsystems/Microservices/BeamMicroservicesEditor.h"
 
+#include "Subsystems/CLI/Autogen/BeamCliServicesStopCommand.h"
+
 void UBeamMicroservicesEditor::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
@@ -57,7 +59,7 @@ void UBeamMicroservicesEditor::OnRealmInitialized()
 		{
 			OnUpdateLocalStateReceived(Stream, Array, Op);
 		};
-		Cli->RunCommand(ListenForStandaloneRunningServicesCommand, {}, {});
+		Cli->RunCommand(ListenForStandaloneRunningServicesCommand, {TEXT("-w")}, {});
 	}
 }
 
@@ -176,7 +178,7 @@ bool UBeamMicroservicesEditor::OpenSwaggerDocs(FString BeamoId, bool bIsRemote)
 	if (bIsLocalRunning || bIsRemoteRunning)
 	{
 		const auto OpenSwaggerCommand = NewObject<UBeamCliProjectOpenSwaggerCommand>();
-		Cli->RunCommandSync(OpenSwaggerCommand, Params);
+		Cli->RunCommandServer(OpenSwaggerCommand, Params, {});
 	}
 
 	return true;
@@ -216,7 +218,7 @@ void UBeamMicroservicesEditor::UpdateRemoteMicroserviceState(const TFunction<voi
 	Params.Add("--remote");
 
 	// Kick of command.
-	Cli->RunCommand(ServicesPs, Params, Op);
+	Cli->RunCommandServer(ServicesPs, Params, Op);
 }
 
 void UBeamMicroservicesEditor::EnsureExistingServices()
@@ -248,7 +250,7 @@ void UBeamMicroservicesEditor::EnsureExistingServices()
 	};
 
 	// Run this synchronously.
-	Cli->RunCommandSync(ServicesPs, {});
+	Cli->RunCommandServer(ServicesPs, {}, {});
 }
 
 void UBeamMicroservicesEditor::DeployMicroservices(const TArray<FString>& EnableBeamoIds, const TArray<FString>& DisableBeamoIds, const FBeamOperationHandle& Op) const
@@ -291,7 +293,7 @@ void UBeamMicroservicesEditor::DeployMicroservices(const TArray<FString>& Enable
 		Params.Add(Ids);
 	}
 	// Kick of command.
-	Cli->RunCommand(ServicesDeploy, Params, Op);
+	Cli->RunCommandServer(ServicesDeploy, Params, Op);
 }
 
 void UBeamMicroservicesEditor::RunDockerMicroservices(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op)
@@ -344,37 +346,35 @@ void UBeamMicroservicesEditor::RunDockerMicroservices(const TArray<FString>& Bea
 	}
 
 	// Kick of command.
-	Cli->RunCommand(ServicesDeploy, Params, Op);
+	Cli->RunCommandServer(ServicesDeploy, Params, Op);
 }
 
 void UBeamMicroservicesEditor::StopDockerMicroservices(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op)
 {
-	const auto ServicesDeploy = NewObject<UBeamCliServicesResetCommand>();
-	ServicesDeploy->OnStreamOutput = [this](const TArray<UBeamCliServicesResetStreamData*>& Result,
-	                                        const TArray<long long>&, const FBeamOperationHandle&)
-	{		
-		for (const auto& BeamoId : Result.Last()->Ids)
-		{
-			if (LocalMicroserviceData.Contains(BeamoId))
-			{
-				LocalMicroserviceData.Find(BeamoId)->RunningState = Stopped;
-			}
-			else
-			{
-				LocalMicroserviceData.Add(BeamoId, FLocalMicroserviceData{
-					                          BeamoId,
-					                          Stopped,
-					                          false
-				                          });
-			}
-		}
-	};
+	const auto ServicesDeploy = NewObject<UBeamCliServicesStopCommand>();	
 
 	// Handle completing the operation
-	ServicesDeploy->OnCompleted = [this](const int& ResultCode, const FBeamOperationHandle& Operation)
+	ServicesDeploy->OnCompleted = [this, BeamoIds](const int& ResultCode, const FBeamOperationHandle& Operation)
 	{
 		if (ResultCode == 0)
+		{
+			for (const auto& BeamoId : BeamoIds)
+			{
+				if (LocalMicroserviceData.Contains(BeamoId))
+				{
+					LocalMicroserviceData.Find(BeamoId)->RunningState = Stopped;
+				}
+				else
+				{
+					LocalMicroserviceData.Add(BeamoId, FLocalMicroserviceData{
+												  BeamoId,
+												  Stopped,
+												  false
+											  });
+				}
+			}
 			RequestTracker->TriggerOperationSuccess(Operation, TEXT(""));
+		}
 		else
 			RequestTracker->TriggerOperationError(Operation, FString::FromInt(ResultCode));
 	};
@@ -394,7 +394,7 @@ void UBeamMicroservicesEditor::StopDockerMicroservices(const TArray<FString>& Be
 
 
 	// Kick of command.
-	Cli->RunCommand(ServicesDeploy, Params, Op);
+	Cli->RunCommandServer(ServicesDeploy, Params, Op);
 }
 
 void UBeamMicroservicesEditor::OnUpdateLocalStateReceived(const TArray<UBeamCliProjectPsStreamData*>& Stream, const TArray<long long>&, const FBeamOperationHandle&)

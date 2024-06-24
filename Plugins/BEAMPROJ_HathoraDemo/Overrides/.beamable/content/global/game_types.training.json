@@ -1,1 +1,20 @@
-{"Teams":{"data":[{"Name":"Team","MinPlayers":1,"MaxPlayers":1}]},"NumericRules":{"data":[]},"StringRules":{"data":[]},"FederatedGameServerNamespace":{"data":"hathora"}}
+{
+  "Teams": {
+    "data": [
+      {
+        "Name": "Team",
+        "MinPlayers": 1,
+        "MaxPlayers": 1
+      }
+    ]
+  },
+  "StringRules": {
+    "data": []
+  },
+  "FederatedGameServerNamespace": {
+    "data": "hathora"
+  },
+  "NumericRules": {
+    "data": []
+  }
+}

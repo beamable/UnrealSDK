@@ -5,8 +5,6 @@
 
 #include "BeamCliServicesPsCommand.generated.h"
 
-class FMonitoredProcess;
-
 
 UCLASS()
 class UBeamCliServicesPsStreamData : public UObject, public IBeamJsonSerializableUObject
@@ -39,6 +37,8 @@ public:
 	TArray<FString> LocalContainerPorts = {};
 	UPROPERTY()
 	TArray<FString> Dependencies = {};
+	UPROPERTY()
+	TArray<FString> ProjectPath = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
@@ -53,7 +53,8 @@ public:
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("ContainerIds"), ContainerIds, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("LocalHostPorts"), LocalHostPorts, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("LocalContainerPorts"), LocalContainerPorts, Serializer);
-		UBeamJsonUtils::SerializeArray<FString>(TEXT("Dependencies"), Dependencies, Serializer);	
+		UBeamJsonUtils::SerializeArray<FString>(TEXT("Dependencies"), Dependencies, Serializer);
+		UBeamJsonUtils::SerializeArray<FString>(TEXT("ProjectPath"), ProjectPath, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
@@ -69,7 +70,8 @@ public:
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("ContainerIds"), ContainerIds, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("LocalHostPorts"), LocalHostPorts, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("LocalContainerPorts"), LocalContainerPorts, Serializer);
-		UBeamJsonUtils::SerializeArray<FString>(TEXT("Dependencies"), Dependencies, Serializer);	
+		UBeamJsonUtils::SerializeArray<FString>(TEXT("Dependencies"), Dependencies, Serializer);
+		UBeamJsonUtils::SerializeArray<FString>(TEXT("ProjectPath"), ProjectPath, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
@@ -85,7 +87,8 @@ public:
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("ContainerIds")), ContainerIds, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("LocalHostPorts")), LocalHostPorts, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("LocalContainerPorts")), LocalContainerPorts, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("Dependencies")), Dependencies, OuterOwner);	
+		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("Dependencies")), Dependencies, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("ProjectPath")), ProjectPath, OuterOwner);	
 	}
 };
 
@@ -128,5 +131,7 @@ public:
 	TFunction<void (const TArray<UBeamCliServicesPsStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
-	virtual TSharedPtr<FMonitoredProcess> RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {}) override;
+	virtual void HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;
+	virtual void HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer) override;
+	virtual FString GetCommand() override;
 };

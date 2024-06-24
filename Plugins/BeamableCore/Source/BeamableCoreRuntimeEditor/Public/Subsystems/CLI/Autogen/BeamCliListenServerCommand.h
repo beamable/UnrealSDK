@@ -5,8 +5,6 @@
 
 #include "BeamCliListenServerCommand.generated.h"
 
-class FMonitoredProcess;
-
 
 UCLASS()
 class UBeamCliListenServerStreamData : public UObject, public IBeamJsonSerializableUObject
@@ -48,6 +46,7 @@ Usage:
   Beamable.Tools listen server [options]
 
 Options:
+  -n, --no-filter                  When true, do not send any approved list of messages, such that all server messages will be sent [default: False]
   --dryrun                         Should any networking happen?
   --cid <cid>                      Cid to use; will default to whatever is in the file system
   --pid <pid>                      Pid to use; will default to whatever is in the file system
@@ -76,5 +75,7 @@ public:
 	TFunction<void (const TArray<UBeamCliListenServerStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
-	virtual TSharedPtr<FMonitoredProcess> RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {}) override;
+	virtual void HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;
+	virtual void HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer) override;
+	virtual FString GetCommand() override;
 };

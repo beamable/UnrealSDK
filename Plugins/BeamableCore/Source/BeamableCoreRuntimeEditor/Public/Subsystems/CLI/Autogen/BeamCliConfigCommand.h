@@ -5,8 +5,6 @@
 
 #include "BeamCliConfigCommand.generated.h"
 
-class FMonitoredProcess;
-
 
 UCLASS()
 class UBeamCliConfigStreamData : public UObject, public IBeamJsonSerializableUObject
@@ -72,9 +70,9 @@ Options:
   -?, -h, --help                   Show help and usage information
 
 Commands:
+  realm               Get current realm config values
   secret              Get the realm secret
   set <name> <value>  Set a config value
-  realm               Get current realm config values
 
 
  */
@@ -90,5 +88,7 @@ public:
 	TFunction<void (const TArray<UBeamCliConfigStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
-	virtual TSharedPtr<FMonitoredProcess> RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {}) override;
+	virtual void HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;
+	virtual void HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer) override;
+	virtual FString GetCommand() override;
 };

@@ -3,23 +3,50 @@
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
 
-#include "BeamCliProjectGenerateClientCommand.generated.h"
+#include "BeamCliServicesResetImageCommand.generated.h"
 
+
+UCLASS()
+class UBeamCliServicesResetImageStreamData : public UObject, public IBeamJsonSerializableUObject
+{
+	GENERATED_BODY()
+
+public:	
+	
+	UPROPERTY()
+	FString Id = {};
+	UPROPERTY()
+	FString Message = {};
+
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+	{
+		Serializer->WriteValue(TEXT("id"), Id);
+		Serializer->WriteValue(TEXT("message"), Message);	
+	}
+
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+	{
+		Serializer->WriteValue(TEXT("id"), Id);
+		Serializer->WriteValue(TEXT("message"), Message);	
+	}
+
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+	{
+		Id = Bag->GetStringField(TEXT("id"));
+		Message = Bag->GetStringField(TEXT("message"));	
+	}
+};
 
 
 /**
  Description:
-  Generate a C# client file based on a built C# microservice dll directory
+  Delete any images associated with the given Beamable services
 
 Usage:
-  Beamable.Tools project generate-client <source> [options]
-
-Arguments:
-  <source>  The .dll filepath for the built microservice
+  Beamable.Tools services reset image [options]
 
 Options:
-  --output-dir <output-dir>        Directory to write the output client at
-  --output-links                   When true, generate the source client files to all associated projects [default: True]
+  --ids <ids>                      The list of services to build, defaults to all local services
   --dryrun                         Should any networking happen?
   --cid <cid>                      Cid to use; will default to whatever is in the file system
   --pid <pid>                      Pid to use; will default to whatever is in the file system
@@ -35,15 +62,17 @@ Options:
 
 
 
-
  */
 UCLASS()
-class UBeamCliProjectGenerateClientCommand : public UBeamCliCommand
+class UBeamCliServicesResetImageCommand : public UBeamCliCommand
 {
 	GENERATED_BODY()
 
 public:
-		
+	inline static FString StreamType = FString(TEXT("stream"));
+	UPROPERTY() TArray<UBeamCliServicesResetImageStreamData*> Stream;
+	UPROPERTY() TArray<int64> Timestamps;
+	TFunction<void (const TArray<UBeamCliServicesResetImageStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual void HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

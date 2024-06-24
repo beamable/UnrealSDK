@@ -5,8 +5,6 @@
 
 #include "BeamCliProjectDepsCommand.generated.h"
 
-class FMonitoredProcess;
-
 
 
 /**
@@ -31,9 +29,9 @@ Options:
   -?, -h, --help                   Show help and usage information
 
 Commands:
-  remove <microservice> <dependency>  Remove the dependency between the given microservice and storage
   add <microservice> <dependency>     Add a given storage as a dependency of a microservice
   list                                Lists all dependencies of given service, if none then lists all dependencies of all existing services
+  remove <microservice> <dependency>  Remove the dependency between the given microservice and storage
 
 
  */
@@ -46,5 +44,7 @@ public:
 		
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
-	virtual TSharedPtr<FMonitoredProcess> RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {}) override;
+	virtual void HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;
+	virtual void HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer) override;
+	virtual FString GetCommand() override;
 };

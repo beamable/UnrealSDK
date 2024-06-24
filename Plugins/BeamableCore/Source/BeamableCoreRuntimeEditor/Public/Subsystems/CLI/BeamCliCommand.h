@@ -5,12 +5,17 @@
 #include "Misc/MonitoredProcess.h"
 #include "RequestTracker/BeamOperationHandle.h"
 #include "Async/Async.h"
+#include "HttpModule.h"
 #include "BeamCliCommand.generated.h"
 
 class FMonitoredProcess;
-class UBeamCli;
 class UBeamEditor;
 class UBeamRequestTracker;
+
+struct FCliRequest
+{
+	FString commandLine;
+};
 
 UCLASS(Abstract)
 class UBeamCliCommand : public UObject
@@ -19,129 +24,74 @@ class UBeamCliCommand : public UObject
 
 protected:
 	TSharedPtr<FMonitoredProcess> CmdProcess;
+	FHttpRequestPtr CmdRequest;
 
 public:
 	UBeamCliCommand() = default;
 
-	virtual void Run(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {})
-	{
-		RequestTracker = GEngine->GetEngineSubsystem<UBeamRequestTracker>();
-		Editor = GEditor->GetEditorSubsystem<UBeamEditor>();
-		Cli = GEditor->GetEditorSubsystem<UBeamCli>();
+	const static FString PathToLocalCli;	
 
-		checkf(Cli->IsInstalled(), TEXT("The Beamable CLI must be installed for any CLI commands to be run."))
-		
-		CmdProcess = RunImpl(CommandParams, Op);
-		CmdProcess->Launch();
-	};
+	/**
+	 *  Appends global options we want to pass to every command.
+	 */
+	static FString PrepareParams(FString Params);
 
-	virtual void RunSync(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {})
-	{
-		RequestTracker = GEngine->GetEngineSubsystem<UBeamRequestTracker>();
-		Editor = GEditor->GetEditorSubsystem<UBeamEditor>();
-		Cli = GEditor->GetEditorSubsystem<UBeamCli>();
+	/**
+	 * Runs a command asynchronously. The command runs in a separate thread --- the callbacks configured in the command, however, are always run on the GameThread.	  
+	 */
+	virtual void Run(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {});;
 
-		checkf(Cli->IsInstalled(), TEXT("The Beamable CLI must be installed for any CLI commands to be run."))
-		
-		CmdProcess = RunImpl(CommandParams, Op);
-		CmdProcess->Launch();
+	/**
+	 * Runs a command in a separate thread but blocks the calling thread until it is done.
+	 * The command runs in a separate thread --- the callbacks configured in the command, however, are always run on the GameThread.	  
+	 */
+	virtual void RunSync(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {});
 
-		// Busy wait until this finishes.
-		while (CmdProcess->Update())
-		{
-		}
-	}
+	/**
+	 * Runs the command as an HTTP request to the long running CLI process running in server mode that we start at the UBeamCli setup.
+	 * The command runs as an HTTP request and its callbacks are guaranteed to run on the GameThread.	  
+	 */
+	virtual void RunServer(const FString Uri, const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {});
 
-	virtual TSharedPtr<FMonitoredProcess> RunImpl(const TArray<FString>& CommandParams,
-	                                              const FBeamOperationHandle& Op = {})
-	{
-		return nullptr;
-	};
+	/**
+	 * For Run and RunSync, this prepares the CmdProcess to be run. 
+	 */
+	virtual void PrepareCommandProcess(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {});
 
-	const static FString PathToLocalCli;
-	const static FString PathToCli;
-		
+	/**
+	 * Helper function to parse out the StdOut of the CmdProcess Run/RunSync and extract the JSON responses from it.  
+	 */
+	bool ConsumeMessageFromOutput(FString& StdOutCopy, FString& OutMessageJson);
+
+	/**
+	 * Whether or not a command has been started and is finished. Returns false for commands that have never been started.
+	 */
+	bool IsDone() const;
+
+
+	/** START -  Auto Generated Function Overrides */
+
+	/**
+	 * Generated via Beam CLI for every cmd subclass. Returns the command name ("version", "project ps", etc...).
+	 */
+	virtual FString GetCommand();
+
+	/**
+	 * Generated via Beam CLI for every cmd subclass. Parses any received JSON and invokes the cmd subclass' appropriate  
+	 */
+	virtual void HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer);
+	virtual void HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer);
+
+	/** END -  Auto Generated Function Overrides */
 
 	bool bIsReceivingMessage;
 	FString MessageBuffer;
 
-	bool IsDone() const
-	{
-		return CmdProcess->Update();
-	}
-
-
-	bool ConsumeMessageFromOutput(FString& StdOutCopy, FString& OutMessageJson)
-	{
-		const auto StreamStartIdx = 0;
-		const auto MessageStartIdx = 0;
-		const auto MessageEndIdx = StdOutCopy.Len();
-
-		// If there's nothing in the buffer, we just skip out.
-		if(StdOutCopy.IsEmpty())
-			return false;
-
-		// Didn't see a message 
-		if (!bIsReceivingMessage && (MessageStartIdx == INDEX_NONE && MessageEndIdx == INDEX_NONE))
-		{
-			MessageBuffer = TEXT("");
-			return false;
-		}
-
-		// If we are not receiving a message and we receive a full one in a single StdOut call, we parse it out and  
-		if (!bIsReceivingMessage && MessageStartIdx != INDEX_NONE && MessageEndIdx != INDEX_NONE)
-		{
-			OutMessageJson = StdOutCopy.RightChop(StreamStartIdx);
-			StdOutCopy = StdOutCopy.RightChop(MessageEndIdx);			
-			// This means a message was completely received and is ready to be sent.
-			return true;
-		}
-
-		// If we are not receiving a message and we see a start but not an end, we get the start of the message into the buffer and turn on the partial message flag.
-		if (!bIsReceivingMessage && (MessageStartIdx != INDEX_NONE && MessageEndIdx == INDEX_NONE))
-		{
-			const auto PartialMessage = StdOutCopy.RightChop(MessageStartIdx);
-			bIsReceivingMessage = true;
-			MessageBuffer = MessageBuffer.Append(PartialMessage);
-			UE_LOG(LogTemp, Warning, TEXT("Beginning => %s"), *MessageBuffer);
-			return false;
-		}
-
-		// If we are receiving a message and it wasn't finished this StdOut message; we just append the contents to the message.
-		if (bIsReceivingMessage && (MessageStartIdx == INDEX_NONE && MessageEndIdx == INDEX_NONE))
-		{
-			MessageBuffer = MessageBuffer.Append(StdOutCopy);
-			return false;
-		}
-
-		// If we are receiving a message and it was finished in this StdOut message; we append this to 
-		if (bIsReceivingMessage && (MessageStartIdx == INDEX_NONE && MessageEndIdx != INDEX_NONE))
-		{
-			const auto PartialMessage = StdOutCopy.Mid(0, MessageEndIdx);
-			bIsReceivingMessage = false;
-			MessageBuffer = MessageBuffer.Append(PartialMessage);
-			OutMessageJson = MessageBuffer;
-			UE_LOG(LogTemp, Warning, TEXT("Ending => %s"), *MessageBuffer);
-			MessageBuffer = TEXT("");
-			// This means a message was completely received and is ready to be sent.
-			return true;
-		}
-
-		return false;
-	}
-
-
-	static FString PrepareParams(FString Params)
-	{
-		return Params;//.Append(" --reporter-use-fatal");
-	}
-
 protected:
+	UPROPERTY()
 	UBeamRequestTracker* RequestTracker;
+	UPROPERTY()
 	UBeamEditor* Editor;
+	UPROPERTY()
 	UBeamCli* Cli;
 };
-
-
-inline const FString UBeamCliCommand::PathToLocalCli = FString(TEXT("dotnet beam"));
-inline const FString UBeamCliCommand::PathToCli = FString(TEXT("beam"));

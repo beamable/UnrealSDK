@@ -8,6 +8,7 @@
 #include "Subsystems/BeamEditorSubsystem.h"
 #include "BeamCli.generated.h"
 
+class UBeamCliServerServeCommand;
 class UBeamCliCommand;
 /**
  * 
@@ -22,15 +23,20 @@ protected:
 
 	virtual void OnRealmInitialized() override;
 
-	bool bInstalled;
-	bool bInstalledLocally;
-	bool bInstalledGlobally;
+	FOptionalBool bInstalled;	
 
 	UPROPERTY()
 	TArray<UBeamCliCommand*> RunningProcesses;
+	TUniquePtr<FMonitoredProcess> IsInstalledProcess;
 
-	TUniquePtr<FMonitoredProcess> IsLocalCliInstalledProcess;
-	TUniquePtr<FMonitoredProcess> IsGlobalCliInstalledProcess;
+	/**
+	 * Stores the current location of the CLI process running in server mode.
+	 * This will be empty when no process is running.
+	 * When it is empty, RunCommandServer attempts to boot the server up again before anything.  
+	 */
+	FString CurrentCliServerUri;
+
+	UBeamCliServerServeCommand* CreateServerCommand(FBeamOperationHandle Op);
 
 public:
 	/**
@@ -41,6 +47,14 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="Params,Op"))
 	void RunCommand(UBeamCliCommand* Command, const TArray<FString>& Params, const FBeamOperationHandle& Op);
+
+
+	/**
+	 * This will kick a command via our long-running CLI process (in server mode). Always prefer to use this over RunCommand and RunCommandSync unless you can't.
+	 * Cannot be used for long-running commands (such as ProjectPs).
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="Params,Op"))
+	void RunCommandServer(UBeamCliCommand* Command, const TArray<FString>& Params, const FBeamOperationHandle& Op);
 
 	/**
 	 * @brief Just a helper function to run a command synchronously.
@@ -53,7 +67,7 @@ public:
 	 * @brief Whether or not the CLI is installed on this machine. We check for all editor integrations that require the CLI to work. 
 	 */
 	UFUNCTION(BlueprintPure, Category="Beam")
-	bool IsInstalled() const { return bInstalled; }
+	bool IsInstalled() const { return bInstalled.IsSet && bInstalled.Val; }
 
 	/**
 	 * @brief Gets the correct CLI installation to use. 

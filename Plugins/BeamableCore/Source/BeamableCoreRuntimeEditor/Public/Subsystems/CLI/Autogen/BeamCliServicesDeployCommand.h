@@ -5,8 +5,6 @@
 
 #include "BeamCliServicesDeployCommand.generated.h"
 
-class FMonitoredProcess;
-
 
 UCLASS()
 class UBeamCliServicesDeployStreamData : public UObject, public IBeamJsonSerializableUObject
@@ -122,8 +120,6 @@ Usage:
   Beamable.Tools services deploy [options]
 
 Options:
-  --enable <enable>                            These are the ids for services you wish to be enabled once Beam-O receives the updated manifest
-  --disable <disable>                          These are the ids for services you wish to be disabled once Beam-O receives the updated manifest
   --from-file <from-file>                      If this option is set to a valid path to a ServiceManifest JSON, deploys that instead []
   --comment <comment>                          Associates this comment along with the published Manifest. You'll be able to read it via the Beamable Portal []
   --service-comments <service-comments>        Any number of strings in the format BeamoId::Comment
@@ -167,5 +163,7 @@ public:
 	TFunction<void (const TArray<UBeamCliServicesDeployLogsStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnLogsStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
-	virtual TSharedPtr<FMonitoredProcess> RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {}) override;
+	virtual void HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;
+	virtual void HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer) override;
+	virtual FString GetCommand() override;
 };

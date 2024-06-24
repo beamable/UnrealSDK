@@ -145,7 +145,7 @@ TUnrealRequestPtr UBeamBackend::CreateUnpreparedRequest(int64& OutRequestId, con
 	// Creates a request with the specified timeout.
 	auto Req = FHttpModule::Get().CreateRequest();
 	Req->SetTimeout(RetryConfig.Timeout);
-	Req->SetHeader(FString(TEXT("X-BEAM-TIMEOUT")), FString::Printf(TEXT("%lld"),RetryConfig.Timeout));
+	Req->SetHeader(FString(TEXT("X-BEAM-TIMEOUT")), FString::Printf(TEXT("%lld"), RetryConfig.Timeout));
 	Req->SetHeader(TEXT("X-KS-USER-AGENT"), FString::Printf(TEXT("Unreal-%s"), *UGameplayStatics::GetPlatformName()));
 
 	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation: TIMEOUT_HEADER=%lld"), RetryConfig.Timeout);
@@ -199,13 +199,19 @@ void UBeamBackend::PrepareBeamableRequestToRealm(const TUnrealRequestPtr& Reques
 	const auto Cid = RealmHandle.Cid;
 	const auto Pid = RealmHandle.Pid;
 
-	const auto ScopeHeader = RealmHandle.Pid.AsString.IsEmpty()
-		                         ? RealmHandle.Cid.AsString
-		                         : FString::Format(
-			                         TEXT("{0}.{1}"), {RealmHandle.Cid.AsString, RealmHandle.Pid.AsString});
-	Request->SetHeader(HEADER_REQUEST_SCOPE, ScopeHeader);
-
-	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation: SCOPE_HEADER=%s"), *ScopeHeader);
+	if (!Cid.AsString.IsEmpty())
+	{
+		const auto ScopeHeader = RealmHandle.Pid.AsString.IsEmpty()
+			                         ? RealmHandle.Cid.AsString
+			                         : FString::Format(
+				                         TEXT("{0}.{1}"), {RealmHandle.Cid.AsString, RealmHandle.Pid.AsString});
+		Request->SetHeader(HEADER_REQUEST_SCOPE, ScopeHeader);
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation: SCOPE_HEADER=%s"), *ScopeHeader);
+	}
+	else
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation: Skipped SCOPE_HEADER as no CID was found."));
+	}	
 }
 
 void UBeamBackend::PrepareBeamableRequestToRealmWithAuthToken(const TUnrealRequestPtr& Request,
@@ -505,10 +511,11 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 				const auto Route = FailedReq->GetURL();
 				const auto Verb = FailedReq->GetVerb();
 				const auto Body = FString(UTF8_TO_TCHAR(FailedReq->GetContent().GetData()));
-				ensureAlwaysMsgf(false, TEXT( "This request should not have been enqueued for retry, but it was. REQUEST_ID=%lld, VERB=%s, ROUTE=%s, BODY=%s, RETRY_RESP_CODES=%s, RETRY_ERR_CODES=%s" ),
-				                 ProcessingReq.RequestToRetry.RequestId, *Route, *Verb, *Body,
-				                 *FString::JoinBy(RetryConfig.HttpResponseCodes, TEXT(","), [](int64 c) { return FString::FromInt(c); }),
-				                 *FString::Join(RetryConfig.CustomErrorCodes, TEXT(",")));
+				ensureAlwaysMsgf(
+					false, TEXT( "This request should not have been enqueued for retry, but it was. REQUEST_ID=%lld, VERB=%s, ROUTE=%s, BODY=%s, RETRY_RESP_CODES=%s, RETRY_ERR_CODES=%s" ),
+					ProcessingReq.RequestToRetry.RequestId, *Route, *Verb, *Body,
+					*FString::JoinBy(RetryConfig.HttpResponseCodes, TEXT(","), [](int64 c) { return FString::FromInt(c); }),
+					*FString::Join(RetryConfig.CustomErrorCodes, TEXT(",")));
 			}
 
 			RetriesSentOut.Add(InFlightProcessingRequest.Key);
@@ -595,7 +602,8 @@ void UBeamBackend::UpdateResponseCache(const FRequestType& RequestType, const UO
 	         UpdateResponseCache(RequestType, CallingContext, Request, Content);
 }
 
-bool UBeamBackend::ExtractDataFromResponse(const FHttpRequestPtr Request, const FHttpResponsePtr Response, const bool bWasRequestCompleted, EHttpRequestStatus::Type& OutRequestStatus, int32& OutResponseCode, FString& OutResponseBody)
+bool UBeamBackend::ExtractDataFromResponse(const FHttpRequestPtr Request, const FHttpResponsePtr Response, const bool bWasRequestCompleted, EHttpRequestStatus::Type& OutRequestStatus,
+                                           int32& OutResponseCode, FString& OutResponseBody)
 {
 	OutRequestStatus = Request->GetStatus();
 	if (bWasRequestCompleted)

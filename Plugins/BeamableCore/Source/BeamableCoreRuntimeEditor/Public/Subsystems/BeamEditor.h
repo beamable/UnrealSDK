@@ -60,7 +60,7 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamEditorBootstrapper : public UObject
 	 * Our BeamableWindowUI and other AssetEditor extensions wait for this flag to be true before allowing functionality to be accessed in editor.
 	 */
 	UFUNCTION()
-	void Run_TrySignIntoMainEditorSlot();
+	void Run_TrySignIntoMainEditorSlot(FBeamWaitCompleteEvent Evt);
 
 	/**
 	 * @brief This runs after the SignIn operation the previous step resolves and simply flags the editor as ready. 

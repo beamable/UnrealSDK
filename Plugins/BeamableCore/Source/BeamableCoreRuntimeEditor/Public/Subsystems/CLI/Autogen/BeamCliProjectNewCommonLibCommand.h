@@ -5,8 +5,6 @@
 
 #include "BeamCliProjectNewCommonLibCommand.generated.h"
 
-class FMonitoredProcess;
-
 
 
 /**
@@ -20,8 +18,7 @@ Arguments:
   <name>  The name of the new library project
 
 Options:
-  -i, --init                       Automatically create a .beamable folder context if no context exists
-  --sln <sln>                      Relative path to the .sln file to use for the new project. If the .sln file does not exist, it will be created. By default, when no value is provided, the .sln path will be <name>/<name>.sln []
+  --sln <sln>                      Relative path to the .sln file to use for the new project. If the .sln file does not exist, it will be created. When no option is configured, if this command is executing inside a .beamable folder, then the first .sln found in .beamable/.. will be used. If no .sln is found, the .sln path will be <name>.sln. If no .beamable folder exists, then the <project>/<project>.sln will be used [default: BeamableUnreal.sln]
   --version <version>              Specifies version of Beamable project dependencies. Defaults to the current version of the CLI [default: 0.0.123]
   --output-path <output-path>      The path where the project is going to be created
   --dryrun                         Should any networking happen?
@@ -50,5 +47,7 @@ public:
 		
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
-	virtual TSharedPtr<FMonitoredProcess> RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {}) override;
+	virtual void HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;
+	virtual void HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer) override;
+	virtual FString GetCommand() override;
 };

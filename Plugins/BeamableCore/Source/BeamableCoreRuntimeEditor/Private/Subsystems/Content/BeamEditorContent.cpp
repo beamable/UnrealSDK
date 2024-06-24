@@ -151,7 +151,7 @@ FBeamOperationHandle UBeamEditorContent::RefreshLocalManifests(FBeamOperationHan
 		else RequestTracker->TriggerOperationError(OpHandle, FString::Printf(TEXT("%d"), ResCode));
 	};
 
-	Cli->RunCommand(GetLocalManifestsCommand, {}, Op);
+	Cli->RunCommandServer(GetLocalManifestsCommand, {}, Op);
 	return Op;
 }
 

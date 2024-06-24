@@ -5,8 +5,6 @@
 
 #include "BeamCliInitCommand.generated.h"
 
-class FMonitoredProcess;
-
 
 UCLASS()
 class UBeamCliInitStreamData : public UObject, public IBeamJsonSerializableUObject
@@ -50,17 +48,20 @@ public:
   Initialize a new Beamable project in the current directory
 
 Usage:
-  Beamable.Tools init [options]
+  Beamable.Tools init [<path>] [options]
+
+Arguments:
+  <path>  the folder that will be initialized as a beamable project.  [default: .]
 
 Options:
-  --username <username>            Specify user name
+  --email, --username <email>      Specify user email address
   --password <password>            User password
   --host <host>                    The host endpoint for beamable
   --cid <cid>                      Cid to use; will default to whatever is in the file system
   --pid <pid>                      Pid to use; will default to whatever is in the file system
   --refresh-token <refresh-token>  Refresh token to use for the requests
   --save-to-environment            Save login refresh token to environment variable
-  --save-to-file                   Save login refresh token to file
+  --no-token-save                  Prevent auth tokens from being saved to disk. This replaces the legacy --save-to-file option [default: False]
   --customer-scoped                Make request customer scoped instead of product only
   --print-to-console               Prints out login request response to console
   --dryrun                         Should any networking happen?
@@ -78,6 +79,7 @@ Options:
 
 
 
+
  */
 UCLASS()
 class UBeamCliInitCommand : public UBeamCliCommand
@@ -91,5 +93,7 @@ public:
 	TFunction<void (const TArray<UBeamCliInitStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
-	virtual TSharedPtr<FMonitoredProcess> RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {}) override;
+	virtual void HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;
+	virtual void HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer) override;
+	virtual FString GetCommand() override;
 };
