@@ -28,6 +28,7 @@ public class BeamableUnrealTarget : TargetRules
 		ConfigureIfSandbox(this, samplePluginName);
 		ConfigureIfHathoraDemo(this, samplePluginName);
 		ConfigureIfSteamDemo(this, samplePluginName);
+		ConfigureIfDiscordDemo(this, samplePluginName);
 		ApplyProjectOverrides(Target, samplePluginName);
 	}
 
@@ -118,6 +119,33 @@ public class BeamableUnrealTarget : TargetRules
 		{
 			var oss = Beam.OssConfig.Disabled();
 			TargetRules.bUsesSteam = true;
+
+			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)
+			{
+				Beam.ConfigureGame(TargetRules, oss);
+			}
+			else if (TargetRules.Type == UnrealBuildTool.TargetType.Editor)
+			{
+				Beam.ConfigureEditor(TargetRules, oss);
+			}
+			else if (TargetRules.Type == UnrealBuildTool.TargetType.Server)
+			{
+				Beam.ConfigureServer(TargetRules, oss);
+			}
+			else
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+		}
+	}
+
+	public const string kBeamProj_DiscordDemo = "BEAMPROJ_DiscordDemo";
+
+	public static void ConfigureIfDiscordDemo(TargetRules TargetRules, string beamProj)
+	{
+		if (beamProj == kBeamProj_DiscordDemo)
+		{
+			var oss = Beam.OssConfig.Disabled();
 
 			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)
 			{
