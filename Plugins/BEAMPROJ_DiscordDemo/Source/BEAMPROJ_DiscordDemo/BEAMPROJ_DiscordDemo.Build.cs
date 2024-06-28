@@ -14,6 +14,8 @@ public class BEAMPROJ_DiscordDemo : ModuleRules
 				"Core",
 				"BeamableCore",
 				"BeamableCoreRuntime",
+				
+				"DiscordSDK"
 			}
 		);
 		
