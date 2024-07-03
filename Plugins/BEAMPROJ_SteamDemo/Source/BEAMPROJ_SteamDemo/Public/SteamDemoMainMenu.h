@@ -65,7 +65,7 @@ protected:
 			PC->bEnableMouseOverEvents = true;
 		}
 
-		UGameInstance* GameInstance = UGameplayStatics::GetGameInstance(GetWorld());
+		UGameInstance* GameInstance = GetWorld()->GetGameInstance();
 		UE_LOG(LogTemp, Warning, TEXT("SteamDemo Init Start"));
 		UBeamRuntime* Runtime = GameInstance->GetSubsystem<UBeamRuntime>();
 

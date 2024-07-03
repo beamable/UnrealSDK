@@ -119,7 +119,7 @@ public partial class DiscordSampleMs : Microservice, IFederatedLogin<DiscordSamp
 
     private static bool IsDiscordUserWhitelistedForMatchmaking(DiscordGuildUser discordGuildUser, DiscordRealmConfig discordRealmConfig)
     {
-        return discordGuildUser.roles.Intersect(discordRealmConfig.RoleIds).Any();
+        return discordGuildUser?.roles != null && discordGuildUser.roles.Intersect(discordRealmConfig.RoleIds).Any();
     }
 }
 
