@@ -142,12 +142,20 @@ public class DiscordBot
             {
                 AlwaysDownloadUsers = true,
                 GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMembers,
+
             }
         );
 
         _discordClient.Log += OnLog; // Debug purposes
         _discordClient.Ready += OnReady;
+        _discordClient.Disconnected += OnDisconnected;
         _discordClient.GuildMemberUpdated += OnGuildMemberUpdated;
+    }
+
+    private Task OnDisconnected(Exception arg)
+    {
+        BeamableLogger.LogException(arg);
+        return Task.CompletedTask;
     }
 
     public async Task Connect()
@@ -293,6 +301,29 @@ public static class Requests
         }
     }
 
+    public static async Task<DiscordGuild> GetGuildInfo(string botToken, string guildId)
+    {
+        using var httpClient = new HttpClient();
+        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bot {botToken}");
+        var response = await httpClient.GetAsync($"https://discord.com/api/v10/guilds/{guildId}");
+
+        var asStr = await response.Content.ReadAsStringAsync();
+        Log.Warning("Discord Get Current Guild User Raw Response = {RawResponse}", asStr);
+
+        if (!response.IsSuccessStatusCode)
+            return null;
+
+        try
+        {
+            var discordGuildUser = JsonUtility.FromJson<DiscordGuild>(asStr);
+            return discordGuildUser;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
     public static async Task<DiscordUser> GetDiscordUserFromToken(string token)
     {
         using var httpClient = new HttpClient();
@@ -384,4 +415,29 @@ public class ExternalAccount
     public string providerService;
     public string providerNamespace;
     public string userId;
+}
+
+[Serializable]
+public class DiscordGuild
+{
+    public string id;
+    public string name;
+    public string icon;
+    public string description;
+    public string splash;
+    public long approximate_member_count;
+    public long approximate_presence_count;
+    public string[] features;
+    public DiscordRole[] roles;
+}
+
+[Serializable]
+public class DiscordRole
+{
+    public string id;
+    public string name;
+    public string permissions;
+    public long position;
+    public long color;
+    public bool hoist;
 }

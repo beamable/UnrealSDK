@@ -19,6 +19,7 @@
     <PropertyGroup Label="Dotnet Settings">
         <!-- net8.0 is the LTS version until 2026. To update your net version, update the <TargetFramework> when Beamable announces support. -->
         <TargetFramework>net6.0</TargetFramework>
+        <InvariantGlobalization>false</InvariantGlobalization>
     </PropertyGroup>
 
     <!-- Put your stuff here OR override our stuff here (some docs): https://docs.beamable.com/docs/cli-guide-microservice-configuration#beamable-properties -->

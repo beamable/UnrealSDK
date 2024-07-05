@@ -25,6 +25,8 @@ RUN dotnet publish ${BEAM_CSPROJ_PATH} -p:BeamableVersion=${BEAM_VERSION} -c rel
 FROM mcr.microsoft.com/dotnet/runtime:6.0-alpine
 WORKDIR /beamApp
 
+RUN apk add --no-cache icu-libs
+
 # expose the health port
 EXPOSE 6565 
 
