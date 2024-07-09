@@ -15,17 +15,17 @@ on:
 run-name: Prepare RC - ${{ inputs.commit }} by @${{ github.actor }}
 jobs:
   buildLinuxServers:
-    uses: Beamable/UnrealSDK/.github/workflows/build_linux_server.yml@${{ inputs.commit }}    
+    uses: ./.github/workflows/build_linux_server.yml    
     with:
       buildAll: true
     
   buildLinuxClients:
-    uses: Beamable/UnrealSDK/.github/workflows/build_linux_client.yml@${{ inputs.commit }}
+    uses: ./.github/workflows/build_linux_client.yml
     with:
       buildAll: true
     
   buildWindowsClients:    
-    uses: Beamable/UnrealSDK/.github/workflows/build_windows_client.yml@${{ inputs.commit }}
+    uses: ./.github/workflows/build_windows_client.yml
     with:
       buildAll: true
       

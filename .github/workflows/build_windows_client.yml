@@ -77,7 +77,7 @@ jobs:
               - '*.uproject'
             
   build:
-    uses: Beamable/UnrealSDK/.github/workflows/build_windows.yml@${{ env.GITHUB_SHA }}
+    uses: ./.github/workflows/build_windows.yml
     strategy:
       max-parallel: 2
       matrix:

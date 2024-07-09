@@ -53,7 +53,7 @@ jobs:
   
   build:
     needs: changes
-    uses: Beamable/UnrealSDK/.github/workflows/build_linux.yml@${{ env.GITHUB_SHA }}
+    uses: ./.github/workflows/build_linux.yml@
     strategy:
       max-parallel: 1
       matrix:
