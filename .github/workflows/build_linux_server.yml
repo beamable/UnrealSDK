@@ -1,4 +1,4 @@
-name: [ Build ] Linux - Server - Dev
+name: Build - Linux - Server - Dev
 
 on:
   workflow_dispatch:
