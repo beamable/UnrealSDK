@@ -53,10 +53,17 @@ jobs:
   
   build:
     needs: changes
-    uses: ./.github/workflows/build_linux.yml
+    uses: ./.github/workflows/build_linux.yml    
+    
+    # Only run this if the changes job actually detected changes OR if we are building all.
+    # Empty array will be serialized as [] so you can simply check it in the if condition.
+    # Second part of the condition just checks if it's not an empty string - that would mean some failure during changes job execution.
+    if: ${{ (!inputs.buildAll && needs.changes.outputs.BEAMPROJS != '[]' && needs.changes.outputs.BEAMPROJS != '') || inputs.buildAll }}
+    
     strategy:
       max-parallel: 1
       matrix:
+        # Result of changes job as well as vars are plain strings. That's why you have to use fromJson() to parse it into array.
         # The list of BeamProj is defined by "wherever we detected changes" when inputs.buildAll is false
         # The list of BeamProj is Repository Variable (declared in Github's UnrealSDK's Settings -> Secrets & Variables -> Variables).        
         beamProj: ${{ !inputs.buildAll && fromJSON(needs.changes.outputs.BEAMPROJS) || fromJSON(vars.ALL_SERVER_BEAMPROJS) }}    
