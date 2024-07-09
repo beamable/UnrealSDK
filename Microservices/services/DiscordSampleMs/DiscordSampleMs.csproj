@@ -27,7 +27,14 @@
     </PropertyGroup>
 
     <ItemGroup Label="Nuget References">
-        <PackageReference Include="Beamable.Microservice.Runtime" Version="2.0.1" />
+        <!-- 
+        BEAMABLE DEVELOPERS: This is how we reference samples when we are developing them. 
+        This makes it so that, if we have a locally built package set up, we use that one. Otherwise, we use the version below.
+        
+        GAME-MAKERS: You don't need to care about this and if you want to reference packages in your own projects, you can just do it normally.
+        <PackageReference Include="Beamable.Common" Version="2.0.0" />     
+        -->
+        <PackageReference Include="Beamable.Microservice.Runtime" Version="$(BeamableVersion)"/>
         <PackageReference Include="Discord.Net" Version="3.15.2" />
     </ItemGroup>
 

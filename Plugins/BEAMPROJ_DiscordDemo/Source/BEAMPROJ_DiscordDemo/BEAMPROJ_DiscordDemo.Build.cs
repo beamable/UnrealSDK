@@ -15,7 +15,7 @@ public class BEAMPROJ_DiscordDemo : ModuleRules
 				"BeamableCore",
 				"BeamableCoreRuntime",
 				"Json", "JsonUtilities",
-				"DiscordSDK"
+				"DiscordSDK", "BeamableUnrealMicroserviceClients", "BeamableUnrealMicroserviceClients"
 			}
 		);
 		

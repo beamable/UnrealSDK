@@ -5,16 +5,16 @@
 #include "Serialization/BeamJsonSerializable.h"
 
 
-#include "MSPlaygroundAddResponse.generated.h"
+#include "DiscordSampleMsUpdateFromDiscordResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLEUNREALMICROSERVICECLIENTS_API UMSPlaygroundAddResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
+class BEAMABLEUNREALMICROSERVICECLIENTS_API UDiscordSampleMsUpdateFromDiscordResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Value", Category="Beam")
-	int32 Value = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Value", Category="Beam")
+	bool bValue = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

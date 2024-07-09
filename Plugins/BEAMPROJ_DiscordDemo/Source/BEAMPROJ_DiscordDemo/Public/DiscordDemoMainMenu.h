@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "DiscordSubsystem.h"
+#include "AutoGen/SubSystems/BeamDiscordSampleMsApi.h"
 #include "AutoGen/SubSystems/BeamNotificationApi.h"
 #include "Runtime/BeamLevelSubsystem.h"
 #include "Runtime/BeamRuntime.h"
-#include "Subsystems/Stats/BeamStatsSubsystem.h"
 #include "DiscordDemoMainMenu.generated.h"
 
 USTRUCT()
@@ -38,6 +38,10 @@ DECLARE_DELEGATE_OneParam(FOnMatchmakingAccessRefreshMessageCode, FMatchmakingAc
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnMatchmakingAccessRefreshMessage, FMatchmakingAccessRefreshNotificationMessage,
                                   Evt);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDelegate_LoginComplete, bool, Success, const FString&, Error);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDelegate_StatusUpdate, bool, loggedIn, bool, MatchmakingEnabled);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegate_Simple);
 
 UCLASS()
@@ -53,13 +57,24 @@ class BEAMPROJ_DISCORDDEMO_API UDiscordDemoMainMenu : public UBeamLevelSubsystem
 	UPROPERTY()
 	UBeamNotifications* Notifications;
 
+	UPROPERTY()
+	UBeamDiscordSampleMsApi* DiscordSampleMsApi;
+
 	FDelegateHandle OnBeamableReady;
 
 	UPROPERTY(BlueprintAssignable)
 	FDelegate_Simple OnInitialized;
+	UPROPERTY(BlueprintAssignable)
+	FDelegate_LoginComplete OnLoginCompleted;
+	UPROPERTY(BlueprintAssignable)
+	FDelegate_StatusUpdate OnStatusUpdated;
 
 	UPROPERTY()
 	bool CanPerformMatchmaking = false;
+	UPROPERTY()
+	bool LoggedIn = false;
+
+	FUserSlot UserSlot = FUserSlot(TEXT("Player0"));
 
 	UFUNCTION()
 	void HandleMatchmakingAccessRefreshNotificationMessage(FMatchmakingAccessRefreshNotificationMessage evt)
@@ -67,6 +82,7 @@ class BEAMPROJ_DISCORDDEMO_API UDiscordDemoMainMenu : public UBeamLevelSubsystem
 		UE_LOG(LogTemp, Display, TEXT("BeamDiscord HandleMatchmakingAccessRefreshNotificationMessage: %hhd"),
 		       evt.matchmaking_discord_whitelisted);
 		CanPerformMatchmaking = evt.matchmaking_discord_whitelisted;
+		this->OnStatusUpdated.Broadcast(this->LoggedIn, this->CanPerformMatchmaking);
 	}
 
 protected:
@@ -76,6 +92,7 @@ protected:
 	{
 		Notifications = GEngine->GetEngineSubsystem<UBeamNotifications>();
 		UserSlots = GEngine->GetEngineSubsystem<UBeamUserSlots>();
+		DiscordSampleMsApi = GEngine->GetEngineSubsystem<UBeamDiscordSampleMsApi>();
 		UE_LOG(LogTemp, Display, TEXT("Initialize BeamDiscord Demo Main Menu"));
 	}
 
@@ -91,9 +108,8 @@ protected:
 		}
 		UGameInstance* GameInstance = GetWorld()->GetGameInstance();
 		UBeamRuntime* Runtime = GameInstance->GetSubsystem<UBeamRuntime>();
-		FUserSlot TargetSlot = FUserSlot(TEXT("Player0"));
 		FBeamRealmUser User;
-		const bool userGrabbed = UserSlots->GetUserDataAtSlot(TargetSlot, User, this);
+		const bool userGrabbed = UserSlots->GetUserDataAtSlot(UserSlot, User, this);
 		if (!userGrabbed)
 		{
 			UE_LOG(LogTemp, Error, TEXT("DiscordDemo Main Menu, NO USER!"))
@@ -113,12 +129,15 @@ protected:
 					       TEXT(
 						       "SteamDemoLogs [Federated Identity] Successfully SignedUp using federated identity!"
 					       ));
+					LoggedIn = true;
+					this->HandleLoggedIn(true, TEXT(""));
 					return;
 				}
 				UE_LOG(LogTemp, Error, TEXT("SteamDemoLogs, FAILED TO LOGIN: %s"), *Evt.EventData);
+				this->HandleLoggedIn(false, *Evt.EventData);
 			});
 		const auto OnSignUpWithDiscord = FBeamOperationEventHandlerCode::CreateLambda(
-			[this, TargetSlot,Namespace,ServiceName,UserData,Runtime,LoginHandler](const FBeamOperationEvent& Evt)
+			[this,Namespace,ServiceName,UserData,Runtime,LoginHandler](const FBeamOperationEvent& Evt)
 			{
 				if (Evt.EventType == OET_SUCCESS)
 				{
@@ -127,6 +146,8 @@ protected:
 					       TEXT(
 						       "[Federated Identity] Successfully SignedUp using federated identity!"
 					       ));
+					LoggedIn = true;
+					this->HandleLoggedIn(true, TEXT(""));
 					return;
 				}
 				// Error Handling
@@ -137,18 +158,54 @@ protected:
 					       TEXT(
 						       "[Federated Identity] %s User already associated with beamable account. Logging in instead."
 					       ));
-					Runtime->CPP_LoginExternalIdentityOperation(TargetSlot, ServiceName, Namespace,
+					Runtime->CPP_LoginExternalIdentityOperation(this->UserSlot, ServiceName, Namespace,
 					                                            UserData.OAuthToken, LoginHandler);
 				}
 				else
 				{
 					UE_LOG(LogTemp, Warning, TEXT("[Federated Identity] Failed To Sign Up. Reason=%s."),
 					       *Evt.EventData);
+					this->HandleLoggedIn(false, *Evt.EventData);
 				}
 			});
-		Runtime->CPP_AttachExternalIdentityOperation(TargetSlot, ServiceName, Namespace,
+		Runtime->CPP_AttachExternalIdentityOperation(this->UserSlot, ServiceName, Namespace,
 		                                             AccountID, UserData.OAuthToken,
 		                                             OnSignUpWithDiscord);
+	}
+
+	void HandleLoggedIn(bool success, const FString& Error)
+	{
+		this->OnLoginCompleted.Broadcast(success, Error);
+		this->OnStatusUpdated.Broadcast(this->LoggedIn, this->CanPerformMatchmaking);
+		if (success)
+		{
+			TMap<FString, FString> empty;
+			UDiscordSampleMsUpdateUserWhitelistedStatusRequest* request =
+				UDiscordSampleMsUpdateUserWhitelistedStatusRequest::Make(this, empty);
+			const auto Handler = FOnDiscordSampleMsUpdateUserWhitelistedStatusFullResponse::CreateLambda(
+				[this](FDiscordSampleMsUpdateUserWhitelistedStatusFullResponse Resp)
+				{
+					// If the request failed, or we are retrying, we do nothing  
+					if (Resp.State != RS_Success)
+					{
+						
+						UE_LOG(LogTemp, Display, TEXT(" BeamDiscord FDiscordSampleMsUpdateUserWhitelistedStatusFullResponse: REQUEST FAILED: %s"),
+							   *Resp.ErrorData.message);
+						return;
+					}
+
+					FMatchmakingAccessRefreshNotificationMessage newMessage;
+					newMessage.matchmaking_discord_whitelisted = Resp.SuccessData->bMatchmakingDiscordWhitelisted;
+					// Otherwise, print the value 
+					UE_LOG(LogTemp, Display, TEXT(" BeamDiscord FDiscordSampleMsUpdateUserWhitelistedStatusFullResponse: %dhh"),
+					       Resp.SuccessData->bMatchmakingDiscordWhitelisted);
+					HandleMatchmakingAccessRefreshNotificationMessage(newMessage);
+					
+				});
+			FBeamRequestContext Ctx;
+			UE_LOG(LogTemp, Display, TEXT("BeamDiscord SENDING UpdateUserWhitelistedStatus request"))
+			DiscordSampleMsApi->CPP_UpdateUserWhitelistedStatus(UserSlot, request, Handler, Ctx, {}, this);
+		}
 	}
 
 	UFUNCTION(BlueprintCallable)
