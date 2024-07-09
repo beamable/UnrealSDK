@@ -53,7 +53,7 @@ jobs:
   
   build:
     needs: changes
-    uses: ./.github/workflows/build_linux.yml@
+    uses: ./.github/workflows/build_linux.yml
     strategy:
       max-parallel: 1
       matrix:
