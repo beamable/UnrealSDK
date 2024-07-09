@@ -1,0 +1,68 @@
+name: [ Build ] Linux - Server - Dev
+
+on:
+  workflow_dispatch:
+    inputs:
+      buildAll:
+        type: boolean
+        description: 'Whether or not we should build all BEAMPROJS instead of just the ones with changes.'
+        required: true
+        default: false
+  push:
+    branches:
+      - dev
+  workflow_call:
+    inputs:
+      buildAll:
+        type: boolean
+        description: 'Whether or not we should build all BEAMPROJS instead of just the ones with changes.'
+        required: true
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  changes:
+    runs-on: unreal-builder
+    
+    # This job only runs if we are looking for changes
+    if: ${{ inputs.buildAll == 'false' }}
+    
+    # Expose the list of changed "BEAMPROJ_XXXXX" that were found (this maps to the filter names)
+    outputs:
+      BEAMPROJS: ${{ steps.filter.outputs.changes }}
+    
+    # Clone the repo and find the changed "BEAMPROJ_XXXXX"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          # The filters here are BEAMPROJ-specific. 
+          # We should only rebuild artifacts for a specific BEAMPROJ if there are changes to files it considers relevant. 
+          filters: |
+            BEAMPROJ_HathoraDemo:            
+              - 'Plugins/BEAMPROJ_HathoraDemo/**'
+              - 'Plugins/BeamableCore/**'
+              - 'Plugins/OnlineSubsystemBeamable/**'
+              - 'Dockerfile'
+              - '**.sh'
+              - 'Source/**'
+              - '*.uproject'
+  
+  build:
+    needs: changes
+    uses: Beamable/UnrealSDK/.github/workflows/build_linux.yml@${{ env.GITHUB_SHA }}
+    strategy:
+      max-parallel: 1
+      matrix:
+        # The list of BeamProj is defined by "wherever we detected changes" when inputs.buildAll is false
+        # The list of BeamProj is Repository Variable (declared in Github's UnrealSDK's Settings -> Secrets & Variables -> Variables).        
+        beamProj: ${{ inputs.buildAll == 'false' && fromJSON(needs.changes.outputs.BEAMPROJS) || vars.ALL_SERVER_BEAMPROJS }}    
+    with:
+      beamProj: ${{ matrix.beamProj }}
+      buildType: server
+    secrets:
+      GHCR_ACTOR: ${{ secrets.GHCR_ACTOR }}
+      GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}

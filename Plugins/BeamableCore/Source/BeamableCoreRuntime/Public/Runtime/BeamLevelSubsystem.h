@@ -14,6 +14,7 @@ class BEAMABLECORERUNTIME_API UBeamLevelSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
 
+protected:
 	/**
 	 * Should return the name of the Level that this subsystem must exist in.
 	 */

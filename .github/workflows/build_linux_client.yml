@@ -1,17 +1,17 @@
-name: [Build] Windows - Client - Dev
+name: [Build] Linux - Client - Dev
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:  
     inputs:
       buildAll:
         type: boolean
         description: 'Whether or not we should build all BEAMPROJS instead of just the ones with changes.'
         required: true
-        default: false      
+        default: false
   push:
     branches:
-      - dev    
-  workflow_call:    
+      - dev
+  workflow_call:
     inputs:
       buildAll:
         type: boolean
@@ -22,20 +22,20 @@ on:
 permissions:
   contents: write
 
-jobs:  
+jobs:
   changes:
-    runs-on: [self-hosted, Windows]
+    runs-on: unreal-builder
     
     # This job only runs if we are looking for changes    
     if: ${{ inputs.buildAll == 'false' }}
     
-    # Expose the list of changed "BEAMPROJ_XXXXX" that were found (this maps to the filter names)
+    # Expose the list of changed "BEAMPROJ_XXXXX" that were found (this maps to the filter names)    
     outputs:            
       BEAMPROJS: ${{ steps.filter.outputs.changes }}
-      
+    
     # Clone the repo and find the changed "BEAMPROJ_XXXXX"
-    steps:
-      - uses: actions/checkout@v4
+    steps:      
+      - uses: actions/checkout@v4      
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -46,40 +46,37 @@ jobs:
               - 'Plugins/BEAMPROJ_HathoraDemo/**'
               - 'Plugins/BeamableCore/**'
               - 'Plugins/OnlineSubsystemBeamable/**'
-              - 'DockerfileWindows'
+              - 'Dockerfile'
               - '**.sh'
-              - '**.ps1'              
               - 'Source/**'
               - '*.uproject'            
             BEAMPROJ_SteamDemo:            
               - 'Plugins/BEAMPROJ_SteamDemo/**'
               - 'Plugins/BeamableCore/**'
-              - 'DockerfileWindows'
+              - 'Dockerfile'
               - '**.sh'
-              - '**.ps1'
               - 'Source/**'
               - '*.uproject'
             BEAMPROJ_LiveOpsDemo:            
               - 'Plugins/BEAMPROJ_LiveOpsDemo/**'
               - 'Plugins/BeamableCore/**'
-              - 'DockerfileWindows'
+              - 'Dockerfile'
               - '**.sh'
-              - '**.ps1'
               - 'Source/**'
               - '*.uproject'
             BEAMPROJ_DiscordDemo:            
               - 'Plugins/BEAMPROJ_DiscordDemo/**'
               - 'Plugins/BeamableCore/**'
-              - 'DockerfileWindows'
+              - 'Dockerfile'
               - '**.sh'
-              - '**.ps1'
               - 'Source/**'
               - '*.uproject'
             
   build:
-    uses: Beamable/UnrealSDK/.github/workflows/build_windows.yml@${{ env.GITHUB_SHA }}
+    needs: changes    
+    uses: Beamable/UnrealSDK/.github/workflows/build_linux.yml@${{ env.GITHUB_SHA }}  
     strategy:
-      max-parallel: 2
+      max-parallel: 1
       matrix:
         # The list of BeamProj is defined by "wherever we detected changes" when inputs.buildAll is false
         # The list of BeamProj is a hard-coded list of all BeamProjs when inputs.buildAll is true
@@ -88,3 +85,6 @@ jobs:
     with:
       beamProj: ${{ matrix.beamProj }}
       buildType: client
+    secrets:
+      GHCR_ACTOR: ${{ secrets.GHCR_ACTOR }}
+      GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}

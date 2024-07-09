@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class BEAMPROJ_DiscordDemo : ModuleRules
+public class BEAMPROJ_LiveOpsDemo : ModuleRules
 {
-	public BEAMPROJ_DiscordDemo(ReadOnlyTargetRules Target) : base(Target)
+	public BEAMPROJ_LiveOpsDemo(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
@@ -12,10 +12,6 @@ public class BEAMPROJ_DiscordDemo : ModuleRules
 			new string[]
 			{
 				"Core",
-				"DiscordSDK",
-				
-				// Because we are making microservice calls, we add the microservice plugin for our project
-				"BeamableUnrealMicroserviceClients"
 			}
 		);
 		
@@ -25,7 +21,7 @@ public class BEAMPROJ_DiscordDemo : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore"
+				"SlateCore",
 				// ... add private dependencies that you statically link with here ...	
 			}
 		);

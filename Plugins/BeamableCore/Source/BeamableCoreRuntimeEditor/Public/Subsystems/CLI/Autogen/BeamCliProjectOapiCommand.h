@@ -51,7 +51,7 @@ Usage:
   Beamable.Tools project oapi [options]
 
 Options:
-  --ids <ids>                      The list of services to build, defaults to all local services
+  --ids <ids>                      The list of services to include, defaults to all local services
   --dryrun                         Should any networking happen?
   --cid <cid>                      Cid to use; will default to whatever is in the file system
   --pid <pid>                      Pid to use; will default to whatever is in the file system

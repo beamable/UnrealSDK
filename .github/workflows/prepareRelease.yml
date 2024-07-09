@@ -1,0 +1,31 @@
+name: [Release] Create Release Draft
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        description: The tag for this version in the format "X.Y.Z"
+        required: true        
+      commit:
+        type: string
+        description: Commit hash to deploy
+        default: main        
+
+run-name: Prepare RC - ${{ inputs.commit }} by @${{ github.actor }}
+jobs:
+  buildLinuxServers:
+    uses: Beamable/UnrealSDK/.github/workflows/build_linux_server.yml@${{ inputs.commit }}    
+    with:
+      buildAll: true
+    
+  buildLinuxClients:
+    uses: Beamable/UnrealSDK/.github/workflows/build_linux_client.yml@${{ inputs.commit }}
+    with:
+      buildAll: true
+    
+  buildWindowsClients:    
+    uses: Beamable/UnrealSDK/.github/workflows/build_windows_client.yml@${{ inputs.commit }}
+    with:
+      buildAll: true
+      

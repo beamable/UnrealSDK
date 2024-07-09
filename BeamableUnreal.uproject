@@ -73,6 +73,16 @@
 			"Optional": true
 		},
 		{
+			"Name": "BEAMPROJ_LiveOpsDemo",
+			"Enabled": false,
+			"Optional": true
+		},
+		{
+			"Name": "BEAMPROJ_DiscordDemo",
+			"Enabled": false,
+			"Optional": true
+		},
+		{
 			"Name": "OpenImageDenoise",
 			"Enabled": false
 		},

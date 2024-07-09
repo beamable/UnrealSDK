@@ -72,6 +72,7 @@ struct FBeamInventoryState
 {
 	GENERATED_BODY()
 
+	FBeamGamerTag OwnerPlayerGamerTag;
 	FUserSlot OwnerPlayer;
 
 
@@ -143,6 +144,8 @@ struct FBeamInventoryUpdateCommand
 	void GetAllCreatedItems(FOptionalArrayOfItemCreateRequestBody& NewItems, UObject* Owner = GetTransientPackage()) const;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnInventoryRefreshed, FBeamGamerTag, GamerTag, FUserSlot, UserSlot);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnInventoryRefreshedCode, FBeamGamerTag, FUserSlot);
 
 /**
  * 
@@ -176,7 +179,22 @@ public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
 	static UBeamInventorySubsystem* GetSelf(const UObject* CallingContext) { return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamInventorySubsystem>(); }
 
+	/**
+	 * This gets called in three cases:
+	 *  - Whenever a FetchAllInventoryOperation for a given UserSlot is about to be completed.
+	 *  - Whenever a FetchPlayerInventoryOperation for a given GamerTag is about to be completed.
+	 *  - After we have updated the local inventory in response to receiving a remote notification that the inventory needed refreshing.
+	 *
+	 *  This is NOT called as part of any write-based operations of this subsystem.
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FOnInventoryRefreshed OnInventoryRefreshed;
 
+	/**
+	 * @copybrief OnInventoryRefreshed
+	 */
+	FOnInventoryRefreshedCode OnInventoryRefreshedCode;
+	
 	/**
 	 * @brief Gets the list of all inventory items and currencies from the backend and updates the local inventory state.  
 	 */
@@ -241,6 +259,24 @@ public:
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue", AutoCreateRefTerm="ItemStates"))
 	bool TryGetAllItems(FUserSlot Player, TArray<FBeamItemState>& ItemStates);
 
+	/**
+	 * @brief Given a currency FBeamContentId, gets the amount the player has. Returns false if no player is signed into th given slot.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetCurrencyAmountByGamerTag(const FBeamGamerTag& GamerTag, const FBeamContentId& CurrencyId, int64& Amount);
+
+	/**
+	 * @brief Gets the list of all currencies the given player has. Returns false if no player is signed into th given slot.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetAllCurrenciesByGamerTag(const FBeamGamerTag& GamerTag, TArray<FBeamPlayerCurrency>& Currencies);
+
+	/**
+	 * @brief Gets all items for the given player. 
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue", AutoCreateRefTerm="ItemStates"))
+	bool TryGetAllItemsByGamerTag(const FBeamGamerTag& GamerTag, TArray<FBeamItemState>& ItemStates);
+	
 	/**
 	 * @brief Begins constructing an FBeamInventoryUpdateCommand for a particular player. Can force reset any update already in construction for the given player. 
 	 */
@@ -308,8 +344,11 @@ private:
 	bool FetchInventoryForPlayer(FUserSlot RequestingSlot, FBeamGamerTag GamerTag, FBeamOperationHandle Op);
 
 	UFUNCTION()
-	bool CommitInventoryUpdate(FUserSlot Player, FBeamOperationHandle Op);
+	bool CommitInventoryUpdate(FUserSlot Player, FBeamOperationHandle Op);	
 
 	UFUNCTION()
 	void MergeInventoryViewIntoState(const UInventoryView* InventoryView, FBeamInventoryState& Inventory);
+	
+	UFUNCTION()
+	void InvokeOnInventoryRefreshed(const FBeamGamerTag& GamerTag, const FUserSlot OwnerPlayer);
 };

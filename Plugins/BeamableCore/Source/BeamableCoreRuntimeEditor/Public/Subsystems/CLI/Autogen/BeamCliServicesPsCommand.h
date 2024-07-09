@@ -14,7 +14,11 @@ class UBeamCliServicesPsStreamData : public UObject, public IBeamJsonSerializabl
 public:	
 	
 	UPROPERTY()
-	bool IsLocal = {};
+	TArray<bool> ExistInLocal = {};
+	UPROPERTY()
+	TArray<bool> ExistInRemote = {};
+	UPROPERTY()
+	TArray<bool> IsRunningRemotely = {};
 	UPROPERTY()
 	bool IsDockerRunning = {};
 	UPROPERTY()
@@ -22,7 +26,7 @@ public:
 	UPROPERTY()
 	TArray<bool> ShouldBeEnabledOnRemote = {};
 	UPROPERTY()
-	TArray<bool> RunningState = {};
+	TArray<bool> IsRunningLocally = {};
 	UPROPERTY()
 	TArray<FString> ProtocolTypes = {};
 	UPROPERTY()
@@ -42,11 +46,13 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("IsLocal"), IsLocal);
+		UBeamJsonUtils::SerializeArray<bool>(TEXT("ExistInLocal"), ExistInLocal, Serializer);
+		UBeamJsonUtils::SerializeArray<bool>(TEXT("ExistInRemote"), ExistInRemote, Serializer);
+		UBeamJsonUtils::SerializeArray<bool>(TEXT("IsRunningRemotely"), IsRunningRemotely, Serializer);
 		Serializer->WriteValue(TEXT("IsDockerRunning"), IsDockerRunning);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("BeamoIds"), BeamoIds, Serializer);
 		UBeamJsonUtils::SerializeArray<bool>(TEXT("ShouldBeEnabledOnRemote"), ShouldBeEnabledOnRemote, Serializer);
-		UBeamJsonUtils::SerializeArray<bool>(TEXT("RunningState"), RunningState, Serializer);
+		UBeamJsonUtils::SerializeArray<bool>(TEXT("IsRunningLocally"), IsRunningLocally, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("ProtocolTypes"), ProtocolTypes, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("ImageIds"), ImageIds, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("ContainerNames"), ContainerNames, Serializer);
@@ -59,11 +65,13 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("IsLocal"), IsLocal);
+		UBeamJsonUtils::SerializeArray<bool>(TEXT("ExistInLocal"), ExistInLocal, Serializer);
+		UBeamJsonUtils::SerializeArray<bool>(TEXT("ExistInRemote"), ExistInRemote, Serializer);
+		UBeamJsonUtils::SerializeArray<bool>(TEXT("IsRunningRemotely"), IsRunningRemotely, Serializer);
 		Serializer->WriteValue(TEXT("IsDockerRunning"), IsDockerRunning);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("BeamoIds"), BeamoIds, Serializer);
 		UBeamJsonUtils::SerializeArray<bool>(TEXT("ShouldBeEnabledOnRemote"), ShouldBeEnabledOnRemote, Serializer);
-		UBeamJsonUtils::SerializeArray<bool>(TEXT("RunningState"), RunningState, Serializer);
+		UBeamJsonUtils::SerializeArray<bool>(TEXT("IsRunningLocally"), IsRunningLocally, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("ProtocolTypes"), ProtocolTypes, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("ImageIds"), ImageIds, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("ContainerNames"), ContainerNames, Serializer);
@@ -76,11 +84,13 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		IsLocal = Bag->GetBoolField(TEXT("IsLocal"));
+		UBeamJsonUtils::DeserializeArray<bool>(Bag->GetArrayField(TEXT("ExistInLocal")), ExistInLocal, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<bool>(Bag->GetArrayField(TEXT("ExistInRemote")), ExistInRemote, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<bool>(Bag->GetArrayField(TEXT("IsRunningRemotely")), IsRunningRemotely, OuterOwner);
 		IsDockerRunning = Bag->GetBoolField(TEXT("IsDockerRunning"));
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("BeamoIds")), BeamoIds, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<bool>(Bag->GetArrayField(TEXT("ShouldBeEnabledOnRemote")), ShouldBeEnabledOnRemote, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<bool>(Bag->GetArrayField(TEXT("RunningState")), RunningState, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<bool>(Bag->GetArrayField(TEXT("IsRunningLocally")), IsRunningLocally, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("ProtocolTypes")), ProtocolTypes, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("ImageIds")), ImageIds, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("ContainerNames")), ContainerNames, OuterOwner);
@@ -101,7 +111,6 @@ Usage:
   Beamable.Tools services ps [options]
 
 Options:
-  --remote                         Makes it so that we output the current realm's remote manifest, instead of the local one
   --json                           Outputs as json instead of summary table
   --dryrun                         Should any networking happen?
   --cid <cid>                      Cid to use; will default to whatever is in the file system

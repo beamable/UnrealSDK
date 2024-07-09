@@ -8,11 +8,11 @@ on:
         required: true
         default: 'BEAMPROJ_Sandbox'
         type: string
-      isServerBuild:
-        description: 'Decided if this is a server build'
+      buildType:
+        type: string
+        description: 'Either "client", for regular builds, or "server". for dedicated server builds.'
         required: true
-        default: true
-        type: boolean
+        default: "client"      
     secrets:
       GHCR_ACTOR:
         required: true
@@ -23,7 +23,7 @@ permissions:
   contents: write
 
 jobs:
-  deploy:
+  build:
     runs-on: unreal-builder
     steps:
       # Gets the repo
@@ -31,10 +31,16 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
-      - name: Set buildType
+          
+      # Sets the buildType ENV var as either server or client.
+      - name: Set buildType ENV var
         id: set-build-type
-        run: echo "buildType=$([[ "${{ inputs.isServerBuild }}" == 'true' ]] && echo 'server' || echo 'client')" >> $GITHUB_ENV
+        run: echo "buildType=$("${{ inputs.buildType }}")" >> $GITHUB_ENV
+      - name: Check buildType ENV var
+        id: check-build-type
+        run: echo "${{ env.buildType }}"
       
+      # Caches the UnrealSDK repo's Intermediate and Saved folders
       - uses: actions/cache@v4
         continue-on-error: false
         with:
@@ -59,6 +65,7 @@ jobs:
         run: |
           echo ${{ inputs.beamProj }} > BeamProjOverride.txt |
           cat BeamProjOverride.txt
+          
       # Set up Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -78,12 +85,13 @@ jobs:
       # Compress the results      
       - name: Compress Directory
         run: cd packaged/Linu* &&
-          tar cvzf ../../linux_${{ env.buildType }}_${{ inputs.beamProj }}.tar.gz * &&
+          tar cvzf ../../linux_${{ env.buildType }}_${{ inputs.beamProj }}_${{ env.GITHUB_SHA }}.tar.gz * &&
           cd ../../
       
-      # Uploads the artifacts so we can download the build      
+      # Uploads the artifacts so we can download the build       
       - name: Upload Compressed Folder as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Linux Server Build - ${{ inputs.beamProj }}
-          path: linux_${{ env.buildType }}_${{ inputs.beamProj }}.tar.gz
+          name: Linux-${{ inputs.beamProj }}-${{ env.buildType }}-${{ env.GITHUB_SHA }}
+          path: linux_${{ inputs.beamProj }}_${{ env.buildType }}_${{ env.GITHUB_SHA }}.tar.gz
+          overwrite: true # If we ever re-run this reusable workflow in the same commit hash, this makes sure it replaces it.

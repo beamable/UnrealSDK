@@ -1,6 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
+/* BEAMABLE USINGS TO COPY PASTE START */
 using System;
+/* BEAMABLE USINGS TO COPY PASTE END */
+
 using UnrealBuildTool;
 using System.Collections.Generic;
 using System.IO;
@@ -26,6 +29,7 @@ public class BeamableUnrealTarget : TargetRules
 
 		Console.WriteLine($"Configuring standalone project as beamproj={samplePluginName}.");
 		ConfigureIfSandbox(this, samplePluginName);
+		ConfigureIfLiveOpsDemo(this, samplePluginName);
 		ConfigureIfHathoraDemo(this, samplePluginName);
 		ConfigureIfSteamDemo(this, samplePluginName);
 		ConfigureIfDiscordDemo(this, samplePluginName);
@@ -53,6 +57,33 @@ public class BeamableUnrealTarget : TargetRules
 	public static void ConfigureIfSandbox(TargetRules TargetRules, string beamProj)
 	{
 		if (beamProj == kBeamProj_Sandbox)
+		{
+			var oss = Beam.OssConfig.Disabled();
+
+			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)
+			{
+				Beam.ConfigureGame(TargetRules, oss);
+			}
+			else if (TargetRules.Type == UnrealBuildTool.TargetType.Editor)
+			{
+				Beam.ConfigureEditor(TargetRules, oss);
+			}
+			else if (TargetRules.Type == UnrealBuildTool.TargetType.Server)
+			{
+				Beam.ConfigureServer(TargetRules, oss);
+			}
+			else
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+		}
+	}
+	
+	public const string kBeamProj_LiveOpsDemo = "BEAMPROJ_LiveOpsDemo";
+
+	public static void ConfigureIfLiveOpsDemo(TargetRules TargetRules, string beamProj)
+	{
+		if (beamProj == kBeamProj_LiveOpsDemo)
 		{
 			var oss = Beam.OssConfig.Disabled();
 

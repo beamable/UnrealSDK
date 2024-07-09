@@ -14,12 +14,12 @@ Start by getting our repo, then installing .NET and Docker Dekstop.
  2. Check out the `latest` (or your preferred version) tagged release.
  3. Run the `init_repo.sh` script.
  4. Generating Project Files.
- 5. \[Optional] Verify things are working by compiling the editor of our SDK project.
+ 5. Optional - Verify things are working by compiling the editor of our SDK project.
 
 Next up, install our dependencies.
 
  - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
- - [.NET](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
+ - [.NET](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
 Once you have our repo and dependencies set up in your machine, follow along one of the next section to set up the SDK in your project.
 ### Set up the Beamable SDK - Fast Path
@@ -31,16 +31,26 @@ Setting up the SDK in your project is done by manually copying over a set of fil
 Please, follow along these instructions:
 
 1. Copy the `beam-init-game-maker.sh` script into the root of your Unreal Project.
-2. Copy the `UnrealSDK/Plugins/BeamableCore` plugin into your `Plugins` folder.
-3. Set up the `BeamableCore` plugin in your `.uproject` file.
-4. Open the `UnrealSDK/Source/BeamableUnreal.Target.cs` file and copy the `Beam` class into your `YourGame.Target.cs` file.
-5. Call `Beam.ConfigureGame/Server/Editor` in their corresponding `Target.cs` files.
-6. Call `Beam.AddRuntimeModuleDependencies` and `Beam.AddEditorModuleDependencies` in the corresponding `Build.cs` files.
-7. Run the `YourProject/beam-init-game-maker.sh` script from inside your project's root directory.
-	1. This will install the version of our CLI tool that your SDK version corresponds to locally in your project.
-	2. Verify that it worked by running `dotnet beam --version` from inside your project root directory.
-8. Generate Project Files.
-9. Open Rider/VS and compile your editor.
+2. From a terminal running in your project directory, run the copied script passing in the path to the **UnrealSDK** in your machine.
+	1. `. beam-init-game-maker.sh "E:/Path/To/UnrealSDK"`
+	2. `. beam-init-game-maker.sh "E:/Path/To/UnrealSDK" true`, if you're planning to use the `OnlineSubsystemBeamable`.
+3. For each of your `Target.cs` files, add the following lines to their constructor:
+	1. `MyProject.Target.cs => Beam.ConfigureGame(this, Beam.OssConfig.Disabled())`.
+	2. `MyProjectEditor.Target.cs => Beam.ConfigureEditor(this, Beam.OssConfig.Disabled())`.
+	3. `MyProjectServer.Target.cs => Beam.ConfigureServer(this, Beam.OssConfig.Disabled())`, if you have dedicated server builds.
+4. In each of the Modules you want to use Beamable's SDK, add this to their `Build.cs` files:
+	1. `RuntimeModule.Build.cs => Beam.AddRuntimeModuleDependencies(this);`
+	2. `EditorModule.Build.cs => Beam.AddEditorModuleDependencies(this);`
+	3. `UncookedOnlyModule.Build.cs => Beam.AddUncookedOnlyModuleDependencies(this);`
+	4. Pay attention to the type of module you're adding the SDK to and call the proper function. (You can see the module type in your `uproject` file)
+5. Some OS-specific things:
+	1. On MacOS, you'll have to manually regenerate project files. 
+	2. On Windows, this was done by `beam-init-game-maker.sh` script.
+6. Verify that your project is set up correctly:
+	1. Check there is a `.beamable` folder in your project root directory.
+	2. Check there is a `.config/dotnet-tools.json` file in your project directory.
+	3. Run `dotnet beam --version` from inside your project root directory and see that it outputs a valid `X.Y.Z` string.
+7. Open Rider/VS and compile your editor.
 #### Making your First Request
 Once your Editor opens, you'll see the Beamable Logo in your upper-right bar, next to the Settings dropdown. This button opens the Beamable window.
 
