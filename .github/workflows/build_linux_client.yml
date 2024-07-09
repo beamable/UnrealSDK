@@ -5,7 +5,7 @@ on:
     inputs:
       buildAll:
         type: boolean
-        description: 'Whether or not we should build all BEAMPROJS instead of just the ones with changes.'
+        description: 'Build all BEAMPROJS.'
         required: true
         default: false
   push:
@@ -15,7 +15,7 @@ on:
     inputs:
       buildAll:
         type: boolean
-        description: 'Whether or not we should build all BEAMPROJS instead of just the ones with changes.'
+        description: 'Build all BEAMPROJS.'
         required: true
         default: false
 
