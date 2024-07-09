@@ -27,7 +27,7 @@ jobs:
     runs-on: [self-hosted, Windows]
     
     # This job only runs if we are looking for changes    
-    if: ${{ inputs.buildAll == 'false' }}
+    if: ${{ !inputs.buildAll }}
     
     # Expose the list of changed "BEAMPROJ_XXXXX" that were found (this maps to the filter names)
     outputs:            
@@ -84,7 +84,7 @@ jobs:
         # The list of BeamProj is defined by "wherever we detected changes" when inputs.buildAll is false
         # The list of BeamProj is a hard-coded list of all BeamProjs when inputs.buildAll is true
         # This is because our RC job also reuses this but needs to generate ALL builds independent of changes. 
-        beamProj: ${{ inputs.buildAll == 'false' && fromJSON(needs.changes.outputs.BEAMPROJS) || vars.ALL_BEAMPROJS }}
+        beamProj: ${{ !inputs.buildAll && fromJSON(needs.changes.outputs.BEAMPROJS) || fromJSON(vars.ALL_BEAMPROJS) }}
     with:
       beamProj: ${{ matrix.beamProj }}
       buildType: client
