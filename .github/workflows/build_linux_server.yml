@@ -1,16 +1,19 @@
 name: Build - Linux - Server - Dev
 
 on:
-  workflow_dispatch:
-    inputs:
-      buildAll:        
-        type: boolean
-        description: 'Build all BEAMPROJS.'        
-        required: true
-        default: false
   push:
     branches:
       - dev
+  workflow_dispatch:
+    inputs:
+      buildAll:
+        type: choice
+        description: 'Build all BEAMPROJS.'
+        required: true
+        default: "false"
+        options:
+          - "true"
+          - "false"  
   workflow_call:
     inputs:
       buildAll:
@@ -72,7 +75,8 @@ jobs:
     # Empty array will be serialized as [] so you can simply check it in the if condition.     
     if: |
       always() &&
-      (needs.changes.result == 'success' || needs.changes.result == 'skipped') &&      
+      (needs.unifyInputs.result == 'success') &&
+      (needs.changes.result == 'success' || needs.changes.result == 'skipped') &&
       (needs.changes.outputs.BEAMPROJS != '[]' && needs.changes.outputs.BEAMPROJS != '') || (needs.unifyInputs.buildAll == 'true')
     
     strategy:
@@ -81,7 +85,7 @@ jobs:
         # Result of changes job as well as vars are plain strings. That's why you have to use fromJson() to parse it into array.
         # The list of BeamProj is defined by "wherever we detected changes" when inputs.buildAll is false
         # The list of BeamProj is Repository Variable (declared in Github's UnrealSDK's Settings -> Secrets & Variables -> Variables).        
-        beamProj: ${{ !needs.unifyInputs.buildAll && fromJSON(needs.changes.outputs.BEAMPROJS) || fromJSON(vars.ALL_SERVER_BEAMPROJS) }}    
+        beamProj: ${{ needs.unifyInputs.buildAll == 'false' && fromJSON(needs.changes.outputs.BEAMPROJS) || fromJSON(vars.ALL_SERVER_BEAMPROJS) }}    
     with:
       beamProj: ${{ matrix.beamProj }}
       buildType: server

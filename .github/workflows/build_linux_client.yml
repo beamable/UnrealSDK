@@ -1,16 +1,19 @@
 name: Build - Linux - Client - Dev
 
 on:
-  workflow_dispatch:  
-    inputs:
-      buildAll:
-        type: boolean
-        description: 'Build all BEAMPROJS.'
-        required: true
-        default: false
   push:
     branches:
       - dev
+  workflow_dispatch:  
+    inputs:
+      buildAll:
+        type: choice
+        description: 'Build all BEAMPROJS.'
+        required: true
+        default: "false"
+        options:
+          - "true"
+          - "false"  
   workflow_call:
     inputs:
       buildAll:
@@ -93,9 +96,10 @@ jobs:
     # Empty array will be serialized as [] so you can simply check it in the if condition.     
     if: |
       always() &&
-      (needs.changes.result == 'success' || needs.changes.result == 'skipped') &&      
+      (needs.unifyInputs.result == 'success') &&
+      (needs.changes.result == 'success' || needs.changes.result == 'skipped') &&
       (needs.changes.outputs.BEAMPROJS != '[]' && needs.changes.outputs.BEAMPROJS != '') || (needs.unifyInputs.buildAll == 'true')
-    
+      
     strategy:
       max-parallel: 1
       matrix:
