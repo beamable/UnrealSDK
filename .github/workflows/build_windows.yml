@@ -30,7 +30,7 @@ jobs:
 
       - uses: actions/checkout@v4
         with:
-          repository: /beamable/BeamableProduct
+          repository: beamable/BeamableProduct
           fetch-depth: 0
           lfs: true
           path: $GITHUB_WORKSPACE/BeamableProduct/
