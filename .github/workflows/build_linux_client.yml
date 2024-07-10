@@ -92,9 +92,9 @@ jobs:
     # Only run this if the changes job actually detected changes OR if we are building all.
     # Empty array will be serialized as [] so you can simply check it in the if condition.     
     if: |
-        always() &&
-        (needs.changes.result == 'success' || needs.changes.result == 'skipped') &&      
-        (needs.changes.outputs.BEAMPROJS != '[]') || (needs.unifyInputs.buildAll == 'true')
+      always() &&
+      (needs.changes.result == 'success' || needs.changes.result == 'skipped') &&      
+      (needs.changes.outputs.BEAMPROJS != '[]' && needs.changes.outputs.BEAMPROJS != '') || (needs.unifyInputs.buildAll == 'true')
     
     strategy:
       max-parallel: 1
