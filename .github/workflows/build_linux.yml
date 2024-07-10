@@ -57,7 +57,7 @@ jobs:
             $GITHUB_WORKSPACE/BeamableUnreal/Intermediate/
             $GITHUB_WORKSPACE/BeamableUnreal/Saved/
             $GITHUB_WORKSPACE/BeamableUnreal/UnrealSDK.sln
-          key: ${{ runner.os }}-${{ inputs.beamProj }}-${{ env.buildType }}-${{ hashFiles(github.workspace + '/BeamableUnreal/Source/**') }}
+          key: ${{ runner.os }}-${{ inputs.beamProj }}-${{ env.buildType }}-${{ hashFiles(format('{0}/BeamableUnreal/Source/**', github.workspace)) }}
           restore-keys: ${{ runner.os }}-${{ inputs.beamProj }}-${{ env.buildType }}-
      
       # Installs .NET 8 so we can run init_repo.sh

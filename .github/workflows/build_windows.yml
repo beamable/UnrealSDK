@@ -61,7 +61,7 @@ jobs:
             $env:GITHUB_WORKSPACE/BeamableUnreal/Intermediate/
             $env:GITHUB_WORKSPACE/BeamableUnreal/Saved/
             $env:GITHUB_WORKSPACE/BeamableUnreal/UnrealSDK.sln
-          key: ${{ runner.os }}-${{ inputs.beamProj }}-${{ env.buildType }}-${{ hashFiles(github.workspace +'BeamableUnreal/Source/**') }}
+          key: ${{ runner.os }}-${{ inputs.beamProj }}-${{ env.buildType }}-${{ hashFiles(format('{0}/BeamableUnreal/Source/**', github.workspace)) }}
           restore-keys: ${{ runner.os }}-${{ inputs.beamProj }}-${{ env.buildType }}-
 
       # Run Set-Packages for Unreal
