@@ -22,12 +22,18 @@ on:
 permissions:
   contents: write
 
-jobs:  
+jobs:
+  unifyInputs:
+    runs-on: [self-hosted, Windows]
+    steps:
+      - name: Set environment variables
+        run: echo "buildAll=${{ inputs.buildAll || 'false' }}" >> $GITHUB_ENV
+        
   changes:
     runs-on: [self-hosted, Windows]
     
     # This job only runs if we are looking for changes    
-    if: ${{ !inputs.buildAll }}
+    if: ${{ !env.buildAll }}
     
     # Expose the list of changed "BEAMPROJ_XXXXX" that were found (this maps to the filter names)
     outputs:            
@@ -86,7 +92,7 @@ jobs:
     # So... in order for this to work in all cases, we need have workflow_call's buildAll as string to match the behavior of workflow_dispatch bool type. 
     if: |
       (needs.changes.outputs.BEAMPROJS != '[]') || 
-      ((needs.changes.result == 'success' || needs.changes.result == 'skipped') && fromJSON(inputs.buildAll))
+      ((needs.changes.result == 'success' || needs.changes.result == 'skipped') && fromJSON(env.buildAll))
     
     strategy:
       max-parallel: 2
@@ -94,7 +100,7 @@ jobs:
         # Result of changes job as well as vars are plain strings. That's why you have to use fromJson() to parse it into array.
         # The list of BeamProj is defined by "wherever we detected changes" when inputs.buildAll is false
         # The list of BeamProj is Repository Variable (declared in Github's UnrealSDK's Settings -> Secrets & Variables -> Variables).         
-        beamProj: ${{ !inputs.buildAll && fromJSON(needs.changes.outputs.BEAMPROJS) || fromJSON(vars.ALL_BEAMPROJS) }}
+        beamProj: ${{ !env.buildAll && fromJSON(needs.changes.outputs.BEAMPROJS) || fromJSON(vars.ALL_BEAMPROJS) }}
     with:
       beamProj: ${{ matrix.beamProj }}
       buildType: client
