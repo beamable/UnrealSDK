@@ -26,20 +26,20 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
-          path: $GITHUB_WORKSPACE/BeamableUnreal/
+          path: BeamableUnreal/
 
       - uses: actions/checkout@v4
         with:
           repository: beamable/BeamableProduct
           fetch-depth: 0
           lfs: true
-          path: $GITHUB_WORKSPACE/BeamableProduct/
+          path: BeamableProduct/
           ref: main
 
       # Sets the buildType ENV var as either server or client.
       - name: Set buildType ENV var
         id: set-build-type
-        run: echo "buildType=$("${{ inputs.buildType }}")" >> $GITHUB_ENV
+        run: echo "buildType=${{ inputs.buildType }}" >> $env:GITHUB_ENV
       - name: Check buildType ENV var
         id: check-build-type
         run: echo "${{ env.buildType }}"
@@ -58,36 +58,33 @@ jobs:
         continue-on-error: false
         with:
           path: |
-            $env:GITHUB_WORKSPACE/BeamableUnreal/Intermediate/
-            $env:GITHUB_WORKSPACE/BeamableUnreal/Saved/
-            $env:GITHUB_WORKSPACE/BeamableUnreal/UnrealSDK.sln
-          key: ${{ runner.os }}-${{ inputs.beamProj }}-${{ env.buildType }}-${{ hashFiles(format('{0}/BeamableUnreal/Source/**', github.workspace)) }}
+            /BeamableUnreal/Intermediate/
+            /BeamableUnreal/Saved/
+            /BeamableUnreal/UnrealSDK.sln
+          key: ${{ runner.os }}-${{ inputs.beamProj }}-${{ env.buildType }}-${{ hashFiles('/BeamableUnreal/Source/**') }}
           restore-keys: ${{ runner.os }}-${{ inputs.beamProj }}-${{ env.buildType }}-
 
       # Run Set-Packages for Unreal
       - name: Run Set Packages for local build of the CLI
-        run: |
-          cd $env:GITHUB_WORKSPACE/BeamableProduct/
-          bash set-packages.sh $env:GITHUB_WORKSPACE/BeamableUnreal/ UNREAL_NugetSource "" "" $env:GITHUB_WORKSPACE/BeamableUnreal/Microservices
+        working-directory: ./BeamableProduct
+        run: bash set-packages.sh $env:GITHUB_WORKSPACE/BeamableUnreal/ UNREAL_NugetSource "" "" $env:GITHUB_WORKSPACE/BeamableUnreal/Microservices
 
       # Run init_repo.sh (needed to setup the project correctly locally)     
       - name: Prepare Repository for compilation
-        run: |
-          cd $env:GITHUB_WORKSPACE/BeamableUnreal/
-          bash init_repo.sh
+        working-directory: ./BeamableUnreal
+        run: bash init_repo.sh
 
       # Sets the BEAMPROJ based on the input to this workflow.
       - name: Set BeamProjOverride.txt
+        working-directory: ./BeamableUnreal
         run: |
-          cd $env:GITHUB_WORKSPACE/BeamableUnreal/
           echo ${{ inputs.beamProj }} > BeamProjOverride.txt |
           cat BeamProjOverride.txt
 
       # Builds the image
       - name: Build image
-        run: |
-          cd $env:GITHUB_WORKSPACE/BeamableUnreal/
-          . .\docker_run_windows.ps1
+        working-directory: ./BeamableUnreal
+        run: .\docker_run_windows.ps1
 
       # Compress the results
       - name: Compress Directory
