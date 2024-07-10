@@ -33,6 +33,7 @@ jobs:
     steps:
       - name: Set environment variables
         id: unifyBuildAll
+        shell: bash
         run: echo "buildAll=${{ inputs.buildAll || 'false' }}" >> $GITHUB_OUTPUT
         
   changes:
