@@ -40,7 +40,7 @@ jobs:
     runs-on: unreal-builder
 
     # This job only runs if we are looking for changes    
-    if: ${{ needs.unifyInputs.buildAll == 'false' }}
+    if: ${{ needs.unifyInputs.outputs.buildAll == 'false' }}
     
     # Expose the list of changed "BEAMPROJ_XXXXX" that were found (this maps to the filter names)
     outputs:
@@ -77,7 +77,7 @@ jobs:
       always() &&
       (needs.unifyInputs.result == 'success') &&
       (needs.changes.result == 'success' || needs.changes.result == 'skipped') &&
-      (needs.changes.outputs.BEAMPROJS != '[]' && needs.changes.outputs.BEAMPROJS != '') || (needs.unifyInputs.buildAll == 'true')
+      (needs.changes.outputs.BEAMPROJS != '[]' && needs.changes.outputs.BEAMPROJS != '') || (needs.unifyInputs.outputs.buildAll == 'true')
     
     strategy:
       max-parallel: 1
@@ -85,7 +85,7 @@ jobs:
         # Result of changes job as well as vars are plain strings. That's why you have to use fromJson() to parse it into array.
         # The list of BeamProj is defined by "wherever we detected changes" when inputs.buildAll is false
         # The list of BeamProj is Repository Variable (declared in Github's UnrealSDK's Settings -> Secrets & Variables -> Variables).        
-        beamProj: ${{ needs.unifyInputs.buildAll == 'false' && fromJSON(needs.changes.outputs.BEAMPROJS) || fromJSON(vars.ALL_SERVER_BEAMPROJS) }}    
+        beamProj: ${{ needs.unifyInputs.outputs.buildAll == 'false' && fromJSON(needs.changes.outputs.BEAMPROJS) || fromJSON(vars.ALL_SERVER_BEAMPROJS) }}    
     with:
       beamProj: ${{ matrix.beamProj }}
       buildType: server
