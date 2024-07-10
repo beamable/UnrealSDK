@@ -60,9 +60,8 @@ jobs:
     # There's a bug in GHAs that makes it so that this job's if is mis-evaluated if its dependent job is skipped... unless we explicitly check for it.
     # https://github.com/actions/runner/issues/491
     if: |
-      always() &&
-      (needs.changes.result == 'success' || needs.changes.result == 'skipped') &&
-      ${{ (needs.changes.outputs.BEAMPROJS != '[]') || (inputs.buildAll) }}
+      (needs.changes.outputs.BEAMPROJS != '[]') || 
+      ((needs.changes.result == 'success' || needs.changes.result == 'skipped') && inputs.buildAll)
     
     strategy:
       max-parallel: 1
