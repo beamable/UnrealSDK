@@ -14,7 +14,7 @@ on:
   workflow_call:    
     inputs:
       buildAll:
-        type: boolean
+        type: string
         description: 'Build all BEAMPROJS.'
         required: true
         default: false
@@ -82,11 +82,11 @@ jobs:
     
     # Only run this if the changes job actually detected changes OR if we are building all.
     # Empty array will be serialized as [] so you can simply check it in the if condition.    
-    # There's a bug in GHAs that makes it so that this job's if is mis-evaluated if its dependent job is skipped... unless we explicitly check for it.
-    # https://github.com/actions/runner/issues/491
+    # The boolean variable is passed in as a string when in workflow_dispatch (even if you set it as a bool)
+    # So... in order for this to work in all cases, we need have workflow_call's buildAll as string to match the behavior of workflow_dispatch bool type. 
     if: |
       (needs.changes.outputs.BEAMPROJS != '[]') || 
-      ((needs.changes.result == 'success' || needs.changes.result == 'skipped') && inputs.buildAll)
+      ((needs.changes.result == 'success' || needs.changes.result == 'skipped') && fromJSON(inputs.buildAll))
     
     strategy:
       max-parallel: 2
