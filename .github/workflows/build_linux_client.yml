@@ -25,15 +25,19 @@ permissions:
 jobs:
   unifyInputs:
     runs-on: unreal-builder
+    outputs:
+      buildAll: ${{ steps.unifyBuildAll.outputs.buildAll }}
     steps:
       - name: Set environment variables
-        run: echo "buildAll=${{ inputs.buildAll || 'false' }}" >> $GITHUB_ENV
+        id: unifyBuildAll
+        run: echo "buildAll=${{ inputs.buildAll || 'false' }}" >> $GITHUB_OUTPUT
       
   changes:
+    needs: unifyInputs
     runs-on: unreal-builder
     
     # This job only runs if we are looking for changes    
-    if: ${{ !env.buildAll }}
+    if: ${{ !needs.unifyInputs.buildAll }}
     
     # Expose the list of changed "BEAMPROJ_XXXXX" that were found (this maps to the filter names)    
     outputs:            
@@ -79,7 +83,7 @@ jobs:
               - '*.uproject'
             
   build:
-    needs: changes    
+    needs: [unifyInputs, changes]    
     uses: ./.github/workflows/build_linux.yml
     
     # Only run this if the changes job actually detected changes OR if we are building all.
@@ -88,7 +92,7 @@ jobs:
     # So... in order for this to work in all cases, we need have workflow_call's buildAll as string to match the behavior of workflow_dispatch bool type. 
     if: |
       (needs.changes.outputs.BEAMPROJS != '[]') || 
-      ((needs.changes.result == 'success' || needs.changes.result == 'skipped') && fromJSON(env.buildAll))
+      ((needs.changes.result == 'success' || needs.changes.result == 'skipped') && fromJSON(needs.unifyInputs.buildAll))
     
     strategy:
       max-parallel: 1
@@ -96,7 +100,7 @@ jobs:
         # Result of changes job as well as vars are plain strings. That's why you have to use fromJson() to parse it into array.
         # The list of BeamProj is defined by "wherever we detected changes" when inputs.buildAll is false
         # The list of BeamProj is Repository Variable (declared in Github's UnrealSDK's Settings -> Secrets & Variables -> Variables).         
-        beamProj: ${{ !env.buildAll && fromJSON(needs.changes.outputs.BEAMPROJS) || fromJSON(vars.ALL_BEAMPROJS) }}
+        beamProj: ${{ !needs.unifyInputs.buildAll && fromJSON(needs.changes.outputs.BEAMPROJS) || fromJSON(vars.ALL_BEAMPROJS) }}
     with:
       beamProj: ${{ matrix.beamProj }}
       buildType: client
