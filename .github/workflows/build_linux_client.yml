@@ -78,7 +78,7 @@ jobs:
     
     # Only run this if the changes job actually detected changes OR if we are building all.
     # Empty array will be serialized as [] so you can simply check it in the if condition.    
-    if: ${{ needs.changes.outputs.BEAMPROJS != '[]' || inputs.buildAll }}
+    if: ${{ (needs.changes.outputs.BEAMPROJS != '[]') || (inputs.buildAll) }}
     
     strategy:
       max-parallel: 1
