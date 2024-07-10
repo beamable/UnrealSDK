@@ -18,7 +18,7 @@ permissions:
   contents: write
 
 jobs:
-  deploy:
+  build:
     runs-on: [self-hosted, Windows]
     steps:
       # Gets the repo

@@ -49,6 +49,9 @@ jobs:
       - uses: dorny/paths-filter@v3
         id: filter
         with:
+          # Check against previous commit
+          base: ${{ github.ref }}
+          
           # The filters here are BEAMPROJ-specific. 
           # We should only rebuild artifacts for a specific BEAMPROJ if there are changes to files it considers relevant. 
           filters: |
