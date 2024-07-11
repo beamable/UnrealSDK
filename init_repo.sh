@@ -38,14 +38,16 @@ fi
 # If you're in our main-branch and this errors out, please make sure '.config/dotnet-tools.json' is pointed at a valid and released CLI version.  
 dotnet tool restore
 
-# Create a playground microservice that is un-versioned.  
+# Create a playground microservice/storage that is ignored in Git.
+# Use this to write quick and dirty MS code.
+# Feel free to create a realm in our shared org with your name and "devname-playground" and ONLY EVER DEPLOY THIS TO THIS REALM.
+# Keep an eye to not commit the clients to this MS.  
 if [ ! -d "$(pwd)/Microservices/services/MSPlayground" ]; then
     echo "Creating MSPlayground microservice for local development."
-    beam project new service MSPlayground --sln "$(pwd)/Microservices/Microservices.sln" --logs v
+    dotnet beam project new service MSPlayground --sln "$(pwd)/Microservices/Microservices.sln" --logs v
 fi
 
-# Create a playground microstorage that is un-versioned.
 if [ ! -d "$(pwd)/Microservices/services/DBPlayground" ]; then
     echo "Creating DBPlayground storage for local development."
-    beam project new storage DBPlayground --sln "$(pwd)/Microservices/Microservices.sln" --link-to MSPlayground --logs v
+    dotnet beam project new storage DBPlayground --sln "$(pwd)/Microservices/Microservices.sln" --link-to MSPlayground --logs v
 fi
