@@ -26,13 +26,18 @@ jobs:
   build:
     runs-on: unreal-builder
     steps:
+      # Run commands to print out more information about the runner
+      - name: Print out Additional Runner info 
+        run: |
+          curl https://api.ipify.org
+        
       # Gets the Unreal Repo and the CLI repo
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           lfs: true
-          path: BeamableUnreal/
-          
+          path: BeamableUnreal/      
+
       - uses: actions/checkout@v4
         with:
           repository: beamable/BeamableProduct
