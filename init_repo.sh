@@ -38,6 +38,27 @@ fi
 # If you're in our main-branch and this errors out, please make sure '.config/dotnet-tools.json' is pointed at a valid and released CLI version.  
 dotnet tool restore
 
+# We export some EnvVars so that the `dotnet beam project new` commands see these
+# This is important so that this works from inside GitHub Actions (when running inside a container)
+# It fixes this script so that the microservices CSPROJ files see these EnvVars and function properly when inside a docker container.  
+DotNetConfigPath="$(pwd)/.config/dotnet-tools.json"
+export DotNetConfigPath
+echo "Setting DotNetConfigPath as an EnvVar: $DotNetConfigPath"
+
+BeamableVersion=$(
+  # Read the UnrealSDK's own dotnet-tools manifest.
+  sed -e 's/^ *//' < "$(pwd)/.config/dotnet-tools.json" |
+    # Make it into a single line
+    tr -d '\n' |
+    # Extract everything from "beamable.tools" until the first comma after the first value between quotes. 
+    # It prints out this: "beamable.tools": {"version": "0.0.123"    
+    grep -Eo '"beamable.tools": {"version": "[^,]*"' |
+    # Extract the semantic version number out of that string
+    grep -Eo '[0-9]+.[0-9]+.[0-9]+'
+)
+export BeamableVersion
+echo "Setting BeamableVersion as an EnvVar: $BeamableVersion"
+
 # Create a playground microservice/storage that is ignored in Git.
 # Use this to write quick and dirty MS code.
 # Feel free to create a realm in our shared org with your name and "devname-playground" and ONLY EVER DEPLOY THIS TO THIS REALM.
