@@ -68,13 +68,13 @@ jobs:
       - name: Run Set Packages for local build of the CLI
         working-directory: ./BeamableProduct
         shell: bash
-        run: set-packages.sh "${{ github.workspace }}/BeamableUnreal/" "UNREAL_NugetSource" "" "" "${{ github.workspace }}/BeamableUnreal/Microservices"
+        run: bash set-packages.sh "${{ github.workspace }}/BeamableUnreal/" "UNREAL_NugetSource" "" "" "${{ github.workspace }}/BeamableUnreal/Microservices"
 
       # Run init_repo.sh (needed to setup the project correctly locally)     
       - name: Prepare Repository for compilation
         working-directory: ./BeamableUnreal
         shell: bash
-        run: init_repo.sh
+        run: bash init_repo.sh
 
       # Sets the BEAMPROJ based on the input to this workflow.
       - name: Set BeamProjOverride.txt
