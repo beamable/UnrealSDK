@@ -98,6 +98,10 @@ jobs:
           registry: ghcr.io
           username: ${{ secrets.GHCR_ACTOR }}
           password: ${{ secrets.GHCR_TOKEN }}
+          
+      # Clean up docker stuff to make sure there's space in the runner for the UE image.
+      - name: Cleanup Dangling Docker Images to Free Space
+        run: docker image prune
       
       # Pull the base image and build the project
       - name: Pull base image and build
