@@ -41,7 +41,7 @@ dotnet tool restore
 # We export some EnvVars so that the `dotnet beam project new` commands see these
 # This is important so that this works from inside GitHub Actions (when running inside a container)
 # It fixes this script so that the microservices CSPROJ files see these EnvVars and function properly when inside a docker container.  
-DotNetConfigPath="$(pwd)/.config/dotnet-tools.json"
+DotNetConfigPath="$(pwd)"
 export DotNetConfigPath
 echo "Setting DotNetConfigPath as an EnvVar: $DotNetConfigPath"
 
