@@ -5,7 +5,7 @@ img[src*='#center'] {
 }
 </style>
 
-This demo, showcases how you can use the **Unreal SDK** and **Beamable Microservices** to integrate with Steam.
+This demo showcases how you can use the **Unreal SDK** and **Beamable Microservices** to integrate with Steam.
 
 Aside from our `BeamableCore` Plugin, here's what the sample contains:
 
@@ -19,17 +19,19 @@ To set up this sample you'll need a few things:
 
 To configure the sample, set the `BeamProjOverride.txt` to `BEAMPROJ_SteamDemo`, re-generate your project files and run the `BeamableUnreal` project (it'll be configured as the `BEAMPROJ_SteamDemo` sample).
 
-## Setting up Beamable & Discord Application
+## Setting up Beamable & Steam Application
 
 !!! note "Assumptions"
 	Instructions below assume that you already have the Steam application created, if that is not the case create one first.
 
 Since this sample requires several resources, we do not host it ourselves. So, in order to access the sample we'll go set up a Steam account and setup the sample:
 
-1. Log into your [Steam](https://partner.steamgames.com/apps) account.
+1. Log into your [Steam](https://partner.steamgames.com/apps) developer account.
 2. Go to your App and set aside its `AppId`.
-3. Create and set aside publisher key using [this tutorial](https://partner.steamgames.com/doc/webapi_overview/auth#publisher-keys).
-4. Make sure that game is added to user that you want to use to login.
+3. Create a Publisher Web API key using [this tutorial](https://partner.steamgames.com/doc/webapi_overview/auth#publisher-keys). Set it aside in a notepad for future use.
+4. Make sure that game is added to user that you want to use to login. To do that:
+	1. Generate a Steam Key.
+	2. Add it to your Steam account so you can access the game.
 
 Now, you'll need to configure a Beamable realm so you can use it:
 
@@ -45,19 +47,21 @@ Now, you'll need to configure a Beamable realm so you can use it:
 8. Sign into your Beamable account and go to the `steam-demo` realm.
 	1. Hit `Apply to Build`.
 9.  Open a bash terminal at the `BeamableUnreal` root directory.
-10. Make sure Docker is running and then run `dotnet beam services deploy` in that directory to get the microservices to your `steam-demo` realm.
-11. Go to the Portal (`Operate -> Microservices`) and verify that the microservices have initialized.
-12. In main folder (for the builded game same folder that the executable is) create `steam_appid.txt` file with Steam Application ID as only content.
+10. Run `dotnet beam enable --with-group BEAMPROJ_SteamDemo`
+11. Make sure Docker is running and then run `dotnet beam services deploy` in that directory to get the microservices to your `steam-demo` realm.
+12. Go to the Portal (`Operate -> Microservices`) and verify that the microservices have initialized.
 13. In `DefaultEngine.ini` set the value of `SteamDevAppId` to your Steam Application ID. For more there tutorial [here](https://docs.unrealengine.com/4.27/en-US/ProgrammingAndScripting/Online/Steam/).
+14. Package the project.
+15. In main folder (in the built game's folder where the executable is) create `steam_appid.txt` file with Steam Application ID as only content.
 
-Now, you are ready to sign into a game using Discord.
-
+Now, you are ready to sign into a game using Steam.
 ## Playing the sample through PIE
 
 In order to test the sample:
 
-- Start game
-- It should attempt the login
+- Start game with Steam open with the account to which you added the game.
+- It should automatically try to login to that account.
+- You should see your "Steam" status change to playing.
 
 #### What can you do with this sample?
 
@@ -65,7 +69,7 @@ In order to test the sample:
 
 However, its Beamable code components are free for you to copy and use in your own project. Here's what these are:
 
-- The DiscordDemo Microservice.
+- The `SteamDemo` Microservice.
 - Beamable code inside `BEAMPROJ_SteamDemo` except code inside a `ThirdParty` directory.
 - Content inside the `BEAMPROJ_SteamDemo` except things inside a `ThirdParty` directory.
 

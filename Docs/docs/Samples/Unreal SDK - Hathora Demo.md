@@ -34,8 +34,9 @@ Since this sample requires several resources, we do not host it ourselves. So, i
 	1. If you fail to see content here, close the editor and try again. There's a known issue in the UE SDK when accessing content for the first time that may cause them to not appear.
 7. Hit `Publish` and wait. Go to the Portal (`Operate -> Content`) and verify that the content is there.
 8. Open a bash terminal at the `BeamableUnreal` root directory.
-9. Make sure Docker is running and then run `beam services deploy` in that directory to get the microservices to your `hathora-demo` realm.
-10. Go to the Portal (`Operate -> Microservices`) and verify that the microservices have initialized.
+9. Run `dotnet beam enable --with-group BEAMPROJ_HathoraDemo`
+10. Make sure Docker is running and then run `dotnet beam services deploy` in that directory to get the microservices to your `hathora-demo` realm.
+11. Go to the Portal (`Operate -> Microservices`) and verify that the microservices have initialized.
 
 
 Now, we'll go set up a Hathora account and upload the sample dedicated server build:
