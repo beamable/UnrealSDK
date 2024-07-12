@@ -1,4 +1,4 @@
-FROM ghcr.io/epicgames/unreal-engine:dev-5.3.2 as builder
+FROM ghcr.io/epicgames/unreal-engine:dev-5.4.2 as builder
 
 USER ue4
 # use --build-arg BUILD_TYPE=-server in docker build to set it to be server build

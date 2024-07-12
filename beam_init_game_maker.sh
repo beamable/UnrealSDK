@@ -43,12 +43,23 @@ if [ ! -d ".beamable" ]; then
    mkdir .beamable
 fi
 
+# Read out the expected version of the CLI for your current version of the Unreal SDK you are installing from
+CLI_VERSION=$(
+  # Read the UnrealSDK's own dotnet-tools manifest.
+  sed -e 's/^ *//' < "$PATH_TO_UNREAL_SDK_REPO/.config/dotnet-tools.json" |
+    # Make it into a single line
+    tr -d '\n' |
+    # Extract everything from "beamable.tools" until the first comma after the first value between quotes. 
+    # It prints out this: "beamable.tools": {"version": "0.0.123"    
+    grep -Eo '"beamable.tools": {"version": "[^,]*"' |
+    # Extract the semantic version number out of that string
+    grep -Eo '[0-9]+.[0-9]+.[0-9]+'
+)
+
+# Check for a dotnet tool manifest --- this defines your CLI version
 if [ ! -f ".config/dotnet-tools.json" ]; then
     dotnet new tool-manifest
 fi
-
-# Read out the expected version of the CLI
-CLI_VERSION=0.0.123
 
 # Install Beamable.Tools with optional version
 dotnet tool install Beamable.Tools --version "$CLI_VERSION"

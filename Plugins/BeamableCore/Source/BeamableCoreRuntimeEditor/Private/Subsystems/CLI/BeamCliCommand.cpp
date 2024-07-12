@@ -117,9 +117,9 @@ void UBeamCliCommand::PrepareCommandProcess(const TArray<FString>& CommandParams
 			{
 				UE_LOG(LogBeamCli, Display, TEXT("BeamCli Command - Message Received. CMD=%s, MESSAGE=%s"), *Params, *MessageJson);
 
-				const auto ReceivedStreamType = Bag.GetString("type");
-				const auto Timestamp = static_cast<int64>(Bag.GetField("ts")->AsNumber());
-				const auto DataJson = Bag.JsonObject->GetObjectField("data").ToSharedRef();
+				const auto ReceivedStreamType = Bag.GetString(TEXT("type"));
+				const auto Timestamp = static_cast<int64>(Bag.GetField(TEXT("ts"))->AsNumber());
+				const auto DataJson = Bag.JsonObject->GetObjectField(TEXT("data")).ToSharedRef();
 
 				HandleStreamReceived(Op, ReceivedStreamType, Timestamp, DataJson, false);
 			}

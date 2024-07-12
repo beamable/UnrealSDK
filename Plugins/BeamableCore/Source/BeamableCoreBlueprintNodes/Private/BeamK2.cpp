@@ -470,7 +470,7 @@ UK2Node_IfThenElse* BeamK2::CreateIfThenElseNodeAgainstCondition(UEdGraphNode* C
 UK2Node_Event* BeamK2::CreateEventNodeForDelegate(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const FString& DelegateName)
 {
 	// Adds the event node to the graph.
-	UK2Node_Event* EventNode = CompilerContext.SpawnIntermediateEventNode<UK2Node_Event>(Node, nullptr, SourceGraph);
+	UK2Node_Event* EventNode = CompilerContext.SpawnIntermediateNode<UK2Node_Event>(Node, SourceGraph);
 
 	// To ensure uniqueness per graph we use the owner custom node's name in this node as well.
 	const auto EventNodeName = FString::Printf(TEXT("%sHandler_%s_%s"), *DelegateName, *SourceGraph->GetName(), *Node->GetName());

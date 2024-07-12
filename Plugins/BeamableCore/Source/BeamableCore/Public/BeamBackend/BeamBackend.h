@@ -916,7 +916,7 @@ public:
 
 
 		// Get retry stuff
-		const auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
+		auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
 		const auto RetryConfig = Context->RetryConfiguration;
 		const auto bShouldRetryIfFail = RetryConfig.RetryMaxAttempt == -1 || CurrFailedCount < RetryConfig.RetryMaxAttempt;
 
@@ -958,8 +958,9 @@ public:
 			// Store it so wait handles can grab at it later
 			InFlightResponseErrorData[*Context] = ErrorData;
 
-			// Bump the failed count associated with this request id.					
-			InFlightFailureCount[RequestId] = CurrFailedCount + 1;
+			// Bump the failed count associated with this request id.
+			CurrFailedCount += 1;
+			InFlightFailureCount[RequestId] = CurrFailedCount;
 
 			// If we should still retry (-1 == infinite retry)
 			if (bWillRetry)
@@ -1177,7 +1178,7 @@ public:
 		// Then, we handle success and error cases.
 
 		// Get retry stuff
-		const auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
+		auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
 		const auto RetryConfig = Context->RetryConfiguration;
 		const auto bShouldRetryIfFail = RetryConfig.RetryMaxAttempt == -1 || CurrFailedCount < RetryConfig.RetryMaxAttempt;
 
@@ -1224,7 +1225,8 @@ public:
 			bWillRetry |= bWillReAuth;
 
 			// Bump the failed count associated with this request id.					
-			InFlightFailureCount[RequestId] = bWillReAuth ? CurrFailedCount : CurrFailedCount + 1;
+			CurrFailedCount = bWillReAuth ? CurrFailedCount : CurrFailedCount + 1;
+			InFlightFailureCount[RequestId] = CurrFailedCount;
 
 			if (bWillRetry)
 			{
@@ -1412,7 +1414,7 @@ public:
 			FullResponse.State = IsSuccessfulResponse(ResponseCode) ? RS_Success : RS_Error;
 
 		// Get retry stuff
-		const auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
+		auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
 		const auto RetryConfig = Context->RetryConfiguration;
 		const auto bShouldRetryIfFail = !bIsCancelled && (RetryConfig.RetryMaxAttempt == -1 || RetryConfig.RetryMaxAttempt > CurrFailedCount);
 
@@ -1442,8 +1444,9 @@ public:
 			// Store it so wait handles can grab at it later
 			InFlightResponseErrorData[*Context] = FullResponse.ErrorData;
 
-			// Bump the failed count associated with this request id.					
-			InFlightFailureCount[RequestId] = CurrFailedCount + 1;
+			// Bump the failed count associated with this request id.
+			CurrFailedCount = CurrFailedCount + 1;
+			InFlightFailureCount[RequestId] = CurrFailedCount;
 
 			// If we should still retry (-1 == infinite retry)
 			if (bWillRetry)
@@ -1661,7 +1664,7 @@ public:
 		else
 			FullResponse.State = IsSuccessfulResponse(ResponseCode) ? RS_Success : RS_Error;
 
-		const auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
+		auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
 		const auto RetryConfig = Context->RetryConfiguration;
 		const auto bShouldRetryIfFail = !bIsCancelled && (RetryConfig.RetryMaxAttempt == -1 || RetryConfig.RetryMaxAttempt > CurrFailedCount);
 
@@ -1695,8 +1698,9 @@ public:
 			// Store it so wait handles can grab at it later
 			InFlightResponseErrorData[*Context] = FullResponse.ErrorData;
 
-			// Bump the failed count associated with this request id.					
-			InFlightFailureCount[RequestId] = bWillReAuth ? CurrFailedCount : CurrFailedCount + 1;
+			// Bump the failed count associated with this request id.
+			CurrFailedCount = bWillReAuth ? CurrFailedCount : CurrFailedCount + 1;
+			InFlightFailureCount[RequestId] = CurrFailedCount;
 
 			// If we should still retry (-1 == infinite retry)
 			if (bWillRetry)
