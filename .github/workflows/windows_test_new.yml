@@ -22,8 +22,6 @@ jobs:
           run: choco install visualstudio2022buildtools --package-parameters "--wait --quiet --addProductLang En-us --config ${{ github.workspace }}\.vsconfig"
         - name: Setup MSVC v143 14.34 build tools
           uses: ilammy/msvc-dev-cmd@v1
-          with:
-            arch: x64
         - name: Build with Unreal
           uses: OrchidIsle/UE5-Build-Project@0.2.2
           with:
