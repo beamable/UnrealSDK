@@ -19,7 +19,7 @@ jobs:
           run: |
             net use Z: \\unrealtests.file.core.windows.net\test /user:unrealtests ${{ secrets.AZURE_STORAGE_KEY }}
         - name: Install Visual Studio Build Tools
-          run: choco install visualstudio2022buildtools --package-parameters "--wait --quiet --addProductLang En-us --config Z:\config\v143-14.34-buildtools.vsconfig"
+          run: choco install visualstudio2022buildtools --package-parameters "--wait --quiet --addProductLang En-us"
         - name: Setup MSVC v143 14.34 build tools
           uses: ilammy/msvc-dev-cmd@v1
           with:
