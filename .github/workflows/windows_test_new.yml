@@ -1,0 +1,37 @@
+name: Build - Windows - Client - Dev
+
+on:
+  push:
+    branches:
+      - dev
+      - newApproachCi
+
+permissions:
+  contents: write
+
+jobs:
+    build:
+      runs-on: windows-latest
+      steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v4
+        - name: Map Azure File Share
+          run: |
+            net use Z: \\unrealtests.file.core.windows.net\u<AzureFileShareName> /user:unrealtests ${{ secrets.AZURE_STORAGE_KEY }}
+        - name: Install Visual Studio Build Tools
+          run: choco install visualstudio2022buildtools --package-parameters "--wait --quiet --addProductLang En-us --config Z:\config\v143-14.34-buildtools.vsconfig"
+        - name: Setup MSVC v143 14.34 build tools
+          uses: ilammy/msvc-dev-cmd@v1
+          with:
+            toolset: 14.34
+            arch: x64
+        - name: Build with Unreal
+          uses: OrchidIsle/UE5-Build-Project@0.2.2
+          with:
+            RUNUAT_PATH: 'Z:/UE_5.4/Engine/Build/BatchFiles/RunUAT.bat'
+            UPROJECT_PATH: ${{ github.workspace }}/BeamableUnreal.uproject
+            BUILD_CONFIG: Development
+            PLATFORM: Win64
+            COOK: true
+            STAGE: false
+    
