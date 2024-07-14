@@ -17,7 +17,7 @@ jobs:
           uses: actions/checkout@v4
         - name: Map Azure File Share
           run: |
-            net use Z: \\unrealtests.file.core.windows.net\u<AzureFileShareName> /user:unrealtests ${{ secrets.AZURE_STORAGE_KEY }}
+            net use Z: \\unrealtests.file.core.windows.net\test /user:unrealtests ${{ secrets.AZURE_STORAGE_KEY }}
         - name: Install Visual Studio Build Tools
           run: choco install visualstudio2022buildtools --package-parameters "--wait --quiet --addProductLang En-us --config Z:\config\v143-14.34-buildtools.vsconfig"
         - name: Setup MSVC v143 14.34 build tools
