@@ -23,7 +23,6 @@ jobs:
         - name: Setup MSVC v143 14.34 build tools
           uses: ilammy/msvc-dev-cmd@v1
           with:
-            toolset: 14.34
             arch: x64
         - name: Build with Unreal
           uses: OrchidIsle/UE5-Build-Project@0.2.2
