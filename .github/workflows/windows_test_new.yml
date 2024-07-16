@@ -61,6 +61,9 @@ jobs:
           run: choco install visualstudio2022buildtools --package-parameters "--wait --quiet --addProductLang En-us --config ${{ github.workspace }}\BeamableUnreal\.vsconfig"
         - name: Setup MSVC v143 14.34 build tools
           uses: ilammy/msvc-dev-cmd@v1
+        - name: Generate project files
+          run: |
+          Z:\UE_5.4\Engine\Binaries\ThirdParty\DotNet\6.0.302\windows\dotnet.exe  "Z:\UE_5.4\Engine\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.dll" -ProjectFiles -UsePrecompiled -Game "${{ github.workspace }}/BeamableUnreal/BeamableUnreal.uproject"
         - name: Build with Unreal
           uses: OrchidIsle/UE5-Build-Project@0.2.2
           with:
