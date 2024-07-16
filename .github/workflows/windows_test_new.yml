@@ -58,7 +58,7 @@ jobs:
           run: |
             net use Z: \\magazyns.file.core.windows.net\unreal /user:magazyns ${{ secrets.AZURE_STORAGE_KEY }}
         - name: Install Visual Studio Build Tools
-          run: choco install visualstudio2022buildtools --package-parameters "--wait --quiet --addProductLang En-us --config ${{ github.workspace }}\.vsconfig"
+          run: choco install visualstudio2022buildtools --package-parameters "--wait --quiet --addProductLang En-us --config ${{ github.workspace }}\BeamableUnreal\.vsconfig"
         - name: Setup MSVC v143 14.34 build tools
           uses: ilammy/msvc-dev-cmd@v1
         - name: Build with Unreal
