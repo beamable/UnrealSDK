@@ -11,7 +11,7 @@ permissions:
 
 jobs:
     build:
-      runs-on: windows-latest
+      runs-on: [self-hosted, Windows]
       steps:
         # Run commands to print out more information about the runner
         - name: Print out Additional Runner info 
@@ -23,7 +23,7 @@ jobs:
           with:
             fetch-depth: 0
             lfs: true
-            path: BeamableUnreal/      
+            path: BeamableUnreal/
   
         - uses: actions/checkout@v4
           with:
@@ -49,33 +49,12 @@ jobs:
         - name: Run Set Packages for local build of the CLI
           working-directory: ./BeamableProduct
           run: bash set-packages.sh "${{ github.workspace }}/BeamableUnreal/" "UNREAL_NugetSource" "" "" "${{ github.workspace }}/BeamableUnreal/Microservices"
-        
+
         # Run init_repo.sh (needed to setup the project correctly locally)     
         - name: Prepare Repository for compilation
           working-directory: ./BeamableUnreal
           run: bash init_repo.sh
-        - name: Map Azure File Share
-          run: |
-            net use Z: \\magazyns.file.core.windows.net\unreal /user:magazyns ${{ secrets.AZURE_STORAGE_KEY }}
-        - name: Install Visual Studio Build Tools
-          run: choco install visualstudio2022buildtools --package-parameters "--wait --quiet --addProductLang En-us --config ${{ github.workspace }}\BeamableUnreal\.vsconfig"
-        - name: Setup MSVC v143 14.34 build tools
-          uses: ilammy/msvc-dev-cmd@v1
+
         - name: Generate project files
-          shell: powershell
-          run: |
-            $command = "& `Z:\UE_5.4\Engine\Binaries\ThirdParty\DotNet\6.0.302\windows\dotnet.exe` " + 
-            "`Z:\UE_5.4\Engine\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.dll` -ProjectFiles -UsePrecompiled -Game " +
-            "${{ github.workspace }}/BeamableUnreal/BeamableUnreal.uproject"
-            Invoke-Expression $command
-        - name: Build with Unreal
-          uses: OrchidIsle/UE5-Build-Project@0.2.2
-          with:
-            RUNUAT_PATH: 'Z:/UE_5.4/Engine/Build/BatchFiles/RunUAT.bat'
-            UPROJECT_PATH: ${{ github.workspace }}/BeamableUnreal/BeamableUnreal.uproject
-            BUILD_CONFIG: Development
-            PLATFORM: Win64
-            COOK: true
-            STAGE: false
-            ARCHIVE: true
-            ARCHIVE_PATH: ${{ github.workspace }}/ARCHIVED
+          working-directory: ./BeamableProduct
+          run: powershell .\windows_build.ps1
