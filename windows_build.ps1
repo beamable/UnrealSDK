@@ -15,7 +15,7 @@ Set-Content  -Path "BeamProjOverride.txt" -Value $projectId
 $unrealPath = $Env:UNREAL_ENGINE_PATH
 
 if ([string]::IsNullOrEmpty($Env:UNREAL_ENGINE_PATH)) {
-    $unrealPath = "C:\UE_5.4\Engine"
+    $unrealPath = "C:\Users\Administrator\Documents\Git\UnrealEngine\Engine"
 }
 Write-Output "Engine path: $unrealPath"
 
