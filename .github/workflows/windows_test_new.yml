@@ -39,8 +39,8 @@ jobs:
               BeamableUnreal/Intermediate/
               BeamableUnreal/Saved/
               BeamableUnreal/UnrealSDK.sln
-            key: ${{ runner.os }}-${{ hashFiles('/BeamableUnreal/Source/**') }}
-            restore-keys: ${{ runner.os }}-
+            key: ${{ runner.os }}-new-${{ hashFiles('/BeamableUnreal/Source/**') }}
+            restore-keys: ${{ runner.os }}-new-
         # Installs .NET 8 so we can run init_repo.sh
         - uses: actions/setup-dotnet@v4
           with:

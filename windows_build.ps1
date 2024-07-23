@@ -37,3 +37,6 @@ $parentDirectory = Split-Path $MyInvocation.MyCommand.Path -Parent
  -noP4 -nodebuginfo -allmaps `
  -cook -build -stage -prereqs -pak -archive `
  -archivedirectory=${parentDirectory}\PackagedProject
+
+# Return the exit code
+exit $LASTEXITCODE
