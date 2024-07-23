@@ -4,15 +4,15 @@
 #include "CoreMinimal.h"
 #include "BeamFlow/ApiRequest/K2BeamNode_ApiRequest.h"
 
-#include "K2BeamNode_ApiRequest_MSPlaygroundAdd.generated.h"
+#include "K2BeamNode_ApiRequest_DiscordSampleMsUpdateUserWhitelistedStatus.generated.h"
 
-#define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_MSPlaygroundAdd"
+#define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_DiscordSampleMsUpdateUserWhitelistedStatus"
 
 /**
-* This is the code-gen'ed declaration for the Beam Flow's Endpoint: Post /Add  of the MSPlayground Service. 
+* This is the code-gen'ed declaration for the Beam Flow's Endpoint: Post /UpdateUserWhitelistedStatus  of the DiscordSampleMs Service. 
 */
 UCLASS(meta=(BeamFlow))
-class BEAMABLEUNREALMICROSERVICECLIENTSBP_API UK2BeamNode_ApiRequest_MSPlaygroundAdd : public UK2BeamNode_ApiRequest
+class BEAMABLEUNREALMICROSERVICECLIENTSBP_API UK2BeamNode_ApiRequest_DiscordSampleMsUpdateUserWhitelistedStatus : public UK2BeamNode_ApiRequest
 {
 	GENERATED_BODY()
 
