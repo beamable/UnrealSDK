@@ -14,6 +14,12 @@ if (Test-Path "BeamProjOverride.txt") {
 Set-Content  -Path "BeamProjOverride.txt" -Value $projectId
 $unrealPath = $Env:UNREAL_ENGINE_PATH
 
+if ([string]::IsNullOrEmpty($Env:UNREAL_ENGINE_PATH)) {
+    $unrealPath = "C:\UE_5.4\Engine"
+}
+Write-Output "Engine path: $unrealPath"
+
+
 Set-Item -Path "Env:\UE_SELF_BUILT" -Value "1" -Force
 $parentDirectory = Split-Path $MyInvocation.MyCommand.Path -Parent
 
