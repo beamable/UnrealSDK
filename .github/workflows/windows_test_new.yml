@@ -56,5 +56,5 @@ jobs:
           run: bash init_repo.sh
 
         - name: Generate project files
-          working-directory: ./BeamableProduct
+          working-directory: ./BeamableUnreal
           run: powershell .\windows_build.ps1
