@@ -50,8 +50,12 @@ jobs:
           working-directory: ./BeamableProduct
           run: bash set-packages.sh "${{ github.workspace }}/BeamableUnreal/" "UNREAL_NugetSource" "" "" "${{ github.workspace }}/BeamableUnreal/Microservices"
 
+        - name: Prepare Repository for compilation v1 
+          working-directory: ./BeamableUnreal
+          run: bash beam_init_game_maker.sh
+
         # Run init_repo.sh (needed to setup the project correctly locally)     
-        - name: Prepare Repository for compilation
+        - name: Prepare Repository for compilation v2
           working-directory: ./BeamableUnreal
           run: bash init_repo.sh
 
