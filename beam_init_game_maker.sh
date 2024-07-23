@@ -4,8 +4,11 @@ PATH_TO_UNREAL_SDK_REPO=$1
 INSTALL_OSS=${2:-false}
 
 if [ "$PATH_TO_UNREAL_SDK_REPO" == "" ]; then
-    echo "Please provide the path to the folder on your machine that contains the Beamable Unreal SDK."
-    return 1
+    if [ "$UNREAL_ENGINE_PATH" == "" ]; then
+        echo "Please provide the path to the folder on your machine that contains the Beamable Unreal SDK."
+        return 1
+    fi
+    PATH_TO_UNREAL_SDK_REPO=$UNREAL_ENGINE_PATH
 fi
 
 if [ ! -d "$PATH_TO_UNREAL_SDK_REPO"  ]; then

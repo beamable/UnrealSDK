@@ -23,6 +23,8 @@ Write-Output "Engine path: $unrealPath"
 Set-Item -Path "Env:\UE_SELF_BUILT" -Value "1" -Force
 $parentDirectory = Split-Path $MyInvocation.MyCommand.Path -Parent
 
+& dotnet build Microservices\Microservices.sln
+
 & "${unrealPath}\Binaries\ThirdParty\DotNet\6.0.302\windows\dotnet.exe" `
  "${unrealPath}\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.dll" `
  -ProjectFiles -UsePrecompiled -Game "${parentDirectory}/BeamableUnreal.uproject"
