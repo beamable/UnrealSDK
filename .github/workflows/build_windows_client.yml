@@ -108,7 +108,7 @@ jobs:
       (needs.changes.outputs.BEAMPROJS != '[]' && needs.changes.outputs.BEAMPROJS != '') || (needs.unifyInputs.outputs.buildAll == 'true')
     
     strategy:
-      max-parallel: 2
+      max-parallel: 1
       matrix:
         # Result of changes job as well as vars are plain strings. That's why you have to use fromJson() to parse it into array.
         # The list of BeamProj is defined by "wherever we detected changes" when inputs.buildAll is false

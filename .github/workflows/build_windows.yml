@@ -88,15 +88,11 @@ jobs:
         run: |
           echo ${{ inputs.beamProj }} > BeamProjOverride.txt |
           cat BeamProjOverride.txt
-
-      # Clean up docker stuff to make sure there's space in the runner for the UE image.
-      - name: Cleanup Dangling Docker Images to Free Space
-        run: docker image prune -f
         
       # Builds the image
       - name: Build image
         working-directory: ./BeamableUnreal
-        run: .\docker_run_windows.ps1
+        run: .\windows_build.ps1
 
       # Compress the results
       - name: Compress Directory
