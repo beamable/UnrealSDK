@@ -33,9 +33,7 @@ $parentDirectory = Split-Path $MyInvocation.MyCommand.Path -Parent
 & "${unrealPath}\Build\BatchFiles\RunUAT.bat" BuildCookRun -project="${parentDirectory}\BeamableUnreal.uproject" `
  -utf8output `
  -platform=Win64 `
- -clientconfig=Shipping `
- -serverconfig=Shipping `
  "${extraArg}" `
  -noP4 -nodebuginfo -allmaps `
  -cook -build -stage -prereqs -pak -archive `
- -archivedirectory=${parentDirectory}\PackagedProject
+ -archivedirectory=${parentDirectory}/PackagedProject
