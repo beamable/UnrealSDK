@@ -18,12 +18,13 @@ if ([string]::IsNullOrEmpty($Env:UNREAL_ENGINE_PATH)) {
     $unrealPath = "C:\Users\Administrator\Documents\Git\UnrealEngine\Engine"
 }
 Write-Output "Engine path: $unrealPath"
-
+$extraArg = ""
+if ($buildType -eq 'server') {
+    $extraArg = "-server"
+}
 
 Set-Item -Path "Env:\UE_SELF_BUILT" -Value "1" -Force
 $parentDirectory = Split-Path $MyInvocation.MyCommand.Path -Parent
-
-& dotnet build Microservices\Microservices.sln
 
 & "${unrealPath}\Binaries\ThirdParty\DotNet\6.0.302\windows\dotnet.exe" `
  "${unrealPath}\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.dll" `
@@ -34,9 +35,7 @@ $parentDirectory = Split-Path $MyInvocation.MyCommand.Path -Parent
  -platform=Win64 `
  -clientconfig=Shipping `
  -serverconfig=Shipping `
+ "${extraArg}" `
  -noP4 -nodebuginfo -allmaps `
  -cook -build -stage -prereqs -pak -archive `
  -archivedirectory=${parentDirectory}\PackagedProject
-
-# Return the exit code
-exit $LASTEXITCODE
