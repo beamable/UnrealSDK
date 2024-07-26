@@ -57,6 +57,7 @@ BeamableVersion=$(
     grep -Eo '[0-9]+.[0-9]+.[0-9]+'
 )
 export BeamableVersion
+
 echo "Setting BeamableVersion as an EnvVar: $BeamableVersion"
 
 # Create a playground microservice/storage that is ignored in Git.
