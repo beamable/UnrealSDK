@@ -25,10 +25,12 @@ if ($buildType -eq 'server') {
 
 Set-Item -Path "Env:\UE_SELF_BUILT" -Value "1" -Force
 $parentDirectory = Split-Path $MyInvocation.MyCommand.Path -Parent
+$archiveDir = "${parentDirectory}\PackagedProject"
+Write-Output "Archived directory: $archivedir"
 
 & "${unrealPath}\Binaries\ThirdParty\DotNet\6.0.302\windows\dotnet.exe" `
  "${unrealPath}\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.dll" `
- -ProjectFiles -UsePrecompiled -Game "${parentDirectory}/BeamableUnreal.uproject"
+ -ProjectFiles -UsePrecompiled -Game "${parentDirectory}\BeamableUnreal.uproject"
 
 & "${unrealPath}\Build\BatchFiles\RunUAT.bat" BuildCookRun -project="${parentDirectory}\BeamableUnreal.uproject" `
  -utf8output `
@@ -36,4 +38,4 @@ $parentDirectory = Split-Path $MyInvocation.MyCommand.Path -Parent
  "${extraArg}" `
  -noP4 -nodebuginfo -allmaps `
  -cook -build -stage -prereqs -pak -archive `
- -archivedirectory=${parentDirectory}/PackagedProject
+ -archivedirectory="${archiveDir}"
