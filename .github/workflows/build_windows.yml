@@ -97,7 +97,7 @@ jobs:
 
       # Compress the results
       - name: Compress Directory
-        run: powershell Compress-Archive PackagedProject windows_${{ env.buildType }}_${{ inputs.beamProj }}_${{ env.GITHUB_SHA }}.zip
+        run: powershell Compress-Archive BeamableUnreal/PackagedProject windows_${{ env.buildType }}_${{ inputs.beamProj }}_${{ env.GITHUB_SHA }}.zip
 
       # Uploads the artifacts so we can download the build
       - name: Upload Compressed Folder as Artifact

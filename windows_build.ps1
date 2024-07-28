@@ -35,7 +35,6 @@ Write-Output "Archived directory: $archivedir"
 & "${unrealPath}\Binaries\ThirdParty\DotNet\6.0.302\windows\dotnet.exe" `
  "${unrealPath}\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.dll" `
  -ProjectFiles -UsePrecompiled -Game "${parentDirectory}/BeamableUnreal.uproject"
-
 & "${unrealPath}\Build\BatchFiles\RunUAT.bat" BuildCookRun -project="${parentDirectory}\BeamableUnreal.uproject" `
  -utf8output `
  -platform="${platform}" `
