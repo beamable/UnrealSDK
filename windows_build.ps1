@@ -24,6 +24,7 @@ $extraArg = ""
 if ($buildType -eq 'server') {
     $extraArg = "-server"
 }
+
 $platform="Win64"
 
 Set-Item -Path "Env:\UE_SELF_BUILT" -Value "1" -Force

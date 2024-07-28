@@ -61,6 +61,30 @@ jobs:
           # The filters here are BEAMPROJ-specific. 
           # We should only rebuild artifacts for a specific BEAMPROJ if there are changes to files it considers relevant. 
           filters: |
+            BEAMPROJ_SteamDemo:            
+              - 'Plugins/BEAMPROJ_SteamDemo/**'
+              - 'Plugins/BeamableCore/**'
+              - 'Dockerfile'
+              - '**.sh'
+              - '**.ps1'
+              - 'Source/**'
+              - '*.uproject'
+            BEAMPROJ_LiveOpsDemo:            
+              - 'Plugins/BEAMPROJ_LiveOpsDemo/**'
+              - 'Plugins/BeamableCore/**'
+              - 'Dockerfile'
+              - '**.sh'
+              - '**.ps1'
+              - 'Source/**'
+              - '*.uproject'
+            BEAMPROJ_DiscordDemo:            
+              - 'Plugins/BEAMPROJ_DiscordDemo/**'
+              - 'Plugins/BeamableCore/**'
+              - 'Dockerfile'
+              - '**.sh'
+              - '**.ps1'
+              - 'Source/**'
+              - '*.uproject'
             BEAMPROJ_HathoraDemo:            
               - 'Plugins/BEAMPROJ_HathoraDemo/**'
               - 'Plugins/BeamableCore/**'
@@ -70,30 +94,6 @@ jobs:
               - '**.ps1'              
               - 'Source/**'
               - '*.uproject'            
-            BEAMPROJ_SteamDemo:            
-              - 'Plugins/BEAMPROJ_SteamDemo/**'
-              - 'Plugins/BeamableCore/**'
-              - 'DockerfileWindows'
-              - '**.sh'
-              - '**.ps1'
-              - 'Source/**'
-              - '*.uproject'
-            BEAMPROJ_LiveOpsDemo:            
-              - 'Plugins/BEAMPROJ_LiveOpsDemo/**'
-              - 'Plugins/BeamableCore/**'
-              - 'DockerfileWindows'
-              - '**.sh'
-              - '**.ps1'
-              - 'Source/**'
-              - '*.uproject'
-            BEAMPROJ_DiscordDemo:            
-              - 'Plugins/BEAMPROJ_DiscordDemo/**'
-              - 'Plugins/BeamableCore/**'
-              - 'DockerfileWindows'
-              - '**.sh'
-              - '**.ps1'
-              - 'Source/**'
-              - '*.uproject'
             
   build:
     needs: [unifyInputs, changes]
