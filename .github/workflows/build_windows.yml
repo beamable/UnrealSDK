@@ -66,8 +66,8 @@ jobs:
             /BeamableUnreal/Intermediate/
             /BeamableUnreal/Saved/
             /BeamableUnreal/UnrealSDK.sln
-          key: ${{ runner.os }}-${{ inputs.beamProj }}-${{ env.buildType }}-${{ hashFiles('/BeamableUnreal/Source/**') }}
-          restore-keys: ${{ runner.os }}-${{ inputs.beamProj }}-${{ env.buildType }}-
+          key: unreal-${{ runner.os }}-${{ inputs.beamProj }}-${{ env.buildType }}-${{ hashFiles('/BeamableUnreal/Source/**') }}
+          restore-keys: unreal-${{ runner.os }}-${{ inputs.beamProj }}-${{ env.buildType }}-
 
       # Run Set-Packages for Unreal
       - name: Run Set Packages for local build of the CLI
