@@ -98,7 +98,7 @@ protected:
 				uint32 TicketSize = 0;
 				uint8 TicketBuffer[1024];
 				HAuthTicket AuthTicket = SteamAccount->GetAuthSessionTicket(
-					TicketBuffer, sizeof(TicketBuffer), &TicketSize);
+					TicketBuffer, sizeof(TicketBuffer), &TicketSize, nullptr);
 
 				if (AuthTicket == k_HAuthTicketInvalid || TicketSize <= 0)
 				{
