@@ -22,6 +22,7 @@ $extraArg = ""
 if ($buildType -eq 'server') {
     $extraArg = "-server"
 }
+$platform="Win64"
 
 Set-Item -Path "Env:\UE_SELF_BUILT" -Value "1" -Force
 $parentDirectory = Split-Path $MyInvocation.MyCommand.Path -Parent
@@ -34,7 +35,7 @@ Write-Output "Archived directory: $archivedir"
 
 & "${unrealPath}\Build\BatchFiles\RunUAT.bat" BuildCookRun -project="${parentDirectory}\BeamableUnreal.uproject" `
  -utf8output `
- -platform=Win64 `
+ -platform="${platform}" `
  "${extraArg}" `
  -noP4 -nodebuginfo -allmaps `
  -cook -build -stage -prereqs -pak -archive `
