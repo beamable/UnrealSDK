@@ -30,7 +30,7 @@ struct FMatchmakingAccessRefreshNotificationMessage : public FBeamBaseNotificati
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		matchmaking_discord_whitelisted = Bag->GetBoolField("matchmaking_discord_whitelisted");
+		Bag->TryGetBoolField(TEXT("matchmaking_discord_whitelisted"), matchmaking_discord_whitelisted);
 	}
 };
 
