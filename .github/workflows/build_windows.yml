@@ -41,6 +41,17 @@ jobs:
           path: BeamableProduct/
           ref: main
 
+      # Caches the UnrealSDK repo's Intermediate and Saved folders
+      - uses: actions/cache@v4
+        continue-on-error: false
+        with:
+          path: |
+            BeamableUnreal/Intermediate
+            BeamableUnreal/Saved
+            BeamableUnreal/BeamableUnreal.sln
+          key: unreal-${{ runner.os }}-${{ inputs.beamProj }}-${{ env.buildType }}-${{ hashFiles('/BeamableUnreal/Source/**') }}
+          restore-keys: unreal-${{ runner.os }}-${{ inputs.beamProj }}-
+
       # Sets the buildType ENV var as either server or client.
       - name: Set buildType ENV var
         id: set-build-type
@@ -57,18 +68,6 @@ jobs:
       # Make sure the .NET's paths are added to the shell's path ENV VAR
       - run: Add-Content $env:GITHUB_PATH "C:\Program Files\dotnet"
       - run: Add-Content $env:GITHUB_PATH "~\.dotnet\tools"
-        
-      # Caches the UnrealSDK repo's Intermediate and Saved folders
-      - uses: actions/cache@v4
-        continue-on-error: false
-        with:
-          path: |
-            /BeamableUnreal/Intermediate/
-            /BeamableUnreal/Saved/
-            /BeamableUnreal/UnrealSDK.sln
-          key: unreal-${{ runner.os }}-${{ inputs.beamProj }}-${{ env.buildType }}-${{ hashFiles('/BeamableUnreal/Source/**') }}
-          restore-keys: unreal-${{ runner.os }}-${{ inputs.beamProj }}-${{ env.buildType }}-
-
       # Run Set-Packages for Unreal
       - name: Run Set Packages for local build of the CLI
         working-directory: ./BeamableProduct
