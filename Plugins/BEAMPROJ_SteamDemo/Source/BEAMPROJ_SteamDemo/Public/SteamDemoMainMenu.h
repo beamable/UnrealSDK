@@ -172,7 +172,7 @@ protected:
 							UE_LOG_ONLINE_IDENTITY(
 								Warning,
 								TEXT(
-									"[Federated Identity] %s User already associated with beamable account. Logging in instead."
+									"[Federated Identity] User already associated with beamable account. Logging in instead."
 								));
 							Runtime->CPP_LoginExternalIdentityOperation(TargetSlot, ServiceName, Namespace,
 							                                            ExternalToken, LoginHandler);

@@ -101,11 +101,12 @@ protected:
 	UFUNCTION()
 	void HandleDiscordInitialized(bool success, FDiscordUserData UserData, FString Error)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Initialized BeamDiscord Demo Main Menu: %hhd"), success);
 		if (!success)
 		{
+			UE_LOG(LogTemp, Display, TEXT("Initialized BeamDiscord Demo Main Menu: Discord failed to initialize: %s"), *Error);
 			return;
 		}
+		UE_LOG(LogTemp, Display, TEXT("Initialized BeamDiscord Demo Main Menu: Discord Initialized"));
 		UGameInstance* GameInstance = GetWorld()->GetGameInstance();
 		UBeamRuntime* Runtime = GameInstance->GetSubsystem<UBeamRuntime>();
 		FBeamRealmUser User;
@@ -156,7 +157,7 @@ protected:
 					UE_LOG(LogTemp,
 					       Warning,
 					       TEXT(
-						       "[Federated Identity] %s User already associated with beamable account. Logging in instead."
+						       "[Federated Identity] User already associated with beamable account. Logging in instead."
 					       ));
 					Runtime->CPP_LoginExternalIdentityOperation(this->UserSlot, ServiceName, Namespace,
 					                                            UserData.OAuthToken, LoginHandler);
