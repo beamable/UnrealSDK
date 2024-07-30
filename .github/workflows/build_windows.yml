@@ -10,9 +10,14 @@ on:
         type: string
       buildType:
         type: string
-        description: 'Either "client", for regular builds, or "server". for dedicated server builds.'
+        description: 'Either "client", for regular builds, or "server" for dedicated server builds.'
         required: true
         default: "client"
+      targetPlatform:
+        type: string
+        description: 'Either "Win64", for Windows builds, or "Linux" for Linux builds.'
+        required: true
+        default: "Win64"
 
 permissions:
   contents: write
@@ -49,8 +54,8 @@ jobs:
             BeamableUnreal/Intermediate
             BeamableUnreal/Saved
             BeamableUnreal/BeamableUnreal.sln
-          key: unreal-${{ runner.os }}-${{ inputs.beamProj }}-${{ env.buildType }}-${{ hashFiles('/BeamableUnreal/Source/**') }}
-          restore-keys: unreal-${{ runner.os }}-${{ inputs.beamProj }}-
+          key: unreal-${{ runner.os }}-${{ inputs.targetPlatform }}-${{ inputs.beamProj }}-${{ inputs.buildType }}-${{ hashFiles('/BeamableUnreal/Source/**') }}
+          restore-keys: unreal-${{ runner.os }}-${{ inputs.targetPlatform }}-
 
       # Sets the buildType ENV var as either server or client.
       - name: Set buildType ENV var
@@ -92,7 +97,8 @@ jobs:
       # Builds the image
       - name: Build image
         working-directory: ./BeamableUnreal
-        run: .\windows_build.ps1
+        shell: bash
+        run: bash windows_build.sh
 
       # Compress the results
       - name: Compress Directory

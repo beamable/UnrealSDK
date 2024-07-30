@@ -117,3 +117,4 @@ jobs:
     with:
       beamProj: ${{ matrix.beamProj }}
       buildType: client
+      targetPlatform: "Win64"
