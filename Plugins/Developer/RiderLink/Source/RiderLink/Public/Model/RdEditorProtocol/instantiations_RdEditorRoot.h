@@ -4,7 +4,6 @@
 #include "serialization/Polymorphic.h"
 
 
-
 namespace rd {
 }
 
