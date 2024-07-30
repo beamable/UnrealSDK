@@ -28,10 +28,14 @@ if [ -z "$UNREAL_ENGINE_PATH" ]; then
 fi
 
 export UE_SELF_BUILT=1
-parentDirectory=$(dirname "$0")
+if command -v cygpath >/dev/null 2>&1; then
+    parentDirectory=$(cygpath -da "$(dirname "$0")")
+else
+    parentDirectory=$(realpath "$0")
+fi
 archiveDir="${parentDirectory}/PackagedProject"
 
-echo "Starting a $projectId $buildType build for $platform platform"
+echo "Starting a $projectId $buildType build for $platform platform."
 
 "${unrealPath}/Binaries/ThirdParty/DotNet/6.0.302/windows/dotnet.exe" \
     "${unrealPath}/Binaries/DotNET/UnrealBuildTool/UnrealBuildTool.dll" \
