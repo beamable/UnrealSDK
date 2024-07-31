@@ -153,8 +153,13 @@ TUnrealRequestPtr UBeamBackend::CreateUnpreparedRequest(int64& OutRequestId, con
 	// Using ActivityTimeout makes it possible to reuse this request object (which is important for our retry logic --- see TickRetryQueue)
 	Req->SetActivityTimeout(RetryConfig.Timeout);
 
-	// Set the timeout header so that Beamable's Gateway itself knows how long 
-	Req->SetHeader(FString(TEXT("X-BEAM-TIMEOUT")), FString::Printf(TEXT("%lld"), RetryConfig.Timeout));
+	// Set the timeout header so that Beamable's Gateway itself knows how long
+	long long timeoutInMilliseconds = RetryConfig.Timeout * 1000;
+	// the value should not be lower than 10_000
+	if(timeoutInMilliseconds >= 10000)
+	{
+		Req->SetHeader(FString(TEXT("X-BEAM-TIMEOUT")), FString::Printf(TEXT("%lld"), timeoutInMilliseconds));
+	}
 
 	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation: TIMEOUT_HEADER=%lld"), RetryConfig.Timeout);
 	
