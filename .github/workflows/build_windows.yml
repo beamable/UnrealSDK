@@ -27,9 +27,9 @@ jobs:
     runs-on: [self-hosted, Windows]
     steps:
       # Run commands to print out more information about the runner
-      - name: Print out Additional Runner info
-        run: |
-          curl https://api.ipify.org
+      # - name: Print out Additional Runner info
+      #   run: |
+      #     curl https://api.ipify.org
           
       # Gets the Unreal Repo and the CLI repo
       - uses: actions/checkout@v4
