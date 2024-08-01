@@ -97,7 +97,8 @@ jobs:
       # Builds the image
       - name: Build image
         working-directory: ./BeamableUnreal
-        run: .\windows_build.ps1
+        shell: bash
+        run: bash windows_build.sh
 
       # Compress the results
       - name: Compress Directory
