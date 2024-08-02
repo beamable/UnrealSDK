@@ -36,6 +36,8 @@ fi
 archiveDir="${parentDirectory}/PackagedProject"
 echo "Starting a $projectId $buildType build for $platform platform."
 
+rm -rf Plugins/Developer/RiderLink
+
 "${unrealPath}/Binaries/ThirdParty/DotNet/6.0.302/windows/dotnet.exe" \
     "${unrealPath}/Binaries/DotNET/UnrealBuildTool/UnrealBuildTool.dll" \
     -ProjectFiles -UsePrecompiled -Game "${parentDirectory}/BeamableUnreal.uproject"
