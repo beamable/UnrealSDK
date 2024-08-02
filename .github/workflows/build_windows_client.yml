@@ -64,7 +64,6 @@ jobs:
             BEAMPROJ_SteamDemo:            
               - 'Plugins/BEAMPROJ_SteamDemo/**'
               - 'Plugins/BeamableCore/**'
-              - 'Dockerfile'
               - '**.sh'
               - '**.ps1'
               - 'Source/**'
@@ -72,7 +71,6 @@ jobs:
             BEAMPROJ_LiveOpsDemo:            
               - 'Plugins/BEAMPROJ_LiveOpsDemo/**'
               - 'Plugins/BeamableCore/**'
-              - 'Dockerfile'
               - '**.sh'
               - '**.ps1'
               - 'Source/**'
@@ -80,7 +78,6 @@ jobs:
             BEAMPROJ_DiscordDemo:            
               - 'Plugins/BEAMPROJ_DiscordDemo/**'
               - 'Plugins/BeamableCore/**'
-              - 'Dockerfile'
               - '**.sh'
               - '**.ps1'
               - 'Source/**'
@@ -89,7 +86,6 @@ jobs:
               - 'Plugins/BEAMPROJ_HathoraDemo/**'
               - 'Plugins/BeamableCore/**'
               - 'Plugins/OnlineSubsystemBeamable/**'
-              - 'DockerfileWindows'
               - '**.sh'
               - '**.ps1'              
               - 'Source/**'
