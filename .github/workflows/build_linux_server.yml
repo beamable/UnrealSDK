@@ -37,7 +37,7 @@ jobs:
 
   changes:
     needs: unifyInputs
-    runs-on: unreal-builder
+    runs-on: [self-hosted, Windows]
 
     # This job only runs if we are looking for changes    
     if: | 
