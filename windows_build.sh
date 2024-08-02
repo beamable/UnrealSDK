@@ -34,7 +34,6 @@ else
     parentDirectory=$(realpath "$0")
 fi
 archiveDir="${parentDirectory}/PackagedProject"
-
 echo "Starting a $projectId $buildType build for $platform platform."
 
 rm -rf Plugins/Developer/RiderLink
