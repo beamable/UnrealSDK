@@ -27,7 +27,7 @@ permissions:
 
 jobs:
   unifyInputs:
-    runs-on: unreal-builder
+    runs-on: [self-hosted, Windows]
     outputs:
       buildAll: ${{ steps.unifyBuildAll.outputs.buildAll }}
     steps:
@@ -92,6 +92,3 @@ jobs:
       beamProj: ${{ matrix.beamProj }}
       buildType: server
       targetPlatform: "Linux"
-    secrets:
-      GHCR_ACTOR: ${{ secrets.GHCR_ACTOR }}
-      GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
