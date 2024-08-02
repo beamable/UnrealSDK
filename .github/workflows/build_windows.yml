@@ -54,7 +54,7 @@ jobs:
             BeamableUnreal/Intermediate
             BeamableUnreal/Saved
             BeamableUnreal/BeamableUnreal.sln
-          key: unreal-${{ runner.os }}-${{ inputs.targetPlatform }}-${{ inputs.beamProj }}-${{ inputs.buildType }}-${{ hashFiles('/BeamableUnreal/Source/**') }}
+          key: unreal-${{ runner.os }}-${{ inputs.targetPlatform }}-${{ inputs.buildType }}-${{ hashFiles('/BeamableUnreal/Source/**') }}
           restore-keys: unreal-${{ runner.os }}-${{ inputs.targetPlatform }}-
 
       # Sets the buildType ENV var as either server or client.
