@@ -17,8 +17,8 @@ public:
 	static FString CurrencyArchetypeToJsonString(const UCurrencyArchetype* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make CurrencyArchetype", meta=(DefaultToSelf="Outer", AdvancedDisplay="External, ClientPermission, StartingAmount, Outer", NativeMakeFunc))
-	static UCurrencyArchetype* Make(FString Symbol, FOptionalArchetypeProxy External, FOptionalBeamClientPermission ClientPermission, FOptionalInt64 StartingAmount, UObject* Outer);
+	static UCurrencyArchetype* Make(FString Symbol, FOptionalFederationInfo External, FOptionalBeamClientPermission ClientPermission, FOptionalInt64 StartingAmount, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break CurrencyArchetype", meta=(NativeBreakFunc))
-	static void Break(const UCurrencyArchetype* Serializable, FString& Symbol, FOptionalArchetypeProxy& External, FOptionalBeamClientPermission& ClientPermission, FOptionalInt64& StartingAmount);
+	static void Break(const UCurrencyArchetype* Serializable, FString& Symbol, FOptionalFederationInfo& External, FOptionalBeamClientPermission& ClientPermission, FOptionalInt64& StartingAmount);
 };

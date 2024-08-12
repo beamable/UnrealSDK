@@ -12,7 +12,7 @@ Start by getting our repo, then installing .NET and Docker Dekstop.
 
  1. Clone [UnrealSDK](https://github.com/beamable/UnrealSDK) repo (make sure you have `git-lfs` installed).
  2. Check out the `latest` (or your preferred version) tagged release.
- 3. Run the `init_repo.sh` script.
+ 3. Run the `init_repo.sh` script (on Windows, use GitBash or any other shell).
  4. Generating Project Files.
  5. Optional - Verify things are working by compiling the editor of our SDK project.
 
@@ -30,10 +30,10 @@ Setting up the SDK in your project is done by manually copying over a set of fil
 
 Please, follow along these instructions:
 
-1. Copy the `beam-init-game-maker.sh` script into the root of your Unreal Project.
+1. Copy the `beam_init_game_maker.sh` script into the root of your Unreal Project.
 2. From a terminal running in your project directory, run the copied script passing in the path to the **UnrealSDK** in your machine.
-	1. `. beam-init-game-maker.sh "E:/Path/To/UnrealSDK"`
-	2. `. beam-init-game-maker.sh "E:/Path/To/UnrealSDK" true`, if you're planning to use the `OnlineSubsystemBeamable`.
+	1. `. beam_init_game_maker.sh "E:/Path/To/UnrealSDK"`
+	2. `. beam_init_game_maker.sh "E:/Path/To/UnrealSDK" true`, if you're planning to use the `OnlineSubsystemBeamable`.
 3. For each of your `Target.cs` files, add the following lines to their constructor:
 	1. `MyProject.Target.cs => Beam.ConfigureGame(this, Beam.OssConfig.Disabled())`.
 	2. `MyProjectEditor.Target.cs => Beam.ConfigureEditor(this, Beam.OssConfig.Disabled())`.
@@ -45,7 +45,7 @@ Please, follow along these instructions:
 	4. Pay attention to the type of module you're adding the SDK to and call the proper function. (You can see the module type in your `uproject` file)
 5. Some OS-specific things:
 	1. On MacOS, you'll have to manually regenerate project files. 
-	2. On Windows, this was done by `beam-init-game-maker.sh` script.
+	2. On Windows, this was done by `beam_init_game_maker.sh` script.
 6. Verify that your project is set up correctly:
 	1. Check there is a `.beamable` folder in your project root directory.
 	2. Check there is a `.config/dotnet-tools.json` file in your project directory.

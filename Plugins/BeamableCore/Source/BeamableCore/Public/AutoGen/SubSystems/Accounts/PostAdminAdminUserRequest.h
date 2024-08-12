@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-#include "BeamableCore/Public/AutoGen/AddAccountRequestBody.h"
+#include "BeamableCore/Public/AutoGen/CreateElevatedAccountRequestBody.h"
 #include "BeamableCore/Public/AutoGen/AccountPortalView.h"
 
 #include "PostAdminAdminUserRequest.generated.h"
@@ -27,7 +27,7 @@ public:
 
 	// Body Params
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="", Category="Beam")
-	UAddAccountRequestBody* Body = {};
+	UCreateElevatedAccountRequestBody* Body = {};
 
 	// Beam Base Request Declaration
 	UPostAdminAdminUserRequest() = default;
@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make PostAdminAdminUser",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Role,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UPostAdminAdminUserRequest* Make(FString _Email, FOptionalString _Role, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make PostAdminAdminUser",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Role,_InitProperties,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPostAdminAdminUserRequest* Make(FString _Email, FOptionalString _Role, FOptionalMapOfString _InitProperties, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

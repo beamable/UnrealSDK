@@ -22,7 +22,7 @@ FString UItemArchetypeLibrary::ItemArchetypeToJsonString(const UItemArchetype* S
 	return Result;
 }	
 
-UItemArchetype* UItemArchetypeLibrary::Make(FString Symbol, FOptionalArchetypeProxy External, FOptionalBeamClientPermission ClientPermission, UObject* Outer)
+UItemArchetype* UItemArchetypeLibrary::Make(FString Symbol, FOptionalFederationInfo External, FOptionalBeamClientPermission ClientPermission, UObject* Outer)
 {
 	auto Serializable = NewObject<UItemArchetype>(Outer);
 	Serializable->Symbol = Symbol;
@@ -32,7 +32,7 @@ UItemArchetype* UItemArchetypeLibrary::Make(FString Symbol, FOptionalArchetypePr
 	return Serializable;
 }
 
-void UItemArchetypeLibrary::Break(const UItemArchetype* Serializable, FString& Symbol, FOptionalArchetypeProxy& External, FOptionalBeamClientPermission& ClientPermission)
+void UItemArchetypeLibrary::Break(const UItemArchetype* Serializable, FString& Symbol, FOptionalFederationInfo& External, FOptionalBeamClientPermission& ClientPermission)
 {
 	Symbol = Serializable->Symbol;
 	External = Serializable->External;

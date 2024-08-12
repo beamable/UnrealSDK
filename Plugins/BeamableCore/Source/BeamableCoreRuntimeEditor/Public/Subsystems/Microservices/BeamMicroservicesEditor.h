@@ -35,6 +35,18 @@ struct FLocalMicroserviceData
 
 	UPROPERTY(BlueprintReadOnly)
 	bool bShouldEnableRemoteOnPublish = {};
+
+	
+	UPROPERTY(BlueprintReadOnly)
+	TArray<FString> AvailableKeys;
+
+	// The user will always select this manually here.
+	UPROPERTY(BlueprintReadWrite, DisplayName="Routing Key")
+	FString ManuallySelectedRoutingKey;
+
+	// This is either ManuallySelectedRoutingKey OR the your own local service's key if it is running.
+	UPROPERTY(BlueprintReadOnly)
+	FString TargetRoutingKey;	
 };
 
 USTRUCT(BlueprintType)

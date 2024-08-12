@@ -83,10 +83,10 @@ private:
 	 * Given a Client CSV (contains public content only) and its id, we make requests to the URLs where the actual content JSON is stored.
 	 * Run OnSuccess if all downloads succeed. OnError, otherwise.
 	 */
-	void DownloadLiveContentObjectsData(const FBeamContentManifestId Id, const TArray<FClientContentInfoTableRow*> Rows, const TMap<FBeamContentId, FString> Checksums, FSimpleDelegate OnSuccess,
+	void DownloadLiveContentObjectsData(const FBeamContentManifestId Id, const TArray<FBeamRemoteContentManifestEntry> Rows, const TMap<FBeamContentId, FString> Checksums, FSimpleDelegate OnSuccess,
 	                                    FSimpleDelegate OnError);
 
-	static void PrepareContentDownloadRequest(FBeamContentManifestId ManifestId, FClientContentInfoTableRow* ContentEntry, FDownloadContentState& Item);
+	static void PrepareContentDownloadRequest(FBeamContentManifestId ManifestId, FBeamRemoteContentManifestEntry ContentEntry, FDownloadContentState& Item);
 
 	/**
 	 * Given a response to a Download Content Request, we update the live runtime cache of content definitions. 
@@ -231,5 +231,5 @@ public:
 	UFUNCTION()
 	void FetchIndividualContent(FBeamContentManifestId ManifestId, TArray<FBeamContentId> ContentToDownloadFetch, FBeamOperationHandle Op);
 
-	bool EnforceLinks(FBeamContentManifestId ManifestId, TArray<FClientContentInfoTableRow*> ManifestRows, TArray<FBeamContentId>& OutLinksToFetch);
+	bool EnforceLinks(FBeamContentManifestId ManifestId, TArray<FBeamRemoteContentManifestEntry> ManifestRows, TArray<FBeamContentId>& OutLinksToFetch);
 };

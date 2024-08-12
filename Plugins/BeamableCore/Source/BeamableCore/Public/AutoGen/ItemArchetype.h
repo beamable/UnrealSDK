@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArchetypeProxy.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalFederationInfo.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamClientPermission.h"
 
 #include "ItemArchetype.generated.h"
@@ -17,7 +17,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Symbol", Category="Beam")
 	FString Symbol = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="External", Category="Beam")
-	FOptionalArchetypeProxy External = {};
+	FOptionalFederationInfo External = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Client Permission", Category="Beam")
 	FOptionalBeamClientPermission ClientPermission = {};
 

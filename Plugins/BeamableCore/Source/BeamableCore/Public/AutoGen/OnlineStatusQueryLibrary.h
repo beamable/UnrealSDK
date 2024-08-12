@@ -16,9 +16,9 @@ public:
 	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - OnlineStatusQuery To JSON String")
 	static FString OnlineStatusQueryToJsonString(const UOnlineStatusQuery* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make OnlineStatusQuery", meta=(DefaultToSelf="Outer", AdvancedDisplay="bToManyRequests, PlayerIds, Outer", NativeMakeFunc))
-	static UOnlineStatusQuery* Make(FOptionalBool bToManyRequests, FOptionalArrayOfString PlayerIds, UObject* Outer);
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make OnlineStatusQuery", meta=(DefaultToSelf="Outer", AdvancedDisplay="PlayerIds, Outer", NativeMakeFunc))
+	static UOnlineStatusQuery* Make(FOptionalArrayOfString PlayerIds, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break OnlineStatusQuery", meta=(NativeBreakFunc))
-	static void Break(const UOnlineStatusQuery* Serializable, FOptionalBool& bToManyRequests, FOptionalArrayOfString& PlayerIds);
+	static void Break(const UOnlineStatusQuery* Serializable, FOptionalArrayOfString& PlayerIds);
 };

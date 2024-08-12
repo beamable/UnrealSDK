@@ -25,7 +25,7 @@ struct FBeamRetryConfig
 	TArray<FString> CustomErrorCodes;
 
 	/**
-	 * @brief Timeout for the request.
+	 * @brief Timeout for the request (in seconds).
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam|Retry Rules")
 	int64 Timeout = 10;

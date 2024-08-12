@@ -17,8 +17,8 @@ public:
 	static FString ItemArchetypeToJsonString(const UItemArchetype* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ItemArchetype", meta=(DefaultToSelf="Outer", AdvancedDisplay="External, ClientPermission, Outer", NativeMakeFunc))
-	static UItemArchetype* Make(FString Symbol, FOptionalArchetypeProxy External, FOptionalBeamClientPermission ClientPermission, UObject* Outer);
+	static UItemArchetype* Make(FString Symbol, FOptionalFederationInfo External, FOptionalBeamClientPermission ClientPermission, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break ItemArchetype", meta=(NativeBreakFunc))
-	static void Break(const UItemArchetype* Serializable, FString& Symbol, FOptionalArchetypeProxy& External, FOptionalBeamClientPermission& ClientPermission);
+	static void Break(const UItemArchetype* Serializable, FString& Symbol, FOptionalFederationInfo& External, FOptionalBeamClientPermission& ClientPermission);
 };

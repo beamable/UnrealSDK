@@ -17,8 +17,8 @@ public:
 	static FString CurrencyViewToJsonString(const UCurrencyView* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make CurrencyView", meta=(DefaultToSelf="Outer", AdvancedDisplay="Proxy, Outer", NativeMakeFunc))
-	static UCurrencyView* Make(FString Id, int64 Amount, TArray<UCurrencyProperty*> Properties, FOptionalArchetypeProxy Proxy, UObject* Outer);
+	static UCurrencyView* Make(FString Id, int64 Amount, TArray<UCurrencyProperty*> Properties, FOptionalFederationInfo Proxy, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break CurrencyView", meta=(NativeBreakFunc))
-	static void Break(const UCurrencyView* Serializable, FString& Id, int64& Amount, TArray<UCurrencyProperty*>& Properties, FOptionalArchetypeProxy& Proxy);
+	static void Break(const UCurrencyView* Serializable, FString& Id, int64& Amount, TArray<UCurrencyProperty*>& Properties, FOptionalFederationInfo& Proxy);
 };

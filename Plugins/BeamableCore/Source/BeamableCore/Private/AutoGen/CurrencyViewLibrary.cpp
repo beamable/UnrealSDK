@@ -22,7 +22,7 @@ FString UCurrencyViewLibrary::CurrencyViewToJsonString(const UCurrencyView* Seri
 	return Result;
 }	
 
-UCurrencyView* UCurrencyViewLibrary::Make(FString Id, int64 Amount, TArray<UCurrencyProperty*> Properties, FOptionalArchetypeProxy Proxy, UObject* Outer)
+UCurrencyView* UCurrencyViewLibrary::Make(FString Id, int64 Amount, TArray<UCurrencyProperty*> Properties, FOptionalFederationInfo Proxy, UObject* Outer)
 {
 	auto Serializable = NewObject<UCurrencyView>(Outer);
 	Serializable->Id = Id;
@@ -33,7 +33,7 @@ UCurrencyView* UCurrencyViewLibrary::Make(FString Id, int64 Amount, TArray<UCurr
 	return Serializable;
 }
 
-void UCurrencyViewLibrary::Break(const UCurrencyView* Serializable, FString& Id, int64& Amount, TArray<UCurrencyProperty*>& Properties, FOptionalArchetypeProxy& Proxy)
+void UCurrencyViewLibrary::Break(const UCurrencyView* Serializable, FString& Id, int64& Amount, TArray<UCurrencyProperty*>& Properties, FOptionalFederationInfo& Proxy)
 {
 	Id = Serializable->Id;
 	Amount = Serializable->Amount;
