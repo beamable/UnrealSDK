@@ -7,19 +7,31 @@ img[src*='#center'] {
 
 # Getting Started
 Before you can start using Beamable in your project, sign-up in [our portal](https://portal.beamable.com/login/). 
+### Requirements for Beamable
+Beamable currently supports **Unreal 5.3.2**.
+
+Beamable also has a dependency on  [.NET Version 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0). This is needed for:
+
+- Installing the Beamable CLI (and therefore enabling the various Beamable workflows).
+- Using C# Microservices through the CLI.
+
+Beamable has a hard-dependency on [Docker](https://www.docker.com/products/docker-desktop/). This is needed for two things:
+
+- Building and Deploying Beamable Microservices to your realms (dev/staging/prod environments).
+- Running Beamable Microservices without opening the service's project (for non-engineers that want to run microservices locally).
+
+If you don't have these installed, take this opportunity to install them.
 ## Cloning and Installing Dependencies
 Start by getting our repo, then installing .NET and Docker Dekstop.
 
- 1. Clone [UnrealSDK](https://github.com/beamable/UnrealSDK) repo (make sure you have `git-lfs` installed).
- 2. Check out the `latest` (or your preferred version) tagged release.
+ 1. Clone [UnrealSDK](https://github.com/beamable/UnrealSDK) repo (make sure you have [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) and [`git-lfs`](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage) installed).
+ 2. Checkout the tagged release version from the `main` branch you wish to use (tag format is a semantic version).
  3. Run the `init_repo.sh` script.
- 4. Generating Project Files.
- 5. \[Optional] Verify things are working by compiling the editor of our SDK project.
-
-Next up, install our dependencies.
-
- - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
- - [.NET](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
+	 1. It installs the correct Beamable CLI version globally for you).
+	 2. It also sets up this repo so you can look at our [samples](../../Samples/Unreal SDK - Samples Intro).
+ 4. Optional - [Generate Project Files](https://dev.epicgames.com/documentation/en-us/unreal-engine/how-to-generate-unreal-engine-project-files-for-your-ide?application_version=5.3). 
+	 1. On Windows, you can right-click the `.uproject` file and select `Generate Visual Studio project files`.
+ 5. Optional - Verify things are working by compiling the editor of our SDK project.
 
 Once you have our repo and dependencies set up in your machine, follow along one of the next section to set up the SDK in your project.
 ### Set up the Beamable SDK - Fast Path
@@ -30,16 +42,24 @@ Setting up the SDK in your project is done by manually copying over a set of fil
 
 Please, follow along these instructions:
 
-1. Copy the `beam-init-game-maker.sh` script into the root of your Unreal Project.
+1. Copy the `beam_init_game_maker.sh` script into the root of your Unreal Project.
 2. Copy the `UnrealSDK/Plugins/BeamableCore` plugin into your `Plugins` folder.
-3. Set up the `BeamableCore` plugin in your `.uproject` file.
+3. Add  ```{ "Name": "BeamableCore", "Enabled": true }``` to the array of `Plugins` in your project's `.uproject` file.
 4. Open the `UnrealSDK/Source/BeamableUnreal.Target.cs` file and copy the `Beam` class into your `YourGame.Target.cs` file.
-5. Call `Beam.ConfigureGame/Server/Editor` in their corresponding `Target.cs` files.
-6. Call `Beam.AddRuntimeModuleDependencies` and `Beam.AddEditorModuleDependencies` in the corresponding `Build.cs` files.
-7. Run the `YourProject/beam-init-game-maker.sh` script from inside your project's root directory.
+	1. Add a `using System;` line to your using statements in `YourGame.Target.cs`.
+5. For each existing `Target.cs` file (if one doesn't exist, just don't add it), call the corresponding function in its constructor.
+	1. `YourGame.Target.cs` => `Beam.ConfigureGame(this, default);`
+	2. `YourGameEditor.Target.cs` => `Beam.ConfigureEditor(this, default);`
+	3. `YourGameServer.Target.cs` => `Beam.ConfigureServer(this, default);`
+6. For each existing Beamable-dependent Module (if one doesn't exist, just don't add it), add a function call to its `Build.cs` file (see the type of module inside your `uproject` file):
+	1. Runtime Modules => `Beam.AddRuntimeModuleDependencies(this);`
+	2. UncookedOnly Modules => `Beam.AddUncookedOnlyModuleDependencies(this);`
+	3. Editor Modules => `Beam.AddEditorModuleDependencies(this);`
+7. Run the `YourProject/beam_init_game_maker.sh` script from inside your project's root directory.
 	1. This will install the version of our CLI tool that your SDK version corresponds to locally in your project.
 	2. Verify that it worked by running `dotnet beam --version` from inside your project root directory.
-8. Generate Project Files.
+8. [Generate Project Files](https://dev.epicgames.com/documentation/en-us/unreal-engine/how-to-generate-unreal-engine-project-files-for-your-ide?application_version=5.3) for your project. 
+	 1. On Windows, you can right-click the `YourGame.uproject` file and select `Generate Visual Studio project files`.
 9. Open Rider/VS and compile your editor.
 #### Making your First Request
 Once your Editor opens, you'll see the Beamable Logo in your upper-right bar, next to the Settings dropdown. This button opens the Beamable window.
@@ -54,10 +74,10 @@ Here's some a quick tour of Beamable terminology:
 
 - `Realm` is an isolated data environment (think of it as a branch, but for your backend). 
 	- By default, you have one of these these for your `dev`, `staging` and `prod` environments.
-	- The `ApplyToBuild` button sets the realm information in the `Config/DefaultEngine.ini` file of your project. Whatever realm is configured in this file, is the realm your build will be pointed towards. [Dedicated Server Builds](../Use Guide/Unreal SDK - Dedicated Servers) don't need to care about their baked in `TargetRealm`. They fetch their target realm from Environment Variables.
-- `Content` opens up the **Content Window**.  See the [Content Docs](../Unreal SDK - Content) for more info.
+	- The `ApplyToBuild` button sets the realm information in the `Config/DefaultEngine.ini` file of your project. Whatever realm is configured in this file, is the realm your build will be pointed towards. [Dedicated Server Builds](../Unreal SDK - Dedicated Servers) don't need to care about their baked in `TargetRealm`. They fetch their target realm from Environment Variables.
+- `Content` opens up the **Content Window**.  See the [Content Docs](../../Feature Guides/Unreal SDK - Content) for more info.
 - `Open Portal` opens the **Portal** in your default web-browser already logged in with your editor user and pointed at your current realm.
-- `Microservices` opens the **Microservice Window**. See the [Microservice Docs](../Unreal SDK - Microservices) for more info.
+- `Microservices` opens the **Microservice Window**. See the [Microservice Docs](../../Feature Guides/Unreal SDK - Microservices) for more info.
 - `Reset PIE Users` (Play-In-Editor) removes your PIE users locally cached data. 
 	- By default, when you sign into a Beamable account in PIE (in your game code), Beamable will use the same user until you delete the files `Saved/Beamable/UserSlots/PIE_XXXXX.json`. This button does that for you. After you click it, the next time you enter PIE, a brand new Beamable player account will be created in your current realm.
 

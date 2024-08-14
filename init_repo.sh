@@ -22,7 +22,7 @@ fi
 # It is not committed to the repo and it is the default plugin configured to load 
 # (this means the repo won't work unless you run this script exactly once first).
 
-BASEDIR=$(dirname "$0")
+BASEDIR=$(pwd)
 echo "$BASEDIR"
 cd $BASEDIR
 
@@ -38,7 +38,9 @@ fi
 
 # Check if the beam CLI is installed globally
 if ! command -v beam >/dev/null 2>&1; then
-    dotnet tool install Beamable.Tools --global --version 2.0.0   
+    dotnet tool install Beamable.Tools --global --version 2.0.1 --allow-downgrade 
+else
+    dotnet tool update Beamable.Tools --global --version 2.0.1 --allow-downgrade    
 fi
 
 # Create a microservice

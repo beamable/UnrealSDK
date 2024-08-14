@@ -1,4 +1,5 @@
 site_name: Unreal SDK
+site_url: https://beamable.github.io/UnrealSDK/
 theme:
   name: material
   logo: assets/images/logo.png
