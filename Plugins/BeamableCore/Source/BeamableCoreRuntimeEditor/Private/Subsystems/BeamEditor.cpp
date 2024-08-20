@@ -14,12 +14,33 @@
 #include "Content/BeamContentTypes/BeamGameTypeContent.h"
 
 #include "Subsystems/BeamEditorSubsystem.h"
+#include "Misc/MessageDialog.h"
 
 const FBeamRealmHandle UBeamEditor::Signed_Out_Realm_Handle = FBeamRealmHandle{FString(""), FString("")};
 
 UBeamEditor* UBeamEditor::GetSelf(const UObject* CallingContext)
 {
 	return GEditor->GetEditorSubsystem<UBeamEditor>();
+}
+
+void UBeamEditor::SetBeamableWindowMessage(UBeamableWindowMessage* message)
+{
+	this->WindowMessage = message;
+}
+
+void UBeamEditor::UpdateBeamableWindowMessage(FString Message, EMessageType typeOfMessage)
+{
+	if(this->WindowMessage == nullptr)
+	{
+		this->WindowMessage = NewObject<UBeamableWindowMessage>();
+	}
+	this->WindowMessage->MessageValue = Message;
+	this->WindowMessage->MessageType = typeOfMessage;
+}
+
+void UBeamEditor::ClearBeamableWindowMessage()
+{
+	this->UpdateBeamableWindowMessage(FString(), EMessageType::VE_Info);
 }
 
 void UBeamEditor::Initialize(FSubsystemCollectionBase& Collection)
@@ -546,6 +567,11 @@ void UBeamEditor::SelectRealm_OnSystemsReady(FBeamWaitCompleteEvent, FBeamRealmH
 
 void UBeamEditor::OpenPortalOnCurrentRealm()
 {
+	OpenPortal(EPortalPage::VE_Dashboard);
+}
+
+void UBeamEditor::OpenPortal(EPortalPage PortalPage)
+{
 	FUserSlot MainEditorSlot;
 	FBeamRealmUser Data;
 	if (TryGetMainEditorSlot(MainEditorSlot, Data))
@@ -559,9 +585,30 @@ void UBeamEditor::OpenPortalOnCurrentRealm()
 		const auto ProductionPid = Proj.AllRealms.FindByPredicate([](FBeamProjectRealmData d) { return !d.ParentPID.IsSet; })->PID.AsString;
 		const auto CurrentPid = Data.RealmHandle.Pid.AsString;
 		const auto RefreshToken = Data.AuthToken.RefreshToken;
+		FString Page;
+		switch (PortalPage) {
+		case EPortalPage::VE_Dashboard:
+			Page = FString("dashboard");
+			break;
+		case EPortalPage::VE_Microservices:
+			Page = FString("microservices");
+			break;
+		case EPortalPage::VE_PlayerSearch:
+			Page = FString("players");
+			break;
+		case EPortalPage::VE_RealmConfig:
+			Page = FString("realm-config");
+			break;
+		case EPortalPage::VE_Content:
+			Page = FString("content");
+			break;
+		case EPortalPage::VE_Campaign:
+			Page = FString("messaging");
+			break;
+		}
 
-		const auto URL = FString::Format(TEXT("{0}/{1}/games/{2}/realms/{3}/dashboard?refresh_token={4}"),
-		                                 {PortalUrl, Cid, ProductionPid, CurrentPid, RefreshToken});
+		const auto URL = FString::Format(TEXT("{0}/{1}/games/{2}/realms/{3}/{4}?refresh_token={5}"),
+										 {PortalUrl, Cid, ProductionPid, CurrentPid,Page, RefreshToken});
 
 		FPlatformProcess::LaunchURL(*URL, nullptr, nullptr);
 	}
@@ -628,6 +675,7 @@ void UBeamEditor::SetActiveTargetRealmUnsafe(const FBeamRealmHandle& NewRealmHan
 
 void UBeamEditor::ApplyCurrentSettingsToBuild()
 {
+	// auto set = UEditorDialogLibrary::ShowMessage("Apply realm to build", "It will apply realm to build", EAppMsgType::YesNoCancel, "", EAppMsgCategory::Info);
 	auto Settings = GetMutableDefault<UBeamCoreSettings>();
 	Settings->SaveConfig(CPF_Config, *Settings->GetDefaultConfigFilename());
 

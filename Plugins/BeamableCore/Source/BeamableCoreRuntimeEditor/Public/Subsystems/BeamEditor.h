@@ -20,6 +20,70 @@
 
 #include "BeamEditor.generated.h"
 
+UENUM(BlueprintType)
+enum class EMessageType : uint8 {
+	VE_Info       UMETA(DisplayName="Info"),
+	VE_Warning    UMETA(DisplayName="Warning"),
+	VE_Error      UMETA(DisplayName="Error"),
+};
+
+
+UENUM(BlueprintType)
+enum class EPortalPage : uint8 {
+	VE_Dashboard       UMETA(DisplayName="Dashboard"),
+	VE_Microservices   UMETA(DisplayName="Microservices"),
+	VE_PlayerSearch    UMETA(DisplayName="PlayerSearch"),
+	VE_RealmConfig     UMETA(DisplayName="RealmConfig"),
+	VE_Content         UMETA(DisplayName="Content"),
+	VE_Campaign        UMETA(DisplayName="Campaign"),
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEditorMessageClickedEvent);
+
+UCLASS(Blueprintable)
+class UBeamableWindowMessage : public UObject
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
+	EMessageType MessageType;
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
+	FString MessageValue;
+	UPROPERTY(BlueprintAssignable)
+	FEditorMessageClickedEvent OnClickEvent;
+
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	void  HandleClick()
+	{
+		this->OnClickEvent.Broadcast();
+	}
+
+	UFUNCTION(BlueprintPure, Category="Beam")
+	FText GetText()
+	{
+		return FText::FromString(this->MessageValue);
+	}
+
+	UFUNCTION(BlueprintPure, Category="Beam")
+	void GetIcon(FSlateBrush& Out)
+	{
+		if(this->MessageValue.IsEmpty())
+		{
+			Out = *FAppStyle::Get().GetBrush("Sequencer.Empty");
+			return;
+		}
+		switch(this->MessageType)
+		{
+		case EMessageType::VE_Info:
+			Out = *FAppStyle::Get().GetBrush("Icons.Info");
+		case EMessageType::VE_Warning:
+			Out =  *FAppStyle::Get().GetBrush("Icons.Warning");
+		case EMessageType::VE_Error:
+			Out =  *FAppStyle::Get().GetBrush("Icons.Error");
+		}
+	}
+};
+
 
 DECLARE_DELEGATE(FEditorStateChangedHandlerCode);
 DECLARE_DYNAMIC_DELEGATE(FEditorStateChangedHandler);
@@ -157,6 +221,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	bool bEditorReady;
 
+	UPROPERTY(BlueprintReadOnly, Category="Beam")
+	UBeamableWindowMessage* WindowMessage;
+
 	UPROPERTY(BlueprintAssignable)
 	FEditorStateChangedEvent OnEnteringPIE;
 
@@ -202,6 +269,17 @@ public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
 	static UBeamEditor* GetSelf(const UObject* CallingContext);
 
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="OnOperationEvent"))
+	void SetBeamableWindowMessage(UBeamableWindowMessage* message);
+
+	
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="OnOperationEvent"))
+	void UpdateBeamableWindowMessage(FString Message, EMessageType typeOfMessage);
+	
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="OnOperationEvent"))
+	void ClearBeamableWindowMessage();
+
+	
 	// Operations
 public:
 	/**
@@ -331,6 +409,12 @@ private:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam")
 	void OpenPortalOnCurrentRealm();
+
+	/**
+	 * @brief Opens the Beamable Portal, signed into the MainEditorUser's account, at the selected page. 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	void OpenPortal(EPortalPage page);
 
 	// Utility Functions
 private:
