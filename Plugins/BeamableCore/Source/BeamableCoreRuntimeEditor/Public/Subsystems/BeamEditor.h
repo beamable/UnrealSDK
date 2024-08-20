@@ -59,27 +59,34 @@ public:
 	}
 
 	UFUNCTION(BlueprintPure, Category="Beam")
-	FText GetText()
+	FText GetText() const
 	{
 		return FText::FromString(this->MessageValue);
 	}
 
 	UFUNCTION(BlueprintPure, Category="Beam")
-	void GetIcon(FSlateBrush& Out)
+	void GetIcon(FSlateBrush& Out) const
 	{
 		if(this->MessageValue.IsEmpty())
 		{
-			Out = *FAppStyle::Get().GetBrush("Sequencer.Empty");
+			Out = *FAppStyle::Get().GetBrush(TEXT("Sequencer.Empty"));
+			Out.TintColor = FSlateColor(FLinearColor(1.0f, 1.0f, 0.0f, 0.0f));
 			return;
 		}
 		switch(this->MessageType)
 		{
 		case EMessageType::VE_Info:
-			Out = *FAppStyle::Get().GetBrush("Icons.Info");
+			Out = *FAppStyle::Get().GetBrush(TEXT("Icons.Info"));
+			Out.TintColor = FSlateColor(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
+			break;
 		case EMessageType::VE_Warning:
-			Out =  *FAppStyle::Get().GetBrush("Icons.Warning");
+			Out = *FAppStyle::Get().GetBrush(TEXT("Icons.Warning"));
+			Out.TintColor = FSlateColor(FLinearColor(0.9f, 0.8f, 0.0f, 1.0f));
+			break;
 		case EMessageType::VE_Error:
-			Out =  *FAppStyle::Get().GetBrush("Icons.Error");
+			Out = *FAppStyle::Get().GetBrush(TEXT("Icons.Error"));
+			Out.TintColor = FSlateColor(FLinearColor(1.0f, 0.1f, 0.1f, 1.0f));
+			break;
 		}
 	}
 };
