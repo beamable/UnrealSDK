@@ -21,6 +21,7 @@ const FString UBeamBackend::HEADER_VALUE_ACCEPT_CONTENT_TYPE = FString(TEXT("app
 const FString UBeamBackend::HEADER_AUTHORIZATION = FString(TEXT("Authorization"));
 const FString UBeamBackend::HEADER_REQUEST_SCOPE = FString(TEXT("X-BEAM-SCOPE"));
 const FString UBeamBackend::HEADER_VALUE_AUTHORIZATION = FString(TEXT("Bearer {0}"));
+const FString UBeamBackend::HEADER_ROUTING_KEY_MAP = FString(TEXT("X-BEAM-SERVICE-ROUTING-KEY"));
 const TArray<FString> UBeamBackend::AUTH_ERROR_CODE_RETRY_ALLOWED = TArray<FString>{
 	TEXT("InvalidTokenError"), TEXT("TokenValidationError"), TEXT("ExpiredTokenError")
 };
@@ -156,13 +157,13 @@ TUnrealRequestPtr UBeamBackend::CreateUnpreparedRequest(int64& OutRequestId, con
 	// Set the timeout header so that Beamable's Gateway itself knows how long
 	long long timeoutInMilliseconds = RetryConfig.Timeout * 1000;
 	// the value should not be lower than 10_000
-	if(timeoutInMilliseconds >= 10000)
+	if (timeoutInMilliseconds >= 10000)
 	{
 		Req->SetHeader(FString(TEXT("X-BEAM-TIMEOUT")), FString::Printf(TEXT("%lld"), timeoutInMilliseconds));
 	}
 
 	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation: TIMEOUT_HEADER=%lld"), RetryConfig.Timeout);
-	
+
 	// So we know this request comes from Unreal or an UnrealServer (dedicated server builds).
 	if (IsRunningDedicatedServer()) Req->SetHeader(TEXT("X-KS-USER-AGENT"), FString::Printf(TEXT("UnrealServer-%s"), *UGameplayStatics::GetPlatformName()));
 	else Req->SetHeader(TEXT("X-KS-USER-AGENT"), FString::Printf(TEXT("Unreal-%s"), *UGameplayStatics::GetPlatformName()));
@@ -231,6 +232,7 @@ void UBeamBackend::PrepareBeamableRequestToRealm(const TUnrealRequestPtr& Reques
 	}
 }
 
+
 void UBeamBackend::PrepareBeamableRequestToRealmWithAuthToken(const TUnrealRequestPtr& Request,
                                                               const FBeamRealmHandle& RealmHandle,
                                                               const FBeamAuthToken& AuthToken)
@@ -260,6 +262,37 @@ void UBeamBackend::PrepareBeamableRequestToRealmWithAuthToken(const TUnrealReque
 		Request->SetHeader(HEADER_REQUEST_SCOPE, ScopeHeader);
 		UE_LOG(LogBeamBackend, Display, TEXT("Request Preparation - Target Realm Header: SCOPE_HEADER=%s"),
 		       *ScopeHeader);
+	}
+}
+
+void UBeamBackend::PrepareBeamableRequestToRealmWithRoutingKey(const TUnrealRequestPtr& Request, FUserSlot Slot)
+{
+	const auto OwnerUserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+	if (IsRunningDedicatedServer())
+	{
+		// For dedicated servers, we set the routing key of whatever is the one for the OwnerUserSlot.		
+		FString RoutingKey = TEXT("No RoutingKey Set.");
+		if (CurrentRoutingKeyMaps.Contains(OwnerUserSlot))
+		{
+			RoutingKey = CurrentRoutingKeyMaps[OwnerUserSlot];
+			Request->SetHeader(HEADER_ROUTING_KEY_MAP, RoutingKey);
+		}
+		UE_LOG(LogBeamBackend, Display, TEXT("Request Preparation - Set Routing Key Map: ROUTING_KEY_MAP=%s"), *RoutingKey);
+	}
+	else
+	{
+		// For unauthenticated requests, we also use the RoutingKey set for the OwnerUser.
+		if (Slot.Name.IsEmpty())
+			Slot = OwnerUserSlot;
+
+		// For dedicated servers, we set the routing key of whatever is the one for the OwnerUserSlot.		
+		FString RoutingKey = TEXT("No RoutingKey Set.");
+		if (CurrentRoutingKeyMaps.Contains(Slot))
+		{
+			RoutingKey = CurrentRoutingKeyMaps[Slot];
+			Request->SetHeader(HEADER_ROUTING_KEY_MAP, RoutingKey);
+		}
+		UE_LOG(LogBeamBackend, Display, TEXT("Request Preparation - Set Routing Key Map: ROUTING_KEY_MAP=%s"), *RoutingKey);
 	}
 }
 
@@ -418,6 +451,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 				// Create Login Refresh Token Request.
 				TUnrealRequestPtr ReAuthRequest = FHttpModule::Get().CreateRequest();
 				PrepareBeamableRequestToRealm(ReAuthRequest, ReqRealmHandle);
+				PrepareBeamableRequestToRealmWithRoutingKey(ReAuthRequest, ReqContext.UserSlot);
 
 				ULoginRefreshTokenRequest* Request = NewObject<ULoginRefreshTokenRequest>();
 				Request->RefreshToken = ReqAuthToken.RefreshToken;
@@ -695,6 +729,52 @@ bool UBeamBackend::IsRetryingTimeout(FBeamRequestContext Ctx)
 bool UBeamBackend::IsSuccessfulResponse(int32 ResponseCode)
 {
 	return ResponseCode >= 200 && ResponseCode < 300;
+}
+
+/*	 
+	ROUTING KEYS
+*/
+
+void UBeamBackend::SetRoutingKeyMap(TArray<FString> BeamoIds, TArray<FString> TargetKeys)
+{
+	ensureAlwaysMsgf(BeamoIds.Num() == TargetKeys.Num(), TEXT("These arrays must have the same number of elements; they're pairs."));
+
+	TArray<FString> Mappings;
+	for (int i = 0; i < BeamoIds.Num(); i++)
+	{
+		Mappings.Add(BeamoIds[i] + TEXT(":") + TargetKeys[i]);
+	}
+
+	SetRoutingKeyMap(FString::Join(Mappings, TEXT(",")));
+}
+
+void UBeamBackend::SetRoutingKeyMap(FUserSlot Slot, TArray<FString> BeamoIds, TArray<FString> TargetKeys)
+{
+	ensureAlwaysMsgf(BeamoIds.Num() == TargetKeys.Num(), TEXT("These arrays must have the same number of elements; they're pairs."));
+
+	TArray<FString> Mappings;
+	for (int i = 0; i < BeamoIds.Num(); i++)
+	{
+		Mappings.Add(BeamoIds[i] + TEXT(":") + TargetKeys[i]);
+	}
+
+	SetRoutingKeyMap(Slot, FString::Join(Mappings, TEXT(",")));
+}
+
+void UBeamBackend::SetRoutingKeyMap(FString RoutingKeyMap)
+{
+	const auto AllRuntimeSlots = GetDefault<UBeamCoreSettings>()->RuntimeUserSlots;
+	for (FString Slot : AllRuntimeSlots)
+		SetRoutingKeyMap(Slot, RoutingKeyMap);
+
+	const auto AllDeveloperSlots = GetDefault<UBeamCoreSettings>()->DeveloperUserSlots;
+	for (FString Slot : AllDeveloperSlots)
+		SetRoutingKeyMap(Slot, RoutingKeyMap);
+}
+
+void UBeamBackend::SetRoutingKeyMap(FUserSlot ForSlot, FString RoutingKeyMap)
+{
+	CurrentRoutingKeyMaps.Add(ForSlot, RoutingKeyMap);
 }
 
 /*

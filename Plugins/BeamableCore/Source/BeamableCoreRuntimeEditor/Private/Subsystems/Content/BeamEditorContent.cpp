@@ -102,7 +102,7 @@ FBeamOperationHandle UBeamEditorContent::InitializeWhenEditorReady()
 	return Op;
 }
 
-FBeamOperationHandle UBeamEditorContent::InitializeFromRealm(FBeamRealmHandle NewRealm)
+FBeamOperationHandle UBeamEditorContent::OnRealmInitialized(FBeamRealmHandle NewRealm)
 {
 	// Ensure the CLI is installed
 	checkf(Cli->IsInstalled(), TEXT("Editor Subsystem %s - Content depends on the CLI. It was not found locally."), *GetName());

@@ -88,7 +88,7 @@ FBeamOperationHandle UBeamCli::InitializeWhenEditorReady()
 			if (ResCode == 0)
 			{
 				bInstalled = FOptionalBool{true};
-				RunCommand(CreateServerCommand(Op), {TEXT("-d 300")}, {});
+				StartCliServer(Op);
 			}
 			else
 			{
@@ -116,35 +116,41 @@ FBeamOperationHandle UBeamCli::InitializeWhenEditorReady()
 	return Op;
 }
 
-void UBeamCli::OnRealmInitialized()
+FBeamOperationHandle UBeamCli::InitializeRealm(FBeamRealmHandle NewRealm)
 {
-	// Whenever we change realms, if the CLI is installed, we make sure it is pointing at the same realm we are in UE.  
+	FBeamRealmUser EditorUserData;
+	const auto Slot = Editor->GetMainEditorSlot(EditorUserData);
+
 	if (IsInstalled())
 	{
-		const auto Cmd = NewObject<UBeamCliInitCommand>();
-		Cmd->OnStreamOutput = [](const TArray<UBeamCliInitStreamData*>& Stream, const TArray<int64>&, const FBeamOperationHandle&)
-		{
-			const auto Data = Stream.Last();
-			UE_LOG(LogBeamCli, Display, TEXT("Initialized CLI with Unreal Project: %s %s %s"), *Data->Host, *Data->Cid, *Data->Pid)
-		};
-
 		// Make sure the project is initialized with the locally signed in credentials in UE
 		const auto Realm = GetDefault<UBeamCoreSettings>()->TargetRealm;
 		const auto Host = GetDefault<UBeamCoreSettings>()->BeamableEnvironment->APIUrl;
 
-		FBeamRealmUser EditorUserData;
-		const auto Slot = Editor->GetMainEditorSlot(EditorUserData);
+		const auto Op = RequestTracker->CPP_BeginOperation({Slot}, GetName(), {});
+		const auto Cmd = NewObject<UBeamCliInitCommand>();
+		Cmd->OnStreamOutput = [this, Op](const TArray<UBeamCliInitStreamData*>& Stream, const TArray<int64>&, const FBeamOperationHandle&)
+		{
+			const auto Data = Stream.Last();
+			RequestTracker->TriggerOperationSuccess(Op, {});
+			UE_LOG(LogBeamCli, Display, TEXT("Initialized CLI with Unreal Project: %s %s %s"), *Data->Host, *Data->Cid, *Data->Pid)
+		};
 
-		RunCommandSync(Cmd, {
-			               FString(TEXT("--host ") + Host),
-			               FString(TEXT("--cid ") + Realm.Cid.AsString),
-			               FString(TEXT("--pid ") + Realm.Pid.AsString),
-			               FString(TEXT("--refresh-token ") + EditorUserData.AuthToken.RefreshToken),
-		               });
+		RunCommandServer(Cmd, {
+			                 FString(TEXT("--host ") + Host),
+			                 FString(TEXT("--cid ") + Realm.Cid.AsString),
+			                 FString(TEXT("--pid ") + Realm.Pid.AsString),
+			                 FString(TEXT("--refresh-token ") + EditorUserData.AuthToken.RefreshToken)
+		                 }, Op);
+
+		return Op;
 	}
+
+	UE_LOG(LogBeamCli, Error, TEXT("CLI not installed or not detected. Please make sure you have the CLI installed!"))
+	return RequestTracker->CPP_BeginErrorOperation({Slot}, GetName(), TEXT("CLI not installed or not detected. Please make sure you have the CLI installed!"), {});
 }
 
-UBeamCliServerServeCommand* UBeamCli::CreateServerCommand(FBeamOperationHandle Op)
+void UBeamCli::StartCliServer(FBeamOperationHandle Op)
 {
 	const auto ServerCmd = NewObject<UBeamCliServerServeCommand>();
 	ServerCmd->OnStreamOutput = [this, Op](const TArray<UBeamCliServerServeStreamData*>& Stream, const TArray<int64>&, const FBeamOperationHandle&)
@@ -163,7 +169,8 @@ UBeamCliServerServeCommand* UBeamCli::CreateServerCommand(FBeamOperationHandle O
 		CurrentCliServerUri = TEXT("");
 		UE_LOG(LogBeamCli, Display, TEXT("On SERVER CLI TERMINATED %d"), ResCode)
 	};
-	return ServerCmd;
+
+	RunCommand(ServerCmd, {TEXT("-d 300")}, {});
 }
 
 void UBeamCli::RunCommand(UBeamCliCommand* Command, const TArray<FString>& Params, const FBeamOperationHandle& Op)
@@ -180,20 +187,21 @@ void UBeamCli::RunCommandServer(UBeamCliCommand* Command, const TArray<FString>&
 	// If we don't have a server up and running, first start one.
 	if (CurrentCliServerUri.IsEmpty())
 	{
-		// auto ServerCmd = CreateServerCommand();
-		//
-		// // Once the server is booted up, we'll update the CLI Server Uri and then run the requested command.s
-		// ServerCmd->OnStreamOutput = [this, Command, Params, Op](const TArray<UBeamCliServerServeStreamData*>& Stream, const TArray<int64>&, const FBeamOperationHandle&)
-		// {
-		// 	UE_LOG(LogBeamCli, Display, TEXT("Restarted CLI Server. PORT=%d, URI=%s"), Stream[0]->Port, *Stream[0]->Uri)
-		// 	CurrentCliServerUri = Stream[0]->Uri;
-		//
-		// 	UE_LOG(LogBeamCli, Display, TEXT("Now executing command. CMD=%s"), *Command->GetClass()->GetName());
-		// 	Command->RunServer(CurrentCliServerUri, Params, Op);
-		// };
-		//
-		// // Run the server command so we boot the server up.
-		// RunCommand(ServerCmd, {TEXT("-d 300")}, {});
+		// Run the server command so we boot the server up --- when its up, run the intended command.
+		auto ServerStartHandler = FBeamOperationEventHandlerCode::CreateLambda([this, Command, Params, Op](FBeamOperationEvent Evt)
+		{
+			if (Evt.EventType == OET_SUCCESS)
+			{
+				UE_LOG(LogBeamCli, Display, TEXT("Now executing command. CMD=%s"), *Command->GetClass()->GetName());
+				Command->RunServer(CurrentCliServerUri, Params, Op);
+			}
+			else
+			{
+				UE_LOG(LogBeamCli, Error, TEXT("Should not be seeing this. If you do see it, please report a bug to Beamable. CMD=%s"), *Command->GetClass()->GetName());
+			}
+		});
+		const auto ServerStartOp = RequestTracker->CPP_BeginOperation({}, GetName(), ServerStartHandler);
+		StartCliServer(ServerStartOp);
 	}
 	// If we do... just run it.
 	else

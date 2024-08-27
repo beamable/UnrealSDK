@@ -62,7 +62,7 @@ if [ ! -f ".config/dotnet-tools.json" ]; then
 fi
 
 # Install Beamable.Tools with optional version
-dotnet tool install Beamable.Tools --version "$CLI_VERSION"
+dotnet tool install Beamable.Tools --version "$CLI_VERSION" --allow-downgrade
 echo "Beamable Tools are installed. To call them use \"dotnet beam\" from any directory under your Unreal project root."
 
 dotnet beam unreal init "$PATH_TO_UNREAL_SDK_REPO" "$UPROJECT_PATH" "$INSTALL_OSS"

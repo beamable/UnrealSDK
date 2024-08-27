@@ -11,18 +11,21 @@ if ! dotnet tool list >/dev/null 2>&1; then
     exit 1
 fi
 
+# Install the SDK in your project
+# Find the .uproject file path and name
+UPROJECT_PATH=$(find . -name "*.uproject" -print -quit)
+echo "Found .uproject: $UPROJECT_PATH"
+
 # Ensure we are inside a unreal project root folder.
-if [ ! -f *.uproject ]; then
+if [ $UPROJECT_PATH == "" ]; then
    echo "Please run this script from inside a folder containing a .uproject (your Unreal Project's root)."
-   exit 1
+   return 1
 fi
 
 # Copy the Sandbox plugin over to the plugin folder.
 # This is a local-only plugin that you can do whatever you want in.
 # It is not committed to the repo and it is the default plugin configured to load
 # (this means the repo won't work unless you run this script exactly once first).
-
-
 SANDBOX_PROJ_NAME="BEAMPROJ_Sandbox"
 PLUGIN_SANDBOX_PATH="$(pwd)/Plugins/$SANDBOX_PROJ_NAME"
 TEMPLATE_SANDBOX_PATH="$(pwd)/Templates/Plugins/$SANDBOX_PROJ_NAME"
@@ -36,14 +39,15 @@ fi
 # Restore the Beamable.Tools tool defined in the '.config/dotnet-tools.json' file
 # If you're in our dev-branch and this errors out, please run the set-packages.sh script with the first argument as the path to the root of this repository.
 # If you're in our main-branch and this errors out, please make sure '.config/dotnet-tools.json' is pointed at a valid and released CLI version.  
+echo "Installing the Beam CLI in this project"
 dotnet tool restore
 
 # We export some EnvVars so that the `dotnet beam project new` commands see these
 # This is important so that this works from inside GitHub Actions (when running inside a container)
 # It fixes this script so that the microservices CSPROJ files see these EnvVars and function properly when inside a docker container.  
 DotNetConfigPath="$(pwd)"
-export DotNetConfigPath
 echo "Setting DotNetConfigPath as an EnvVar: $DotNetConfigPath"
+export DotNetConfigPath
 
 BeamableVersion=$(
   # Read the UnrealSDK's own dotnet-tools manifest.
@@ -56,9 +60,9 @@ BeamableVersion=$(
     # Extract the semantic version number out of that string
     grep -Eo '[0-9]+.[0-9]+.[0-9]+'
 )
+echo "Setting BeamableVersion as an EnvVar: $BeamableVersion"
 export BeamableVersion
 
-echo "Setting BeamableVersion as an EnvVar: $BeamableVersion"
 
 # Create a playground microservice/storage that is ignored in Git.
 # Use this to write quick and dirty MS code.

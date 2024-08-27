@@ -68,7 +68,7 @@ public:
 	virtual void InitializeWhenUnrealReady_Implementation(FBeamOperationHandle& ResultOp);
 
 	/**
-	 * @brief UBeamRuntime::OnStarted runs after all these callbacks have completed. At this point, you can make any non-authenticated request to beamable.
+	 * @brief At this point, you can make any non-authenticated request to beamable. But... you don't have access to any beamable content types (they are fetched at this point).
 	 * For example, downloading content at the start of a player session (see UBeamContentSubsystem for an example).
 	 * This is guaranteed to run only once per game-client/server session. Also, for UBeamRuntimeSubsystems running in dedicated servers, this is the last of the callbacks here that will actually run.
 	 * After this runs, UBeamRuntime::OnStarted is invoked and user-level code can run to make non-authenticated requests to beamable (ie: game-specific signup/login flows). 
@@ -76,6 +76,16 @@ public:
 	UFUNCTION(BlueprintNativeEvent, Category="Beam")
 	void         OnBeamableStarting(FBeamOperationHandle& ResultOp);
 	virtual void OnBeamableStarting_Implementation(FBeamOperationHandle& ResultOp);
+
+	/**
+	 * @brief UBeamRuntime::OnStarted runs after all these callbacks have completed. At this point, you can make any non-authenticated request to beamable and you have access to your content manifest).
+	 * For example, pre-fetching store data based on store content.
+	 * This is guaranteed to run only once per game-client/server session. Also, for UBeamRuntimeSubsystems running in dedicated servers, this is the last of the callbacks here that will actually run.
+	 * After this runs, UBeamRuntime::OnStarted is invoked and user-level code can run to make non-authenticated requests to beamable (ie: game-specific signup/login flows). 
+	 */
+	UFUNCTION(BlueprintNativeEvent, Category="Beam")
+	void         OnBeamableContentReady(FBeamOperationHandle& ResultOp);
+	virtual void OnBeamableContentReady_Implementation(FBeamOperationHandle& ResultOp);
 
 	/**
 	 * @brief Called whenever a user authenticates into a user slot.

@@ -515,10 +515,10 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 					InitalizeFromRealmOps.Reset(Subsystems.Num());
 					for (auto& Subsystem : Subsystems)
 					{
-						const auto Handle = Subsystem->InitializeFromRealm(NewRealmHandle);
+						const auto Handle = Subsystem->InitializeRealm(NewRealmHandle);
 						InitalizeFromRealmOps.Add(Handle);
 					}
-					const auto OnCompleteCode = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, SelectRealm_OnSystemsReady), NewRealmHandle, Op);
+					const auto OnCompleteCode = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, SelectRealm_OnRealmInitialized), NewRealmHandle, Op);
 					InitializeFromRealmsWait = RequestTracker->CPP_WaitAll({}, InitalizeFromRealmOps, {}, OnCompleteCode);
 					return;
 				}
@@ -544,10 +544,8 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 	GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_GetConfig(MainEditorSlot, GetConfigReq, GetConfigReqHandle, Ctx, Op, this);
 }
 
-void UBeamEditor::SelectRealm_OnSystemsReady(FBeamWaitCompleteEvent, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op) const
+void UBeamEditor::SelectRealm_OnRealmInitialized(FBeamWaitCompleteEvent, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op)
 {
-	// TODO: Expose error handling for BeamErrorResponses that happen in the InitializeFromRealm operations
-
 	// We update the UserSlot info with the new PID.
 	FBeamRealmUser UserData;
 	const auto MainEditorSlot = GetMainEditorSlot(UserData);
@@ -557,9 +555,22 @@ void UBeamEditor::SelectRealm_OnSystemsReady(FBeamWaitCompleteEvent, FBeamRealmH
 
 	// Notify all systems that we have successfully initialized the realm
 	const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
+	RealmInitializedOps.Reset(Subsystems.Num());
 	for (auto& Subsystem : Subsystems)
 	{
-		Subsystem->OnRealmInitialized();
+		const auto Handle = Subsystem->OnRealmInitialized(NewRealmHandle);
+		RealmInitializedOps.Add(Handle);
+	}
+	const auto OnCompleteCode = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, SelectRealm_OnSystemsRead), NewRealmHandle, Op);
+	RealmInitializedWait = RequestTracker->CPP_WaitAll({}, InitalizeFromRealmOps, {}, OnCompleteCode);	
+}
+
+void UBeamEditor::SelectRealm_OnSystemsRead(FBeamWaitCompleteEvent, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op)
+{
+	const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
+	for (auto& Subsystem : Subsystems)
+	{
+		Subsystem->OnReady();
 	}
 
 	RequestTracker->TriggerOperationSuccess(Op, TEXT(""));

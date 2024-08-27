@@ -199,6 +199,13 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamEditor : public UEditorSubsystem
 	 */
 	TArray<FBeamOperationHandle> InitalizeFromRealmOps = {};
 	FBeamWaitHandle InitializeFromRealmsWait;
+	
+	/**
+	 * @brief When we change the realm, we notify all UBeamEditorSubsystems that exist so that they can set up their internal state to be correct with the new realm.
+	 * They return operation handles that we wait on. When ALL operations of ALL systems are done, we notify each system that the realm change was finished.
+	 */
+	TArray<FBeamOperationHandle> RealmInitializedOps = {};
+	FBeamWaitHandle RealmInitializedWait;
 
 	/**
 	 * @brief Registered to the global user-slot cleared callback from the user slot system so that we can clean up the editor environment if it was the MainEditorSlot that was cleared. 
@@ -408,8 +415,14 @@ private:
 	 * @brief Callback for RealmChangedHandler. (See ChangeActiveRealm and OnRealmWillChangeHandler).
 	 */
 	UFUNCTION()
-	void SelectRealm_OnSystemsReady(FBeamWaitCompleteEvent Evt, FBeamRealmHandle NewRealmHandle,
-	                                FBeamOperationHandle Op) const;
+	void SelectRealm_OnRealmInitialized(FBeamWaitCompleteEvent Evt, FBeamRealmHandle NewRealmHandle,
+	                                FBeamOperationHandle Op);
+
+	/**
+	 * Callback for after OnRealmInitialized. 
+	 */
+	UFUNCTION()
+	void SelectRealm_OnSystemsRead(FBeamWaitCompleteEvent Evt, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op);
 
 	/**
 	 * @brief Opens the Beamable Portal, signed into the MainEditorUser's account, at the dashboard page. 

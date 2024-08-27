@@ -7,29 +7,6 @@
 #define LOCTEXT_NAMESPACE "K2BeamOperation_Editor_Microservices_Update"
 
 UCLASS(meta=(BeamFlowNode))
-class UK2BeamOperation_Editor_Microservices_UpdateRemote : public UK2BeamNode_Operation
-{
-	GENERATED_BODY()
-
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
-	{
-		return LOCTEXT("Title", "Editor Operation - Microservices - Update Remote");
-	}
-
-	virtual FName GetSubsystemSelfFunctionName() const override
-	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamMicroservicesEditor, GetSelf);
-	}
-
-	virtual FName GetOperationFunctionName() const override
-	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamMicroservicesEditor, UpdateRemoteMicroserviceStateOperation);
-	}
-
-	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamMicroservicesEditor::StaticClass(); }	
-};
-
-UCLASS(meta=(BeamFlowNode))
 class UK2BeamOperation_Editor_Microservices_Run : public UK2BeamNode_Operation
 {
 	GENERATED_BODY()

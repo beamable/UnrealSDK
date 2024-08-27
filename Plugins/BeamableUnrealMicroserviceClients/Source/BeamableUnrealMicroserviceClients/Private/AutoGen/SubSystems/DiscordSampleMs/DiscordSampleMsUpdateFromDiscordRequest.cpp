@@ -8,7 +8,7 @@ void UDiscordSampleMsUpdateFromDiscordRequest::BuildVerb(FString& VerbString) co
 
 void UDiscordSampleMsUpdateFromDiscordRequest::BuildRoute(FString& RouteString) const
 {
-	FString Route = TEXT("micro_DiscordSampleMs/UpdateFromDiscord");
+	FString Route = TEXT("_microDiscordSampleMs/UpdateFromDiscord");
 	
 	
 	FString QueryParams = TEXT("");

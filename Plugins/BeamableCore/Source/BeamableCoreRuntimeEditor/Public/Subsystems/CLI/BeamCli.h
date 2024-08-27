@@ -21,7 +21,7 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamCli : public UBeamEditorSubsystem
 protected:
 	virtual FBeamOperationHandle InitializeWhenEditorReady() override;
 
-	virtual void OnRealmInitialized() override;
+	virtual FBeamOperationHandle InitializeRealm(FBeamRealmHandle NewRealm) override;	
 
 	FOptionalBool bInstalled;	
 
@@ -36,7 +36,7 @@ protected:
 	 */
 	FString CurrentCliServerUri;
 
-	UBeamCliServerServeCommand* CreateServerCommand(FBeamOperationHandle Op);
+	void StartCliServer(FBeamOperationHandle Op);
 
 public:
 	/**

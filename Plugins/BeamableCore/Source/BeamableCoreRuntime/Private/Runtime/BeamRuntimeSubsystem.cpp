@@ -68,6 +68,14 @@ void UBeamRuntimeSubsystem::OnBeamableStarting_Implementation(FBeamOperationHand
 	ResultOp = Handle;
 }
 
+void UBeamRuntimeSubsystem::OnBeamableContentReady_Implementation(FBeamOperationHandle& ResultOp)
+{
+	// By default, just return an empty completed operation
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({}, GetName(), {});
+	Runtime->RequestTrackerSystem->TriggerOperationSuccess(Handle, {});	
+	ResultOp = Handle;
+}
+
 void UBeamRuntimeSubsystem::OnFailedUserAuth_Implementation(const FUserSlot& UserSlot)
 {
 	UE_LOG(LogBeamRuntime, Verbose, TEXT("Runtime Subsystem %s - On Failed Owner User Auth"), *GetName())

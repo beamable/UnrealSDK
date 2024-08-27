@@ -19,16 +19,16 @@ struct FBeamMatchmakingTicket
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
-	FGuid TicketId;
+	FGuid TicketId = {};
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
-	UBeamGameTypeContent* GameType;
+	UBeamGameTypeContent* GameType = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
-	TArray<FUserSlot> SlotsInTicket;
+	TArray<FUserSlot> SlotsInTicket = {};
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
-	TArray<FBeamGamerTag> GamerTagsInTicket;
+	TArray<FBeamGamerTag> GamerTagsInTicket = {};
 
 	/**
 	 * This will be empty until the OnMatchReady callback is invoked.

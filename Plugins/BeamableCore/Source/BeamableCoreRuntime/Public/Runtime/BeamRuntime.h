@@ -181,9 +181,15 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	virtual void TriggerInitializeWhenUnrealReady();
 
 	/**
-	 * @brief This gets called after all runtime systems had the opportunity to get ready for authentication to happen.
+	 * @brief This gets called after all runtime systems had the opportunity to make requests to Beamable that do not depend on content information.
 	 */
 	void TriggerOnBeamableStarting(FBeamWaitCompleteEvent);
+	
+	/**
+	 * @brief This gets called after all runtime systems had the opportunity to make initialization requests to Beamable that DO depend on content data.
+	 */
+	void TriggerOnContentReady(FBeamWaitCompleteEvent Evt);
+	
 	/**
 	 * @brief This gets called after all runtime subsystems have been initialized, but before the Owner Player's auth has been made.
 	 */
@@ -245,10 +251,16 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	FBeamWaitHandle OnInitializeWhenUnrealReadyWait;
 
 	/**
-	 * @brief After beamable has finished it's initialization but has yet to attempt its frictionless auth	 
+	 * @brief After beamable has finished it's initialization but has yet to download its content manifest.	 
 	 */
-	TArray<FBeamOperationHandle> OnBeamableStartedOps = {};
-	FBeamWaitHandle OnBeamableStartedWait;
+	TArray<FBeamOperationHandle> OnBeamableStartingOps = {};
+	FBeamWaitHandle OnBeamableStartingWait;
+
+	/**
+	 * @brief After beamable has finished fetching the content manifest, but has yet to finish initializing the runtime subsystems and has not yet attempted its frictionless auth.	 
+	 */
+	TArray<FBeamOperationHandle> OnBeamableContentReadyOps = {};
+	FBeamWaitHandle OnBeamableContentReadyWait;
 
 	/**
 	 * @brief So that actors and components can react to beamable's initialization flow being finished.

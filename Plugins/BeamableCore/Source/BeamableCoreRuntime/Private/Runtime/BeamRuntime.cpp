@@ -26,7 +26,7 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
-    // We do some initialization for dedicated servers... 
+	// We do some initialization for dedicated servers... 
 	if (GetGameInstance()->IsDedicatedServerInstance())
 	{
 		// Let's just load up the target realm's PID from the follow hierarchy:
@@ -44,7 +44,7 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 				GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Cid = FBeamCid{OverridenCustomer};
 			}
 		}
-		
+
 		// We do this so game-makers can choose their preferred ways of setting up dedicated server builds and deployments.
 		FString OverridenRealm;
 		if (!FParse::Value(FCommandLine::Get(), TEXT("beamable-realm-override"), OverridenRealm))
@@ -55,7 +55,7 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 				GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Pid = FBeamPid{OverridenRealm};
 			}
 		}
-	
+
 		// We do this so game-makers can override any builds we provide to point to our BeamProdEnv regardless
 		FString OverridenEnv;
 		if (!FParse::Value(FCommandLine::Get(), TEXT("beamable-environment-override"), OverridenRealm))
@@ -63,14 +63,14 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 			OverridenEnv = FPlatformMisc::GetEnvironmentVariable(TEXT("BEAMABLE_ENVIRONMENT_OVERRIDE"));
 			if (!OverridenEnv.IsEmpty())
 			{
-				if(OverridenEnv.Equals(TEXT("BeamProdEnv")))
+				if (OverridenEnv.Equals(TEXT("BeamProdEnv")))
 					GetMutableDefault<UBeamCoreSettings>()->BeamableEnvironment = GetMutableDefault<UBeamCoreSettings>()->BeamablePossibleEnvironments[0];
 				else if (OverridenEnv.Equals(TEXT("BeamStagingEnv")))
 					GetMutableDefault<UBeamCoreSettings>()->BeamableEnvironment = GetMutableDefault<UBeamCoreSettings>()->BeamablePossibleEnvironments[1];
 				else
 					GetMutableDefault<UBeamCoreSettings>()->BeamableEnvironment = GetMutableDefault<UBeamCoreSettings>()->BeamablePossibleEnvironments[2];
 
-				UE_LOG(LogBeamRuntime, Display, TEXT("Initializing UBeamRuntime Subsystem - Overriden Environment: %s!"), *GetDefault<UBeamCoreSettings>()->BeamableEnvironment.ToString());				
+				UE_LOG(LogBeamRuntime, Display, TEXT("Initializing UBeamRuntime Subsystem - Overriden Environment: %s!"), *GetDefault<UBeamCoreSettings>()->BeamableEnvironment.ToString());
 			}
 		}
 	}
@@ -242,40 +242,70 @@ void UBeamRuntime::TriggerOnBeamableStarting(FBeamWaitCompleteEvent Evt)
 		if (!FParse::Value(FCommandLine::Get(), TEXT("beamable-realm-secret"), RealmSecret))
 		{
 			RealmSecret = FPlatformMisc::GetEnvironmentVariable(TEXT("BEAMABLE_REALM_SECRET"));
-			if(!GIsEditor)
+			if (!GIsEditor)
 			{
 				checkf(!RealmSecret.IsEmpty(), TEXT("To run a dedicated server that communicates with Beamable, either:\n"
-					   "- Start it with the command line \'-beamable-realm-secret <realm_secret>\'\n"
-					   "- Start it in an environment with the EnvVar \'BEAMABLE_REALM_SECRET\' set to your realm secret.\n"
-					   "To find your realm secret for your realms, look into your Project Settings => Editor => Beamable Editor => PerSlotDeveloperProjectData => All Realms\n"
-					   "Remember to set this command line argument in your Networking settings for playmode in Editor Settings => Level Editor => Play => Multiplayer Options => Server => Additional Server Launch Parameters."
-				   ))
+					       "- Start it with the command line \'-beamable-realm-secret <realm_secret>\'\n"
+					       "- Start it in an environment with the EnvVar \'BEAMABLE_REALM_SECRET\' set to your realm secret.\n"
+					       "To find your realm secret for your realms, look into your Project Settings => Editor => Beamable Editor => PerSlotDeveloperProjectData => All Realms\n"
+					       "Remember to set this command line argument in your Networking settings for playmode in Editor Settings => Level Editor => Play => Multiplayer Options => Server => Additional Server Launch Parameters."
+				       ))
 			}
 		}
 		GEngine->GetEngineSubsystem<UBeamBackend>()->RealmSecret = RealmSecret;
 	}
 
-	// After we have set up the RealmSecret (for dedicated servers only) --- the UBeamRuntimeSubsystem's OnBeamableStarted gets called.
-	// OnBeamableReady is never called in the server, as the server never authenticates via the UserSlot system.
-	// This is not great semantics, but necessary while we don't have server tokens for authentication.
-	// OnBeamableStarted basically means we are ready for authentication, but nothing else. And... that until you authenticate into the OwnerPlayer slot, OnBeamableReady functions will not run
-	// on BeamableRuntimeSubsystems.
 	if (const UWorld* World = GetWorld())
 	{
 		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			const TArray<UBeamRuntimeSubsystem*> Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
 
-			OnBeamableStartedOps.Reset(Subsystems.Num());
+			OnBeamableStartingOps.Reset(Subsystems.Num());
 			for (auto& Subsystem : Subsystems)
 			{
 				FBeamOperationHandle Handle;
 				Subsystem->OnBeamableStarting(Handle);
-				OnBeamableStartedOps.Add(Handle);
+				OnBeamableStartingOps.Add(Handle);
+			}
+
+			const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::TriggerOnContentReady);
+			OnBeamableStartingWait = RequestTrackerSystem->CPP_WaitAll({}, OnBeamableStartingOps, {}, OnCompleteCode);
+		}
+	}
+}
+
+void UBeamRuntime::TriggerOnContentReady(FBeamWaitCompleteEvent Evt)
+{
+	// Handle errors in operations we were waiting on...
+	TArray<FString> Errors;
+	if (RequestTrackerSystem->IsWaitFailed(Evt, Errors))
+	{
+		FString Err;
+		for (const auto& Error : Errors) Err += Error + TEXT("\n");
+		UE_LOG(LogBeamRuntime, Error, TEXT("%s"), *Err);
+
+		// Early out and don't initialize if errors happen here.
+		return;
+	}
+	
+	// Here, we are just giving UBeamRuntimeSubsystem implementations the opportunity to initialize themselves based on content definitions (but not FUserSlots).
+	if (const UWorld* World = GetWorld())
+	{
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
+		{
+			const TArray<UBeamRuntimeSubsystem*> Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
+
+			OnBeamableContentReadyOps.Reset(Subsystems.Num());
+			for (auto& Subsystem : Subsystems)
+			{
+				FBeamOperationHandle Handle;
+				Subsystem->OnBeamableContentReady(Handle);
+				OnBeamableContentReadyOps.Add(Handle);
 			}
 
 			const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::TriggerOnStartedAndFrictionlessAuth);
-			OnBeamableStartedWait = RequestTrackerSystem->CPP_WaitAll({}, OnBeamableStartedOps, {}, OnCompleteCode);
+			OnBeamableContentReadyWait = RequestTrackerSystem->CPP_WaitAll({}, OnBeamableStartingOps, {}, OnCompleteCode);
 		}
 	}
 }
@@ -1329,7 +1359,8 @@ void UBeamRuntime::SendAnalyticsEvent(const FString& EventOpCode, const FString&
 	SendAnalyticsEvent(Settings->GetOwnerPlayerSlot(), EventOpCode, EventCategory, EventName, EventParamsObj);
 }
 
-void UBeamRuntime::SendAnalyticsEvent(const FUserSlot& Slot, const FString& EventOpCode, const FString& EventCategory, const FString& EventName, const TArray<TSharedRef<FJsonObject>>& EventParamsObj) const
+void UBeamRuntime::SendAnalyticsEvent(const FUserSlot& Slot, const FString& EventOpCode, const FString& EventCategory, const FString& EventName,
+                                      const TArray<TSharedRef<FJsonObject>>& EventParamsObj) const
 {
 	// Create the request object
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
@@ -1346,7 +1377,8 @@ void UBeamRuntime::SendAnalyticsEvent(const FUserSlot& Slot, const FString& Even
 	const auto AuthTokenHeader = FString::Format(*UBeamBackend::HEADER_VALUE_AUTHORIZATION, {AuthToken.AccessToken});
 	HttpRequest->SetHeader(UBeamBackend::HEADER_AUTHORIZATION, AuthTokenHeader);
 
-	FString Url = FString::Format(TEXT("https://api.beamable.com/report/custom_batch/{0}/{1}/{2}"), {Settings->TargetRealm.Cid.AsString, Settings->TargetRealm.Pid.AsString, UserData.GamerTag.AsString});
+	FString Url = FString::Format(
+		TEXT("https://api.beamable.com/report/custom_batch/{0}/{1}/{2}"), {Settings->TargetRealm.Cid.AsString, Settings->TargetRealm.Pid.AsString, UserData.GamerTag.AsString});
 
 	// Set the URL
 	HttpRequest->SetURL(Url);

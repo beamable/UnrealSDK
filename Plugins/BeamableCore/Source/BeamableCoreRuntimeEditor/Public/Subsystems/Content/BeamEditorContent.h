@@ -88,7 +88,7 @@ public:
 	virtual void Deinitialize() override;
 
 	virtual FBeamOperationHandle InitializeWhenEditorReady() override;
-	virtual FBeamOperationHandle InitializeFromRealm(FBeamRealmHandle NewRealm) override;
+	virtual FBeamOperationHandle OnRealmInitialized(FBeamRealmHandle NewRealm) override;
 
 	UFUNCTION(BlueprintCallable, Category="Beam")
 	void GetLocalManifestIds(TArray<FString>& Keys) const;

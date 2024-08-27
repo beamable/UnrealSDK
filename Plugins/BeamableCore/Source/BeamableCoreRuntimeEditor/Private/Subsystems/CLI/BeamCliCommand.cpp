@@ -4,7 +4,7 @@ const FString UBeamCliCommand::PathToLocalCli = FString(TEXT("dotnet"));
 
 FString UBeamCliCommand::PrepareParams(FString Params)
 {
-	return Params;
+	return Params.Append(" -q");
 }
 
 void UBeamCliCommand::Run(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op)
@@ -67,9 +67,9 @@ void UBeamCliCommand::RunServer(const FString Uri, const TArray<FString>& Comman
 			{
 				UE_LOG(LogBeamCli, Verbose, TEXT("BeamCli Server - Processing JSON message. CMD=%s, JSON=%s"), *CommandLineToExecute, *MessageJson);
 
-				const auto ReceivedStreamType = Bag.GetString("type");
-				const auto Timestamp = static_cast<int64>(Bag.GetField("ts")->AsNumber());
-				const auto DataJson = Bag.JsonObject->GetObjectField("data").ToSharedRef();
+				const auto ReceivedStreamType = Bag.GetString(TEXT("type"));
+				const auto Timestamp = static_cast<int64>(Bag.GetField(TEXT("ts"))->AsNumber());
+				const auto DataJson = Bag.JsonObject->GetObjectField(TEXT("data")).ToSharedRef();
 
 				HandleStreamReceived(Op, ReceivedStreamType, Timestamp, DataJson, true);
 				HandleStreamCompleted(Op, 0, true);
