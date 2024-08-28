@@ -235,7 +235,7 @@ void UBeamAnnouncementsSubsystem::MarkAnnouncementRead(FUserSlot UserSlot, FBeam
 			{
 				TArray<UAnnouncementView*> AnnouncementViewArr =  PerUserAnnouncements[UserSlot];
 				
-				if (Resp.RequestData->Body->Announcement.Val.IsEmpty())
+				if (!Resp.RequestData->Body->Announcement.Val.IsEmpty())
 				{
 					FOptionalArrayOfString AllAnnouncements;
 					for (UAnnouncementView *AnnouncementView : AnnouncementViewArr)
@@ -251,7 +251,7 @@ void UBeamAnnouncementsSubsystem::MarkAnnouncementRead(FUserSlot UserSlot, FBeam
 					FOptionalArrayOfString AllAnnouncements;
 					for (UAnnouncementView *AnnouncementView : AnnouncementViewArr)
 					{
-						for (FString AnnouncementId : Resp.RequestData->Body->Announcements)
+						for (FString AnnouncementId : Resp.RequestData->Body->Announcements.Val	)
 						{
 							if (AnnouncementView->Id == AnnouncementId)
 							{
@@ -299,7 +299,7 @@ void UBeamAnnouncementsSubsystem::ClaimAnnouncement(FUserSlot UserSlot, FBeamOpe
 			{
 				TArray<UAnnouncementView*> AnnouncementViewArr =  PerUserAnnouncements[UserSlot];
 				
-				if (Resp.RequestData->Body->Announcement.Val.IsEmpty())
+				if (!Resp.RequestData->Body->Announcement.Val.IsEmpty())
 				{
 					FOptionalArrayOfString AllAnnouncements;
 					for (UAnnouncementView *AnnouncementView : AnnouncementViewArr)
@@ -315,7 +315,7 @@ void UBeamAnnouncementsSubsystem::ClaimAnnouncement(FUserSlot UserSlot, FBeamOpe
 					FOptionalArrayOfString AllAnnouncements;
 					for (UAnnouncementView *AnnouncementView : AnnouncementViewArr)
 					{
-						for (FString AnnouncementId : Resp.RequestData->Body->Announcements)
+						for (FString AnnouncementId : Resp.RequestData->Body->Announcements.Val)
 						{
 							if (AnnouncementView->Id == AnnouncementId)
 							{
