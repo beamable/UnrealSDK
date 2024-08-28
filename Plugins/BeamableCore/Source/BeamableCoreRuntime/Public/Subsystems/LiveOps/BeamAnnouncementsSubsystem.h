@@ -50,20 +50,25 @@ private:
 	// Operations
 	FBeamOperationHandle RefreshAnnouncementsOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent);
 	FBeamOperationHandle CPP_RefreshAnnouncementsOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent);
-
-	void MarkAnnouncementRead(FUserSlot UserSlot, FBeamOperationHandle Op, FOptionalString& Announcement);
-	FBeamRequestContext RequestMarkAnnouncementRead(const FUserSlot& UserSlot, FBeamOperationHandle Op,
-	                                                FOnPutReadFullResponse Handler, FOptionalString Announcement,
-	                                                FOptionalArrayOfString Announcements) const;
-
+	
 	// Operation Implementations
 	void RefreshAnnouncements(FUserSlot UserSlot, FBeamOperationHandle Op);
-	
-	void MarkAnnouncementRead(FUserSlot UserSlot, FBeamOperationHandle Op, FOptionalArrayOfString& Announcements);
+
+	void MarkAnnouncementRead(FUserSlot UserSlot, FBeamOperationHandle Op, FOptionalString& Announcement, FOptionalArrayOfString& Announcements);
+
+	void ClaimAnnouncement(FUserSlot UserSlot, FBeamOperationHandle Op, FOptionalString& Announcement, FOptionalArrayOfString& Announcements);
 
 	// Request Helper Functions
 	FBeamRequestContext RequestGetAnnouncements(const FUserSlot& UserSlot, FBeamOperationHandle Op, FOnGetAnnouncementsFullResponse Handler) const;
 
+	FBeamRequestContext RequestMarkAnnouncementRead(const FUserSlot& UserSlot, FBeamOperationHandle Op,
+												FOnPutReadFullResponse Handler, FOptionalString Announcement,
+												FOptionalArrayOfString Announcements) const;
+	
+	FBeamRequestContext RequestClaimAnnouncement(const FUserSlot& UserSlot, FBeamOperationHandle Op,
+												 FOnObjectAnnouncementsPostClaimFullResponse Handler,
+												 FOptionalString Announcement,
+												 FOptionalArrayOfString Announcements) const;
 public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
 	static UBeamAnnouncementsSubsystem* GetSelf(const UObject* CallingContext) { return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamAnnouncementsSubsystem>(); }
@@ -74,25 +79,53 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Announcement", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle MarkSingleAnnouncementReadOperation(FUserSlot UserSlot,
 													   FBeamOperationEventHandler OnOperationEvent,
-													   const FString& Announcement);
+													   const FString& AnnouncementId);
 
 	/**
 	 * @copydoc MarkSingleAnnouncementReadOperation 
 	 */
-	FBeamOperationHandle CPP_MarkAnnouncementReadOperation(FUserSlot UserSlot,
+	FBeamOperationHandle CPP_MarkSingleAnnouncementReadOperation(FUserSlot UserSlot,
 														   FBeamOperationEventHandlerCode OnOperationEvent,
-														   FOptionalString& Announcement);
+														   FOptionalString& AnnouncementId);
 	/**
 	* @brief Marks a group of announcement as read.  
 	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Announcement", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle MarkAnnouncementsReadOperation(FUserSlot UserSlot,
 													   FBeamOperationEventHandler OnOperationEvent,
-													   const TArray<FString>& Announcements);
+													   const TArray<FString>& AnnouncementsIds);
 	/**
 	 * @copydoc MarkAnnouncementsReadOperation 
 	 */
 	FBeamOperationHandle CPP_MarkAnnouncementReadOperation(FUserSlot UserSlot,
+														   FBeamOperationEventHandlerCode OnOperationEvent,
+														   FOptionalArrayOfString& AnnouncementsIds);
+
+	/**
+	* @brief Claim the rewards in a single announcement.
+	*/
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Announcement", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle ClaimSingleAnnouncementOperation(FUserSlot UserSlot,
+													   FBeamOperationEventHandler OnOperationEvent,
+													   const FString& Announcement);
+
+	/**
+	 * @copydoc ClaimSingleAnnouncementOperation 
+	 */
+	FBeamOperationHandle CPP_ClaimSingleAnnouncementOperation(FUserSlot UserSlot,
+														   FBeamOperationEventHandlerCode OnOperationEvent,
+														   FOptionalString& Announcement);
+	/**
+	* @brief Claim the rewards in a group of announcements.
+	*/
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Announcement", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle ClaimAnnouncementsOperation(FUserSlot UserSlot,
+													   FBeamOperationEventHandler OnOperationEvent,
+													   const TArray<FString>& Announcements);
+	/**
+	 * @copydoc ClaimAnnouncementsOperation 
+	 */
+	FBeamOperationHandle CPP_ClaimAnnouncementsOperation(FUserSlot UserSlot,
 														   FBeamOperationEventHandlerCode OnOperationEvent,
 														   FOptionalArrayOfString& Announcements);
 	
