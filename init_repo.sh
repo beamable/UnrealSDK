@@ -1,5 +1,6 @@
 #!/bin/sh
 
+# Verify that dotnet is installed
 if ! command -v dotnet >/dev/null 2>&1; then
     echo ".NET is not installed."
     exit 1
