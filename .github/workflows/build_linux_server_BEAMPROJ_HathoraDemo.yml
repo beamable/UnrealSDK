@@ -18,7 +18,7 @@ permissions:
 
 jobs:
   deploy:
-    uses: Beamable/UnrealSDK/.github/workflows/build_linux_server.yml@dev
+    uses: Beamable/UnrealSDK/.github/workflows/build_linux_server.yml@main
     with:
       beamProj: BEAMPROJ_HathoraDemo
     secrets:

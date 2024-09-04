@@ -18,6 +18,6 @@ permissions:
 
 jobs:
   deploy:
-    uses: Beamable/UnrealSDK/.github/workflows/build_windows_client.yml@dev
+    uses: Beamable/UnrealSDK/.github/workflows/build_windows_client.yml@main
     with:
       beamProj: BEAMPROJ_HathoraDemo
