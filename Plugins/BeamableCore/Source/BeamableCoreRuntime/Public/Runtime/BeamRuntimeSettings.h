@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/SemanticTypes/BeamContentId.h"
 #include "Engine/StreamableManager.h"
 
 
@@ -48,7 +49,14 @@ public:
 	 * @brief Whether or not we should download each individual content JSON when beamable is ready for use.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Content")
-	bool bDownloadIndividualContentOnStart = false;	
+	bool bDownloadIndividualContentOnStart = false;
+	
+	/**
+	 * @brief Default stores to download by UBeamStoreSubsystem.
+	 * If none are specified it will download all the available Stores content.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Content")
+	TArray<FBeamContentId> StoreContentToDownload; 
 
 
 	FStreamableManager& GetStreamableManager() { return ContentStreamingManager; }
