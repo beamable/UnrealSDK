@@ -63,6 +63,7 @@ jobs:
         run: echo "buildType=${{ inputs.buildType }}" >> $env:GITHUB_ENV
       - name: Set hash ENV var
         id: get_commit_hash
+        working-directory: ./BeamableUnreal
         run: echo "commit_hash=$(git rev-parse HEAD)" >> $GITHUB_ENV
       - name: Check buildType ENV var
         id: check-build-type
