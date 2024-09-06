@@ -75,7 +75,7 @@ fi
 
 if [ ! -d "Microservices/services/DBPlayground" ]; then
     echo "Creating DBPlayground storage for local development."
-    dotnet beam project new storage DBPlayground --sln "Microservices/Microservices.sln" --logs v
+    dotnet beam project new storage DBPlayground --sln "Microservices/Microservices.sln" --quiet --logs v
     dotnet beam project deps add MSPlayground DBPlayground
 fi
 
