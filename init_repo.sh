@@ -68,14 +68,15 @@ export BeamableVersion
 # Use this to write quick and dirty MS code.
 # Feel free to create a realm in our shared org with your name and "devname-playground" and ONLY EVER DEPLOY THIS TO THIS REALM.
 # Keep an eye to not commit the clients to this MS.  
-if [ ! -d "$(pwd)/Microservices/services/MSPlayground" ]; then
+if [ ! -d "Microservices/services/MSPlayground" ]; then
     echo "Creating MSPlayground microservice for local development."
-    dotnet beam project new service MSPlayground --sln "$(pwd)/Microservices/Microservices.sln" --logs v
+    dotnet beam project new service MSPlayground --sln "Microservices/Microservices.sln" --logs v
 fi
 
-if [ ! -d "$(pwd)/Microservices/services/DBPlayground" ]; then
+if [ ! -d "Microservices/services/DBPlayground" ]; then
     echo "Creating DBPlayground storage for local development."
-    dotnet beam project new storage DBPlayground --sln "Microservices/Microservices.sln" --link-to MSPlayground --logs v
+    dotnet beam project new storage DBPlayground --sln "Microservices/Microservices.sln" --logs v
+    dotnet beam project deps add MSPlayground DBPlayground
 fi
 
 echo "Script finished executing."
