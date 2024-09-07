@@ -88,7 +88,7 @@ jobs:
         working-directory: ./BeamableUnreal
         continue-on-error: true
         shell: bash
-        run: bash init_repo.sh
+        run: bash init_repo.sh skip_waiting
 
       # Sets the BEAMPROJ based on the input to this workflow.
       - name: Set BeamProjOverride.txt

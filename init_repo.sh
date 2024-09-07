@@ -79,6 +79,9 @@ if [ ! -d "Microservices/services/DBPlayground" ]; then
     dotnet beam project deps add MSPlayground DBPlayground
 fi
 
-echo "Script finished executing."
 
-read
+if [ $# -eq 0 ] # No arguments supplied
+  then
+    echo "Script finished executing, press any key to exit"
+    read
+fi
