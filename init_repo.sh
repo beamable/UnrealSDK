@@ -83,5 +83,6 @@ fi
 if [ $# -eq 0 ] # No arguments supplied
   then
     echo "Script finished executing, press any key to exit"
+
     read
 fi
