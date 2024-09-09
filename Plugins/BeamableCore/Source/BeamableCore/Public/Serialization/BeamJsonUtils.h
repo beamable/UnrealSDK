@@ -163,6 +163,13 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				UBeamJsonUtils::_SerializeSemanticType<TSemanticTypeRepresentation>(&Value, Serializer);
 			}
 		}
+		else if constexpr (std::is_same_v<TDataType, TSharedPtr<FJsonObject>>)
+		{
+			for (const auto& Value : Array)
+			{
+				UBeamJsonUtils::SerializeJsonObject(&Value, Serializer);
+			}
+		}
 		else if constexpr (TIsPointer<TDataType>::Value)
 		{
 			for (const auto& Value : Array)
@@ -243,6 +250,13 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 			for (const auto& Kvp : Map)
 			{
 				UBeamJsonUtils::_SerializeSemanticType<TSemanticTypeRepresentation, TSerializer>(Kvp.Key, &Kvp.Value, Serializer);
+			}
+		}
+		else if constexpr (std::is_same_v<TMapType, TSharedPtr<FJsonObject>>)
+		{
+			for (const auto& Kvp : Map)
+			{
+				UBeamJsonUtils::SerializeJsonObject(Kvp.Key, &Kvp.Value, Serializer);
 			}
 		}
 		else if constexpr (TIsPointer<TMapType>::Value)
@@ -499,6 +513,33 @@ public:
 		Serializer->WriteObjectEnd();
 	}
 
+	static void SerializeJsonObject(const TSharedPtr<FJsonObject>& Json, TUnrealJsonSerializer Serializer)
+	{
+		FJsonDataBag Bag;
+		Bag.FromJson(Json);
+		Serializer->WriteRawJSONValue(Bag.ToJson(false));
+	}
+
+	static void SerializeJsonObject(const TSharedPtr<FJsonObject>& Json, TUnrealPrettyJsonSerializer Serializer)
+	{
+		FJsonDataBag Bag;
+		Bag.FromJson(Json);
+		Serializer->WriteRawJSONValue(Bag.ToJson(true));
+	}
+	
+	static void SerializeJsonObject(const FString Identifier, const TSharedPtr<FJsonObject>& Json, TUnrealJsonSerializer Serializer)
+	{
+		FJsonDataBag Bag;
+		Bag.FromJson(Json);
+		Serializer->WriteRawJSONValue(Identifier, Bag.ToJson(false));
+	}
+
+	static void SerializeJsonObject(const FString Identifier, const TSharedPtr<FJsonObject>& Json, TUnrealPrettyJsonSerializer Serializer)
+	{
+		FJsonDataBag Bag;
+		Bag.FromJson(Json);
+		Serializer->WriteRawJSONValue(Identifier, Bag.ToJson(true));
+	}
 
 	template <typename TEnum>
 	static FString EnumToSerializationName(TEnum Value)
@@ -654,7 +695,8 @@ public:
 	}
 
 	template <typename TOptionalType, typename TDataType = TOptionalType, typename TSemanticTypeRepresentation = TDataType>
-	static void DeserializeOptional(const FString& Identifier, const TSharedPtr<FJsonObject>& OwnerBag, FBeamOptional& ToDeserialize, TWeakObjectPtr<UObject> OwnerOuter = (UObject*)GetTransientPackage())
+	static void DeserializeOptional(const FString& Identifier, const TSharedPtr<FJsonObject>& OwnerBag, FBeamOptional& ToDeserialize,
+	                                TWeakObjectPtr<UObject> OwnerOuter = (UObject*)GetTransientPackage())
 	{
 		// If we didn't receive this field...
 		if (!OwnerBag->HasField(Identifier))
@@ -1285,5 +1327,10 @@ public:
 			const bool Parsed = Val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
 			ToDeserialize = Parsed;
 		}
+	}
+
+	static void DeserializeJsonObject(const FString Identifier, const TSharedPtr<FJsonObject>& Bag, TSharedPtr<FJsonObject>& Settings, TWeakObjectPtr<UObject> OuterOwner)
+	{
+		Settings = Bag->GetObjectField(Identifier);		
 	}
 };

@@ -209,10 +209,10 @@ bool UBeamBackend::IsConnected() const
 	return CurrentConnectivityStatus.IsConnected;
 }
 
-void UBeamBackend::PrepareBeamableRequestToRealm(const TUnrealRequestPtr& Request, const FBeamRealmHandle& RealmHandle)
+void UBeamBackend::PrepareBeamableRequestToRealm(const TUnrealRequestPtr& UnrealRequest, const FBeamRealmHandle& RealmHandle)
 {
-	Request->SetHeader(HEADER_CONTENT_TYPE, HEADER_VALUE_ACCEPT_CONTENT_TYPE);
-	Request->SetHeader(HEADER_ACCEPT, HEADER_VALUE_ACCEPT_CONTENT_TYPE);
+	UnrealRequest->SetHeader(HEADER_CONTENT_TYPE, HEADER_VALUE_ACCEPT_CONTENT_TYPE);
+	UnrealRequest->SetHeader(HEADER_ACCEPT, HEADER_VALUE_ACCEPT_CONTENT_TYPE);
 
 	const auto Cid = RealmHandle.Cid;
 	const auto Pid = RealmHandle.Pid;
@@ -223,7 +223,7 @@ void UBeamBackend::PrepareBeamableRequestToRealm(const TUnrealRequestPtr& Reques
 			                         ? RealmHandle.Cid.AsString
 			                         : FString::Format(
 				                         TEXT("{0}.{1}"), {RealmHandle.Cid.AsString, RealmHandle.Pid.AsString});
-		Request->SetHeader(HEADER_REQUEST_SCOPE, ScopeHeader);
+		UnrealRequest->SetHeader(HEADER_REQUEST_SCOPE, ScopeHeader);
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation: SCOPE_HEADER=%s"), *ScopeHeader);
 	}
 	else
@@ -233,17 +233,17 @@ void UBeamBackend::PrepareBeamableRequestToRealm(const TUnrealRequestPtr& Reques
 }
 
 
-void UBeamBackend::PrepareBeamableRequestToRealmWithAuthToken(const TUnrealRequestPtr& Request,
+void UBeamBackend::PrepareBeamableRequestToRealmWithAuthToken(const TUnrealRequestPtr& UnrealRequest,
                                                               const FBeamRealmHandle& RealmHandle,
                                                               const FBeamAuthToken& AuthToken)
 {
-	PrepareBeamableRequestToRealm(Request, RealmHandle);
+	PrepareBeamableRequestToRealm(UnrealRequest, RealmHandle);
 
 	if (!IsRunningDedicatedServer())
 	{
 		// For non-dedicated servers, we add an authorization header with the auth token. 
 		const auto AuthTokenHeader = FString::Format(*HEADER_VALUE_AUTHORIZATION, {AuthToken.AccessToken});
-		Request->SetHeader(HEADER_AUTHORIZATION, AuthTokenHeader);
+		UnrealRequest->SetHeader(HEADER_AUTHORIZATION, AuthTokenHeader);
 
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Auth: AUTH_HEADER=%s"), *AuthTokenHeader);
 	}
@@ -259,7 +259,7 @@ void UBeamBackend::PrepareBeamableRequestToRealmWithAuthToken(const TUnrealReque
 				                         TEXT("{0}.{1}"), {
 					                         DedicatedServerRealm.Cid.AsString, DedicatedServerRealm.Pid.AsString
 				                         });
-		Request->SetHeader(HEADER_REQUEST_SCOPE, ScopeHeader);
+		UnrealRequest->SetHeader(HEADER_REQUEST_SCOPE, ScopeHeader);
 		UE_LOG(LogBeamBackend, Display, TEXT("Request Preparation - Target Realm Header: SCOPE_HEADER=%s"),
 		       *ScopeHeader);
 	}

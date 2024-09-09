@@ -61,6 +61,10 @@ jobs:
       - name: Set buildType ENV var
         id: set-build-type
         run: echo "buildType=${{ inputs.buildType }}" >> $env:GITHUB_ENV
+      - name: Set hash ENV var
+        id: get_commit_hash
+        working-directory: ./BeamableUnreal
+        run: echo "commit_hash=$(git rev-parse HEAD)" >> $env:GITHUB_ENV
       - name: Check buildType ENV var
         id: check-build-type
         run: echo "${{ env.buildType }}"
@@ -84,7 +88,7 @@ jobs:
         working-directory: ./BeamableUnreal
         continue-on-error: true
         shell: bash
-        run: bash init_repo.sh
+        run: bash init_repo.sh skip_waiting
 
       # Sets the BEAMPROJ based on the input to this workflow.
       - name: Set BeamProjOverride.txt
@@ -102,11 +106,11 @@ jobs:
 
       # Compress the results
       - name: Compress Directory
-        run: powershell Compress-Archive BeamableUnreal/PackagedProject windows_${{ env.buildType }}_${{ inputs.beamProj }}_${{ env.GITHUB_SHA }}.zip
+        run: powershell Compress-Archive BeamableUnreal/PackagedProject windows_${{ env.buildType }}_${{ inputs.beamProj }}_${{ env.commit_hash }}.zip 
 
       # Uploads the artifacts so we can download the build
       - name: Upload Compressed Folder as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Windows_${{ env.buildType }}_${{ inputs.beamProj }}_${{ env.GITHUB_SHA }}
-          path: windows_${{ env.buildType }}_${{ inputs.beamProj }}_${{ env.GITHUB_SHA }}.zip
+          name: Windows_${{ env.buildType }}_${{ inputs.beamProj }}_${{ env.commit_hash }}
+          path: windows_${{ env.buildType }}_${{ inputs.beamProj }}_${{ env.commit_hash }}.zip 
