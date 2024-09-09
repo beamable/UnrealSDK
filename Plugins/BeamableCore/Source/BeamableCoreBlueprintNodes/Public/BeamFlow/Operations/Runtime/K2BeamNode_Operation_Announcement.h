@@ -4,6 +4,25 @@
 #include "Subsystems/LiveOps/BeamAnnouncementsSubsystem.h"
 #include "K2BeamNode_Operation_Announcement.generated.h"
 
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_GetAllAnnouncements"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamNode_Operation_GetAllAnnouncements : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Announcement - Get Announcements list"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamAnnouncementsSubsystem, GetSelf); }
+
+	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamAnnouncementsSubsystem, GetAnnouncements); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamAnnouncementsSubsystem::StaticClass(); }
+
+};
+
+#undef LOCTEXT_NAMESPACE
+
 #define LOCTEXT_NAMESPACE "K2BeamNode_Operation_MarkAnnouncementRead"
 
 UCLASS(meta=(BeamFlowNode))
