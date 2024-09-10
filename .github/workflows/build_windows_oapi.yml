@@ -75,10 +75,10 @@ jobs:
             modified="$(git status --porcelain | grep 'Plugins/BeamableCore')"
             lines=$(echo "${modified}" | wc -l)
             if [ "$lines" -eq 0 ]; then
-                echo "::set-output name=any::false"
+                echo "any=false" >> $GITHUB_OUTPUT
             else
-                echo "modified_files=${modified}" >> "$GITHUB_OUTPUT"
-                echo "::set-output name=any::true"
+                echo "any=true" >> $GITHUB_OUTPUT
+                echo "Files: ${modified}"
             fi
       # Run init_repo.sh (needed to setup the project correctly locally)     
       - name: Prepare Repository for compilation
