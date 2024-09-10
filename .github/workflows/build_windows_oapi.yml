@@ -1,0 +1,92 @@
+name: Windows Build - Template
+
+on:
+  workflow_call:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: [self-hosted, Windows]
+    steps:          
+      # Gets the Unreal Repo and the CLI repo
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+          path: BeamableUnreal/
+
+      - uses: actions/checkout@v4
+        with:
+          repository: beamable/BeamableProduct
+          fetch-depth: 0
+          lfs: true
+          path: BeamableProduct/
+          ref: main
+
+      # Caches the UnrealSDK repo's Intermediate and Saved folders
+      - uses: actions/cache@v4
+        continue-on-error: false
+        with:
+          path: |
+            BeamableUnreal/Intermediate
+            BeamableUnreal/Saved
+            BeamableUnreal/BeamableUnreal.sln
+          key: unreal-${{ runner.os }}-Win64-client-${{ hashFiles('/BeamableUnreal/Source/**') }}
+          restore-keys: unreal-${{ runner.os }}-Win64-
+
+      # Sets the buildType ENV var as either server or client.
+      - name: Set buildType ENV var
+        id: set-build-type
+        run: echo "buildType=client" >> $env:GITHUB_ENV
+      - name: Set hash ENV var
+        id: get_commit_hash
+        working-directory: ./BeamableUnreal
+        run: echo "commit_hash=$(git rev-parse HEAD)" >> $env:GITHUB_ENV
+      - name: Check buildType ENV var
+        id: check-build-type
+        run: echo "${{ env.buildType }}"
+
+      # Installs .NET 8 so we can run init_repo.sh
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
+
+      # Make sure the .NET's paths are added to the shell's path ENV VAR
+      - run: Add-Content $env:GITHUB_PATH "C:\Program Files\dotnet"
+      - run: Add-Content $env:GITHUB_PATH "~\.dotnet\tools"
+      # Run Set-Packages for Unreal
+      - name: Run Set Packages for local build of the CLI
+        working-directory: ./BeamableProduct
+        shell: bash
+        run: bash set-packages.sh "${{ github.workspace }}/BeamableUnreal/" "UNREAL_NugetSource" "" "" "${{ github.workspace }}/BeamableUnreal/Microservices"
+
+      - name: Update OpenAPI
+        working-directory: ./BeamableUnreal
+        shell: bash
+        run: dotnet beam oapi generate --output Plugins/BeamableCore/Source --engine unreal
+      - name: Check for Changes
+        working-directory: ./BeamableUnreal
+        id: changes
+        run: |
+            modified="$(git status --porcelain | grep 'Plugins/BeamableCore')"
+            lines=$(echo "${modified}" | wc -l)
+            if [ "$lines" -eq 0 ]; then
+                echo "::set-output name=any::false"
+            else
+                echo "modified_files=${modified}" >> "$GITHUB_OUTPUT"
+                echo "::set-output name=any::true"
+            fi
+      # Run init_repo.sh (needed to setup the project correctly locally)     
+      - name: Prepare Repository for compilation
+        working-directory: ./BeamableUnreal
+        if: ${{ steps.changes.outputs.any == 'true' }}
+        shell: bash
+        run: bash init_repo.sh skip_waiting
+        
+      # Builds the image
+      - name: Build image
+        working-directory: ./BeamableUnreal
+        shell: bash
+        run: bash windows_build.sh
