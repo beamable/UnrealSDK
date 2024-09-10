@@ -65,8 +65,7 @@ FBeamOperationHandle UBeamAnnouncementsSubsystem::MarkSingleAnnouncementReadOper
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot},
 		GetClass()->GetFName().ToString(), OnOperationEvent);
 	
-	FOptionalString OptionalAnnouncementID;
-	OptionalAnnouncementID.Val = AnnouncementId;
+	FOptionalString OptionalAnnouncementID {AnnouncementId};
 
 	FOptionalArrayOfString EmptyArrayString;
 	
@@ -93,8 +92,7 @@ FBeamOperationHandle UBeamAnnouncementsSubsystem::MarkAnnouncementsReadOperation
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot},
 		GetClass()->GetFName().ToString(), OnOperationEvent);
 
-	FOptionalArrayOfString OptionalAnnouncementIds;
-	OptionalAnnouncementIds.Val = AnnouncementsIds;
+	FOptionalArrayOfString OptionalAnnouncementIds {AnnouncementsIds};
 
 	FOptionalString EmptyString;
 	
@@ -121,9 +119,8 @@ FBeamOperationHandle UBeamAnnouncementsSubsystem::ClaimSingleAnnouncementOperati
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot},
 	GetClass()->GetFName().ToString(), OnOperationEvent);
 
-	FOptionalString OptionalAnnouncementID;
-	OptionalAnnouncementID.Val = AnnouncementId;
-
+	FOptionalString OptionalAnnouncementID {AnnouncementId};
+	
 	FOptionalArrayOfString EmptyArrayString;
 	
 	ClaimAnnouncement(UserSlot, Handle,OptionalAnnouncementID, EmptyArrayString);
@@ -148,8 +145,7 @@ FBeamOperationHandle UBeamAnnouncementsSubsystem::ClaimAnnouncementsOperation(FU
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot},
 	GetClass()->GetFName().ToString(), OnOperationEvent);
     
-	FOptionalArrayOfString OptionalAnnouncementIDs;
-	OptionalAnnouncementIDs.Val = AnnouncementsIds;
+	FOptionalArrayOfString OptionalAnnouncementIDs {AnnouncementsIds};
 
 	FOptionalString EmptyString;
     	
