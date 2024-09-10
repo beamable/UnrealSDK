@@ -58,8 +58,115 @@ FBeamOperationHandle UBeamAnnouncementsSubsystem::CPP_RefreshAnnouncementsOperat
 	RefreshAnnouncements(UserSlot, Handle);
 	return Handle;
 }
+FBeamOperationHandle UBeamAnnouncementsSubsystem::MarkSingleAnnouncementReadOperation(FUserSlot UserSlot,
+	FBeamOperationEventHandler OnOperationEvent,
+	const FString& AnnouncementId)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot},
+		GetClass()->GetFName().ToString(), OnOperationEvent);
+	
+	FOptionalString OptionalAnnouncementID {AnnouncementId};
+
+	FOptionalArrayOfString EmptyArrayString;
+	
+	MarkAnnouncementRead(UserSlot, Handle,OptionalAnnouncementID, EmptyArrayString);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamAnnouncementsSubsystem::CPP_MarkSingleAnnouncementReadOperation(FUserSlot UserSlot,
+	FBeamOperationEventHandlerCode OnOperationEvent,
+	FOptionalString &AnnouncementId)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot},
+		GetClass()->GetFName().ToString(), OnOperationEvent);
+
+	FOptionalArrayOfString EmptyArrayString;
+	
+	MarkAnnouncementRead(UserSlot, Handle,AnnouncementId, EmptyArrayString);
+	return Handle;
+}
+FBeamOperationHandle UBeamAnnouncementsSubsystem::MarkAnnouncementsReadOperation(FUserSlot UserSlot,
+	FBeamOperationEventHandler OnOperationEvent,
+	const TArray<FString>& AnnouncementsIds)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot},
+		GetClass()->GetFName().ToString(), OnOperationEvent);
+
+	FOptionalArrayOfString OptionalAnnouncementIds {AnnouncementsIds};
+
+	FOptionalString EmptyString;
+	
+	MarkAnnouncementRead(UserSlot, Handle,EmptyString,OptionalAnnouncementIds);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamAnnouncementsSubsystem::CPP_MarkAnnouncementReadOperation(FUserSlot UserSlot,
+	FBeamOperationEventHandlerCode OnOperationEvent,
+	FOptionalArrayOfString& AnnouncementsIds)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot},
+		GetClass()->GetFName().ToString(), OnOperationEvent);
+
+	FOptionalString EmptyString;
+	
+	MarkAnnouncementRead(UserSlot, Handle,EmptyString,AnnouncementsIds);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamAnnouncementsSubsystem::ClaimSingleAnnouncementOperation(FUserSlot UserSlot,
+	FBeamOperationEventHandler OnOperationEvent, const FString& AnnouncementId)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot},
+	GetClass()->GetFName().ToString(), OnOperationEvent);
+
+	FOptionalString OptionalAnnouncementID {AnnouncementId};
+	
+	FOptionalArrayOfString EmptyArrayString;
+	
+	ClaimAnnouncement(UserSlot, Handle,OptionalAnnouncementID, EmptyArrayString);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamAnnouncementsSubsystem::CPP_ClaimSingleAnnouncementOperation(FUserSlot UserSlot,
+	FBeamOperationEventHandlerCode OnOperationEvent, FOptionalString& AnnouncementId)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot},
+	GetClass()->GetFName().ToString(), OnOperationEvent);
+
+	FOptionalArrayOfString EmptyArrayString;
+	
+	ClaimAnnouncement(UserSlot, Handle,AnnouncementId, EmptyArrayString);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamAnnouncementsSubsystem::ClaimAnnouncementsOperation(FUserSlot UserSlot,
+	FBeamOperationEventHandler OnOperationEvent, const TArray<FString>& AnnouncementsIds)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot},
+	GetClass()->GetFName().ToString(), OnOperationEvent);
+    
+	FOptionalArrayOfString OptionalAnnouncementIDs {AnnouncementsIds};
+
+	FOptionalString EmptyString;
+    	
+	ClaimAnnouncement(UserSlot, Handle,EmptyString, OptionalAnnouncementIDs);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamAnnouncementsSubsystem::CPP_ClaimAnnouncementsOperation(FUserSlot UserSlot,
+	FBeamOperationEventHandlerCode OnOperationEvent, FOptionalArrayOfString& AnnouncementsIds)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot},
+GetClass()->GetFName().ToString(), OnOperationEvent);
+
+	FOptionalString EmptyString;
+	
+	ClaimAnnouncement(UserSlot, Handle,EmptyString, AnnouncementsIds);
+	return Handle;
+}
 
 /* * STATS SUBSYSTEM - Operation Implementations * */
+
 
 void UBeamAnnouncementsSubsystem::RefreshAnnouncements(FUserSlot UserSlot, FBeamOperationHandle Op)
 {
@@ -94,6 +201,136 @@ void UBeamAnnouncementsSubsystem::RefreshAnnouncements(FUserSlot UserSlot, FBeam
 	auto Ctx = RequestGetAnnouncements(UserSlot, Op, Handler);
 }
 
+void UBeamAnnouncementsSubsystem::MarkAnnouncementRead(FUserSlot UserSlot, FBeamOperationHandle Op,
+	FOptionalString& Announcement,FOptionalArrayOfString& Announcements)
+{
+	// Ensure we have a user at the given slot.
+	FBeamRealmUser RealmUser;
+	if (!IsRunningDedicatedServer())
+	{
+		if (!UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
+		{
+			RequestTracker->TriggerOperationError(Op, TEXT("NO_AUTHENTICATED_USER_AT_SLOT"));
+			return;
+		}
+	}	
+
+	auto Handler = FOnPutReadFullResponse::CreateLambda([this, Op, UserSlot](
+		const FBeamFullResponse<UPutReadRequest*, UCommonResponse*>& Resp)
+	{
+		// If we are invoking this before retrying, we just don't do anything 
+		if (Resp.State == RS_Retrying) return;
+
+		if (Resp.State != RS_Success)
+		{
+			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.error);
+		}
+		else
+		{
+			if (PerUserAnnouncements.Contains(UserSlot))
+			{
+				TArray<UAnnouncementView*> AnnouncementViewArr =  PerUserAnnouncements[UserSlot];
+				
+				if (!Resp.RequestData->Body->Announcement.Val.IsEmpty())
+				{
+					FOptionalArrayOfString AllAnnouncements;
+					for (UAnnouncementView *AnnouncementView : AnnouncementViewArr)
+					{
+						if (AnnouncementView->Id == Resp.RequestData->Body->Announcement.Val)
+						{
+							AnnouncementView->bIsRead = true;
+						}
+					}
+				}
+				else
+				{
+					FOptionalArrayOfString AllAnnouncements;
+					for (UAnnouncementView *AnnouncementView : AnnouncementViewArr)
+					{
+						for (FString AnnouncementId : Resp.RequestData->Body->Announcements.Val	)
+						{
+							if (AnnouncementView->Id == AnnouncementId)
+							{
+								AnnouncementView->bIsRead = true;
+							}
+						}
+					}
+				}
+			}
+			RequestTracker->TriggerOperationSuccess(Op, {});
+		}
+	});
+	
+	auto Ctx = RequestMarkAnnouncementRead(UserSlot,Op,Handler,Announcement,Announcements);
+
+}
+
+void UBeamAnnouncementsSubsystem::ClaimAnnouncement(FUserSlot UserSlot, FBeamOperationHandle Op,
+	FOptionalString& Announcement, FOptionalArrayOfString& Announcements)
+{
+	// Ensure we have a user at the given slot.
+	FBeamRealmUser RealmUser;
+	if (!IsRunningDedicatedServer())
+	{
+		if (!UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
+		{
+			RequestTracker->TriggerOperationError(Op, TEXT("NO_AUTHENTICATED_USER_AT_SLOT"));
+			return;
+		}
+	}	
+
+	auto Handler = FOnObjectAnnouncementsPostClaimFullResponse::CreateLambda([this, Op, UserSlot](
+		const FBeamFullResponse<UObjectAnnouncementsPostClaimRequest*, UCommonResponse*>& Resp)
+	{
+		// If we are invoking this before retrying, we just don't do anything 
+		if (Resp.State == RS_Retrying) return;
+
+		if (Resp.State != RS_Success)
+		{
+			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.error);
+		}
+		else
+		{
+			if (PerUserAnnouncements.Contains(UserSlot))
+			{
+				TArray<UAnnouncementView*> AnnouncementViewArr =  PerUserAnnouncements[UserSlot];
+				
+				if (!Resp.RequestData->Body->Announcement.Val.IsEmpty())
+				{
+					FOptionalArrayOfString AllAnnouncements;
+					for (UAnnouncementView *AnnouncementView : AnnouncementViewArr)
+					{
+						if (AnnouncementView->Id == Resp.RequestData->Body->Announcement.Val)
+						{
+							AnnouncementView->bIsClaimed = true;
+						}
+					}
+				}
+				else
+				{
+					FOptionalArrayOfString AllAnnouncements;
+					for (UAnnouncementView *AnnouncementView : AnnouncementViewArr)
+					{
+						for (FString AnnouncementId : Resp.RequestData->Body->Announcements.Val)
+						{
+							if (AnnouncementView->Id == AnnouncementId)
+							{
+								AnnouncementView->bIsClaimed = true;
+							}
+						}
+					}
+				}
+			}
+		
+			//TODO : Refresh inventory ?
+			RequestTracker->TriggerOperationSuccess(Op, {});
+		}
+	});
+	
+	auto Ctx = RequestClaimAnnouncement(UserSlot,Op,Handler,Announcement,Announcements);
+}
+
+
 /* * ANNOUNCEMENTS SUBSYSTEM - Request Helper Functions * */
 
 FBeamRequestContext UBeamAnnouncementsSubsystem::RequestGetAnnouncements(const FUserSlot& UserSlot, const FBeamOperationHandle Op, const FOnGetAnnouncementsFullResponse Handler) const
@@ -106,6 +343,38 @@ FBeamRequestContext UBeamAnnouncementsSubsystem::RequestGetAnnouncements(const F
 	AnnouncementsApi->CPP_GetAnnouncements(UserSlot, Req, Handler, Ctx, Op, this);
 	return Ctx;
 }
+
+FBeamRequestContext UBeamAnnouncementsSubsystem::RequestMarkAnnouncementRead(const FUserSlot& UserSlot, const FBeamOperationHandle Op,
+	const FOnPutReadFullResponse Handler,FOptionalString Announcement, FOptionalArrayOfString Announcements) const
+{
+	FBeamRealmUser RealmUser;
+	Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this);
+	
+	const auto Req = UPutReadRequest::Make(RealmUser.GamerTag.AsLong,
+		Announcement,Announcements,
+		GetTransientPackage(), {});
+	FBeamRequestContext Ctx;
+	AnnouncementsApi->CPP_PutRead(UserSlot, Req, Handler, Ctx, Op, this);
+
+	return Ctx;
+}
+
+FBeamRequestContext UBeamAnnouncementsSubsystem::RequestClaimAnnouncement(const FUserSlot& UserSlot, const FBeamOperationHandle Op,
+	const FOnObjectAnnouncementsPostClaimFullResponse Handler,FOptionalString Announcement, FOptionalArrayOfString Announcements) const
+{
+	FBeamRealmUser RealmUser;
+	Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this);
+
+	
+	const auto Req = UObjectAnnouncementsPostClaimRequest::Make(RealmUser.GamerTag.AsLong,
+		Announcement,Announcements,
+		GetTransientPackage(), {});
+	
+	FBeamRequestContext Ctx;
+	AnnouncementsApi->CPP_PostClaim(UserSlot, Req, Handler, Ctx, Op, this);
+	return Ctx;
+}
+
 
 /* * ANNOUNCEMENTS SUBSYSTEM - Read Local State Functions * */
 
