@@ -70,6 +70,7 @@ jobs:
       - name: Check for Changes
         working-directory: ./BeamableUnreal
         id: changes
+        shell: bash
         run: |
             modified="$(git status --porcelain | grep 'Plugins/BeamableCore')"
             lines=$(echo "${modified}" | wc -l)
