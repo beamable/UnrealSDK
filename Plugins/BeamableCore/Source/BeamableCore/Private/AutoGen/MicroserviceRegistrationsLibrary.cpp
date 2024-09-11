@@ -22,7 +22,7 @@ FString UMicroserviceRegistrationsLibrary::MicroserviceRegistrationsToJsonString
 	return Result;
 }	
 
-UMicroserviceRegistrations* UMicroserviceRegistrationsLibrary::Make(FString ServiceName, FString Cid, FString Pid, int32 InstanceCount, FOptionalBool bTrafficFilterEnabled, FOptionalInt64 StartedByGamerTag, FOptionalString RoutingKey, FOptionalString BeamoName, FOptionalArrayOfSupportedFederation Federation, UObject* Outer)
+UMicroserviceRegistrations* UMicroserviceRegistrationsLibrary::Make(FString ServiceName, FString Cid, FString Pid, int32 InstanceCount, FOptionalBool bTrafficFilterEnabled, FOptionalString RoutingKey, FOptionalInt64 StartedById, FOptionalString BeamoName, FOptionalArrayOfSupportedFederation Federation, UObject* Outer)
 {
 	auto Serializable = NewObject<UMicroserviceRegistrations>(Outer);
 	Serializable->ServiceName = ServiceName;
@@ -30,23 +30,23 @@ UMicroserviceRegistrations* UMicroserviceRegistrationsLibrary::Make(FString Serv
 	Serializable->Pid = Pid;
 	Serializable->InstanceCount = InstanceCount;
 	Serializable->bTrafficFilterEnabled = bTrafficFilterEnabled;
-	Serializable->StartedByGamerTag = StartedByGamerTag;
 	Serializable->RoutingKey = RoutingKey;
+	Serializable->StartedById = StartedById;
 	Serializable->BeamoName = BeamoName;
 	Serializable->Federation = Federation;
 	
 	return Serializable;
 }
 
-void UMicroserviceRegistrationsLibrary::Break(const UMicroserviceRegistrations* Serializable, FString& ServiceName, FString& Cid, FString& Pid, int32& InstanceCount, FOptionalBool& bTrafficFilterEnabled, FOptionalInt64& StartedByGamerTag, FOptionalString& RoutingKey, FOptionalString& BeamoName, FOptionalArrayOfSupportedFederation& Federation)
+void UMicroserviceRegistrationsLibrary::Break(const UMicroserviceRegistrations* Serializable, FString& ServiceName, FString& Cid, FString& Pid, int32& InstanceCount, FOptionalBool& bTrafficFilterEnabled, FOptionalString& RoutingKey, FOptionalInt64& StartedById, FOptionalString& BeamoName, FOptionalArrayOfSupportedFederation& Federation)
 {
 	ServiceName = Serializable->ServiceName;
 	Cid = Serializable->Cid;
 	Pid = Serializable->Pid;
 	InstanceCount = Serializable->InstanceCount;
 	bTrafficFilterEnabled = Serializable->bTrafficFilterEnabled;
-	StartedByGamerTag = Serializable->StartedByGamerTag;
 	RoutingKey = Serializable->RoutingKey;
+	StartedById = Serializable->StartedById;
 	BeamoName = Serializable->BeamoName;
 	Federation = Serializable->Federation;
 		

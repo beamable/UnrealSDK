@@ -3,9 +3,9 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfSupportedFederation.h"
 
 #include "MicroserviceRegistrations.generated.h"
@@ -26,10 +26,10 @@ public:
 	int32 InstanceCount = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Traffic Filter Enabled", Category="Beam")
 	FOptionalBool bTrafficFilterEnabled = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Started By Gamer Tag", Category="Beam")
-	FOptionalInt64 StartedByGamerTag = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Routing Key", Category="Beam")
 	FOptionalString RoutingKey = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Started By Id", Category="Beam")
+	FOptionalInt64 StartedById = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Beamo Name", Category="Beam")
 	FOptionalString BeamoName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Federation", Category="Beam")
