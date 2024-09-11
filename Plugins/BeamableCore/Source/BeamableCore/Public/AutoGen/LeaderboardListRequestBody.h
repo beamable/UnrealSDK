@@ -5,6 +5,7 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 
 #include "LeaderboardListRequestBody.generated.h"
 
@@ -14,6 +15,8 @@ class BEAMABLECORE_API ULeaderboardListRequestBody : public UObject, public IBea
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Include Partitions", Category="Beam")
+	FOptionalBool bIncludePartitions = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Skip", Category="Beam")
 	FOptionalInt32 Skip = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Limit", Category="Beam")

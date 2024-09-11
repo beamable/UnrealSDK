@@ -17,8 +17,8 @@ public:
 	static FString ClientManifestJsonResponseToJsonString(const UClientManifestJsonResponse* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ClientManifestJsonResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UClientManifestJsonResponse* Make(TArray<FBeamRemoteContentManifestEntry> Items, UObject* Outer);
+	static UClientManifestJsonResponse* Make(TArray<FBeamRemoteContentManifestEntry> Entries, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break ClientManifestJsonResponse", meta=(NativeBreakFunc))
-	static void Break(const UClientManifestJsonResponse* Serializable, TArray<FBeamRemoteContentManifestEntry>& Items);
+	static void Break(const UClientManifestJsonResponse* Serializable, TArray<FBeamRemoteContentManifestEntry>& Entries);
 };

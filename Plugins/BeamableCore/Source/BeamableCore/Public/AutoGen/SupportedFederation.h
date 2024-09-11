@@ -5,7 +5,7 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Enums/FederationType.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
-#include "Dom/JsonObject.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalOptionalJsonNodeWrapper.h"
 
 #include "SupportedFederation.generated.h"
 
@@ -17,9 +17,10 @@ class BEAMABLECORE_API USupportedFederation : public UObject, public IBeamJsonSe
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
 	EFederationType Type = {};
-	TSharedPtr<FJsonObject> Settings = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name Space", Category="Beam")
 	FOptionalString NameSpace = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Settings", Category="Beam")
+	FOptionalOptionalJsonNodeWrapper Settings = {};
 
 	
 

@@ -22,17 +22,17 @@ FString UClientManifestJsonResponseLibrary::ClientManifestJsonResponseToJsonStri
 	return Result;
 }	
 
-UClientManifestJsonResponse* UClientManifestJsonResponseLibrary::Make(TArray<FBeamRemoteContentManifestEntry> Items, UObject* Outer)
+UClientManifestJsonResponse* UClientManifestJsonResponseLibrary::Make(TArray<FBeamRemoteContentManifestEntry> Entries, UObject* Outer)
 {
 	auto Serializable = NewObject<UClientManifestJsonResponse>(Outer);
-	Serializable->Items = Items;
+	Serializable->Entries = Entries;
 	
 	return Serializable;
 }
 
-void UClientManifestJsonResponseLibrary::Break(const UClientManifestJsonResponse* Serializable, TArray<FBeamRemoteContentManifestEntry>& Items)
+void UClientManifestJsonResponseLibrary::Break(const UClientManifestJsonResponse* Serializable, TArray<FBeamRemoteContentManifestEntry>& Entries)
 {
-	Items = Serializable->Items;
+	Entries = Serializable->Entries;
 		
 }
 

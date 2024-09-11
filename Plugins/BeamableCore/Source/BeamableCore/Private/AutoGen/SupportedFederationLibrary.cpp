@@ -22,19 +22,21 @@ FString USupportedFederationLibrary::SupportedFederationToJsonString(const USupp
 	return Result;
 }	
 
-USupportedFederation* USupportedFederationLibrary::Make(EFederationType Type, FOptionalString NameSpace, UObject* Outer)
+USupportedFederation* USupportedFederationLibrary::Make(EFederationType Type, FOptionalString NameSpace, FOptionalOptionalJsonNodeWrapper Settings, UObject* Outer)
 {
 	auto Serializable = NewObject<USupportedFederation>(Outer);
 	Serializable->Type = Type;
 	Serializable->NameSpace = NameSpace;
+	Serializable->Settings = Settings;
 	
 	return Serializable;
 }
 
-void USupportedFederationLibrary::Break(const USupportedFederation* Serializable, EFederationType& Type, FOptionalString& NameSpace)
+void USupportedFederationLibrary::Break(const USupportedFederation* Serializable, EFederationType& Type, FOptionalString& NameSpace, FOptionalOptionalJsonNodeWrapper& Settings)
 {
 	Type = Serializable->Type;
 	NameSpace = Serializable->NameSpace;
+	Settings = Serializable->Settings;
 		
 }
 

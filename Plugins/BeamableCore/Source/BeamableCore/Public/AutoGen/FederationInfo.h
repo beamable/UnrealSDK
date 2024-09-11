@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-#include "Dom/JsonObject.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalOptionalJsonNodeWrapper.h"
 
 #include "FederationInfo.generated.h"
 
@@ -17,7 +17,8 @@ public:
 	FString Service = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Namespace", Category="Beam")
 	FString Namespace = {};
-	TSharedPtr<FJsonObject> Settings = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Settings", Category="Beam")
+	FOptionalOptionalJsonNodeWrapper Settings = {};
 
 	
 

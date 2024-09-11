@@ -16,9 +16,9 @@ public:
 	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - FederationInfo To JSON String")
 	static FString FederationInfoToJsonString(const UFederationInfo* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make FederationInfo", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UFederationInfo* Make(FString Service, FString Namespace, UObject* Outer);
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make FederationInfo", meta=(DefaultToSelf="Outer", AdvancedDisplay="Settings, Outer", NativeMakeFunc))
+	static UFederationInfo* Make(FString Service, FString Namespace, FOptionalOptionalJsonNodeWrapper Settings, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break FederationInfo", meta=(NativeBreakFunc))
-	static void Break(const UFederationInfo* Serializable, FString& Service, FString& Namespace);
+	static void Break(const UFederationInfo* Serializable, FString& Service, FString& Namespace, FOptionalOptionalJsonNodeWrapper& Settings);
 };

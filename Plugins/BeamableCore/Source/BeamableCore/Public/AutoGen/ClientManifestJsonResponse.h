@@ -13,8 +13,8 @@ class BEAMABLECORE_API UClientManifestJsonResponse : public UObject, public IBea
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Items", Category="Beam")
-	TArray<FBeamRemoteContentManifestEntry> Items = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Entries", Category="Beam")
+	TArray<FBeamRemoteContentManifestEntry> Entries = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

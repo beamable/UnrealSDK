@@ -30,6 +30,8 @@ public:
 	FOptionalInt64 StartedByGamerTag = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Routing Key", Category="Beam")
 	FOptionalString RoutingKey = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Beamo Name", Category="Beam")
+	FOptionalString BeamoName = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Federation", Category="Beam")
 	FOptionalArrayOfSupportedFederation Federation = {};
 

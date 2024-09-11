@@ -22,19 +22,21 @@ FString UFederationInfoLibrary::FederationInfoToJsonString(const UFederationInfo
 	return Result;
 }	
 
-UFederationInfo* UFederationInfoLibrary::Make(FString Service, FString Namespace, UObject* Outer)
+UFederationInfo* UFederationInfoLibrary::Make(FString Service, FString Namespace, FOptionalOptionalJsonNodeWrapper Settings, UObject* Outer)
 {
 	auto Serializable = NewObject<UFederationInfo>(Outer);
 	Serializable->Service = Service;
 	Serializable->Namespace = Namespace;
+	Serializable->Settings = Settings;
 	
 	return Serializable;
 }
 
-void UFederationInfoLibrary::Break(const UFederationInfo* Serializable, FString& Service, FString& Namespace)
+void UFederationInfoLibrary::Break(const UFederationInfo* Serializable, FString& Service, FString& Namespace, FOptionalOptionalJsonNodeWrapper& Settings)
 {
 	Service = Serializable->Service;
 	Namespace = Serializable->Namespace;
+	Settings = Serializable->Settings;
 		
 }
 

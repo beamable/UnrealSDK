@@ -22,9 +22,10 @@ FString ULeaderboardListRequestBodyLibrary::LeaderboardListRequestBodyToJsonStri
 	return Result;
 }	
 
-ULeaderboardListRequestBody* ULeaderboardListRequestBodyLibrary::Make(FOptionalInt32 Skip, FOptionalInt32 Limit, FOptionalString Prefix, UObject* Outer)
+ULeaderboardListRequestBody* ULeaderboardListRequestBodyLibrary::Make(FOptionalBool bIncludePartitions, FOptionalInt32 Skip, FOptionalInt32 Limit, FOptionalString Prefix, UObject* Outer)
 {
 	auto Serializable = NewObject<ULeaderboardListRequestBody>(Outer);
+	Serializable->bIncludePartitions = bIncludePartitions;
 	Serializable->Skip = Skip;
 	Serializable->Limit = Limit;
 	Serializable->Prefix = Prefix;
@@ -32,8 +33,9 @@ ULeaderboardListRequestBody* ULeaderboardListRequestBodyLibrary::Make(FOptionalI
 	return Serializable;
 }
 
-void ULeaderboardListRequestBodyLibrary::Break(const ULeaderboardListRequestBody* Serializable, FOptionalInt32& Skip, FOptionalInt32& Limit, FOptionalString& Prefix)
+void ULeaderboardListRequestBodyLibrary::Break(const ULeaderboardListRequestBody* Serializable, FOptionalBool& bIncludePartitions, FOptionalInt32& Skip, FOptionalInt32& Limit, FOptionalString& Prefix)
 {
+	bIncludePartitions = Serializable->bIncludePartitions;
 	Skip = Serializable->Skip;
 	Limit = Serializable->Limit;
 	Prefix = Serializable->Prefix;

@@ -1028,7 +1028,7 @@ void UBeamContentSubsystem::FetchContentManifest(FBeamContentManifestId Manifest
 		{
 			UBeamContentCache* Cache = NewObject<UBeamContentCache>();
 			Cache->ManifestId = ManifestId;
-			Cache->LatestRemoteManifest = TArray(Resp.SuccessData->Items);
+			Cache->LatestRemoteManifest = TArray(Resp.SuccessData->Entries);
 
 			const auto NumEntries = Cache->LatestRemoteManifest.Num();
 			Cache->Cache.Reserve(NumEntries);
