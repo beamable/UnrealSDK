@@ -26,24 +26,13 @@ jobs:
           path: BeamableProduct/
           ref: main
 
-      # Caches the UnrealSDK repo's Intermediate and Saved folders
-      - uses: actions/cache@v4
-        continue-on-error: false
-        with:
-          path: |
-            BeamableUnreal/Intermediate
-            BeamableUnreal/Saved
-            BeamableUnreal/BeamableUnreal.sln
-          key: unreal-${{ runner.os }}-Win64-client-${{ hashFiles('/BeamableUnreal/Source/**') }}
-          restore-keys: unreal-${{ runner.os }}-Win64-
-
       # Sets the buildType ENV var as either server or client.
       - name: Set buildType ENV var
         id: set-build-type
         run: echo "buildType=client" >> $env:GITHUB_ENV
       - name: Set hash ENV var
         id: get_commit_hash
-        working-directory: ./BeamableUnreal
+        working-directory: BeamableUnreal
         run: echo "commit_hash=$(git rev-parse HEAD)" >> $env:GITHUB_ENV
       - name: Check buildType ENV var
         id: check-build-type
