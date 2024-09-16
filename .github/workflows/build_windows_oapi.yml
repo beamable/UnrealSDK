@@ -52,6 +52,10 @@ jobs:
         shell: bash
         run: bash set-packages.sh "${{ github.workspace }}/BeamableUnreal/" "UNREAL_NugetSource" "" "" "${{ github.workspace }}/BeamableUnreal/Microservices"
 
+      - name: Remove old AutoGen code
+        working-directory: ./BeamableUnreal
+        shell: powershell
+        run: Remove-Item -Recurse -Force Plugins\BeamableCore\Source\BeamableCore\Private\AutoGen
       - name: Update OpenAPI
         working-directory: ./BeamableUnreal
         shell: bash
