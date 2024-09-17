@@ -240,6 +240,27 @@ UClass** UBeamEditorContent::FindContentTypeByTypeId(FString TypeId)
 	return ContentTypeStringToContentClass.Find(TypeId);
 }
 
+void UBeamEditorContent::FindSubTypesOfContentType(const TArray<FString>& TypeNames,
+	TMap<FString, TArray<FString>>& OutMappings)
+{
+	for (const auto Pair : ContentTypeStringToContentClass)
+	{
+		const FString CurrentId = Pair.Key;
+		for(const auto TypeName : TypeNames)
+		{
+			if(CurrentId.StartsWith(TypeName))
+			{
+				if(!OutMappings.Contains(TypeName))
+				{
+					TArray<FString> Array;
+					OutMappings.Add(TypeName, Array);
+				}
+				OutMappings[TypeName].Add(CurrentId);
+			}
+		}
+	}
+}
+
 bool UBeamEditorContent::TryLoadContentObject(const FBeamContentManifestId& OwnerManifest, FBeamContentId ContentId, UBeamContentObject*& OutLoadedContentObject)
 {
 	// Hit the cache first.

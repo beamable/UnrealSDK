@@ -99,6 +99,8 @@ public:
 	UClass** FindContentTypeByName(FString TypeName);
 	UClass** FindContentTypeByTypeId(FString TypeId);
 
+	void FindSubTypesOfContentType(const TArray<FString>& TypeNames, TMap<FString,TArray<FString>>& OutMappings);
+
 	bool TryLoadContentObject(const FBeamContentManifestId& OwnerManifest, FBeamContentId ContentId, UBeamContentObject*& OutLoadedContentObject);
 
 	bool LoadContentObjectInstance(const ULocalContentManifestStreamData* Manifest, const FBeamContentId& ContentId, UBeamContentObject*& OutNewContentObject, UObject* Outer);

@@ -22,7 +22,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString title = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BeamContentTypeFilter="listing",BeamContentTypeFilterMode="tree"))
 	TArray<FBeamContentLink> listings = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FOptionalBool showInactiveListings = {};

@@ -234,21 +234,21 @@ struct BEAMABLECORE_API FBeamOfferObtainItem : public FBeamJsonSerializableUStru
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString ContentId = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BeamContentTypeFilter="item",BeamContentTypeFilterMode="tree"))
+	FBeamContentId ContentId = {};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FBeamOfferObtainItemProperty> Properties = {};
 	
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("contentId"), ContentId);
+		Serializer->WriteValue(TEXT("contentId"), ContentId.AsString);
 		UBeamJsonUtils::SerializeArray(TEXT("properties"),Properties, Serializer);
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		ContentId = Bag->GetStringField(TEXT("contentId"));
+		ContentId = FBeamContentId(Bag->GetStringField(TEXT("contentId")));
 		UBeamJsonUtils::DeserializeArray(Bag->GetArrayField(TEXT("properties")),Properties, OuterOwner);
 	}
 };
@@ -258,7 +258,7 @@ struct BEAMABLECORE_API FBeamOfferObtainCurrency : public FBeamJsonSerializableU
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BeamContentTypeFilter="currency",BeamContentTypeFilterMode="tree"))
 	FBeamContentId Symbol = {};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -325,7 +325,7 @@ struct BEAMABLECORE_API FBeamListingPrice : public FBeamJsonSerializableUStruct
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	EBeamListingPriceType Type = {};
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam", meta=(BeamContentTypeFilter="currency",BeamContentTypeFilterMode="tree"))
 	FBeamContentId Symbol = {};
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	int64 Amount = {};
