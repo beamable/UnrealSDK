@@ -38,20 +38,6 @@ if(ReceivedStreamType.Equals(StreamTypeRemoteProgress) && OnRemoteProgressStream
 			OnRemoteProgressStreamOutput(RemoteProgressStream, RemoteProgressTimestamps, Op);
 		});				
 	}
-if(ReceivedStreamType.Equals(StreamTypeLogs) && OnLogsStreamOutput)
-	{
-		UBeamCliServicesDeployLogsStreamData* Data = NewObject<UBeamCliServicesDeployLogsStreamData>(this);
-		Data->OuterOwner = this;
-		Data->BeamDeserializeProperties(DataJson);
-
-		LogsStream.Add(Data);
-		LogsTimestamps.Add(Timestamp);
-		
-		AsyncTask(ENamedThreads::GameThread, [this, Op]
-		{
-			OnLogsStreamOutput(LogsStream, LogsTimestamps, Op);
-		});				
-	}
 }
 
 void UBeamCliServicesDeployCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

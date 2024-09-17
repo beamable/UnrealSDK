@@ -15,7 +15,7 @@ Usage:
   Beamable.Tools services stop [options]
 
 Options:
-  --ids <ids>                          The list of services to include, defaults to all local services
+  --ids <ids>                          The list of services to include, defaults to all local services (separated by whitespace)
   --dryrun                             Should any networking happen?
   --cid <cid>                          Cid to use; will default to whatever is in the file system
   --pid <pid>                          Pid to use; will default to whatever is in the file system
@@ -29,6 +29,7 @@ Options:
   --no-log-file                        By default, logs are automatically written to a temp file so that they can be used in an error case. However, when this option is enabled, logs are not written. Also, if the BEAM_CLI_NO_FILE_LOG environment variable is set, no log file will be written.  [default: False]
   --docker-cli-path <docker-cli-path>  a custom location for docker. By default, the CLI will attempt to resolve docker through its usual install locations. You can also use the BEAM_DOCKER_EXE environment variable to specify. 
                                        Currently, a docker path has been automatically identified. [default: docker]
+  --emit-log-streams                   Out all log messages as data payloads in addition to however they are logged
   --dir <dir>                          Directory to use for configuration
   --raw                                Output raw JSON to standard out. This happens by default when the command is being piped
   --pretty                             Output syntax highlighted box text. This happens by default when the command is not piped

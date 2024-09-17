@@ -44,6 +44,13 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 				GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Cid = FBeamCid{OverridenCustomer};
 			}
 		}
+		else
+		{
+			if (!OverridenCustomer.IsEmpty())
+			{
+				GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Cid = FBeamCid{OverridenCustomer};
+			}
+		}
 
 		// We do this so game-makers can choose their preferred ways of setting up dedicated server builds and deployments.
 		FString OverridenRealm;
@@ -55,12 +62,33 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 				GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Pid = FBeamPid{OverridenRealm};
 			}
 		}
+		else
+		{
+			if (!OverridenRealm.IsEmpty())
+			{
+				GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Pid = FBeamPid{OverridenRealm};
+			}
+		}
 
 		// We do this so game-makers can override any builds we provide to point to our BeamProdEnv regardless
 		FString OverridenEnv;
 		if (!FParse::Value(FCommandLine::Get(), TEXT("beamable-environment-override"), OverridenRealm))
 		{
 			OverridenEnv = FPlatformMisc::GetEnvironmentVariable(TEXT("BEAMABLE_ENVIRONMENT_OVERRIDE"));
+			if (!OverridenEnv.IsEmpty())
+			{
+				if (OverridenEnv.Equals(TEXT("BeamProdEnv")))
+					GetMutableDefault<UBeamCoreSettings>()->BeamableEnvironment = GetMutableDefault<UBeamCoreSettings>()->BeamablePossibleEnvironments[0];
+				else if (OverridenEnv.Equals(TEXT("BeamStagingEnv")))
+					GetMutableDefault<UBeamCoreSettings>()->BeamableEnvironment = GetMutableDefault<UBeamCoreSettings>()->BeamablePossibleEnvironments[1];
+				else
+					GetMutableDefault<UBeamCoreSettings>()->BeamableEnvironment = GetMutableDefault<UBeamCoreSettings>()->BeamablePossibleEnvironments[2];
+
+				UE_LOG(LogBeamRuntime, Display, TEXT("Initializing UBeamRuntime Subsystem - Overriden Environment: %s!"), *GetDefault<UBeamCoreSettings>()->BeamableEnvironment.ToString());
+			}
+		}
+		else
+		{
 			if (!OverridenEnv.IsEmpty())
 			{
 				if (OverridenEnv.Equals(TEXT("BeamProdEnv")))
@@ -288,7 +316,7 @@ void UBeamRuntime::TriggerOnContentReady(FBeamWaitCompleteEvent Evt)
 		// Early out and don't initialize if errors happen here.
 		return;
 	}
-	
+
 	// Here, we are just giving UBeamRuntimeSubsystem implementations the opportunity to initialize themselves based on content definitions (but not FUserSlots).
 	if (const UWorld* World = GetWorld())
 	{

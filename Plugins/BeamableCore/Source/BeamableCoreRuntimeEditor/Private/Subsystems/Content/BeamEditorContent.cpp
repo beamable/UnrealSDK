@@ -259,14 +259,20 @@ bool UBeamEditorContent::LoadContentObjectInstance(const ULocalContentManifestSt
 	if (const auto Entry = Manifest->Entries.FindByPredicate([ContentId](ULocalContentManifestEntryStreamData* E) { return E->FullId.Equals(ContentId.AsString); }))
 	{
 		// Otherwise, find the UClass for the content type. Load the JSON and deserialize it into the UBeamContentObject.
-		if (const auto Type = FindContentTypeByTypeId(ContentId.GetTypeId()))
+		UClass* ObjectClass;
+		EBeamContentObjectSupportLevel SupportLevel;
+		UBeamContentObject::GetClassForTypeId(ContentTypeStringToContentClass, ContentId.GetTypeId(), ObjectClass, SupportLevel);
+
+		// Create the object instance
+		if (ObjectClass)
 		{
 			const auto FilePath = GetJsonBlobPath(ContentId.AsString, Manifest->ManifestId);
 			FString FileContents;
 			if (FFileHelper::LoadFileToString(FileContents, *FilePath))
 			{
-				const auto ContentObject = NewObject<UBeamContentObject>(Outer, *Type);
+				const auto ContentObject = NewObject<UBeamContentObject>(Outer, ObjectClass);
 				OutNewContentObject = ContentObject;
+				OutNewContentObject->SupportLevel = SupportLevel;
 				if (auto Bag = FJsonDataBag(); Bag.FromJson(*FileContents))
 				{
 					OutNewContentObject->Id = ContentId.AsString;
@@ -418,7 +424,10 @@ bool UBeamEditorContent::GetContent(const FBeamContentManifestId& ManifestId, FB
 {
 	FString Err;
 	const auto bRes = GetContentForEditing(ManifestId, ContentId, ContentObject, Err);
-	if (!bRes) UE_LOG(LogTemp, Warning, TEXT("Fallback Content Getter: Failed to find content with ID=%s from Manifest=%s."), *ContentId.AsString, *ManifestId.AsString)
+	if (!bRes)
+	{
+		UE_LOG(LogTemp, Verbose, TEXT("Fallback Content Getter: Failed to find content with ID=%s from Manifest=%s."), *ContentId.AsString, *ManifestId.AsString)
+	}
 	return bRes;
 }
 
@@ -428,7 +437,7 @@ bool UBeamEditorContent::GetContentForEditing(const FBeamContentManifestId& Mani
 	if (!EditingTable)
 	{
 		ErrMsg = FString::Format(TEXT("Trying to load a content object from a Manifest={0} that is not loaded. Ignore this during packaging."), {ManifestId.AsString});
-		UE_LOG(LogBeamContent, Warning, TEXT("%s"), *ErrMsg);
+		UE_LOG(LogBeamContent, Display, TEXT("%s"), *ErrMsg);
 		return false;
 	}
 
@@ -436,22 +445,14 @@ bool UBeamEditorContent::GetContentForEditing(const FBeamContentManifestId& Mani
 	if (!Entries.FindByPredicate([EditObjectId](ULocalContentManifestEntryStreamData* data) { return data->FullId.Equals(EditObjectId.AsString); }))
 	{
 		ErrMsg = FString::Format(TEXT("Trying to load a content object that doesn't exist in this manifest. CONTENT_ID={0}"), {EditObjectId.AsString});
-		UE_LOG(LogBeamContent, Warning, TEXT("%s"), *ErrMsg);
+		UE_LOG(LogBeamContent, Verbose, TEXT("%s"), *ErrMsg);
 		return false;
 	}
-
-	if (!FindContentTypeByTypeId(EditObjectId.GetTypeId()))
-	{
-		ErrMsg = FString::Format(
-			TEXT("Trying to load a content object that doesn't have a type in Unreal. Please create a UBeamContentObject subclass for this type of content. CONTENT_ID={0}."), {EditObjectId.AsString});
-		UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
-		return false;
-	}
-
+	
 	if (!TryLoadContentObject(ManifestId, EditObjectId, ContentObject))
 	{
 		ErrMsg = FString::Format(TEXT("Trying to load a content object that doesn't exist. CONTENT_ID={0}"), {EditObjectId.AsString});
-		UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
+		UE_LOG(LogBeamContent, Verbose, TEXT("%s"), *ErrMsg);
 		return false;
 	}
 
@@ -590,8 +591,7 @@ bool UBeamEditorContent::TryGetFilteredListOfContent(const FBeamContentManifestI
 		FoundLocalContent[FoundLocalContent.Num() - 1]->ContentName = FText::FromString(Names[i]);
 		FoundLocalContent[FoundLocalContent.Num() - 1]->ContentTypeName = FText::FromString(Types[i]);
 		FoundLocalContent[FoundLocalContent.Num() - 1]->LocalStatus = StatusesInManifest[i];
-		FoundLocalContent[FoundLocalContent.Num() - 1]->ContentObject = ObjectsInManifest[i];
-		FoundLocalContent[FoundLocalContent.Num() - 1]->ContentType = ContentTypeStringToContentClass[Types[i]];
+		FoundLocalContent[FoundLocalContent.Num() - 1]->ContentObject = ObjectsInManifest[i];		
 	}
 
 	return true;

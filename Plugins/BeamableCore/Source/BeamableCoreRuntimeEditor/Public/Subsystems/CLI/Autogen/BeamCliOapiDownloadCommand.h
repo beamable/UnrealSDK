@@ -17,6 +17,7 @@ Usage:
 Options:
   --output <output>                    When null or empty, the generated code will be sent to standard-out. When there is a output value, the file or files will be written to the path []
   --filter <filter>                    Filter which open apis to generate. An empty string matches everything []
+  --combine-into-one-document          Combines all API documents into one. In order to achieve that it will need to rename some of the types because of duplicates, eg. GetManifestResponse
   --dryrun                             Should any networking happen?
   --cid <cid>                          Cid to use; will default to whatever is in the file system
   --pid <pid>                          Pid to use; will default to whatever is in the file system
@@ -30,6 +31,7 @@ Options:
   --no-log-file                        By default, logs are automatically written to a temp file so that they can be used in an error case. However, when this option is enabled, logs are not written. Also, if the BEAM_CLI_NO_FILE_LOG environment variable is set, no log file will be written.  [default: False]
   --docker-cli-path <docker-cli-path>  a custom location for docker. By default, the CLI will attempt to resolve docker through its usual install locations. You can also use the BEAM_DOCKER_EXE environment variable to specify. 
                                        Currently, a docker path has been automatically identified. [default: docker]
+  --emit-log-streams                   Out all log messages as data payloads in addition to however they are logged
   --dir <dir>                          Directory to use for configuration
   --raw                                Output raw JSON to standard out. This happens by default when the command is being piped
   --pretty                             Output syntax highlighted box text. This happens by default when the command is not piped

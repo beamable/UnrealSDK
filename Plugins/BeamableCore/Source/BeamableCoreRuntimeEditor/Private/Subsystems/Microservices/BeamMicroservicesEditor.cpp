@@ -127,7 +127,7 @@ bool UBeamMicroservicesEditor::TryGetFilteredListOfServices(TArray<FString> Incl
 		// If we don't pass in any included group filters, we want to default to including.
 		auto bMatchIncludedGroupName = IncludedGroupNames.IsEmpty();
 		for (FString GroupName : IncludedGroupNames)
-			bMatchIncludedGroupName |= MicroserviceData.Value.ServiceGroups.Contains(GroupName);
+			bMatchIncludedGroupName |= MicroserviceData.Value.ServiceGroups.Contains(GroupName) || IncludedGroupNames.Contains(TEXT("All"));
 
 		// If we don't pass in any excluded group filters, we want to default to including.
 		auto bMatchExcludedGroupName = ExcludedGroupNames.IsEmpty();
@@ -147,6 +147,8 @@ bool UBeamMicroservicesEditor::TryGetFilteredListOfServices(TArray<FString> Incl
 			ServiceView->RunningState = MicroserviceData.Value.RunningState;
 			ServiceView->ServiceGroups = MicroserviceData.Value.ServiceGroups;
 			ServiceView->ServiceType = MicroService;
+			ServiceView->AvailableRoutingKeys = MicroserviceData.Value.AvailableKeys;
+			ServiceView->SelectedRoutingKey = MicroserviceData.Value.CurrentRoutingKey;
 
 			FilteredServices.Add(ServiceView);
 		}
@@ -154,6 +156,19 @@ bool UBeamMicroservicesEditor::TryGetFilteredListOfServices(TArray<FString> Incl
 	return true;
 }
 
+TArray<FString> UBeamMicroservicesEditor::GetServiceGroupFilterOptions() const
+{
+	TArray<FString> Options;
+	for (const auto MicroserviceData : LocalMicroserviceData)
+	{
+		const auto Groups = MicroserviceData.Value.ServiceGroups;
+		for (FString Group : Groups)
+			Options.AddUnique(Group);
+	}
+
+	Options.Insert(TEXT("All"), 0);
+	return Options;
+}
 
 bool UBeamMicroservicesEditor::OpenSwaggerDocs(FString BeamoId)
 {
@@ -275,7 +290,7 @@ void UBeamMicroservicesEditor::RunHostMicroservices(const TArray<FString>& Beamo
 	TArray<FString> Params = {};
 	if (!BeamoIds.IsEmpty())
 	{
-		const auto Ids = FString::Printf(TEXT("--ids %s"), *FString::Join(BeamoIds, TEXT(" ")));
+		const auto Ids = FString::Printf(TEXT("--ids %s --detach"), *FString::Join(BeamoIds, TEXT(" ")));
 		Params.Add(Ids);
 	}
 
@@ -430,7 +445,7 @@ void UBeamMicroservicesEditor::StopDockerMicroservices(const TArray<FString>& Be
 }
 
 void UBeamMicroservicesEditor::OnUpdateLocalStateReceived(const TArray<UBeamCliProjectPsStreamData*>& Stream, const TArray<long long>&, const FBeamOperationHandle&)
-{	
+{
 	for (const UBeamCliProjectPsStreamData* ProjectStatusChange : Stream)
 	{
 		const auto BeamoId = ProjectStatusChange->Service;
@@ -451,21 +466,21 @@ void UBeamMicroservicesEditor::OnUpdateLocalStateReceived(const TArray<UBeamCliP
 			if (ProjectStatusChange->IsRunning)
 			{
 				LocalMicroserviceData.Add(ProjectStatusChange->Service, FLocalMicroserviceData{
-											  BeamoId, ProjectStatusChange->Groups,
-											  ProjectStatusChange->IsContainer ? RunningOnDocker : RunningStandalone,
-											  false, ProjectStatusChange->RoutingKeys,
-										  });
+					                          BeamoId, ProjectStatusChange->Groups,
+					                          ProjectStatusChange->IsContainer ? RunningOnDocker : RunningStandalone,
+					                          false, ProjectStatusChange->RoutingKeys,
+				                          });
 			}
 			else
 			{
 				LocalMicroserviceData.Add(ProjectStatusChange->Service, FLocalMicroserviceData{
-											  BeamoId, ProjectStatusChange->Groups,
-											  Stopped,
-											  false, ProjectStatusChange->RoutingKeys,
-										  });
+					                          BeamoId, ProjectStatusChange->Groups,
+					                          Stopped,
+					                          false, ProjectStatusChange->RoutingKeys,
+				                          });
 			}
 		}
-	}	
+	}
 
 	OnLocalMicroserviceUpdate.Broadcast();
 }

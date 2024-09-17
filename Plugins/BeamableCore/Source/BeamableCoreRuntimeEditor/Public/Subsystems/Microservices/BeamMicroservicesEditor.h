@@ -91,6 +91,12 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FString> ServiceGroups;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<FString> AvailableRoutingKeys;
+
+	UPROPERTY(BlueprintReadWrite)
+	FString SelectedRoutingKey;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMicroserviceStateChange);
@@ -174,6 +180,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice", meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetFilteredListOfServices(TArray<FString> IncludedGroupNames, TArray<FString> ExcludedGroupNames, TEnumAsByte<ELocalMicroserviceRunningMethod> RunningStatusFilter,
 	                                  TArray<UBeamMicroserviceLocalEditorView*>& FilteredServices);
+
+	/**
+	 * Gets a list of all BeamServiceGroups that currently exist.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice")
+	TArray<FString> GetServiceGroupFilterOptions() const;
+	
 	/**
 	 * @brief Opens the swagger document for the current running service. 
 	 */

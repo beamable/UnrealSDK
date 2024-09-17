@@ -687,8 +687,7 @@ bool UBeamBackend::CleanUpRequestData()
 
 void UBeamBackend::UpdateResponseCache(const FRequestType& RequestType, const UObject* CallingContext, const FHttpRequestPtr& Request, const FString& Content)
 {
-	GEngine->GetEngineSubsystem<UBeamResponseCache>()->
-	         UpdateResponseCache(RequestType, CallingContext, Request, Content);
+	GEngine->GetEngineSubsystem<UBeamResponseCache>()->UpdateResponseCache(RequestType, CallingContext, Request, Content);	
 }
 
 bool UBeamBackend::ExtractDataFromResponse(const FHttpRequestPtr Request, const FHttpResponsePtr Response, const bool bWasRequestCompleted, EHttpRequestStatus::Type& OutRequestStatus,
@@ -710,8 +709,21 @@ bool UBeamBackend::ExtractDataFromResponse(const FHttpRequestPtr Request, const 
 	}
 	else
 	{
-		OutResponseCode = 408;
-		OutResponseBody = FString(R"({ "status": 408, "error": "Timeout", "service": "Gateway", "message": "Timeout" })");
+		if (Response->GetFailureReason() == EHttpFailureReason::ConnectionError)
+		{
+			OutResponseCode = 408;
+			OutResponseBody = FString(R"({ "status": 408, "error": "ConnectionError", "service": "", "message": "Failed to connect" })");
+		}
+		else if (Response->GetFailureReason() == EHttpFailureReason::TimedOut)
+		{
+			OutResponseCode = 408;
+			OutResponseBody = FString(R"({ "status": 408, "error": "Timeout", "service": "Gateway", "message": "Timeout" })");
+		}
+		else
+		{
+			OutResponseCode = 408;
+			OutResponseBody = FString(R"({ "status": 408, "error": "Timeout", "service": "Gateway", "message": "Timeout" })");
+		}
 	}
 	return true;
 }
@@ -729,6 +741,35 @@ bool UBeamBackend::IsRetryingTimeout(FBeamRequestContext Ctx)
 bool UBeamBackend::IsSuccessfulResponse(int32 ResponseCode)
 {
 	return ResponseCode >= 200 && ResponseCode < 300;
+}
+
+/*	 
+	GENERIC-BEAM REQUEST FUNCTION
+*/
+
+TUnrealRequestPtr UBeamBackend::CreateGenericBeamRequest(int64& OutRequestId, const FBeamRetryConfig& RetryConfig, const UGenericBeamRequest* RequestData)
+{
+	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Preparing NonBeam Request: VERB=%s, URI=%s, BODY=%s"), *RequestData->Verb, *RequestData->URL, *RequestData->Body);
+
+	// Ensures we get a valid Next Id even if requests get made from multiple threads.
+	int64 ReqId;
+	auto Req = CreateUnpreparedRequest(ReqId, RetryConfig);
+	PrepareBeamableRequestVerbRouteBody(Req, RequestData, RequestData->URL);
+
+	const auto RequestContext = FBeamRequestContext{ReqId, RetryConfig, FBeamRealmHandle{}, -1, FUserSlot(""), AS_None};
+
+	// Keep track of this request and it's data. 
+	InFlightRequestContexts.Add(ReqId, RequestContext);
+	InFlightRequestData.Add(RequestContext, TScriptInterface<IBeamBaseRequestInterface>(const_cast<UGenericBeamRequest*>(RequestData)));
+
+	// Store make sure we have a slot waiting for the response/error value to be added
+	InFlightResponseBodyData.Add(RequestContext, nullptr);
+	InFlightResponseErrorData.Add(RequestContext, FBeamErrorResponse{});
+
+
+	INC_DWORD_STAT(STATID_RequestStarted)
+	OutRequestId = ReqId;
+	return Req;
 }
 
 /*	 

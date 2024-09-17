@@ -18,9 +18,8 @@ Arguments:
   <service-name>  Name of the service to open swagger to []
 
 Options:
-  --routing-key <routing-key>          The routing key for the service instance we want. If not passed, defaults to the deployed service
-  --local                              When set, enforces the routing key to be the one for the local machine
-  --remote                             When set, enforces the routing key to be the one for the service deployed to the realm
+  -k, --routing-key <routing-key>      The routing key for the service instance we want. If not passed, defaults to the local service [default: desktop-54b40oj_35af403fa25c152dbfa81c316bdb09d8]
+  -r, --remote                         When set, enforces the routing key to be the one for the service deployed to the realm. Cannot be specified when --routing-key is also set
   --dryrun                             Should any networking happen?
   --cid <cid>                          Cid to use; will default to whatever is in the file system
   --pid <pid>                          Pid to use; will default to whatever is in the file system
@@ -34,6 +33,7 @@ Options:
   --no-log-file                        By default, logs are automatically written to a temp file so that they can be used in an error case. However, when this option is enabled, logs are not written. Also, if the BEAM_CLI_NO_FILE_LOG environment variable is set, no log file will be written.  [default: False]
   --docker-cli-path <docker-cli-path>  a custom location for docker. By default, the CLI will attempt to resolve docker through its usual install locations. You can also use the BEAM_DOCKER_EXE environment variable to specify. 
                                        Currently, a docker path has been automatically identified. [default: docker]
+  --emit-log-streams                   Out all log messages as data payloads in addition to however they are logged
   --dir <dir>                          Directory to use for configuration
   --raw                                Output raw JSON to standard out. This happens by default when the command is being piped
   --pretty                             Output syntax highlighted box text. This happens by default when the command is not piped

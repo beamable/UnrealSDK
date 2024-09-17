@@ -140,10 +140,16 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 	const auto SelfClass = GetClass();
 	UE_LOG(LogBeamContent, Verbose, TEXT("BuildPropertiesJsonObject - Parsing Class: %s"), *SelfClass->GetName());
 	for (TFieldIterator<FProperty> It(SelfClass); It; ++It)
-	{
+	{		
 		FJsonDomBuilder::FObject CurrProp = FJsonDomBuilder::FObject{};
 		FString CurrPropName = It->GetName();
 		UE_LOG(LogBeamContent, Verbose, TEXT("BuildPropertiesJsonObject - Parsing Prop: %s"), *CurrPropName);
+		if(FieldsExcludedFromContentJsonSerialization.Contains(CurrPropName))
+		{
+			UE_LOG(LogBeamContent, Verbose, TEXT("BuildPropertiesJsonObject - Skipping Excluded Prop: %s"), *CurrPropName);
+			continue;
+		}
+		
 
 		auto ShouldAddToJson = true;
 		if (const auto SoftObjectProperty = CastField<FSoftObjectProperty>(*It))
@@ -555,11 +561,15 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 
 void UBeamContentObject::ParseBasicJsonObject(const TSharedPtr<FJsonObject>& Object)
 {
-	Id = Object->GetStringField("id");
-	Version = Object->GetStringField("version");
+	Id = Object->GetStringField(TEXT("id"));
+	Version = Object->GetStringField(TEXT("version"));
 
-	const auto Properties = Object->GetObjectField("properties");
-	ParsePropertiesJsonObject(Properties);
+	// We only parse properties IF we are a sup
+	if(!SupportLevel)
+	{
+		const auto Properties = Object->GetObjectField(TEXT("properties"));
+		ParsePropertiesJsonObject(Properties);
+	}
 }
 
 void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>& JsonProperties)
@@ -569,12 +579,18 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 
 	for (TFieldIterator<FProperty> It(SelfClass); It; ++It)
 	{
-		const FString PropName = It->GetName();
-		UE_LOG(LogBeamContent, Verbose, TEXT("ParsePropertiesJsonObject - Parsing Prop: %s"), *PropName);
+		const FString PropName = It->GetName();		
+		UE_LOG(LogBeamContent, Verbose, TEXT("BuildPropertiesJsonObject - Parsing Prop: %s"), *PropName);
+		if(FieldsExcludedFromContentJsonSerialization.Contains(PropName))
+		{
+			UE_LOG(LogBeamContent, Verbose, TEXT("BuildPropertiesJsonObject - Skipping Excluded Prop: %s"), *PropName);
+			continue;
+		}
+		
 		if (const auto SoftObjectProperty = CastField<FSoftObjectProperty>(*It))
 		{
 			FString JsonVal;
-			if (!JsonProperties->GetObjectField(PropName)->TryGetStringField("data", JsonVal))
+			if (!JsonProperties->GetObjectField(PropName)->TryGetStringField(TEXT("data"), JsonVal))
 				JsonVal = TEXT("None");
 
 			const auto Val = SoftObjectProperty->ContainerPtrToValuePtr<FSoftObjectPtr>(this);
@@ -605,7 +621,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 				if (const auto InnerOptionalSoftObject = CastField<FSoftObjectProperty>(OptionalValueProp))
 				{
 					const auto Val = InnerOptionalSoftObject->ContainerPtrToValuePtr<FSoftObjectPtr>(OptionalVal);
-					InnerOptionalSoftObject->SetPropertyValue(Val, FSoftObjectPtr(FSoftObjectPath(JsonProperties->GetObjectField(PropName)->GetStringField("data"))));
+					InnerOptionalSoftObject->SetPropertyValue(Val, FSoftObjectPtr(FSoftObjectPath(JsonProperties->GetObjectField(PropName)->GetStringField(TEXT("data")))));
 				}
 				else if (const auto InnerOptionalStructProperty = CastField<FStructProperty>(OptionalValueProp))
 				{
@@ -613,7 +629,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 
 					if (InnerOptionalStruct->IsChildOf(FBeamMap::StaticStruct()))
 					{
-						const auto BeamMapJson = JsonProperties->GetObjectField(PropName)->GetObjectField("data");
+						const auto BeamMapJson = JsonProperties->GetObjectField(PropName)->GetObjectField(TEXT("data"));
 						FBeamMap* BeamMap = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamMap>(OptionalVal);
 						BeamMap->OuterOwner = this;
 						const FMapProperty* InnerMapProperty = nullptr;
@@ -627,7 +643,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 					}
 					else if (InnerOptionalStruct->IsChildOf(FBeamArray::StaticStruct()))
 					{
-						const auto BeamArrayJson = JsonProperties->GetObjectField(PropName)->GetArrayField("data");
+						const auto BeamArrayJson = JsonProperties->GetObjectField(PropName)->GetArrayField(TEXT("data"));
 						FBeamArray* BeamArray = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamArray>(OptionalVal);
 						BeamArray->OuterOwner = this;
 						const FArrayProperty* InnerArrayProperty = nullptr;
@@ -650,14 +666,14 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 					}
 					else if (InnerOptionalStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
 					{
-						const auto SubJsonSemantic = JsonProperties->GetObjectField(PropName)->GetStringField("data");
+						const auto SubJsonSemantic = JsonProperties->GetObjectField(PropName)->GetStringField(TEXT("data"));
 						FBeamSemanticType* ValData = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamSemanticType>(OptionalVal);
 						ValData->Set(&SubJsonSemantic, ValData->GetSerializationRepresentationName(0));
 						OptionalVal->Set(ValData);
 					}
 					else if (InnerOptionalStruct->IsChildOf(FBeamJsonSerializableUStruct::StaticStruct()))
 					{
-						const auto SubJsonSerializable = JsonProperties->GetObjectField(PropName)->GetObjectField("data");
+						const auto SubJsonSerializable = JsonProperties->GetObjectField(PropName)->GetObjectField(TEXT("data"));
 						FBeamJsonSerializableUStruct* ValData = InnerOptionalStructProperty->ContainerPtrToValuePtr<FBeamJsonSerializableUStruct>(OptionalVal);
 						ValData->OuterOwner = this;
 						ValData->BeamDeserializeProperties(SubJsonSerializable);
@@ -671,7 +687,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 				}
 				else if (const auto MapProperty = CastField<FMapProperty>(OptionalValueProp))
 				{
-					const auto MapJson = JsonProperties->GetObjectField(PropName)->GetObjectField("data");
+					const auto MapJson = JsonProperties->GetObjectField(PropName)->GetObjectField(TEXT("data"));
 					ParseMapProperty(PropName, MapJson, MapProperty, OptionalVal);
 					OptionalVal->Set(OptionalVal->GetAddr());
 				}
@@ -687,7 +703,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 					}
 					else
 					{
-						ArrayJson = JsonProperties->GetObjectField(PropName)->GetArrayField("data");
+						ArrayJson = JsonProperties->GetObjectField(PropName)->GetArrayField(TEXT("data"));
 					}
 
 					ParseArrayProperty(PropName, ArrayJson, ArrayProperty, OptionalVal);
@@ -695,7 +711,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 				}
 				else if (const auto ClassProperty = CastField<FClassProperty>(OptionalValueProp))
 				{
-					const auto StrVal = JsonProperties->GetObjectField(PropName)->GetStringField("data");
+					const auto StrVal = JsonProperties->GetObjectField(PropName)->GetStringField(TEXT("data"));
 					const auto Val = ClassProperty->ContainerPtrToValuePtr<UClass>(OptionalVal);
 					ClassProperty->SetPropertyValue(Val, FSoftClassPath{StrVal}.ResolveClass());
 					OptionalVal->Set(OptionalVal->GetAddr());
@@ -706,7 +722,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 
 					if (InnerOptionalClass->ImplementsInterface(UBeamJsonSerializableUObject::StaticClass()))
 					{
-						const auto SubJsonSerializable = JsonProperties->GetObjectField(PropName)->GetObjectField("data");
+						const auto SubJsonSerializable = JsonProperties->GetObjectField(PropName)->GetObjectField(TEXT("data"));
 						const auto Val = InnerOptionalUObjectProperty->ContainerPtrToValuePtr<UObject*>(OptionalVal);
 						*Val = NewObject<UObject>(this, InnerOptionalClass);
 						IBeamJsonSerializableUObject* ValData = Cast<IBeamJsonSerializableUObject>(*Val);
@@ -723,56 +739,56 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 				else if (const auto TextProperty = CastField<FTextProperty>(OptionalValueProp))
 				{
 					const auto Val = TextProperty->ContainerPtrToValuePtr<FText>(OptionalVal);
-					const auto StrVal = JsonProperties->GetObjectField(PropName)->GetStringField("data");
+					const auto StrVal = JsonProperties->GetObjectField(PropName)->GetStringField(TEXT("data"));
 					TextProperty->SetPropertyValue(Val, FText::FromString(StrVal));
 					OptionalVal->Set(OptionalVal->GetAddr());
 				}
 				else if (const auto NameProperty = CastField<FNameProperty>(OptionalValueProp))
 				{
 					const auto Val = NameProperty->ContainerPtrToValuePtr<FName>(OptionalVal);
-					NameProperty->SetPropertyValue(Val, FName(JsonProperties->GetObjectField(PropName)->GetStringField("data")));
+					NameProperty->SetPropertyValue(Val, FName(JsonProperties->GetObjectField(PropName)->GetStringField(TEXT("data"))));
 					OptionalVal->Set(OptionalVal->GetAddr());
 				}
 				else if (const auto StrProperty = CastField<FStrProperty>(OptionalValueProp))
 				{
 					const auto Val = StrProperty->ContainerPtrToValuePtr<FString>(OptionalVal);
-					StrProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetStringField("data"));
+					StrProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetStringField(TEXT("data")));
 					OptionalVal->Set(OptionalVal->GetAddr());
 				}
 				else if (const auto BoolProperty = CastField<FBoolProperty>(OptionalValueProp))
 				{
 					const auto Val = BoolProperty->ContainerPtrToValuePtr<bool>(OptionalVal);
-					BoolProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetBoolField("data"));
+					BoolProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetBoolField(TEXT("data")));
 					OptionalVal->Set(OptionalVal->GetAddr());
 				}
 				else if (const auto FloatProperty = CastField<FFloatProperty>(OptionalValueProp))
 				{
 					const auto Val = FloatProperty->ContainerPtrToValuePtr<float>(OptionalVal);
-					FloatProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetNumberField("data"));
+					FloatProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetNumberField(TEXT("data")));
 					OptionalVal->Set(OptionalVal->GetAddr());
 				}
 				else if (const auto DoubleProperty = CastField<FDoubleProperty>(OptionalValueProp))
 				{
 					const auto Val = DoubleProperty->ContainerPtrToValuePtr<double>(OptionalVal);
-					DoubleProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetNumberField("data"));
+					DoubleProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetNumberField(TEXT("data")));
 					OptionalVal->Set(OptionalVal->GetAddr());
 				}
 				else if (const auto Int32Property = CastField<FIntProperty>(OptionalValueProp))
 				{
 					const auto Val = Int32Property->ContainerPtrToValuePtr<int32>(OptionalVal);
-					Int32Property->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetIntegerField("data"));
+					Int32Property->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetIntegerField(TEXT("data")));
 					OptionalVal->Set(OptionalVal->GetAddr());
 				}
 				else if (const auto Int64Property = CastField<FInt64Property>(OptionalValueProp))
 				{
 					const auto Val = Int64Property->ContainerPtrToValuePtr<int64>(OptionalVal);
-					Int64Property->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetIntegerField("data"));
+					Int64Property->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetIntegerField(TEXT("data")));
 					OptionalVal->Set(OptionalVal->GetAddr());
 				}
 				else if (const auto ByteProperty = CastField<FByteProperty>(OptionalValueProp))
 				{
 					const auto Val = ByteProperty->ContainerPtrToValuePtr<uint8>(OptionalVal);
-					ByteProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetIntegerField("data"));
+					ByteProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetIntegerField(TEXT("data")));
 					OptionalVal->Set(OptionalVal->GetAddr());
 				}
 				else if (const auto EnumProperty = CastField<FEnumProperty>(OptionalValueProp))
@@ -796,7 +812,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 			}
 			else if (ScriptStruct && ScriptStruct->IsChildOf(FBeamMap::StaticStruct()))
 			{
-				const auto BeamMapJson = JsonProperties->GetObjectField(PropName)->GetObjectField("data");
+				const auto BeamMapJson = JsonProperties->GetObjectField(PropName)->GetObjectField(TEXT("data"));
 				FBeamMap* BeamMap = StructProperty->ContainerPtrToValuePtr<FBeamMap>(this);
 				BeamMap->OuterOwner = this;
 				const FMapProperty* InnerMapProperty = nullptr;
@@ -809,7 +825,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 			}
 			else if (ScriptStruct && ScriptStruct->IsChildOf(FBeamArray::StaticStruct()))
 			{
-				const auto BeamArrayJson = JsonProperties->GetObjectField(PropName)->GetArrayField("data");
+				const auto BeamArrayJson = JsonProperties->GetObjectField(PropName)->GetArrayField(TEXT("data"));
 				FBeamArray* BeamArray = StructProperty->ContainerPtrToValuePtr<FBeamArray>(this);
 				BeamArray->OuterOwner = this;
 				const FArrayProperty* InnerArrayProperty = nullptr;
@@ -822,14 +838,14 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 			}
 			else if (ScriptStruct && ScriptStruct->IsChildOf(FGameplayTag::StaticStruct()))
 			{
-				const auto SubJsonSemantic = JsonProperties->GetObjectField(PropName)->GetStringField("data");
+				const auto SubJsonSemantic = JsonProperties->GetObjectField(PropName)->GetStringField(TEXT("data"));
 				FGameplayTag* ValData = StructProperty->ContainerPtrToValuePtr<FGameplayTag>(this);
 				const auto bShouldError = GetDefault<UBeamCoreSettings>()->bErrorIfGameplayTagNotFound;
 				*ValData = FGameplayTag::RequestGameplayTag(FName(SubJsonSemantic), !SubJsonSemantic.Equals(TEXT("None")) && bShouldError);
 			}
 			else if (ScriptStruct && ScriptStruct->IsChildOf(FGameplayTagContainer::StaticStruct()))
 			{
-				const auto SubJsonSemantic = JsonProperties->GetObjectField(PropName)->GetStringField("data");
+				const auto SubJsonSemantic = JsonProperties->GetObjectField(PropName)->GetStringField(TEXT("data"));
 				FGameplayTagContainer* ValData = StructProperty->ContainerPtrToValuePtr<FGameplayTagContainer>(this);
 				ValData->FromExportString(SubJsonSemantic);
 			}
@@ -844,13 +860,13 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 			}
 			else if (ScriptStruct && ScriptStruct->IsChildOf(FBeamSemanticType::StaticStruct()))
 			{
-				const auto SubJsonSemantic = JsonProperties->GetObjectField(PropName)->GetStringField("data");
+				const auto SubJsonSemantic = JsonProperties->GetObjectField(PropName)->GetStringField(TEXT("data"));
 				FBeamSemanticType* ValData = StructProperty->ContainerPtrToValuePtr<FBeamSemanticType>(this);
 				ValData->Set(&SubJsonSemantic, ValData->GetSerializationRepresentationName(0));
 			}
 			else if (ScriptStruct && ScriptStruct->IsChildOf(FBeamJsonSerializableUStruct::StaticStruct()))
 			{
-				const auto SubJsonSerializable = JsonProperties->GetObjectField(PropName)->GetObjectField("data");
+				const auto SubJsonSerializable = JsonProperties->GetObjectField(PropName)->GetObjectField(TEXT("data"));
 				FBeamJsonSerializableUStruct* ValData = StructProperty->ContainerPtrToValuePtr<FBeamJsonSerializableUStruct>(this);
 				ValData->OuterOwner = this;
 				ValData->BeamDeserializeProperties(SubJsonSerializable);
@@ -862,7 +878,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 		}
 		else if (const auto MapProperty = CastField<FMapProperty>(*It))
 		{
-			const auto Map = JsonProperties->GetObjectField(PropName)->GetObjectField("data");
+			const auto Map = JsonProperties->GetObjectField(PropName)->GetObjectField(TEXT("data"));
 			ParseMapProperty(PropName, Map, MapProperty, this);
 		}
 		else if (const auto ArrayProperty = CastField<FArrayProperty>(*It))
@@ -877,7 +893,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 			}
 			else
 			{
-				ArrayJson = JsonProperties->GetObjectField(PropName)->GetArrayField("data");
+				ArrayJson = JsonProperties->GetObjectField(PropName)->GetArrayField(TEXT("data"));
 			}
 
 			ParseArrayProperty(PropName, ArrayJson, ArrayProperty, this);
@@ -885,7 +901,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 		else if (const auto ClassProperty = CastField<FClassProperty>(*It))
 		{
 			const auto Val = ClassProperty->ContainerPtrToValuePtr<UClass>(this);
-			const auto StrVal = JsonProperties->GetObjectField(PropName)->GetStringField("data");
+			const auto StrVal = JsonProperties->GetObjectField(PropName)->GetStringField(TEXT("data"));
 			ClassProperty->SetPropertyValue(Val, FSoftClassPath{StrVal}.ResolveClass());
 		}
 		else if (const auto UObjectProperty = CastField<FObjectProperty>(*It))
@@ -894,7 +910,7 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 			if (ObjectClass->ImplementsInterface(UBeamJsonSerializableUObject::StaticClass()))
 			{
 				const TSharedPtr<FJsonObject>* JsonObject;
-				if (JsonProperties->GetObjectField(PropName)->TryGetObjectField("data", JsonObject))
+				if (JsonProperties->GetObjectField(PropName)->TryGetObjectField(TEXT("data"), JsonObject))
 				{
 					UObject* Val = NewObject<UObject>(this, ObjectClass);
 					IBeamJsonSerializableUObject* ValData = Cast<IBeamJsonSerializableUObject>(Val);
@@ -912,52 +928,52 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 		else if (const auto TextProperty = CastField<FTextProperty>(*It))
 		{
 			const auto Val = TextProperty->ContainerPtrToValuePtr<FText>(this);
-			TextProperty->SetPropertyValue(Val, FText::FromString(JsonProperties->GetObjectField(PropName)->GetStringField("data")));
+			TextProperty->SetPropertyValue(Val, FText::FromString(JsonProperties->GetObjectField(PropName)->GetStringField(TEXT("data"))));
 		}
 		else if (const auto NameProperty = CastField<FNameProperty>(*It))
 		{
 			const auto Val = NameProperty->ContainerPtrToValuePtr<FName>(this);
-			NameProperty->SetPropertyValue(Val, FName(JsonProperties->GetObjectField(PropName)->GetStringField("data")));
+			NameProperty->SetPropertyValue(Val, FName(JsonProperties->GetObjectField(PropName)->GetStringField(TEXT("data"))));
 		}
 		else if (const auto StrProperty = CastField<FStrProperty>(*It))
 		{
 			const auto Val = StrProperty->ContainerPtrToValuePtr<FString>(this);
-			StrProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetStringField("data"));
+			StrProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetStringField(TEXT("data")));
 		}
 		else if (const auto BoolProperty = CastField<FBoolProperty>(*It))
 		{
 			const auto Val = BoolProperty->ContainerPtrToValuePtr<bool>(this);
-			BoolProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetBoolField("data"));
+			BoolProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetBoolField(TEXT("data")));
 		}
 		else if (const auto FloatProperty = CastField<FFloatProperty>(*It))
 		{
 			const auto Val = FloatProperty->ContainerPtrToValuePtr<float>(this);
-			FloatProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetNumberField("data"));
+			FloatProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetNumberField(TEXT("data")));
 		}
 		else if (const auto DoubleProperty = CastField<FDoubleProperty>(*It))
 		{
 			const auto Val = DoubleProperty->ContainerPtrToValuePtr<double>(this);
-			DoubleProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetNumberField("data"));
+			DoubleProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetNumberField(TEXT("data")));
 		}
 		else if (const auto Int32Property = CastField<FIntProperty>(*It))
 		{
 			const auto Val = Int32Property->ContainerPtrToValuePtr<int32>(this);
-			Int32Property->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetIntegerField("data"));
+			Int32Property->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetIntegerField(TEXT("data")));
 		}
 		else if (const auto Int64Property = CastField<FInt64Property>(*It))
 		{
 			const auto Val = Int64Property->ContainerPtrToValuePtr<int64>(this);
-			Int64Property->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetIntegerField("data"));
+			Int64Property->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetIntegerField(TEXT("data")));
 		}
 		else if (const auto ByteProperty = CastField<FByteProperty>(*It))
 		{
 			const auto Val = ByteProperty->ContainerPtrToValuePtr<uint8>(this);
-			ByteProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetIntegerField("data"));
+			ByteProperty->SetPropertyValue(Val, JsonProperties->GetObjectField(PropName)->GetIntegerField(TEXT("data")));
 		}
 		else if (const auto EnumProperty = CastField<FEnumProperty>(*It))
 		{
 			UEnum* Enum = EnumProperty->GetEnum();
-			const auto StrVal = JsonProperties->GetObjectField(PropName)->GetStringField("data");
+			const auto StrVal = JsonProperties->GetObjectField(PropName)->GetStringField(TEXT("data"));
 			int64 EnumValue = Enum->GetValueByNameString(StrVal);
 
 			if (EnumValue != INDEX_NONE)
@@ -1239,7 +1255,7 @@ void UBeamContentObject::ParseArrayProperty(const FString& PropName, const TArra
 	FScriptArrayHelper ArrayHelper(ArrayProperty, Val);
 	ArrayHelper.Resize(JsonArray.Num());
 
-	if (const auto SoftObjectProperty = CastField<FSoftObjectProperty>(ArrayProperty->Inner))
+	if ([[maybe_unused]] const auto SoftObjectProperty = CastField<FSoftObjectProperty>(ArrayProperty->Inner))
 	{
 		for (int i = 0; i < JsonArray.Num(); ++i)
 		{

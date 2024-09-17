@@ -3,6 +3,7 @@
     <PropertyGroup Label="Beamable Settings">
         <!-- All Microservices must have the value, "service" -->
         <BeamProjectType>service</BeamProjectType>
+        <BeamServiceGroup>BEAMPROJ_DiscordDemo</BeamServiceGroup>
     </PropertyGroup>
 
     <!-- These are Special Beamable parameters that we use to keep the beamable packages in-sync to the CLI version your project is using. -->

@@ -377,7 +377,6 @@ public:
 	 */
 	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	TMap<FBeamRequestContext, TScriptInterface<IBeamBaseRequestInterface>> InFlightRequestData;
-
 	/**
 	 * @brief When we create a new request, authenticated or otherwise, we store it's deserialized response object here.
 	 * When it and WaitHandles that depend on it are completed, we remove it from here.	 
@@ -1818,10 +1817,22 @@ public:
 		}
 	}
 
-	UFUNCTION(BlueprintCallable, Category="Beam|Requests", DisplayName="Beam - Did Timeout", meta=(ExpandBoolAsExecs="ReturnValue"))
-	static bool IsRetryingTimeout(FBeamRequestContext Ctx);
+	/*	 
+		GENERIC-BEAM REQUEST FUNCTION
+	*/
 
-	static bool IsSuccessfulResponse(int32 ResponseCode);
+	/**
+	 * @brief Creates a request that will not target a Beamable server and prepares it to be sent out. This does not bind the lambda --- see any auto-generated API to understand how to manually make
+	 * a Beamable request.
+	 * 
+	 * @tparam TRequestData A type that implements the FBeamBaseRequest struct.
+	 * @param OutRequestId  The RequestId assigned to the returned TUnrealRequest.	 
+	 * @param RetryConfig The Retry Configuration for this request. 
+	 * @param RequestData An instance of the request type.
+	 * 
+	 * @return A TUnrealRequest object that will be tracked by UBeamBackend.
+	 */
+	TUnrealRequestPtr CreateGenericBeamRequest(int64& OutRequestId, const FBeamRetryConfig& RetryConfig, const UGenericBeamRequest* RequestData);
 
 	/*	 
 		ROUTING KEYS
@@ -1847,6 +1858,15 @@ public:
 	 * and non-authenticated requests.
 	 */
 	void SetRoutingKeyMap(FUserSlot ForSlot, FString RoutingKeyMap);
+
+	/*	 
+		UTILITIES
+	*/
+
+	UFUNCTION(BlueprintCallable, Category="Beam|Requests", DisplayName="Beam - Did Timeout", meta=(ExpandBoolAsExecs="ReturnValue"))
+	static bool IsRetryingTimeout(FBeamRequestContext Ctx);
+
+	static bool IsSuccessfulResponse(int32 ResponseCode);
 
 private:
 	void UpdateResponseCache(const FRequestType& RequestType, const UObject* CallingContext, const FHttpRequestPtr& Request, const FString& Content);

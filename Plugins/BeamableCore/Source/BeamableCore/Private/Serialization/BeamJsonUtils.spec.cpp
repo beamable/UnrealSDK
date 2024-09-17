@@ -2,7 +2,6 @@
 
 #include "Misc/AutomationTest.h"
 #include "Serialization/BeamJsonUtils.h"
-#include "JsonObjectConverter.h"
 #include "AutoGen/Optionals/OptionalMapOfArrayOfCurrencyProperty.h"
 #include "BeamBackend/SemanticTypes/BeamCid.h"
 
@@ -12,7 +11,7 @@ END_DEFINE_SPEC(FBeamJsonUtilsSpec)
 
 void FBeamJsonUtilsSpec::Define()
 {
-	struct FTestInt : public FBeamJsonSerializableUStruct
+	struct FTestInt : FBeamJsonSerializableUStruct
 	{
 		int a;
 
@@ -28,11 +27,11 @@ void FBeamJsonUtilsSpec::Define()
 
 		virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 		{
-			a = Bag->GetIntegerField("a");
+			a = Bag->GetIntegerField(TEXT("a"));
 		}
 	};
 
-	struct FBeamArrayOfInt : public FBeamArray
+	struct FBeamArrayOfInt : FBeamArray
 	{
 		TArray<int> Values;
 
@@ -1351,8 +1350,8 @@ void FBeamJsonUtilsSpec::Define()
 
 				virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 				{
-					a = Bag->GetIntegerField("a");
-					b = Bag->GetStringField("b");
+					a = Bag->GetIntegerField(TEXT("a"));
+					b = Bag->GetStringField(TEXT("b"));
 				}
 			};
 
@@ -1502,8 +1501,8 @@ void FBeamJsonUtilsSpec::Define()
 
 					virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 					{
-						a = Bag->GetIntegerField("a");
-						b = Bag->GetStringField("b");
+						a = Bag->GetIntegerField(TEXT("a"));
+						b = Bag->GetStringField(TEXT("b"));
 					}
 				};
 
@@ -1670,8 +1669,8 @@ void FBeamJsonUtilsSpec::Define()
 
 					virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 					{
-						a = Bag->GetIntegerField("a");
-						b = Bag->GetStringField("b");
+						a = Bag->GetIntegerField(TEXT("a"));
+						b = Bag->GetStringField(TEXT("b"));
 					}
 				};
 
@@ -2010,8 +2009,8 @@ void FBeamJsonUtilsSpec::Define()
 
 				virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 				{
-					a = Bag->GetIntegerField("a");
-					b = Bag->GetStringField("b");
+					a = Bag->GetIntegerField(TEXT("a"));
+					b = Bag->GetStringField(TEXT("b"));
 				}
 			};
 
@@ -2114,7 +2113,7 @@ void FBeamJsonUtilsSpec::Define()
 
 					virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 					{
-						a = Bag->GetIntegerField("a");
+						a = Bag->GetIntegerField(TEXT("a"));
 					}
 				};
 
@@ -2227,7 +2226,7 @@ void FBeamJsonUtilsSpec::Define()
 
 					virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 					{
-						a = Bag->GetIntegerField("a");
+						a = Bag->GetIntegerField(TEXT("a"));
 					}
 				};
 

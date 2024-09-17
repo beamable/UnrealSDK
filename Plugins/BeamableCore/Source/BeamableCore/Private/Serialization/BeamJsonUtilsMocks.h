@@ -28,7 +28,7 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		a = Bag->GetIntegerField("a");
+		a = Bag->GetIntegerField(TEXT("a"));
 	}
 };
 
@@ -64,9 +64,9 @@ public:
 	
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UBeamJsonUtils::DeserializeArray<UMockIntJsonSerializable*>(Bag->GetArrayField("a"), a, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<UMockIntJsonSerializable*>(Bag->GetArrayField(TEXT("a")), a, OuterOwner);
 		UBeamJsonUtils::DeserializeUObject<UMockIntJsonSerializable*>("b", Bag, b, OuterOwner);
-		UBeamJsonUtils::DeserializeMap<UMockIntJsonSerializable*>(Bag->GetObjectField("c"), c, OuterOwner);
+		UBeamJsonUtils::DeserializeMap<UMockIntJsonSerializable*>(Bag->GetObjectField(TEXT("c")), c, OuterOwner);
 	}
 };
 

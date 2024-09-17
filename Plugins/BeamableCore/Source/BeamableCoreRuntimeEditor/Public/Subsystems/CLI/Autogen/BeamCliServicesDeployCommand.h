@@ -75,43 +75,6 @@ public:
 };
 
 
-UCLASS()
-class UBeamCliServicesDeployLogsStreamData : public UObject, public IBeamJsonSerializableUObject
-{
-	GENERATED_BODY()
-
-public:	
-	
-	UPROPERTY()
-	FString Message = {};
-	UPROPERTY()
-	FString Level = {};
-	UPROPERTY()
-	FString TimeStamp = {};
-
-	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
-	{
-		Serializer->WriteValue(TEXT("Message"), Message);
-		Serializer->WriteValue(TEXT("Level"), Level);
-		Serializer->WriteValue(TEXT("TimeStamp"), TimeStamp);	
-	}
-
-	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
-	{
-		Serializer->WriteValue(TEXT("Message"), Message);
-		Serializer->WriteValue(TEXT("Level"), Level);
-		Serializer->WriteValue(TEXT("TimeStamp"), TimeStamp);	
-	}
-
-	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
-	{
-		Message = Bag->GetStringField(TEXT("Message"));
-		Level = Bag->GetStringField(TEXT("Level"));
-		TimeStamp = Bag->GetStringField(TEXT("TimeStamp"));	
-	}
-};
-
-
 /**
  Description:
   Deploys services remotely to the current realm
@@ -138,6 +101,7 @@ Options:
   --no-log-file                                By default, logs are automatically written to a temp file so that they can be used in an error case. However, when this option is enabled, logs are not written. Also, if the BEAM_CLI_NO_FILE_LOG environment variable is set, no log file will be written.  [default: False]
   --docker-cli-path <docker-cli-path>          a custom location for docker. By default, the CLI will attempt to resolve docker through its usual install locations. You can also use the BEAM_DOCKER_EXE environment variable to specify. 
                                                Currently, a docker path has been automatically identified. [default: docker]
+  --emit-log-streams                           Out all log messages as data payloads in addition to however they are logged
   --dir <dir>                                  Directory to use for configuration
   --raw                                        Output raw JSON to standard out. This happens by default when the command is being piped
   --pretty                                     Output syntax highlighted box text. This happens by default when the command is not piped
@@ -161,12 +125,7 @@ public:
 	inline static FString StreamTypeRemoteProgress = FString(TEXT("remote_progress"));
 	UPROPERTY() TArray<UBeamCliServicesDeployRemoteProgressStreamData*> RemoteProgressStream;
 	UPROPERTY() TArray<int64> RemoteProgressTimestamps;
-	TFunction<void (const TArray<UBeamCliServicesDeployRemoteProgressStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnRemoteProgressStreamOutput;
-
-	inline static FString StreamTypeLogs = FString(TEXT("logs"));
-	UPROPERTY() TArray<UBeamCliServicesDeployLogsStreamData*> LogsStream;
-	UPROPERTY() TArray<int64> LogsTimestamps;
-	TFunction<void (const TArray<UBeamCliServicesDeployLogsStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnLogsStreamOutput;	
+	TFunction<void (const TArray<UBeamCliServicesDeployRemoteProgressStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnRemoteProgressStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual void HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

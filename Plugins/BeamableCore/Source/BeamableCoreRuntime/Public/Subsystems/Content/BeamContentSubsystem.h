@@ -10,6 +10,7 @@
 #include "Runtime/BeamRuntimeSubsystem.h"
 #include "UObject/Object.h"
 #include "AutoGen/Rows/ClientContentInfoTableRow.h"
+#include "BeamBackend/BeamGenericApi.h"
 #include "Content/DownloadContentState.h"
 
 #include "BeamContentSubsystem.generated.h"
@@ -41,6 +42,9 @@ class BEAMABLECORERUNTIME_API UBeamContentSubsystem : public UBeamRuntimeSubsyst
 
 	UPROPERTY()
 	UBeamContentApi* ContentApi;
+
+	UPROPERTY()
+	UBeamGenericApi* GenericApi;
 
 	UPROPERTY()
 	TMap<FBeamContentManifestId, UBeamContentCache*> LiveContent;
@@ -80,18 +84,11 @@ public:
 
 private:
 	/**
-	 * Given a Client CSV (contains public content only) and its id, we make requests to the URLs where the actual content JSON is stored.
+	 * Given a list of FBeamRemoteContentManifestEntry (contains public content only) and a FBeamContentManifestId, we make requests to the URLs where the actual content JSON is stored.
 	 * Run OnSuccess if all downloads succeed. OnError, otherwise.
 	 */
-	void DownloadLiveContentObjectsData(const FBeamContentManifestId Id, const TArray<FBeamRemoteContentManifestEntry> Rows, const TMap<FBeamContentId, FString> Checksums, FSimpleDelegate OnSuccess,
-	                                    FSimpleDelegate OnError);
-
-	static void PrepareContentDownloadRequest(FBeamContentManifestId ManifestId, FBeamRemoteContentManifestEntry ContentEntry, FDownloadContentState& Item);
-
-	/**
-	 * Given a response to a Download Content Request, we update the live runtime cache of content definitions. 
-	 */
-	void UpdateDownloadedContent(FString UriResponse, FDownloadContentState DownloadState);
+	void DownloadLiveContentObjects(const FBeamContentManifestId ManifestId, const TArray<FBeamRemoteContentManifestEntry> Rows, const TMap<FBeamContentId, FString> Checksums,
+	                                FBeamOperationHandle Op);
 
 public:
 	/**
