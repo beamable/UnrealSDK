@@ -42,13 +42,7 @@ void FBeamContentIdCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 			TArray<FName> TypesToRemove;
 			TMap<FString,TArray<FString>> OutMappings;
 			Content->FindSubTypesOfContentType(BeamContentTypeFilterArray,OutMappings);
-			for(const auto Map : OutMappings)
-			{
-				for(const auto El: Map.Value)
-				{
-					UE_LOG(LogTemp, Warning, TEXT("Out mapping: %s - %s"), *Map.Key, *El);
-				}
-			}
+
 			for (const auto& Map : ContentTypeToIdsMap)
 			{
 				const auto ExampleContent = Map.Value[0].Get()->ToString();
@@ -58,7 +52,6 @@ void FBeamContentIdCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 				{
 					for(const auto El: TT.Value)
 					{
-						UE_LOG(LogTemp, Warning, TEXT("%s - %s type %s"), *El, *ExampleContent, *TypeId);
 						if (!OnlyExplicitTypes && TypeId.StartsWith(El))
 						{
 							GoodContent = true;
