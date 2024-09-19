@@ -93,7 +93,7 @@ jobs:
       - name: Cleanup workspace
         if: always()
         shell: bash
-        run: rm -rf ${{ github.workspace }}/*
+        run: rm -rf .*
   build:
     needs: [unifyInputs, changes]
     uses: ./.github/workflows/build_windows.yml
