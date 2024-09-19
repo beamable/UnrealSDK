@@ -32,7 +32,6 @@ jobs:
       #     curl https://api.ipify.org
           
       # Gets the Unreal Repo and the CLI repo
-      - uses: TooMuch4U/actions-clean@v2.1
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -116,4 +115,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Windows_${{ env.buildType }}_${{ inputs.beamProj }}_${{ env.commit_hash }}
-          path: windows_${{ env.buildType }}_${{ inputs.beamProj }}_${{ env.commit_hash }}.zip 
+          path: windows_${{ env.buildType }}_${{ inputs.beamProj }}_${{ env.commit_hash }}.zip
+      - name: Cleanup workspace
+        if: always()
+        shell: bash
+        run: rm -rf ${{ github.workspace }}/*

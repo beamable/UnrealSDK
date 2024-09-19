@@ -51,7 +51,6 @@ jobs:
       
     # Clone the repo and find the changed "BEAMPROJ_XXXXX"
     steps:
-      - uses: TooMuch4U/actions-clean@v2.1
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
         id: filter
@@ -90,8 +89,11 @@ jobs:
               - '**.sh'
               - '**.ps1'              
               - 'Source/**'
-              - '*.uproject'            
-            
+              - '*.uproject'      
+      - name: Cleanup workspace
+        if: always()
+        shell: bash
+        run: rm -rf ${{ github.workspace }}/*
   build:
     needs: [unifyInputs, changes]
     uses: ./.github/workflows/build_windows.yml

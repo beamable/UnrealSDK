@@ -11,7 +11,6 @@ jobs:
   build:
     runs-on: [self-hosted, Windows]
     steps:
-      - uses: TooMuch4U/actions-clean@v2.1
       # Gets the Unreal Repo and the CLI repo
       - uses: actions/checkout@v4
         with:
@@ -105,3 +104,7 @@ jobs:
         working-directory: BeamableUnreal
         shell: bash
         run: bash windows_build.sh
+      - name: Cleanup workspace
+        if: always()
+        shell: bash
+        run: rm -rf ${{ github.workspace }}/*
