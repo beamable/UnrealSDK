@@ -53,6 +53,8 @@ jobs:
           path: |
             BeamableUnreal/Intermediate
             BeamableUnreal/Saved
+            BeamableUnreal/Plugins/BeamableCore/Intermediate
+            BeamableUnreal/Plugins/BeamableCore/Saved
             BeamableUnreal/BeamableUnreal.sln
           key: unreal-${{ runner.os }}-${{ inputs.targetPlatform }}-${{ inputs.buildType }}-${{ hashFiles('/BeamableUnreal/Source/**') }}
           restore-keys: unreal-${{ runner.os }}-${{ inputs.targetPlatform }}-

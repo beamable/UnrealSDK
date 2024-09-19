@@ -61,6 +61,7 @@ jobs:
         working-directory: ./unrealProject
         shell: powershell
         run: |
+            dotnet tool restore
             Remove-Item -Recurse -Force Plugins/BeamableCore/Source/BeamableCore/Private/AutoGen
             Remove-Item -Recurse -Force Plugins/BeamableCore/Source/BeamableCore/Public/AutoGen
       - name: Update OpenAPI
