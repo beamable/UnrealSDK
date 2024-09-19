@@ -32,6 +32,7 @@ jobs:
       #     curl https://api.ipify.org
           
       # Gets the Unreal Repo and the CLI repo
+      - uses: TooMuch4U/actions-clean@v2.1
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0

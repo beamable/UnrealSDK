@@ -51,6 +51,7 @@ jobs:
     
     # Clone the repo and find the changed "BEAMPROJ_XXXXX"
     steps:
+      - uses: TooMuch4U/actions-clean@v2.1
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
         id: filter

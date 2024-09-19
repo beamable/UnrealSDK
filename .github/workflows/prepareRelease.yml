@@ -19,11 +19,6 @@ jobs:
     with:
       buildAll: true
     
-  buildLinuxClients:
-    uses: ./.github/workflows/build_linux_client.yml
-    with:
-      buildAll: true
-    
   buildWindowsClients:    
     uses: ./.github/workflows/build_windows_client.yml
     with:

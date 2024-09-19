@@ -10,13 +10,14 @@ permissions:
 jobs:
   build:
     runs-on: [self-hosted, Windows]
-    steps:          
+    steps:
+      - uses: TooMuch4U/actions-clean@v2.1
       # Gets the Unreal Repo and the CLI repo
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           lfs: true
-          path: unrealProject/
+          path: BeamableUnreal
 
       - uses: actions/checkout@v4
         with:
@@ -32,7 +33,7 @@ jobs:
         run: echo "buildType=client" >> $env:GITHUB_ENV
       - name: Set hash ENV var
         id: get_commit_hash
-        working-directory: unrealProject
+        working-directory: BeamableUnreal
         run: echo "commit_hash=$(git rev-parse HEAD)" >> $env:GITHUB_ENV
       - name: Check buildType ENV var
         id: check-build-type
@@ -50,32 +51,32 @@ jobs:
       - name: Run Set Packages for local build of the CLI
         working-directory: ./BeamableProduct
         shell: bash
-        run: bash set-packages.sh "${{ github.workspace }}/unrealProject/" "UNREAL_NugetSource" "" "" "${{ github.workspace }}/unrealProject/Microservices"
+        run: bash set-packages.sh "${{ github.workspace }}/BeamableUnreal/" "UNREAL_NugetSource" "" "" "${{ github.workspace }}/BeamableUnreal/Microservices"
 
       # Run init_repo.sh (needed to setup the project correctly locally)     
       - name: Prepare Repository for compilation
-        working-directory: ./unrealProject
+        working-directory: ./BeamableUnreal
         shell: bash
         run: bash init_repo.sh skip_waiting
       - name: Remove old AutoGen code
-        working-directory: ./unrealProject
+        working-directory: ./BeamableUnreal
         shell: powershell
         run: |
             dotnet tool restore
             Remove-Item -Recurse -Force Plugins/BeamableCore/Source/BeamableCore/Private/AutoGen
             Remove-Item -Recurse -Force Plugins/BeamableCore/Source/BeamableCore/Public/AutoGen
       - name: Update OpenAPI
-        working-directory: ./unrealProject
+        working-directory: ./BeamableUnreal
         shell: bash
         run: dotnet beam oapi generate --output Plugins/BeamableCore/Source --engine unreal
       - name: Print problematic files
-        working-directory: ./unrealProject
+        working-directory: ./BeamableUnreal
         shell: powershell
         run: |
             Get-Content -Path Plugins\BeamableCore\Source\BeamableCore\Public\AutoGen\FederationInfo.h
             Get-Content -Path Plugins\BeamableCore\Source\BeamableCore\Private\AutoGen\FederationInfo.cpp
       - name: Check for Changes
-        working-directory: ./unrealProject
+        working-directory: ./BeamableUnreal
         id: changes
         shell: bash
         run: |
@@ -89,18 +90,18 @@ jobs:
             fi
       # Run clean for Unreal
       - name: Clean project dir
-        working-directory: ./unrealProject
+        working-directory: ./BeamableUnreal
         shell: bash
         run: bash clean_project.sh
       # Run init_repo.sh (needed to setup the project correctly locally)     
       - name: Prepare Repository for compilation
-        working-directory: unrealProject
+        working-directory: BeamableUnreal
         if: ${{ steps.changes.outputs.any == 'true' }}
         shell: bash
         run: bash init_repo.sh skip_waiting
         
       # Builds the image
       - name: Build image
-        working-directory: unrealProject
+        working-directory: BeamableUnreal
         shell: bash
         run: bash windows_build.sh
