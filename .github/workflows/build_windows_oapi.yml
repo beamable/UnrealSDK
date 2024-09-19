@@ -47,6 +47,11 @@ jobs:
       - run: Add-Content $env:GITHUB_PATH "C:\Program Files\dotnet"
       - run: Add-Content $env:GITHUB_PATH "~\.dotnet\tools"
       # Run Set-Packages for Unreal
+      - name: Clean project dir
+        working-directory: ./unrealProject
+        shell: bash
+        run: bash clean_project.sh
+      # Run Set-Packages for Unreal
       - name: Run Set Packages for local build of the CLI
         working-directory: ./BeamableProduct
         shell: bash
@@ -55,7 +60,9 @@ jobs:
       - name: Remove old AutoGen code
         working-directory: ./unrealProject
         shell: powershell
-        run: Remove-Item -Recurse -Force Plugins\BeamableCore\Source\BeamableCore\Private\AutoGen
+        run: |
+            Remove-Item -Recurse -Force Plugins/BeamableCore/Source/BeamableCore/Private/AutoGen
+            Remove-Item -Recurse -Force Plugins/BeamableCore/Source/BeamableCore/Public/AutoGen
       - name: Update OpenAPI
         working-directory: unrealProject
         shell: bash
