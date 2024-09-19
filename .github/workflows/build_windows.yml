@@ -119,4 +119,4 @@ jobs:
       - name: Cleanup workspace
         if: always()
         shell: bash
-        run: rm -rf .*
+        run: rm -rf .* && rm -rf *
