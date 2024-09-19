@@ -41,7 +41,7 @@ public class BeamableCore : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore",
+				"SlateCore","Json", "JsonUtilities",
 				"OnlineSubsystem"
 				// ... add private dependencies that you statically link with here ...	
 			}
