@@ -46,11 +46,6 @@ jobs:
       # Make sure the .NET's paths are added to the shell's path ENV VAR
       - run: Add-Content $env:GITHUB_PATH "C:\Program Files\dotnet"
       - run: Add-Content $env:GITHUB_PATH "~\.dotnet\tools"
-      # Run clean for Unreal
-      - name: Clean project dir
-        working-directory: ./unrealProject
-        shell: bash
-        run: bash clean_project.sh
       # Run Set-Packages for Unreal
       - name: Run Set Packages for local build of the CLI
         working-directory: ./BeamableProduct
@@ -82,6 +77,11 @@ jobs:
                 echo "any=true" >> $GITHUB_OUTPUT
                 echo "Files: ${modified}"
             fi
+      # Run clean for Unreal
+      - name: Clean project dir
+        working-directory: ./unrealProject
+        shell: bash
+        run: bash clean_project.sh
       # Run init_repo.sh (needed to setup the project correctly locally)     
       - name: Prepare Repository for compilation
         working-directory: unrealProject
