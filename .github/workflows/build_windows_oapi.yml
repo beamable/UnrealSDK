@@ -57,19 +57,7 @@ jobs:
         run: |
             Get-Content -Path Plugins\BeamableCore\Source\BeamableCore\Public\AutoGen\FederationInfo.h
             Get-Content -Path Plugins\BeamableCore\Source\BeamableCore\Private\AutoGen\FederationInfo.cpp
-      - name: Check for Changes
-        working-directory: ./BeamableUnreal
-        id: changes
-        shell: bash
-        run: |
-            modified="$(git status --porcelain | grep 'Plugins/BeamableCore')"
-            lines=$(echo "${modified}" | wc -l)
-            if [ "$lines" -eq 0 ]; then
-                echo "any=false" >> $GITHUB_OUTPUT
-            else
-                echo "any=true" >> $GITHUB_OUTPUT
-                echo "Files: ${modified}"
-            fi
+
       # Run init_repo.sh (needed to setup the project correctly locally)     
       - name: Prepare Repository for compilation
         working-directory: BeamableUnreal
