@@ -75,6 +75,13 @@ jobs:
         working-directory: BeamableUnreal
         shell: bash
         run: bash init_repo.sh skip_waiting
+      # Sets the BEAMPROJ based on the input to this workflow.
+      - name: Set BeamProjOverride.txt
+        working-directory: ./BeamableUnreal
+        shell: bash
+        run: |
+          echo "BEAMPROJ_SteamDemo" > BeamProjOverride.txt |
+          cat BeamProjOverride.txt
         
       # Builds the image
       - name: Build image
