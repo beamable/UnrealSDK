@@ -35,7 +35,7 @@ fi
 
 # Install Beamable.Tools with optional version
 if [ -z "$1" ]; then
-    dotnet tool install Beamable.Tools --version 2.0.1 --allow-downgrade
+    dotnet tool install Beamable.Tools --version 2.0.2 --allow-downgrade
 else
     dotnet tool install Beamable.Tools --version "$1" --allow-downgrade
 fi

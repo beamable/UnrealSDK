@@ -77,7 +77,7 @@
         -->
         
         <PackageReference Include="Beamable.Microservice.Runtime" Condition="Exists('../../../BeamableSource/Beamable.Microservice.Runtime.0.0.123.nupkg')" Version="0.0.123"/>
-        <PackageReference Include="Beamable.Microservice.Runtime" Condition="!Exists('../../../BeamableSource/Beamable.Microservice.Runtime.0.0.123.nupkg')" Version="2.0.0"/>
+        <PackageReference Include="Beamable.Microservice.Runtime" Condition="!Exists('../../../BeamableSource/Beamable.Microservice.Runtime.0.0.123.nupkg')" Version="2.0.2"/>
         
         <PackageReference Include="EmbedIO" Version="3.4.*"/>
         <PackageReference Include="LoxSmoke.DocXml" Version="3.4.*"/>

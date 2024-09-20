@@ -2,10 +2,10 @@
 
 # use the dotnet sdk as a build stage
 FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine as build-env
-WORKDIR /BeamableSource
+WORKDIR /subsrc/BeamableSource
 COPY ./BeamableSource/*.nupkg ./
 WORKDIR /subsrc/
-RUN dotnet nuget add source /BeamableSource
+RUN dotnet nuget add source /subsrc/BeamableSource
 
 # <BEAM-CLI-COPY-ENV> this line signals the start of environment variables copies into the built container. Do not remove it. This will be overwritten every time a variable changes in the execution of the CLI.
 ENV BEAM_CSPROJ_PATH="/subsrc/Microservices/services/HathoraDemo/HathoraDemo.csproj"
@@ -18,7 +18,6 @@ COPY Microservices/services/HathoraDemo /subsrc/Microservices/services/HathoraDe
 
 # build the dotnet program
 WORKDIR /
-
 RUN dotnet publish ${BEAM_CSPROJ_PATH} -c release -o /beamApp
 
 # use the dotnet runtime as the final stage

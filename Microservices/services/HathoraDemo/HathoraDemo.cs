@@ -26,7 +26,7 @@ namespace Beamable.HathoraDemo
         public async Promise<ServerInfo> CreateGameServer(Lobby lobby)
         {
             var roomId = lobby.lobbyId;
-            BeamableLogger.Log($"Trying to provision game server for lobby={roomId} --- From={Context.UserId}");
+            BeamableLogger.Log($"Trying to provision game server for lobby={roomId} of gametype={lobby.matchType.Value.id.Value} --- From={Context.UserId}");
 
             RealmConfig config = await Services.RealmConfig.GetRealmConfigSettings();
 
