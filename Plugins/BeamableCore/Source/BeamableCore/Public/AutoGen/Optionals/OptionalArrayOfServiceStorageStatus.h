@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalArrayOfServiceStorageStatus : public FBeamOptio
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TArray<UServiceStorageStatus*> Val;
 
 	FOptionalArrayOfServiceStorageStatus();

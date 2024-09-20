@@ -20,10 +20,10 @@ struct BEAMABLECORE_API FBeamOfferConstraint : public FBeamJsonSerializableUStru
 		  Value(Value){}	
 	FBeamOfferConstraint() = default;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FString Constraint = {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	int64 Value = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
@@ -50,10 +50,10 @@ struct BEAMABLECORE_API FBeamOfferRequirement : public FBeamJsonSerializableUStr
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FString OfferSymbol = {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FBeamOfferConstraint Purchases = {};
 
 	FBeamOfferRequirement(const FString& OfferSymbol, const FBeamOfferConstraint& Purchases)
@@ -82,19 +82,19 @@ struct BEAMABLECORE_API FBeamStatRequirement : public FBeamJsonSerializableUStru
 
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FOptionalString Domain = {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FOptionalString Access = {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FString Stat = {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FString Constraint = {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	int64 Value = {};
 
 	FBeamStatRequirement(const FOptionalString& Domain, const FOptionalString& Access, const FString& Stat,
@@ -131,13 +131,13 @@ struct BEAMABLECORE_API FBeamCohortRequirement : public FBeamJsonSerializableUSt
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FString Trial = {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FString Cohort = {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FString Constraint = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
@@ -160,10 +160,10 @@ struct BEAMABLECORE_API FBeamActivePeriod : public FBeamJsonSerializableUStruct
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FString Start = {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FOptionalString End = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
@@ -184,7 +184,7 @@ struct BEAMABLECORE_API FBeamOptionalActivePeriod : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	FBeamActivePeriod Val = {};
 
 	explicit FBeamOptionalActivePeriod(const FBeamActivePeriod& Val): Val(Val)
@@ -210,10 +210,10 @@ struct BEAMABLECORE_API FBeamOfferObtainItemProperty : public FBeamJsonSerializa
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FString Name = {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FString Value = {};
 	
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
@@ -234,10 +234,10 @@ struct BEAMABLECORE_API FBeamOfferObtainItem : public FBeamJsonSerializableUStru
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BeamContentTypeFilter="item",BeamContentTypeFilterMode="tree"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BeamContentTypeFilter="item",BeamContentTypeFilterMode="tree"),Category="Beam")
 	FBeamContentId ContentId = {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	TArray<FBeamOfferObtainItemProperty> Properties = {};
 	
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
@@ -258,10 +258,10 @@ struct BEAMABLECORE_API FBeamOfferObtainCurrency : public FBeamJsonSerializableU
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BeamContentTypeFilter="currency",BeamContentTypeFilterMode="tree"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BeamContentTypeFilter="currency",BeamContentTypeFilterMode="tree"),Category="Beam")
 	FBeamContentId Symbol = {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	int64 Amount = {};
 	
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
@@ -282,16 +282,16 @@ struct BEAMABLECORE_API FBeamListingOffer : public FBeamJsonSerializableUStruct
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	TArray<FString> Titles = {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	TArray<FString> Descriptions = {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	TArray<FBeamOfferObtainCurrency> ObtainCurrency = {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	TArray<FBeamOfferObtainItem> ObtainItems = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
@@ -359,34 +359,34 @@ struct BEAMABLECORE_API FBeamScheduleDefinition : public FBeamJsonSerializableUS
 {
     GENERATED_BODY()
 
-    // UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    // UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Category="Beam")
     // int64 Index = -1;
     //
-    // UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    // UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
     // FString CronRawFormat;
     //
-    // UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    // UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
     // FString CronHumanFormat;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Category="Beam")
     TArray<FString> Second = {};
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Category="Beam")
     TArray<FString> Minute = {};
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Category="Beam")
     TArray<FString> Hour = {};
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Category="Beam")
     TArray<FString> DayOfMonth = {};
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Category="Beam")
     TArray<FString> Month = {};
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Category="Beam")
     TArray<FString> Year = {};
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Category="Beam")
     TArray<FString> DayOfWeek = {};
 	
     virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
@@ -424,19 +424,19 @@ struct BEAMABLECORE_API FBeamSchedule : public FBeamJsonSerializableUStruct
 {
     GENERATED_BODY()
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
     FString Description = {};
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
     FString ActiveFrom = FDateTime::UtcNow().ToIso8601();
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
     FOptionalString ActiveTo = {};
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
     TArray<FBeamScheduleDefinition> Definitions = {};
 
-    // UFUNCTION(BlueprintCallable)
+    // UPROPERTY(BlueprintCallable)
     bool IsPeriod() const
     {
         for (const FBeamScheduleDefinition& Def : Definitions)
@@ -476,7 +476,7 @@ struct BEAMABLECORE_API FBeamOptionalCohortRequirements : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	TArray<FBeamCohortRequirement> Val = {};
 
 
@@ -502,7 +502,7 @@ struct BEAMABLECORE_API FBeamOptionalStatRequirements : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	TArray<FBeamStatRequirement> Val = {};
 
 
@@ -528,7 +528,7 @@ struct BEAMABLECORE_API FBeamOptionalOfferRequirements : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	TArray<FBeamOfferRequirement> Val = {};
 
 	explicit FBeamOptionalOfferRequirements(const TArray<FBeamOfferRequirement>& Val): Val(Val)
@@ -554,7 +554,7 @@ struct BEAMABLECORE_API FBeamOptionalSchedule : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FBeamSchedule Val = {};
 
 
@@ -587,39 +587,39 @@ public:
 	UFUNCTION()
 	void GetContentType_UBeamListingContent(FString& Result);
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FBeamListingPrice price = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FBeamListingOffer offer = {};
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FBeamOptionalActivePeriod activePeriod = {};
 	 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FOptionalInt64 purchaseLimit = {};
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FBeamOptionalCohortRequirements cohortRequirements = {};
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FBeamOptionalStatRequirements playerStatRequirements = {};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FBeamOptionalOfferRequirements offerRequirements = {};
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	TMap<FString,FString> clientData = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FOptionalInt64 activeDurationSeconds = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FOptionalInt64 activeDurationCoolDownSeconds = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FOptionalInt64 activeDurationPurchaseLimit = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FOptionalString buttonText = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FBeamOptionalSchedule schedule = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FOptionalString scheduleInstancePurchaseLimit = {};
 };
 

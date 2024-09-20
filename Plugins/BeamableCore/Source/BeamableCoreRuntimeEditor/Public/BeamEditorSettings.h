@@ -16,22 +16,22 @@ struct FBeamProjectRealmData
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FBeamCid CID;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FBeamPid PID;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FOptionalBeamPid ParentPID;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FString ProjectName;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FString RealmName;
 
-	UPROPERTY(BlueprintReadOnly, Transient, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, Transient, VisibleAnywhere,Category="Beam")
 	FString RealmSecret;
 };
 
@@ -40,13 +40,13 @@ struct FBeamCustomerProjectData
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FString CustomerName;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FString CustomerAlias;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	TArray<FBeamProjectRealmData> AllRealms;
 };
 

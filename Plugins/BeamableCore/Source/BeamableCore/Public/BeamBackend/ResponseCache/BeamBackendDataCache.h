@@ -22,13 +22,13 @@ struct FBeamCachedRequestCallsite
 	/**
 	 * @brief The type of the request being made at this callsite.
 	 */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category="Beam")
 	FRequestType Type;
 
 	/**
 	 * @brief The calling context this request is being made from.
 	 */
-	UPROPERTY(BlueprintReadWrite, EditInstanceOnly)
+	UPROPERTY(BlueprintReadWrite, EditInstanceOnly,Category="Beam")
 	const UObject* CallingContext = nullptr;
 
 	friend bool operator==(const FBeamCachedRequestCallsite& Lhs, const FBeamCachedRequestCallsite& RHS)

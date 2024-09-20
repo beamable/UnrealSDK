@@ -33,26 +33,26 @@ struct FLocalMicroserviceData
 	/**
 	 * The id of the service.
 	 */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	FString BeamoId;
 
 	/**
 	 * If the service is part of any BeamServiceGroup, the group will show up here.
 	 */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	TArray<FString> ServiceGroups;
 
 	/**
 	 * The current local running state of the service. This only reflects the local running state of the service.
 	 * If its running remotely or not, is not captured by this variable.
 	 */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	TEnumAsByte<ELocalMicroserviceRunningMethod> RunningState = {};
 
 	/**
 	 * If, when deploying services to the realm, you wish to turn this service on. 
 	 */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	bool bShouldEnableRemoteOnPublish = {};
 
 	/**
@@ -64,13 +64,13 @@ struct FLocalMicroserviceData
 	 *
 	 * These are generated automatically from a hash of your MAC Address and a prefix so you don't have to worry about guaranteeing uniqueness.
 	 */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	TArray<FString> AvailableKeys;
 
 	/**
 	 * The currently selected routing key.
 	 */
-	UPROPERTY(BlueprintReadWrite, DisplayName="Routing Key")
+	UPROPERTY(BlueprintReadWrite, DisplayName="Routing Key", Category="Beam")
 	FString CurrentRoutingKey;
 };
 
@@ -80,22 +80,22 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamMicroserviceLocalEditorView : public UO
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	FString BeamoId;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	TEnumAsByte<EBeamServiceType> ServiceType;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	TEnumAsByte<ELocalMicroserviceRunningMethod> RunningState = {};
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	TArray<FString> ServiceGroups;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	TArray<FString> AvailableRoutingKeys;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
 	FString SelectedRoutingKey;
 };
 
@@ -130,7 +130,7 @@ public:
 	/**
 	 * @brief Current local state of LocalMicroservices according to the editor. UI should always build itself from the data here whenever it changes.
 	 */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	TMap<FString, FLocalMicroserviceData> LocalMicroserviceData;
 
 	/**

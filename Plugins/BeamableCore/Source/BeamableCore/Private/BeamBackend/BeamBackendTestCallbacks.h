@@ -112,19 +112,19 @@ struct FBeamMockGetRequestCSVResponseRow : public FTableRowBase
 	const static FString KeyField;
 	const static TArray<FString> HeaderFields;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	int32 Field1 = 0;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	FString Field2;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	int64 Field3 = 0;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	FString Field4;
 	
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	EGroupType Field5 = EGroupType::BEAM_guild;
 };
 
@@ -134,7 +134,7 @@ class UBeamMockGetRequestCSVResponse : public UObject, public IBeamBaseResponseB
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	UDataTable* FakeTable;
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override

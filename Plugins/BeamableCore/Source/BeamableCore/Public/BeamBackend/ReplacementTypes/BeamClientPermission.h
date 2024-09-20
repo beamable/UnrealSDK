@@ -13,10 +13,10 @@ struct BEAMABLECORE_API FBeamClientPermission : public FBeamJsonSerializableUStr
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category="Beam")
 	FString AsString;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category="Beam")
 	bool AsBool = false;
 
 	FBeamClientPermission() = default;

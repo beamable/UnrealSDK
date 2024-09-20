@@ -9,7 +9,7 @@ struct FRequestType
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FString Name;
 
 	explicit FRequestType()

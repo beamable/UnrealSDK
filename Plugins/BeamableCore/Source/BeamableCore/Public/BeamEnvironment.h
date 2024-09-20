@@ -23,19 +23,19 @@ struct FBeamPackageVersion
 	const static char PREVIEW_SEPARATOR;
 
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category="Beam")
 	int Major = UNASSIGNED_VALUE;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category="Beam")
 	int Minor = UNASSIGNED_VALUE;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category="Beam")
 	int Patch = UNASSIGNED_VALUE;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category="Beam")
 	int RC = UNASSIGNED_VALUE;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category="Beam")
 	int64 NightlyTime = UNASSIGNED_VALUE;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category="Beam")
 	bool bIsPreview = false;
 
 	FORCEINLINE bool IsReleaseCandidate() const { return RC > UNASSIGNED_VALUE; }
@@ -77,20 +77,20 @@ public:
 	using UDataAsset::Serialize; // Bring Serialize from UDataAsset into scope
 	using FJsonSerializable::Serialize; // Bring Serialize from FJsonSerializable into scope
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category="Beam")
 	FString Environment;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category="Beam")
 	FString APIUrl;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category="Beam")
 	FString PortalUrl;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category="Beam")
 	FString BeamMongoExpressUrl;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category="Beam")
 	FString SDKVersion;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category="Beam")
 	FString DockerRegistryUrl;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,Category="Beam")
 	FBeamPackageVersion Version;
 
 	virtual void Serialize(FJsonSerializerBase& Serializer, bool bFlatObject) override;

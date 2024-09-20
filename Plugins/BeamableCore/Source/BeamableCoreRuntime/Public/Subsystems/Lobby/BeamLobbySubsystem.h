@@ -30,16 +30,16 @@ class UBeamLobbyState : public UObject
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FGuid LobbyId;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FUserSlot OwnerUserSlot;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FBeamGamerTag OwnerGamerTag;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	bool bIsLobbyOwner;
 
 	FDelegateHandle NotificationSubscriptionHandle;
@@ -89,10 +89,10 @@ class UBeamLobbyUpdateCommand : public UObject
 	UBeamLobbySubsystem* StatsSubsystem;
 
 public:
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FGuid LobbyId;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FUserSlot OwnerUserSlot;
 
 	FOptionalString NewLobbyName;
@@ -135,24 +135,24 @@ public:
 	/**
 	 * Configuration variable for the size of passcode created by this game.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Config)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Config, Category="Beam")
 	int32 PasscodeSize;
 
 	/**
 	 * Holds information about which lobby each local player is in. 
 	 */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	TMap<FUserSlot, UBeamLobbyState*> LocalPlayerLobbyInfo;
 
 	/**
 	 * Holds the Lobby objects.
 	 */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	TArray<ULobby*> KnownLobbies;
 
 	int32 DedicatedServerLobbyIdx;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	TMap<FUserSlot, UBeamLobbyUpdateCommand*> UpdateCommands;
 
 private:
@@ -175,7 +175,7 @@ public:
 	 *  Gets the lobby that the given user is contained.
 	 *  By default, will use the Owner user slot.
 	 */
-	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="UserSlot"))
+	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="UserSlot"),Category="Beam")
 	ULobby* GetCurrentLobby(const FUserSlot& UserSlot);
 
 	/**
@@ -190,19 +190,19 @@ public:
 	/**
 	 * Tries to get whatever the current local data for the given lobby id is. If you want a guarantee that this data is up-to-date call, [CPP_]RefreshLobbyOperation first.
 	 */
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool TryGetLobbyById(FGuid LobbyId, ULobby*& Lobby);
 
 	/**
 	 * Tries to get whatever the current local data for the given user slot's current lobby. If you want a guarantee that this data is up-to-date call, [CPP_]RefreshLobbyOperation first.
 	 */
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool TryGetCurrentLobby(FUserSlot Slot, ULobby*& Lobby);
 
 	/**
 	 * Tries to get whatever the current local data for the given user slot's current lobby state. If you want a guarantee that this data is up-to-date call, [CPP_]RefreshLobbyOperation first.
 	 */
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool TryGetCurrentLobbyState(FUserSlot Slot, UBeamLobbyState*& Lobby);
 
 	/**
@@ -210,7 +210,7 @@ public:
 	 * If you are running multiples, call TryGetLobby with the id of the lobby you want.
 	 * 
 	 */
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool TryGetDedicatedServerInstanceLobby(ULobby*& Lobby);
 
 	/**
@@ -220,21 +220,21 @@ public:
 	 *
 	 * When bForce is on, it'll discard any update that was previously being constructed before starting a new one. Otherwise, it'll return false. 
 	 */
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool TryBeginUpdateLobby(FUserSlot Slot, bool bForce);
 
 	/**
 	 * After calling TryBeginUpdateLobbyData, call this to set the new name for the lobby.
 	 * Will fail if you are not the lobby host.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void PrepareUpdateName(const FUserSlot& Slot, const FString& NewName);
 
 	/**
 	 * After calling TryBeginUpdateLobbyData, call this to set the new description for the lobby.
 	 * Will fail if you are not the lobby host.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void PrepareUpdateDescription(const FUserSlot& Slot, const FString& NewDesc);
 
 	/**
@@ -242,42 +242,42 @@ public:
 	 * A passcode will be generated by going from Public->Private.
 	 * Will fail if you are not the lobby host.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void PrepareUpdateRestriction(const FUserSlot& Slot, const ELobbyRestriction& NewLobbyRestriction);
 
 	/**
 	 * After calling TryBeginUpdateLobbyData, call this to set the new UBeamGameTypeContent (or subclass) for the lobby.	 
 	 * Will fail if you are not the lobby host.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void PrepareUpdateGameType(const FUserSlot& Slot, const FBeamContentId& NewGameType);
 
 	/**
 	 * After calling TryBeginUpdateLobbyData, call this to set the new host for the lobby. Must be one of the players in the lobby.	 
 	 * Will fail if you are not the lobby host.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void PrepareUpdateHost(const FUserSlot& Slot, const FBeamGamerTag& NewHost);
 
 	/**
 	 * After calling TryBeginUpdateLobbyData, call this to set the new MaxPlayer count for the lobby.	 
 	 * Will fail if you are not the lobby host or if there are more players in the lobby than the new max players.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void PrepareUpdateMaxPlayers(const FUserSlot& Slot, const int32& NewMaxPlayers);
 
 	/**
 	 * After calling TryBeginUpdateLobbyData, call this to set the which entries in ULobby::Data should added or updated in the lobby.	 
 	 * Will fail if you are not the lobby host.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void PrepareUpdateGlobalData(const FUserSlot& Slot, const TMap<FString, FString>& UpdatedGlobalData);
 
 	/**
 	 * After calling TryBeginUpdateLobbyData, call this to set the which entries in ULobby::Data should be removed from the lobby.	 
 	 * Will fail if you are not the lobby host.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void PrepareDeleteGlobalData(const FUserSlot& Slot, const TArray<FString>& GlobalDataToRemove);
 
 

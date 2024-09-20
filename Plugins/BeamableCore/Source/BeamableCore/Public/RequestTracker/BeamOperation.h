@@ -40,7 +40,7 @@ struct BEAMABLECORE_API FBeamOperationEvent
 	/**
 	 * @brief The owner operation. This is mostly here for testing. 
 	 */
-	UPROPERTY(BlueprintReadOnly, AdvancedDisplay)
+	UPROPERTY(BlueprintReadOnly, AdvancedDisplay, Category="Beam")
 	FBeamOperationHandle OwnerHandle;
 
 	/**
@@ -96,37 +96,37 @@ public:
 	/**
 	 * @brief Whether or not this operation is ongoing, complete or cancelled.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Category="Beam")
 	int Status = ONGOING;
 
 	/**
 	 * @brief The name of subsystem that owns this operation. Mostly for debugging purposes. 
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Category="Beam")
 	FString CallingSystem;
 
 	/**
 	 * @brief The list of requests that were made during this operation.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Category="Beam")
 	TArray<int64> DependentRequests;
 
 	/**
 	 * @brief The list of user slots that are participating in this operation.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Category="Beam")
 	TArray<FUserSlot> DependentUserSlots;
 
 	/**
 	 * @brief The list of user slots that are participating in this operation.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Category="Beam")
 	TArray<FBeamWaitHandle> WaitedBy;
 	
 	/**
 	 * @brief The Blueprint-based Handler for this Operation's Events.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Category="Beam")
 	FBeamOperationEventHandler BlueprintHandler;
 
 	/**
@@ -137,6 +137,6 @@ public:
 	/**
 	 * List of events that were triggered by this operation.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Category="Beam")
 	TArray<FBeamOperationEvent> TriggeredEvents;
 };

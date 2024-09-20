@@ -20,16 +20,16 @@ public:
 	UFUNCTION()
 	void GetContentType_UBeamStoreContent(FString& Result);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FString title = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BeamContentTypeFilter="listing",BeamContentTypeFilterMode="tree"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BeamContentTypeFilter="listing",BeamContentTypeFilterMode="tree"),Category="Beam")
 	TArray<FBeamContentLink> listings = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FOptionalBool showInactiveListings = {};
 	/// The default value is 20. If you need to show more than 20 listings at a time, change this field.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FOptionalInt32 activeListingLimit = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FOptionalInt32 choose = {};
 };
 DEFINE_CONTENT_TYPE_NAME(UBeamStoreContent, "stores")

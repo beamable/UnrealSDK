@@ -238,10 +238,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	UBeamableWindowMessage* WindowMessage;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable,Category="Beam")
 	FEditorStateChangedEvent OnEnteringPIE;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable,Category="Beam")
 	FEditorStateChangedEvent OnExitingPIE;
 
 	/**
@@ -300,7 +300,7 @@ public:
 	 * @brief Signs in to the beamable editor.	  
 	 * @return The OperationHandle for the sign in operation. 
 	 */
-	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="OnOperationEvent"))
+	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="OnOperationEvent"),Category="Beam")
 	FBeamOperationHandle SignInOperation(FString OrgName, FString Email, FString Password,
 	                                     const FBeamOperationEventHandler& OnOperationEvent);
 

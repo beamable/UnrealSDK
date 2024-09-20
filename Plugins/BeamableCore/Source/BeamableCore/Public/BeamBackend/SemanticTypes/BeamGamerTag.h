@@ -11,10 +11,10 @@ struct BEAMABLECORE_API FBeamGamerTag : public FBeamSemanticType
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Beam")
 	FString AsString;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Beam")
 	int64 AsLong = -1;
 
 	FBeamGamerTag() = default;

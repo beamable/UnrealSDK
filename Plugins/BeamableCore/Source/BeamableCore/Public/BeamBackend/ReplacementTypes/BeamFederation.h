@@ -11,10 +11,10 @@ struct BEAMABLECORE_API FBeamFederation : public FBeamJsonSerializableUStruct
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category="Beam")
 	FString Service;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category="Beam")
 	FString Namespace;
 
 
@@ -57,7 +57,7 @@ struct BEAMABLECORE_API FOptionalBeamFederation : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	FBeamFederation Val;
 
 	FOptionalBeamFederation();

@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalArrayOfInt32 : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TArray<int32> Val;
 
 	FOptionalArrayOfInt32();

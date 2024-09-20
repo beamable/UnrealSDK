@@ -10,7 +10,7 @@ struct BEAMABLECORE_API FBeamContentId : public FBeamSemanticType
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Beam")
 	FString AsString;
 
 	//IsValid ID
@@ -75,7 +75,7 @@ struct BEAMABLECORE_API FBeamContentLink : public FBeamSemanticType
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Beam")
 	FString AsString;
 
 	FBeamContentLink() = default;

@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalArrayOfCurrencyChange : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TArray<UCurrencyChange*> Val;
 
 	FOptionalArrayOfCurrencyChange();

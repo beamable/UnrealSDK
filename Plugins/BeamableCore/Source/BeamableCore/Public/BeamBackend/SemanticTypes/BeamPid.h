@@ -10,7 +10,7 @@ struct BEAMABLECORE_API FBeamPid : public FBeamSemanticType
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Beam")
 	FString AsString;
 
 	FBeamPid() = default;

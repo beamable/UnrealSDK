@@ -73,10 +73,10 @@ public:
 	inline static const FString Global_Manifest_Name = TEXT("global");
 	inline static const FBeamContentManifestId Global_Manifest = FBeamContentManifestId(Global_Manifest_Name);
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	TArray<UClass*> AllContentTypes;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	TMap<FString, UClass*> ContentTypeStringToContentClass;
 
 	/**
@@ -108,34 +108,34 @@ public:
 	void GetContentTypeToIdMaps(TMap<FName, TArray<TSharedPtr<FName>>>& Map);
 	bool GetContentTypeFromId(FBeamContentId Id, FString& TypeName);
 
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool GetOrCreateContent(const FBeamContentManifestId& ManifestId, const FString& ContentName, TSubclassOf<UBeamContentObject> ContentObjectSubType, TArray<FString> Tags,
 	                        UBeamContentObject*& ContentObject, FString& ErrMsg);
 
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool CreateNewContent(const FBeamContentManifestId& ManifestId, const FString& ContentName, TSubclassOf<UBeamContentObject> ContentObjectSubType, TArray<FString> Tags,
 	                      UBeamContentObject*& ContentObject, FString& ErrMsg);
 
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool GetContent(const FBeamContentManifestId& ManifestId, FBeamContentId ContentId, UBeamContentObject*& ContentObject);
 
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool GetContentForEditing(const FBeamContentManifestId& ManifestId, FBeamContentId EditObjectId, UBeamContentObject*& ContentObject, FString& ErrMsg);
 
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool SaveContentObject(const FBeamContentManifestId& ManifestId, UBeamContentObject* EditingObject, FString& ErrMsg);
 
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool DeleteContentObject(const FBeamContentManifestId& ManifestId, FBeamContentId Id, FString& ErrMsg);
 
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool CreateNewContentInManifest(const FBeamContentManifestId& ManifestId, const FString& ContentName, const int& ContentTypeIndex, UBeamContentObject*& ContentObject, TArray<FString> Tags,
 	                                FString& ErrMsg);
 
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool TryRenameContent(const FBeamContentManifestId& ManifestId, const FBeamContentId& ContentId, const FString& NewContentName, FText& Err);
 
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool TryGetFilteredListOfContent(const FBeamContentManifestId ManifestId, const FString& NameFilter, const FString& TypeFilter, const TEnumAsByte<EBeamLocalContentStatus>& ContentStatusFilter,
 	                                 TArray<UBeamContentLocalView*>& FoundLocalContent);
 
@@ -143,7 +143,7 @@ public:
 	static FString GetManifestDataTableName(FBeamContentManifestId Id);
 	static FBeamContentManifestId GetManifestIdFromDataTable(const UDataTable* Table);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void BakeManifest(ULocalContentManifestStreamData* LocalManifest, UBeamContentCache* Cache);
 
 	/**

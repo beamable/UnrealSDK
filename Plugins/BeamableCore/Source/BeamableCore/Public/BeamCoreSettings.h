@@ -137,6 +137,6 @@ public:
 	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="Content")
 	TArray<TSoftObjectPtr<UBeamContentCache>> BakedContentManifests;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	FUserSlot GetOwnerPlayerSlot() const { return FUserSlot{RuntimeUserSlots[0]}; }
 };

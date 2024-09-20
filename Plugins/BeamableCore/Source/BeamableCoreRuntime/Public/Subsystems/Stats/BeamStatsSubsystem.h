@@ -18,10 +18,10 @@ class UBeamStatsState : public UObject
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	FBeamStatsType OwnerType;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	TMap<FString, FString> StringStats;
 };
 
@@ -38,34 +38,34 @@ public:
 
 	void Init(UBeamStatsSubsystem* Subsystem, FUserSlot Slot, FBeamStatsType Type, TMap<FString, FString> StartingStats);
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	FUserSlot UserSlot;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	FBeamStatsType StatType;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	TArray<FString> StatNames;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	TArray<FString> StatValues;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void AddStat(FString Key, FString Value);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void AddStats(TArray<FString> Key, TArray<FString> Value);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void AddStatsMap(TMap<FString, FString> Stats);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void RemoveStat(FString Key);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void Discard();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	TMap<FString, FString> AsMap();
 };
 
@@ -79,19 +79,19 @@ struct FBeamStatsUpdatedEvent
 	/**
 	 * Contains only the keys of the updated values.
 	 */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	TMap<FString, FString> OldValues;
 
 	/**
 	 * Contains only the keys of the updated values.
 	 */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	TMap<FString, FString> NewValues;
 
-	UPROPERTY(BlueprintReadOnly, meta=(PinHiddenByDefault))
+	UPROPERTY(BlueprintReadOnly, meta=(PinHiddenByDefault),Category="Beam")
 	FBeamGamerTag GamerTag;
 
-	UPROPERTY(BlueprintReadOnly, meta=(PinHiddenByDefault))
+	UPROPERTY(BlueprintReadOnly, meta=(PinHiddenByDefault),Category="Beam")
 	FUserSlot LocalSlot;
 };
 
@@ -118,7 +118,7 @@ public:
 	/**
 	 * Holds stats for all players. 
 	 */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	TMap<FBeamStatsType, UBeamStatsState*> PlayerStatCache;
 
 	/**
@@ -133,7 +133,7 @@ public:
 	 */
 	FOnBeamStatsUpdatedCode OnStatsUpdatedCode;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	TMap<FUserSlot, UBeamStatUpdateCommand*> UpdateCommands;
 
 private:
@@ -144,13 +144,13 @@ private:
 
 public:
 	// Update Command
-	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="Stats", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="Stats", ExpandBoolAsExecs="ReturnValue"), Category="Beam")
 	bool TryCreateUpdateCommand(FUserSlot Slot, const TMap<FString, FString>& Stats, UBeamStatUpdateCommand*& Command);
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void AddStatToUpdateCommand(FUserSlot Slot, FString Key, FString Value);
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void RemoveStatFromUpdateCommand(FUserSlot Slot, FString Key);
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void ResetUpdateCommand(FUserSlot Slot);
 
 	// Operations

@@ -19,16 +19,16 @@ struct FBeamPlayerCurrency
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	FUserSlot OwnerPlayer;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	FBeamContentId ContentId;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
 	int64 Amount = 0;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
 	TMap<FString, FString> Properties;
 };
 
@@ -37,22 +37,22 @@ struct FBeamItemState
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Beam")
 	FBeamContentId ContentId;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Beam")
 	int64 InstanceId = 0;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Beam")
 	FString FederatedId;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Beam")
 	TMap<FString, FString> Properties;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Beam")
 	FDateTime CreatedAt;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Beam")
 	FDateTime UpdatedAt;
 
 	friend bool operator==(const FBeamItemState& Lhs, const FBeamItemState& RHS)
@@ -100,7 +100,7 @@ struct FBeamInventoryUpdateCommand
 	UPROPERTY()
 	TMap<FBeamContentId, int64> CurrencyChanges;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FUserSlot OwnerSlot;
 
 	int64 CreateItemCount;
@@ -244,96 +244,96 @@ public:
 	/**
 	 * @brief Given a currency FBeamContentId, gets the amount the player has. Returns false if no player is signed into th given slot.
 	 */
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool TryGetCurrencyAmount(FUserSlot Player, const FBeamContentId& CurrencyId, int64& Amount);
 
 	/**
 	 * @brief Gets the list of all currencies the given player has. Returns false if no player is signed into th given slot.
 	 */
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool TryGetAllCurrencies(FUserSlot Player, TArray<FBeamPlayerCurrency>& Currencies);
 
 	/**
 	 * @brief Gets all items for the given player. 
 	 */
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue", AutoCreateRefTerm="ItemStates"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue", AutoCreateRefTerm="ItemStates"), Category="Beam")
 	bool TryGetAllItems(FUserSlot Player, TArray<FBeamItemState>& ItemStates);
 
 	/**
 	 * @brief Given a currency FBeamContentId, gets the amount the player has. Returns false if no player is signed into th given slot.
 	 */
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool TryGetCurrencyAmountByGamerTag(const FBeamGamerTag& GamerTag, const FBeamContentId& CurrencyId, int64& Amount);
 
 	/**
 	 * @brief Gets the list of all currencies the given player has. Returns false if no player is signed into th given slot.
 	 */
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool TryGetAllCurrenciesByGamerTag(const FBeamGamerTag& GamerTag, TArray<FBeamPlayerCurrency>& Currencies);
 
 	/**
 	 * @brief Gets all items for the given player. 
 	 */
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue", AutoCreateRefTerm="ItemStates"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue", AutoCreateRefTerm="ItemStates"), Category="Beam")
 	bool TryGetAllItemsByGamerTag(const FBeamGamerTag& GamerTag, TArray<FBeamItemState>& ItemStates);
 	
 	/**
 	 * @brief Begins constructing an FBeamInventoryUpdateCommand for a particular player. Can force reset any update already in construction for the given player. 
 	 */
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool BeginInventoryUpdate(FUserSlot Player, FBeamInventoryUpdateCommand& Commands, bool ResetIfExists = false);
 
 	/**
 	 * @brief Adds an "Add Currency" change to the FBeamInventoryUpdateCommand of the given player. Must be called between BeginInventoryUpdate and CommitInventoryUpdate.
 	 * Gain is a positive number here (how much you want to add?).
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void PrepareAddCurrency(FUserSlot Player, FBeamContentId CurrencyId, int64 Gain);
 
 	/**
 	 * @brief Adds an "Remove Currency" change to the FBeamInventoryUpdateCommand of the given player. Must be called between BeginInventoryUpdate and CommitInventoryUpdate.
 	 * Loss is a positive number here (how much you want to remove?).
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void PrepareRemoveCurrency(FUserSlot Player, FBeamContentId CurrencyId, int64 Loss);
 
 	/**
 	 * @brief Adds an "Modify Currency" change to the FBeamInventoryUpdateCommand of the given player. Must be called between BeginInventoryUpdate and CommitInventoryUpdate.
 	 * Amount is a positive OR negative number here (what's the delta you want to apply?).
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void PrepareModifyCurrency(FUserSlot Player, FBeamContentId CurrencyId, int64 Amount);
 
 	/**
 	 * @brief Adds an "Create Item" change to the FBeamInventoryUpdateCommand of the given player. Must be called between BeginInventoryUpdate and CommitInventoryUpdate.	 
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void PrepareCreateItem(FUserSlot Player, FBeamContentId ItemId, TMap<FString, FString> Properties);
 
 
 	/**
 	 * @brief Adds an "Remove Item" change to the FBeamInventoryUpdateCommand of the given player. Must be called between BeginInventoryUpdate and CommitInventoryUpdate.	 
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void PrepareRemoveItem(FUserSlot Player, const FBeamItemState& State);
 
 	/**
 	 * @brief Adds an "Remove Item" change to the FBeamInventoryUpdateCommand of the given player. Must be called between BeginInventoryUpdate and CommitInventoryUpdate.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void PrepareRemoveItemWithId(FUserSlot Player, FBeamContentId ContentId, int64 InstanceId);
 
 	/**
 	 * @brief Adds an "Modify Item" change to the FBeamInventoryUpdateCommand of the given player. Must be called between BeginInventoryUpdate and CommitInventoryUpdate.
 	 * Will pass along the properties in the given FBeamItemState to update that item's state.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void PrepareModifyItem(FUserSlot Player, const FBeamItemState& State);
 
 	/**
 	 * @brief Adds an "Modify Item" change to the FBeamInventoryUpdateCommand of the given player. Must be called between BeginInventoryUpdate and CommitInventoryUpdate.	 
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void PrepareModifyItemById(FUserSlot Player, FBeamContentId ContentId, int64 InstanceId, TMap<FString, FString> Properties);
 
 private:

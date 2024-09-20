@@ -10,7 +10,7 @@ struct BEAMABLECORE_API FBeamContentManifestId : public FBeamSemanticType
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Beam")
 	FString AsString;
 
 	FBeamContentManifestId() = default;

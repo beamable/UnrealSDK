@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalArrayOfEventInventoryRewardItem : public FBeamO
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TArray<UEventInventoryRewardItem*> Val;
 
 	FOptionalArrayOfEventInventoryRewardItem();

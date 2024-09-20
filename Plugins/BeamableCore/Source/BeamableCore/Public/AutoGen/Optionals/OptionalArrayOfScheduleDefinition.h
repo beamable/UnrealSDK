@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalArrayOfScheduleDefinition : public FBeamOptiona
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TArray<UScheduleDefinition*> Val;
 
 	FOptionalArrayOfScheduleDefinition();

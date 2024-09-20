@@ -12,7 +12,7 @@ class BEAMABLECORE_API UClientManifestResponse : public UObject, public IBeamBas
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	UDataTable* CsvData;
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;

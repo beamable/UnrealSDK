@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalArrayOfServiceStorageReference : public FBeamOp
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TArray<UServiceStorageReference*> Val;
 
 	FOptionalArrayOfServiceStorageReference();

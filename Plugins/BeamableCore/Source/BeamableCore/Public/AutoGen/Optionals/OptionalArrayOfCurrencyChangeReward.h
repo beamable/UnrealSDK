@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalArrayOfCurrencyChangeReward : public FBeamOptio
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TArray<UCurrencyChangeReward*> Val;
 
 	FOptionalArrayOfCurrencyChangeReward();

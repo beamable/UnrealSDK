@@ -17,13 +17,13 @@ public:
 	UFUNCTION()
 	void GetContentType_UBeamCurrencyContent(FString& Result);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FBeamClientPermission clientPermission;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	int64 startingAmount;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Federation")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Federation",Category="Beam")
 	FOptionalBeamFederation external;
 };
 

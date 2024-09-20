@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalSessionLanguageContext : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	USessionLanguageContext* Val;
 
 	FOptionalSessionLanguageContext();

@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalArrayOfBeamPid : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TArray<FBeamPid> Val;
 
 	FOptionalArrayOfBeamPid();

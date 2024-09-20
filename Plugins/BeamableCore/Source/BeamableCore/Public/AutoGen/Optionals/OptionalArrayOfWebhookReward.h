@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalArrayOfWebhookReward : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TArray<UWebhookReward*> Val;
 
 	FOptionalArrayOfWebhookReward();

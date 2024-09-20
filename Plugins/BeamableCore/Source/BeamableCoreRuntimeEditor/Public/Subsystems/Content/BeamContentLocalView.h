@@ -20,19 +20,19 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamContentLocalView : public UObject
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	UBeamContentObject* ContentObject;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	TEnumAsByte<EBeamLocalContentStatus> LocalStatus;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	FText ContentFullId;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	FText ContentTypeName;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	FText ContentName;
 };
 
@@ -41,9 +41,9 @@ struct BEAMABLECORERUNTIMEEDITOR_API FBeamContentViewConfig
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	FLinearColor BorderColor = FLinearColor::Gray;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TSoftObjectPtr<UTexture2D> TypeForContentObject;
 };

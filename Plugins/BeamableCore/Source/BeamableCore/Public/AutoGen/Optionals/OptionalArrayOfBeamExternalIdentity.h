@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalArrayOfBeamExternalIdentity : public FBeamOptio
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TArray<FBeamExternalIdentity> Val;
 
 	FOptionalArrayOfBeamExternalIdentity();

@@ -9,13 +9,13 @@ struct FBeamAuthToken
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	FString AccessToken;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	FString RefreshToken;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	int64 ExpiresIn = -1;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	int64 IssuedAt = -1;
 
 	friend bool operator==(const FBeamAuthToken& Lhs, const FBeamAuthToken& RHS)

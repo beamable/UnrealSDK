@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalEntitlementClaimWindow : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	UEntitlementClaimWindow* Val;
 
 	FOptionalEntitlementClaimWindow();

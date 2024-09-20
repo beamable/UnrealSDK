@@ -36,10 +36,10 @@ class ULoginRefreshTokenRequest : public UObject, public IBeamBaseRequestInterfa
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FString GrantType = "refresh_token";
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FString RefreshToken;
 
 	virtual void BuildVerb(FString& VerbString) const override;
@@ -53,7 +53,7 @@ class ULoginRefreshTokenResponse : public UObject, public IBeamJsonSerializableU
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	UTokenResponse* Body;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;

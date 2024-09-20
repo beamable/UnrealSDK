@@ -129,6 +129,6 @@ public:
 														   FBeamOperationEventHandlerCode OnOperationEvent,
 														   FOptionalArrayOfString& Announcements);
 	
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool GetAnnouncements(FUserSlot Slot, TArray<UAnnouncementView*>& Announcements);
 };

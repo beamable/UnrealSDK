@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalArrayOfStatStringListEntry : public FBeamOption
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TArray<UStatStringListEntry*> Val;
 
 	FOptionalArrayOfStatStringListEntry();

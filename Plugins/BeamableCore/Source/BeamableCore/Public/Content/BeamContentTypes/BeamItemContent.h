@@ -16,10 +16,10 @@ public:
 	UFUNCTION()
 	void GetContentType_UBeamItemContent(FString& Result);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FBeamClientPermission clientPermission;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Federation")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Federation",Category="Beam")
 	FOptionalBeamFederation external;
 	
 };

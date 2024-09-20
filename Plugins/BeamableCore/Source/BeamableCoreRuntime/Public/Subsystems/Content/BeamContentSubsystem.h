@@ -24,7 +24,7 @@ class BEAMABLECORERUNTIME_API ULocalCachedContentSave : public USaveGame
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly, SaveGame)
+	UPROPERTY(BlueprintReadOnly, SaveGame,Category="Beam")
 	UBeamContentCache* SavedCache;
 
 	/**
@@ -104,37 +104,37 @@ public:
 	/**
 	 * Tries to get a UBeamContentObject with the given Id from the 'global' (default) manifest.
 	 */
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool TryGetContent(FBeamContentId ContentId, UBeamContentObject*& OutContent);
 
 	/**
 	 * Tries to get a UBeamContentObject with the given Id from the manifest with the given Id.
 	 */
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool TryGetContentFromManifest(FBeamContentManifestId ManifestId, FBeamContentId ContentId, UBeamContentObject*& OutContent);
 
 	/**
 	 * Checks if the in-memory content caches of the 'global' manfist have the content with the given id.
 	 */
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool IsLoadedContent(FBeamContentId ContentId);
 
 	/**
 	 * Checks if the in-memory content caches have the content from the given manifest and with the given id.
 	 */
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool IsLoadedContentFromManifest(FBeamContentManifestId ManifestId, FBeamContentId ContentId);
 
 	/**
 	 * Tries to get a UBeamContentObject with the given Id from the 'global' (default) manifest. This will always return the most recent baked content (either the cooked one or a downloaded and saved one). 
 	 */
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool TryGetBakedContent(FBeamContentId ContentId, UBeamContentObject*& OutContent);
 
 	/**
 	* Tries to get a UBeamContentObject with the given Id from the manifest with the given Id. This will always return the most recent baked content (either the cooked one or a downloaded and saved one).
 	 */
-	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"),Category="Beam")
 	bool TryGetBakedContentFromManifest(FBeamContentManifestId ManifestId, FBeamContentId ContentId, UBeamContentObject*& OutContent);
 
 	/**
@@ -151,7 +151,7 @@ public:
 	 * @brief Gets all content ids for all loaded content objects of a certain type. It returns all content subtypes of the given type too, unless specified otherwise.
 	 * @return The number of objects that match that. 
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	int GetIdsOfContentType(TSubclassOf<UBeamContentObject> Type, TArray<FBeamContentId>& Ids, bool bGetInherited = true);
 
 	/**

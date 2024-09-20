@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalMapOfString : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TMap<FString, FString> Val;
 
 	FOptionalMapOfString();

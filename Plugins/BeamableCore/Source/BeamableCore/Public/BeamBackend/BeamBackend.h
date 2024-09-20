@@ -33,13 +33,13 @@ struct FBeamConnectivity
 	/**
 	 * @brief Whether or not the last request was successful (true) or failed due to connectivity issues (false).
 	 */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	bool IsConnected = true;
 
 	/**
 	 * @brief The time in ticks since the last successful request occurred.
 	 */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	int64 LastTimeSinceSuccessfulRequest = 0;
 };
 

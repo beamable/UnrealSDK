@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalArrayOfItemDeleteRequestBody : public FBeamOpti
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TArray<UItemDeleteRequestBody*> Val;
 
 	FOptionalArrayOfItemDeleteRequestBody();

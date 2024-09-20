@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalSupportedFederation : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	USupportedFederation* Val;
 
 	FOptionalSupportedFederation();

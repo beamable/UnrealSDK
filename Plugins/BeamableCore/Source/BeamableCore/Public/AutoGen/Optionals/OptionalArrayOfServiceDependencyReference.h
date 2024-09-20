@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalArrayOfServiceDependencyReference : public FBea
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TArray<UServiceDependencyReference*> Val;
 
 	FOptionalArrayOfServiceDependencyReference();

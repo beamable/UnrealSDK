@@ -48,7 +48,7 @@ public:
 	 * This should never be set before OnBeamableReady has been called. This may be called at some later point if this subsystem's initialization flow needs to kick-off Operations
 	 * on OnBeamableReady in order to get ready for use.
 	 */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Beam")
 	bool bIsStarted = false;
 
 	/**
@@ -56,7 +56,7 @@ public:
 	 * This should never be set before OnBeamableReady has been called. This may be called at some later point if this subsystem's initialization flow needs to kick-off Operations
 	 * on OnBeamableReady in order to get ready for use.
 	 */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Beam")
 	bool bIsReady = false;
 
 	/**

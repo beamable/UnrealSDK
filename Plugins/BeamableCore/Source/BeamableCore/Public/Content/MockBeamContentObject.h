@@ -22,10 +22,10 @@ struct FContentLinkWrapperTestStruct : public FBeamJsonSerializableUStruct
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Beam")
 	int32 SomeOtherProperty = 0;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Beam")
 	FBeamContentLink LinkTest;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
@@ -47,13 +47,13 @@ class UContentLinkWrapperTestClass : public UObject, public IBeamJsonSerializabl
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Beam")
 	int32 SomeOtherProperty;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Beam")
 	FBeamContentLink LinkTest;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Beam")
 	UContentLinkWrapperTestClass* RecursiveLinkTest;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
@@ -81,112 +81,112 @@ public:
 	UFUNCTION()
 	void GetContentType_UMockBeamContentObject(FString& Result);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	int32 Value;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	FBeamCid BeamCid;
 
 	/**
 	 * @brief Gameplay Tags are serialized as a regular string in content objects.  
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	FGameplayTag UnrealGameplayTag;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	TArray<FGameplayTag> GameplayTagsArray;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	TMap<FString, FGameplayTag> GameplayTagsMap;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	TArray<FBeamCid> ArrayOfBeamCid;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	TMap<FString, FBeamCid> MapOfBeamCid;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	TArray<FString> ArrayOfString;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	TArray<uint8> ArrayOfU8;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	TMap<FString, FString> MapOfString;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	TMap<FString, uint8> MapOfU8;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	FArrayOfString BeamArrayOfString;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	FMapOfString BeamMapOfString;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	TArray<FArrayOfString> ArrayOfArrayOfString;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	TArray<FMapOfString> ArrayOfMapOfString;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	TMap<FString, FArrayOfString> MapOfArrayOfString;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	TMap<FString, FMapOfString> MapOfMapOfString;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	FOptionalBool BeamOptionalBool;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	FOptionalArrayOfInt32 BeamOptionalArrayOfInt32;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	FOptionalMapOfInt64 BeamOptionalMapOfInt64;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	FOptionalBeamCid BeamOptionalBeamCid;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	FOptionalArrayOfBeamPid BeamOptionalArrayOfBeamPid;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	TSoftObjectPtr<UTexture2D> UnrealSoftObjRef;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	UClass* UnrealClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	TArray<UClass*> UnrealClassArray;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	TMap<FString, UClass*> UnrealClassMap;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	FBeamContentLink TestLink;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Beam")
 	FContentLinkWrapperTestStruct TestLinkStructWrapper;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Beam")
 	UContentLinkWrapperTestClass* TestLinkClassWrapper;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Beam")
 	TArray<FBeamContentLink> TestArrayLink;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Beam")
 	TArray<FContentLinkWrapperTestStruct> TestArrayLinkStructWrapper;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Beam")
 	TArray<UContentLinkWrapperTestClass*> TestArrayLinkClassWrapper;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Beam")
 	TMap<FString, FBeamContentLink> TestMapLink;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Beam")
 	TMap<FString, FContentLinkWrapperTestStruct> TestMapLinkStructWrapper;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Beam")
 	TMap<FString, UContentLinkWrapperTestClass*> TestMapLinkClassWrapper;
 };
 

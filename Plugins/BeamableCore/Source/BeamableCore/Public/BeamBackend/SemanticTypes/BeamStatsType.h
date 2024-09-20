@@ -17,7 +17,7 @@ struct BEAMABLECORE_API FBeamStatsType : public FBeamSemanticType
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Beam")
 	FString AsString;
 
 	FBeamStatsType() = default;

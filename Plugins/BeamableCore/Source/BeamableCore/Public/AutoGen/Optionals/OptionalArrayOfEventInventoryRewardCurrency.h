@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalArrayOfEventInventoryRewardCurrency : public FB
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TArray<UEventInventoryRewardCurrency*> Val;
 
 	FOptionalArrayOfEventInventoryRewardCurrency();

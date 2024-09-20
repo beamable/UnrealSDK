@@ -14,25 +14,25 @@ struct FBeamErrorResponse
 	/**
 	 * @brief The HTTP Status Code. 
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, DisplayName="Status")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, DisplayName="Status", Category="Beam")
 	int64 status = 400;
 
 	/**
 	 * @brief Beamable's own Error Code.
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, DisplayName="Error")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, DisplayName="Error", Category="Beam")
 	FString error;
 
 	/**
 	 * @brief The Beamable service where the error originated.
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, DisplayName="Service")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, DisplayName="Service", Category="Beam")
 	FString service;
 
 	/**
 	 * @brief A more detailed message about the error.
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, DisplayName="Message")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, DisplayName="Message", Category="Beam")
 	FString message;
 };
 

@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalOrderRules : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	UOrderRules* Val;
 
 	FOptionalOrderRules();

@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalArrayOfGroupScoreBinding : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TArray<UGroupScoreBinding*> Val;
 
 	FOptionalArrayOfGroupScoreBinding();

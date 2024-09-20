@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalBeamCid : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	FBeamCid Val;
 
 	FOptionalBeamCid();

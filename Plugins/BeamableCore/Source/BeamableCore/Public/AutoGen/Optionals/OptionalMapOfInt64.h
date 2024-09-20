@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalMapOfInt64 : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TMap<FString, int64> Val;
 
 	FOptionalMapOfInt64();

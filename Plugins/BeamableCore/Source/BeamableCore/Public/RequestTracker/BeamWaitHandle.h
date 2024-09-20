@@ -23,7 +23,7 @@ struct BEAMABLECORE_API FBeamWaitHandle
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	int64 WaitHandleId = -1;
 
 	friend bool operator==(const FBeamWaitHandle& Lhs, const FBeamWaitHandle& RHS)
@@ -44,19 +44,19 @@ struct BEAMABLECORE_API FBeamWaitCompleteEvent
 
 	FBeamWaitHandle WaitHandle;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	TArray<FBeamRequestContext> Contexts;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	TArray<TScriptInterface<IBeamBaseRequestInterface>> Requests;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	TArray<TScriptInterface<IBeamBaseResponseBodyInterface>> Responses;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	TArray<FBeamErrorResponse> Errors;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	TArray<FBeamOperationHandle> Operations;
 };
 
@@ -82,7 +82,7 @@ public:
 	/**
 	 * @brief The Blueprint-based Handler for this Wait's Events.
 	 */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Beam")
 	FOnWaitComplete BlueprintHandler;
 
 	FOnWaitCompleteCode CodeHandler;

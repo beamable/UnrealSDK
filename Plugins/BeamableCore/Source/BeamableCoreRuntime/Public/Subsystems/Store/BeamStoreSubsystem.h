@@ -22,13 +22,13 @@ public:
 
 	void Init(UBeamStoreSubsystem* Subsystem, FUserSlot Slot, FBeamContentId StoreId, FBeamContentId ListingId);
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	FUserSlot UserSlot;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	FBeamContentId StoreId;
 	
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	FBeamContentId ListingId;
 };
 
@@ -49,7 +49,7 @@ public:
 	UBeamContentSubsystem* ContentSubsystem;
 	UPROPERTY()
 	TArray<UBeamStoreContent*> StoreContents;
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	TMap<FUserSlot, UBeamPurchaseListingOperation*> PurchaseCommands;
 
 private:
@@ -59,7 +59,7 @@ private:
 public:
 	virtual void OnBeamableContentReady_Implementation(FBeamOperationHandle& ResultOp) override;
 	
-	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="Store", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="Store", ExpandBoolAsExecs="ReturnValue"), Category="Beam")
 	bool TryCreatePurchaseListingOperation(FUserSlot Slot, FBeamContentId StoreId, FBeamContentId ListingId, UBeamPurchaseListingOperation*& Command);
 	
 	/**
@@ -94,11 +94,11 @@ public:
 	FBeamOperationHandle CPP_RefreshStoreOperation(FBeamOperationEventHandlerCode ResultOp);
 
 	// Helper Functions
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	bool TryGetItemsFromListing(FBeamContentId ListingId, TArray<FBeamOfferObtainItem>& items);
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	bool TryGetCurrenciesFromListing(FBeamContentId ListingId, TArray<FBeamOfferObtainCurrency>& currencies);
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	bool GetFormattedPrice(FBeamContentId ListingId, FString& FormattedPrice);
 private:
 	void PerformPurchase(FUserSlot UserSlot, FBeamContentId StoreId, FBeamContentId ListingId, FBeamOperationHandle Op = {});

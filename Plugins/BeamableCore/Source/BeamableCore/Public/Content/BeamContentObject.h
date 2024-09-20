@@ -38,22 +38,22 @@ class BEAMABLECORE_API UBeamContentObject : public UObject
 	inline static TArray<FString> FieldsExcludedFromContentJsonSerialization = {"Id", "Version", "Tags", "Created", "LastChanged", "SupportLevel"};
 
 public:
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	FString Id;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	FString Version;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	TArray<FString> Tags;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	FDateTime Created;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	FDateTime LastChanged;
 
 	/**
 	 * This is "true" for instances of content objects that we download BUT cannot find a type in this client into which we can deserialize them. 
 	 */
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly,Category="Beam")
 	TEnumAsByte<EBeamContentObjectSupportLevel> SupportLevel = FullSupport;
 
 	/**

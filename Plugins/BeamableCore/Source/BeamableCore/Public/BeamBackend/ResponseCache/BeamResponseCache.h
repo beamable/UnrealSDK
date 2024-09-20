@@ -86,7 +86,7 @@ public:
 	 *                 CallingContext if ReqType is empty and CallingContext is not null.
 	 *                 Callsite if ReqType is not Empty and CallingContext is not null.
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void SetCacheConfig(FRequestType ReqType, UObject* CallingContext, FBeamCacheConfig Config, TEnumAsByte<EBeamCacheHierarchyLevel>& OutLevel);
 
 private:

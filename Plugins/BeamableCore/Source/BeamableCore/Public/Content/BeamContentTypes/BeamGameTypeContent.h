@@ -86,13 +86,13 @@ struct BEAMABLECORE_API FBeamMatchmakingTeamsRule : public FBeamJsonSerializable
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FString Name;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	int32 MinPlayers = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	int32 MaxPlayers = 0;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
@@ -122,13 +122,13 @@ struct BEAMABLECORE_API FBeamMatchmakingNumericRule : public FBeamJsonSerializab
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	double MaxDelta = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	double Default = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FString Property;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
@@ -158,10 +158,10 @@ struct BEAMABLECORE_API FBeamMatchmakingStringRule : public FBeamJsonSerializabl
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FString Value;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FString Property;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
@@ -191,7 +191,7 @@ struct BEAMABLECORE_API FOptionalBeamStatComparisonRule : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Instanced)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Instanced, Category="Beam")
 	UBeamStatComparisonRule* Val;
 
 	FOptionalBeamStatComparisonRule();
@@ -236,30 +236,30 @@ public:
 	UFUNCTION()
 	void GetContentType_UBeamGameTypeContent(FString& Result);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	TArray<FBeamMatchmakingTeamsRule> Teams;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FOptionalBeamStatComparisonRule EntryRules;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	TArray<FBeamMatchmakingNumericRule> NumericRules;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	TArray<FBeamMatchmakingStringRule> StringRules;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FOptionalInt32 MaxWaitDurationSecs;
 
 	/**
 	 * The length of time to wait for players to enqueue before matching.
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
 	FOptionalInt32 MatchingIntervalSecs;
 
 	/**
 	 * If you have a C#MS implementing IFederatedGameServer, use the UniqueName of its associated IThirdPartyCloudIdentity here so that Beamable knows which microservice to call to provision a GameServer for this type.
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Federated Game Server", meta=(ToolTip="If you have a C#MS implementing IFederatedGameServer, use the UniqueName of its associated IThirdPartyCloudIdentity so that Beamable knows which microservice to call to provision a GameServer for this type."))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Federated Game Server",Category="Beam", meta=(ToolTip="If you have a C#MS implementing IFederatedGameServer, use the UniqueName of its associated IThirdPartyCloudIdentity so that Beamable knows which microservice to call to provision a GameServer for this type."))
 	FOptionalString FederatedGameServerNamespace;
 };
 

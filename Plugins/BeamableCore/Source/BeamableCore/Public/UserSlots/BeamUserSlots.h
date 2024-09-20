@@ -24,37 +24,37 @@ struct FUserSlotAuthData
 	/**
 	 * @brief The Access Token for the User signed into a User Slot.
 	 */
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
 	FString AccessToken;
 
 	/**
 	 * @brief The Refresh Token for the User signed into a User Slot. Used to re-authenticate the user in case of token expiration.
 	 */
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
 	FString RefreshToken;
 
 	/**
 	 * @brief The DateTime offset from IssuedAt in which the AccessToken will no longer be valid.
 	 */
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
 	int64 ExpiresIn = -1;
 
 	/**
 	 * @brief The DateTime in which the AccessToken will no longer be valid.
 	 */
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
 	int64 IssuedAt = -1;
 
 	/**
 	 * @brief The CustomerId whose scope this user exists in.
 	 */
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
 	FBeamCid Cid;
 
 	/**
 	 * @brief The ProductId (Realm) into which this user is signed into.
 	 */
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
 	FBeamPid Pid;
 
 	/**
@@ -73,16 +73,16 @@ struct FUserSlotAccountData
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
 	FBeamAccountId AccountId;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
 	FBeamGamerTag GamerTag;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
 	FString Email;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
 	TArray<FBeamExternalIdentity> ExternalIdentities;
 };
 
@@ -173,7 +173,7 @@ public:
 	 *
 	 * @see GetNamespacedSlotId 	 
 	 */
-	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf="SlotAContext, SlotBContext", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf="SlotAContext, SlotBContext", ExpandBoolAsExecs="ReturnValue"), Category="Beam")
 	static bool IsSameSlot(FUserSlot SlotA, FUserSlot SlotB, const UObject* SlotAContext, const UObject* SlotBContext);
 
 	/**

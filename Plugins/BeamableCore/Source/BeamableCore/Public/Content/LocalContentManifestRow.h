@@ -13,13 +13,13 @@ struct BEAMABLECORE_API FLocalContentManifestRow : public FTableRowBase
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	TArray<FString> Tags;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
 	FString Checksum;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Beam")
 	FBeamContentManifestId OwnerManifestId;
 
 	/**

@@ -222,7 +222,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	/**
 	 * @brief Callback added to the UserSlot global callback so that we can respond to users signing out. 
 	 */
-	UFUNCTION()
+	UFUNCTION(Category="Beam")
 	void TriggerOnUserSlotCleared(const EUserSlotClearedReason& Reason, const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const UObject* Context);
 
 	/**
@@ -360,22 +360,22 @@ public:
 	 *
 	 *  The OnReady event exposed here is what game makers should use when registering their actors, components, etc... if they wish to depend on beamable's runtime systems.	  
 	 */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="IsOwnerUserAuthenticated")
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="IsOwnerUserAuthenticated",Category="Beam")
 	bool bDidFirstAuthRun = false;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	bool IsFirstAuth() const { return !bDidFirstAuthRun; }
 
 	/**
 	 * @brief This flag is used to verify that beamable has been properly initialized and is ready for authentication.
 	 */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="IsBeamableStarted")
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="IsBeamableStarted",Category="Beam")
 	bool bIsBeamableStarted = false;
 
 	/**
 	 * @brief In BP, use this function to bind initialization functions to OnReady. This will execute the delegate if you're already ready before it binds it. 
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void RegisterOnStarted(FRuntimeStateChangedHandler Handler)
 	{
 		if (bIsBeamableStarted) const auto _ = Handler.ExecuteIfBound();
@@ -385,13 +385,13 @@ public:
 	/**
 	 * @brief In BP, use this function to bind initialization functions to OnReady. This will NOT execute the delegate if you're already ready. 
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void RegisterOnStarted_NoExecute(FRuntimeStateChangedHandler Handler) { OnStarted.Add(Handler); }
 
 	/**
 	 * @brief In BP, use this function to unbind initialization custom events to OnReady. 
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void UnregisterOnStarted(FRuntimeStateChangedHandler Handler)
 	{
 		if (OnStarted.Contains(Handler))
@@ -434,7 +434,7 @@ public:
 	/**
 	 * @brief In BP, use this function to bind initialization functions to OnReady. This will execute the delegate if you're already ready before it binds it. 
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void RegisterOnReady(FRuntimeStateChangedHandler Handler)
 	{
 		if (bDidFirstAuthRun) const auto _ = Handler.ExecuteIfBound();
@@ -444,13 +444,13 @@ public:
 	/**
 	 * @brief In BP, use this function to bind initialization functions to OnReady. This will NOT execute the delegate if you're already ready. 
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void RegisterOnReady_NoExecute(FRuntimeStateChangedHandler Handler) { OnReady.Add(Handler); }
 
 	/**
 	 * @brief In BP, use this function to unbind initialization custom events to OnReady. 
 	 */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void UnregisterOnReady(FRuntimeStateChangedHandler Handler)
 	{
 		if (OnReady.Contains(Handler))
@@ -563,7 +563,7 @@ public:
 
 private:
 	// Hard-coded special case auth flow	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Beam")
 	void FrictionlessLoginIntoSlot(const FUserSlot& UserSlot);
 
 	// BP/CPP Independent Operation Implementations

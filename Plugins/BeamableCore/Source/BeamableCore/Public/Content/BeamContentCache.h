@@ -18,15 +18,15 @@ class BEAMABLECORE_API UBeamContentCache : public UObject
 	friend class UBeamContentSubsystem;
 
 public:
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FBeamContentManifestId ManifestId;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	TMap<FBeamContentId, UBeamContentObject*> Cache;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	TMap<FBeamContentId, FString> Hashes;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	TArray<FBeamRemoteContentManifestEntry> LatestRemoteManifest;
 };

@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalMapOfArrayOfCurrencyProperty : public FBeamOpti
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TMap<FString, FArrayOfCurrencyProperty> Val;
 
 	FOptionalMapOfArrayOfCurrencyProperty();

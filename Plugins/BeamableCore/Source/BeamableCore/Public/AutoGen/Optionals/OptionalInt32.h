@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalInt32 : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	int32 Val;
 
 	FOptionalInt32();

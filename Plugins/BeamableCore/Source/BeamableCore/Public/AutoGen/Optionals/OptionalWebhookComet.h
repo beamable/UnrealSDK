@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalWebhookComet : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	UWebhookComet* Val;
 
 	FOptionalWebhookComet();

@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalArrayOfBeamTag : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TArray<FBeamTag> Val;
 
 	FOptionalArrayOfBeamTag();

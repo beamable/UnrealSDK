@@ -13,7 +13,7 @@ struct BEAMABLECORE_API FOptionalDouble : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	double Val;
 
 	FOptionalDouble();
