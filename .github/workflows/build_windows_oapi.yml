@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 0
           lfs: true
           path: BeamableProduct/
-          ref: main
+          ref: fix/unreal-oapi-generation-fix
 
       # Sets the buildType ENV var as either server or client.
       - name: Set buildType ENV var
@@ -86,14 +86,6 @@ jobs:
         working-directory: BeamableUnreal
         shell: bash
         run: bash init_repo.sh skip_waiting
-      # Sets the BEAMPROJ based on the input to this workflow.
-      - name: Set BeamProjOverride.txt
-        if: ${{ steps.changes.outputs.any == 'true' }}
-        working-directory: ./BeamableUnreal
-        shell: bash
-        run: |
-          echo "BEAMPROJ_SteamDemo" > BeamProjOverride.txt |
-          cat BeamProjOverride.txt
         
       # Builds the image
       - name: Build image
