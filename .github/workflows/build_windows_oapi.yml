@@ -26,6 +26,18 @@ jobs:
           path: BeamableProduct/
           ref: fix/unreal-oapi-generation-fix
 
+      # Caches the UnrealSDK repo's Intermediate and Saved folders
+      - uses: actions/cache@v4
+        continue-on-error: false
+        with:
+          path: |
+            BeamableUnreal/Intermediate
+            BeamableUnreal/Saved
+            BeamableUnreal/Plugins/BeamableCore/Intermediate
+            BeamableUnreal/Plugins/BeamableCore/Saved
+            BeamableUnreal/BeamableUnreal.sln
+          key: unreal-${{ runner.os }}-${{ inputs.targetPlatform }}-${{ inputs.buildType }}-${{ hashFiles('/BeamableUnreal/Source/**') }}
+          restore-keys: unreal-${{ runner.os }}-${{ inputs.targetPlatform }}-
       # Sets the buildType ENV var as either server or client.
       - name: Set buildType ENV var
         id: set-build-type
@@ -74,7 +86,7 @@ jobs:
         run: |
             modified="$(git diff -b -- 'Plugins/**/*.h' 'Plugins/**/*.cpp')"
             lines=$(echo "${modified}" | wc -l)
-            if [ "$lines" -eq 0 ]; then
+            if [ "$lines" -le 1 ]; then 
                 echo "any=false" >> $GITHUB_OUTPUT
             else
                 echo "any=true" >> $GITHUB_OUTPUT
