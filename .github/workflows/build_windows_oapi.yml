@@ -52,6 +52,21 @@ jobs:
         shell: bash
         run: bash set-packages.sh "${{ github.workspace }}/BeamableUnreal/" "UNREAL_NugetSource" "" "" "${{ github.workspace }}/BeamableUnreal/Microservices"
 
+      # Run init_repo.sh (needed to setup the project correctly locally)     
+      - name: Prepare Repository for compilation
+        working-directory: ./BeamableUnreal
+        shell: bash
+        run: bash init_repo.sh skip_waiting
+      - name: Remove old AutoGen code
+        working-directory: ./BeamableUnreal
+        shell: powershell
+        run: |
+            dotnet tool restore
+            Remove-Item -Recurse -Force Plugins/BeamableCore/Source/BeamableCore/Private/AutoGen
+            Remove-Item -Recurse -Force Plugins/BeamableCore/Source/BeamableCore/Public/AutoGen
+      - name: Update OpenAPI
+        working-directory: ./BeamableUnreal
+        run: dotnet beam oapi generate --output Plugins/BeamableCore/Source --engine unreal
       - name: Check for Changes
         working-directory: ./BeamableUnreal
         id: changes
@@ -67,11 +82,13 @@ jobs:
             fi
       # Run init_repo.sh (needed to setup the project correctly locally)     
       - name: Prepare Repository for compilation
+        if: ${{ steps.changes.outputs.any == 'true' }}
         working-directory: BeamableUnreal
         shell: bash
         run: bash init_repo.sh skip_waiting
       # Sets the BEAMPROJ based on the input to this workflow.
       - name: Set BeamProjOverride.txt
+        if: ${{ steps.changes.outputs.any == 'true' }}
         working-directory: ./BeamableUnreal
         shell: bash
         run: |
@@ -80,6 +97,7 @@ jobs:
         
       # Builds the image
       - name: Build image
+        if: ${{ steps.changes.outputs.any == 'true' }}
         working-directory: BeamableUnreal
         shell: bash
         run: bash windows_build.sh
