@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 0
           lfs: true
           path: BeamableProduct/
-          ref: fix/unreal-oapi-generation-fix
+          ref: main
 
       # Caches the UnrealSDK repo's Intermediate and Saved folders
       - uses: actions/cache@v4
