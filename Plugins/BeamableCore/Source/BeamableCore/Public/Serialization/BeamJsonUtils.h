@@ -9,6 +9,10 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "Serialization/BeamMap.h"
 #include "Serialization/BeamOptional.h"
+#include "Dom/JsonValue.h"
+#include "Dom/JsonObject.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
+#include "Serialization/JsonDataBag.h"
 
 #include "BeamJsonUtils.generated.h"
 

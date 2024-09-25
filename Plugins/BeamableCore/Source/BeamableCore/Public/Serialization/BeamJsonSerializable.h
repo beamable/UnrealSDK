@@ -3,6 +3,8 @@
 #include "Serialization/JsonWriter.h"
 #include "Policies/CondensedJsonPrintPolicy.h"
 #include "Policies/PrettyJsonPrintPolicy.h"
+#include "Dom/JsonObject.h"
+#include "UObject/Interface.h"
 
 #include "BeamJsonSerializable.generated.h"
 
