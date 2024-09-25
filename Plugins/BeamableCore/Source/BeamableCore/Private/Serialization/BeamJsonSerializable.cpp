@@ -1,4 +1,6 @@
 ﻿#include "Serialization/BeamJsonSerializable.h"
+#include "Serialization/JsonDataBag.h"
+
 FBeamJsonSerializableUStruct::~FBeamJsonSerializableUStruct() = default;
 
 void FBeamJsonSerializableUStruct::BeamSerialize(TUnrealJsonSerializer& Serializer) const

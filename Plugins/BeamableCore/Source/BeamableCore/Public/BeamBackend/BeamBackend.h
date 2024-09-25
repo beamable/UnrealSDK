@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/Engine.h"
 #include "BeamBaseResponseBodyInterface.h"
 #include "HttpManager.h"
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "Serialization/BeamJsonSerializable.h"
 
 #include "Serialization/BeamOptional.h"

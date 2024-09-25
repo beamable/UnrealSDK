@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "BeamableCore/Public/AutoGen/LobbyQueryResponse.h"
 
 #include "LobbyQueryResponseLibrary.generated.h"

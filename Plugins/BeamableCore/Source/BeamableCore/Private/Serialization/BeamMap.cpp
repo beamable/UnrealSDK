@@ -1,4 +1,5 @@
 ﻿#include "Serialization/BeamMap.h"
+#include "Serialization/JsonDataBag.h"
 
 void FBeamMap::BeamSerialize(TUnrealJsonSerializer& Serializer) const
 {

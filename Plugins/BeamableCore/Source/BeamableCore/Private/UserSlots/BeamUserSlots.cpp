@@ -2,7 +2,7 @@
 
 
 #include "UserSlots/BeamUserSlots.h"
-
+#include "Misc/Paths.h"
 #include "BeamCoreSettings.h"
 #include "BeamLogging.h"
 #include "JsonObjectConverter.h"

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "BeamableCore/Public/AutoGen/PreviewVipBonusResponse.h"
 
 #include "PreviewVipBonusResponseLibrary.generated.h"

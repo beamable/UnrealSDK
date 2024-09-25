@@ -1,5 +1,5 @@
 ﻿#include "BeamJsonUtilsMocks.h"
-
+#include "UObject/UObjectGlobals.h"
 #include "Misc/AutomationTest.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "AutoGen/Optionals/OptionalMapOfArrayOfCurrencyProperty.h"

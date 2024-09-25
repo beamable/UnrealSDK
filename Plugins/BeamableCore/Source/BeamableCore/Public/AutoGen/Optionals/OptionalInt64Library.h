@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 
 #include "OptionalInt64Library.generated.h"

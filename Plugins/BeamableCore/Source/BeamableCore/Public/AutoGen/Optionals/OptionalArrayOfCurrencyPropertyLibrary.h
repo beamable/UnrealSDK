@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfCurrencyProperty.h"
 
 #include "OptionalArrayOfCurrencyPropertyLibrary.generated.h"

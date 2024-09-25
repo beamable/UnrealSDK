@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/GameInstance.h"
+#include "Engine/Engine.h"
 #include "HttpModule.h"
 #include "AutoGen/SubSystems/BeamAccountsApi.h"
 #include "AutoGen/SubSystems/BeamAuthApi.h"

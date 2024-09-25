@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "BeamableCore/Public/AutoGen/StartSessionRequestBody.h"
 
 #include "StartSessionRequestBodyLibrary.generated.h"

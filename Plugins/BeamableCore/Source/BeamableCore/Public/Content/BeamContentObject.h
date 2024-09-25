@@ -204,15 +204,7 @@ public:
 	 * @param ContentTypeId The type id of a particular content object (this is the object's id without the last component).
 	 * @param OutObject The UBeamContentObject instance that is correct.
 	 */
-	static void NewFromTypeId(const TMap<FString, UClass*>& ContentTypeToContentClass, const FString& ContentTypeId, UBeamContentObject*& OutObject)
-	{
-		UClass* ObjectClass;
-		EBeamContentObjectSupportLevel SupportLevel;
-		GetClassForTypeId(ContentTypeToContentClass, ContentTypeId, ObjectClass, SupportLevel);
-		OutObject = NewObject<UBeamContentObject>(GetTransientPackage(), ObjectClass);
-		OutObject->SupportLevel = SupportLevel;
-	}
-
+	static void NewFromTypeId(const TMap<FString, UClass*>& ContentTypeToContentClass, const FString& ContentTypeId, UBeamContentObject*& OutObject);
 	/**
 	 * See NewFromTypeId.
 	 */

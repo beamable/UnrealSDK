@@ -1,5 +1,6 @@
 #pragma once
 #include "JsonObjectConverter.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 
 #include "BeamErrorResponse.generated.h"
 

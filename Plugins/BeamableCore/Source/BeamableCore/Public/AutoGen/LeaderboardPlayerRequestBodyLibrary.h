@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "BeamableCore/Public/AutoGen/LeaderboardPlayerRequestBody.h"
 
 #include "LeaderboardPlayerRequestBodyLibrary.generated.h"

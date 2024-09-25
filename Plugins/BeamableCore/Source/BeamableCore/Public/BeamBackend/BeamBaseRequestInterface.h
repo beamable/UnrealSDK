@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "UObject/Interface.h"
 #include "RequestType.h"
 #include "BeamBaseRequestInterface.generated.h"
 

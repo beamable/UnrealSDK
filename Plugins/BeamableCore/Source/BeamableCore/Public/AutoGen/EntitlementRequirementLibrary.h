@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "BeamableCore/Public/AutoGen/EntitlementRequirement.h"
 
 #include "EntitlementRequirementLibrary.generated.h"

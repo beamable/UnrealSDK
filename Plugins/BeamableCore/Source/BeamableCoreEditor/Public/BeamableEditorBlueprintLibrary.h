@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "BeamEditorSettings.h"
 #include "WidgetBlueprint.h"
 #include "BeamableEditorBlueprintLibrary.generated.h"

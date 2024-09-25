@@ -3,12 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/GameInstance.h"
 #include "../../../../BeamableCore/Public/Content/BeamContentCache.h"
 #include "AutoGen/SubSystems/BeamContentApi.h"
 #include "Content/BeamContentObject.h"
 #include "GameFramework/SaveGame.h"
 #include "Runtime/BeamRuntimeSubsystem.h"
 #include "UObject/Object.h"
+#include "UObject/UObjectGlobals.h"
 #include "AutoGen/Rows/ClientContentInfoTableRow.h"
 #include "BeamBackend/BeamGenericApi.h"
 #include "Content/DownloadContentState.h"

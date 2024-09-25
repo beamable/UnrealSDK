@@ -1,5 +1,6 @@
 #pragma once
 #include "BeamFullResponse.h"
+#include "UObject/Interface.h"
 #include "BeamLogging.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamBaseResponseBodyInterface.generated.h"

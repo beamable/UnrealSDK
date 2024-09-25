@@ -2,6 +2,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "UserSlots/UserSlot.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "BeamLobbyNotifications.generated.h"
 
 struct FBeamContentId;

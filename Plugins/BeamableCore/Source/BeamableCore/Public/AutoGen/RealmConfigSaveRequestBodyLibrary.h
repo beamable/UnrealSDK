@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "BeamableCore/Public/AutoGen/RealmConfigSaveRequestBody.h"
 
 #include "RealmConfigSaveRequestBodyLibrary.generated.h"

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "BeamAccountId.h"
 #include "BeamCid.h"
 #include "BeamBackend/ReplacementTypes/BeamClientPermission.h"

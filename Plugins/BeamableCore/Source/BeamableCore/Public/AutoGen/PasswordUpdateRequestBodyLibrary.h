@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "BeamableCore/Public/AutoGen/PasswordUpdateRequestBody.h"
 
 #include "PasswordUpdateRequestBodyLibrary.generated.h"

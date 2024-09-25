@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "BeamableCore/Public/AutoGen/GetGroupStatusResponse.h"
 
 #include "GetGroupStatusResponseLibrary.generated.h"

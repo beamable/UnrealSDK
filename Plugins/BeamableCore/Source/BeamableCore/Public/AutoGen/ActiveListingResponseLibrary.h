@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "BeamableCore/Public/AutoGen/ActiveListingResponse.h"
 
 #include "ActiveListingResponseLibrary.generated.h"

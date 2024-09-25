@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "BeamableCore/Public/AutoGen/CommitImageRequestBody.h"
 
 #include "CommitImageRequestBodyLibrary.generated.h"

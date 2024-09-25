@@ -9,7 +9,7 @@ public class BeamableCore : ModuleRules
 	public BeamableCore(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-
+		IWYUSupport = IWYUSupport.None;
 		PublicIncludePaths.AddRange(
 			new string[]
 			{

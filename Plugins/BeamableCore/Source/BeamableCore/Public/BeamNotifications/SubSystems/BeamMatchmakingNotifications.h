@@ -2,6 +2,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "UserSlots/UserSlot.h"
+#include "Subsystems/EngineSubsystem.h"
 #include "BeamMatchmakingNotifications.generated.h"
 
 struct FBeamContentId;

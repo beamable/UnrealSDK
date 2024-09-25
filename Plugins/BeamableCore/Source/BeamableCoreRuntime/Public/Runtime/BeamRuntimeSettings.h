@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
 #include "Engine/StreamableManager.h"
+#include "Engine/DeveloperSettings.h"
 
 
 #include "BeamRuntimeSettings.generated.h"

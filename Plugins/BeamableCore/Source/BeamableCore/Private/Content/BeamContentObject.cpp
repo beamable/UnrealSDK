@@ -2015,3 +2015,12 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 		UE_LOG(LogBeamContent, Error, TEXT("Content Serialization does not support maps with non-FString keys.\n"))
 	}
 }
+
+void UBeamContentObject::NewFromTypeId(const TMap<FString, UClass*>& ContentTypeToContentClass, const FString& ContentTypeId, UBeamContentObject*& OutObject)
+{
+	UClass* ObjectClass;
+	EBeamContentObjectSupportLevel SupportLevel;
+	GetClassForTypeId(ContentTypeToContentClass, ContentTypeId, ObjectClass, SupportLevel);
+	OutObject = OutObject = NewObject<UBeamContentObject>(GetTransientPackage(), ObjectClass);
+	OutObject->SupportLevel = SupportLevel;
+}

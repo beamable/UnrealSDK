@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalLeaderboardCohortSettings.h"
 
 #include "OptionalLeaderboardCohortSettingsLibrary.generated.h"

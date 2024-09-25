@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/GameInstance.h"
 #include "BeamRuntimeSettings.h"
 #include "UObject/Object.h"
 #include "Runtime/BeamRuntime.h"

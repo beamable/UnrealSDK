@@ -2,6 +2,7 @@
 
 #include "BeamBackendDataCache.h"
 #include "BeamCacheConfig.h"
+#include "Engine/Engine.h"
 #include "BeamCoreSettings.h"
 #include "BeamBackend/BeamBackend.h"
 #include "BeamBackend/BeamBaseRequestInterface.h"

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfAttachmentProperty.h"
 
 #include "OptionalArrayOfAttachmentPropertyLibrary.generated.h"

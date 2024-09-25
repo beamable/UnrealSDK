@@ -8,6 +8,8 @@
 #include "BeamBackend/SemanticTypes/BeamCid.h"
 #include "BeamBackend/SemanticTypes/BeamPid.h"
 #include "Subsystems/Content/BeamContentLocalView.h"
+#include "Engine/DeveloperSettings.h"
+
 #include "BeamEditorSettings.generated.h"
 
 

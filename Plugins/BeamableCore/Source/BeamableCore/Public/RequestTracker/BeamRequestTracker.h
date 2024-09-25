@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/Engine.h"
 #include "BeamOperation.h"
 #include "BeamBackend/BeamBackend.h"
 #include "RequestTracker/BeamWaitHandle.h"
