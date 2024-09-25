@@ -69,6 +69,10 @@ jobs:
               - '**.sh'
               - 'Source/**'
               - '*.uproject'
+      - name: Cleanup workspace
+        if: always()
+        shell: bash
+        run: rm -rf .* && rm -rf *
   
   build:
     needs: [unifyInputs, changes]

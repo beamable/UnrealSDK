@@ -10,13 +10,13 @@ permissions:
 jobs:
   build:
     runs-on: [self-hosted, Windows]
-    steps:          
+    steps:
       # Gets the Unreal Repo and the CLI repo
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           lfs: true
-          path: unrealProject/
+          path: BeamableUnreal
 
       - uses: actions/checkout@v4
         with:
@@ -26,13 +26,25 @@ jobs:
           path: BeamableProduct/
           ref: main
 
+      # Caches the UnrealSDK repo's Intermediate and Saved folders
+      - uses: actions/cache@v4
+        continue-on-error: false
+        with:
+          path: |
+            BeamableUnreal/Intermediate
+            BeamableUnreal/Saved
+            BeamableUnreal/Plugins/BeamableCore/Intermediate
+            BeamableUnreal/Plugins/BeamableCore/Saved
+            BeamableUnreal/BeamableUnreal.sln
+          key: unreal-${{ runner.os }}-${{ inputs.targetPlatform }}-${{ inputs.buildType }}-${{ hashFiles('/BeamableUnreal/Source/**') }}
+          restore-keys: unreal-${{ runner.os }}-${{ inputs.targetPlatform }}-
       # Sets the buildType ENV var as either server or client.
       - name: Set buildType ENV var
         id: set-build-type
         run: echo "buildType=client" >> $env:GITHUB_ENV
       - name: Set hash ENV var
         id: get_commit_hash
-        working-directory: unrealProject
+        working-directory: BeamableUnreal
         run: echo "commit_hash=$(git rev-parse HEAD)" >> $env:GITHUB_ENV
       - name: Check buildType ENV var
         id: check-build-type
@@ -50,38 +62,49 @@ jobs:
       - name: Run Set Packages for local build of the CLI
         working-directory: ./BeamableProduct
         shell: bash
-        run: bash set-packages.sh "${{ github.workspace }}/unrealProject/" "UNREAL_NugetSource" "" "" "${{ github.workspace }}/unrealProject/Microservices"
+        run: bash set-packages.sh "${{ github.workspace }}/BeamableUnreal/" "UNREAL_NugetSource" "" "" "${{ github.workspace }}/BeamableUnreal/Microservices"
 
-      - name: Remove old AutoGen code
-        working-directory: ./unrealProject
-        shell: powershell
-        run: Remove-Item -Recurse -Force Plugins\BeamableCore\Source\BeamableCore\Private\AutoGen
-      - name: Update OpenAPI
-        working-directory: unrealProject
+      # Run init_repo.sh (needed to setup the project correctly locally)     
+      - name: Prepare Repository for compilation
+        working-directory: ./BeamableUnreal
         shell: bash
+        run: bash init_repo.sh skip_waiting
+      - name: Remove old AutoGen code
+        working-directory: ./BeamableUnreal
+        shell: powershell
+        run: |
+            dotnet tool restore
+            Remove-Item -Recurse -Force Plugins/BeamableCore/Source/BeamableCore/Private/AutoGen
+            Remove-Item -Recurse -Force Plugins/BeamableCore/Source/BeamableCore/Public/AutoGen
+      - name: Update OpenAPI
+        working-directory: ./BeamableUnreal
         run: dotnet beam oapi generate --output Plugins/BeamableCore/Source --engine unreal
       - name: Check for Changes
-        working-directory: unrealProject
+        working-directory: ./BeamableUnreal
         id: changes
         shell: bash
         run: |
-            modified="$(git status --porcelain | grep 'Plugins/BeamableCore')"
+            modified="$(git diff -b -- 'Plugins/**/*.h' 'Plugins/**/*.cpp')"
             lines=$(echo "${modified}" | wc -l)
-            if [ "$lines" -eq 0 ]; then
+            if [ "$lines" -le 1 ]; then 
                 echo "any=false" >> $GITHUB_OUTPUT
             else
                 echo "any=true" >> $GITHUB_OUTPUT
-                echo "Files: ${modified}"
+                echo "Modified: ${modified}"
             fi
       # Run init_repo.sh (needed to setup the project correctly locally)     
       - name: Prepare Repository for compilation
-        working-directory: unrealProject
         if: ${{ steps.changes.outputs.any == 'true' }}
+        working-directory: BeamableUnreal
         shell: bash
         run: bash init_repo.sh skip_waiting
         
       # Builds the image
       - name: Build image
-        working-directory: unrealProject
+        if: ${{ steps.changes.outputs.any == 'true' }}
+        working-directory: BeamableUnreal
         shell: bash
         run: bash windows_build.sh
+      - name: Cleanup workspace
+        shell: bash
+        run: rm -rf .* && rm -rf *

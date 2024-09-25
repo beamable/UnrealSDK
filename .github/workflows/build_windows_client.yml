@@ -89,8 +89,11 @@ jobs:
               - '**.sh'
               - '**.ps1'              
               - 'Source/**'
-              - '*.uproject'            
-            
+              - '*.uproject'      
+      - name: Cleanup workspace
+        if: always()
+        shell: bash
+        run: rm -rf .* && rm -rf *
   build:
     needs: [unifyInputs, changes]
     uses: ./.github/workflows/build_windows.yml

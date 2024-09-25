@@ -53,6 +53,8 @@ jobs:
           path: |
             BeamableUnreal/Intermediate
             BeamableUnreal/Saved
+            BeamableUnreal/Plugins/BeamableCore/Intermediate
+            BeamableUnreal/Plugins/BeamableCore/Saved
             BeamableUnreal/BeamableUnreal.sln
           key: unreal-${{ runner.os }}-${{ inputs.targetPlatform }}-${{ inputs.buildType }}-${{ hashFiles('/BeamableUnreal/Source/**') }}
           restore-keys: unreal-${{ runner.os }}-${{ inputs.targetPlatform }}-
@@ -113,4 +115,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Windows_${{ env.buildType }}_${{ inputs.beamProj }}_${{ env.commit_hash }}
-          path: windows_${{ env.buildType }}_${{ inputs.beamProj }}_${{ env.commit_hash }}.zip 
+          path: windows_${{ env.buildType }}_${{ inputs.beamProj }}_${{ env.commit_hash }}.zip
+      - name: Cleanup workspace
+        if: always()
+        shell: bash
+        run: rm -rf .* && rm -rf *

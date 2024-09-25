@@ -79,6 +79,8 @@ public class BeamableCoreRuntime : ModuleRules
 					"UnrealEd",
 					"ToolWidgets",
 					"EditorScriptingUtilities",
+					"Json",
+					"JsonUtilities",
 					"HTTP",
 				}
 			);
