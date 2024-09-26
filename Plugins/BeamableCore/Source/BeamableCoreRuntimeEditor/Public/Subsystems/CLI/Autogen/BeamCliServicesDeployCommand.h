@@ -88,6 +88,7 @@ Options:
   --service-comments <service-comments>        Any number of strings in the format BeamoId::Comment
                                                Associates each comment to the given Beamo Id if it's among the published services. You'll be able to read it via the Beamable Portal []
   --docker-registry-url <docker-registry-url>  A custom docker registry url to use when uploading. By default, the result from the beamo/registry network call will be used, with minor string manipulation to add https scheme, remove port specificatino, and add /v2
+  -k, --keep-containers                        Automatically remove service containers after they exit [default: False]
   --dryrun                                     Should any networking happen?
   --cid <cid>                                  Cid to use; will default to whatever is in the file system
   --pid <pid>                                  Pid to use; will default to whatever is in the file system

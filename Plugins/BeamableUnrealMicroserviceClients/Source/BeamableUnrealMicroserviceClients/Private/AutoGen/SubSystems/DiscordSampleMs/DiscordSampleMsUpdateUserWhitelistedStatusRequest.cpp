@@ -8,7 +8,7 @@ void UDiscordSampleMsUpdateUserWhitelistedStatusRequest::BuildVerb(FString& Verb
 
 void UDiscordSampleMsUpdateUserWhitelistedStatusRequest::BuildRoute(FString& RouteString) const
 {
-	FString Route = TEXT("_microDiscordSampleMs/UpdateUserWhitelistedStatus");
+	FString Route = TEXT("micro_DiscordSampleMs/UpdateUserWhitelistedStatus");
 	
 	
 	FString QueryParams = TEXT("");

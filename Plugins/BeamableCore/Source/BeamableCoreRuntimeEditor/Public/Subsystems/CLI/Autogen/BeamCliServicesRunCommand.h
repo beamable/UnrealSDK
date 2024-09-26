@@ -80,6 +80,7 @@ Usage:
 Options:
   --ids <ids>                          The ids for the services you wish to deploy. Ignoring this option deploys all services
   -fcpu, --force-amd-cpu-arch          Force the services to run with amd64 CPU architecture, useful when deploying from computers with ARM architecture [default: False]
+  -k, --keep-containers                Automatically remove service containers after they exit [default: False]
   --dryrun                             Should any networking happen?
   --cid <cid>                          Cid to use; will default to whatever is in the file system
   --pid <pid>                          Pid to use; will default to whatever is in the file system

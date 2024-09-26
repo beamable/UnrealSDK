@@ -751,7 +751,7 @@ void UBeamContentSubsystem::DownloadLiveContentObjects(const FBeamContentManifes
 				//  - Tries to save the downloaded file to the local '.beamable' folder.
 				//  - Checks to see if it was the last download and, if so, invoke the appropriate on success/error callback.
 				const auto IndividualContentHandler = FOnGenericBeamRequestFullResponse::CreateLambda([this, Op, ManifestId, ContentEntry](FGenericBeamRequestFullResponse Resp)
-				{
+				{								
 					if (Resp.State == RS_Success)
 					{
 						auto ResponseJson = Resp.SuccessData->ResponseBody;

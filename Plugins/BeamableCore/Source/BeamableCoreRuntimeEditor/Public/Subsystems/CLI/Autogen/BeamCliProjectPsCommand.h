@@ -2,7 +2,12 @@
 
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
-
+#include "Subsystems/CLI/Autogen/StreamData/ServiceStatusStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/ServicesForRouteCollectionStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/ServiceInstanceStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/DockerServiceDescriptorStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/HostServiceDescriptorStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/RemoteServiceDescriptorStreamData.h"
 #include "BeamCliProjectPsCommand.generated.h"
 
 
@@ -14,86 +19,31 @@ class UBeamCliProjectPsStreamData : public UObject, public IBeamJsonSerializable
 public:	
 	
 	UPROPERTY()
-	int32 ProcessId = {};
-	UPROPERTY()
 	FString Cid = {};
 	UPROPERTY()
 	FString Pid = {};
 	UPROPERTY()
-	FString Prefix = {};
-	UPROPERTY()
-	FString Service = {};
-	UPROPERTY()
-	bool IsRunning = {};
-	UPROPERTY()
-	bool IsContainer = {};
-	UPROPERTY()
-	FString ServiceType = {};
-	UPROPERTY()
-	int32 HealthPort = {};
-	UPROPERTY()
-	int32 DataPort = {};
-	UPROPERTY()
-	FString ExecutionVersion = {};
-	UPROPERTY()
-	FString ContainerId = {};
-	UPROPERTY()
-	TArray<FString> Groups = {};
-	UPROPERTY()
-	TArray<FString> RoutingKeys = {};
+	TArray<UServiceStatusStreamData*> Services = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("processId"), ProcessId);
 		Serializer->WriteValue(TEXT("cid"), Cid);
 		Serializer->WriteValue(TEXT("pid"), Pid);
-		Serializer->WriteValue(TEXT("prefix"), Prefix);
-		Serializer->WriteValue(TEXT("service"), Service);
-		Serializer->WriteValue(TEXT("isRunning"), IsRunning);
-		Serializer->WriteValue(TEXT("isContainer"), IsContainer);
-		Serializer->WriteValue(TEXT("serviceType"), ServiceType);
-		Serializer->WriteValue(TEXT("healthPort"), HealthPort);
-		Serializer->WriteValue(TEXT("dataPort"), DataPort);
-		Serializer->WriteValue(TEXT("executionVersion"), ExecutionVersion);
-		Serializer->WriteValue(TEXT("containerId"), ContainerId);
-		UBeamJsonUtils::SerializeArray<FString>(TEXT("groups"), Groups, Serializer);
-		UBeamJsonUtils::SerializeArray<FString>(TEXT("routingKeys"), RoutingKeys, Serializer);	
+		UBeamJsonUtils::SerializeArray<UServiceStatusStreamData*>(TEXT("services"), Services, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("processId"), ProcessId);
 		Serializer->WriteValue(TEXT("cid"), Cid);
 		Serializer->WriteValue(TEXT("pid"), Pid);
-		Serializer->WriteValue(TEXT("prefix"), Prefix);
-		Serializer->WriteValue(TEXT("service"), Service);
-		Serializer->WriteValue(TEXT("isRunning"), IsRunning);
-		Serializer->WriteValue(TEXT("isContainer"), IsContainer);
-		Serializer->WriteValue(TEXT("serviceType"), ServiceType);
-		Serializer->WriteValue(TEXT("healthPort"), HealthPort);
-		Serializer->WriteValue(TEXT("dataPort"), DataPort);
-		Serializer->WriteValue(TEXT("executionVersion"), ExecutionVersion);
-		Serializer->WriteValue(TEXT("containerId"), ContainerId);
-		UBeamJsonUtils::SerializeArray<FString>(TEXT("groups"), Groups, Serializer);
-		UBeamJsonUtils::SerializeArray<FString>(TEXT("routingKeys"), RoutingKeys, Serializer);	
+		UBeamJsonUtils::SerializeArray<UServiceStatusStreamData*>(TEXT("services"), Services, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		ProcessId = Bag->GetIntegerField(TEXT("processId"));
 		Cid = Bag->GetStringField(TEXT("cid"));
 		Pid = Bag->GetStringField(TEXT("pid"));
-		Prefix = Bag->GetStringField(TEXT("prefix"));
-		Service = Bag->GetStringField(TEXT("service"));
-		IsRunning = Bag->GetBoolField(TEXT("isRunning"));
-		IsContainer = Bag->GetBoolField(TEXT("isContainer"));
-		ServiceType = Bag->GetStringField(TEXT("serviceType"));
-		HealthPort = Bag->GetIntegerField(TEXT("healthPort"));
-		DataPort = Bag->GetIntegerField(TEXT("dataPort"));
-		ExecutionVersion = Bag->GetStringField(TEXT("executionVersion"));
-		ContainerId = Bag->GetStringField(TEXT("containerId"));
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("groups")), Groups, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("routingKeys")), RoutingKeys, OuterOwner);	
+		UBeamJsonUtils::DeserializeArray<UServiceStatusStreamData*>(Bag->GetArrayField(TEXT("services")), Services, OuterOwner);	
 	}
 };
 
@@ -106,26 +56,29 @@ Usage:
   Beamable.Tools project ps [options]
 
 Options:
-  -w, --watch                          When true, the command will run forever and watch the state of the program
-  --dryrun                             Should any networking happen?
-  --cid <cid>                          Cid to use; will default to whatever is in the file system
-  --pid <pid>                          Pid to use; will default to whatever is in the file system
-  -q, --quiet                          When true, skip input waiting and use defaults [default: False]
-  --host <host>                        The host endpoint for beamable
-  --access-token <access-token>        The access token to use for the requests
-  --refresh-token <refresh-token>      Refresh token to use for the requests
-  --log, --logs <log>                  Extra logs gets printed out
-  --no-redirect                        If there is a local dotnet tool installation (with a ./config/dotnet-tools.json file) for the beam tool, then any global invocation of the beam tool will automatically redirect and call the local version. However, there will be a performance penalty due to the extra process invocation. This option flag will cause an error to occur instead of automatically redirecting the execution to a new process invocation.
-  --unmask-logs                        By default, logs will automatically mask tokens. However, when this option is enabled, tokens will be visible in their full text. This is a security risk.
-  --no-log-file                        By default, logs are automatically written to a temp file so that they can be used in an error case. However, when this option is enabled, logs are not written. Also, if the BEAM_CLI_NO_FILE_LOG environment variable is set, no log file will be written.  [default: False]
-  --docker-cli-path <docker-cli-path>  a custom location for docker. By default, the CLI will attempt to resolve docker through its usual install locations. You can also use the BEAM_DOCKER_EXE environment variable to specify. 
-                                       Currently, a docker path has been automatically identified. [default: docker]
-  --emit-log-streams                   Out all log messages as data payloads in addition to however they are logged
-  --dir <dir>                          Directory to use for configuration
-  --raw                                Output raw JSON to standard out. This happens by default when the command is being piped
-  --pretty                             Output syntax highlighted box text. This happens by default when the command is not piped
-  --dotnet-path <dotnet-path>          a custom location for dotnet [default: dotnet]
-  -?, -h, --help                       Show help and usage information
+  -w, --watch                                        When true, the command will run forever and watch the state of the program
+  --ids <ids>                                        The list of services to include, defaults to all local services (separated by whitespace)
+  --without-group, --without-groups <without-group>  A set of BeamServiceGroup tags that will exclude the associated services. Exclusion takes precedence over inclusion
+  --with-group, --with-groups <with-group>           A set of BeamServiceGroup tags that will include the associated services
+  --dryrun                                           Should any networking happen?
+  --cid <cid>                                        Cid to use; will default to whatever is in the file system
+  --pid <pid>                                        Pid to use; will default to whatever is in the file system
+  -q, --quiet                                        When true, skip input waiting and use defaults [default: False]
+  --host <host>                                      The host endpoint for beamable
+  --access-token <access-token>                      The access token to use for the requests
+  --refresh-token <refresh-token>                    Refresh token to use for the requests
+  --log, --logs <log>                                Extra logs gets printed out
+  --no-redirect                                      If there is a local dotnet tool installation (with a ./config/dotnet-tools.json file) for the beam tool, then any global invocation of the beam tool will automatically redirect and call the local version. However, there will be a performance penalty due to the extra process invocation. This option flag will cause an error to occur instead of automatically redirecting the execution to a new process invocation.
+  --unmask-logs                                      By default, logs will automatically mask tokens. However, when this option is enabled, tokens will be visible in their full text. This is a security risk.
+  --no-log-file                                      By default, logs are automatically written to a temp file so that they can be used in an error case. However, when this option is enabled, logs are not written. Also, if the BEAM_CLI_NO_FILE_LOG environment variable is set, no log file will be written.  [default: False]
+  --docker-cli-path <docker-cli-path>                a custom location for docker. By default, the CLI will attempt to resolve docker through its usual install locations. You can also use the BEAM_DOCKER_EXE environment variable to specify. 
+                                                     Currently, a docker path has been automatically identified. [default: docker]
+  --emit-log-streams                                 Out all log messages as data payloads in addition to however they are logged
+  --dir <dir>                                        Directory to use for configuration
+  --raw                                              Output raw JSON to standard out. This happens by default when the command is being piped
+  --pretty                                           Output syntax highlighted box text. This happens by default when the command is not piped
+  --dotnet-path <dotnet-path>                        a custom location for dotnet [default: dotnet]
+  -?, -h, --help                                     Show help and usage information
 
 
 

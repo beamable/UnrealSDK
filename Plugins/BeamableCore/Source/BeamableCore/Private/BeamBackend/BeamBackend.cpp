@@ -260,7 +260,7 @@ void UBeamBackend::PrepareBeamableRequestToRealmWithAuthToken(const TUnrealReque
 					                         DedicatedServerRealm.Cid.AsString, DedicatedServerRealm.Pid.AsString
 				                         });
 		UnrealRequest->SetHeader(HEADER_REQUEST_SCOPE, ScopeHeader);
-		UE_LOG(LogBeamBackend, Display, TEXT("Request Preparation - Target Realm Header: SCOPE_HEADER=%s"),
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Target Realm Header: SCOPE_HEADER=%s"),
 		       *ScopeHeader);
 	}
 }
@@ -277,7 +277,7 @@ void UBeamBackend::PrepareBeamableRequestToRealmWithRoutingKey(const TUnrealRequ
 			RoutingKey = CurrentRoutingKeyMaps[OwnerUserSlot];
 			Request->SetHeader(HEADER_ROUTING_KEY_MAP, RoutingKey);
 		}
-		UE_LOG(LogBeamBackend, Display, TEXT("Request Preparation - Set Routing Key Map: ROUTING_KEY_MAP=%s"), *RoutingKey);
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Set Routing Key Map: ROUTING_KEY_MAP=%s"), *RoutingKey);
 	}
 	else
 	{
@@ -285,14 +285,14 @@ void UBeamBackend::PrepareBeamableRequestToRealmWithRoutingKey(const TUnrealRequ
 		if (Slot.Name.IsEmpty())
 			Slot = OwnerUserSlot;
 
-		// For dedicated servers, we set the routing key of whatever is the one for the OwnerUserSlot.		
+		// For non-dedicated servers, we set the routing key for the given slot.		
 		FString RoutingKey = TEXT("No RoutingKey Set.");
 		if (CurrentRoutingKeyMaps.Contains(Slot))
 		{
 			RoutingKey = CurrentRoutingKeyMaps[Slot];
 			Request->SetHeader(HEADER_ROUTING_KEY_MAP, RoutingKey);
 		}
-		UE_LOG(LogBeamBackend, Display, TEXT("Request Preparation - Set Routing Key Map: ROUTING_KEY_MAP=%s"), *RoutingKey);
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Set Routing Key Map: ROUTING_KEY_MAP=%s"), *RoutingKey);
 	}
 }
 
@@ -604,9 +604,12 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 	}
 
 	// Log out all requests that were actually sent out and removed from the InFlightProcessingRequests list.
-	UE_LOG(LogBeamBackend, Verbose,
-	       TEXT("Beamable Retry Queue | Successfully sent out these requests. REQ_IDS=[%s]"),
-	       *FString::Join(RetriesSentOutStr, TEXT(",")));
+	if(RetriesSentOutStr.Num() > 0)
+	{
+		UE_LOG(LogBeamBackend, Verbose,
+			  TEXT("Beamable Retry Queue | Successfully sent out these requests. REQ_IDS=[%s]"),
+			  *FString::Join(RetriesSentOutStr, TEXT(",")));
+	}
 
 	// Return true to keep this ticking...
 	return true;
@@ -709,7 +712,12 @@ bool UBeamBackend::ExtractDataFromResponse(const FHttpRequestPtr Request, const 
 	}
 	else
 	{
-		if (Response->GetFailureReason() == EHttpFailureReason::ConnectionError)
+		if (!Response.IsValid())
+		{
+			OutResponseCode = 408;
+			OutResponseBody = FString(R"({ "status": 408, "error": "NoResponse", "service": "", "message": "Null Response Found" })");
+		}
+		else if (Response->GetFailureReason() == EHttpFailureReason::ConnectionError)
 		{
 			OutResponseCode = 408;
 			OutResponseBody = FString(R"({ "status": 408, "error": "ConnectionError", "service": "", "message": "Failed to connect" })");

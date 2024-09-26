@@ -2,55 +2,22 @@
 
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
-#include "Subsystems/CLI/Autogen/StreamData/ServiceInstanceStreamData.h"
-#include "Subsystems/CLI/Autogen/StreamData/DockerServiceDescriptorStreamData.h"
-#include "Subsystems/CLI/Autogen/StreamData/HostServiceDescriptorStreamData.h"
-#include "Subsystems/CLI/Autogen/StreamData/RemoteServiceDescriptorStreamData.h"
-#include "BeamCliProjectStopCommand.generated.h"
 
+#include "BeamCliProjectOpenMongoCommand.generated.h"
 
-UCLASS()
-class UBeamCliProjectStopStreamData : public UObject, public IBeamJsonSerializableUObject
-{
-	GENERATED_BODY()
-
-public:	
-	
-	UPROPERTY()
-	FString ServiceName = {};
-	UPROPERTY()
-	UServiceInstanceStreamData* Instance = {};
-
-	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
-	{
-		Serializer->WriteValue(TEXT("serviceName"), ServiceName);
-		UBeamJsonUtils::SerializeUObject<UServiceInstanceStreamData*>("instance", Instance, Serializer);	
-	}
-
-	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
-	{
-		Serializer->WriteValue(TEXT("serviceName"), ServiceName);
-		UBeamJsonUtils::SerializeUObject<UServiceInstanceStreamData*>("instance", Instance, Serializer);	
-	}
-
-	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
-	{
-		ServiceName = Bag->GetStringField(TEXT("serviceName"));
-		UBeamJsonUtils::DeserializeUObject<UServiceInstanceStreamData*>("instance", Bag, Instance, OuterOwner);	
-	}
-};
 
 
 /**
  Description:
-  Stop a running service
+  Opens a Mongo-Express web page for the given mongo storage object
 
 Usage:
-  Beamable.Tools project stop [options]
+  Beamable.Tools project open-mongo [<service-name>] [options]
+
+Arguments:
+  <service-name>  Name of the storage to open mongo-express to []
 
 Options:
-  --ids <ids>                          The list of services to include, defaults to all local services (separated by whitespace)
-  -k, --kill-task                      Kill the task instead of sending a graceful shutdown signal via the socket [default: False]
   --dryrun                             Should any networking happen?
   --cid <cid>                          Cid to use; will default to whatever is in the file system
   --pid <pid>                          Pid to use; will default to whatever is in the file system
@@ -73,17 +40,15 @@ Options:
 
 
 
+
  */
 UCLASS()
-class UBeamCliProjectStopCommand : public UBeamCliCommand
+class UBeamCliProjectOpenMongoCommand : public UBeamCliCommand
 {
 	GENERATED_BODY()
 
 public:
-	inline static FString StreamType = FString(TEXT("stream"));
-	UPROPERTY() TArray<UBeamCliProjectStopStreamData*> Stream;
-	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (const TArray<UBeamCliProjectStopStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+		
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual void HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;
