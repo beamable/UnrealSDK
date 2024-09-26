@@ -91,7 +91,7 @@ Now that you have this event hooked up, you can add your first **Beam Flow Node*
 - A set of Custom Event nodes (for success, error and completion) of the request being made to the Beamable backe-end.
 	- Because of this, Unreal does not allow the use of these nodes (or any node that expands to Event nodes) outside of **EventGraphs** or **Macros used in EventGraphs**.
 
-![intro-beam-flow-node.png](images/intro-beam-flow-node.png#center)
+![intro-beam-flow-node.png](../images/intro-beam-flow-node.png#center)
 
 With the SDKs default configuration and the above setup, you can enter PIE (Play-In-Editor). You should see several requests's responses being written to your Output Log window. After you see the final `GetMe` request, you can exit PIE knowing you've very first request to the Beamable backend.
 
