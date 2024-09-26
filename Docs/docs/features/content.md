@@ -94,7 +94,7 @@ The last part of the id is the only one you should edit through the **Content Wi
 The SDK fetches the content manifest before the `OnBeamableStarted` callback is
 triggered. By default, it downloads the content manifest and each individual piece of content. You can enable and disable this behaviour it can be configured to do so inside `Project Settings -> Beamable Runtime`.
 
-![DownloadIndividualContent](./Images/Unreal_Content_DownloadIndividualContentOnStart.png#center)
+![DownloadIndividualContent](./images/content-download-individual-on-start.png#center)
 
 The SDK also supports automated content updates: once a user is signed into Beamable, our `UBeamContentSubsystem` begins to listen for notifications that the realm's content manifest has been updated from Beamable's server. If that happens, we will re-download the manifest. Again, we only download individual content pieces if that setting is on. There is an API you can use to manually download individual content pieces: `FetchIndividualContentBatchOperation` and `FetchIndividualContentOperation`.
 ### The Content Manifest

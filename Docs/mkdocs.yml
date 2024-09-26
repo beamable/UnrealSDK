@@ -57,16 +57,19 @@ plugins:
 
 nav:  
   - Use Guide: 
-    - Getting Started: 'Use Guide/Unreal SDK - Intro.md'
-    - Runtime Concepts: 'Use Guide/Unreal SDK - Runtime Concepts.md'
-    - Operations & Waits: 'Use Guide/Unreal SDK - Operations & Waits.md'
-    - Dedicated Servers: 'Use Guide/Unreal SDK - Dedicated Servers.md'
+    - Getting Started: 'guides/intro.md'
+    - Runtime Concepts: 'guides/runtime-concepts.md'
+    - Operations & Waits: 'guides/operations-and-waits.md'
+    - Dedicated Servers: 'guides/dedicated-servers.md'
     - Feature Guides:
-      - Content: 'Feature Guides/Unreal SDK - Content.md'
-      - Microservices: 'Feature Guides/Unreal SDK - Microservices.md'
+      - Content: 'features/content.md'
+      - Microservices: 'features/microservices.md'
+      - Stores: 'features/stores.md'
   - Samples: 
-    - Samples Intro: 'Samples/Unreal SDK - Samples Intro.md'
-    - Hathora Demo: 'Samples/Unreal SDK - Hathora Demo.md'
+    - Samples Intro: 'samples/intro.md'
+    - Hathora Demo: 'samples/hathora-demo.md'
+    - Discord Demo: 'samples/discord-demo.md'
+    - Steam Demo: 'samples/steam-demo.md'
 
 copyright: |
   &copy; 2024 <a href="https://github.com/Beamable"  target="_blank" rel="noopener">Beamable</a>
