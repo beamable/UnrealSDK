@@ -10,7 +10,48 @@ FString UBeamCliProjectRunCommand::GetCommand()
 		
 void UBeamCliProjectRunCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
-	
+	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
+	{
+		UBeamCliProjectRunStreamData* Data = NewObject<UBeamCliProjectRunStreamData>(this);
+		Data->OuterOwner = this;
+		Data->BeamDeserializeProperties(DataJson);
+
+		Stream.Add(Data);
+		Timestamps.Add(Timestamp);
+		
+		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		{
+			OnStreamOutput(Stream, Timestamps, Op);
+		});				
+	}
+if(ReceivedStreamType.Equals(StreamTypeBuildErrors) && OnBuildErrorsStreamOutput)
+	{
+		UBeamCliProjectRunBuildErrorsStreamData* Data = NewObject<UBeamCliProjectRunBuildErrorsStreamData>(this);
+		Data->OuterOwner = this;
+		Data->BeamDeserializeProperties(DataJson);
+
+		BuildErrorsStream.Add(Data);
+		BuildErrorsTimestamps.Add(Timestamp);
+		
+		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		{
+			OnBuildErrorsStreamOutput(BuildErrorsStream, BuildErrorsTimestamps, Op);
+		});				
+	}
+if(ReceivedStreamType.Equals(StreamTypeErrorRunFailErrorOutput) && OnErrorRunFailErrorOutputStreamOutput)
+	{
+		UBeamCliProjectRunErrorRunFailErrorOutputStreamData* Data = NewObject<UBeamCliProjectRunErrorRunFailErrorOutputStreamData>(this);
+		Data->OuterOwner = this;
+		Data->BeamDeserializeProperties(DataJson);
+
+		ErrorRunFailErrorOutputStream.Add(Data);
+		ErrorRunFailErrorOutputTimestamps.Add(Timestamp);
+		
+		AsyncTask(ENamedThreads::GameThread, [this, Op]
+		{
+			OnErrorRunFailErrorOutputStreamOutput(ErrorRunFailErrorOutputStream, ErrorRunFailErrorOutputTimestamps, Op);
+		});				
+	}
 }
 
 void UBeamCliProjectRunCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

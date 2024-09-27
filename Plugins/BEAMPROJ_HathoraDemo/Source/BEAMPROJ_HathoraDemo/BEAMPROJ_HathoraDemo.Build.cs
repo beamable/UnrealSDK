@@ -16,7 +16,7 @@ public class BEAMPROJ_HathoraDemo : ModuleRules
 				"OnlineSubsystem",
 				"OnlineSubsystemUtils",
 				"OnlineSubsystemBeamable",
-				
+				"BeamableUnrealMicroserviceClients",
 				"HathoraSDK"
 			});
 			

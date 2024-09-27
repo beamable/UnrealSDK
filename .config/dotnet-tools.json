@@ -6,7 +6,8 @@
       "version": "0.0.123",
       "commands": [
         "beam"
-      ]
+      ],
+      "rollForward": false
     }
   }
 }
