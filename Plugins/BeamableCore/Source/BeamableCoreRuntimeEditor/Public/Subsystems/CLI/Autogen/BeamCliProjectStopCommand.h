@@ -2,7 +2,10 @@
 
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
-
+#include "Subsystems/CLI/Autogen/StreamData/ServiceInstanceStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/DockerServiceDescriptorStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/HostServiceDescriptorStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/RemoteServiceDescriptorStreamData.h"
 #include "BeamCliProjectStopCommand.generated.h"
 
 
@@ -16,24 +19,24 @@ public:
 	UPROPERTY()
 	FString ServiceName = {};
 	UPROPERTY()
-	bool DidStop = {};
+	UServiceInstanceStreamData* Instance = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
 		Serializer->WriteValue(TEXT("serviceName"), ServiceName);
-		Serializer->WriteValue(TEXT("didStop"), DidStop);	
+		UBeamJsonUtils::SerializeUObject<UServiceInstanceStreamData*>("instance", Instance, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
 		Serializer->WriteValue(TEXT("serviceName"), ServiceName);
-		Serializer->WriteValue(TEXT("didStop"), DidStop);	
+		UBeamJsonUtils::SerializeUObject<UServiceInstanceStreamData*>("instance", Instance, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
 		ServiceName = Bag->GetStringField(TEXT("serviceName"));
-		DidStop = Bag->GetBoolField(TEXT("didStop"));	
+		UBeamJsonUtils::DeserializeUObject<UServiceInstanceStreamData*>("instance", Bag, Instance, OuterOwner);	
 	}
 };
 
@@ -47,6 +50,7 @@ Usage:
 
 Options:
   --ids <ids>                          The list of services to include, defaults to all local services (separated by whitespace)
+  -k, --kill-task                      Kill the task instead of sending a graceful shutdown signal via the socket [default: False]
   --dryrun                             Should any networking happen?
   --cid <cid>                          Cid to use; will default to whatever is in the file system
   --pid <pid>                          Pid to use; will default to whatever is in the file system

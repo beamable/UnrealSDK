@@ -38,12 +38,12 @@ The `UBeamUserSlots` Engine Subsystem is responsible for:
 
 The image below describes how the SDK's lifecycle injects itself into UE's lifecycle:
 
-![InitFlow](Images/Unreal_Runtime_Concepts_InitFlow.png#center)
+![InitFlow](images/runtime-concepts-init-flow.png#center)
 
 The next image show a high-level description of the authentication flows supported by the SDK:
 
 
-![](Images/Unreal_Runtime_Concepts_AuthFlow.png#center)
+![](Images/runtime-concept-authflow.png#center)
 
 Now that you have a high-level understanding of the SDK's initialization flows, read up on how to achieve the two most common Sign Up and Login flows among the ones we provide.
 ## Player Sign Up and Login Flows with Beamable
@@ -74,7 +74,7 @@ In PC/Console titles, often the user can sign-in and up from inside the game. Th
 
 Start by turning off Frictionless Authentication in `Project Settings -> Beamable Core -> Authenticate Frictionless (...)`.
 
-![](Unreal_Runtime_Concepts_DisableFrictionlessAuth.png#center)
+![](images/images/runtime-concepts-disable-frictionles-auth.png#center)
 
 Next, in your `BeginPlay` implementation, register a function to run when the SDK has successfully started via `UBeamRuntime::RegisterOnStarted`. If the SDK has already started when you call this function, it'll run the callback you provide it as its parameter immediately; if not, it'll wait until the SDK is fully ready and then call it. 
 
@@ -126,6 +126,6 @@ The lowest layer of systems are shared between the SDK's UE Editor integration a
 	- These are integrated with our `UBeam____Api` subsystems. 
 	- `BeginOperation` is effectively the same a creating a new promise. 
 	- `TriggerOperationSuccess`, `TriggerOperationError` and `TriggerOperationCancelled` should be called when you want to complete the Operation.
-	- This is a somewhat complex subsystem so we recommend you read [Operations & Waits](../Unreal SDK - Operations & Waits).
+	- This is a somewhat complex subsystem so we recommend you read [Operations & Waits](../operations-and-waits).
 
 The systems above are used by various environments the Beamable SDK runs in: PIE, Editor, Dedicated Server Builds and regular game builds. Their code is pretty heavily commented and complex; still, feel free to read it and figure things out that way.

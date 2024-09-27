@@ -11,6 +11,7 @@
 #include "BeamBackend/BeamMicroserviceClientSubsystem.h"
 #include "Subsystems/BeamEditor.h"
 #include "Subsystems/CLI/BeamCli.h"
+#include "Subsystems/CLI/Autogen/BeamCliFederationLocalKeyCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliProjectPsCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliServicesPsCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliProjectOpenSwaggerCommand.h"
@@ -20,7 +21,7 @@
 #include "BeamMicroservicesEditor.generated.h"
 
 UENUM(BlueprintType)
-enum ELocalMicroserviceRunningMethod { Any, Stopped, RunningOnDocker, RunningStandalone };
+enum ELocalMicroserviceRunningMethod { Any, Stopped, RunningOnDocker, RunningOnHost };
 
 UENUM(BlueprintType)
 enum EBeamServiceType { MicroService, MicroStorage };
@@ -56,7 +57,9 @@ struct FLocalMicroserviceData
 	bool bShouldEnableRemoteOnPublish = {};
 
 	/**
-	 * The list of routing keys currently available for you to configure your local editor to target.
+	 * This maps a list of "Targets" (dev emails OR "Realm") to the routing key value to reach that.
+	 * This list of targets is populated by the all known running service instances.
+	 * 
 	 * Routing keys uniquely identify a running local service in a realm.
 	 *
 	 * The "" (empty string) routing key means "route to the deployed service in the realm".
@@ -64,14 +67,14 @@ struct FLocalMicroserviceData
 	 *
 	 * These are generated automatically from a hash of your MAC Address and a prefix so you don't have to worry about guaranteeing uniqueness.
 	 */
-	UPROPERTY(BlueprintReadOnly)
-	TArray<FString> AvailableKeys;
+	UPROPERTY(BlueprintReadOnly, DisplayName="Targets")
+	TMap<FString, FString> TargetsToRoutingKeys;
 
 	/**
-	 * The currently selected routing key.
+	 * The currently selected target from the map of available targets.
 	 */
-	UPROPERTY(BlueprintReadWrite, DisplayName="Routing Key")
-	FString CurrentRoutingKey;
+	UPROPERTY(BlueprintReadWrite, DisplayName="Selected Target")
+	FString CurrentTarget;
 };
 
 UCLASS(BlueprintType)
@@ -93,10 +96,10 @@ public:
 	TArray<FString> ServiceGroups;
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<FString> AvailableRoutingKeys;
+	TArray<FString> AvailableTargets;
 
 	UPROPERTY(BlueprintReadWrite)
-	FString SelectedRoutingKey;
+	FString SelectedTarget;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMicroserviceStateChange);
@@ -111,6 +114,9 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamMicroservicesEditor : public UBeamEdito
 
 	UPROPERTY()
 	UBeamCli* Cli;
+	UPROPERTY()
+	UBeamBackend* Backend;
+	
 
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
@@ -133,6 +139,12 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	TMap<FString, FLocalMicroserviceData> LocalMicroserviceData;
 
+	/**
+	 * @brief The routing key for the local signed in user and PC. 
+	 */
+	UPROPERTY(BlueprintReadOnly)
+	FString LocalRoutingKey;
+	
 	/**
 	 * @brief Helper function to be used in custom blueprint nodes.
 	 */
@@ -186,7 +198,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice")
 	TArray<FString> GetServiceGroupFilterOptions() const;
-	
+
 	/**
 	 * @brief Opens the swagger document for the current running service. 
 	 */
@@ -205,6 +217,10 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice", meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool SetCurrentRoutingKey(FString BeamoId, FString Key);
+
+
+	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice")
+	FString ConstructRoutingKeyMap();
 
 protected:
 	void DeployMicroservices(const TArray<FString>& EnableBeamoIds, const TArray<FString>& DisableBeamoIds, const FBeamOperationHandle& Op) const;

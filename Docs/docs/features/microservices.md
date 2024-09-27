@@ -50,7 +50,7 @@ Here are the constraints around these generated clients:
 - They follow the same pattern as our Auto-Generated UE APIs and are generated from the Microservice's OAPI docs. 
 - They'll ONLY generate types that are found in `[________Callable]` methods of your Microservices.
 - The generated Plugin is NOT editable by the user (it gets destroyed/recreated with every new generation).
-- In general, the type-mapping seen in the [Content section](../Feature Guides/Unreal SDK - Content.md#supported-content-serialization) is what you can expect.
+- In general, the type-mapping seen in the [Content section](../features/content.md#supported-content-serialization) is what you can expect.
 
 !!! note "Customize the Generation?"
 	We do have plans to enable you to declare the intent to generate a particular type via an attribute in the future. However, actually customizing the outputted code is unlikely as it is already simple enough to write wrapper around it should you want a different style interface.
