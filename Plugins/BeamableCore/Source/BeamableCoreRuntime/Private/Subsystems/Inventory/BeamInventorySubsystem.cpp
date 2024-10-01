@@ -727,6 +727,8 @@ void UBeamInventorySubsystem::MergeInventoryViewIntoState(const UInventoryView* 
 		}
 	}
 
+	Inventory.Items.Empty();
+	
 	for (const auto PerItemIdGroup : InventoryView->Items)
 	{
 		const auto ItemContentId = FBeamContentId{PerItemIdGroup->Id};
