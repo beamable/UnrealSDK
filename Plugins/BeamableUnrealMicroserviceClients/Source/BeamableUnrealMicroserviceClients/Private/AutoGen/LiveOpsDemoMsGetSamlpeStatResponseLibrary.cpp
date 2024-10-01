@@ -1,10 +1,10 @@
 
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/LiveOpsDemoMsGetSamlpeStatResponseLibrary.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/LiveOpsDemoMSGetSamlpeStatResponseLibrary.h"
 
 #include "CoreMinimal.h"
 
 
-FString ULiveOpsDemoMsGetSamlpeStatResponseLibrary::LiveOpsDemoMsGetSamlpeStatResponseToJsonString(const ULiveOpsDemoMsGetSamlpeStatResponse* Serializable, const bool Pretty)
+FString ULiveOpsDemoMSGetSamlpeStatResponseLibrary::LiveOpsDemoMSGetSamlpeStatResponseToJsonString(const ULiveOpsDemoMSGetSamlpeStatResponse* Serializable, const bool Pretty)
 {
 	FString Result = FString{};
 	if(Pretty)
@@ -22,15 +22,15 @@ FString ULiveOpsDemoMsGetSamlpeStatResponseLibrary::LiveOpsDemoMsGetSamlpeStatRe
 	return Result;
 }	
 
-ULiveOpsDemoMsGetSamlpeStatResponse* ULiveOpsDemoMsGetSamlpeStatResponseLibrary::Make(int32 Value, UObject* Outer)
+ULiveOpsDemoMSGetSamlpeStatResponse* ULiveOpsDemoMSGetSamlpeStatResponseLibrary::Make(int32 Value, UObject* Outer)
 {
-	auto Serializable = NewObject<ULiveOpsDemoMsGetSamlpeStatResponse>(Outer);
+	auto Serializable = NewObject<ULiveOpsDemoMSGetSamlpeStatResponse>(Outer);
 	Serializable->Value = Value;
 	
 	return Serializable;
 }
 
-void ULiveOpsDemoMsGetSamlpeStatResponseLibrary::Break(const ULiveOpsDemoMsGetSamlpeStatResponse* Serializable, int32& Value)
+void ULiveOpsDemoMSGetSamlpeStatResponseLibrary::Break(const ULiveOpsDemoMSGetSamlpeStatResponse* Serializable, int32& Value)
 {
 	Value = Serializable->Value;
 		

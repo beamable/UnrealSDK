@@ -1,14 +1,14 @@
 
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/LiveOpsDemoMs/LiveOpsDemoMsIncrementStatRequest.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/LiveOpsDemoMS/LiveOpsDemoMSIncrementStatRequest.h"
 
-void ULiveOpsDemoMsIncrementStatRequest::BuildVerb(FString& VerbString) const
+void ULiveOpsDemoMSIncrementStatRequest::BuildVerb(FString& VerbString) const
 {
 	VerbString = TEXT("POST");
 }
 
-void ULiveOpsDemoMsIncrementStatRequest::BuildRoute(FString& RouteString) const
+void ULiveOpsDemoMSIncrementStatRequest::BuildRoute(FString& RouteString) const
 {
-	FString Route = TEXT("_microLiveOpsDemoMs/IncrementStat");
+	FString Route = TEXT("micro_LiveOpsDemoMS/IncrementStat");
 	
 	
 	FString QueryParams = TEXT("");
@@ -18,7 +18,7 @@ void ULiveOpsDemoMsIncrementStatRequest::BuildRoute(FString& RouteString) const
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
 }
 
-void ULiveOpsDemoMsIncrementStatRequest::BuildBody(FString& BodyString) const
+void ULiveOpsDemoMSIncrementStatRequest::BuildBody(FString& BodyString) const
 {
 	ensureAlways(Body);
 
@@ -27,9 +27,9 @@ void ULiveOpsDemoMsIncrementStatRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-ULiveOpsDemoMsIncrementStatRequest* ULiveOpsDemoMsIncrementStatRequest::Make(int64 _UserID, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+ULiveOpsDemoMSIncrementStatRequest* ULiveOpsDemoMSIncrementStatRequest::Make(int64 _UserID, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
-	ULiveOpsDemoMsIncrementStatRequest* Req = NewObject<ULiveOpsDemoMsIncrementStatRequest>(RequestOwner);
+	ULiveOpsDemoMSIncrementStatRequest* Req = NewObject<ULiveOpsDemoMSIncrementStatRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)

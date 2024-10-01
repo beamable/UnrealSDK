@@ -1,24 +1,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/LiveOpsDemoMsGetSamlpeStatResponse.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/LiveOpsDemoMSGetSamlpeStatResponse.h"
 
-#include "LiveOpsDemoMsGetSamlpeStatResponseLibrary.generated.h"
+#include "LiveOpsDemoMSGetSamlpeStatResponseLibrary.generated.h"
 
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLEUNREALMICROSERVICECLIENTS_API ULiveOpsDemoMsGetSamlpeStatResponseLibrary : public UBlueprintFunctionLibrary
+class BEAMABLEUNREALMICROSERVICECLIENTS_API ULiveOpsDemoMSGetSamlpeStatResponseLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - LiveOpsDemoMsGetSamlpeStatResponse To JSON String")
-	static FString LiveOpsDemoMsGetSamlpeStatResponseToJsonString(const ULiveOpsDemoMsGetSamlpeStatResponse* Serializable, const bool Pretty);
+	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - LiveOpsDemoMSGetSamlpeStatResponse To JSON String")
+	static FString LiveOpsDemoMSGetSamlpeStatResponseToJsonString(const ULiveOpsDemoMSGetSamlpeStatResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make LiveOpsDemoMsGetSamlpeStatResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static ULiveOpsDemoMsGetSamlpeStatResponse* Make(int32 Value, UObject* Outer);
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make LiveOpsDemoMSGetSamlpeStatResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	static ULiveOpsDemoMSGetSamlpeStatResponse* Make(int32 Value, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break LiveOpsDemoMsGetSamlpeStatResponse", meta=(NativeBreakFunc))
-	static void Break(const ULiveOpsDemoMsGetSamlpeStatResponse* Serializable, int32& Value);
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break LiveOpsDemoMSGetSamlpeStatResponse", meta=(NativeBreakFunc))
+	static void Break(const ULiveOpsDemoMSGetSamlpeStatResponse* Serializable, int32& Value);
 };

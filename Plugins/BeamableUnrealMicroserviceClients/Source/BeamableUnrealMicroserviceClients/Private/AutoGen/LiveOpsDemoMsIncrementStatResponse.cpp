@@ -1,26 +1,26 @@
 
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/LiveOpsDemoMsIncrementStatResponse.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/LiveOpsDemoMSIncrementStatResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 
 
 
-void ULiveOpsDemoMsIncrementStatResponse::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
+void ULiveOpsDemoMSIncrementStatResponse::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
 {
 	OuterOwner = RequestData;
 	UBeamJsonUtils::DeserializeRawPrimitive<bool>(ResponseContent, bValue, OuterOwner);
 }
 
-void ULiveOpsDemoMsIncrementStatResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void ULiveOpsDemoMSIncrementStatResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("Value"), bValue);
 }
 
-void ULiveOpsDemoMsIncrementStatResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
+void ULiveOpsDemoMSIncrementStatResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("Value"), bValue);		
 }
 
-void ULiveOpsDemoMsIncrementStatResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void ULiveOpsDemoMSIncrementStatResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	bValue = Bag->GetBoolField(TEXT("Value"));
 }

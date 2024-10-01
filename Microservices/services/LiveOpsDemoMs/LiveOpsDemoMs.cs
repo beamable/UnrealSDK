@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using System;
 using Beamable.Common;
 
-namespace Beamable.LiveOpsDemoMs
+namespace Beamable.LiveOpsDemoMS
 {
-    [Microservice("LiveOpsDemoMs")]
-    public class LiveOpsDemoMs : Microservice
-    {
-        const string PlaySampleStatID = "my_sample_stat";
+	[Microservice("LiveOpsDemoMS")]
+	public class LiveOpsDemoMS : Microservice
+	{
+	    const string PlaySampleStatID = "my_sample_stat";
         const string SampleItemID = "items.sample_item";
 
         [ClientCallable]
@@ -36,7 +36,7 @@ namespace Beamable.LiveOpsDemoMs
             //Add 3 sample items with level 1
             Dictionary<string, string> itemProperties = new Dictionary<string, string>
             {
-                 { "itemlevel", "1" }
+                { "itemlevel", "1" }
             };
 
             //Add 3 instances of the sample item
@@ -63,9 +63,7 @@ namespace Beamable.LiveOpsDemoMs
         [ClientCallable]
         public async Task<bool> UpgradeItem(long userID, long itemInstaceID)
         {
-
             ItemContent itemRef = new ItemContent();
-
 
             List<InventoryObject<ItemContent>> items = await Services.Inventory.GetItems<ItemContent>();
 
@@ -94,17 +92,20 @@ namespace Beamable.LiveOpsDemoMs
                     }
                 }
             }
+
             await Services.Inventory.Update(updateBuilder);
 
             return true;
         }
+
         //Increases player sample stat by 1
         [ClientCallable]
         public async Task<bool> IncrementStat(long userID)
         {
             string[] returnedStatID = { PlaySampleStatID };
 
-            Dictionary<string, string> playerStats = await Services.Stats.GetStats("client", "private", "player", userID, returnedStatID);
+            Dictionary<string, string> playerStats =
+                await Services.Stats.GetStats("client", "private", "player", userID, returnedStatID);
 
 
             int newStatValue = int.Parse(playerStats[returnedStatID[0]]);
@@ -124,12 +125,12 @@ namespace Beamable.LiveOpsDemoMs
         {
             string[] returnedStatID = { PlaySampleStatID };
 
-            Dictionary<string, string> playerStats = await Services.Stats.GetStats("client", "private", "player", userID, returnedStatID);
+            Dictionary<string, string> playerStats =
+                await Services.Stats.GetStats("client", "private", "player", userID, returnedStatID);
 
             int statValue = int.Parse(playerStats[returnedStatID[0]]);
 
             return statValue;
         }
-    }
+	}
 }
-

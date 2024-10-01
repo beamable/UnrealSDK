@@ -1,14 +1,14 @@
 
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/LiveOpsDemoMs/LiveOpsDemoMsPrepareNewPlayerRequest.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/LiveOpsDemoMS/LiveOpsDemoMSPrepareNewPlayerRequest.h"
 
-void ULiveOpsDemoMsPrepareNewPlayerRequest::BuildVerb(FString& VerbString) const
+void ULiveOpsDemoMSPrepareNewPlayerRequest::BuildVerb(FString& VerbString) const
 {
 	VerbString = TEXT("POST");
 }
 
-void ULiveOpsDemoMsPrepareNewPlayerRequest::BuildRoute(FString& RouteString) const
+void ULiveOpsDemoMSPrepareNewPlayerRequest::BuildRoute(FString& RouteString) const
 {
-	FString Route = TEXT("_microLiveOpsDemoMs/PrepareNewPlayer");
+	FString Route = TEXT("micro_LiveOpsDemoMS/PrepareNewPlayer");
 	
 	
 	FString QueryParams = TEXT("");
@@ -18,7 +18,7 @@ void ULiveOpsDemoMsPrepareNewPlayerRequest::BuildRoute(FString& RouteString) con
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
 }
 
-void ULiveOpsDemoMsPrepareNewPlayerRequest::BuildBody(FString& BodyString) const
+void ULiveOpsDemoMSPrepareNewPlayerRequest::BuildBody(FString& BodyString) const
 {
 	ensureAlways(Body);
 
@@ -27,9 +27,9 @@ void ULiveOpsDemoMsPrepareNewPlayerRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-ULiveOpsDemoMsPrepareNewPlayerRequest* ULiveOpsDemoMsPrepareNewPlayerRequest::Make(int64 _UserID, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+ULiveOpsDemoMSPrepareNewPlayerRequest* ULiveOpsDemoMSPrepareNewPlayerRequest::Make(int64 _UserID, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
-	ULiveOpsDemoMsPrepareNewPlayerRequest* Req = NewObject<ULiveOpsDemoMsPrepareNewPlayerRequest>(RequestOwner);
+	ULiveOpsDemoMSPrepareNewPlayerRequest* Req = NewObject<ULiveOpsDemoMSPrepareNewPlayerRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)

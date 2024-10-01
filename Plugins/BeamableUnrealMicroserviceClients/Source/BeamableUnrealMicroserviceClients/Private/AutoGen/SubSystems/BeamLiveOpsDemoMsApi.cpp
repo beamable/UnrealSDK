@@ -1,18 +1,18 @@
 
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/BeamLiveOpsDemoMsApi.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/BeamLiveOpsDemoMSApi.h"
 #include "BeamCoreSettings.h"
 
 
-void UBeamLiveOpsDemoMsApi::Initialize(FSubsystemCollectionBase& Collection)
+void UBeamLiveOpsDemoMSApi::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 	Backend = Cast<UBeamBackend>(Collection.InitializeDependency(UBeamBackend::StaticClass()));
 	RequestTracker = Cast<UBeamRequestTracker>(Collection.InitializeDependency(UBeamRequestTracker::StaticClass()));
 	ResponseCache = Cast<UBeamResponseCache>(Collection.InitializeDependency(UBeamResponseCache::StaticClass()));
-	MicroserviceName = TEXT("LiveOpsDemoMs");
+	MicroserviceName = TEXT("LiveOpsDemoMS");
 }
 
-void UBeamLiveOpsDemoMsApi::Deinitialize()
+void UBeamLiveOpsDemoMSApi::Deinitialize()
 {
 	Super::Deinitialize();
 }
@@ -20,8 +20,8 @@ void UBeamLiveOpsDemoMsApi::Deinitialize()
 
 
 
-void UBeamLiveOpsDemoMsApi::BP_PrepareNewPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                ULiveOpsDemoMsPrepareNewPlayerRequest* RequestData, const FOnLiveOpsDemoMsPrepareNewPlayerSuccess& OnSuccess, const FOnLiveOpsDemoMsPrepareNewPlayerError& OnError, const FOnLiveOpsDemoMsPrepareNewPlayerComplete& OnComplete, 
+void UBeamLiveOpsDemoMSApi::BP_PrepareNewPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                                ULiveOpsDemoMSPrepareNewPlayerRequest* RequestData, const FOnLiveOpsDemoMSPrepareNewPlayerSuccess& OnSuccess, const FOnLiveOpsDemoMSPrepareNewPlayerError& OnError, const FOnLiveOpsDemoMSPrepareNewPlayerComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
@@ -35,14 +35,14 @@ void UBeamLiveOpsDemoMsApi::BP_PrepareNewPlayerImpl(const FBeamRealmHandle& Targ
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<ULiveOpsDemoMsPrepareNewPlayerRequest, ULiveOpsDemoMsPrepareNewPlayerResponse, FOnLiveOpsDemoMsPrepareNewPlayerSuccess, FOnLiveOpsDemoMsPrepareNewPlayerError, FOnLiveOpsDemoMsPrepareNewPlayerComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<ULiveOpsDemoMSPrepareNewPlayerRequest, ULiveOpsDemoMSPrepareNewPlayerResponse, FOnLiveOpsDemoMSPrepareNewPlayerSuccess, FOnLiveOpsDemoMSPrepareNewPlayerError, FOnLiveOpsDemoMSPrepareNewPlayerComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<ULiveOpsDemoMsPrepareNewPlayerRequest, ULiveOpsDemoMsPrepareNewPlayerResponse, FOnLiveOpsDemoMsPrepareNewPlayerSuccess, FOnLiveOpsDemoMsPrepareNewPlayerError, FOnLiveOpsDemoMsPrepareNewPlayerComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<ULiveOpsDemoMSPrepareNewPlayerRequest, ULiveOpsDemoMSPrepareNewPlayerResponse, FOnLiveOpsDemoMSPrepareNewPlayerSuccess, FOnLiveOpsDemoMSPrepareNewPlayerError, FOnLiveOpsDemoMSPrepareNewPlayerComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -51,8 +51,8 @@ void UBeamLiveOpsDemoMsApi::BP_PrepareNewPlayerImpl(const FBeamRealmHandle& Targ
 	}
 }
 
-void UBeamLiveOpsDemoMsApi::CPP_PrepareNewPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              ULiveOpsDemoMsPrepareNewPlayerRequest* RequestData, const FOnLiveOpsDemoMsPrepareNewPlayerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamLiveOpsDemoMSApi::CPP_PrepareNewPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                              ULiveOpsDemoMSPrepareNewPlayerRequest* RequestData, const FOnLiveOpsDemoMSPrepareNewPlayerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	const auto Request = Backend->CreateMicroserviceAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData, Prefix);
@@ -65,14 +65,14 @@ void UBeamLiveOpsDemoMsApi::CPP_PrepareNewPlayerImpl(const FBeamRealmHandle& Tar
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<ULiveOpsDemoMsPrepareNewPlayerRequest, ULiveOpsDemoMsPrepareNewPlayerResponse>
+		Backend->RunAuthenticatedCodeRequestProcessor<ULiveOpsDemoMSPrepareNewPlayerRequest, ULiveOpsDemoMSPrepareNewPlayerResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<ULiveOpsDemoMsPrepareNewPlayerRequest, ULiveOpsDemoMsPrepareNewPlayerResponse>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<ULiveOpsDemoMSPrepareNewPlayerRequest, ULiveOpsDemoMSPrepareNewPlayerResponse>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -82,8 +82,8 @@ void UBeamLiveOpsDemoMsApi::CPP_PrepareNewPlayerImpl(const FBeamRealmHandle& Tar
 }
 
 		
-void UBeamLiveOpsDemoMsApi::BP_UpgradeItemImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                ULiveOpsDemoMsUpgradeItemRequest* RequestData, const FOnLiveOpsDemoMsUpgradeItemSuccess& OnSuccess, const FOnLiveOpsDemoMsUpgradeItemError& OnError, const FOnLiveOpsDemoMsUpgradeItemComplete& OnComplete, 
+void UBeamLiveOpsDemoMSApi::BP_UpgradeItemImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                                ULiveOpsDemoMSUpgradeItemRequest* RequestData, const FOnLiveOpsDemoMSUpgradeItemSuccess& OnSuccess, const FOnLiveOpsDemoMSUpgradeItemError& OnError, const FOnLiveOpsDemoMSUpgradeItemComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
@@ -97,14 +97,14 @@ void UBeamLiveOpsDemoMsApi::BP_UpgradeItemImpl(const FBeamRealmHandle& TargetRea
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<ULiveOpsDemoMsUpgradeItemRequest, ULiveOpsDemoMsUpgradeItemResponse, FOnLiveOpsDemoMsUpgradeItemSuccess, FOnLiveOpsDemoMsUpgradeItemError, FOnLiveOpsDemoMsUpgradeItemComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<ULiveOpsDemoMSUpgradeItemRequest, ULiveOpsDemoMSUpgradeItemResponse, FOnLiveOpsDemoMSUpgradeItemSuccess, FOnLiveOpsDemoMSUpgradeItemError, FOnLiveOpsDemoMSUpgradeItemComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<ULiveOpsDemoMsUpgradeItemRequest, ULiveOpsDemoMsUpgradeItemResponse, FOnLiveOpsDemoMsUpgradeItemSuccess, FOnLiveOpsDemoMsUpgradeItemError, FOnLiveOpsDemoMsUpgradeItemComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<ULiveOpsDemoMSUpgradeItemRequest, ULiveOpsDemoMSUpgradeItemResponse, FOnLiveOpsDemoMSUpgradeItemSuccess, FOnLiveOpsDemoMSUpgradeItemError, FOnLiveOpsDemoMSUpgradeItemComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -113,8 +113,8 @@ void UBeamLiveOpsDemoMsApi::BP_UpgradeItemImpl(const FBeamRealmHandle& TargetRea
 	}
 }
 
-void UBeamLiveOpsDemoMsApi::CPP_UpgradeItemImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              ULiveOpsDemoMsUpgradeItemRequest* RequestData, const FOnLiveOpsDemoMsUpgradeItemFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamLiveOpsDemoMSApi::CPP_UpgradeItemImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                              ULiveOpsDemoMSUpgradeItemRequest* RequestData, const FOnLiveOpsDemoMSUpgradeItemFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	const auto Request = Backend->CreateMicroserviceAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData, Prefix);
@@ -127,14 +127,14 @@ void UBeamLiveOpsDemoMsApi::CPP_UpgradeItemImpl(const FBeamRealmHandle& TargetRe
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<ULiveOpsDemoMsUpgradeItemRequest, ULiveOpsDemoMsUpgradeItemResponse>
+		Backend->RunAuthenticatedCodeRequestProcessor<ULiveOpsDemoMSUpgradeItemRequest, ULiveOpsDemoMSUpgradeItemResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<ULiveOpsDemoMsUpgradeItemRequest, ULiveOpsDemoMsUpgradeItemResponse>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<ULiveOpsDemoMSUpgradeItemRequest, ULiveOpsDemoMSUpgradeItemResponse>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -144,8 +144,8 @@ void UBeamLiveOpsDemoMsApi::CPP_UpgradeItemImpl(const FBeamRealmHandle& TargetRe
 }
 
 		
-void UBeamLiveOpsDemoMsApi::BP_IncrementStatImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                ULiveOpsDemoMsIncrementStatRequest* RequestData, const FOnLiveOpsDemoMsIncrementStatSuccess& OnSuccess, const FOnLiveOpsDemoMsIncrementStatError& OnError, const FOnLiveOpsDemoMsIncrementStatComplete& OnComplete, 
+void UBeamLiveOpsDemoMSApi::BP_IncrementStatImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                                ULiveOpsDemoMSIncrementStatRequest* RequestData, const FOnLiveOpsDemoMSIncrementStatSuccess& OnSuccess, const FOnLiveOpsDemoMSIncrementStatError& OnError, const FOnLiveOpsDemoMSIncrementStatComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
@@ -159,14 +159,14 @@ void UBeamLiveOpsDemoMsApi::BP_IncrementStatImpl(const FBeamRealmHandle& TargetR
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<ULiveOpsDemoMsIncrementStatRequest, ULiveOpsDemoMsIncrementStatResponse, FOnLiveOpsDemoMsIncrementStatSuccess, FOnLiveOpsDemoMsIncrementStatError, FOnLiveOpsDemoMsIncrementStatComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<ULiveOpsDemoMSIncrementStatRequest, ULiveOpsDemoMSIncrementStatResponse, FOnLiveOpsDemoMSIncrementStatSuccess, FOnLiveOpsDemoMSIncrementStatError, FOnLiveOpsDemoMSIncrementStatComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<ULiveOpsDemoMsIncrementStatRequest, ULiveOpsDemoMsIncrementStatResponse, FOnLiveOpsDemoMsIncrementStatSuccess, FOnLiveOpsDemoMsIncrementStatError, FOnLiveOpsDemoMsIncrementStatComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<ULiveOpsDemoMSIncrementStatRequest, ULiveOpsDemoMSIncrementStatResponse, FOnLiveOpsDemoMSIncrementStatSuccess, FOnLiveOpsDemoMSIncrementStatError, FOnLiveOpsDemoMSIncrementStatComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -175,8 +175,8 @@ void UBeamLiveOpsDemoMsApi::BP_IncrementStatImpl(const FBeamRealmHandle& TargetR
 	}
 }
 
-void UBeamLiveOpsDemoMsApi::CPP_IncrementStatImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              ULiveOpsDemoMsIncrementStatRequest* RequestData, const FOnLiveOpsDemoMsIncrementStatFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamLiveOpsDemoMSApi::CPP_IncrementStatImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                              ULiveOpsDemoMSIncrementStatRequest* RequestData, const FOnLiveOpsDemoMSIncrementStatFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	const auto Request = Backend->CreateMicroserviceAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData, Prefix);
@@ -189,14 +189,14 @@ void UBeamLiveOpsDemoMsApi::CPP_IncrementStatImpl(const FBeamRealmHandle& Target
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<ULiveOpsDemoMsIncrementStatRequest, ULiveOpsDemoMsIncrementStatResponse>
+		Backend->RunAuthenticatedCodeRequestProcessor<ULiveOpsDemoMSIncrementStatRequest, ULiveOpsDemoMSIncrementStatResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<ULiveOpsDemoMsIncrementStatRequest, ULiveOpsDemoMsIncrementStatResponse>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<ULiveOpsDemoMSIncrementStatRequest, ULiveOpsDemoMSIncrementStatResponse>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -206,8 +206,8 @@ void UBeamLiveOpsDemoMsApi::CPP_IncrementStatImpl(const FBeamRealmHandle& Target
 }
 
 		
-void UBeamLiveOpsDemoMsApi::BP_GetSamlpeStatImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                ULiveOpsDemoMsGetSamlpeStatRequest* RequestData, const FOnLiveOpsDemoMsGetSamlpeStatSuccess& OnSuccess, const FOnLiveOpsDemoMsGetSamlpeStatError& OnError, const FOnLiveOpsDemoMsGetSamlpeStatComplete& OnComplete, 
+void UBeamLiveOpsDemoMSApi::BP_GetSamlpeStatImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                                ULiveOpsDemoMSGetSamlpeStatRequest* RequestData, const FOnLiveOpsDemoMSGetSamlpeStatSuccess& OnSuccess, const FOnLiveOpsDemoMSGetSamlpeStatError& OnError, const FOnLiveOpsDemoMSGetSamlpeStatComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
@@ -221,14 +221,14 @@ void UBeamLiveOpsDemoMsApi::BP_GetSamlpeStatImpl(const FBeamRealmHandle& TargetR
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<ULiveOpsDemoMsGetSamlpeStatRequest, ULiveOpsDemoMsGetSamlpeStatResponse, FOnLiveOpsDemoMsGetSamlpeStatSuccess, FOnLiveOpsDemoMsGetSamlpeStatError, FOnLiveOpsDemoMsGetSamlpeStatComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<ULiveOpsDemoMSGetSamlpeStatRequest, ULiveOpsDemoMSGetSamlpeStatResponse, FOnLiveOpsDemoMSGetSamlpeStatSuccess, FOnLiveOpsDemoMSGetSamlpeStatError, FOnLiveOpsDemoMSGetSamlpeStatComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<ULiveOpsDemoMsGetSamlpeStatRequest, ULiveOpsDemoMsGetSamlpeStatResponse, FOnLiveOpsDemoMsGetSamlpeStatSuccess, FOnLiveOpsDemoMsGetSamlpeStatError, FOnLiveOpsDemoMsGetSamlpeStatComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<ULiveOpsDemoMSGetSamlpeStatRequest, ULiveOpsDemoMSGetSamlpeStatResponse, FOnLiveOpsDemoMSGetSamlpeStatSuccess, FOnLiveOpsDemoMSGetSamlpeStatError, FOnLiveOpsDemoMSGetSamlpeStatComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
@@ -237,8 +237,8 @@ void UBeamLiveOpsDemoMsApi::BP_GetSamlpeStatImpl(const FBeamRealmHandle& TargetR
 	}
 }
 
-void UBeamLiveOpsDemoMsApi::CPP_GetSamlpeStatImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              ULiveOpsDemoMsGetSamlpeStatRequest* RequestData, const FOnLiveOpsDemoMsGetSamlpeStatFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamLiveOpsDemoMSApi::CPP_GetSamlpeStatImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+                              ULiveOpsDemoMSGetSamlpeStatRequest* RequestData, const FOnLiveOpsDemoMSGetSamlpeStatFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	const auto Request = Backend->CreateMicroserviceAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData, Prefix);
@@ -251,14 +251,14 @@ void UBeamLiveOpsDemoMsApi::CPP_GetSamlpeStatImpl(const FBeamRealmHandle& Target
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<ULiveOpsDemoMsGetSamlpeStatRequest, ULiveOpsDemoMsGetSamlpeStatResponse>
+		Backend->RunAuthenticatedCodeRequestProcessor<ULiveOpsDemoMSGetSamlpeStatRequest, ULiveOpsDemoMSGetSamlpeStatResponse>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<ULiveOpsDemoMsGetSamlpeStatRequest, ULiveOpsDemoMsGetSamlpeStatResponse>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<ULiveOpsDemoMSGetSamlpeStatRequest, ULiveOpsDemoMSGetSamlpeStatResponse>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
@@ -272,14 +272,14 @@ void UBeamLiveOpsDemoMsApi::CPP_GetSamlpeStatImpl(const FBeamRealmHandle& Target
 
 
 
-void UBeamLiveOpsDemoMsApi::CPP_PrepareNewPlayer(const FUserSlot& UserSlot, ULiveOpsDemoMsPrepareNewPlayerRequest* Request, const FOnLiveOpsDemoMsPrepareNewPlayerFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamLiveOpsDemoMSApi::CPP_PrepareNewPlayer(const FUserSlot& UserSlot, ULiveOpsDemoMSPrepareNewPlayerRequest* Request, const FOnLiveOpsDemoMSPrepareNewPlayerFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(ULiveOpsDemoMsPrepareNewPlayerRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(ULiveOpsDemoMSPrepareNewPlayerRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
 	CPP_PrepareNewPlayerImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
@@ -287,14 +287,14 @@ void UBeamLiveOpsDemoMsApi::CPP_PrepareNewPlayer(const FUserSlot& UserSlot, ULiv
 }
 
 		
-void UBeamLiveOpsDemoMsApi::CPP_UpgradeItem(const FUserSlot& UserSlot, ULiveOpsDemoMsUpgradeItemRequest* Request, const FOnLiveOpsDemoMsUpgradeItemFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamLiveOpsDemoMSApi::CPP_UpgradeItem(const FUserSlot& UserSlot, ULiveOpsDemoMSUpgradeItemRequest* Request, const FOnLiveOpsDemoMSUpgradeItemFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(ULiveOpsDemoMsUpgradeItemRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(ULiveOpsDemoMSUpgradeItemRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
 	CPP_UpgradeItemImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
@@ -302,14 +302,14 @@ void UBeamLiveOpsDemoMsApi::CPP_UpgradeItem(const FUserSlot& UserSlot, ULiveOpsD
 }
 
 		
-void UBeamLiveOpsDemoMsApi::CPP_IncrementStat(const FUserSlot& UserSlot, ULiveOpsDemoMsIncrementStatRequest* Request, const FOnLiveOpsDemoMsIncrementStatFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamLiveOpsDemoMSApi::CPP_IncrementStat(const FUserSlot& UserSlot, ULiveOpsDemoMSIncrementStatRequest* Request, const FOnLiveOpsDemoMSIncrementStatFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(ULiveOpsDemoMsIncrementStatRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(ULiveOpsDemoMSIncrementStatRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
 	CPP_IncrementStatImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
@@ -317,14 +317,14 @@ void UBeamLiveOpsDemoMsApi::CPP_IncrementStat(const FUserSlot& UserSlot, ULiveOp
 }
 
 		
-void UBeamLiveOpsDemoMsApi::CPP_GetSamlpeStat(const FUserSlot& UserSlot, ULiveOpsDemoMsGetSamlpeStatRequest* Request, const FOnLiveOpsDemoMsGetSamlpeStatFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamLiveOpsDemoMSApi::CPP_GetSamlpeStat(const FUserSlot& UserSlot, ULiveOpsDemoMSGetSamlpeStatRequest* Request, const FOnLiveOpsDemoMSGetSamlpeStatFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(ULiveOpsDemoMsGetSamlpeStatRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(ULiveOpsDemoMSGetSamlpeStatRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
 	CPP_GetSamlpeStatImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
@@ -336,14 +336,14 @@ void UBeamLiveOpsDemoMsApi::CPP_GetSamlpeStat(const FUserSlot& UserSlot, ULiveOp
 
 
 
-void UBeamLiveOpsDemoMsApi::PrepareNewPlayer(FUserSlot UserSlot, ULiveOpsDemoMsPrepareNewPlayerRequest* Request, const FOnLiveOpsDemoMsPrepareNewPlayerSuccess& OnSuccess, const FOnLiveOpsDemoMsPrepareNewPlayerError& OnError, const FOnLiveOpsDemoMsPrepareNewPlayerComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+void UBeamLiveOpsDemoMSApi::PrepareNewPlayer(FUserSlot UserSlot, ULiveOpsDemoMSPrepareNewPlayerRequest* Request, const FOnLiveOpsDemoMSPrepareNewPlayerSuccess& OnSuccess, const FOnLiveOpsDemoMSPrepareNewPlayerError& OnError, const FOnLiveOpsDemoMSPrepareNewPlayerComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(ULiveOpsDemoMsPrepareNewPlayerRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(ULiveOpsDemoMSPrepareNewPlayerRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
 	BP_PrepareNewPlayerImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
@@ -351,14 +351,14 @@ void UBeamLiveOpsDemoMsApi::PrepareNewPlayer(FUserSlot UserSlot, ULiveOpsDemoMsP
 }
 
 		
-void UBeamLiveOpsDemoMsApi::UpgradeItem(FUserSlot UserSlot, ULiveOpsDemoMsUpgradeItemRequest* Request, const FOnLiveOpsDemoMsUpgradeItemSuccess& OnSuccess, const FOnLiveOpsDemoMsUpgradeItemError& OnError, const FOnLiveOpsDemoMsUpgradeItemComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+void UBeamLiveOpsDemoMSApi::UpgradeItem(FUserSlot UserSlot, ULiveOpsDemoMSUpgradeItemRequest* Request, const FOnLiveOpsDemoMSUpgradeItemSuccess& OnSuccess, const FOnLiveOpsDemoMSUpgradeItemError& OnError, const FOnLiveOpsDemoMSUpgradeItemComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(ULiveOpsDemoMsUpgradeItemRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(ULiveOpsDemoMSUpgradeItemRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
 	BP_UpgradeItemImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
@@ -366,14 +366,14 @@ void UBeamLiveOpsDemoMsApi::UpgradeItem(FUserSlot UserSlot, ULiveOpsDemoMsUpgrad
 }
 
 		
-void UBeamLiveOpsDemoMsApi::IncrementStat(FUserSlot UserSlot, ULiveOpsDemoMsIncrementStatRequest* Request, const FOnLiveOpsDemoMsIncrementStatSuccess& OnSuccess, const FOnLiveOpsDemoMsIncrementStatError& OnError, const FOnLiveOpsDemoMsIncrementStatComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+void UBeamLiveOpsDemoMSApi::IncrementStat(FUserSlot UserSlot, ULiveOpsDemoMSIncrementStatRequest* Request, const FOnLiveOpsDemoMSIncrementStatSuccess& OnSuccess, const FOnLiveOpsDemoMSIncrementStatError& OnError, const FOnLiveOpsDemoMSIncrementStatComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(ULiveOpsDemoMsIncrementStatRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(ULiveOpsDemoMSIncrementStatRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
 	BP_IncrementStatImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
@@ -381,14 +381,14 @@ void UBeamLiveOpsDemoMsApi::IncrementStat(FUserSlot UserSlot, ULiveOpsDemoMsIncr
 }
 
 		
-void UBeamLiveOpsDemoMsApi::GetSamlpeStat(FUserSlot UserSlot, ULiveOpsDemoMsGetSamlpeStatRequest* Request, const FOnLiveOpsDemoMsGetSamlpeStatSuccess& OnSuccess, const FOnLiveOpsDemoMsGetSamlpeStatError& OnError, const FOnLiveOpsDemoMsGetSamlpeStatComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+void UBeamLiveOpsDemoMSApi::GetSamlpeStat(FUserSlot UserSlot, ULiveOpsDemoMSGetSamlpeStatRequest* Request, const FOnLiveOpsDemoMSGetSamlpeStatSuccess& OnSuccess, const FOnLiveOpsDemoMSGetSamlpeStatError& OnError, const FOnLiveOpsDemoMSGetSamlpeStatComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(ULiveOpsDemoMsGetSamlpeStatRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(ULiveOpsDemoMSGetSamlpeStatRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
 	BP_GetSamlpeStatImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	

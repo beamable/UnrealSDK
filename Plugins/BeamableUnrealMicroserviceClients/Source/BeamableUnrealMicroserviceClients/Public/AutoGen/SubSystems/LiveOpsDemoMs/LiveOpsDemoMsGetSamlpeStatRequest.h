@@ -8,12 +8,12 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/GetSamlpeStatRequestArgs.h"
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/LiveOpsDemoMsGetSamlpeStatResponse.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/LiveOpsDemoMSGetSamlpeStatResponse.h"
 
-#include "LiveOpsDemoMsGetSamlpeStatRequest.generated.h"
+#include "LiveOpsDemoMSGetSamlpeStatRequest.generated.h"
 
 UCLASS(BlueprintType)
-class BEAMABLEUNREALMICROSERVICECLIENTS_API ULiveOpsDemoMsGetSamlpeStatRequest : public UObject, public IBeamBaseRequestInterface
+class BEAMABLEUNREALMICROSERVICECLIENTS_API ULiveOpsDemoMSGetSamlpeStatRequest : public UObject, public IBeamBaseRequestInterface
 {
 	GENERATED_BODY()
 	
@@ -30,24 +30,24 @@ public:
 	UGetSamlpeStatRequestArgs* Body = {};
 
 	// Beam Base Request Declaration
-	ULiveOpsDemoMsGetSamlpeStatRequest() = default;
+	ULiveOpsDemoMSGetSamlpeStatRequest() = default;
 
 	virtual void BuildVerb(FString& VerbString) const override;
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|LiveOpsDemoMs", DisplayName="Beam - Make LiveOpsDemoMsGetSamlpeStat",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static ULiveOpsDemoMsGetSamlpeStatRequest* Make(int64 _UserID, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|LiveOpsDemoMS", DisplayName="Beam - Make LiveOpsDemoMSGetSamlpeStat",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static ULiveOpsDemoMSGetSamlpeStatRequest* Make(int64 _UserID, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnLiveOpsDemoMsGetSamlpeStatSuccess, FBeamRequestContext, Context, ULiveOpsDemoMsGetSamlpeStatRequest*, Request, ULiveOpsDemoMsGetSamlpeStatResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnLiveOpsDemoMSGetSamlpeStatSuccess, FBeamRequestContext, Context, ULiveOpsDemoMSGetSamlpeStatRequest*, Request, ULiveOpsDemoMSGetSamlpeStatResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnLiveOpsDemoMsGetSamlpeStatError, FBeamRequestContext, Context, ULiveOpsDemoMsGetSamlpeStatRequest*, Request, FBeamErrorResponse, Error);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnLiveOpsDemoMSGetSamlpeStatError, FBeamRequestContext, Context, ULiveOpsDemoMSGetSamlpeStatRequest*, Request, FBeamErrorResponse, Error);
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnLiveOpsDemoMsGetSamlpeStatComplete, FBeamRequestContext, Context, ULiveOpsDemoMsGetSamlpeStatRequest*, Request);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnLiveOpsDemoMSGetSamlpeStatComplete, FBeamRequestContext, Context, ULiveOpsDemoMSGetSamlpeStatRequest*, Request);
 
-using FLiveOpsDemoMsGetSamlpeStatFullResponse = FBeamFullResponse<ULiveOpsDemoMsGetSamlpeStatRequest*, ULiveOpsDemoMsGetSamlpeStatResponse*>;
-DECLARE_DELEGATE_OneParam(FOnLiveOpsDemoMsGetSamlpeStatFullResponse, FLiveOpsDemoMsGetSamlpeStatFullResponse);
+using FLiveOpsDemoMSGetSamlpeStatFullResponse = FBeamFullResponse<ULiveOpsDemoMSGetSamlpeStatRequest*, ULiveOpsDemoMSGetSamlpeStatResponse*>;
+DECLARE_DELEGATE_OneParam(FOnLiveOpsDemoMSGetSamlpeStatFullResponse, FLiveOpsDemoMSGetSamlpeStatFullResponse);

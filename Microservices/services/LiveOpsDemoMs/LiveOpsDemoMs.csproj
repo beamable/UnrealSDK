@@ -6,9 +6,9 @@
 
         <!-- When "true", this will auto-generate client code to any linked unity projects -->
         <GenerateClientCode>true</GenerateClientCode>
+        <RootNamespace>LiveOpsDemoMS</RootNamespace>
 
         <BeamServiceGroup>BEAMPROJ_LiveOpsDemo</BeamServiceGroup>
-      
     </PropertyGroup>
 
     <!-- These are special Beamable parameters that we use to keep the beamable packages in-sync to the CLI version your project is using. -->
@@ -23,7 +23,7 @@
     
     <PropertyGroup Label="Dotnet Settings">
         <!-- net8.0 is the LTS version until 2026. To update your net version, update the <TargetFramework> when Beamable announces support. -->
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup Label="Nuget References">

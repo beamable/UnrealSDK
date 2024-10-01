@@ -44,7 +44,7 @@ public:
 	FDelegate_Simple OnInventoryItemsUpdated;
 	
 	UPROPERTY()
-	UBeamLiveOpsDemoMsApi *LiveOpsMS;
+	UBeamLiveOpsDemoMSApi *LiveOpsMS;
 
 	int64 CurrentSampleStatValue  = 1;
 
@@ -61,7 +61,7 @@ protected:
 		Runtime = GI->GetSubsystem<UBeamRuntime>();
 		Stats = GI->GetSubsystem<UBeamStatsSubsystem>();
 		Inventory = GI->GetSubsystem<UBeamInventorySubsystem>();
-		LiveOpsMS = GEngine->GetEngineSubsystem<UBeamLiveOpsDemoMsApi>();
+		LiveOpsMS = GEngine->GetEngineSubsystem<UBeamLiveOpsDemoMSApi>();
 
 		Inventory->OnInventoryRefreshedCode.AddUObject(this,&ULiveOpsDemoMainMenu::OnInventoryRefreshed);
 		
@@ -76,12 +76,12 @@ protected:
 		FBeamRealmUser UserData;
 		if (Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, UserData, this))
 		{
-			TMap<FString, FString> empty;
-			ULiveOpsDemoMsPrepareNewPlayerRequest* request =
-				ULiveOpsDemoMsPrepareNewPlayerRequest::Make(UserData.GamerTag.AsLong,this, empty);
+			TMap<FString, FString> Empty;
+			ULiveOpsDemoMSPrepareNewPlayerRequest* Request =
+				ULiveOpsDemoMSPrepareNewPlayerRequest::Make(UserData.GamerTag.AsLong,this, Empty);
 			
-			const auto Handler = FOnLiveOpsDemoMsPrepareNewPlayerFullResponse::CreateLambda(
-				[this](FBeamFullResponse<ULiveOpsDemoMsPrepareNewPlayerRequest*, ULiveOpsDemoMsPrepareNewPlayerResponse*> Resp)
+			const auto Handler = FOnLiveOpsDemoMSPrepareNewPlayerFullResponse::CreateLambda(
+				[this](FBeamFullResponse<ULiveOpsDemoMSPrepareNewPlayerRequest*, ULiveOpsDemoMSPrepareNewPlayerResponse*> Resp)
 				{
 					if (Resp.SuccessData)
 					{
@@ -90,7 +90,7 @@ protected:
 					}
 				});
 			FBeamRequestContext Ctx;
-			LiveOpsMS->CPP_PrepareNewPlayer(UserSlot,request,Handler,Ctx,{},this);
+			LiveOpsMS->CPP_PrepareNewPlayer(UserSlot,Request,Handler,Ctx,{},this);
 
 			
 		}
@@ -136,11 +136,11 @@ protected:
 		if (Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, UserData, this))
 		{
 			TMap<FString, FString> Empty;
-			ULiveOpsDemoMsIncrementStatRequest* Request =
-				ULiveOpsDemoMsIncrementStatRequest::Make(UserData.GamerTag.AsLong,this, Empty);
+			ULiveOpsDemoMSIncrementStatRequest* Request =
+				ULiveOpsDemoMSIncrementStatRequest::Make(UserData.GamerTag.AsLong,this, Empty);
 			
-			const auto Handler = FOnLiveOpsDemoMsIncrementStatFullResponse::CreateLambda(
-				[this,UserData](FBeamFullResponse<ULiveOpsDemoMsIncrementStatRequest*, ULiveOpsDemoMsIncrementStatResponse*> Resp)
+			const auto Handler = FOnLiveOpsDemoMSIncrementStatFullResponse::CreateLambda(
+				[this,UserData](FBeamFullResponse<ULiveOpsDemoMSIncrementStatRequest*, ULiveOpsDemoMSIncrementStatResponse*> Resp)
 				{
 					if (Resp.SuccessData)
 					{
@@ -165,19 +165,17 @@ protected:
 	{
 	
 		const auto UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
-		Inventory->CPP_FetchAllInventoryOperation(UserSlot,{});
+		
 		FBeamRealmUser UserData;
 		if (Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, UserData, this))
 		{
 			TMap<FString, FString> Empty;
-			ULiveOpsDemoMsUpgradeItemRequest* Request =
-				ULiveOpsDemoMsUpgradeItemRequest::Make(UserData.GamerTag.AsLong,ItemInstanceID,this, Empty);
+			ULiveOpsDemoMSUpgradeItemRequest* Request =
+				ULiveOpsDemoMSUpgradeItemRequest::Make(UserData.GamerTag.AsLong,ItemInstanceID,this, Empty);
 			
-			const auto Handler = FOnLiveOpsDemoMsUpgradeItemFullResponse::CreateLambda(
-				[this,UserData](FBeamFullResponse<ULiveOpsDemoMsUpgradeItemRequest*, ULiveOpsDemoMsUpgradeItemResponse*> Resp)
+			const auto Handler = FOnLiveOpsDemoMSUpgradeItemFullResponse::CreateLambda(
+				[this,UserData](FBeamFullResponse<ULiveOpsDemoMSUpgradeItemRequest*, ULiveOpsDemoMSUpgradeItemResponse*> Resp)
 				{
-					UE_LOG(LogTemp, Display, TEXT("call succeeded"));
-					int i =0;
 					if (Resp.SuccessData)
 					{
 						OnInventoryItemsUpdated.Broadcast();

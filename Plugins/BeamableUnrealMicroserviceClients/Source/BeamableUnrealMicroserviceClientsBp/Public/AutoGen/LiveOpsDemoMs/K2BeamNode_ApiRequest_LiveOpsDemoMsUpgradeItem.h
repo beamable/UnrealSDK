@@ -4,15 +4,15 @@
 #include "CoreMinimal.h"
 #include "BeamFlow/ApiRequest/K2BeamNode_ApiRequest.h"
 
-#include "K2BeamNode_ApiRequest_LiveOpsDemoMsUpgradeItem.generated.h"
+#include "K2BeamNode_ApiRequest_LiveOpsDemoMSUpgradeItem.generated.h"
 
-#define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_LiveOpsDemoMsUpgradeItem"
+#define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_LiveOpsDemoMSUpgradeItem"
 
 /**
-* This is the code-gen'ed declaration for the Beam Flow's Endpoint: Post /UpgradeItem  of the LiveOpsDemoMs Service. 
+* This is the code-gen'ed declaration for the Beam Flow's Endpoint: Post /UpgradeItem  of the LiveOpsDemoMS Service. 
 */
 UCLASS(meta=(BeamFlow))
-class BEAMABLEUNREALMICROSERVICECLIENTSBP_API UK2BeamNode_ApiRequest_LiveOpsDemoMsUpgradeItem : public UK2BeamNode_ApiRequest
+class BEAMABLEUNREALMICROSERVICECLIENTSBP_API UK2BeamNode_ApiRequest_LiveOpsDemoMSUpgradeItem : public UK2BeamNode_ApiRequest
 {
 	GENERATED_BODY()
 

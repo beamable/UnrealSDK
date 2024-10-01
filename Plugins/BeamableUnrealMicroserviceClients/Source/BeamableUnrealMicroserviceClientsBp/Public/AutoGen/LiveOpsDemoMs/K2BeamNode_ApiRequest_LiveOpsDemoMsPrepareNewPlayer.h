@@ -4,15 +4,15 @@
 #include "CoreMinimal.h"
 #include "BeamFlow/ApiRequest/K2BeamNode_ApiRequest.h"
 
-#include "K2BeamNode_ApiRequest_LiveOpsDemoMsPrepareNewPlayer.generated.h"
+#include "K2BeamNode_ApiRequest_LiveOpsDemoMSPrepareNewPlayer.generated.h"
 
-#define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_LiveOpsDemoMsPrepareNewPlayer"
+#define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_LiveOpsDemoMSPrepareNewPlayer"
 
 /**
-* This is the code-gen'ed declaration for the Beam Flow's Endpoint: Post /PrepareNewPlayer  of the LiveOpsDemoMs Service. 
+* This is the code-gen'ed declaration for the Beam Flow's Endpoint: Post /PrepareNewPlayer  of the LiveOpsDemoMS Service. 
 */
 UCLASS(meta=(BeamFlow))
-class BEAMABLEUNREALMICROSERVICECLIENTSBP_API UK2BeamNode_ApiRequest_LiveOpsDemoMsPrepareNewPlayer : public UK2BeamNode_ApiRequest
+class BEAMABLEUNREALMICROSERVICECLIENTSBP_API UK2BeamNode_ApiRequest_LiveOpsDemoMSPrepareNewPlayer : public UK2BeamNode_ApiRequest
 {
 	GENERATED_BODY()
 

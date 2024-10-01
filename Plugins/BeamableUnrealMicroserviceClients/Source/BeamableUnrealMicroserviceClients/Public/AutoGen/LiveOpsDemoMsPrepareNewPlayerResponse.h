@@ -5,10 +5,10 @@
 #include "Serialization/BeamJsonSerializable.h"
 
 
-#include "LiveOpsDemoMsPrepareNewPlayerResponse.generated.h"
+#include "LiveOpsDemoMSPrepareNewPlayerResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLEUNREALMICROSERVICECLIENTS_API ULiveOpsDemoMsPrepareNewPlayerResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
+class BEAMABLEUNREALMICROSERVICECLIENTS_API ULiveOpsDemoMSPrepareNewPlayerResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 

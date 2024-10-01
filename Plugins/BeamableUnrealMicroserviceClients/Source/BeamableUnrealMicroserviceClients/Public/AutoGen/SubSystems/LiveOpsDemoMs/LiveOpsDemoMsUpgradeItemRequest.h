@@ -8,12 +8,12 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/UpgradeItemRequestArgs.h"
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/LiveOpsDemoMsUpgradeItemResponse.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/LiveOpsDemoMSUpgradeItemResponse.h"
 
-#include "LiveOpsDemoMsUpgradeItemRequest.generated.h"
+#include "LiveOpsDemoMSUpgradeItemRequest.generated.h"
 
 UCLASS(BlueprintType)
-class BEAMABLEUNREALMICROSERVICECLIENTS_API ULiveOpsDemoMsUpgradeItemRequest : public UObject, public IBeamBaseRequestInterface
+class BEAMABLEUNREALMICROSERVICECLIENTS_API ULiveOpsDemoMSUpgradeItemRequest : public UObject, public IBeamBaseRequestInterface
 {
 	GENERATED_BODY()
 	
@@ -30,24 +30,24 @@ public:
 	UUpgradeItemRequestArgs* Body = {};
 
 	// Beam Base Request Declaration
-	ULiveOpsDemoMsUpgradeItemRequest() = default;
+	ULiveOpsDemoMSUpgradeItemRequest() = default;
 
 	virtual void BuildVerb(FString& VerbString) const override;
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|LiveOpsDemoMs", DisplayName="Beam - Make LiveOpsDemoMsUpgradeItem",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static ULiveOpsDemoMsUpgradeItemRequest* Make(int64 _UserID, int64 _ItemInstaceID, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|LiveOpsDemoMS", DisplayName="Beam - Make LiveOpsDemoMSUpgradeItem",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static ULiveOpsDemoMSUpgradeItemRequest* Make(int64 _UserID, int64 _ItemInstaceID, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnLiveOpsDemoMsUpgradeItemSuccess, FBeamRequestContext, Context, ULiveOpsDemoMsUpgradeItemRequest*, Request, ULiveOpsDemoMsUpgradeItemResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnLiveOpsDemoMSUpgradeItemSuccess, FBeamRequestContext, Context, ULiveOpsDemoMSUpgradeItemRequest*, Request, ULiveOpsDemoMSUpgradeItemResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnLiveOpsDemoMsUpgradeItemError, FBeamRequestContext, Context, ULiveOpsDemoMsUpgradeItemRequest*, Request, FBeamErrorResponse, Error);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnLiveOpsDemoMSUpgradeItemError, FBeamRequestContext, Context, ULiveOpsDemoMSUpgradeItemRequest*, Request, FBeamErrorResponse, Error);
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnLiveOpsDemoMsUpgradeItemComplete, FBeamRequestContext, Context, ULiveOpsDemoMsUpgradeItemRequest*, Request);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnLiveOpsDemoMSUpgradeItemComplete, FBeamRequestContext, Context, ULiveOpsDemoMSUpgradeItemRequest*, Request);
 
-using FLiveOpsDemoMsUpgradeItemFullResponse = FBeamFullResponse<ULiveOpsDemoMsUpgradeItemRequest*, ULiveOpsDemoMsUpgradeItemResponse*>;
-DECLARE_DELEGATE_OneParam(FOnLiveOpsDemoMsUpgradeItemFullResponse, FLiveOpsDemoMsUpgradeItemFullResponse);
+using FLiveOpsDemoMSUpgradeItemFullResponse = FBeamFullResponse<ULiveOpsDemoMSUpgradeItemRequest*, ULiveOpsDemoMSUpgradeItemResponse*>;
+DECLARE_DELEGATE_OneParam(FOnLiveOpsDemoMSUpgradeItemFullResponse, FLiveOpsDemoMSUpgradeItemFullResponse);

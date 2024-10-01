@@ -1,10 +1,10 @@
 
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/LiveOpsDemoMsPrepareNewPlayerResponseLibrary.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/LiveOpsDemoMSPrepareNewPlayerResponseLibrary.h"
 
 #include "CoreMinimal.h"
 
 
-FString ULiveOpsDemoMsPrepareNewPlayerResponseLibrary::LiveOpsDemoMsPrepareNewPlayerResponseToJsonString(const ULiveOpsDemoMsPrepareNewPlayerResponse* Serializable, const bool Pretty)
+FString ULiveOpsDemoMSPrepareNewPlayerResponseLibrary::LiveOpsDemoMSPrepareNewPlayerResponseToJsonString(const ULiveOpsDemoMSPrepareNewPlayerResponse* Serializable, const bool Pretty)
 {
 	FString Result = FString{};
 	if(Pretty)
@@ -22,15 +22,15 @@ FString ULiveOpsDemoMsPrepareNewPlayerResponseLibrary::LiveOpsDemoMsPrepareNewPl
 	return Result;
 }	
 
-ULiveOpsDemoMsPrepareNewPlayerResponse* ULiveOpsDemoMsPrepareNewPlayerResponseLibrary::Make(bool bValue, UObject* Outer)
+ULiveOpsDemoMSPrepareNewPlayerResponse* ULiveOpsDemoMSPrepareNewPlayerResponseLibrary::Make(bool bValue, UObject* Outer)
 {
-	auto Serializable = NewObject<ULiveOpsDemoMsPrepareNewPlayerResponse>(Outer);
+	auto Serializable = NewObject<ULiveOpsDemoMSPrepareNewPlayerResponse>(Outer);
 	Serializable->bValue = bValue;
 	
 	return Serializable;
 }
 
-void ULiveOpsDemoMsPrepareNewPlayerResponseLibrary::Break(const ULiveOpsDemoMsPrepareNewPlayerResponse* Serializable, bool& bValue)
+void ULiveOpsDemoMSPrepareNewPlayerResponseLibrary::Break(const ULiveOpsDemoMSPrepareNewPlayerResponse* Serializable, bool& bValue)
 {
 	bValue = Serializable->bValue;
 		

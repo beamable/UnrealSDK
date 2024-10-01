@@ -8,12 +8,12 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/PrepareNewPlayerRequestArgs.h"
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/LiveOpsDemoMsPrepareNewPlayerResponse.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/LiveOpsDemoMSPrepareNewPlayerResponse.h"
 
-#include "LiveOpsDemoMsPrepareNewPlayerRequest.generated.h"
+#include "LiveOpsDemoMSPrepareNewPlayerRequest.generated.h"
 
 UCLASS(BlueprintType)
-class BEAMABLEUNREALMICROSERVICECLIENTS_API ULiveOpsDemoMsPrepareNewPlayerRequest : public UObject, public IBeamBaseRequestInterface
+class BEAMABLEUNREALMICROSERVICECLIENTS_API ULiveOpsDemoMSPrepareNewPlayerRequest : public UObject, public IBeamBaseRequestInterface
 {
 	GENERATED_BODY()
 	
@@ -30,24 +30,24 @@ public:
 	UPrepareNewPlayerRequestArgs* Body = {};
 
 	// Beam Base Request Declaration
-	ULiveOpsDemoMsPrepareNewPlayerRequest() = default;
+	ULiveOpsDemoMSPrepareNewPlayerRequest() = default;
 
 	virtual void BuildVerb(FString& VerbString) const override;
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|LiveOpsDemoMs", DisplayName="Beam - Make LiveOpsDemoMsPrepareNewPlayer",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static ULiveOpsDemoMsPrepareNewPlayerRequest* Make(int64 _UserID, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|LiveOpsDemoMS", DisplayName="Beam - Make LiveOpsDemoMSPrepareNewPlayer",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static ULiveOpsDemoMSPrepareNewPlayerRequest* Make(int64 _UserID, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnLiveOpsDemoMsPrepareNewPlayerSuccess, FBeamRequestContext, Context, ULiveOpsDemoMsPrepareNewPlayerRequest*, Request, ULiveOpsDemoMsPrepareNewPlayerResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnLiveOpsDemoMSPrepareNewPlayerSuccess, FBeamRequestContext, Context, ULiveOpsDemoMSPrepareNewPlayerRequest*, Request, ULiveOpsDemoMSPrepareNewPlayerResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnLiveOpsDemoMsPrepareNewPlayerError, FBeamRequestContext, Context, ULiveOpsDemoMsPrepareNewPlayerRequest*, Request, FBeamErrorResponse, Error);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnLiveOpsDemoMSPrepareNewPlayerError, FBeamRequestContext, Context, ULiveOpsDemoMSPrepareNewPlayerRequest*, Request, FBeamErrorResponse, Error);
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnLiveOpsDemoMsPrepareNewPlayerComplete, FBeamRequestContext, Context, ULiveOpsDemoMsPrepareNewPlayerRequest*, Request);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnLiveOpsDemoMSPrepareNewPlayerComplete, FBeamRequestContext, Context, ULiveOpsDemoMSPrepareNewPlayerRequest*, Request);
 
-using FLiveOpsDemoMsPrepareNewPlayerFullResponse = FBeamFullResponse<ULiveOpsDemoMsPrepareNewPlayerRequest*, ULiveOpsDemoMsPrepareNewPlayerResponse*>;
-DECLARE_DELEGATE_OneParam(FOnLiveOpsDemoMsPrepareNewPlayerFullResponse, FLiveOpsDemoMsPrepareNewPlayerFullResponse);
+using FLiveOpsDemoMSPrepareNewPlayerFullResponse = FBeamFullResponse<ULiveOpsDemoMSPrepareNewPlayerRequest*, ULiveOpsDemoMSPrepareNewPlayerResponse*>;
+DECLARE_DELEGATE_OneParam(FOnLiveOpsDemoMSPrepareNewPlayerFullResponse, FLiveOpsDemoMSPrepareNewPlayerFullResponse);

@@ -1,10 +1,10 @@
 
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/LiveOpsDemoMsIncrementStatResponseLibrary.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/LiveOpsDemoMSIncrementStatResponseLibrary.h"
 
 #include "CoreMinimal.h"
 
 
-FString ULiveOpsDemoMsIncrementStatResponseLibrary::LiveOpsDemoMsIncrementStatResponseToJsonString(const ULiveOpsDemoMsIncrementStatResponse* Serializable, const bool Pretty)
+FString ULiveOpsDemoMSIncrementStatResponseLibrary::LiveOpsDemoMSIncrementStatResponseToJsonString(const ULiveOpsDemoMSIncrementStatResponse* Serializable, const bool Pretty)
 {
 	FString Result = FString{};
 	if(Pretty)
@@ -22,15 +22,15 @@ FString ULiveOpsDemoMsIncrementStatResponseLibrary::LiveOpsDemoMsIncrementStatRe
 	return Result;
 }	
 
-ULiveOpsDemoMsIncrementStatResponse* ULiveOpsDemoMsIncrementStatResponseLibrary::Make(bool bValue, UObject* Outer)
+ULiveOpsDemoMSIncrementStatResponse* ULiveOpsDemoMSIncrementStatResponseLibrary::Make(bool bValue, UObject* Outer)
 {
-	auto Serializable = NewObject<ULiveOpsDemoMsIncrementStatResponse>(Outer);
+	auto Serializable = NewObject<ULiveOpsDemoMSIncrementStatResponse>(Outer);
 	Serializable->bValue = bValue;
 	
 	return Serializable;
 }
 
-void ULiveOpsDemoMsIncrementStatResponseLibrary::Break(const ULiveOpsDemoMsIncrementStatResponse* Serializable, bool& bValue)
+void ULiveOpsDemoMSIncrementStatResponseLibrary::Break(const ULiveOpsDemoMSIncrementStatResponse* Serializable, bool& bValue)
 {
 	bValue = Serializable->bValue;
 		

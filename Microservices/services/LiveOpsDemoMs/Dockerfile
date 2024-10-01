@@ -31,7 +31,7 @@ EXPOSE 6565
 COPY --from=build-env /beamApp .
 
 # when starting the container, run dotnet with the built dll
-ENTRYPOINT ["dotnet", "/beamApp/LiveOpsDemoMs.dll"]
+ENTRYPOINT ["dotnet", "/beamApp/LiveOpsDemoMS.dll"]
 
 # Swap entrypoints if the container is exploding and you want to keep it alive indefinitely so you can go look into it.
 #ENTRYPOINT ["tail", "-f", "/dev/null"]

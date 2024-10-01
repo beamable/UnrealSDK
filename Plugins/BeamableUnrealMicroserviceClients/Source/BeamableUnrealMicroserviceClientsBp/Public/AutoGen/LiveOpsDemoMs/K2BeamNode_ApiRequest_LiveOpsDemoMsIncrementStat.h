@@ -4,15 +4,15 @@
 #include "CoreMinimal.h"
 #include "BeamFlow/ApiRequest/K2BeamNode_ApiRequest.h"
 
-#include "K2BeamNode_ApiRequest_LiveOpsDemoMsIncrementStat.generated.h"
+#include "K2BeamNode_ApiRequest_LiveOpsDemoMSIncrementStat.generated.h"
 
-#define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_LiveOpsDemoMsIncrementStat"
+#define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_LiveOpsDemoMSIncrementStat"
 
 /**
-* This is the code-gen'ed declaration for the Beam Flow's Endpoint: Post /IncrementStat  of the LiveOpsDemoMs Service. 
+* This is the code-gen'ed declaration for the Beam Flow's Endpoint: Post /IncrementStat  of the LiveOpsDemoMS Service. 
 */
 UCLASS(meta=(BeamFlow))
-class BEAMABLEUNREALMICROSERVICECLIENTSBP_API UK2BeamNode_ApiRequest_LiveOpsDemoMsIncrementStat : public UK2BeamNode_ApiRequest
+class BEAMABLEUNREALMICROSERVICECLIENTSBP_API UK2BeamNode_ApiRequest_LiveOpsDemoMSIncrementStat : public UK2BeamNode_ApiRequest
 {
 	GENERATED_BODY()
 

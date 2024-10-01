@@ -8,12 +8,12 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamableUnrealMicroserviceClients/Public/AutoGen/IncrementStatRequestArgs.h"
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/LiveOpsDemoMsIncrementStatResponse.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/LiveOpsDemoMSIncrementStatResponse.h"
 
-#include "LiveOpsDemoMsIncrementStatRequest.generated.h"
+#include "LiveOpsDemoMSIncrementStatRequest.generated.h"
 
 UCLASS(BlueprintType)
-class BEAMABLEUNREALMICROSERVICECLIENTS_API ULiveOpsDemoMsIncrementStatRequest : public UObject, public IBeamBaseRequestInterface
+class BEAMABLEUNREALMICROSERVICECLIENTS_API ULiveOpsDemoMSIncrementStatRequest : public UObject, public IBeamBaseRequestInterface
 {
 	GENERATED_BODY()
 	
@@ -30,24 +30,24 @@ public:
 	UIncrementStatRequestArgs* Body = {};
 
 	// Beam Base Request Declaration
-	ULiveOpsDemoMsIncrementStatRequest() = default;
+	ULiveOpsDemoMSIncrementStatRequest() = default;
 
 	virtual void BuildVerb(FString& VerbString) const override;
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|LiveOpsDemoMs", DisplayName="Beam - Make LiveOpsDemoMsIncrementStat",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static ULiveOpsDemoMsIncrementStatRequest* Make(int64 _UserID, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|LiveOpsDemoMS", DisplayName="Beam - Make LiveOpsDemoMSIncrementStat",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static ULiveOpsDemoMSIncrementStatRequest* Make(int64 _UserID, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnLiveOpsDemoMsIncrementStatSuccess, FBeamRequestContext, Context, ULiveOpsDemoMsIncrementStatRequest*, Request, ULiveOpsDemoMsIncrementStatResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnLiveOpsDemoMSIncrementStatSuccess, FBeamRequestContext, Context, ULiveOpsDemoMSIncrementStatRequest*, Request, ULiveOpsDemoMSIncrementStatResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnLiveOpsDemoMsIncrementStatError, FBeamRequestContext, Context, ULiveOpsDemoMsIncrementStatRequest*, Request, FBeamErrorResponse, Error);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnLiveOpsDemoMSIncrementStatError, FBeamRequestContext, Context, ULiveOpsDemoMSIncrementStatRequest*, Request, FBeamErrorResponse, Error);
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnLiveOpsDemoMsIncrementStatComplete, FBeamRequestContext, Context, ULiveOpsDemoMsIncrementStatRequest*, Request);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnLiveOpsDemoMSIncrementStatComplete, FBeamRequestContext, Context, ULiveOpsDemoMSIncrementStatRequest*, Request);
 
-using FLiveOpsDemoMsIncrementStatFullResponse = FBeamFullResponse<ULiveOpsDemoMsIncrementStatRequest*, ULiveOpsDemoMsIncrementStatResponse*>;
-DECLARE_DELEGATE_OneParam(FOnLiveOpsDemoMsIncrementStatFullResponse, FLiveOpsDemoMsIncrementStatFullResponse);
+using FLiveOpsDemoMSIncrementStatFullResponse = FBeamFullResponse<ULiveOpsDemoMSIncrementStatRequest*, ULiveOpsDemoMSIncrementStatResponse*>;
+DECLARE_DELEGATE_OneParam(FOnLiveOpsDemoMSIncrementStatFullResponse, FLiveOpsDemoMSIncrementStatFullResponse);

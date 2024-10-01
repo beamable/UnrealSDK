@@ -1,14 +1,14 @@
 
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/LiveOpsDemoMs/LiveOpsDemoMsGetSamlpeStatRequest.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/LiveOpsDemoMS/LiveOpsDemoMSGetSamlpeStatRequest.h"
 
-void ULiveOpsDemoMsGetSamlpeStatRequest::BuildVerb(FString& VerbString) const
+void ULiveOpsDemoMSGetSamlpeStatRequest::BuildVerb(FString& VerbString) const
 {
 	VerbString = TEXT("POST");
 }
 
-void ULiveOpsDemoMsGetSamlpeStatRequest::BuildRoute(FString& RouteString) const
+void ULiveOpsDemoMSGetSamlpeStatRequest::BuildRoute(FString& RouteString) const
 {
-	FString Route = TEXT("_microLiveOpsDemoMs/GetSamlpeStat");
+	FString Route = TEXT("micro_LiveOpsDemoMS/GetSamlpeStat");
 	
 	
 	FString QueryParams = TEXT("");
@@ -18,7 +18,7 @@ void ULiveOpsDemoMsGetSamlpeStatRequest::BuildRoute(FString& RouteString) const
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
 }
 
-void ULiveOpsDemoMsGetSamlpeStatRequest::BuildBody(FString& BodyString) const
+void ULiveOpsDemoMSGetSamlpeStatRequest::BuildBody(FString& BodyString) const
 {
 	ensureAlways(Body);
 
@@ -27,9 +27,9 @@ void ULiveOpsDemoMsGetSamlpeStatRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-ULiveOpsDemoMsGetSamlpeStatRequest* ULiveOpsDemoMsGetSamlpeStatRequest::Make(int64 _UserID, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+ULiveOpsDemoMSGetSamlpeStatRequest* ULiveOpsDemoMSGetSamlpeStatRequest::Make(int64 _UserID, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
-	ULiveOpsDemoMsGetSamlpeStatRequest* Req = NewObject<ULiveOpsDemoMsGetSamlpeStatRequest>(RequestOwner);
+	ULiveOpsDemoMSGetSamlpeStatRequest* Req = NewObject<ULiveOpsDemoMSGetSamlpeStatRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)

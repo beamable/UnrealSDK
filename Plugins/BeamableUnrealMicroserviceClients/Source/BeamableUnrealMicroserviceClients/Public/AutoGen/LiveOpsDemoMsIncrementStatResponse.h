@@ -5,10 +5,10 @@
 #include "Serialization/BeamJsonSerializable.h"
 
 
-#include "LiveOpsDemoMsIncrementStatResponse.generated.h"
+#include "LiveOpsDemoMSIncrementStatResponse.generated.h"
 
 UCLASS(BlueprintType, Category="Beam")
-class BEAMABLEUNREALMICROSERVICECLIENTS_API ULiveOpsDemoMsIncrementStatResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
+class BEAMABLEUNREALMICROSERVICECLIENTS_API ULiveOpsDemoMSIncrementStatResponse : public UObject, public IBeamJsonSerializableUObject, public IBeamBaseResponseBodyInterface
 {
 	GENERATED_BODY()
 

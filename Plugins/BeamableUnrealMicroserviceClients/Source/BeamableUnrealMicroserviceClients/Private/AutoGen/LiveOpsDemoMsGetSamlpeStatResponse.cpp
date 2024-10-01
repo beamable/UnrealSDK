@@ -1,26 +1,26 @@
 
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/LiveOpsDemoMsGetSamlpeStatResponse.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/LiveOpsDemoMSGetSamlpeStatResponse.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "Misc/DefaultValueHelper.h"
 
 
-void ULiveOpsDemoMsGetSamlpeStatResponse::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
+void ULiveOpsDemoMSGetSamlpeStatResponse::DeserializeRequestResponse(UObject* RequestData, FString ResponseContent)
 {
 	OuterOwner = RequestData;
 	UBeamJsonUtils::DeserializeRawPrimitive<int32>(ResponseContent, Value, OuterOwner);
 }
 
-void ULiveOpsDemoMsGetSamlpeStatResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+void ULiveOpsDemoMSGetSamlpeStatResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("Value"), Value);
 }
 
-void ULiveOpsDemoMsGetSamlpeStatResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
+void ULiveOpsDemoMSGetSamlpeStatResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("Value"), Value);		
 }
 
-void ULiveOpsDemoMsGetSamlpeStatResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+void ULiveOpsDemoMSGetSamlpeStatResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	Value = Bag->GetIntegerField(TEXT("Value"));
 }

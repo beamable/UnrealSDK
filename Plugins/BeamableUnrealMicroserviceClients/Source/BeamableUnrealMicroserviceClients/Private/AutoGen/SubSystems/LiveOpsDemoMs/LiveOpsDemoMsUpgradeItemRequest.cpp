@@ -1,14 +1,14 @@
 
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/LiveOpsDemoMs/LiveOpsDemoMsUpgradeItemRequest.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/LiveOpsDemoMS/LiveOpsDemoMSUpgradeItemRequest.h"
 
-void ULiveOpsDemoMsUpgradeItemRequest::BuildVerb(FString& VerbString) const
+void ULiveOpsDemoMSUpgradeItemRequest::BuildVerb(FString& VerbString) const
 {
 	VerbString = TEXT("POST");
 }
 
-void ULiveOpsDemoMsUpgradeItemRequest::BuildRoute(FString& RouteString) const
+void ULiveOpsDemoMSUpgradeItemRequest::BuildRoute(FString& RouteString) const
 {
-	FString Route = TEXT("_microLiveOpsDemoMs/UpgradeItem");
+	FString Route = TEXT("micro_LiveOpsDemoMS/UpgradeItem");
 	
 	
 	FString QueryParams = TEXT("");
@@ -18,7 +18,7 @@ void ULiveOpsDemoMsUpgradeItemRequest::BuildRoute(FString& RouteString) const
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
 }
 
-void ULiveOpsDemoMsUpgradeItemRequest::BuildBody(FString& BodyString) const
+void ULiveOpsDemoMSUpgradeItemRequest::BuildBody(FString& BodyString) const
 {
 	ensureAlways(Body);
 
@@ -27,9 +27,9 @@ void ULiveOpsDemoMsUpgradeItemRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-ULiveOpsDemoMsUpgradeItemRequest* ULiveOpsDemoMsUpgradeItemRequest::Make(int64 _UserID, int64 _ItemInstaceID, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+ULiveOpsDemoMSUpgradeItemRequest* ULiveOpsDemoMSUpgradeItemRequest::Make(int64 _UserID, int64 _ItemInstaceID, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
-	ULiveOpsDemoMsUpgradeItemRequest* Req = NewObject<ULiveOpsDemoMsUpgradeItemRequest>(RequestOwner);
+	ULiveOpsDemoMSUpgradeItemRequest* Req = NewObject<ULiveOpsDemoMSUpgradeItemRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)

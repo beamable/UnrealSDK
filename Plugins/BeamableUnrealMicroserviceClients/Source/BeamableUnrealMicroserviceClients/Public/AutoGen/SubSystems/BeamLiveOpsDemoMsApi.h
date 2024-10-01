@@ -7,20 +7,20 @@
 #include "BeamBackend/ResponseCache/BeamResponseCache.h"
 #include "RequestTracker/BeamRequestTracker.h"
 
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/LiveOpsDemoMs/LiveOpsDemoMsPrepareNewPlayerRequest.h"
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/LiveOpsDemoMs/LiveOpsDemoMsUpgradeItemRequest.h"
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/LiveOpsDemoMs/LiveOpsDemoMsIncrementStatRequest.h"
-#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/LiveOpsDemoMs/LiveOpsDemoMsGetSamlpeStatRequest.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/LiveOpsDemoMS/LiveOpsDemoMSPrepareNewPlayerRequest.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/LiveOpsDemoMS/LiveOpsDemoMSUpgradeItemRequest.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/LiveOpsDemoMS/LiveOpsDemoMSIncrementStatRequest.h"
+#include "BeamableUnrealMicroserviceClients/Public/AutoGen/SubSystems/LiveOpsDemoMS/LiveOpsDemoMSGetSamlpeStatRequest.h"
 #include "BeamBackend/BeamMicroserviceClientSubsystem.h"
 
-#include "BeamLiveOpsDemoMsApi.generated.h"
+#include "BeamLiveOpsDemoMSApi.generated.h"
 
 
 /**
- * Subsystem containing request calls for the LiveOpsDemoMs service.
+ * Subsystem containing request calls for the LiveOpsDemoMS service.
  */
 UCLASS(NotBlueprintType)
-class BEAMABLEUNREALMICROSERVICECLIENTS_API UBeamLiveOpsDemoMsApi : public UBeamMicroserviceClientSubsystem
+class BEAMABLEUNREALMICROSERVICECLIENTS_API UBeamLiveOpsDemoMSApi : public UBeamMicroserviceClientSubsystem
 {
 private:
 	GENERATED_BODY()
@@ -45,62 +45,62 @@ private:
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
-	void BP_PrepareNewPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, ULiveOpsDemoMsPrepareNewPlayerRequest* RequestData,
-	                  const FOnLiveOpsDemoMsPrepareNewPlayerSuccess& OnSuccess, const FOnLiveOpsDemoMsPrepareNewPlayerError& OnError, const FOnLiveOpsDemoMsPrepareNewPlayerComplete& OnComplete, 
+	void BP_PrepareNewPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, ULiveOpsDemoMSPrepareNewPlayerRequest* RequestData,
+	                  const FOnLiveOpsDemoMSPrepareNewPlayerSuccess& OnSuccess, const FOnLiveOpsDemoMSPrepareNewPlayerError& OnError, const FOnLiveOpsDemoMSPrepareNewPlayerComplete& OnComplete, 
 					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
-	void CPP_PrepareNewPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, ULiveOpsDemoMsPrepareNewPlayerRequest* RequestData,
-	                   const FOnLiveOpsDemoMsPrepareNewPlayerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_PrepareNewPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, ULiveOpsDemoMSPrepareNewPlayerRequest* RequestData,
+	                   const FOnLiveOpsDemoMSPrepareNewPlayerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 		
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
-	void BP_UpgradeItemImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, ULiveOpsDemoMsUpgradeItemRequest* RequestData,
-	                  const FOnLiveOpsDemoMsUpgradeItemSuccess& OnSuccess, const FOnLiveOpsDemoMsUpgradeItemError& OnError, const FOnLiveOpsDemoMsUpgradeItemComplete& OnComplete, 
+	void BP_UpgradeItemImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, ULiveOpsDemoMSUpgradeItemRequest* RequestData,
+	                  const FOnLiveOpsDemoMSUpgradeItemSuccess& OnSuccess, const FOnLiveOpsDemoMSUpgradeItemError& OnError, const FOnLiveOpsDemoMSUpgradeItemComplete& OnComplete, 
 					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
-	void CPP_UpgradeItemImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, ULiveOpsDemoMsUpgradeItemRequest* RequestData,
-	                   const FOnLiveOpsDemoMsUpgradeItemFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_UpgradeItemImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, ULiveOpsDemoMSUpgradeItemRequest* RequestData,
+	                   const FOnLiveOpsDemoMSUpgradeItemFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 		
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
-	void BP_IncrementStatImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, ULiveOpsDemoMsIncrementStatRequest* RequestData,
-	                  const FOnLiveOpsDemoMsIncrementStatSuccess& OnSuccess, const FOnLiveOpsDemoMsIncrementStatError& OnError, const FOnLiveOpsDemoMsIncrementStatComplete& OnComplete, 
+	void BP_IncrementStatImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, ULiveOpsDemoMSIncrementStatRequest* RequestData,
+	                  const FOnLiveOpsDemoMSIncrementStatSuccess& OnSuccess, const FOnLiveOpsDemoMSIncrementStatError& OnError, const FOnLiveOpsDemoMSIncrementStatComplete& OnComplete, 
 					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
-	void CPP_IncrementStatImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, ULiveOpsDemoMsIncrementStatRequest* RequestData,
-	                   const FOnLiveOpsDemoMsIncrementStatFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_IncrementStatImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, ULiveOpsDemoMSIncrementStatRequest* RequestData,
+	                   const FOnLiveOpsDemoMSIncrementStatFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 		
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
-	void BP_GetSamlpeStatImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, ULiveOpsDemoMsGetSamlpeStatRequest* RequestData,
-	                  const FOnLiveOpsDemoMsGetSamlpeStatSuccess& OnSuccess, const FOnLiveOpsDemoMsGetSamlpeStatError& OnError, const FOnLiveOpsDemoMsGetSamlpeStatComplete& OnComplete, 
+	void BP_GetSamlpeStatImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, ULiveOpsDemoMSGetSamlpeStatRequest* RequestData,
+	                  const FOnLiveOpsDemoMSGetSamlpeStatSuccess& OnSuccess, const FOnLiveOpsDemoMSGetSamlpeStatError& OnError, const FOnLiveOpsDemoMSGetSamlpeStatComplete& OnComplete, 
 					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 	/**
 	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
 	 */
-	void CPP_GetSamlpeStatImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, ULiveOpsDemoMsGetSamlpeStatRequest* RequestData,
-	                   const FOnLiveOpsDemoMsGetSamlpeStatFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_GetSamlpeStatImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, ULiveOpsDemoMSGetSamlpeStatRequest* RequestData,
+	                   const FOnLiveOpsDemoMSGetSamlpeStatFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 public:
 	
 	/** Used by a helper blueprint node so that you can easily chain requests in BP-land. */
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly)
-	static UBeamLiveOpsDemoMsApi* GetSelf() { return GEngine->GetEngineSubsystem<UBeamLiveOpsDemoMsApi>(); }
+	static UBeamLiveOpsDemoMSApi* GetSelf() { return GEngine->GetEngineSubsystem<UBeamLiveOpsDemoMSApi>(); }
 
 	
 
 	
 	/**
-	 * @brief Makes an authenticated request to the Post /PrepareNewPlayer endpoint of the LiveOpsDemoMs Service.
+	 * @brief Makes an authenticated request to the Post /PrepareNewPlayer endpoint of the LiveOpsDemoMS Service.
 	 *
 	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
 	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
@@ -112,11 +112,11 @@ public:
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_PrepareNewPlayer(const FUserSlot& UserSlot, ULiveOpsDemoMsPrepareNewPlayerRequest* Request, const FOnLiveOpsDemoMsPrepareNewPlayerFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_PrepareNewPlayer(const FUserSlot& UserSlot, ULiveOpsDemoMSPrepareNewPlayerRequest* Request, const FOnLiveOpsDemoMSPrepareNewPlayerFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
-	 * @brief Makes an authenticated request to the Post /UpgradeItem endpoint of the LiveOpsDemoMs Service.
+	 * @brief Makes an authenticated request to the Post /UpgradeItem endpoint of the LiveOpsDemoMS Service.
 	 *
 	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
 	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
@@ -128,11 +128,11 @@ public:
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_UpgradeItem(const FUserSlot& UserSlot, ULiveOpsDemoMsUpgradeItemRequest* Request, const FOnLiveOpsDemoMsUpgradeItemFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_UpgradeItem(const FUserSlot& UserSlot, ULiveOpsDemoMSUpgradeItemRequest* Request, const FOnLiveOpsDemoMSUpgradeItemFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
-	 * @brief Makes an authenticated request to the Post /IncrementStat endpoint of the LiveOpsDemoMs Service.
+	 * @brief Makes an authenticated request to the Post /IncrementStat endpoint of the LiveOpsDemoMS Service.
 	 *
 	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
 	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
@@ -144,11 +144,11 @@ public:
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_IncrementStat(const FUserSlot& UserSlot, ULiveOpsDemoMsIncrementStatRequest* Request, const FOnLiveOpsDemoMsIncrementStatFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_IncrementStat(const FUserSlot& UserSlot, ULiveOpsDemoMSIncrementStatRequest* Request, const FOnLiveOpsDemoMSIncrementStatFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
-	 * @brief Makes an authenticated request to the Post /GetSamlpeStat endpoint of the LiveOpsDemoMs Service.
+	 * @brief Makes an authenticated request to the Post /GetSamlpeStat endpoint of the LiveOpsDemoMS Service.
 	 *
 	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
 	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
@@ -160,14 +160,14 @@ public:
 	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
-	void CPP_GetSamlpeStat(const FUserSlot& UserSlot, ULiveOpsDemoMsGetSamlpeStatRequest* Request, const FOnLiveOpsDemoMsGetSamlpeStatFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	void CPP_GetSamlpeStat(const FUserSlot& UserSlot, ULiveOpsDemoMSGetSamlpeStatRequest* Request, const FOnLiveOpsDemoMSGetSamlpeStatFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 
 	
 
 	
 	/**
-	 * @brief Makes an authenticated request to the Post /PrepareNewPlayer endpoint of the LiveOpsDemoMs Service.
+	 * @brief Makes an authenticated request to the Post /PrepareNewPlayer endpoint of the LiveOpsDemoMS Service.
 	 *
 	 * @param UserSlot The authenticated UserSlot with the user making the request. 
 	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
@@ -177,12 +177,12 @@ public:
 	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|LiveOpsDemoMs", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void PrepareNewPlayer(FUserSlot UserSlot, ULiveOpsDemoMsPrepareNewPlayerRequest* Request, const FOnLiveOpsDemoMsPrepareNewPlayerSuccess& OnSuccess, const FOnLiveOpsDemoMsPrepareNewPlayerError& OnError, const FOnLiveOpsDemoMsPrepareNewPlayerComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|LiveOpsDemoMS", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void PrepareNewPlayer(FUserSlot UserSlot, ULiveOpsDemoMSPrepareNewPlayerRequest* Request, const FOnLiveOpsDemoMSPrepareNewPlayerSuccess& OnSuccess, const FOnLiveOpsDemoMSPrepareNewPlayerError& OnError, const FOnLiveOpsDemoMSPrepareNewPlayerComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**
-	 * @brief Makes an authenticated request to the Post /UpgradeItem endpoint of the LiveOpsDemoMs Service.
+	 * @brief Makes an authenticated request to the Post /UpgradeItem endpoint of the LiveOpsDemoMS Service.
 	 *
 	 * @param UserSlot The authenticated UserSlot with the user making the request. 
 	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
@@ -192,12 +192,12 @@ public:
 	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|LiveOpsDemoMs", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void UpgradeItem(FUserSlot UserSlot, ULiveOpsDemoMsUpgradeItemRequest* Request, const FOnLiveOpsDemoMsUpgradeItemSuccess& OnSuccess, const FOnLiveOpsDemoMsUpgradeItemError& OnError, const FOnLiveOpsDemoMsUpgradeItemComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|LiveOpsDemoMS", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void UpgradeItem(FUserSlot UserSlot, ULiveOpsDemoMSUpgradeItemRequest* Request, const FOnLiveOpsDemoMSUpgradeItemSuccess& OnSuccess, const FOnLiveOpsDemoMSUpgradeItemError& OnError, const FOnLiveOpsDemoMSUpgradeItemComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**
-	 * @brief Makes an authenticated request to the Post /IncrementStat endpoint of the LiveOpsDemoMs Service.
+	 * @brief Makes an authenticated request to the Post /IncrementStat endpoint of the LiveOpsDemoMS Service.
 	 *
 	 * @param UserSlot The authenticated UserSlot with the user making the request. 
 	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
@@ -207,12 +207,12 @@ public:
 	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|LiveOpsDemoMs", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void IncrementStat(FUserSlot UserSlot, ULiveOpsDemoMsIncrementStatRequest* Request, const FOnLiveOpsDemoMsIncrementStatSuccess& OnSuccess, const FOnLiveOpsDemoMsIncrementStatError& OnError, const FOnLiveOpsDemoMsIncrementStatComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|LiveOpsDemoMS", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void IncrementStat(FUserSlot UserSlot, ULiveOpsDemoMSIncrementStatRequest* Request, const FOnLiveOpsDemoMSIncrementStatSuccess& OnSuccess, const FOnLiveOpsDemoMSIncrementStatError& OnError, const FOnLiveOpsDemoMSIncrementStatComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**
-	 * @brief Makes an authenticated request to the Post /GetSamlpeStat endpoint of the LiveOpsDemoMs Service.
+	 * @brief Makes an authenticated request to the Post /GetSamlpeStat endpoint of the LiveOpsDemoMS Service.
 	 *
 	 * @param UserSlot The authenticated UserSlot with the user making the request. 
 	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
@@ -222,7 +222,7 @@ public:
 	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|LiveOpsDemoMs", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
-	void GetSamlpeStat(FUserSlot UserSlot, ULiveOpsDemoMsGetSamlpeStatRequest* Request, const FOnLiveOpsDemoMsGetSamlpeStatSuccess& OnSuccess, const FOnLiveOpsDemoMsGetSamlpeStatError& OnError, const FOnLiveOpsDemoMsGetSamlpeStatComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|LiveOpsDemoMS", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void GetSamlpeStat(FUserSlot UserSlot, ULiveOpsDemoMSGetSamlpeStatRequest* Request, const FOnLiveOpsDemoMSGetSamlpeStatSuccess& OnSuccess, const FOnLiveOpsDemoMSGetSamlpeStatError& OnError, const FOnLiveOpsDemoMSGetSamlpeStatComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 };
