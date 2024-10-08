@@ -6,6 +6,7 @@
 #include "Runtime/BeamLevelSubsystem.h"
 #include "Subsystems/Inventory/BeamInventorySubsystem.h"
 #include "Subsystems/Stats/BeamStatsSubsystem.h"
+#include "AutoGen/SubSystems/BeamLiveOpsDemoMsApi.h"
 #include "LiveOpsDemoMainMenu.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegate_Simple);
@@ -39,6 +40,14 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FDelegate_Simple OnSampleStatUpdated;
 
+	UPROPERTY(BlueprintAssignable)
+	FDelegate_Simple OnInventoryItemsUpdated;
+	
+	UPROPERTY()
+	UBeamLiveOpsDemoMSApi *LiveOpsMS;
+
+	int64 CurrentSampleStatValue  = 1;
+
 protected:
 	virtual void Deinitialize() override
 	{
@@ -52,7 +61,10 @@ protected:
 		Runtime = GI->GetSubsystem<UBeamRuntime>();
 		Stats = GI->GetSubsystem<UBeamStatsSubsystem>();
 		Inventory = GI->GetSubsystem<UBeamInventorySubsystem>();
+		LiveOpsMS = GEngine->GetEngineSubsystem<UBeamLiveOpsDemoMSApi>();
 
+		Inventory->OnInventoryRefreshedCode.AddUObject(this,&ULiveOpsDemoMainMenu::OnInventoryRefreshed);
+		
 		const auto OnReady = FRuntimeStateChangedHandlerCode::CreateUObject(this, &ThisClass::OnBeamableReady);
 		OnBeamableReadyHandle = Runtime->CPP_RegisterOnReady(OnReady);
 	}
@@ -60,66 +72,119 @@ protected:
 	void OnBeamableReady()
 	{
 		const auto UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
-
-		const auto StatHandler = FBeamOperationEventHandlerCode::CreateLambda([this](FBeamOperationEvent Evt)
+		
+		FBeamRealmUser UserData;
+		if (Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, UserData, this))
 		{
-			if (Evt.EventType == OET_SUCCESS)
+			TMap<FString, FString> Empty;
+			ULiveOpsDemoMSPrepareNewPlayerRequest* Request =
+				ULiveOpsDemoMSPrepareNewPlayerRequest::Make(UserData.GamerTag.AsLong,this, Empty);
+			
+			const auto Handler = FOnLiveOpsDemoMSPrepareNewPlayerFullResponse::CreateLambda(
+				[this](FBeamFullResponse<ULiveOpsDemoMSPrepareNewPlayerRequest*, ULiveOpsDemoMSPrepareNewPlayerResponse*> Resp)
+				{
+					if (Resp.SuccessData)
+					{
+						OnLiveOpsDemoReady.Broadcast();
+						UE_LOG(LogTemp, Display, TEXT("Payer initial data was set successfully"));
+					}
+				});
+			FBeamRequestContext Ctx;
+			LiveOpsMS->CPP_PrepareNewPlayer(UserSlot,Request,Handler,Ctx,{},this);
+
+			
+		}
+	}
+	UFUNCTION()
+	void OnInventoryRefreshed(FBeamGamerTag GamerTag, FUserSlot UserSlot)
+	{
+		OnInventoryItemsUpdated.Broadcast();
+	}
+	UFUNCTION(BlueprintCallable)
+	void GetInventoryData(int64 &GemsCount,int64 &CoinsCount,TArray<FBeamItemState> &SampleItems)
+	{
+		const auto UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+		FBeamRealmUser UserData;
+		if (Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, UserData, this))
+		{
+			FString GemsID = "currency.gems";
+			FString CoinsID = "currency.coins";
+			
+			Inventory->TryGetCurrencyAmountByGamerTag(UserData.GamerTag,GemsID,GemsCount);
+			Inventory->TryGetCurrencyAmountByGamerTag(UserData.GamerTag,CoinsID,CoinsCount);
+			
+			TArray<FBeamItemState> AllItems;
+			Inventory->TryGetAllItemsByGamerTag(UserData.GamerTag,AllItems);
+
+			for (auto ItemState : AllItems)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Successfully initialized my_sample_stat to 1"));
-				OnLiveOpsDemoReady.Broadcast();
+				if (ItemState.ContentId.AsString == "items.sample_item")
+				{
+					SampleItems.Add(ItemState);
+				}
 			}
-		});
-		Stats->CPP_SetStatOperation(UserSlot, TEXT("my_sample_stat"), TEXT("1"), StatHandler);
+		}
+		
 	}
 
 	UFUNCTION(BlueprintCallable)
 	void IncrementSampleStat()
 	{
 		const auto UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+		
 		FBeamRealmUser UserData;
 		if (Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, UserData, this))
 		{
-			const auto StatType = UBeamStatsTypeLibrary::MakeStatsType(Client, Public, UserData.GamerTag);
-
-			const auto PlayerStatsState = Stats->PlayerStatCache.FindChecked(StatType);
-			const auto StatStr = PlayerStatsState->StringStats.FindChecked(TEXT("my_sample_stat"));
-
-			int64 OldVal;
-			if (FDefaultValueHelper::ParseInt64(StatStr, OldVal))
-			{
-				const auto NewVal = FString::Printf(TEXT("%llu"), OldVal + 1);
-				const auto StatHandler = FBeamOperationEventHandlerCode::CreateLambda([this, NewVal](FBeamOperationEvent Evt)
+			TMap<FString, FString> Empty;
+			ULiveOpsDemoMSIncrementStatRequest* Request =
+				ULiveOpsDemoMSIncrementStatRequest::Make(UserData.GamerTag.AsLong,this, Empty);
+			
+			const auto Handler = FOnLiveOpsDemoMSIncrementStatFullResponse::CreateLambda(
+				[this,UserData](FBeamFullResponse<ULiveOpsDemoMSIncrementStatRequest*, ULiveOpsDemoMSIncrementStatResponse*> Resp)
 				{
-					UE_LOG(LogTemp, Warning, TEXT("Successfully incremented my_sample_stat: %s"), *NewVal)
-					if (Evt.EventType == OET_SUCCESS)
+					if (Resp.SuccessData)
 					{
+						CurrentSampleStatValue++;
 						OnSampleStatUpdated.Broadcast();
 					}
 				});
-				Stats->CPP_SetStatOperation(UserSlot, "my_sample_stat", NewVal, StatHandler);
-			}
+			FBeamRequestContext Ctx;
+			LiveOpsMS->CPP_IncrementStat(UserSlot,Request,Handler,Ctx,{},this);
 		}
+		
 	}
 
 	UFUNCTION(BlueprintCallable)
 	int64 GetSampleStat()
 	{
+		return CurrentSampleStatValue;
+	}
+	
+	UFUNCTION(BlueprintCallable)
+	void UpgradeItem(int64 ItemInstanceID)
+	{
+	
 		const auto UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+		
 		FBeamRealmUser UserData;
 		if (Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, UserData, this))
 		{
-			const auto StatType = UBeamStatsTypeLibrary::MakeStatsType(Client, Public, UserData.GamerTag);
-
-			const auto PlayerStatsState = Stats->PlayerStatCache.FindChecked(StatType);
-			const auto StatStr = PlayerStatsState->StringStats.FindChecked(TEXT("my_sample_stat"));
-
-			int64 OldVal;
-			if (FDefaultValueHelper::ParseInt64(StatStr, OldVal))
-			{
-				return OldVal;
-			}
+			TMap<FString, FString> Empty;
+			ULiveOpsDemoMSUpgradeItemRequest* Request =
+				ULiveOpsDemoMSUpgradeItemRequest::Make(UserData.GamerTag.AsLong,ItemInstanceID,this, Empty);
+			
+			const auto Handler = FOnLiveOpsDemoMSUpgradeItemFullResponse::CreateLambda(
+				[this,UserData](FBeamFullResponse<ULiveOpsDemoMSUpgradeItemRequest*, ULiveOpsDemoMSUpgradeItemResponse*> Resp)
+				{
+					if (Resp.SuccessData)
+					{
+						OnInventoryItemsUpdated.Broadcast();
+					}
+				});
+			FBeamRequestContext Ctx;
+			LiveOpsMS->CPP_UpgradeItem(UserSlot,Request,Handler,Ctx,{},this);
 		}
-
-		return -1;
 	}
+	
+
 };

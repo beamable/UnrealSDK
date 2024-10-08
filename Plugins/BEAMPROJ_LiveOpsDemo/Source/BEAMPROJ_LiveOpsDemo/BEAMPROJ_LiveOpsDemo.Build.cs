@@ -12,6 +12,9 @@ public class BEAMPROJ_LiveOpsDemo : ModuleRules
 			new string[]
 			{
 				"Core",
+				
+				// Because we are making microservice calls, we add the microservice plugin for our project
+				"BeamableUnrealMicroserviceClients"
 			}
 		);
 		
