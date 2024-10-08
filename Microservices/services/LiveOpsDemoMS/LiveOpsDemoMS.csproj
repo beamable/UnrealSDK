@@ -6,9 +6,10 @@
 
         <!-- When "true", this will auto-generate client code to any linked unity projects -->
         <GenerateClientCode>true</GenerateClientCode>
-        <RootNamespace>LiveOpsDemoMS</RootNamespace>
 
         <BeamServiceGroup>BEAMPROJ_LiveOpsDemo</BeamServiceGroup>
+
+        <RootNamespace>LiveOpsDemoMS</RootNamespace>
     </PropertyGroup>
 
     <!-- These are special Beamable parameters that we use to keep the beamable packages in-sync to the CLI version your project is using. -->
