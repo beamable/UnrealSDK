@@ -164,6 +164,7 @@ FBeamOperationHandle UBeamEditorContent::RefreshLocalManifests(FBeamOperationHan
 bool UBeamEditorContent::RefreshLocalManifests(FString& Err)
 {
 	FSlowTask* SlowTask = new FSlowTask(1, FText::FromString(TEXT("Reloading content...")));
+	SlowTask->Initialize();
 	SlowTask->MakeDialog();
 
 	bool Res = false;
@@ -179,6 +180,7 @@ bool UBeamEditorContent::RefreshLocalManifests(FString& Err)
 		Res = ResCode == 0;
 		Err = Res ? TEXT("") : TEXT("FAILED_REFRESH");
 		SlowTask->Destroy();
+		delete SlowTask;
 	};
 
 	Cli->RunCommandSync(GetLocalManifestsCommand, {});
@@ -190,8 +192,8 @@ bool UBeamEditorContent::PublishManifest(FBeamContentManifestId ContentManifestI
 {
 	const auto EditorSlot = Editor->GetMainEditorSlot();
 
-	const auto Message = FText::FromString(TEXT("Publishing Content..."));
-	FSlowTask* SlowTask = new FSlowTask(10, Message);
+	FSlowTask* SlowTask = new FSlowTask(1, FText::FromString(TEXT("Publishing Content...")));
+	SlowTask->Initialize();
 	SlowTask->MakeDialog();
 
 	bool Res = false;
@@ -207,6 +209,7 @@ bool UBeamEditorContent::PublishManifest(FBeamContentManifestId ContentManifestI
 		Res = ResCode == 0;
 		Err = Res ? TEXT("") : TEXT("FAILED_PUBLISH");
 		SlowTask->Destroy();
+		delete SlowTask;
 	};
 	Cli->RunCommandSync(PublishCommand, {FString::Printf(TEXT("--manifest-ids %s"), *ContentManifestId.AsString)});
 	SlowTask->EnterProgressFrame();
