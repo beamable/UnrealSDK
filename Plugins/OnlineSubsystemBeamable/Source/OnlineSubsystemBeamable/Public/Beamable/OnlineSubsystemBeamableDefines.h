@@ -1,5 +1,3 @@
-// ================================ Copyright (c) Wildcard Alliance , All Rights Reserved. ================================
-
 #pragma once
 
 #include "OnlineSubsystemTypes.h"

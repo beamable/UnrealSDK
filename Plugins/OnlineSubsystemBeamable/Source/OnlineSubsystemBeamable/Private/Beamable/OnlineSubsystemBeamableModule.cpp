@@ -1,5 +1,3 @@
-// ================================ Copyright (c) Wildcard Alliance , All Rights Reserved. ================================
-
 #include "Beamable/OnlineSubsystemBeamableModule.h"
 #include "CoreMinimal.h"
 

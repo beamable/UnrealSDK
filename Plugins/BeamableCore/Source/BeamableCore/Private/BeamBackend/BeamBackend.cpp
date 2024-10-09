@@ -436,7 +436,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 			                 TEXT(
 				                 "Beamable Retry Queue | Failed Request Object is still being processed. This should never happen! Please turn-on Verbose logging for `LogBeamBackend` and report a bug to Beamable!"
 			                 ));
-			ensureAlwaysMsgf(ReqContext.BeamStatus != AS_InFlight,
+			ensureAlwaysMsgf(ReqContext.BeamStatus == AS_InFlight,
 			                 TEXT(
 				                 "Beamable Retry Queue | This request was already completed. This should never happen! Please turn-on Verbose logging for `LogBeamBackend` and report a bug to Beamable! REQUEST_ID=%lld"
 			                 ), ReqContext.RequestId);

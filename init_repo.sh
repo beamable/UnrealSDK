@@ -67,22 +67,24 @@ export BeamableVersion
 # Create a playground microservice/storage that is ignored in Git.
 # Use this to write quick and dirty MS code.
 # Feel free to create a realm in our shared org with your name and "devname-playground" and ONLY EVER DEPLOY THIS TO THIS REALM.
-# Keep an eye to not commit the clients to this MS.  
-if [ ! -d "Microservices/services/MSPlayground" ]; then
-    echo "Creating MSPlayground microservice for local development."
-    dotnet beam project new service MSPlayground --sln "Microservices/Microservices.sln" --logs v
+# Keep an eye to not commit the clients to this MS.
+# Running this script will always clean up the playground services.  
+if [ -d "Microservices/services/MSPlayground" ]; then
+  rm -rf "Microservices/services/MSPlayground"
 fi
+echo "Creating MSPlayground microservice for local development."
+dotnet beam project new service MSPlayground --sln "Microservices/Microservices.sln" --logs v --groups BEAMPROJ_Sandbox
 
-if [ ! -d "Microservices/services/DBPlayground" ]; then
-    echo "Creating DBPlayground storage for local development."
-    dotnet beam project new storage DBPlayground --sln "Microservices/Microservices.sln" --quiet --logs v
-    dotnet beam project deps add MSPlayground DBPlayground
+if [ -d "Microservices/services/DBPlayground" ]; then
+  rm -rf "Microservices/services/DBPlayground"
 fi
+echo "Creating DBPlayground storage for local development."
+dotnet beam project new storage DBPlayground --sln "Microservices/Microservices.sln" --quiet --logs v --groups BEAMPROJ_Sandbox
+dotnet beam project deps add MSPlayground DBPlayground
 
 
 if [ $# -eq 0 ] # No arguments supplied
   then
     echo "Script finished executing, press any key to exit"
-
     read
 fi

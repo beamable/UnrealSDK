@@ -1,0 +1,6 @@
+{
+  "federations":
+  {
+    "hathora":[{"interface": "IFederatedGameServer"}]
+  }
+}

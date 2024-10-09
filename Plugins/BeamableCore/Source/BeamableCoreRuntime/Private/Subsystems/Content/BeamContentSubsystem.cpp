@@ -1032,13 +1032,13 @@ void UBeamContentSubsystem::FetchContentManifest(FBeamContentManifestId Manifest
 					const auto DownloadOpHandler = FBeamOperationEventHandlerCode::CreateLambda([this, ManifestId, Op](FBeamOperationEvent Evt)
 					{
 						// If all content was downloaded correctly.
-						if (Evt.EventType == OET_SUCCESS && Evt.EventCode == NAME_None)
+						if (Evt.EventType == OET_SUCCESS && Evt.EventId == NAME_None)
 						{
 							ContentManifestsUpdated.Broadcast({ManifestId});
 							GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
 						}
 
-						if (Evt.EventType == OET_ERROR && Evt.EventCode == NAME_None)
+						if (Evt.EventType == OET_ERROR && Evt.EventId == NAME_None)
 						{
 							GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, {});
 						}

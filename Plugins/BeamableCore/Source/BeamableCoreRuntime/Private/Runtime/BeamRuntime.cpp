@@ -111,6 +111,7 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 	UserSlotAuthenticatedHandler = UserSlotSystem->GlobalUserSlotAuthenticatedCodeHandler.AddUObject(this, &UBeamRuntime::TriggerOnUserSlotAuthenticated);
 	UserSlotClearedHandler = UserSlotSystem->GlobalUserSlotClearedCodeHandler.AddUObject(this, &UBeamRuntime::TriggerOnUserSlotCleared);
 
+	// TODO: Only do this IF a setting tells us to do so --- default the setting to true. Expose a function to kick this off explicitly for cases where they user disables this option.
 	ExecuteOnGameThread(TEXT("Initialize"), [this]()
 	{
 		this->TriggerInitializeWhenUnrealReady();

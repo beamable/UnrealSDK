@@ -21,14 +21,15 @@ public:
 	UPROPERTY()
 	UBeamRequestTracker* BeamRequestTracker;
 
-	TArray<int64>     ExpectedRequestsInOperations;
+	TArray<int64> ExpectedRequestsInOperations;
 	TArray<FUserSlot> ExpectedParticipants;
 
 	EBeamOperationEventType ExpectedEventType;
-	FName                   ExpectedEventSubTypeCode;
-	int64                   ExpectedEventRequestId;
-	FString                 ExpectedEventSystem;
-	FString                 ExpectedEventData;
+	FName ExpectedEventId;
+	int64 ExpectedEventRequestId;
+	FString ExpectedEventSystem;
+	FString ExpectedEventCode;
+	TScriptInterface<IBeamOperationEventData> ExpectedEventData;
 
 
 	// Done callback so that we can run latent tests correctly

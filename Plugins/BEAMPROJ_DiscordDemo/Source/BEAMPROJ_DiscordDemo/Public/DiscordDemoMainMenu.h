@@ -10,6 +10,8 @@
 #include "Runtime/BeamRuntime.h"
 #include "DiscordDemoMainMenu.generated.h"
 
+struct FBeamOperationEvent;
+
 USTRUCT()
 struct FMatchmakingAccessRefreshNotificationMessage : public FBeamBaseNotificationMessage
 {
@@ -134,8 +136,8 @@ protected:
 					this->HandleLoggedIn(true, TEXT(""));
 					return;
 				}
-				UE_LOG(LogTemp, Error, TEXT("SteamDemoLogs, FAILED TO LOGIN: %s"), *Evt.EventData);
-				this->HandleLoggedIn(false, *Evt.EventData);
+				UE_LOG(LogTemp, Error, TEXT("SteamDemoLogs, FAILED TO LOGIN: %s"), *Evt.EventCode);
+				this->HandleLoggedIn(false, *Evt.EventCode);
 			});
 		const auto OnSignUpWithDiscord = FBeamOperationEventHandlerCode::CreateLambda(
 			[this,Namespace,ServiceName,UserData,Runtime,LoginHandler](const FBeamOperationEvent& Evt)
@@ -152,7 +154,7 @@ protected:
 					return;
 				}
 				// Error Handling
-				if (Evt.EventData.Contains("EXTERNAL_IDENTITY_IN_USE"))
+				if (Evt.EventCode.Contains("EXTERNAL_IDENTITY_IN_USE"))
 				{
 					UE_LOG(LogTemp,
 					       Warning,
@@ -164,9 +166,8 @@ protected:
 				}
 				else
 				{
-					UE_LOG(LogTemp, Warning, TEXT("[Federated Identity] Failed To Sign Up. Reason=%s."),
-					       *Evt.EventData);
-					this->HandleLoggedIn(false, *Evt.EventData);
+					UE_LOG(LogTemp, Warning, TEXT("[Federated Identity] Failed To Sign Up. Reason=%s."), *Evt.EventCode);
+					this->HandleLoggedIn(false, *Evt.EventCode);
 				}
 			});
 		Runtime->CPP_AttachExternalIdentityOperation(this->UserSlot, ServiceName, Namespace,

@@ -1,7 +1,7 @@
 
 #pragma once
 
-
+#include "Subsystems/CLI/Autogen/StreamData/FederationInstanceStreamData.h"
 #include "Serialization/BeamJsonUtils.h"
 #include "DockerServiceDescriptorStreamData.generated.h"
 
@@ -29,6 +29,8 @@ public:
 	int64 StartedByAccountId = {};
 	UPROPERTY()
 	TArray<FString> Groups = {};
+	UPROPERTY()
+	TArray<UFederationInstanceStreamData*> Federations = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
@@ -39,7 +41,8 @@ public:
 		Serializer->WriteValue(TEXT("dataPort"), DataPort);
 		Serializer->WriteValue(TEXT("routingKey"), RoutingKey);
 		Serializer->WriteValue(TEXT("startedByAccountId"), StartedByAccountId);
-		UBeamJsonUtils::SerializeArray<FString>(TEXT("groups"), Groups, Serializer);	
+		UBeamJsonUtils::SerializeArray<FString>(TEXT("groups"), Groups, Serializer);
+		UBeamJsonUtils::SerializeArray<UFederationInstanceStreamData*>(TEXT("federations"), Federations, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
@@ -51,7 +54,8 @@ public:
 		Serializer->WriteValue(TEXT("dataPort"), DataPort);
 		Serializer->WriteValue(TEXT("routingKey"), RoutingKey);
 		Serializer->WriteValue(TEXT("startedByAccountId"), StartedByAccountId);
-		UBeamJsonUtils::SerializeArray<FString>(TEXT("groups"), Groups, Serializer);	
+		UBeamJsonUtils::SerializeArray<FString>(TEXT("groups"), Groups, Serializer);
+		UBeamJsonUtils::SerializeArray<UFederationInstanceStreamData*>(TEXT("federations"), Federations, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
@@ -63,7 +67,8 @@ public:
 		DataPort = Bag->GetIntegerField(TEXT("dataPort"));
 		RoutingKey = Bag->GetStringField(TEXT("routingKey"));
 		FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("startedByAccountId")), StartedByAccountId);
-		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("groups")), Groups, OuterOwner);	
+		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("groups")), Groups, OuterOwner);
+		UBeamJsonUtils::DeserializeArray<UFederationInstanceStreamData*>(Bag->GetArrayField(TEXT("federations")), Federations, OuterOwner);	
 	}
 };
 

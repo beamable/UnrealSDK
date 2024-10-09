@@ -11,7 +11,7 @@ using UnityEngine;
 namespace Beamable.SteamDemo
 {
 	[Microservice("SteamDemo")]
-	public class SteamDemo : Microservice, IFederatedLogin<SteamIdentity>
+	public partial class SteamDemo : Microservice
 	{
 		private const string BaseUri = "https://partner.steam-api.com";
 		private const string AuthenticateUserTicketUri = BaseUri + "/ISteamUserAuth/AuthenticateUserTicket/v1";
@@ -79,12 +79,7 @@ namespace Beamable.SteamDemo
 			return $"{AuthenticateUserTicketUri}/?key={_publisherToken}&appid={_appId}&ticket={ticket}";
 		}
 	}
-
-	public class SteamIdentity : IThirdPartyCloudIdentity
-	{
-		public string UniqueName => "federated_steam";
-	}
-
+	
 	[Serializable]
 	public class SteamAuthenticateUserTicket
 	{

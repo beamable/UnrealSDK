@@ -15,7 +15,7 @@ using Lobby = Beamable.Experimental.Api.Lobbies.Lobby;
 namespace Beamable.HathoraDemo
 {
     [Microservice("HathoraDemo")]
-    public class HathoraDemo : Microservice, IFederatedGameServer<HathoraIdentity>
+    public partial class HathoraDemo : Microservice
     {
         [ClientCallable]
         public async Promise InitializePlayer()
@@ -203,11 +203,6 @@ namespace Beamable.HathoraDemo
 
             return matchMakingConfig;
         }
-    }
-
-    public class HathoraIdentity : IThirdPartyCloudIdentity
-    {
-        public string UniqueName => "hathora";
     }
 
     public static class Stats

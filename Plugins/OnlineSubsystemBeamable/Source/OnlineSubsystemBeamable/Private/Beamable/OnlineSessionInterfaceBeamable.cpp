@@ -1,5 +1,3 @@
-// ================================ Copyright (c) Wildcard Alliance , All Rights Reserved. ================================
-
 #include "OnlineSessionInterfaceBeamable.h"
 #include "Misc/Guid.h"
 #include "OnlineSubsystem.h"
@@ -361,7 +359,7 @@ bool FOnlineSessionBeamable::StartMatchmaking(const TArray<FUniqueNetIdRef>& Loc
 		{
 			if (Evt.EventType == OET_ERROR)
 			{
-				UE_LOG_ONLINE_SESSION(Error, TEXT("[FOnlineSessionBeamable::StartMatchmaking] Failed to join queue: %s"), *Evt.EventData);
+				UE_LOG_ONLINE_SESSION(Error, TEXT("[FOnlineSessionBeamable::StartMatchmaking] Failed to join queue: %s"), *Evt.EventCode);
 				TriggerOnMatchmakingCompleteDelegates(SessionName, false);
 				return;
 			}
@@ -369,7 +367,7 @@ bool FOnlineSessionBeamable::StartMatchmaking(const TArray<FUniqueNetIdRef>& Loc
 			UE_LOG_ONLINE_SESSION(Verbose, TEXT("[FOnlineSessionBeamable::StartMatchmaking] Matchmaking Queue Joined. Binding delegates to hooks."));
 
 			FGuid TicketId;
-			FGuid::Parse(Evt.EventData, TicketId);
+			FGuid::Parse(Evt.EventCode, TicketId);
 
 			FOnMatchmakingTicketUpdatedCode SearchingHandler;
 			SearchingHandler.BindRaw(this, &FOnlineSessionBeamable::OnMatchmakingSearching);
@@ -421,7 +419,7 @@ bool FOnlineSessionBeamable::CancelMatchmaking(const FUniqueNetId& SearchingPlay
 	{
 		if (Evt.EventType == OET_ERROR)
 		{
-			UE_LOG_ONLINE_SESSION(Error, TEXT("[FOnlineSessionBeamable::StartMatchmaking] Failed to cancel matchmaking queue. SESSION_NAME=%s, ERROR=%s"), *SessionName.ToString(), *Evt.EventData);
+			UE_LOG_ONLINE_SESSION(Error, TEXT("[FOnlineSessionBeamable::StartMatchmaking] Failed to cancel matchmaking queue. SESSION_NAME=%s, ERROR=%s"), *SessionName.ToString(), *Evt.EventCode);
 			TriggerOnCancelMatchmakingCompleteDelegates(SessionName, false);
 			return;
 		}
@@ -536,12 +534,12 @@ bool FOnlineSessionBeamable::CreateSession(const FUniqueNetId& HostingPlayerId, 
 			UE_LOG_ONLINE_SESSION(Verbose, TEXT("[FOnlineSessionBeamable::CreateSession] callback"));
 
 			FGuid LobbyId;
-			FGuid::Parse(Evt.EventData, LobbyId);
+			FGuid::Parse(Evt.EventCode, LobbyId);
 			ULobby* Lobby = nullptr;
 			if (!LobbySubsystem->TryGetLobbyById(LobbyId, Lobby))
 			{
 				// log lobby not found
-				UE_LOG_ONLINE_SESSION(Error, TEXT("[FOnlineSessionBeamable::CreateSession] Error: Lobby not found {lobby}"), *Evt.EventData);
+				UE_LOG_ONLINE_SESSION(Error, TEXT("[FOnlineSessionBeamable::CreateSession] Error: Lobby not found {lobby}"), *Evt.EventCode);
 				TriggerOnCreateSessionCompleteDelegates(NamedSession->SessionName, false);
 				return;
 			}
@@ -617,7 +615,7 @@ bool FOnlineSessionBeamable::StartSession(FName SessionName)
 					                                                         if (Evt.EventType != OET_SUCCESS)
 					                                                         {
 						                                                         // log the error
-						                                                         UE_LOG_ONLINE_SESSION(Error, TEXT("Beamable Error while Provisioning Game Server=%s"), *Evt.EventData);
+						                                                         UE_LOG_ONLINE_SESSION(Error, TEXT("Beamable Error while Provisioning Game Server=%s"), *Evt.EventCode);
 						                                                         TriggerOnStartSessionCompleteDelegates(SessionName, false);
 						                                                         return;
 					                                                         }
@@ -680,7 +678,7 @@ bool FOnlineSessionBeamable::UpdateSession(FName SessionName, FOnlineSessionSett
 				                                              {
 					                                              if (Evt.EventType != OET_SUCCESS)
 					                                              {
-						                                              if (Evt.EventData == TEXT("CANNOT_MODIFY_OTHER_PLAYER_TAGS_IF_NOT_HOST"))
+						                                              if (Evt.EventId == TEXT("CANNOT_MODIFY_OTHER_PLAYER_TAGS_IF_NOT_HOST"))
 						                                              {
 							                                              // log the error
 							                                              UE_LOG_ONLINE_SESSION(
@@ -691,7 +689,7 @@ bool FOnlineSessionBeamable::UpdateSession(FName SessionName, FOnlineSessionSett
 						                                              else
 						                                              {
 							                                              // log the error
-							                                              UE_LOG_ONLINE_SESSION(Error, TEXT("Beamable PutLobby Error with Code=%s"), *Evt.EventData);
+							                                              UE_LOG_ONLINE_SESSION(Error, TEXT("Beamable PutLobby Error with Code=%s"), *Evt.EventCode);
 						                                              }
 
 						                                              TriggerOnUpdateSessionCompleteDelegates(SessionName, false);
@@ -909,26 +907,26 @@ bool FOnlineSessionBeamable::JoinSession(const FUniqueNetId& PlayerId, FName Ses
 			const auto Passcode = DesiredSession.Session.SessionSettings.Settings.FindRef(FName(BeamOssSettings->LobbyPasscodeSettingsKey)).Data.ToString();
 			const auto JoinSessionHandler = FBeamOperationEventHandlerCode::CreateLambda([this, LobbySubsystem, SessionName, NewSession, PlayerAccount](FBeamOperationEvent Evt)
 			{
-				UE_LOG_ONLINE_SESSION(Log, TEXT("[FOnlineSessionBeamable::JoinSession] Join Session Result %s"), *Evt.EventCode.ToString());
+				UE_LOG_ONLINE_SESSION(Log, TEXT("[FOnlineSessionBeamable::JoinSession] Join Session Result %s"), *Evt.EventId.ToString());
 
 				if (Evt.EventType == OET_ERROR)
 				{
 					// TODO: Get list of errors (lobby full, etc...) from Justin and map this to the various EOnJoinSessionCompleteResults.
-					UE_LOG_ONLINE_SESSION(Error, TEXT("[FOnlineSessionBeamable::JoinSession] Failed to join Lobby. ERROR=%s"), *Evt.EventData);
+					UE_LOG_ONLINE_SESSION(Error, TEXT("[FOnlineSessionBeamable::JoinSession] Failed to join Lobby. ERROR=%s"), *Evt.EventCode);
 					TriggerOnJoinSessionCompleteDelegates(SessionName, EOnJoinSessionCompleteResult::UnknownError);
 					return;
 				}
 
 				// Get the Lobby Id.
 				FGuid LobbyId;
-				FGuid::Parse(Evt.EventData, LobbyId);
+				FGuid::Parse(Evt.EventCode, LobbyId);
 
 				// We should be able to get this lobby from our LobbySubsystem.
 				ULobby* Lobby = nullptr;
 				if (!LobbySubsystem->TryGetLobbyById(LobbyId, Lobby))
 				{
 					// log lobby not found
-					UE_LOG_ONLINE_SESSION(Error, TEXT("[FOnlineSessionBeamable::JoinSession] Lobby not found. LOBBY_ID=%s"), *Evt.EventData);
+					UE_LOG_ONLINE_SESSION(Error, TEXT("[FOnlineSessionBeamable::JoinSession] Lobby not found. LOBBY_ID=%s"), *Evt.EventCode);
 					TriggerOnJoinSessionCompleteDelegates(SessionName, EOnJoinSessionCompleteResult::UnknownError);
 					return;
 				}
@@ -980,12 +978,12 @@ bool FOnlineSessionBeamable::JoinSession(const FUniqueNetId& PlayerId, FName Ses
 			// Gets the passcode if its there			
 			const auto JoinSessionHandler = FBeamOperationEventHandlerCode::CreateLambda([this, LobbySubsystem, LobbyId, SessionName, NewSession, PlayerAccount](FBeamOperationEvent Evt)
 			{
-				UE_LOG_ONLINE_SESSION(Log, TEXT("[FOnlineSessionBeamable::JoinSession] Join Session Result %s"), *Evt.EventCode.ToString());
+				UE_LOG_ONLINE_SESSION(Log, TEXT("[FOnlineSessionBeamable::JoinSession] Join Session Result %s"), *Evt.EventId.ToString());
 
 				if (Evt.EventType == OET_ERROR)
 				{
 					// TODO: Get list of errors (lobby full, etc...) from Justin and map this to the various EOnJoinSessionCompleteResults.
-					UE_LOG_ONLINE_SESSION(Error, TEXT("[FOnlineSessionBeamable::JoinSession] Failed to join Lobby. ERROR=%s"), *Evt.EventData);
+					UE_LOG_ONLINE_SESSION(Error, TEXT("[FOnlineSessionBeamable::JoinSession] Failed to join Lobby. ERROR=%s"), *Evt.EventCode);
 					TriggerOnJoinSessionCompleteDelegates(SessionName, EOnJoinSessionCompleteResult::UnknownError);
 					return;
 				}
@@ -995,7 +993,7 @@ bool FOnlineSessionBeamable::JoinSession(const FUniqueNetId& PlayerId, FName Ses
 				if (!LobbySubsystem->TryGetLobbyById(LobbyId, Lobby))
 				{
 					// log lobby not found
-					UE_LOG_ONLINE_SESSION(Error, TEXT("[FOnlineSessionBeamable::JoinSession] Lobby not found {lobby}"), *Evt.EventData);
+					UE_LOG_ONLINE_SESSION(Error, TEXT("[FOnlineSessionBeamable::JoinSession] Lobby not found {lobby}"), *Evt.EventCode);
 					TriggerOnJoinSessionCompleteDelegates(SessionName, EOnJoinSessionCompleteResult::SessionDoesNotExist);
 					return;
 				}

@@ -19,7 +19,7 @@
     
     <PropertyGroup Label="Dotnet Settings">
         <!-- net8.0 is the LTS version until 2026. To update your net version, update the <TargetFramework> when Beamable announces support. -->
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <InvariantGlobalization>false</InvariantGlobalization>
     </PropertyGroup>
 
@@ -36,6 +36,7 @@
         <PackageReference Include="Beamable.Common" Version="2.0.0" />     
         -->
         <PackageReference Include="Beamable.Microservice.Runtime" Version="$(BeamableVersion)"/>
+        <PackageReference Include="Beamable.Microservice.SourceGen" Version="$(BeamableVersion)" OutputItemType="Analyzer"/>
         <PackageReference Include="Discord.Net" Version="3.15.2" />
     </ItemGroup>
 
