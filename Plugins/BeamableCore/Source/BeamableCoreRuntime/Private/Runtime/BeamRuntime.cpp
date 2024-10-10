@@ -117,6 +117,7 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 		this->TriggerInitializeWhenUnrealReady();
 	});
 
+
 	UE_LOG(LogBeamRuntime, Verbose, TEXT("Initializing UBeamRuntime Subsystem!"));
 
 	UBeamBackend* EngineSubsystem = GEngine->GetEngineSubsystem<UBeamBackend>();
@@ -176,6 +177,8 @@ void UBeamRuntime::PIEExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivit
 		? BeamBackend->DedicatedServerExecuteRequestImpl(ActiveRequestId, Connectivity)
 		: BeamBackend->DefaultExecuteRequestImpl(ActiveRequestId, Connectivity);
 }
+
+// On Beamable Start Flow
 
 void UBeamRuntime::TriggerInitializeWhenUnrealReady()
 {
@@ -370,6 +373,8 @@ void UBeamRuntime::TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent Ev
 }
 
 
+// On Beamable Ready / OnUserReady flow
+
 void UBeamRuntime::TriggerOnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const UObject* Context)
 {
 	if (!Context || (Context && (Context->GetWorld() != GetWorld()))) return;
@@ -474,7 +479,6 @@ void UBeamRuntime::TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent Evt, FU
 	}
 }
 
-
 void UBeamRuntime::TriggerOnUserSlotCleared(const EUserSlotClearedReason& Reason, const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const UObject* Context)
 {
 	if (!Context || (Context && (Context->GetWorld() != GetWorld()))) return;
@@ -577,6 +581,9 @@ void UBeamRuntime::TriggerPostUserSignedOut(FBeamWaitCompleteEvent Evt, FUserSlo
 		}
 	}
 }
+
+
+// Login/Signup/Attach Operations
 
 FBeamOperationHandle UBeamRuntime::LoginFrictionlessOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent)
 {
