@@ -111,10 +111,12 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 	UserSlotAuthenticatedHandler = UserSlotSystem->GlobalUserSlotAuthenticatedCodeHandler.AddUObject(this, &UBeamRuntime::TriggerOnUserSlotAuthenticated);
 	UserSlotClearedHandler = UserSlotSystem->GlobalUserSlotClearedCodeHandler.AddUObject(this, &UBeamRuntime::TriggerOnUserSlotCleared);
 
+	// TODO: Only do this IF a setting tells us to do so --- default the setting to true. Expose a function to kick this off explicitly for cases where they user disables this option.
 	ExecuteOnGameThread(TEXT("Initialize"), [this]()
 	{
 		this->TriggerInitializeWhenUnrealReady();
 	});
+
 
 	UE_LOG(LogBeamRuntime, Verbose, TEXT("Initializing UBeamRuntime Subsystem!"));
 
@@ -175,6 +177,8 @@ void UBeamRuntime::PIEExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivit
 		? BeamBackend->DedicatedServerExecuteRequestImpl(ActiveRequestId, Connectivity)
 		: BeamBackend->DefaultExecuteRequestImpl(ActiveRequestId, Connectivity);
 }
+
+// On Beamable Start Flow
 
 void UBeamRuntime::TriggerInitializeWhenUnrealReady()
 {
@@ -369,6 +373,8 @@ void UBeamRuntime::TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent Ev
 }
 
 
+// On Beamable Ready / OnUserReady flow
+
 void UBeamRuntime::TriggerOnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const UObject* Context)
 {
 	if (!Context || (Context && (Context->GetWorld() != GetWorld()))) return;
@@ -473,7 +479,6 @@ void UBeamRuntime::TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent Evt, FU
 	}
 }
 
-
 void UBeamRuntime::TriggerOnUserSlotCleared(const EUserSlotClearedReason& Reason, const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const UObject* Context)
 {
 	if (!Context || (Context && (Context->GetWorld() != GetWorld()))) return;
@@ -576,6 +581,9 @@ void UBeamRuntime::TriggerPostUserSignedOut(FBeamWaitCompleteEvent Evt, FUserSlo
 		}
 	}
 }
+
+
+// Login/Signup/Attach Operations
 
 FBeamOperationHandle UBeamRuntime::LoginFrictionlessOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent)
 {

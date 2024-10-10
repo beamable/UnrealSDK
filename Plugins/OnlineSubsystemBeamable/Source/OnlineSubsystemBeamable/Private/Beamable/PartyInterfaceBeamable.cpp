@@ -1,6 +1,3 @@
-// ================================ Copyright (c) Wildcard Alliance , All Rights Reserved. ================================
-
-
 #include "PartyInterfaceBeamable.h"
 
 #include "Beamable/OnlineSubsystemBeamable.h"

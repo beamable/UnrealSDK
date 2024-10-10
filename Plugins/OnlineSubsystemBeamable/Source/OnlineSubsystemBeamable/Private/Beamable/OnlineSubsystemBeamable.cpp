@@ -1,6 +1,4 @@
-﻿// Copyright Epic Games, Inc. All Rights Reserved.
-
-#include "Beamable/OnlineSubsystemBeamable.h"
+﻿#include "Beamable/OnlineSubsystemBeamable.h"
 #include "Beamable/OnlineIdentityBeamable.h"
 #include "Beamable/OnlineStatsBeamable.h"
 #include "Beamable/OnlineSessionInterfaceBeamable.h"

@@ -23,6 +23,19 @@ enum EBeamOperationEventType
 
 BEAMABLECORE_API ENUM_CLASS_FLAGS(EBeamOperationEventType);
 
+UINTERFACE()
+class UBeamOperationEventData : public UInterface
+{
+	GENERATED_BODY()
+};
+
+class IBeamOperationEventData
+{
+	GENERATED_BODY()
+
+public:
+	
+};
 
 /**
  * @brief An Operation event.
@@ -56,10 +69,10 @@ struct BEAMABLECORE_API FBeamOperationEvent
 	int64 RequestId = -1;
 
 	/**
-	 * @brief An code indicating the an operation-specific type of the event that happened. It is the value of an operation-specific Enum.
+	 * @brief An operation-specific id describing the type of the event that happened.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
-	FName EventCode = NAME_None;
+	FName EventId = NAME_None;
 
 	/**
 	 * @brief The Beamable Runtime System where the Operation event originated.
@@ -68,10 +81,16 @@ struct BEAMABLECORE_API FBeamOperationEvent
 	FString System;
 
 	/**
-	 * @brief An error string or some arbitrary string data that can be passed on by the event
+	 * @brief An Error Code string. In some very rare cases, this might just be some arbitrary string data that can be passed on by the event.
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Beam")
-	FString EventData;
+	FString EventCode;
+
+	/**
+	 * @brief An event data object that may or may not exist for each emitted event.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Beam")
+	TScriptInterface<IBeamOperationEventData> EventData;
 };
 
 

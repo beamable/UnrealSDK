@@ -4,6 +4,7 @@
         <!-- All Microservices must have the value, "service" -->
         <BeamProjectType>service</BeamProjectType>
         <BeamServiceGroup>BEAMPROJ_HathoraDemo</BeamServiceGroup>
+        <GenerateClientCode>false</GenerateClientCode>
     </PropertyGroup>
 
     <!-- These are Special Beamable parameters that we use to keep the beamable packages in-sync to the CLI version your project is using. -->
@@ -20,7 +21,7 @@
     <!-- Standard dotnet settings-->
     <PropertyGroup Label="Dotnet Settings">
         <!-- As of Beamable 1.0, net6.0 is required. -->
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
 
     <!-- Put your stuff here OR override our stuff here (some docs): https://docs.beamable.com/docs/cli-guide-microservice-configuration#beamable-properties -->
@@ -37,6 +38,7 @@
         <PackageReference Include="Beamable.Common" Version="2.0.0" />     
         -->
         <PackageReference Include="Beamable.Microservice.Runtime" Version="$(BeamableVersion)"/>
+        <PackageReference Include="Beamable.Microservice.SourceGen" Version="$(BeamableVersion)" OutputItemType="Analyzer"/>
 
     </ItemGroup>
 

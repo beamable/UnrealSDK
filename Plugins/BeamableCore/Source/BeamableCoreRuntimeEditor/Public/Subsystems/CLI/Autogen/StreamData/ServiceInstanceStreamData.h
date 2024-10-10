@@ -2,6 +2,7 @@
 #pragma once
 
 #include "Subsystems/CLI/Autogen/StreamData/DockerServiceDescriptorStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/FederationInstanceStreamData.h"
 #include "Subsystems/CLI/Autogen/StreamData/HostServiceDescriptorStreamData.h"
 #include "Subsystems/CLI/Autogen/StreamData/RemoteServiceDescriptorStreamData.h"
 #include "Serialization/BeamJsonUtils.h"

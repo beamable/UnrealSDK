@@ -1,6 +1,3 @@
-// ================================ Copyright (c) Wildcard Alliance , All Rights Reserved. ================================
-
-
 #include "Beamable/OnlineStatsBeamable.h"
 
 #include "OnlineError.h"

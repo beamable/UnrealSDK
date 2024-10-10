@@ -3,23 +3,48 @@
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
 
-#include "BeamCliProjectOpenSwaggerCommand.generated.h"
+#include "BeamCliFederationAddCommand.generated.h"
 
+
+UCLASS()
+class UBeamCliFederationAddStreamData : public UObject, public IBeamJsonSerializableUObject
+{
+	GENERATED_BODY()
+
+public:	
+	
+	
+
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+	{
+			
+	}
+
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+	{
+			
+	}
+
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+	{
+			
+	}
+};
 
 
 /**
  Description:
-  Opens the swagger page for a given service
+  Adds a federation to a particular microservice
 
 Usage:
-  Beamable.Tools project open-swagger [<service-name>] [options]
+  Beamable.Tools federation add <microservice> <fed-id> <fed-type> [options]
 
 Arguments:
-  <service-name>  Name of the service to open swagger to []
+  <microservice>                                                                                      The BeamoId of the microservice to add
+  <fed-id>                                                                                            A federation id. This uniquely identifies your federation. Different federation interfaces can be associated with each id
+  <IFederatedCommerce|IFederatedGameServer|IFederatedInventory|IFederatedLogin|IFederatedPlayerInit>  The type of federation to add
 
 Options:
-  -k, --routing-key <routing-key>      The routing key for the service instance we want. If not passed, defaults to the local service [default: desktop-54b40oj_f52ec40b04998c126ef3095036e1fb65]
-  -r, --remote                         When set, enforces the routing key to be the one for the service deployed to the realm. Cannot be specified when --routing-key is also set
   --dryrun                             Should any networking happen?
   --cid <cid>                          Cid to use; will default to whatever is in the file system
   --pid <pid>                          Pid to use; will default to whatever is in the file system
@@ -45,12 +70,15 @@ Options:
 
  */
 UCLASS()
-class UBeamCliProjectOpenSwaggerCommand : public UBeamCliCommand
+class UBeamCliFederationAddCommand : public UBeamCliCommand
 {
 	GENERATED_BODY()
 
 public:
-		
+	inline static FString StreamType = FString(TEXT("stream"));
+	UPROPERTY() TArray<UBeamCliFederationAddStreamData*> Stream;
+	UPROPERTY() TArray<int64> Timestamps;
+	TFunction<void (const TArray<UBeamCliFederationAddStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
 	virtual void HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;

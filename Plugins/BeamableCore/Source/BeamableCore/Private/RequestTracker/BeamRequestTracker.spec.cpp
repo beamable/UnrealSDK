@@ -394,9 +394,9 @@ void FBeamRequestTrackerSpec::Define()
 				Handler.BindUFunction(OperationCallbacks, GET_FUNCTION_NAME_CHECKED(UBeamRequestTrackerOperationTestCallbacks, MockOperationEvent_Expected));
 				OperationCallbacks->ExpectedEventRequestId = ReqId;
 				OperationCallbacks->ExpectedEventType = EBeamOperationEventType::OET_SUCCESS;
-				OperationCallbacks->ExpectedEventSubTypeCode = NAME_None;
+				OperationCallbacks->ExpectedEventId = NAME_None;
 				OperationCallbacks->ExpectedEventSystem = TEXT("Success Test");
-				OperationCallbacks->ExpectedEventData = TEXT("SuccessData");
+				OperationCallbacks->ExpectedEventCode = TEXT("SuccessData");
 				OperationCallbacks->ExpectedParticipants = {FakeUserSlot};
 				OperationCallbacks->ExpectedRequestsInOperations = {ReqId};
 
@@ -423,9 +423,9 @@ void FBeamRequestTrackerSpec::Define()
 				Handler.BindUFunction(OperationCallbacks, GET_FUNCTION_NAME_CHECKED(UBeamRequestTrackerOperationTestCallbacks, MockOperationEvent_Expected));
 				OperationCallbacks->ExpectedEventRequestId = ErrorReqId;
 				OperationCallbacks->ExpectedEventType = EBeamOperationEventType::OET_ERROR;
-				OperationCallbacks->ExpectedEventSubTypeCode = NAME_None;
+				OperationCallbacks->ExpectedEventId = NAME_None;
 				OperationCallbacks->ExpectedEventSystem = TEXT("Error Test");
-				OperationCallbacks->ExpectedEventData = TEXT("ErrorData");
+				OperationCallbacks->ExpectedEventCode = TEXT("ErrorData");
 				OperationCallbacks->ExpectedParticipants = {FakeUserSlot};
 				OperationCallbacks->ExpectedRequestsInOperations = {ErrorReqId};
 
@@ -452,9 +452,9 @@ void FBeamRequestTrackerSpec::Define()
 				Handler.BindUFunction(OperationCallbacks, GET_FUNCTION_NAME_CHECKED(UBeamRequestTrackerOperationTestCallbacks, MockOperationEvent_Expected));
 				OperationCallbacks->ExpectedEventRequestId = ReqId;
 				OperationCallbacks->ExpectedEventType = EBeamOperationEventType::OET_CANCELLED;
-				OperationCallbacks->ExpectedEventSubTypeCode = NAME_None;
+				OperationCallbacks->ExpectedEventId = NAME_None;
 				OperationCallbacks->ExpectedEventSystem = TEXT("Cancelled Test");
-				OperationCallbacks->ExpectedEventData = TEXT("CancelledData");
+				OperationCallbacks->ExpectedEventCode = TEXT("CancelledData");
 				OperationCallbacks->ExpectedParticipants = {FakeUserSlot};
 				OperationCallbacks->ExpectedRequestsInOperations = {ReqId};
 
@@ -481,9 +481,9 @@ void FBeamRequestTrackerSpec::Define()
 				Handler.BindUFunction(OperationCallbacks, GET_FUNCTION_NAME_CHECKED(UBeamRequestTrackerOperationTestCallbacks, MockOperationEvent_Expected));
 				OperationCallbacks->ExpectedEventRequestId = ReqId;
 				OperationCallbacks->ExpectedEventType = EBeamOperationEventType::OET_SUCCESS;
-				OperationCallbacks->ExpectedEventSubTypeCode = FName("1");
+				OperationCallbacks->ExpectedEventId = FName("1");
 				OperationCallbacks->ExpectedEventSystem = GetTestName();
-				OperationCallbacks->ExpectedEventData = TEXT("SuccessData");
+				OperationCallbacks->ExpectedEventCode = TEXT("SuccessData");
 				OperationCallbacks->ExpectedParticipants = {FakeUserSlot};
 				OperationCallbacks->ExpectedRequestsInOperations = {ReqId};
 
@@ -503,9 +503,9 @@ void FBeamRequestTrackerSpec::Define()
 				Handler.BindUFunction(OperationCallbacks, GET_FUNCTION_NAME_CHECKED(UBeamRequestTrackerOperationTestCallbacks, MockOperationEvent_Expected));
 				OperationCallbacks->ExpectedEventRequestId = -1;
 				OperationCallbacks->ExpectedEventType = EBeamOperationEventType::OET_SUCCESS;
-				OperationCallbacks->ExpectedEventSubTypeCode = FName("1");
+				OperationCallbacks->ExpectedEventId = FName("1");
 				OperationCallbacks->ExpectedEventSystem = GetTestName();
-				OperationCallbacks->ExpectedEventData = TEXT("SuccessData");
+				OperationCallbacks->ExpectedEventCode = TEXT("SuccessData");
 				OperationCallbacks->ExpectedParticipants = {FakeUserSlot};
 				OperationCallbacks->ExpectedRequestsInOperations = {};
 

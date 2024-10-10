@@ -1,6 +1,4 @@
-﻿// ================================ Copyright (c) Wildcard Alliance , All Rights Reserved. ================================
-
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "Engine/DeveloperSettings.h"

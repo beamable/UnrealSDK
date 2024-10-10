@@ -146,11 +146,11 @@ protected:
 								TEXT(
 									"SteamDemoLogs [Federated Identity] Successfully SignedUp using federated identity!"
 								));
-							this->OnLoginCompleteDelegate.Broadcast(true,*Evt.EventData);
+							this->OnLoginCompleteDelegate.Broadcast(true,*Evt.EventCode);
 							return;
 						}
-						UE_LOG(LogTemp, Error, TEXT("SteamDemoLogs, FAILED TO LOGIN: %s"), *Evt.EventData);
-						this->OnLoginCompleteDelegate.Broadcast(false,*Evt.EventData);
+						UE_LOG(LogTemp, Error, TEXT("SteamDemoLogs, FAILED TO LOGIN: %s"), *Evt.EventCode);
+						this->OnLoginCompleteDelegate.Broadcast(false,*Evt.EventCode);
 					});
 
 				const auto OnSignUpWithSteam = FBeamOperationEventHandlerCode::CreateLambda(
@@ -162,12 +162,12 @@ protected:
 							this->LoggedIn = true;
 							UE_LOG_ONLINE_IDENTITY(
 								Warning, TEXT("[Federated Identity] Successfully SignedUp using federated identity!"));
-							this->OnLoginCompleteDelegate.Broadcast(true,*Evt.EventData);
+							this->OnLoginCompleteDelegate.Broadcast(true,*Evt.EventCode);
 							return;
 						}
 
 						// Error Handling
-						if (Evt.EventData.Contains("EXTERNAL_IDENTITY_IN_USE"))
+						if (Evt.EventCode.Contains("EXTERNAL_IDENTITY_IN_USE"))
 						{
 							UE_LOG_ONLINE_IDENTITY(
 								Warning,
@@ -180,9 +180,8 @@ protected:
 						}
 						else
 						{
-							UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Federated Identity] Failed To Sign Up. Reason=%s."),
-							                       *Evt.EventData);
-							this->OnLoginCompleteDelegate.Broadcast(false,*Evt.EventData);
+							UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Federated Identity] Failed To Sign Up. Reason=%s."), *Evt.EventCode);
+							this->OnLoginCompleteDelegate.Broadcast(false,*Evt.EventCode);
 						}
 					});
 				Runtime->CPP_AttachExternalIdentityOperation(TargetSlot, ServiceName, Namespace, 

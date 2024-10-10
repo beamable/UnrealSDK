@@ -2,8 +2,8 @@
 
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
-#include "Subsystems/CLI/Autogen/StreamData/RunningServiceStreamData.h"
-#include "Subsystems/CLI/Autogen/StreamData/RunningFederationStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/ServiceFederationsStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/FederationsConfigStreamData.h"
 #include "BeamCliFederationListCommand.generated.h"
 
 
@@ -19,44 +19,42 @@ public:
 	UPROPERTY()
 	FString Pid = {};
 	UPROPERTY()
-	TArray<URunningServiceStreamData*> Services = {};
+	TArray<UServiceFederationsStreamData*> Services = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
 		Serializer->WriteValue(TEXT("cid"), Cid);
 		Serializer->WriteValue(TEXT("pid"), Pid);
-		UBeamJsonUtils::SerializeArray<URunningServiceStreamData*>(TEXT("services"), Services, Serializer);	
+		UBeamJsonUtils::SerializeArray<UServiceFederationsStreamData*>(TEXT("services"), Services, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
 		Serializer->WriteValue(TEXT("cid"), Cid);
 		Serializer->WriteValue(TEXT("pid"), Pid);
-		UBeamJsonUtils::SerializeArray<URunningServiceStreamData*>(TEXT("services"), Services, Serializer);	
+		UBeamJsonUtils::SerializeArray<UServiceFederationsStreamData*>(TEXT("services"), Services, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
 		Cid = Bag->GetStringField(TEXT("cid"));
 		Pid = Bag->GetStringField(TEXT("pid"));
-		UBeamJsonUtils::DeserializeArray<URunningServiceStreamData*>(Bag->GetArrayField(TEXT("services")), Services, OuterOwner);	
+		UBeamJsonUtils::DeserializeArray<UServiceFederationsStreamData*>(Bag->GetArrayField(TEXT("services")), Services, OuterOwner);	
 	}
 };
 
 
 /**
  Description:
-  List all running services in the current realm
+  List all federations configured in known services
 
 Usage:
   Beamable.Tools federation list [options]
 
 Options:
-  --type <type>                        Filter the services by the types of federations they provide
-  --name <name>                        Filter the services by the service name
-  -ns, --namespace <namespace>         Filter the services by the federation namespace
-  --player <player>                    Filter the services by the playerId of the author
-  --listen                             After piping the current list of services, keeps on listening and pipe them again every change
+  --type <type>                        Filter the federations by the type
+  --id <id>                            Filter the federations by the service name
+  -fid, --fed-ids <fed-ids>            Filter the federation by its federation id
   --dryrun                             Should any networking happen?
   --cid <cid>                          Cid to use; will default to whatever is in the file system
   --pid <pid>                          Pid to use; will default to whatever is in the file system
