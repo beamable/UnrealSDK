@@ -172,6 +172,11 @@ public:
 	// LOCAL STATE
 
 	/**
+	 * @brief Returns all the subsystems that are dependent on this subclass
+	 */
+	virtual TArray<TSubclassOf<UBeamRuntimeSubsystem>> GetDependantSubsystems() override;
+	
+	/**
 	 *  Gets the lobby that the given user is contained.
 	 *  By default, will use the Owner user slot.
 	 */

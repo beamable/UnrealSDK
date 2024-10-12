@@ -10,6 +10,7 @@
 #include "BeamRuntimeSettings.generated.h"
 class UBeamContentCache;
 class UDataTable;
+class UBeamRuntimeSubsystem;
 /**
  * 
  */
@@ -40,6 +41,22 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Beam Systems")
 	TArray<TSubclassOf<USubsystem>> ClientRuntimeSubsystemBlueprints;
 
+	
+	/**
+	 * @brief Whether we should automatically initialize all beamable subsystems on the start of the game play mode.
+	 * If you disable this, you will need to call ManuallyInitializeSubsystems Function at BeamRuntime to initialize subsystems when needed
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Beam Systems")
+	bool bAutoInitializeSDKAtStartup  = true;
+
+	/**
+	 * @brief List of all the subsystems that is not needed to be initialized at the game start.
+	 * By adding subsystems to this list they will not be initialized at the game start however these subsystems could be
+	 * initialized later by calling ManuallyInitializeSubsystems Function at BeamRuntime
+	 */
+	UPROPERTY(Config,EditAnywhere, BlueprintReadOnly, Category="Beam Systems")
+	TArray<TSubclassOf<UBeamRuntimeSubsystem>> ManualyInitializedRuntimeSubsystems;
+	
 	/**
 	 * @brief As per UE docs, we have a streamable manager declared to load up beamable content asynchronously at runtime: https://docs.unrealengine.com/5.1/en-US/asynchronous-asset-loading-in-unreal-engine/.
 	 */
@@ -57,7 +74,6 @@ public:
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Content")
 	TArray<FBeamContentId> StoreContentToDownload; 
-
-
+	
 	FStreamableManager& GetStreamableManager() { return ContentStreamingManager; }
 };

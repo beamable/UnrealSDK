@@ -12,7 +12,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRuntimeUserSlotDataChangedEvent, FUserSlot, UserSlot);
 
 UCLASS(Abstract, Blueprintable, meta=(IsBlueprintBase=true, ShowWorldContextPin))
-class BEAMABLECORERUNTIME_API UBeamRuntimeSubsystem : public UGameInstanceSubsystem, public FTickableGameObject
+class BEAMABLECORERUNTIME_API	UBeamRuntimeSubsystem : public UGameInstanceSubsystem, public FTickableGameObject
 {
 	GENERATED_BODY()
 
@@ -67,6 +67,12 @@ public:
 	void InitializeWhenUnrealReady(FBeamOperationHandle& ResultOp);
 	virtual void InitializeWhenUnrealReady_Implementation(FBeamOperationHandle& ResultOp);
 
+	/**
+	 * This returns a list of the subsystems that depends on this subsystem.
+	 */
+	UFUNCTION()
+	virtual TArray<TSubclassOf<UBeamRuntimeSubsystem>> GetDependantSubsystems() { return TArray<TSubclassOf<UBeamRuntimeSubsystem>>();}
+	
 	/**
 	 * @brief At this point, you can make any non-authenticated request to beamable. But... you don't have access to any beamable content types (they are fetched at this point).
 	 * For example, downloading content at the start of a player session (see UBeamContentSubsystem for an example).

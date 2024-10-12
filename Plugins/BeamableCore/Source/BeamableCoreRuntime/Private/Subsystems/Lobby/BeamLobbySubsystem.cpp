@@ -5,6 +5,8 @@
 
 #include "AutoGen/Optionals/OptionalArrayOfLobbyLibrary.h"
 #include "AutoGen/SubSystems/BeamLobbyApi.h"
+#include "Subsystems/Inventory/BeamInventorySubsystem.h"
+#include "Subsystems/Matchmaking/BeamMatchmakingSubsystem.h"
 
 void UBeamLobbySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -75,6 +77,13 @@ void UBeamLobbySubsystem::OnUserSignedOut_Implementation(const FUserSlot& UserSl
 }
 
 // LOCAL STATE
+
+TArray<TSubclassOf<UBeamRuntimeSubsystem>> UBeamLobbySubsystem::GetDependantSubsystems()
+{
+	TArray<TSubclassOf<UBeamRuntimeSubsystem>> DependantSubsystems;
+	DependantSubsystems.Add(UBeamMatchmakingSubsystem::StaticClass());
+	return DependantSubsystems;
+}
 
 ULobby* UBeamLobbySubsystem::GetCurrentLobby(const FUserSlot& UserSlot)
 {

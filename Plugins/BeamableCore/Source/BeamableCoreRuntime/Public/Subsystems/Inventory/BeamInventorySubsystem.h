@@ -180,6 +180,11 @@ public:
 	static UBeamInventorySubsystem* GetSelf(const UObject* CallingContext) { return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamInventorySubsystem>(); }
 
 	/**
+	 * @brief Returns all the subsystems that are dependent on this subclass
+	 */
+	virtual TArray<TSubclassOf<UBeamRuntimeSubsystem>> GetDependantSubsystems() override;
+	
+	/**
 	 * This gets called in three cases:
 	 *  - Whenever a FetchAllInventoryOperation for a given UserSlot is about to be completed.
 	 *  - Whenever a FetchPlayerInventoryOperation for a given GamerTag is about to be completed.

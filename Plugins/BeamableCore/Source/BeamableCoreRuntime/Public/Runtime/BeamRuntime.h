@@ -170,6 +170,9 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
+	/** @brief a boolean that indicates if InitSDK was already called */
+	bool bSDKInitializationStarted;
+	
 	/** @brief Initializes the subsystem.  */
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
@@ -195,6 +198,10 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 */
 	void TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent);
 
+
+	void TriggerManuallySetSubsystemStarted(FBeamWaitCompleteEvent Evt);
+	void TriggerManuallySetSubsystemContentReady(FBeamWaitCompleteEvent Evt);
+	void TriggerManuallySetSubsystemsUserReady(FBeamWaitCompleteEvent Evt);
 	/**
 	 * Manages connectivity and recovery for every user slot.
 	 */
@@ -350,6 +357,19 @@ public:
 	UPROPERTY()
 	UBeamNotifications* NotificationSystem;
 
+
+	/**
+	 * @brief Call this if you need to initialize the SDK if you want to initialize a subsystem that was set to manually initialize from the project settings.
+	 * The main usage is to disable automatic SDK initialization from the project settings
+	 */
+	void InitSDK();
+	
+	/**
+	 * @brief Call this function if you want to initialize a subsystem that was set to manually initialize from the project settings.
+	 * This function will initialize all the passed subsystem
+	 */
+	virtual void ManuallyInitializeSubsystem(TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsType,FRuntimeStateChangedEventCode OnStarted, FRuntimeStateChangedEventCode OnUserReady);
+	
 	/**
 	 * @brief This flag is used for beamable's automatic initialization.
 	 * It ensures that the OnBeamableReady event is only ever called once in one of two moments after the game boots up:

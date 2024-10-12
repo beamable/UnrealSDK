@@ -15,6 +15,7 @@
 #include "AutoGen/SubSystems/BeamInventoryApi.h"
 #include "BeamNotifications/SubSystems/BeamInventoryNotifications.h"
 #include "Subsystems/Content/BeamContentSubsystem.h"
+#include "Subsystems/LiveOps/BeamAnnouncementsSubsystem.h"
 
 bool FBeamInventoryState::TryGetPlayerCurrencyProperties(const FBeamContentId& CurrencyId, FBeamPlayerCurrency& Currency)
 {
@@ -318,6 +319,13 @@ void UBeamInventorySubsystem::OnPostUserSignedOut_Implementation(const FUserSlot
 	}
 
 	Super::OnPostUserSignedOut_Implementation(UserSlot, Reason, BeamRealmUser, ResultOp);
+}
+
+TArray<TSubclassOf<UBeamRuntimeSubsystem>> UBeamInventorySubsystem::GetDependantSubsystems()
+{
+	TArray<TSubclassOf<UBeamRuntimeSubsystem>> DependantSubsystems;
+	DependantSubsystems.Add(UBeamAnnouncementsSubsystem::StaticClass());
+	return DependantSubsystems;
 }
 
 void UBeamInventorySubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsFirstAuth, FBeamOperationHandle& ResultOp)

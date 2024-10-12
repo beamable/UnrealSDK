@@ -66,6 +66,8 @@ void UBeamRuntimeSubsystem::OnBeamableStarting_Implementation(FBeamOperationHand
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({}, GetName(), {});
 	Runtime->RequestTrackerSystem->TriggerOperationSuccess(Handle, {});	
 	ResultOp = Handle;
+
+	bIsStarted = true;
 }
 
 void UBeamRuntimeSubsystem::OnBeamableContentReady_Implementation(FBeamOperationHandle& ResultOp)
@@ -94,6 +96,8 @@ void UBeamRuntimeSubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserS
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({}, GetName(), {});
 	Runtime->RequestTrackerSystem->TriggerOperationSuccess(Handle, {});
 	ResultOp = Handle;
+
+	bIsReady = true;
 }
 
 void UBeamRuntimeSubsystem::OnPostUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp)
