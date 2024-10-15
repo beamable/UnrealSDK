@@ -38,4 +38,6 @@ main() {
         python -m mkdocs serve
     fi
 }
-main $1
+
+# Call the main function with arguments
+main "$@"
