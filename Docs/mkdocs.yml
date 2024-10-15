@@ -60,10 +60,10 @@ nav:
     - Getting Started: 'guides/intro.md'
     - Runtime Concepts: 'guides/runtime-concepts.md'
     - Operations & Waits: 'guides/operations-and-waits.md'
-    - Stats: 'guides/stats.md'
     - Dedicated Servers: 'guides/dedicated-servers.md'
     - Feature Guides:
       - Content: 'features/content.md'
+      - Stats: 'features/stats.md'
       - Microservices: 'features/microservices.md'
       - Stores: 'features/stores.md'
   - Samples: 
