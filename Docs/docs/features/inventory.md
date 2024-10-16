@@ -17,10 +17,21 @@ Beamable's Inventory system is built on the Content feature. This means that con
 
 ## Data Concepts
 
-Inventory manages two types of data- items and virtual currencies. One thing that both have in common is that during creation of each of them it is up to game maker to decide how they can be added to player inventory by specifying `Write self` property:
+Inventory manages two types of data- items and virtual currencies. One thing that both have in common is that during creation of each of them it is up to game maker to decide how they can be added to player inventory by specifying `clientPermission` field:
 
-- **Client-Authoritative**- If your game does not include networked multiplayer and can tolerate cheating, allowing the client to read/write their own currencies is the simplest option.
-- **Server-Authoritative**- A much more secure way to handle item/currency modifications is via a Microservice. In this scenario, the client is not able to modify their currencies directly, it is handled on the server.
+- **Client-Authoritative**- If your game does not include networked multiplayer and can tolerate cheating, allowing the client to read and write their own currencies is the simplest option.
+- **Server-Authoritative**- A much more secure way to handle item/currency modifications is via a Microservice. In this scenario, the client is not able to modify their currencies directly, it is handled on the server. It can still read it from Unreal.
 
 !!! note "Edit player Inventory via Portal"
-    Regardlesss of the value of the `Write self` property it is possible to view and modify players inventory through the Portal. More info [here](https://docs.beamable.com/docs/portal-inventory).
+    Regardlesss of the value of the `clientPermission` field it is possible to view and modify players inventory through the Portal. More info [here](https://docs.beamable.com/docs/portal-inventory).
+
+### Virtual Currencies
+
+This feature is flexible enough to meet the currency needs of any game's design. Currencies are used to buy items (e.g., Gold) and to symbolize the player's progress through the game, such as experience points (XP).
+
+The Virtual Currency system in Beamable is built on top of the Content system. Currencies are available out of the box in the Beamable SDK as a content type.
+
+In Unreal SDK Currency is represented by `FBeamCurrencyContent` type. Besides decribed earlier `clientPermission` each Currency type contains `startingAmount` field specifying how many currency is player starting with.
+
+### Items
+
