@@ -4,7 +4,9 @@ img[src*='#center'] {
     margin: auto;
 }
 </style>
-# Unreal SDK - Stats
+# Stats
+
+## Overview
 
 The Beamable SDK Stats feature allows player to track a variety of built-in and custom player stat variables with configurable visibility levels. Two main use cases are:
 - Data Store- a simple place to read/write info about player

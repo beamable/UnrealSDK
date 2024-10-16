@@ -48,7 +48,7 @@ markdown_extensions:
   - pymdownx.tasklist:
       custom_checkbox: true
   - toc:
-      permalink: 
+      permalink: ¶
 
 plugins:
    - glightbox
@@ -64,6 +64,7 @@ nav:
     - Feature Guides:
       - Content: 'features/content.md'
       - Stats: 'features/stats.md'
+      - Inventory: 'features/inventory.md'
       - Microservices: 'features/microservices.md'
       - Stores: 'features/stores.md'
   - Samples: 
