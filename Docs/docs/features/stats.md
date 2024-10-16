@@ -31,7 +31,7 @@ Second one is stat `domain`, in Unreal represented by enum `EBeamStatsDomain`, i
 
 In order to create first Stats commit with Blueprints we will use `BeamStatsSubsystem` created for that purpose.
 
-!!! note "Subsystem assumptions"
+???+ warning "Subsystem assumptions"
     Make sure that user is logged in. See [Runtime Concepts](../guides/runtime-concepts.md)
 
 First there should be created a update command with `Try Create Update Command` with new stats values. Then we need to commit that stats update operation using `Commit Stats Operation` in order to send them to Beamable backend. That is it!
@@ -45,4 +45,14 @@ Then if we grab the User Id from the Unreal Engine logs, click `Open Portal` in 
 
 ## Performance Guidelines
 
+### Batching updates
+
 In this example there is created a new `UpdateCommand` and commited right away. In order to achieve better performance and reduce amount of calls to backend it is encouraged to create `UpdateCommand`, attach as many changes as needed and commit then instead of commiting each change separately.
+
+### Stats keys naming
+
+Good rule of thumb for keys is "shorter is better" and keys of 8-20 characters are ideal (purely for human ergonomics) and keeping them under a few hundred characters is best for performance.
+
+### Stats values length
+
+Values should be no more than a few hundred characters long. This is a performance issue: the MongoDB collection has an index on keys, so the bigger the keys are the bigger that index grows, leading to performance hits in both writing and reading. 
