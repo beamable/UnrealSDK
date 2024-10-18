@@ -8,7 +8,7 @@ img[src*='#center'] {
 
 ## Overview
 
-The Beamable **Inventory** Feature allows game makers to manage owned items per player within the game.
+The Beamable **Inventory** Feature allows game makers to manage owned items and currencies per player within the game.
 
 Beamable's Inventory system is built on the Content feature. This means that content can be created and published via the Content Manager, then granted to players through various workflows:
 
@@ -35,3 +35,48 @@ In Unreal SDK Currency is represented by `FBeamCurrencyContent` type. Besides de
 
 ### Items
 
+The Items feature allows for the creation and management of various in-game objects, such as equipment, consumables, and resources. I
+
+In Beamable, Items are built on the Content system and can be customized to fit the specific needs of your game. Items can be a subclass of `FBeamItemContent` and contain additional fields.
+
+In the Unreal SDK, Items are represented by the `FBeamItemContent` type. 
+
+#### Item State
+
+Item State- `FBeamItemState` in Unreal SDK- is representation of the items that player has. Most important part of each one are:
+
+- **ContentId**- id of `Item` content.
+- **Properties**- map of properties of this specific item instance. 
+- **InstanceId**- id of item instance.
+
+Rest of the fields:
+
+- **CreatedAt**- when item instance was created.
+- **UpdatedAt**- last edit date.
+- **FederatedId**- only if item is federated.
+
+
+## Getting Started
+
+First, make sure that you have created and published content with at least one currency and item, both of them should have `Client permission` with `true` value.
+
+In order to create first Inventory commit with Blueprints we will use `BeamInventorySubsystem` created for that purpose.
+
+???+ warning "Subsystem assumptions"
+    Make sure that user is logged in. See [Runtime Concepts](../guides/runtime-concepts.md)
+
+![unreal-inventory-operations](./images/inventory-operations.png)
+
+Then if we grab the User Id from the Unreal Engine logs, click `Open Portal` in Beamable settings, go to `Engage->Players`, find used player and go to `Inventory` and search if both currency amount changed and new item is added to the inventory:
+
+![unreal-beamable-inventory-portal](./images/inventory-portal.png)
+
+## Federation
+
+Items and Currencies can be attached to federated service.
+
+## Performance Guidelines
+
+### Batching updates
+
+In this example there is created a new `FBeamInventoryUpdateCommand` and commited right away. In order to achieve better performance and reduce amount of calls to backend it is encouraged to create `FBeamInventoryUpdateCommand`, attach as many changes as needed and commit then instead of commiting each change separately.
