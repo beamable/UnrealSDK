@@ -1,7 +1,6 @@
 #include "Subsystems/LiveOps/BeamAnnouncementsSubsystem.h"
-
 #include "BeamNotifications/SubSystems/BeamAnnouncementsNotifications.h"
-
+#include "Subsystems/Inventory/BeamInventorySubsystem.h"
 
 void UBeamAnnouncementsSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -16,6 +15,13 @@ void UBeamAnnouncementsSubsystem::Deinitialize()
 	Super::Deinitialize();
 }
 
+TArray<TSubclassOf<UBeamRuntimeSubsystem>> UBeamAnnouncementsSubsystem::GetDependingOnSubsystems()
+{
+	TArray<TSubclassOf<UBeamRuntimeSubsystem>> DependingSubsytems =
+		Super::GetDependingOnSubsystems();
+	DependingSubsytems.Add(UBeamInventorySubsystem::StaticClass());
+	return DependingSubsytems;
+}
 void UBeamAnnouncementsSubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp)
 {
 	PerUserAnnouncements.Add(UserSlot, {});

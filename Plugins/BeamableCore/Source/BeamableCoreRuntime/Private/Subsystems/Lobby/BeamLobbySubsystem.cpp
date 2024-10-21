@@ -76,14 +76,8 @@ void UBeamLobbySubsystem::OnUserSignedOut_Implementation(const FUserSlot& UserSl
 	Super::OnUserSignedOut_Implementation(UserSlot, Reason, BeamRealmUser, ResultOp);
 }
 
-// LOCAL STATE
 
-TArray<TSubclassOf<UBeamRuntimeSubsystem>> UBeamLobbySubsystem::GetDependantSubsystems()
-{
-	TArray<TSubclassOf<UBeamRuntimeSubsystem>> DependantSubsystems;
-	DependantSubsystems.Add(UBeamMatchmakingSubsystem::StaticClass());
-	return DependantSubsystems;
-}
+// LOCAL STATE
 
 ULobby* UBeamLobbySubsystem::GetCurrentLobby(const FUserSlot& UserSlot)
 {

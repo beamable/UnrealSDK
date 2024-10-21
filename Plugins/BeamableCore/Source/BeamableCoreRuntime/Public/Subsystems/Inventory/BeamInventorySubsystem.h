@@ -178,11 +178,6 @@ class BEAMABLECORERUNTIME_API UBeamInventorySubsystem : public UBeamRuntimeSubsy
 public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
 	static UBeamInventorySubsystem* GetSelf(const UObject* CallingContext) { return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamInventorySubsystem>(); }
-
-	/**
-	 * @brief Returns all the subsystems that are dependent on this subclass
-	 */
-	virtual TArray<TSubclassOf<UBeamRuntimeSubsystem>> GetDependantSubsystems() override;
 	
 	/**
 	 * This gets called in three cases:

@@ -321,13 +321,6 @@ void UBeamInventorySubsystem::OnPostUserSignedOut_Implementation(const FUserSlot
 	Super::OnPostUserSignedOut_Implementation(UserSlot, Reason, BeamRealmUser, ResultOp);
 }
 
-TArray<TSubclassOf<UBeamRuntimeSubsystem>> UBeamInventorySubsystem::GetDependantSubsystems()
-{
-	TArray<TSubclassOf<UBeamRuntimeSubsystem>> DependantSubsystems;
-	DependantSubsystems.Add(UBeamAnnouncementsSubsystem::StaticClass());
-	return DependantSubsystems;
-}
-
 void UBeamInventorySubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsFirstAuth, FBeamOperationHandle& ResultOp)
 {
 	Inventories.Add(BeamRealmUser.GamerTag, FBeamInventoryState{BeamRealmUser.GamerTag, UserSlot, {}, {}, {}, {}});
