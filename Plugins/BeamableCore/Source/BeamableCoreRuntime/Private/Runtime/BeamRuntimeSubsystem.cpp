@@ -2,6 +2,7 @@
 
 
 #include "Runtime/BeamRuntimeSubsystem.h"
+#include "Subsystems/Content/BeamContentSubsystem.h"
 
 #include "BeamLogging.h"
 
@@ -60,14 +61,20 @@ void UBeamRuntimeSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 	ResultOp = Handle;
 }
 
+TArray<TSubclassOf<UBeamRuntimeSubsystem>> UBeamRuntimeSubsystem::GetDependingOnSubsystems()
+{
+	TArray<TSubclassOf<UBeamRuntimeSubsystem>> DependingSubsystems;
+	DependingSubsystems.Add(UBeamContentSubsystem::StaticClass());
+	return DependingSubsystems;
+}
+
+
 void UBeamRuntimeSubsystem::OnBeamableStarting_Implementation(FBeamOperationHandle& ResultOp)
 {
 	// By default, just return an empty completed operation
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({}, GetName(), {});
 	Runtime->RequestTrackerSystem->TriggerOperationSuccess(Handle, {});	
 	ResultOp = Handle;
-
-	bIsStarted = true;
 }
 
 void UBeamRuntimeSubsystem::OnBeamableContentReady_Implementation(FBeamOperationHandle& ResultOp)
@@ -96,8 +103,6 @@ void UBeamRuntimeSubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserS
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({}, GetName(), {});
 	Runtime->RequestTrackerSystem->TriggerOperationSuccess(Handle, {});
 	ResultOp = Handle;
-
-	bIsReady = true;
 }
 
 void UBeamRuntimeSubsystem::OnPostUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp)

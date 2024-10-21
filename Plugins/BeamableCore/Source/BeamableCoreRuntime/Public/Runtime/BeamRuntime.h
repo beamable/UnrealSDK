@@ -163,19 +163,38 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FUserStateChangedEventCode, FUserSlot);
 
 
 /**
+ * State of SDK intialization.
+ *
+ * - NotInitialized: The sdk initialization did not start yet.
+ * - Initializing: The sdk initialization has begun but did not finish yet.
+ * - Initialized: The sdk is now initialized and ready to be used.
+ * - InitializationFailed : The sdk initialization process started but ended up with error.
+ */
+UENUM()
+enum ESDKState
+{
+	NotInitialized,
+	Initializing,
+	Initialized,
+	InitializationFailed
+};
+
+/**
  * 
  */
 UCLASS(BlueprintType, meta=(Namespace="Beam"))
 class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
-
-	/** @brief a boolean that indicates if InitSDK was already called */
-	bool bSDKInitializationStarted;
+	
 	
 	/** @brief Initializes the subsystem.  */
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
+	/** List of subsystems that can not be manually initialized because all the other sub systems are dependent on
+	* Or the sdk will not be functioning without it
+	 */
+	TArray<TSubclassOf<UBeamRuntimeSubsystem>> GetRequiredSubsystems();
 	/**
 	 * @brief This gets called the frame after all the subsystem initializations have happened.
 	 * This enables all subsystems to have a chance to subscribe to BeamRuntime events should they choose to do so.
@@ -186,22 +205,47 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	/**
 	 * @brief This gets called after all runtime systems had the opportunity to make requests to Beamable that do not depend on content information.
 	 */
-	void TriggerOnBeamableStarting(FBeamWaitCompleteEvent);
+	void TriggerOnBeamableStarting(FBeamWaitCompleteEvent, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems);
 
 	/**
 	 * @brief This gets called after all runtime systems had the opportunity to make initialization requests to Beamable that DO depend on content data.
 	 */
-	void TriggerOnContentReady(FBeamWaitCompleteEvent Evt);
+	void TriggerOnContentReady(FBeamWaitCompleteEvent Evt, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems);
 
 	/**
 	 * @brief This gets called after all runtime subsystems have been initialized, but before the Owner Player's auth has been made.
 	 */
-	void TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent);
+	void TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems);
 
+	/**
+	 * @brief This function gets called to start the flow of initializing subsystems manually
+	 */
+	void ManuallyInitializeSubsystem(TArray<TSubclassOf<UBeamRuntimeSubsystem>>& SubsystemsTypesToInitialize,
+	                                 bool bInitializeUsers,
+	                                 FBeamOperationHandle OnOperationEvent);
+	/**
+	* @brief This gets called after the first initialize call to set manually subsystems as started but without initializing the content
+	 */
+	void TriggerManuallySetSubsystemStarted(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, bool
+	                                        bInitializeUsers, FBeamOperationHandle OnOperationEvent);
+	/**
+	 * @brief This gets called after all the manually initialized subsystems had the opportunity to make initialization requests to Beamable that DO depend on content data.
+	 */
+	void TriggerManuallySetSubsystemContentReady(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, bool
+	                                             bInitializeUsers, FBeamOperationHandle
+	                                             OnOperationEvent);
+	/**
+	 * @brief This gets called to initialize the users for the manually initialized subsystems.
+	 */
+	void TriggerManuallySetSubsystemsUserReady(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, bool
+	                                           bInitializeUsers, FBeamOperationHandle
+	                                           OnOperationEvent);
 
-	void TriggerManuallySetSubsystemStarted(FBeamWaitCompleteEvent Evt);
-	void TriggerManuallySetSubsystemContentReady(FBeamWaitCompleteEvent Evt);
-	void TriggerManuallySetSubsystemsUserReady(FBeamWaitCompleteEvent Evt);
+	/**
+	 * @brief This gets called to trigger the post user sign in for the manually initialized subsystems.
+	 */
+	void TriggerManuallySubsystemsPostUserSignIn(FBeamWaitCompleteEvent Evt,
+	                                             TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, FBeamOperationHandle OnOperationEvent);
 	/**
 	 * Manages connectivity and recovery for every user slot.
 	 */
@@ -224,7 +268,8 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	/**
 	 * @brief 
 	 */
-	void TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser);
+	void TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, TArray<UBeamRuntimeSubsystem*>
+	                                    AutomaticallyInitializedSubsystems);
 
 	/**
 	 * @brief Callback added to the UserSlot global callback so that we can respond to users signing out. 
@@ -335,6 +380,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	TMap<FUserSlot, FBeamWebSocketHandle> DefaultNotificationChannels;
 
 public:
+	
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
 	static UBeamRuntime* GetSelf(const UObject* CallingContext) { return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamRuntime>(); }
 
@@ -347,7 +393,10 @@ public:
 	UFUNCTION()
 	void PIEExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity);
 
-
+	/** @brief an enum that represents the state of the sdk if it is currently initialized and ready to be used or not */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="SDK State")
+	TEnumAsByte<ESDKState> CurrentSdkState;
+	
 	UPROPERTY()
 	UBeamUserSlots* UserSlotSystem;
 
@@ -359,17 +408,42 @@ public:
 
 
 	/**
-	 * @brief Call this if you need to initialize the SDK if you want to initialize a subsystem that was set to manually initialize from the project settings.
-	 * The main usage is to disable automatic SDK initialization from the project settings
+	 * @brief Call this if you need to initialize the SDK manually
+	 * The main usage is to disable automatic SDK initialization from the project settings and call this function when needed
 	 */
+	UFUNCTION(BlueprintCallable)
 	void InitSDK();
+
 	
 	/**
 	 * @brief Call this function if you want to initialize a subsystem that was set to manually initialize from the project settings.
-	 * This function will initialize all the passed subsystem
+	 * This function will initialize all the passed subsystems
 	 */
-	virtual void ManuallyInitializeSubsystem(TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsType,FRuntimeStateChangedEventCode OnStarted, FRuntimeStateChangedEventCode OnUserReady);
+	UFUNCTION(BlueprintCallable)
+	inline FName GetManualSubsystemsStartedEventID() { return FName("SUBSYSTEMS_STARTED");}
 	
+	UFUNCTION(BlueprintCallable)
+	FBeamOperationHandle ManuallyInitializeSubsystemOperation(FUserSlot UserSlot, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize,
+	                                                          FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc ManuallyInitializeSubsystemOperation
+	 */
+	FBeamOperationHandle CPP_ManuallyInitializeSubsystemOperation(FUserSlot UserSlot, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize,
+	                                                              FBeamOperationEventHandlerCode OnOperationEvent);
+
+	/**
+	 * @brief Call this function if you want to initialize a subsystem that was set to manually initialize from the project settings.
+	 * This function will initialize all the passed subsystems along with the user data
+	 */
+	UFUNCTION(BlueprintCallable)
+	FBeamOperationHandle ManuallyInitializeSubsystemOperationWithUserData(FUserSlot UserSlot, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize,
+	                                                                      FBeamOperationEventHandler OnOperationEvent);
+	/**
+	 * @copydoc ManuallyInitializeSubsystemOperationWithUserData
+	 */
+	FBeamOperationHandle CPP_ManuallyInitializeSubsystemOperationWithUserData(FUserSlot UserSlot, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize,
+																  FBeamOperationEventHandlerCode OnOperationEvent);
 	/**
 	 * @brief This flag is used for beamable's automatic initialization.
 	 * It ensures that the OnBeamableReady event is only ever called once in one of two moments after the game boots up:
@@ -387,18 +461,12 @@ public:
 	bool IsFirstAuth() const { return !bDidFirstAuthRun; }
 
 	/**
-	 * @brief This flag is used to verify that beamable has been properly initialized and is ready for authentication.
-	 */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="IsBeamableStarted")
-	bool bIsBeamableStarted = false;
-
-	/**
 	 * @brief In BP, use this function to bind initialization functions to OnReady. This will execute the delegate if you're already ready before it binds it. 
 	 */
 	UFUNCTION(BlueprintCallable)
 	void RegisterOnStarted(FRuntimeStateChangedHandler Handler)
 	{
-		if (bIsBeamableStarted) const auto _ = Handler.ExecuteIfBound();
+		if (CurrentSdkState == ESDKState::Initialized) const auto _ = Handler.ExecuteIfBound();
 		OnStarted.Add(Handler);
 	}
 
@@ -420,7 +488,7 @@ public:
 
 	FDelegateHandle CPP_RegisterOnStarted(FRuntimeStateChangedHandlerCode Handler)
 	{
-		if (bIsBeamableStarted) const auto _ = Handler.ExecuteIfBound();
+		if (CurrentSdkState == ESDKState::Initialized) const auto _ = Handler.ExecuteIfBound();
 		return OnStartedCode.Add(Handler);
 	}
 
@@ -596,7 +664,7 @@ public:
 private:
 	// Hard-coded special case auth flow	
 	UFUNCTION(BlueprintCallable)
-	void FrictionlessLoginIntoSlot(const FUserSlot& UserSlot);
+	void FrictionlessLoginIntoSlot(const FUserSlot& UserSlot, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems);
 
 	// BP/CPP Independent Operation Implementations
 	void LoginFrictionless(FUserSlot UserSlot, FBeamOperationHandle Op);

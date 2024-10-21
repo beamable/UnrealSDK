@@ -47,7 +47,7 @@ public:
 	 * If you disable this, you will need to call ManuallyInitializeSubsystems Function at BeamRuntime to initialize subsystems when needed
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Beam Systems")
-	bool bAutoInitializeSDKAtStartup  = true;
+	bool bAutoInitializeSdkAtStartup  = true;
 
 	/**
 	 * @brief List of all the subsystems that is not needed to be initialized at the game start.
