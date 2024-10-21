@@ -103,3 +103,6 @@ Intermediate/
 Saved/
 Packaged/
 steam_appid.txt
+
+.venv
+Docs/site

@@ -54,11 +54,11 @@ Please, follow along these instructions:
 #### Making your First Request
 Once your Editor opens, you'll see the Beamable Logo in your upper-right bar, next to the Settings dropdown. This button opens the Beamable window.
 
-![BeamableWindowLocation](Images/intro-beamable-window-location.png#center)
+![BeamableWindowLocation](./images/intro-beamable-window-location.png#center)
 
 In this window, you can login to the account you just created in the Beamable portal. When you do, you should see the window below:
 
-![](Images/intro-beamable-window-opened.png#center)
+![](./images/intro-beamable-window-opened.png#center)
 
 Here's some a quick tour of Beamable terminology:
 
@@ -91,7 +91,7 @@ Now that you have this event hooked up, you can add your first **Beam Flow Node*
 - A set of Custom Event nodes (for success, error and completion) of the request being made to the Beamable backe-end.
 	- Because of this, Unreal does not allow the use of these nodes (or any node that expands to Event nodes) outside of **EventGraphs** or **Macros used in EventGraphs**.
 
-![intro-beam-flow-node.png](../images/intro-beam-flow-node.png#center)
+![intro-beam-flow-node.png](./images/intro-beam-flow-node.png#center)
 
 With the SDKs default configuration and the above setup, you can enter PIE (Play-In-Editor). You should see several requests's responses being written to your Output Log window. After you see the final `GetMe` request, you can exit PIE knowing you've very first request to the Beamable backend.
 

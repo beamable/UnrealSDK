@@ -13,14 +13,31 @@ main() {
             exit 2
         fi
     done
-    pip install mkdocs-material
-    pip install mkdocs-glightbox
-    pip install mkdocs-autorefs
+
+    if [ ! -d ".venv" ]; then
+        python -m venv .venv
+        source .venv/Scripts/activate
+        python -m pip install mkdocs-material
+        python -m pip install mkdocs-glightbox
+        python -m pip install mkdocs-autorefs
+    fi
+    activate_path=$(find .venv -type f -name "activate")
+
+    if [ -n "$activate_path" ]; then
+        echo "Path to activate python venv: $activate_path"
+        source $activate_path
+    else
+        echo "Activate file not found"
+        exit 2
+    fi
+
 
     argument=${1:-"nothing"}
-    if [ $argument = "serve" ]; then
+    if [[ $argument == "serve" ]]; then
         cd Docs
-        mkdocs serve
+        python -m mkdocs serve
     fi
 }
-main
+
+# Call the main function with arguments
+main "$@"

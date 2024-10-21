@@ -123,7 +123,7 @@ Feel free to copy-paste them as a template of how to implement and reason about 
 
 Beam-Flow nodes are the purple nodes with Beamable Icons that you can find. There are two flavors of them; one are Raw Requests that you can use to hit our APIs; the other is the Operation Beam Flow node.
 
-![beam-flow-node](./Images/operation-and-waits-beam-flow-nodes.png#center)
+![beam-flow-node](./images/operation-and-waits-beam-flow-nodes.png#center)
 
 Beamable Operation Flow Nodes assume a few things:
 

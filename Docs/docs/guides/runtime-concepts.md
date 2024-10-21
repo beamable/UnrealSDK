@@ -38,14 +38,15 @@ The `UBeamUserSlots` Engine Subsystem is responsible for:
 
 The image below describes how the SDK's lifecycle injects itself into UE's lifecycle:
 
-![InitFlow](images/runtime-concepts-init-flow.png#center)
+![InitFlow](./images/runtime-concepts-init-flow.png#center)
 
 The next image show a high-level description of the authentication flows supported by the SDK:
 
 
-![](Images/runtime-concept-authflow.png#center)
+![](./images/runtime-concept-authflow.png#center)
 
 Now that you have a high-level understanding of the SDK's initialization flows, read up on how to achieve the two most common Sign Up and Login flows among the ones we provide.
+
 ## Player Sign Up and Login Flows with Beamable
 
 The Beamable SDK comes with a set of pre-implemented operations for common sign-up use-cases. Here are how to set up a few of the common login/signup flows using Beamable.
@@ -74,7 +75,7 @@ In PC/Console titles, often the user can sign-in and up from inside the game. Th
 
 Start by turning off Frictionless Authentication in `Project Settings -> Beamable Core -> Authenticate Frictionless (...)`.
 
-![](images/images/runtime-concepts-disable-frictionles-auth.png#center)
+![Frictionless Auth](./images/runtime-concepts-disable-frictionles-auth.png)
 
 Next, in your `BeginPlay` implementation, register a function to run when the SDK has successfully started via `UBeamRuntime::RegisterOnStarted`. If the SDK has already started when you call this function, it'll run the callback you provide it as its parameter immediately; if not, it'll wait until the SDK is fully ready and then call it. 
 
@@ -82,6 +83,7 @@ Next, in your `BeginPlay` implementation, register a function to run when the SD
 	Remember that these are part of the initialization flow. As such, try to have a single function bound to these points in order to provide guarantees to the rest of your game code about the state of Beamable.
 
 At any point during or after that callback has triggered, make a call to one of the `UBeamRuntime::SignUp____` or `UBeamRuntime::Login____` Operations with the appropriate parameters. We treat these operations as atomic inside the SDK and will clear any invalid partial state in case of any failure during their internal multi-step process; triggering `UBeamRuntime::OnUserReady` only in the case that the user is fully ready for use.
+
 ### Understanding BeamRuntimeSubsystems
 
 `BeamRuntimeSubsystem` implementations are stateful subsystems that provide some specific Beamable functionality. They are built on top of our Auto Generated `UBeam____Api` classses to make it simpler to leverage our APIs; that way:
@@ -99,6 +101,11 @@ These are hand-written and, currently, are comprised of:
 These systems make use of the various `UBeamRuntime::____` callbacks to keep their state correct and expose callbacks and configuration options for **Game-Maker Code** to run with semantically relevant guarantees.
 
 If the exposed hooks on these are not enough for your use case and constraints, as a user you can create your own `UBeamRuntimeSubsystem`. The SDK tries not to hide things from you so you can use the provided `UBeamRuntimeSubsystems` to understand how they are set up when creating your own. The documentation in [Lower-Level SDK Subsystems][#lower-level-sdk-subsystems] can also be useful when implementing your own `UBeamRuntimeSubsystems`. 
+
+#### C++ version of Blueprint examples
+
+Most of the docs contains examples only using Blueprints. Unless described otherwise there is option to achieve same results in C++ while folowing Blueprint sample. In order to achieve that replace calls to `BeamStatSubsystem` commands with the same ones with `CPP_` prefix if that version exists and use same ones if version without it does not exists. That means using `CPP_CommitStatsOperation` instead of `CommitStatsOperation`, but `TryCreateUpdateCommand` in both Blueprint and C++ version.
+
 ###  Lower-Level SDK Subsystems
 
 This section talks about lower-level details of how requests to Beamable get made. ***You don't need to read this***, but... you might want to anyway.
