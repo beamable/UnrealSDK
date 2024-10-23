@@ -5,6 +5,8 @@
 
 #include "AutoGen/Optionals/OptionalArrayOfLobbyLibrary.h"
 #include "AutoGen/SubSystems/BeamLobbyApi.h"
+#include "Subsystems/Inventory/BeamInventorySubsystem.h"
+#include "Subsystems/Matchmaking/BeamMatchmakingSubsystem.h"
 
 void UBeamLobbySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -73,6 +75,7 @@ void UBeamLobbySubsystem::OnUserSignedOut_Implementation(const FUserSlot& UserSl
 
 	Super::OnUserSignedOut_Implementation(UserSlot, Reason, BeamRealmUser, ResultOp);
 }
+
 
 // LOCAL STATE
 

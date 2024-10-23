@@ -15,6 +15,7 @@
 #include "AutoGen/SubSystems/BeamInventoryApi.h"
 #include "BeamNotifications/SubSystems/BeamInventoryNotifications.h"
 #include "Subsystems/Content/BeamContentSubsystem.h"
+#include "Subsystems/LiveOps/BeamAnnouncementsSubsystem.h"
 
 bool FBeamInventoryState::TryGetPlayerCurrencyProperties(const FBeamContentId& CurrencyId, FBeamPlayerCurrency& Currency)
 {

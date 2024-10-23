@@ -813,17 +813,20 @@ void UBeamContentSubsystem::DownloadLiveContentObjects(const FBeamContentManifes
 
 	const auto WaitIndividualDownloadsHandler = FOnWaitCompleteCode::CreateLambda([this, Op](FBeamWaitCompleteEvent Evt)
 	{
-		if (Runtime->RequestTrackerSystem->IsWaitSuccessful(Evt))
+		if (this->Runtime)
 		{
-			this->Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, {});
-			return;
-		}
+			if (this->Runtime->RequestTrackerSystem->IsWaitSuccessful(Evt))
+			{
+				this->Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, {});
+				return;
+			}
 
-		TArray<FString> Errs;
-		if (Runtime->RequestTrackerSystem->IsWaitFailed(Evt, Errs))
-		{
-			this->Runtime->RequestTrackerSystem->TriggerOperationError(Op, FString::Join(Errs, TEXT("\n")));
-			return;
+			TArray<FString> Errs;
+			if (this->Runtime->RequestTrackerSystem->IsWaitFailed(Evt, Errs))
+			{
+				this->Runtime->RequestTrackerSystem->TriggerOperationError(Op, FString::Join(Errs, TEXT("\n")));
+				return;
+			}
 		}
 	});
 	Runtime->RequestTrackerSystem->CPP_WaitAll(IndividualDownloadRequests, {}, {}, WaitIndividualDownloadsHandler);

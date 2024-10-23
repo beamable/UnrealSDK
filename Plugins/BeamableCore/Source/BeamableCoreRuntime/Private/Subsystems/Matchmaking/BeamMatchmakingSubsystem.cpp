@@ -45,6 +45,14 @@ void UBeamMatchmakingSubsystem::OnPostUserSignedIn_Implementation(const FUserSlo
 	Super::OnPostUserSignedIn_Implementation(UserSlot, BeamRealmUser, bIsOwnerUserAuth, ResultOp);
 }
 
+TArray<TSubclassOf<UBeamRuntimeSubsystem>> UBeamMatchmakingSubsystem::GetDependingOnSubsystems()
+{
+	TArray<TSubclassOf<UBeamRuntimeSubsystem>> DependantSubsystems =
+	Super::GetDependingOnSubsystems();
+	DependantSubsystems.Add(UBeamLobbySubsystem::StaticClass());
+	return DependantSubsystems;
+}
+
 // LOCAL STATE GETTERS
 
 bool UBeamMatchmakingSubsystem::IsUserSlotInQueue(const FUserSlot& Slot)

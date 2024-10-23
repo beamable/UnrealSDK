@@ -72,6 +72,9 @@ private:
 public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
 	static UBeamAnnouncementsSubsystem* GetSelf(const UObject* CallingContext) { return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamAnnouncementsSubsystem>(); }
+
+	//Returns a list of subsystems that this system is depending on
+	virtual TArray<TSubclassOf<UBeamRuntimeSubsystem>> GetDependingOnSubsystems() override;
 	
 	/**
 	* @brief Marks one announcement as read.  

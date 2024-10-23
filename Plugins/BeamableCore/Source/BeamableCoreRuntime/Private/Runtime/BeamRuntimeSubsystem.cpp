@@ -2,6 +2,7 @@
 
 
 #include "Runtime/BeamRuntimeSubsystem.h"
+#include "Subsystems/Content/BeamContentSubsystem.h"
 
 #include "BeamLogging.h"
 
@@ -59,6 +60,14 @@ void UBeamRuntimeSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 	Runtime->RequestTrackerSystem->TriggerOperationSuccess(Handle, {});
 	ResultOp = Handle;
 }
+
+TArray<TSubclassOf<UBeamRuntimeSubsystem>> UBeamRuntimeSubsystem::GetDependingOnSubsystems()
+{
+	TArray<TSubclassOf<UBeamRuntimeSubsystem>> DependingSubsystems;
+	DependingSubsystems.Add(UBeamContentSubsystem::StaticClass());
+	return DependingSubsystems;
+}
+
 
 void UBeamRuntimeSubsystem::OnBeamableStarting_Implementation(FBeamOperationHandle& ResultOp)
 {

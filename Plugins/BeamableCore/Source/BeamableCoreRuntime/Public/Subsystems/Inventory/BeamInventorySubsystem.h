@@ -178,7 +178,7 @@ class BEAMABLECORERUNTIME_API UBeamInventorySubsystem : public UBeamRuntimeSubsy
 public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
 	static UBeamInventorySubsystem* GetSelf(const UObject* CallingContext) { return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamInventorySubsystem>(); }
-
+	
 	/**
 	 * This gets called in three cases:
 	 *  - Whenever a FetchAllInventoryOperation for a given UserSlot is about to be completed.
