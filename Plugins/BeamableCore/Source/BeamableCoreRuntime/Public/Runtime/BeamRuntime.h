@@ -420,7 +420,7 @@ public:
 	 * This function will initialize all the passed subsystems
 	 */
 	UFUNCTION(BlueprintCallable)
-	inline FName GetManualSubsystemsStartedEventID() { return FName("SUBSYSTEMS_STARTED");}
+	static inline FName GetOperationEventID_SubsystemsInitializedWithoutUserData() { return FName("SUBSYSTEMS_STARTED");}
 	
 	UFUNCTION(BlueprintCallable)
 	FBeamOperationHandle ManuallyInitializeSubsystemOperation(FUserSlot UserSlot, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize,

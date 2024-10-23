@@ -142,3 +142,66 @@ class UK2BeamNode_Operation_Logout : public UK2BeamNode_Operation
 };
 
 #undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_ManuallyInitializeSubsystemWithUserData"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamNode_Operation_ManuallyInitializeSubsystemWithUserData : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Manually Initialize Subsystem With User Data"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
+
+	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, ManuallyInitializeSubsystemOperationWithUserData); }
+
+	virtual TArray<FName> GetOperationEventIds(EBeamOperationEventType Type) const override
+	{
+		TArray<FName> Ids = Super::GetOperationEventIds(Type);
+
+		switch (Type)
+		{
+		case OET_SUCCESS:
+			Ids.Add( UBeamRuntime::GetOperationEventID_SubsystemsInitializedWithoutUserData());
+			return Ids;
+		}
+
+		return Ids;
+	};
+
+	virtual TArray<FString> GetOperationEventIdTooltips(EBeamOperationEventType Type) const override
+	{
+		TArray<FString> Ids = Super::GetOperationEventIdTooltips(Type);
+
+		switch (Type)
+		{
+		case OET_SUCCESS:
+			Ids.Add(TEXT("Triggered when subsystems are initialized but did not initialize the user data till now"));
+			return Ids;
+		}
+		return Ids;
+	}
+	
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_ManuallyInitializeSubsystem"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamNode_Operation_ManuallyInitializeSubsystem : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Manually Initialize Subsystems WITHOUT User Data"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
+
+	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, ManuallyInitializeSubsystemOperation); }
+	
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
