@@ -314,16 +314,24 @@ void UBeamRuntime::TriggerOnBeamableStarting(FBeamWaitCompleteEvent Evt,
 	TArray<FString> Errors;
 	if (RequestTrackerSystem->IsWaitFailed(Evt, Errors))
 	{
+		CurrentSdkState = ESDKState::InitializationFailed;
+
 		FString Err;
 		for (const auto& Error : Errors) Err += Error + TEXT("\n");
 		UE_LOG(LogBeamRuntime, Error, TEXT("%s"), *Err);
 
-		CurrentSdkState = ESDKState::InitializationFailed;
+		CachedInitializationErrors.Empty();
+		for (auto& Op : Evt.Operations)
+		{
+			RequestTrackerSystem->TryGetOperationEvents(Op,EBeamOperationEventType::OET_ERROR,NAME_All,CachedInitializationErrors);
+		}
+		OnSDKInitializationFailed.Broadcast(CachedInitializationErrors);
+		OnSDKInitializationFailedCode.Broadcast(CachedInitializationErrors);
 		
 		// Early out and don't initialize if errors happen here.
 		return;
 	}
-
+	
 	// If everything is fine... so let's continue with initializing Beamable.
 	if (const bool bIsDedicatedServer = GetGameInstance()->IsDedicatedServerInstance())
 	{
@@ -380,12 +388,19 @@ void UBeamRuntime::TriggerOnContentReady(FBeamWaitCompleteEvent Evt,
 	TArray<FString> Errors;
 	if (RequestTrackerSystem->IsWaitFailed(Evt, Errors))
 	{
+		CurrentSdkState = ESDKState::InitializationFailed;
+		
 		FString Err;
 		for (const auto& Error : Errors) Err += Error + TEXT("\n");
 		UE_LOG(LogBeamRuntime, Error, TEXT("%s"), *Err);
 
-		CurrentSdkState = ESDKState::InitializationFailed;
-		
+		CachedInitializationErrors.Empty();
+		for (auto& Op : Evt.Operations)
+		{
+			RequestTrackerSystem->TryGetOperationEvents(Op,EBeamOperationEventType::OET_ERROR,NAME_All,CachedInitializationErrors);
+		}
+		OnSDKInitializationFailed.Broadcast(CachedInitializationErrors);
+		OnSDKInitializationFailedCode.Broadcast(CachedInitializationErrors);
 		// Early out and don't initialize if errors happen here.
 		return;
 	}
@@ -417,11 +432,19 @@ void UBeamRuntime::TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent Ev
 	TArray<FString> Errors;
 	if (RequestTrackerSystem->IsWaitFailed(Evt, Errors))
 	{
+		CurrentSdkState = ESDKState::InitializationFailed;
+		
 		FString Err;
 		for (const auto& Error : Errors) Err += Error + TEXT("\n");
 		UE_LOG(LogBeamRuntime, Error, TEXT("%s"), *Err);
 
-		CurrentSdkState = ESDKState::InitializationFailed;
+		CachedInitializationErrors.Empty();
+		for (auto& Op : Evt.Operations)
+		{
+			RequestTrackerSystem->TryGetOperationEvents(Op,EBeamOperationEventType::OET_ERROR,NAME_All,CachedInitializationErrors);
+		}
+		OnSDKInitializationFailed.Broadcast(CachedInitializationErrors);
+		OnSDKInitializationFailedCode.Broadcast(CachedInitializationErrors);
 		// Early out and don't initialize if errors happen here.
 		return;
 	}
@@ -520,6 +543,14 @@ void UBeamRuntime::TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent Evt, FU
 		for (const auto& Error : Errors) Err += Error + TEXT("\n");
 		UE_LOG(LogBeamRuntime, Error, TEXT("%s"), *Err);
 
+		TArray<FBeamOperationEvent> ErrorEvents;
+		for (auto& Op : Evt.Operations)
+		{
+			RequestTrackerSystem->TryGetOperationEvents(Op,EBeamOperationEventType::OET_ERROR,NAME_All,ErrorEvents);
+		}
+
+		OnSubsystemsUserInitializationFailed.Broadcast(UserSlot,ErrorEvents);
+		OnSubsystemsUserInitializationFailedCode.Broadcast(UserSlot,ErrorEvents);
 		// Early out and don't initialize if errors happen here.
 		return;
 	}
@@ -555,6 +586,15 @@ void UBeamRuntime::TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent Evt, FU
 					FString Err;
 					for (const auto& Error : Errors) Err += Error + TEXT("\n");
 					UE_LOG(LogBeamRuntime, Error, TEXT("%s"), *Err);
+
+					TArray<FBeamOperationEvent> ErrorEvents;
+					for (auto& Op : PostEvt.Operations)
+					{
+						RequestTrackerSystem->TryGetOperationEvents(Op,EBeamOperationEventType::OET_ERROR,NAME_All,ErrorEvents);
+					}
+
+					OnSubsystemsUserInitializationFailed.Broadcast(UserSlot,ErrorEvents);
+					OnSubsystemsUserInitializationFailedCode.Broadcast(UserSlot,ErrorEvents);
 
 					// Early out and don't initialize if errors happen here.
 					return;

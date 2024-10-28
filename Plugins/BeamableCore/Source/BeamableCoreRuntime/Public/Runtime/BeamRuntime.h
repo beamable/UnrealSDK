@@ -161,7 +161,17 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUserStateChangedEvent, const FUserS
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FUserStateChangedEventCode, FUserSlot);
 
+DECLARE_DYNAMIC_DELEGATE_OneParam(FRuntimeError,const TArray<FBeamOperationEvent>&, OperationEventsWithErrors);
 
+DECLARE_DELEGATE_OneParam(FRuntimeErrorCode,const TArray<FBeamOperationEvent>&);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSDKInitilizationErrorEvent,const TArray<FBeamOperationEvent>&, OperationEventsWithErrors);
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FSDKInitilizationErrorEventCode,const TArray<FBeamOperationEvent>&) ;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSubsystemsUserInitializationErrorEvent,const FUserSlot&,UserSlot,const TArray<FBeamOperationEvent>&, OperationEventsWithErrors);
+
+DECLARE_MULTICAST_DELEGATE_TwoParams(FSubsystemsUserInitializationErrorEventCode, const FUserSlot&,const TArray<FBeamOperationEvent>&);
 /**
  * State of SDK intialization.
  *
@@ -324,6 +334,18 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	FRuntimeStateChangedEventCode OnStartedCode;
 
 	/**
+	 * @brief This is called when the operations for starting the sdk fails.
+	 */
+	UPROPERTY()
+	FSDKInitilizationErrorEvent OnSDKInitializationFailed;
+	FSDKInitilizationErrorEventCode OnSDKInitializationFailedCode;
+	/**
+	 * @brief This is a list of the operation that ended with errors after the initialization fails.
+	 */
+	UPROPERTY()
+	TArray<FBeamOperationEvent> CachedInitializationErrors;
+	
+	/**
 	 * @brief Every time a user signs into beamable, we give each subsystem the ability to run an operation for that user.
 	 * We also give them the list of currently authenticated UserSlots (so that they can tell if the user that just signed in is the last one for example).
 	 */
@@ -355,7 +377,6 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 */
 	UPROPERTY()
 	FRuntimeStateChangedEvent OnReady;
-
 	FRuntimeStateChangedEventCode OnReadyCode;
 
 	/**
@@ -520,6 +541,13 @@ public:
 	FUserStateChangedEventCode OnUserClearedCode;
 
 	/**
+	 * @brief This is called when the initialization of the subsystems user slots fails.
+	 */
+	UPROPERTY()
+	FSubsystemsUserInitializationErrorEvent OnSubsystemsUserInitializationFailed;
+	FSubsystemsUserInitializationErrorEventCode OnSubsystemsUserInitializationFailedCode;
+	
+	/**
 	 * @brief In BP, use this function to bind initialization functions to OnReady. This will execute the delegate if you're already ready before it binds it. 
 	 */
 	UFUNCTION(BlueprintCallable)
@@ -556,6 +584,45 @@ public:
 	void CPP_UnregisterOnReady(FDelegateHandle Handle)
 	{
 		OnReadyCode.Remove(Handle);
+	}
+
+	/**
+	 * @brief In BP, use this function to bind error handling logic to OnSDKInitializationFailed. This will execute the delegate if sdk already failed initialization before it binds it. 
+	 */
+	UFUNCTION(BlueprintCallable)
+	void RegisterOnSDKInitializationFailed(FRuntimeError Handler)
+	{
+		if (CurrentSdkState == ESDKState::InitializationFailed) const auto _ = Handler.ExecuteIfBound(CachedInitializationErrors);
+		OnSDKInitializationFailed.Add(Handler);
+	}
+
+	/**
+	 * @brief In BP, use this function to bind error handling logic to OnSDKInitializationFailed. This will NOT execute the delegate if initialization already failed. 
+	 */
+	UFUNCTION(BlueprintCallable)
+	void RegisterOnSDKInitializationFailed_NoExecute(FRuntimeError Handler) { OnSDKInitializationFailed.Add(Handler); }
+
+	/**
+	 * @brief In BP, use this function to unbind error handling events to OnSDKInitializationFailed. 
+	 */
+	UFUNCTION(BlueprintCallable)
+	void UnRegisterOnSDKInitializationFailed(FRuntimeError Handler)
+	{
+		if (OnSDKInitializationFailed.Contains(Handler))
+			OnSDKInitializationFailed.Remove(Handler);
+	}
+
+	FDelegateHandle CPP_RegisterOnSDKInitializationFailed(FRuntimeErrorCode Handler)
+	{
+		if (bDidFirstAuthRun) const auto _ = Handler.ExecuteIfBound(CachedInitializationErrors);
+			return OnSDKInitializationFailedCode.Add(Handler);
+	}
+
+	FDelegateHandle CPP_RegisterOnSDKInitializationFailed_NoExecute(FRuntimeErrorCode Handler) { return OnSDKInitializationFailedCode.Add(Handler); }
+
+	void CPP_UnRegisterOnSDKInitializationFailed(FDelegateHandle Handle)
+	{
+		OnSDKInitializationFailedCode.Remove(Handle);
 	}
 
 	/**
