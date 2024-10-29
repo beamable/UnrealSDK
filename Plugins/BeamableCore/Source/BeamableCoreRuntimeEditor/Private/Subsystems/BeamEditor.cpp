@@ -12,6 +12,7 @@
 #include "Content/BeamContentTypes/BeamCurrencyContent.h"
 #include "Content/BeamContentTypes/BeamItemContent.h"
 #include "Content/BeamContentTypes/BeamGameTypeContent.h"
+#include "HAL/PlatformProcess.h"
 
 #include "Subsystems/BeamEditorSubsystem.h"
 #include "Misc/MessageDialog.h"
@@ -41,6 +42,12 @@ void UBeamEditor::UpdateBeamableWindowMessage(FString Message, EMessageType type
 void UBeamEditor::ClearBeamableWindowMessage()
 {
 	this->UpdateBeamableWindowMessage(FString(), EMessageType::VE_Info);
+}
+
+void UBeamEditor::OpenDocsPage(FDocsPageItem item)
+{
+	FString FullUri = FString("https://beamable.github.io/UnrealSDK/") + item.Path;
+    FPlatformProcess::LaunchURL(*FullUri, nullptr, nullptr);
 }
 
 void UBeamEditor::Initialize(FSubsystemCollectionBase& Collection)

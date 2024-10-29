@@ -38,6 +38,23 @@ enum class EPortalPage : uint8 {
 	VE_Campaign        UMETA(DisplayName="Campaign"),
 };
 
+USTRUCT(BlueprintType)
+struct FDocsPageItem
+{
+    GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Beam")
+    FString Id;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Beam")
+    FString Path;
+
+	bool operator==(const FDocsPageItem& Other) const
+	{
+		return Id == Other.Id && Path == Other.Path;
+	}
+};
+
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEditorMessageClickedEvent);
 
 UCLASS(Blueprintable)
@@ -244,6 +261,8 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FEditorStateChangedEvent OnExitingPIE;
 
+	UPROPERTY(BlueprintReadOnly, Category="Beam")
+	TArray<FDocsPageItem> DocsPages;
 	/**
 	 * Called whenever apply to build is pressed. Only use this to bind things that we can't call directly (from other modules).
 	 */	
@@ -293,6 +312,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="OnOperationEvent"))
 	void ClearBeamableWindowMessage();
 
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	void OpenDocsPage(FDocsPageItem item);
 	
 	// Operations
 public:
