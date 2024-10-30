@@ -89,6 +89,8 @@ public:
 	FString SDKVersion;
 	UPROPERTY(EditAnywhere)
 	FString DockerRegistryUrl;
+	UPROPERTY(EditAnywhere)
+	FString DocsUrl;
 
 	UPROPERTY(EditAnywhere)
 	FBeamPackageVersion Version;

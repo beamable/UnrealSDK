@@ -46,7 +46,12 @@ void UBeamEditor::ClearBeamableWindowMessage()
 
 void UBeamEditor::OpenDocsPage(FDocsPageItem item)
 {
-	FString FullUri = FString("https://beamable.github.io/UnrealSDK/") + item.Path;
+	FString Docs = GetDefault<UBeamCoreSettings>()->BeamableEnvironment->DocsUrl;
+	if(Docs.IsEmpty())
+	{
+		Docs = FString("https://beamable.github.io/UnrealSDK/");
+	}
+	const FString FullUri = Docs + item.Path;
     FPlatformProcess::LaunchURL(*FullUri, nullptr, nullptr);
 }
 
