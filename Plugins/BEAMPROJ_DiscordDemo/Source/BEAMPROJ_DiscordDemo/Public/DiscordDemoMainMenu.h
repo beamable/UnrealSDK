@@ -57,6 +57,9 @@ class BEAMPROJ_DISCORDDEMO_API UDiscordDemoMainMenu : public UBeamLevelSubsystem
 	UBeamUserSlots* UserSlots;
 
 	UPROPERTY()
+	UBeamRuntime* Runtime;
+	
+	UPROPERTY()
 	UBeamNotifications* Notifications;
 
 	UPROPERTY()
@@ -110,7 +113,7 @@ protected:
 		}
 		UE_LOG(LogTemp, Display, TEXT("Initialized BeamDiscord Demo Main Menu: Discord Initialized"));
 		UGameInstance* GameInstance = GetWorld()->GetGameInstance();
-		UBeamRuntime* Runtime = GameInstance->GetSubsystem<UBeamRuntime>();
+		Runtime = GameInstance->GetSubsystem<UBeamRuntime>();
 		FBeamRealmUser User;
 		const bool userGrabbed = UserSlots->GetUserDataAtSlot(UserSlot, User, this);
 		if (!userGrabbed)
@@ -140,7 +143,7 @@ protected:
 				this->HandleLoggedIn(false, *Evt.EventCode);
 			});
 		const auto OnSignUpWithDiscord = FBeamOperationEventHandlerCode::CreateLambda(
-			[this,Namespace,ServiceName,UserData,Runtime,LoginHandler](const FBeamOperationEvent& Evt)
+			[this,Namespace,ServiceName,UserData,LoginHandler](const FBeamOperationEvent& Evt)
 			{
 				if (Evt.EventType == OET_SUCCESS)
 				{
@@ -215,30 +218,32 @@ protected:
 	{
 		UE_LOG(LogTemp, Display, TEXT("BeamDiscord Demo Main Menu BEAM"));
 		UGameInstance* GameInstance = GetWorld()->GetGameInstance();
-		UBeamRuntime* Runtime = GameInstance->GetSubsystem<UBeamRuntime>();
+		Runtime = GameInstance->GetSubsystem<UBeamRuntime>();
 
-		OnBeamableReady = Runtime->CPP_RegisterOnReady(FRuntimeStateChangedHandlerCode::CreateLambda(
-			[this,Runtime]
-			{
-				UE_LOG(LogTemp, Display, TEXT("BeamDiscord Demo Main Menu BEAM"));
-				OnInitialized.Broadcast();
-				Runtime->CPP_UnregisterOnReady(OnBeamableReady);
-				const auto UserSlot = FUserSlot(TEXT("Player0"));
-				FDelegateHandle Handle;
-				if (!this->Notifications->TrySubscribeForMessage<
-					FOnMatchmakingAccessRefreshMessageCode, FMatchmakingAccessRefreshNotificationMessage>(UserSlot,
-					Runtime->DefaultNotificationChannel, CTX_KEY_Matchmaking_Refresh,
-					FOnMatchmakingAccessRefreshMessageCode::CreateUObject(
-						this, &UDiscordDemoMainMenu::HandleMatchmakingAccessRefreshNotificationMessage),
-					Handle, this))
-				{
-					UE_LOG(LogBeamNotifications, Warning,
-					       TEXT("BeamDiscord Trying to subscribe to a non-existent socket."));
-				}
-			}));
+		FUserStateChangedHandler UserReadyHandler;
+        FRuntimeError SDKInitializationErrorHandler;
+        UserReadyHandler.BindDynamic(this, &UDiscordDemoMainMenu::OnBeamableUserReady);
+        
+        Runtime->InitSDKWithFrictionlessLogin(UserReadyHandler,SDKInitializationErrorHandler,SDKInitializationErrorHandler);
 	}
 
-
+	UFUNCTION()
+	void OnBeamableUserReady(const FUserSlot& UserSlotAuthenticated)
+	{
+		UE_LOG(LogTemp, Display, TEXT("BeamDiscord Demo Main Menu BEAM"));
+		OnInitialized.Broadcast();
+		FDelegateHandle Handle;
+		if (!this->Notifications->TrySubscribeForMessage<
+			FOnMatchmakingAccessRefreshMessageCode, FMatchmakingAccessRefreshNotificationMessage>(UserSlot,
+			Runtime->DefaultNotificationChannel, CTX_KEY_Matchmaking_Refresh,
+			FOnMatchmakingAccessRefreshMessageCode::CreateUObject(
+				this, &UDiscordDemoMainMenu::HandleMatchmakingAccessRefreshNotificationMessage),
+			Handle, this))
+		{
+			UE_LOG(LogBeamNotifications, Warning,
+				   TEXT("BeamDiscord Trying to subscribe to a non-existent socket."));
+		}
+	}
 	UFUNCTION(BlueprintCallable)
 	void InitializeDiscordDemo()
 	{
