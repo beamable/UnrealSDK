@@ -157,13 +157,13 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRuntimeStateChangedEvent);
 
 DECLARE_MULTICAST_DELEGATE(FRuntimeStateChangedEventCode);
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FUserStateChangedHandler,FUserSlot,UserSlot);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FUserStateChangedHandler,const FUserSlot&,UserSlot);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUserStateChangedEvent, const FUserSlot&, Slot);
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FUserStateChangedEventCode, FUserSlot);
+DECLARE_MULTICAST_DELEGATE_OneParam(FUserStateChangedEventCode, const FUserSlot&);
 
-DECLARE_DELEGATE_OneParam(FUserStateChangedCode,FUserSlot);
+DECLARE_DELEGATE_OneParam(FUserStateChangedCode,const FUserSlot&);
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FRuntimeError,FString, ErrorMessage);
 
