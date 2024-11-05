@@ -51,6 +51,10 @@ void UBeamEditor::OpenDocsPage(FDocsPageItem item)
 	{
 		Docs = FString("https://beamable.github.io/UnrealSDK/");
 	}
+	if(!Docs.EndsWith("/"))
+	{
+		Docs += FString("/");
+	}
 	const FString FullUri = Docs + item.Path;
     FPlatformProcess::LaunchURL(*FullUri, nullptr, nullptr);
 }
@@ -820,7 +824,6 @@ void UBeamEditor::UpdateSignedInUserData_OnFetchProjectDataForSlot(FGetCustomerF
 		{
 			// Update the ProjectData for this user slot
 			CacheProjectDataForUserSlot(UserSlot, Response.SuccessData);
-
 			// Change the target realm to this new one.
 			const auto Handler = FBeamOperationEventHandlerCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, UpdateSignedInUserData_OnRealmSelected), Op);
 			CPP_SelectRealmOperation(MainEditorUserData.RealmHandle, Handler);
