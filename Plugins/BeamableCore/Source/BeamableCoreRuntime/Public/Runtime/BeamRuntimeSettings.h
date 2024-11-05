@@ -41,14 +41,6 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Beam Systems")
 	TArray<TSubclassOf<USubsystem>> ClientRuntimeSubsystemBlueprints;
 
-	
-	/**
-	 * @brief Whether we should automatically initialize all beamable subsystems on the start of the game play mode.
-	 * If you disable this, you will need to call ManuallyInitializeSubsystems Function at BeamRuntime to initialize subsystems when needed
-	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Beam Systems")
-	bool bAutoInitializeSdkAtStartup  = true;
-
 	/**
 	 * @brief List of all the subsystems that is not needed to be initialized at the game start.
 	 * By adding subsystems to this list they will not be initialized at the game start however these subsystems could be

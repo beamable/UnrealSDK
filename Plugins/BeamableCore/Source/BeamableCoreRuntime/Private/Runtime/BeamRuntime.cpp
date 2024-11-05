@@ -112,15 +112,6 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 	UserSlotAuthenticatedHandler = UserSlotSystem->GlobalUserSlotAuthenticatedCodeHandler.AddUObject(this, &UBeamRuntime::TriggerOnUserSlotAuthenticated);
 	UserSlotClearedHandler = UserSlotSystem->GlobalUserSlotClearedCodeHandler.AddUObject(this, &UBeamRuntime::TriggerOnUserSlotCleared);
 	
-	if (GetDefault<UBeamRuntimeSettings>()->bAutoInitializeSdkAtStartup)
-	{
-		ExecuteOnGameThread(TEXT("Initialize"), [this]()
-		{
-			this->TriggerInitializeWhenUnrealReady();
-		});
-		CurrentSdkState = ESDKState::Initializing;
-	}
-
 	UE_LOG(LogBeamRuntime, Verbose, TEXT("Initializing UBeamRuntime Subsystem!"));
 
 	UBeamBackend* EngineSubsystem = GEngine->GetEngineSubsystem<UBeamBackend>();
@@ -145,22 +136,44 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 	}
 }
 
-void UBeamRuntime::InitSDK()
+void UBeamRuntime::InitSDK(FRuntimeStateChangedHandler SDKInitializedHandler,FRuntimeError SDKInitializationErrorHandler)
 {
 	if (CurrentSdkState == ESDKState::NotInitialized || CurrentSdkState == ESDKState::InitializationFailed)
 	{
-		ExecuteOnGameThread(TEXT("Initialize"), [this]()
+		ExecuteOnGameThread(TEXT("Initialize"), [this,SDKInitializedHandler,SDKInitializationErrorHandler]()
 		{
-			this->TriggerInitializeWhenUnrealReady();
+			this->TriggerInitializeWhenUnrealReady(false,SDKInitializedHandler,SDKInitializationErrorHandler);
 		});
 		CurrentSdkState = ESDKState::Initializing;
 	}
 	else
 	{
-		UE_LOG(LogBeamRuntime, Warning, TEXT("Trying to call InitSDK while the SDK is already initialized"));
+		FString ErrMsg = TEXT("Trying to call InitSDK while the SDK is already initialized");
+		SDKInitializationErrorHandler.ExecuteIfBound(ErrMsg);
+		UE_LOG(LogBeamRuntime, Warning, TEXT("%s"),*ErrMsg);
 	}
 }
-
+void UBeamRuntime::InitSDKWithFrictionlessLogin(FUserStateChangedHandler UserReadyHandler,FRuntimeError SDKInitializationErrorHandler,
+	FRuntimeError UserInitilizationError)
+{
+	if (CurrentSdkState == ESDKState::NotInitialized || CurrentSdkState == ESDKState::InitializationFailed)
+	{
+		OnUserReady.Add(UserReadyHandler);
+		OnSubsystemsUserInitializationFailed.Add(UserInitilizationError);
+		ExecuteOnGameThread(TEXT("Initialize"), [this,UserReadyHandler,SDKInitializationErrorHandler]()
+		{
+			FRuntimeStateChangedHandler EmptyHandler;
+			this->TriggerInitializeWhenUnrealReady(true,EmptyHandler,SDKInitializationErrorHandler);
+		});
+		CurrentSdkState = ESDKState::Initializing;
+	}
+	else
+	{
+		FString ErrMsg = TEXT("Trying to call InitSDKWithFrictionlessLogin while the SDK is already initialized");
+		SDKInitializationErrorHandler.ExecuteIfBound(ErrMsg);
+		UE_LOG(LogBeamRuntime, Warning, TEXT("%s"),*ErrMsg);
+	}
+}
 TArray<TSubclassOf<UBeamRuntimeSubsystem>> UBeamRuntime::GetRequiredSubsystems()
 {
 	TArray<TSubclassOf<UBeamRuntimeSubsystem>> RequiredSubsystems;
@@ -208,7 +221,7 @@ void UBeamRuntime::PIEExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivit
 
 // On Beamable Start Flow
 
-void UBeamRuntime::TriggerInitializeWhenUnrealReady()
+void UBeamRuntime::TriggerInitializeWhenUnrealReady(bool ApplyFrictionlessLogin, FRuntimeStateChangedHandler SDKInitializedHandler,FRuntimeError SDKInitializationErrorHandler)
 {
 	const FBeamRealmHandle TargetRealm = GetDefault<UBeamCoreSettings>()->TargetRealm;
 	const FString TargetAPIUrl = GEngine->GetEngineSubsystem<UBeamEnvironment>()->GetAPIUrl();
@@ -243,6 +256,8 @@ void UBeamRuntime::TriggerInitializeWhenUnrealReady()
 		checkf(false, TEXT("Builds with Beamable cannot exist without a configured target realm!"))
 #endif
 		CurrentSdkState = ESDKState::InitializationFailed;
+		
+		SDKInitializationErrorHandler.ExecuteIfBound(TEXT("Trying to initialize the SDK without having a Target Realm configured"));
 	}
 	else
 	{
@@ -300,7 +315,8 @@ void UBeamRuntime::TriggerInitializeWhenUnrealReady()
 					}
 				}
 
-				const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::TriggerOnBeamableStarting,AutomaticallyInitializedSubsystems);
+				const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::TriggerOnBeamableStarting,AutomaticallyInitializedSubsystems,
+					ApplyFrictionlessLogin, SDKInitializedHandler,SDKInitializationErrorHandler);
 				OnInitializeWhenUnrealReadyWait = RequestTracker->CPP_WaitAll({}, InitializeWhenUnrealReadyOps, {}, OnCompleteCode);
 			}
 		}
@@ -308,7 +324,8 @@ void UBeamRuntime::TriggerInitializeWhenUnrealReady()
 }
 
 void UBeamRuntime::TriggerOnBeamableStarting(FBeamWaitCompleteEvent Evt,
-	TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems)
+	TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems,
+	bool ApplyFrictionlessLogin, FRuntimeStateChangedHandler SDKInitializedHandler,FRuntimeError SDKInitializationErrorHandler)
 {
 	// Handle errors in operations we were waiting on...
 	TArray<FString> Errors;
@@ -327,7 +344,8 @@ void UBeamRuntime::TriggerOnBeamableStarting(FBeamWaitCompleteEvent Evt,
 		}
 		OnSDKInitializationFailed.Broadcast(CachedInitializationErrors);
 		OnSDKInitializationFailedCode.Broadcast(CachedInitializationErrors);
-		
+
+		SDKInitializationErrorHandler.ExecuteIfBound(Err);
 		// Early out and don't initialize if errors happen here.
 		return;
 	}
@@ -375,14 +393,16 @@ void UBeamRuntime::TriggerOnBeamableStarting(FBeamWaitCompleteEvent Evt,
 				Subsystem->OnBeamableStarting(Handle);
 				OnBeamableStartingOps.Add(Handle);
 			}
-			const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::TriggerOnContentReady,AutomaticallyInitializedSubsystems);
+			const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::TriggerOnContentReady,AutomaticallyInitializedSubsystems,
+						ApplyFrictionlessLogin, SDKInitializedHandler,SDKInitializationErrorHandler);
 			OnBeamableStartingWait = RequestTrackerSystem->CPP_WaitAll({}, OnBeamableStartingOps, {}, OnCompleteCode);
 		}
 	}
 }
 
 void UBeamRuntime::TriggerOnContentReady(FBeamWaitCompleteEvent Evt,
-	TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems)
+	TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems,
+	bool ApplyFrictionlessLogin, FRuntimeStateChangedHandler SDKInitializedHandler,FRuntimeError SDKInitializationErrorHandler)
 {
 	// Handle errors in operations we were waiting on...
 	TArray<FString> Errors;
@@ -401,6 +421,8 @@ void UBeamRuntime::TriggerOnContentReady(FBeamWaitCompleteEvent Evt,
 		}
 		OnSDKInitializationFailed.Broadcast(CachedInitializationErrors);
 		OnSDKInitializationFailedCode.Broadcast(CachedInitializationErrors);
+
+		SDKInitializationErrorHandler.ExecuteIfBound(Err);
 		// Early out and don't initialize if errors happen here.
 		return;
 	}
@@ -419,14 +441,15 @@ void UBeamRuntime::TriggerOnContentReady(FBeamWaitCompleteEvent Evt,
 			}
 
 			const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this,
-				&UBeamRuntime::TriggerOnStartedAndFrictionlessAuth,AutomaticallyInitializedSubsystems);
+				&UBeamRuntime::TriggerOnStartedAndFrictionlessAuth,AutomaticallyInitializedSubsystems,ApplyFrictionlessLogin, SDKInitializedHandler,SDKInitializationErrorHandler);
 			OnBeamableContentReadyWait = RequestTrackerSystem->CPP_WaitAll({}, OnBeamableStartingOps, {}, OnCompleteCode);
 		}
 	}
 }
 
 void UBeamRuntime::TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent Evt,
-			TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems)
+			TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems,
+			bool ApplyFrictionlessLogin, FRuntimeStateChangedHandler SDKInitializedHandler,FRuntimeError SDKInitializationErrorHandler)
 {
 	// Handle errors in operations we were waiting on...
 	TArray<FString> Errors;
@@ -445,6 +468,8 @@ void UBeamRuntime::TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent Ev
 		}
 		OnSDKInitializationFailed.Broadcast(CachedInitializationErrors);
 		OnSDKInitializationFailedCode.Broadcast(CachedInitializationErrors);
+
+		SDKInitializationErrorHandler.ExecuteIfBound(Err);
 		// Early out and don't initialize if errors happen here.
 		return;
 	}
@@ -455,6 +480,8 @@ void UBeamRuntime::TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent Ev
 	// Everything is fine so let's continue initializing Beamable by firing off the OnStarted callback.
 	OnStartedCode.Broadcast();
 	OnStarted.Broadcast();
+	SDKInitializedHandler.ExecuteIfBound();
+	
 	CurrentSdkState = ESDKState::Initialized;
 
 	// For servers, don't try to authenticate.
@@ -462,7 +489,7 @@ void UBeamRuntime::TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent Ev
 	{
 	}
 	// Sign in automatically to the owner player slot (if configured to do so).
-	else if (GetDefault<UBeamCoreSettings>()->bAutomaticFrictionlessAuthForOwnerPlayer)
+	else if (ApplyFrictionlessLogin)
 	{
 		FrictionlessLoginIntoSlot(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(), AutomaticallyInitializedSubsystems);
 	}
@@ -603,15 +630,7 @@ void UBeamRuntime::TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent Evt, FU
 				{
 					Subsystem->CurrentState = ESubsystemState::InitializedWithUserData;
 				}
-				// By default, only UserSlot at index 0 of RuntimeUserSlots always gets loaded.
-				// This actually only be called ONCE during the entire lifecycle of your program.
-				if (!bDidFirstAuthRun && UserSlot.Name.Equals(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot()))
-				{
-					OnReadyCode.Broadcast();
-					OnReady.Broadcast();
-					bDidFirstAuthRun = true;
-				}
-
+				bDidFirstAuthRun = true;
 				OnUserReadyCode.Broadcast(UserSlot);
 				OnUserReady.Broadcast(UserSlot);
 			});
