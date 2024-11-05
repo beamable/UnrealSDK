@@ -158,7 +158,7 @@ private:
 	 *  Delegate we bind to UBeamRuntime::OnUserReadyCode so that we can react to the newly logged user when Beamable is ready for use.
 	 *  This contains the OnBeamableUserReadyHook.
 	 */
-	void OnBeamableUserReady(FUserSlot Slot, TSharedPtr<FUserOnlineAccountBeamable> UserAccountPtr);
+	void OnBeamableUserReady(const FUserSlot& Slot, TSharedPtr<FUserOnlineAccountBeamable> UserAccountPtr);
 
 	// !!! PUBLIC HOOKS !!!
 public:

@@ -447,7 +447,7 @@ void FOnlineIdentityBeamable::OnBeamableLoginOperationComplete(FBeamOperationEve
 	}
 }
 
-void FOnlineIdentityBeamable::OnBeamableUserReady(FUserSlot Slot, TSharedPtr<FUserOnlineAccountBeamable> UserAccountPtr)
+void FOnlineIdentityBeamable::OnBeamableUserReady(const FUserSlot& Slot, TSharedPtr<FUserOnlineAccountBeamable> UserAccountPtr)
 {
 	const UGameInstance* GameInstance = BeamableSubsystem->GetGameInstance();
 
