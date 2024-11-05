@@ -52,7 +52,6 @@ protected:
 	virtual void Deinitialize() override
 	{
 		Super::Deinitialize();
-		Runtime->CPP_UnregisterOnReady(OnBeamableReadyHandle);
 	}
 
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override
@@ -64,15 +63,16 @@ protected:
 		LiveOpsMS = GEngine->GetEngineSubsystem<UBeamLiveOpsDemoMSApi>();
 
 		Inventory->OnInventoryRefreshedCode.AddUObject(this,&ULiveOpsDemoMainMenu::OnInventoryRefreshed);
-		
-		const auto OnReady = FRuntimeStateChangedHandlerCode::CreateUObject(this, &ThisClass::OnBeamableReady);
-		OnBeamableReadyHandle = Runtime->CPP_RegisterOnReady(OnReady);
-	}
 
-	void OnBeamableReady()
-	{
-		const auto UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+		FUserStateChangedHandler UserReadyHandler;
+		FRuntimeError SDKInitializationErrorHandler;
+		UserReadyHandler.BindDynamic(this, &ULiveOpsDemoMainMenu::OnBeamableUserReady);
 		
+		Runtime->InitSDKWithFrictionlessLogin(UserReadyHandler,SDKInitializationErrorHandler,SDKInitializationErrorHandler);
+	}
+	UFUNCTION()
+	void OnBeamableUserReady(const FUserSlot& UserSlot)
+	{
 		FBeamRealmUser UserData;
 		if (Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, UserData, this))
 		{
