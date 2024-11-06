@@ -14,6 +14,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Online/OnlineSessionNames.h"
 #include "OnlineSubsystemUtils.h"
+#include "AutoGen/SubSystems/BeamHathoraDemoApi.h"
 
 #include "Runtime/BeamLevelSubsystem.h"
 #include "Runtime/BeamRuntime.h"
@@ -102,7 +103,7 @@ protected:
 			UE_LOG(LogTemp, Warning, TEXT("Initializing after beamable started"));
 
 			// Initialize Beamable's OnlineSubsystem
-			OnlineSubsystem = Online::GetSubsystem(GetWorld(),"BEAMABLE");			
+			OnlineSubsystem = Online::GetSubsystem(GetWorld(), "BEAMABLE");
 			BeamOSS::InitializeOnlineSubsystemBeamable(OnlineSubsystem, GI);
 
 			IdentityInterface = OnlineSubsystem->GetIdentityInterface();
@@ -136,7 +137,7 @@ public:
 	{
 		if (!IdentityInterface) return false;
 
-		ELoginStatus::Type LoginStatus = IdentityInterface->GetLoginStatus(0);
+		const ELoginStatus::Type LoginStatus = IdentityInterface->GetLoginStatus(0);
 		return LoginStatus == ELoginStatus::Type::LoggedIn;
 	}
 
@@ -201,10 +202,21 @@ protected:
 			return;
 		}
 
-		if (OnLoginCompleteDelegate.IsBound())
-		{
-			OnLoginCompleteDelegate.Broadcast(bWasSuccessful, ErrorString);
-		}
+		const auto HathoraMicroservice = GEngine->GetEngineSubsystem<UBeamHathoraDemoApi>();
+		const auto Req = UHathoraDemoInitializePlayerRequest::Make(GetTransientPackage(), {});
+		FBeamRequestContext Ctx;
+		HathoraMicroservice->CPP_InitializePlayer(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(), Req,
+		                                          FOnHathoraDemoInitializePlayerFullResponse::CreateLambda([this, bWasSuccessful, ErrorString](FHathoraDemoInitializePlayerFullResponse Resp)
+		                                          {
+			                                          UE_LOG(LogTemp, Display, TEXT("Ran Initialize Player %s"), *StaticEnum<EBeamFullResponseState>()->GetValueAsString(Resp.State));
+			                                          if (Resp.State == RS_Success)
+			                                          {
+				                                          if (OnLoginCompleteDelegate.IsBound())
+				                                          {
+					                                          OnLoginCompleteDelegate.Broadcast(bWasSuccessful, ErrorString);
+				                                          }
+			                                          }
+		                                          }), Ctx, {}, this);
 	}
 
 
@@ -274,14 +286,14 @@ protected:
 		}
 
 		if (Error.WasSuccessful())
-		{			
+		{
 			UE_LOG(LogTemp, Display, TEXT("OnMatchmakingComplete -- SessionName: %s"), *SessionName.ToString());
 			SessionInterface->GetNamedSession(SessionName);
 
 			if (CurrentSearch->SearchResults.Num() == 0)
 			{
 				UE_LOG(LogTemp, Error, TEXT("OnMatchmakingComplete -- SearchResults is empty"));
-				OnMatchmakingFailureDelegate.Broadcast();				
+				OnMatchmakingFailureDelegate.Broadcast();
 				return;
 			}
 			else
@@ -293,7 +305,7 @@ protected:
 			if (!SessionInterface->GetResolvedConnectString(CurrentSearch->SearchResults[0], NAME_GamePort, URL))
 			{
 				UE_LOG(LogTemp, Error, TEXT("OnMatchmakingComplete -- Error resolving connection string"));
-				OnMatchmakingFailureDelegate.Broadcast();				
+				OnMatchmakingFailureDelegate.Broadcast();
 				return;
 			}
 
@@ -324,7 +336,7 @@ protected:
 	}
 
 	void TravelToGameServer(const FString& ServerAddress)
-	{		
+	{
 		if (bStartedTravel)
 			return;
 

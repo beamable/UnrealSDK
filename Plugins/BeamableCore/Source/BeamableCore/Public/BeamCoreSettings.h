@@ -35,33 +35,33 @@ public:
 	*
 	* In the editor environment, this is the realm where you are currently pointed at.
 	* You can use the realm swap drop-down to change this from a list of available realms after you've signed in.
-	* This CAN NEVER BE EMPTY if you are signed into Beamable.
+	* This CAN NEVER BE EMPTY if you are signed in to Beamable.
 	*
-	* When you create an account or sign into a customer for the first time in this project, we default you to that customer's Dev realm if this is ever empty.
+	* When you create an account or sign in to a customer for the first time in this project, we default you to that customer's Dev realm if this is ever empty.
 	*/
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Request/Response")
 	FBeamRealmHandle TargetRealm;
 
 	/**
-	 * @brief Whether or not we should run the global error handlers even if there was a handler provided at the callsite.
+	 * @brief Whether we should run the global error handlers even if there was a handler provided at the callsite.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Request/Response")
 	bool AlwaysRunGlobalErrorHandlers = true;
 
 	/**
-	 * @brief Whether or not we should log after running the Success callback --- by default we always log them if you provide no callback at the callsite.
+	 * @brief Whether we should log after running the Success callback --- by default we always log them if you provide no callback at the callsite.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Request/Response")
 	bool AlwaysLogSuccessResponses = true;
 
 	/**
-	 * @brief Whether or not we should log after running the Error callback --- by default we always log them if you provide no callback at the callsite.
+	 * @brief Whether we should log after running the Error callback --- by default we always log them if you provide no callback at the callsite.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Request/Response")
 	bool AlwaysLogErrorResponses = true;
 
 	/**
-	 * @brief Whether or not we should log after running the Complete callback --- by default we always log them if you provide no callback at the callsite.
+	 * @brief Whether we should log after running the Complete callback --- by default we always log them if you provide no callback at the callsite.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Request/Response")
 	bool AlwaysLogCompletedResponses = true;
@@ -74,6 +74,14 @@ public:
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Request/Response")
 	FBeamRetryConfig FallbackRetryConfiguration{{408}, {}, 10, {.5f, 1, 2, 4, 8}, 5};
 
+	/**
+	 * @brief The configuration for retrying connecting via websockets (@see UBeamNotifications).
+	 * Setting the Max Attempt as -1 will make it an "infinite retry" though we don't recommend doing this from a design perspective.
+	 * Setting more retry attempts than falloff values will default to the last possible falloff value after the attempts exceed the array length.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Request/Response")
+	FBeamRetryConfig WebSocketRetryConfig{{}, {}, 10, {.5f, 1, 2, 4, 8}, 5};
+	
 	/**
 	 * @brief The configuration for cache-ing all requests. Can be overriden via the API in @see UBeamResponseCache.
 	 *
@@ -103,14 +111,14 @@ public:
 
 	/**
 	 * @brief These are the expected user slots for your editor environment. By default, you get logged into the "MainEditorDeveloper" UserSlot.
-	 * User slots not registered here will not be allowed to be authenticated into outside of EditorUtilityWidget/EditorUtilityBlueprints.
+	 * User slots not registered here will not be allowed to be authenticated into outside EditorUtilityWidget/EditorUtilityBlueprints.
 	 * Are only valid slots if they contain the word "Developer" in them.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="User Slots")
 	TArray<FString> DeveloperUserSlots{"MainEditorDeveloper"};
 
 	/**
-	 * @brief Whether or not we should automatically sign in for the Owner Player. If you do not wish this to be true and want to control when you sign into Beamable, you can disable this.
+	 * @brief Whether we should automatically sign in for the Owner Player. If you do not wish this to be true and want to control when you sign in to Beamable, you can disable this.
 	 * If you disable it and want to replicate the default behaviour for whatever reason, simply call the Frictionless Authentication operation at the OnBeamableStarted of a "BootBeamableSubsystem"
 	 * and you will get the same behaviour.
 	 */
@@ -118,7 +126,7 @@ public:
 	bool bAutomaticFrictionlessAuthForOwnerPlayer = true;
 
 	/**
-	 * @brief Whether or not we should persist the Auth data for Runtime User Slots when we are in PIE.
+	 * @brief Whether we should persist the Auth data for Runtime User Slots when we are in PIE.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="User Slots")
 	bool bPersistRuntimeSlotDataWhenInPIE = true;

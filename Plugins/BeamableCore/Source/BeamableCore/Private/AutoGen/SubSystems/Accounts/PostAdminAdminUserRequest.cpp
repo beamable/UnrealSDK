@@ -27,7 +27,7 @@ void UPostAdminAdminUserRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostAdminAdminUserRequest* UPostAdminAdminUserRequest::Make(FString _Email, FOptionalString _Role, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPostAdminAdminUserRequest* UPostAdminAdminUserRequest::Make(FString _Email, FOptionalString _Role, FOptionalMapOfString _InitProperties, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostAdminAdminUserRequest* Req = NewObject<UPostAdminAdminUserRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -36,9 +36,10 @@ UPostAdminAdminUserRequest* UPostAdminAdminUserRequest::Make(FString _Email, FOp
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
-	Req->Body = NewObject<UAddAccountRequestBody>(Req);
+	Req->Body = NewObject<UCreateElevatedAccountRequestBody>(Req);
 	Req->Body->Email = _Email;
 	Req->Body->Role = _Role;
+	Req->Body->InitProperties = _InitProperties;
 	
 
 	return Req;

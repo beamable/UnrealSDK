@@ -6,8 +6,9 @@ void UBeamRequestTrackerOperationTestCallbacks::MockOperationEvent_Expected(FBea
 {
 	Spec->TestEqual("Event Request Id was correctly passed along", OperationEvent.RequestId, ExpectedEventRequestId);
 	Spec->TestEqual("Event Type was correctly passed along", OperationEvent.EventType, ExpectedEventType);
-	Spec->TestEqual("Event SubType was correctly passed along", OperationEvent.EventCode, ExpectedEventSubTypeCode);
+	Spec->TestEqual("Event Id was correctly passed along", OperationEvent.EventId, ExpectedEventId);
 	Spec->TestEqual("Event System was correctly passed along", OperationEvent.System, ExpectedEventSystem);
+	Spec->TestEqual("Event Code was correctly passed along", OperationEvent.EventCode, ExpectedEventCode);
 	Spec->TestEqual("Event Data was correctly passed along", OperationEvent.EventData, ExpectedEventData);
 	Spec->TestEqual("Operation Participants was correctly passed along", BeamRequestTracker->ActiveOperationState.FindChecked(OperationEvent.OwnerHandle)->DependentUserSlots, ExpectedParticipants);
 	Spec->TestEqual("Operation Requests was correctly passed along", BeamRequestTracker->ActiveOperationState.FindRef(OperationEvent.OwnerHandle)->DependentRequests, ExpectedRequestsInOperations);

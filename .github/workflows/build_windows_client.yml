@@ -1,59 +1,119 @@
-name: Windows Client Build - Template
+name: Build - Windows - Client - Dev
 
 on:
-  workflow_call:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
     inputs:
-      beamProj:
-        description: 'The BEAMPROJ we are building. Ie: BEAMPROJ_Sandbox or BEAMPROJ_HathoraDemo.'
+      buildAll:
+        type: choice
+        description: 'Build all BEAMPROJS.'
         required: true
-        default: 'BEAMPROJ_Sandbox'
+        default: "false"
+        options:
+          - "true"
+          - "false"    
+  workflow_call:    
+    inputs:
+      buildAll:
         type: string
+        description: 'Build all BEAMPROJS.'
+        required: true
+        default: false
 
 permissions:
   contents: write
 
 jobs:
-  deploy:
+  unifyInputs:
     runs-on: [self-hosted, Windows]
+    outputs:
+      buildAll: ${{ steps.unifyBuildAll.outputs.buildAll }}
     steps:
-      # Gets the repo
+      - name: Set environment variables
+        id: unifyBuildAll
+        shell: bash
+        run: echo "buildAll=${{ inputs.buildAll || 'false' }}" >> $GITHUB_OUTPUT
+        
+  changes:
+    needs: unifyInputs
+    runs-on: [self-hosted, Windows]
+    
+    # This job only runs if we are looking for changes    
+    if: |
+      always() && 
+      needs.unifyInputs.outputs.buildAll == 'false'
+    
+    # Expose the list of changed "BEAMPROJ_XXXXX" that were found (this maps to the filter names)
+    outputs:            
+      BEAMPROJS: ${{ steps.filter.outputs.changes }}
+      
+    # Clone the repo and find the changed "BEAMPROJ_XXXXX"
+    steps:
       - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
         with:
-          lfs: true
-      
-      # Installs .NET 8 so we can run init_repo.sh
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.x
+          # Check against previous commit
+          base: ${{ github.ref }}
           
-      # Make sure the .NET's paths are added to the shell's path ENV VAR  
-      - run: Add-Content $env:GITHUB_PATH "C:\Program Files\dotnet"
-      - run: Add-Content $env:GITHUB_PATH "~\.dotnet\tools"
-        
-      # Run a git clean
-      - run: git clean -fdx
-        
-      # Run init_repo.sh (needed to setup the project correctly locally)
-      - name: Prepare Repository for Compilation        
-        run: bash init_repo.sh
-      
-      # Sets the BEAMPROJ based on the input to this workflow.
-      - name: Set BeamProjOverride.txt
-        run: |
-          echo ${{ inputs.beamProj }} > BeamProjOverride.txt |
-          cat BeamProjOverride.txt
-      
-      # Builds the image
-      - name: Build image
-        run: .\windows_build_project.ps1
-      
-      # Compress the results
-      - name: Compress Directory
-        run: powershell Compress-Archive PackagedProject windows_client_${{ inputs.beamProj }}.zip
-      
-      # Uploads the artifacts so we can download the build
-      - name: Upload Compressed Folder as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Window Client Build - ${{ inputs.beamProj }}
-          path: windows_client_${{ inputs.beamProj }}.zip
+          # The filters here are BEAMPROJ-specific. 
+          # We should only rebuild artifacts for a specific BEAMPROJ if there are changes to files it considers relevant. 
+          filters: |
+            BEAMPROJ_SteamDemo:            
+              - 'Plugins/BEAMPROJ_SteamDemo/**'
+              - 'Plugins/BeamableCore/**'
+              - '**.sh'
+              - '**.ps1'
+              - 'Source/**'
+              - '*.uproject'
+            BEAMPROJ_LiveOpsDemo:            
+              - 'Plugins/BEAMPROJ_LiveOpsDemo/**'
+              - 'Plugins/BeamableCore/**'
+              - '**.sh'
+              - '**.ps1'
+              - 'Source/**'
+              - '*.uproject'
+            BEAMPROJ_DiscordDemo:            
+              - 'Plugins/BEAMPROJ_DiscordDemo/**'
+              - 'Plugins/BeamableCore/**'
+              - '**.sh'
+              - '**.ps1'
+              - 'Source/**'
+              - '*.uproject'
+            BEAMPROJ_HathoraDemo:            
+              - 'Plugins/BEAMPROJ_HathoraDemo/**'
+              - 'Plugins/BeamableCore/**'
+              - 'Plugins/OnlineSubsystemBeamable/**'
+              - '**.sh'
+              - '**.ps1'              
+              - 'Source/**'
+              - '*.uproject'      
+      - name: Cleanup workspace
+        if: always()
+        shell: bash
+        run: rm -rf .* && rm -rf *
+  build:
+    needs: [unifyInputs, changes]
+    uses: ./.github/workflows/build_windows.yml
+    
+    # Only run this if the changes job actually detected changes OR if we are building all.
+    # Empty array will be serialized as [] so you can simply check it in the if condition.     
+    if: |
+      always() &&
+      (needs.unifyInputs.result == 'success') &&
+      (needs.changes.result == 'success' || needs.changes.result == 'skipped') &&
+      (needs.changes.outputs.BEAMPROJS != '[]' && needs.changes.outputs.BEAMPROJS != '') || (needs.unifyInputs.outputs.buildAll == 'true')
+    
+    strategy:
+      max-parallel: 1
+      matrix:
+        # Result of changes job as well as vars are plain strings. That's why you have to use fromJson() to parse it into array.
+        # The list of BeamProj is defined by "wherever we detected changes" when inputs.buildAll is false
+        # The list of BeamProj is Repository Variable (declared in Github's UnrealSDK's Settings -> Secrets & Variables -> Variables).         
+        beamProj: ${{ needs.unifyInputs.outputs.buildAll == 'false' && fromJSON(needs.changes.outputs.BEAMPROJS) || fromJSON(vars.ALL_BEAMPROJS) }}
+    with:
+      beamProj: ${{ matrix.beamProj }}
+      buildType: client
+      targetPlatform: "Win64"

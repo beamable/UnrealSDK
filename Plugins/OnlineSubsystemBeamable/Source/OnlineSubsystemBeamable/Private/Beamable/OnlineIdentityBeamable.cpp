@@ -1,5 +1,3 @@
-// ================================ Copyright (c) Wildcard Alliance , All Rights Reserved. ================================
-
 #include "OnlineIdentityBeamable.h"
 
 #include "OnlineStatsBeamable.h"
@@ -164,7 +162,7 @@ bool FOnlineIdentityBeamable::Login(int32 LocalUserNum, const FOnlineAccountCred
 						}
 
 						// Error Handling
-						if (Evt.EventData.Contains("EXTERNAL_IDENTITY_IN_USE"))
+						if (Evt.EventCode.Contains("EXTERNAL_IDENTITY_IN_USE"))
 						{
 							UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Federated Identity] %s User already associated with beamable account. Logging in instead."),
 							                       *FString(ServiceName + "/" + Namespace));
@@ -172,8 +170,8 @@ bool FOnlineIdentityBeamable::Login(int32 LocalUserNum, const FOnlineAccountCred
 						}
 						else
 						{
-							UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Federated Identity] Failed To Sign Up. Reason=%s."), *Evt.EventData);
-							TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdBeamable::EmptyId(), Evt.EventData);
+							UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Federated Identity] Failed To Sign Up. Reason=%s."), *Evt.EventCode);
+							TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdBeamable::EmptyId(), Evt.EventCode);
 						}
 					});
 				BeamRuntime->CPP_SignUpExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalUserId, ExternalToken, OnSignUpWithDiscord);
@@ -331,7 +329,7 @@ void FOnlineIdentityBeamable::RevokeAuthToken(const FUniqueNetId& UserId, const 
 }
 
 
-void FOnlineIdentityBeamable::GetUserPrivilege(const FUniqueNetId& UserId, EUserPrivileges::Type Privilege, const FOnGetUserPrivilegeCompleteDelegate& Delegate)
+void FOnlineIdentityBeamable::GetUserPrivilege(const FUniqueNetId& UserId, EUserPrivileges::Type Privilege, const FOnGetUserPrivilegeCompleteDelegate& Delegate, EShowPrivilegeResolveUI ShowResolveUI)
 {
 	if (bForceOfflineMode && Privilege == EUserPrivileges::CanPlayOnline)
 	{
@@ -395,8 +393,8 @@ void FOnlineIdentityBeamable::OnBeamableLoginOperationComplete(FBeamOperationEve
 	// If the login operation failed, let's notify Epic's stuff.
 	if (Evt.EventType != OET_SUCCESS)
 	{
-		UE_LOG_ONLINE_IDENTITY(Error, TEXT("%s"), *Evt.EventData);
-		TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdBeamable::EmptyId(), Evt.EventData);
+		UE_LOG_ONLINE_IDENTITY(Error, TEXT("%s"), *Evt.EventCode);
+		TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdBeamable::EmptyId(), Evt.EventCode);
 		return;
 	}
 
@@ -449,7 +447,7 @@ void FOnlineIdentityBeamable::OnBeamableLoginOperationComplete(FBeamOperationEve
 	}
 }
 
-void FOnlineIdentityBeamable::OnBeamableUserReady(FUserSlot Slot, TSharedPtr<FUserOnlineAccountBeamable> UserAccountPtr)
+void FOnlineIdentityBeamable::OnBeamableUserReady(const FUserSlot& Slot, TSharedPtr<FUserOnlineAccountBeamable> UserAccountPtr)
 {
 	const UGameInstance* GameInstance = BeamableSubsystem->GetGameInstance();
 

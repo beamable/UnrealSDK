@@ -12,14 +12,51 @@
 #include "Content/BeamContentTypes/BeamCurrencyContent.h"
 #include "Content/BeamContentTypes/BeamItemContent.h"
 #include "Content/BeamContentTypes/BeamGameTypeContent.h"
+#include "HAL/PlatformProcess.h"
 
 #include "Subsystems/BeamEditorSubsystem.h"
+#include "Misc/MessageDialog.h"
 
 const FBeamRealmHandle UBeamEditor::Signed_Out_Realm_Handle = FBeamRealmHandle{FString(""), FString("")};
 
 UBeamEditor* UBeamEditor::GetSelf(const UObject* CallingContext)
 {
 	return GEditor->GetEditorSubsystem<UBeamEditor>();
+}
+
+void UBeamEditor::SetBeamableWindowMessage(UBeamableWindowMessage* message)
+{
+	this->WindowMessage = message;
+}
+
+void UBeamEditor::UpdateBeamableWindowMessage(FString Message, EMessageType typeOfMessage)
+{
+	if(this->WindowMessage == nullptr)
+	{
+		this->WindowMessage = NewObject<UBeamableWindowMessage>();
+	}
+	this->WindowMessage->MessageValue = Message;
+	this->WindowMessage->MessageType = typeOfMessage;
+}
+
+void UBeamEditor::ClearBeamableWindowMessage()
+{
+	this->UpdateBeamableWindowMessage(FString(), EMessageType::VE_Info);
+}
+
+void UBeamEditor::OpenDocsPage(FDocsPageItem item)
+{
+	FString Docs = GetDefault<UBeamCoreSettings>()->BeamableEnvironment->DocsUrl;
+	if(Docs.IsEmpty())
+	{
+		Docs = FString("https://beamable.github.io/UnrealSDK/");
+	}
+	if(!Docs.EndsWith("/"))
+	{
+		Docs += FString("/");
+	}
+	const FString FullUri = Docs + item.Path;
+    FPlatformProcess::LaunchURL(*FullUri, nullptr, nullptr);
 }
 
 void UBeamEditor::Initialize(FSubsystemCollectionBase& Collection)
@@ -55,6 +92,9 @@ void UBeamEditor::Initialize(FSubsystemCollectionBase& Collection)
 	const auto SoftPathToDefaultBoostrapper = FSoftObjectPath{DefaultBootstrapper->GetPathName()};
 	if (!EditorUtilitySubsystem->StartupObjects.Contains(SoftPathToDefaultBoostrapper))
 		EditorUtilitySubsystem->StartupObjects.Add(SoftPathToDefaultBoostrapper);
+
+	// Make sure we have a window message object...
+	ClearBeamableWindowMessage();
 }
 
 void UBeamEditor::Deinitialize()
@@ -83,12 +123,12 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 	if (CoreSettings->BeamableEnvironment.IsNull())
 	{
 		CoreSettings->BeamableEnvironment = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/BeamProdEnv.BeamProdEnv'"));
-		
+
 		CoreSettings->BeamablePossibleEnvironments.AddDefaulted(3);
 		CoreSettings->BeamablePossibleEnvironments[0] = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/BeamProdEnv.BeamProdEnv'"));
 		CoreSettings->BeamablePossibleEnvironments[1] = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/BeamStagingEnv.BeamStagingEnv'"));
 		CoreSettings->BeamablePossibleEnvironments[2] = FSoftObjectPath(TEXT("/Script/BeamableCore.BeamEnvironmentData'/BeamableCore/Environments/BeamDevEnv.BeamDevEnv'"));
-		
+
 		CoreSettings->SaveConfig(CPF_Config, *CoreSettings->GetDefaultConfigFilename());
 	}
 
@@ -155,8 +195,20 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 	BeamEditor->OnInitializedAfterEditorReadyWait = RequestTracker->CPP_WaitAll({}, BeamEditor->InitializeAfterEditorReadyOps, {}, OnCompleteCode);
 }
 
-void UBeamEditorBootstrapper::Run_TrySignIntoMainEditorSlot()
+void UBeamEditorBootstrapper::Run_TrySignIntoMainEditorSlot(FBeamWaitCompleteEvent Evt)
 {
+	const auto RequestTracker = GEngine->GetEngineSubsystem<UBeamRequestTracker>();
+	TArray<FString> Errs;
+	if (RequestTracker->IsWaitFailed(Evt, Errs))
+	{
+		for (FString Err : Errs)
+		{
+			UE_LOG(LogBeamEditor, Error, TEXT("Error initializing the Beamable SDK: %s"), *Err);
+		}
+		UE_LOG(LogBeamEditor, Error, TEXT("Please restart the editor to try again after fixing whatever issues the errors describe."));
+		return;
+	}
+
 	const auto BeamEditor = GEditor->GetEditorSubsystem<UBeamEditor>();
 	const auto MainEditorSlot = BeamEditor->GetMainEditorSlot();
 	// Tries to load the saved user at a specific slot.
@@ -482,10 +534,10 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 					InitalizeFromRealmOps.Reset(Subsystems.Num());
 					for (auto& Subsystem : Subsystems)
 					{
-						const auto Handle = Subsystem->InitializeFromRealm(NewRealmHandle);
+						const auto Handle = Subsystem->InitializeRealm(NewRealmHandle);
 						InitalizeFromRealmOps.Add(Handle);
 					}
-					const auto OnCompleteCode = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, SelectRealm_OnSystemsReady), NewRealmHandle, Op);
+					const auto OnCompleteCode = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, SelectRealm_OnRealmInitialized), NewRealmHandle, Op);
 					InitializeFromRealmsWait = RequestTracker->CPP_WaitAll({}, InitalizeFromRealmOps, {}, OnCompleteCode);
 					return;
 				}
@@ -511,10 +563,8 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 	GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_GetConfig(MainEditorSlot, GetConfigReq, GetConfigReqHandle, Ctx, Op, this);
 }
 
-void UBeamEditor::SelectRealm_OnSystemsReady(FBeamWaitCompleteEvent, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op) const
+void UBeamEditor::SelectRealm_OnRealmInitialized(FBeamWaitCompleteEvent, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op)
 {
-	// TODO: Expose error handling for BeamErrorResponses that happen in the InitializeFromRealm operations
-
 	// We update the UserSlot info with the new PID.
 	FBeamRealmUser UserData;
 	const auto MainEditorSlot = GetMainEditorSlot(UserData);
@@ -524,15 +574,33 @@ void UBeamEditor::SelectRealm_OnSystemsReady(FBeamWaitCompleteEvent, FBeamRealmH
 
 	// Notify all systems that we have successfully initialized the realm
 	const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
+	RealmInitializedOps.Reset(Subsystems.Num());
 	for (auto& Subsystem : Subsystems)
 	{
-		Subsystem->OnRealmInitialized();
+		const auto Handle = Subsystem->OnRealmInitialized(NewRealmHandle);
+		RealmInitializedOps.Add(Handle);
+	}
+	const auto OnCompleteCode = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, SelectRealm_OnSystemsRead), NewRealmHandle, Op);
+	RealmInitializedWait = RequestTracker->CPP_WaitAll({}, InitalizeFromRealmOps, {}, OnCompleteCode);	
+}
+
+void UBeamEditor::SelectRealm_OnSystemsRead(FBeamWaitCompleteEvent, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op)
+{
+	const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
+	for (auto& Subsystem : Subsystems)
+	{
+		Subsystem->OnReady();
 	}
 
 	RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 }
 
 void UBeamEditor::OpenPortalOnCurrentRealm()
+{
+	OpenPortal(EPortalPage::VE_Dashboard);
+}
+
+void UBeamEditor::OpenPortal(EPortalPage PortalPage)
 {
 	FUserSlot MainEditorSlot;
 	FBeamRealmUser Data;
@@ -547,9 +615,30 @@ void UBeamEditor::OpenPortalOnCurrentRealm()
 		const auto ProductionPid = Proj.AllRealms.FindByPredicate([](FBeamProjectRealmData d) { return !d.ParentPID.IsSet; })->PID.AsString;
 		const auto CurrentPid = Data.RealmHandle.Pid.AsString;
 		const auto RefreshToken = Data.AuthToken.RefreshToken;
+		FString Page;
+		switch (PortalPage) {
+		case EPortalPage::VE_Dashboard:
+			Page = FString("dashboard");
+			break;
+		case EPortalPage::VE_Microservices:
+			Page = FString("microservices");
+			break;
+		case EPortalPage::VE_PlayerSearch:
+			Page = FString("players");
+			break;
+		case EPortalPage::VE_RealmConfig:
+			Page = FString("realm-config");
+			break;
+		case EPortalPage::VE_Content:
+			Page = FString("content");
+			break;
+		case EPortalPage::VE_Campaign:
+			Page = FString("messaging");
+			break;
+		}
 
-		const auto URL = FString::Format(TEXT("{0}/{1}/games/{2}/realms/{3}/dashboard?refresh_token={4}"),
-		                                 {PortalUrl, Cid, ProductionPid, CurrentPid, RefreshToken});
+		const auto URL = FString::Format(TEXT("{0}/{1}/games/{2}/realms/{3}/{4}?refresh_token={5}"),
+										 {PortalUrl, Cid, ProductionPid, CurrentPid,Page, RefreshToken});
 
 		FPlatformProcess::LaunchURL(*URL, nullptr, nullptr);
 	}
@@ -616,8 +705,12 @@ void UBeamEditor::SetActiveTargetRealmUnsafe(const FBeamRealmHandle& NewRealmHan
 
 void UBeamEditor::ApplyCurrentSettingsToBuild()
 {
+	// auto set = UEditorDialogLibrary::ShowMessage("Apply realm to build", "It will apply realm to build", EAppMsgType::YesNoCancel, "", EAppMsgCategory::Info);
 	auto Settings = GetMutableDefault<UBeamCoreSettings>();
 	Settings->SaveConfig(CPF_Config, *Settings->GetDefaultConfigFilename());
+
+	// Notify other systems that
+	if (OnAppliedSettingsToBuild.IsBound()) OnAppliedSettingsToBuild.Broadcast();
 }
 
 
@@ -734,7 +827,6 @@ void UBeamEditor::UpdateSignedInUserData_OnFetchProjectDataForSlot(FGetCustomerF
 		{
 			// Update the ProjectData for this user slot
 			CacheProjectDataForUserSlot(UserSlot, Response.SuccessData);
-
 			// Change the target realm to this new one.
 			const auto Handler = FBeamOperationEventHandlerCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, UpdateSignedInUserData_OnRealmSelected), Op);
 			CPP_SelectRealmOperation(MainEditorUserData.RealmHandle, Handler);

@@ -3,8 +3,8 @@ name: Docs - Deploy
 on:
   push:
     branches:
-      - dev
       - main
+      - dev
     paths:
       - Docs/**
 
@@ -15,6 +15,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # Run commands to print out more information about the runner
+      - name: Print out Additional Runner info
+        run: |
+          curl https://api.ipify.org
+          
       - uses: actions/checkout@v4
         with: 
             lfs: true
@@ -26,6 +31,10 @@ jobs:
           key: ${{ github.ref }}
           path: .cache
       - run: bash docs_build.sh
-      - run: mkdocs gh-deploy --force
+      - run: python -m mkdocs gh-deploy --force
+        if: github.ref == 'refs/heads/main'
+        working-directory: ./Docs
+      - run: python -m mkdocs build
+        if: github.ref != 'refs/heads/main'
         working-directory: ./Docs
         

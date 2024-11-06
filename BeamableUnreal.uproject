@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "5.3",
+	"EngineAssociation": "5.4",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -63,7 +63,22 @@
 			"Optional": true
 		},
 		{
+			"Name": "BEAMPROJ_SteamDemo",
+			"Enabled": false,
+			"Optional": true
+		},
+		{
 			"Name": "BEAMPROJ_HathoraDemo",
+			"Enabled": false,
+			"Optional": true
+		},
+		{
+			"Name": "BEAMPROJ_LiveOpsDemo",
+			"Enabled": false,
+			"Optional": true
+		},
+		{
+			"Name": "BEAMPROJ_DiscordDemo",
 			"Enabled": false,
 			"Optional": true
 		},

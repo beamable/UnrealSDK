@@ -249,6 +249,7 @@ public:
 	static const FString HEADER_VALUE_AUTHORIZATION;
 	static const FString HEADER_CLIENT_ID;
 	static const FString HEADER_PROJECT_ID;
+	static const FString HEADER_ROUTING_KEY_MAP;
 
 	/**
 	 * @brief List of error codes that mean we should re-auth and automatically make the request again.
@@ -376,7 +377,6 @@ public:
 	 */
 	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	TMap<FBeamRequestContext, TScriptInterface<IBeamBaseRequestInterface>> InFlightRequestData;
-
 	/**
 	 * @brief When we create a new request, authenticated or otherwise, we store it's deserialized response object here.
 	 * When it and WaitHandles that depend on it are completed, we remove it from here.	 
@@ -402,6 +402,16 @@ public:
 	 */
 	TMap<FBeamRequestId, FProcessingRequestRetry> InFlightProcessingRequests;
 
+
+	/**
+	 * @brief This is the current routing keys set for each individual user requests.
+	 * These maps tell the Beamable backend how to forward requests to specific microservice instances (both for direct client->microservice requests AND for in-band federation requests).
+	 * They are included into the headers of every authenticated and non-authenticated request.
+	 * Non-authenticated requests use whatever is defined for the Player0.
+	 *
+	 * This is what enables the Beamable backend to route requests made from your client only to any specific microservice instance-set running in the realm.
+	 */
+	TMap<FUserSlot, FString> CurrentRoutingKeyMaps;
 
 	/**
 	 *  @brief Used only as delegate set in ExecuteRequestDelegate.
@@ -446,6 +456,8 @@ public:
 		auto Req = CreateUnpreparedRequest(ReqId, RetryConfig);
 		PrepareBeamableRequestToRealm(Req, TargetRealm);
 		PrepareBeamableRequestVerbRouteBody<TRequestData>(Req, RequestData, BeamEnvironment->GetAPIUrl());
+		PrepareBeamableRequestToRealmWithRoutingKey(Req, GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot());
+
 
 		const auto RequestContext = FBeamRequestContext{ReqId, RetryConfig, TargetRealm, -1, FUserSlot(""), AS_None};
 
@@ -489,6 +501,7 @@ public:
 		auto Req = CreateUnpreparedRequest(ReqId, RetryConfig);
 		PrepareBeamableRequestToRealm(Req, TargetRealm);
 		PrepareBeamableRequestVerbRouteBody<TRequestData>(Req, RequestData, BeamEnvironment->GetAPIUrl(), TargetRealm, Prefix);
+		PrepareBeamableRequestToRealmWithRoutingKey(Req, GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot());
 
 		const auto RequestContext = FBeamRequestContext{ReqId, RetryConfig, TargetRealm, -1, FUserSlot(""), AS_None};
 
@@ -527,18 +540,20 @@ public:
 		StaticCheckForRequestType<TRequestData>();
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Preparing Request of Type: REQUEST_TYPE=%s"), *RequestData->GetRequestType().Name);
 
-		// Ensures we get a valid Next Id even if requests get made from multiple threads.
-		int64 ReqId;
-		auto Req = CreateUnpreparedRequest(ReqId, RetryConfig);
-		PrepareBeamableRequestToRealmWithAuthToken(Req, TargetRealm, AuthToken);
-		PrepareBeamableRequestVerbRouteBody<TRequestData>(Req, RequestData, BeamEnvironment->GetAPIUrl());
-
-		// Add to the InFlight request list
+		// Get information about the user making the request
 		FUserSlot OutUserSlot;
 		FBeamRealmUser OutUserData;
 		FString NamespacedSlotId;
 		BeamUserSlots->GetUserDataWithRefreshTokenAndPid(AuthToken.RefreshToken, TargetRealm.Pid, OutUserData, OutUserSlot, NamespacedSlotId);
 
+		// Ensures we get a valid Next Id even if requests get made from multiple threads.
+		int64 ReqId;
+		auto Req = CreateUnpreparedRequest(ReqId, RetryConfig);
+		PrepareBeamableRequestToRealmWithAuthToken(Req, TargetRealm, AuthToken);
+		PrepareBeamableRequestVerbRouteBody<TRequestData>(Req, RequestData, BeamEnvironment->GetAPIUrl());
+		PrepareBeamableRequestToRealmWithRoutingKey(Req, OutUserSlot);
+
+		// Add to the InFlight request list
 		const auto RequestContext = FBeamRequestContext{ReqId, RetryConfig, TargetRealm, -1, OutUserSlot, AS_None};
 
 		// Keep track of this request and it's data. 
@@ -578,18 +593,20 @@ public:
 		StaticCheckForRequestType<TRequestData>();
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Preparing Request of Type: REQUEST_TYPE=%s"), *RequestData->GetRequestType().Name);
 
-		// Ensures we get a valid Next Id even if requests get made from multiple threads.
-		int64 ReqId;
-		auto Req = CreateUnpreparedRequest(ReqId, RetryConfig);
-		PrepareBeamableRequestToRealmWithAuthToken(Req, TargetRealm, AuthToken);
-		PrepareBeamableRequestVerbRouteBody<TRequestData>(Req, RequestData, BeamEnvironment->GetAPIUrl(), TargetRealm, Prefix);
-
-		// Add to the InFlight request list
+		// Get some data about the user making the request
 		FUserSlot OutUserSlot;
 		FBeamRealmUser OutUserData;
 		FString NamespacedSlotId;
 		BeamUserSlots->GetUserDataWithRefreshTokenAndPid(AuthToken.RefreshToken, TargetRealm.Pid, OutUserData, OutUserSlot, NamespacedSlotId);
 
+		// Ensures we get a valid Next Id even if requests get made from multiple threads.
+		int64 ReqId;
+		auto Req = CreateUnpreparedRequest(ReqId, RetryConfig);
+		PrepareBeamableRequestToRealmWithAuthToken(Req, TargetRealm, AuthToken);
+		PrepareBeamableRequestVerbRouteBody<TRequestData>(Req, RequestData, BeamEnvironment->GetAPIUrl(), TargetRealm, Prefix);
+		PrepareBeamableRequestToRealmWithRoutingKey(Req, OutUserSlot);
+
+		// Add to the InFlight request list
 		const auto RequestContext = FBeamRequestContext{ReqId, RetryConfig, TargetRealm, -1, OutUserSlot, AS_None};
 
 		// Keep track of this request and it's data. 
@@ -662,8 +679,8 @@ public:
 	 * @param RealmHandle A RealmHandle describing which realm this request is talking too.
 	 * @param UnrealRequest The actual HttpRequest we are configuring to send out through the Unreal Http Module.
 	 */
-	static void PrepareBeamableRequestToRealm(const TUnrealRequestPtr& UnrealRequest,
-	                                          const FBeamRealmHandle& RealmHandle);
+	void PrepareBeamableRequestToRealm(const TUnrealRequestPtr& UnrealRequest,
+	                                   const FBeamRealmHandle& RealmHandle);
 
 	/**
 	 * @brief Prepares an TUnrealRequest using data from a FBeamRealmHandle and an FBeamAuthToken by setting up a JWT Authentication header.
@@ -671,9 +688,16 @@ public:
 	 * @param AuthToken An AuthToken to configure the authentication data required for the request.
 	 * @param UnrealRequest The actual HttpRequest we are configuring to send out through the Unreal Http Module. 
 	 */
-	static void PrepareBeamableRequestToRealmWithAuthToken(const TUnrealRequestPtr& UnrealRequest,
-	                                                       const FBeamRealmHandle& RealmHandle,
-	                                                       const FBeamAuthToken& AuthToken);
+	void PrepareBeamableRequestToRealmWithAuthToken(const TUnrealRequestPtr& UnrealRequest,
+	                                                const FBeamRealmHandle& RealmHandle,
+	                                                const FBeamAuthToken& AuthToken);
+
+	/**
+	 * Prepares a TUnrealRequest using the data in the CurrentRoutingKeyMaps.
+	 * @param Request The request to prepare.
+	 * @param Slot The user-slot making the request, if any. Only relevant for authenticated requests; non-authenticated and dedicated server requests use the data set for the UBeamCoreSettings::GetOwnerPlayerSlot().
+	 */
+	void PrepareBeamableRequestToRealmWithRoutingKey(const TUnrealRequestPtr& Request, FUserSlot Slot);
 
 	/**
 	 * @brief Prepares an TUnrealRequest using any UStruct containing the data (route and body params) we need to make the request.
@@ -916,7 +940,7 @@ public:
 
 
 		// Get retry stuff
-		const auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
+		auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
 		const auto RetryConfig = Context->RetryConfiguration;
 		const auto bShouldRetryIfFail = RetryConfig.RetryMaxAttempt == -1 || CurrFailedCount < RetryConfig.RetryMaxAttempt;
 
@@ -958,8 +982,9 @@ public:
 			// Store it so wait handles can grab at it later
 			InFlightResponseErrorData[*Context] = ErrorData;
 
-			// Bump the failed count associated with this request id.					
-			InFlightFailureCount[RequestId] = CurrFailedCount + 1;
+			// Bump the failed count associated with this request id.
+			CurrFailedCount += 1;
+			InFlightFailureCount[RequestId] = CurrFailedCount;
 
 			// If we should still retry (-1 == infinite retry)
 			if (bWillRetry)
@@ -1177,7 +1202,7 @@ public:
 		// Then, we handle success and error cases.
 
 		// Get retry stuff
-		const auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
+		auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
 		const auto RetryConfig = Context->RetryConfiguration;
 		const auto bShouldRetryIfFail = RetryConfig.RetryMaxAttempt == -1 || CurrFailedCount < RetryConfig.RetryMaxAttempt;
 
@@ -1224,7 +1249,8 @@ public:
 			bWillRetry |= bWillReAuth;
 
 			// Bump the failed count associated with this request id.					
-			InFlightFailureCount[RequestId] = bWillReAuth ? CurrFailedCount : CurrFailedCount + 1;
+			CurrFailedCount = bWillReAuth ? CurrFailedCount : CurrFailedCount + 1;
+			InFlightFailureCount[RequestId] = CurrFailedCount;
 
 			if (bWillRetry)
 			{
@@ -1412,7 +1438,7 @@ public:
 			FullResponse.State = IsSuccessfulResponse(ResponseCode) ? RS_Success : RS_Error;
 
 		// Get retry stuff
-		const auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
+		auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
 		const auto RetryConfig = Context->RetryConfiguration;
 		const auto bShouldRetryIfFail = !bIsCancelled && (RetryConfig.RetryMaxAttempt == -1 || RetryConfig.RetryMaxAttempt > CurrFailedCount);
 
@@ -1442,8 +1468,9 @@ public:
 			// Store it so wait handles can grab at it later
 			InFlightResponseErrorData[*Context] = FullResponse.ErrorData;
 
-			// Bump the failed count associated with this request id.					
-			InFlightFailureCount[RequestId] = CurrFailedCount + 1;
+			// Bump the failed count associated with this request id.
+			CurrFailedCount = CurrFailedCount + 1;
+			InFlightFailureCount[RequestId] = CurrFailedCount;
 
 			// If we should still retry (-1 == infinite retry)
 			if (bWillRetry)
@@ -1661,7 +1688,7 @@ public:
 		else
 			FullResponse.State = IsSuccessfulResponse(ResponseCode) ? RS_Success : RS_Error;
 
-		const auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
+		auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
 		const auto RetryConfig = Context->RetryConfiguration;
 		const auto bShouldRetryIfFail = !bIsCancelled && (RetryConfig.RetryMaxAttempt == -1 || RetryConfig.RetryMaxAttempt > CurrFailedCount);
 
@@ -1695,8 +1722,9 @@ public:
 			// Store it so wait handles can grab at it later
 			InFlightResponseErrorData[*Context] = FullResponse.ErrorData;
 
-			// Bump the failed count associated with this request id.					
-			InFlightFailureCount[RequestId] = bWillReAuth ? CurrFailedCount : CurrFailedCount + 1;
+			// Bump the failed count associated with this request id.
+			CurrFailedCount = bWillReAuth ? CurrFailedCount : CurrFailedCount + 1;
+			InFlightFailureCount[RequestId] = CurrFailedCount;
 
 			// If we should still retry (-1 == infinite retry)
 			if (bWillRetry)
@@ -1740,7 +1768,8 @@ public:
 				if (AlwaysLogErrorResponses || (!bExecutedCallsiteHandler && !bRanGlobalHandlers))
 				{
 					const auto RequestType = RequestData->GetRequestType();
-					UE_LOG(LogBeamBackend, Error, TEXT( "Beamable Request Failed - Retrying | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s" ),
+					UE_LOG(LogBeamBackend, Error,
+					       TEXT( "Beamable Request Failed - Retrying | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s" ),
 					       RequestId, *RequestType.Name, *UserSlotLog, ResponseCode, CurrFailedCount, bWillRetry ? TEXT("true") : TEXT("false"), *ContentAsString);
 				}
 			}
@@ -1765,7 +1794,8 @@ public:
 				// We log the error only if neither callback was set OR if we are configured to do so.
 				if (AlwaysLogErrorResponses && FullResponse.State == RS_Error)
 				{
-					UE_LOG(LogBeamBackend, Error, TEXT( "Beamable Request Failed | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s" ),
+					UE_LOG(LogBeamBackend, Error,
+					       TEXT( "Beamable Request Failed | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, WILL_RETRY=%s, RESPONSE_BODY=%s" ),
 					       RequestId, *RequestType.Name, *UserSlotLog, ResponseCode, CurrFailedCount, bWillRetry ? TEXT("true") : TEXT("false"), *ContentAsString);
 				}
 
@@ -1787,6 +1817,52 @@ public:
 		}
 	}
 
+	/*	 
+		GENERIC-BEAM REQUEST FUNCTION
+	*/
+
+	/**
+	 * @brief Creates a request that will not target a Beamable server and prepares it to be sent out. This does not bind the lambda --- see any auto-generated API to understand how to manually make
+	 * a Beamable request.
+	 * 
+	 * @tparam TRequestData A type that implements the FBeamBaseRequest struct.
+	 * @param OutRequestId  The RequestId assigned to the returned TUnrealRequest.	 
+	 * @param RetryConfig The Retry Configuration for this request. 
+	 * @param RequestData An instance of the request type.
+	 * 
+	 * @return A TUnrealRequest object that will be tracked by UBeamBackend.
+	 */
+	TUnrealRequestPtr CreateGenericBeamRequest(int64& OutRequestId, const FBeamRetryConfig& RetryConfig, const UGenericBeamRequest* RequestData);
+
+	/*	 
+		ROUTING KEYS
+	*/
+
+	/**
+	 * @brief Builds the RoutingKeyMap for a particular set of services/routing targets and set them as the current map for all slots. 
+	 */
+	void SetRoutingKeyMap(TArray<FString> BeamoIds, TArray<FString> TargetKeys);
+
+	/**
+	 * @brief Builds the RoutingKeyMap for a particular set of services/routing targets and set them as the current map for a particular slot. 
+	 */
+	void SetRoutingKeyMap(FUserSlot Slot, TArray<FString> BeamoIds, TArray<FString> TargetKeys);
+
+	/**
+	 * @brief Sets a routing map string to be the routing map used for all slots, dedicated servers and non-authenticated requests.
+	 */
+	void SetRoutingKeyMap(FString RoutingKeyMap);
+
+	/**
+	 * @brief Sets a routing map string to be the routing map used for a particular slot. Setting the route for UBeamCoreSettings::GetOwnerPlayerSlot()'s, also sets it for dedicated servers
+	 * and non-authenticated requests.
+	 */
+	void SetRoutingKeyMap(FUserSlot ForSlot, FString RoutingKeyMap);
+
+	/*	 
+		UTILITIES
+	*/
+
 	UFUNCTION(BlueprintCallable, Category="Beam|Requests", DisplayName="Beam - Did Timeout", meta=(ExpandBoolAsExecs="ReturnValue"))
 	static bool IsRetryingTimeout(FBeamRequestContext Ctx);
 
@@ -1794,7 +1870,8 @@ public:
 
 private:
 	void UpdateResponseCache(const FRequestType& RequestType, const UObject* CallingContext, const FHttpRequestPtr& Request, const FString& Content);
-	static bool ExtractDataFromResponse(const FHttpRequestPtr Request, const FHttpResponsePtr Response, const bool bWasRequestCompleted, EHttpRequestStatus::Type& OutRequestStatus, int32& OutResponseCode, FString& OutResponseBody);
+	static bool ExtractDataFromResponse(const FHttpRequestPtr Request, const FHttpResponsePtr Response, const bool bWasRequestCompleted, EHttpRequestStatus::Type& OutRequestStatus,
+	                                    int32& OutResponseCode, FString& OutResponseBody);
 
 public:
 	/*

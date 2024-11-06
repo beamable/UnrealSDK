@@ -1,66 +1,43 @@
 #include "BeamCliUnityReleaseSharedCodeCommand.h"
 
 #include "BeamLogging.h"
-#include "Misc/MonitoredProcess.h"
 #include "Serialization/JsonSerializerMacros.h"
-		
-TSharedPtr<FMonitoredProcess> UBeamCliUnityReleaseSharedCodeCommand::RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op)
+
+FString UBeamCliUnityReleaseSharedCodeCommand::GetCommand()
 {
-	FString Params = ("unity release-shared-code");
-	for (const auto& CommandParam : CommandParams)
-		Params.Appendf(TEXT(" %s"), *CommandParam);
-	Params = PrepareParams(Params);
-	UE_LOG(LogBeamCli, Verbose, TEXT("BeamCliUnityReleaseSharedCode Command - Invocation: %s %s"), *PathToCli, *Params)
-
-	const auto CliPath = Cli->GetPathToCli();
-	const auto CliProcess = MakeShared<FMonitoredProcess>(CliPath, Params, FPaths::ProjectDir(), true, true);
-	CliProcess->OnOutput().BindLambda([this, Op](const FString& Out)
+	return FString(TEXT("unity release-shared-code"));
+}
+		
+bool UBeamCliUnityReleaseSharedCodeCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+{
+	
+	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
-		UE_LOG(LogBeamCli, Verbose, TEXT("BeamCliUnityReleaseSharedCode Command - Std Out: %s"), *Out);
-		FString OutCopy = Out;
-		FString MessageJson;
-		while (ConsumeMessageFromOutput(OutCopy, MessageJson))
+		UBeamCliUnityReleaseSharedCodeStreamData* Data = NewObject<UBeamCliUnityReleaseSharedCodeStreamData>(this);
+		Data->OuterOwner = this;
+		Data->BeamDeserializeProperties(DataJson);
+
+		Stream.Add(Data);
+		Timestamps.Add(Timestamp);
+		
+		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
-			auto Bag = FJsonDataBag();
-			if (Bag.FromJson(MessageJson))
-			{
-				const auto ReceivedStreamType = Bag.GetString("type");
-				const auto Timestamp = static_cast<int64>(Bag.GetField("ts")->AsNumber());
-				const auto DataJson = Bag.JsonObject->GetObjectField("data").ToSharedRef();
-				
-				
-				if(ReceivedStreamType.Equals(StreamType))
-				{
-					UBeamCliUnityReleaseSharedCodeStreamData* Data = NewObject<UBeamCliUnityReleaseSharedCodeStreamData>(this);
-					Data->OuterOwner = this;
-					Data->BeamDeserializeProperties(DataJson);
+			OnStreamOutput(Stream, Timestamps, Op);
+		});
+		
+		return true;				
+	}
+	
+	return false;
+}
 
-					Stream.Add(Data);
-					Timestamps.Add(Timestamp);
-
-					UE_LOG(LogBeamCli, Verbose, TEXT("BeamCliUnityReleaseSharedCode Command - Message Received: %s"), *MessageJson);
-					AsyncTask(ENamedThreads::GameThread, [this, Op]
-					{
-						OnStreamOutput(Stream, Timestamps, Op);
-					});				
-				}
-
-			}
-			else
-			{
-				UE_LOG(LogBeamCli, Verbose, TEXT("BeamCliUnityReleaseSharedCode Command - Skipping non-JSON message: %s"), *MessageJson);
-			}			
-		}
-	});
-	CliProcess->OnCompleted().BindLambda([this, Op](int ResultCode)
+void UBeamCliUnityReleaseSharedCodeCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)
+{
+	if (OnCompleted)
 	{
-		if (OnCompleted)
+		AsyncTask(ENamedThreads::GameThread, [this, ResultCode, Op]
 		{
-			AsyncTask(ENamedThreads::GameThread, [this, ResultCode, Op]
-			{
-				OnCompleted(ResultCode, Op);
-			});
-		}
-	});
-	return CliProcess;
+			OnCompleted(ResultCode, Op);
+		});
+	}
 }

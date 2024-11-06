@@ -521,7 +521,7 @@ int32 UBeamUserSlots::TryLoadSavedUserAtSlot(FUserSlot SlotId, UObject* CallingC
 
 			// We only consider ourselves authenticated if the realm is the same as it was saved.
 			// TODO: we might want to consider saving the auth data as a JSON Array of FUserSlotAuthData per slot and keeping auth data for each CID/PID... for now,
-			// TODO: we'll just overwrite whenever a realm change happens.			
+			// TODO: we'll just overwrite whenever a realm change happens.
 			const auto TargetRealm = GetDefault<UBeamCoreSettings>()->TargetRealm;
 			if (SlotSerializedAuthData.Cid == TargetRealm.Cid && SlotSerializedAuthData.Pid == TargetRealm.Pid)
 			{

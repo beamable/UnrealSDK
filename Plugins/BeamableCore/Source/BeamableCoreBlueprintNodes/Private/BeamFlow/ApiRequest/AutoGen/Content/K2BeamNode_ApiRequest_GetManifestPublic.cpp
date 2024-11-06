@@ -6,7 +6,7 @@
 
 #include "BeamableCore/Public/AutoGen/SubSystems/BeamContentApi.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Content/GetManifestPublicRequest.h"
-#include "BeamableCore/Public/AutoGen/ClientManifestCsvResponse.h"
+#include "BeamableCore/Public/AutoGen/ClientManifestResponse.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_GetManifestPublic"
 
@@ -49,7 +49,7 @@ UClass* UK2BeamNode_ApiRequest_GetManifestPublic::GetRequestClass() const
 
 UClass* UK2BeamNode_ApiRequest_GetManifestPublic::GetResponseClass() const
 {
-	return UClientManifestCsvResponse::StaticClass();
+	return UClientManifestResponse::StaticClass();
 }
 
 FString UK2BeamNode_ApiRequest_GetManifestPublic::GetRequestSuccessDelegateName() const

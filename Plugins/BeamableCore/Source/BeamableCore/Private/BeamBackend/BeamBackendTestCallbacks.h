@@ -31,7 +31,7 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		FakeInt = Bag->GetIntegerField("fake_int");
+		FakeInt = Bag->GetIntegerField(TEXT("fake_int"));
 	}
 };
 
@@ -83,7 +83,7 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		FakeInt = Bag->GetIntegerField("fake_int");
+		FakeInt = Bag->GetIntegerField(TEXT("fake_int"));
 	}
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override

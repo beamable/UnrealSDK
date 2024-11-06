@@ -1,0 +1,122 @@
+name: Windows Build - Template
+
+on:
+  workflow_call:
+    inputs:
+      beamProj:
+        description: "The BEAMPROJ we are building. Ie: BEAMPROJ_Sandbox or BEAMPROJ_HathoraDemo."
+        required: true
+        default: "BEAMPROJ_Sandbox"
+        type: string
+      buildType:
+        type: string
+        description: 'Either "client", for regular builds, or "server" for dedicated server builds.'
+        required: true
+        default: "client"
+      targetPlatform:
+        type: string
+        description: 'Either "Win64", for Windows builds, or "Linux" for Linux builds.'
+        required: true
+        default: "Win64"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: [self-hosted, Windows]
+    steps:
+      # Run commands to print out more information about the runner
+      # - name: Print out Additional Runner info
+      #   run: |
+      #     curl https://api.ipify.org
+          
+      # Gets the Unreal Repo and the CLI repo
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+          path: BeamableUnreal/
+
+      - uses: actions/checkout@v4
+        with:
+          repository: beamable/BeamableProduct
+          fetch-depth: 0
+          lfs: true
+          path: BeamableProduct/
+          ref: main
+
+      # Caches the UnrealSDK repo's Intermediate and Saved folders
+      - uses: actions/cache@v4
+        continue-on-error: false
+        with:
+          path: |
+            BeamableUnreal/Intermediate
+            BeamableUnreal/Saved
+            BeamableUnreal/Plugins/BeamableCore/Intermediate
+            BeamableUnreal/Plugins/BeamableCore/Saved
+            BeamableUnreal/BeamableUnreal.sln
+          key: unreal-${{ runner.os }}-${{ inputs.targetPlatform }}-${{ inputs.buildType }}-${{ hashFiles('/BeamableUnreal/Source/**') }}
+          restore-keys: unreal-${{ runner.os }}-${{ inputs.targetPlatform }}-
+
+      # Sets the buildType ENV var as either server or client.
+      - name: Set buildType ENV var
+        id: set-build-type
+        run: echo "buildType=${{ inputs.buildType }}" >> $env:GITHUB_ENV
+      - name: Set hash ENV var
+        id: get_commit_hash
+        working-directory: ./BeamableUnreal
+        run: echo "commit_hash=$(git rev-parse HEAD)" >> $env:GITHUB_ENV
+      - name: Check buildType ENV var
+        id: check-build-type
+        run: echo "${{ env.buildType }}"
+
+      # Installs .NET 8 so we can run init_repo.sh
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
+
+      # Make sure the .NET's paths are added to the shell's path ENV VAR
+      - run: Add-Content $env:GITHUB_PATH "C:\Program Files\dotnet"
+      - run: Add-Content $env:GITHUB_PATH "~\.dotnet\tools"
+      # Run Set-Packages for Unreal
+      - name: Run Set Packages for local build of the CLI
+        working-directory: ./BeamableProduct
+        shell: bash
+        run: bash set-packages.sh "${{ github.workspace }}/BeamableUnreal/" "UNREAL_NugetSource" "" "" "${{ github.workspace }}/BeamableUnreal/Microservices"
+
+      # Run init_repo.sh (needed to setup the project correctly locally)     
+      - name: Prepare Repository for compilation
+        working-directory: ./BeamableUnreal
+        continue-on-error: true
+        shell: bash
+        run: bash init_repo.sh skip_waiting
+
+      # Sets the BEAMPROJ based on the input to this workflow.
+      - name: Set BeamProjOverride.txt
+        working-directory: ./BeamableUnreal
+        shell: bash
+        run: |
+          echo ${{ inputs.beamProj }} > BeamProjOverride.txt |
+          cat BeamProjOverride.txt
+        
+      # Builds the image
+      - name: Build image
+        working-directory: ./BeamableUnreal
+        shell: bash
+        run: bash windows_build.sh
+
+      # Compress the results
+      - name: Compress Directory
+        run: powershell Compress-Archive BeamableUnreal/PackagedProject windows_${{ env.buildType }}_${{ inputs.beamProj }}_${{ env.commit_hash }}.zip 
+
+      # Uploads the artifacts so we can download the build
+      - name: Upload Compressed Folder as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Windows_${{ env.buildType }}_${{ inputs.beamProj }}_${{ env.commit_hash }}
+          path: windows_${{ env.buildType }}_${{ inputs.beamProj }}_${{ env.commit_hash }}.zip
+      - name: Cleanup workspace
+        if: always()
+        shell: bash
+        run: rm -rf .* && rm -rf *

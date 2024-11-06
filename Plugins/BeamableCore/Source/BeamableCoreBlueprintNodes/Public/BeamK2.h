@@ -5,11 +5,11 @@
 #include "K2Node_IfThenElse.h"
 #include "K2Node_MakeArray.h"
 #include "K2Node_SwitchEnum.h"
+#include "K2Node_SwitchName.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 
 #define LOCTEXT_NAMESPACE "BeamK2"
 
-class UK2Node_SwitchString;
 
 namespace BeamK2
 {
@@ -68,7 +68,7 @@ namespace BeamK2
 	/**
 	 * @brief Utility that creates a correctly configured SwitchString node following the given "ExecFlowPin" and switching on the given "SwitchOnValuePin".
 	 */
-	UK2Node_SwitchString* CreateSwitchNameNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema, TArray<FName> const StringOptions,
+	UK2Node_SwitchName* CreateSwitchNameNode(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema, TArray<FName> const StringOptions,
 												 UEdGraphPin* ExecFlowPin, UEdGraphPin* SwitchOnValuePin);
 
 	/**

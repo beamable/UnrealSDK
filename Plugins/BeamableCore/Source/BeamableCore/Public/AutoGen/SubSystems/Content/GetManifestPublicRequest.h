@@ -8,7 +8,7 @@
 #include "BeamBackend/BeamFullResponse.h"
 
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamContentManifestId.h"
-#include "BeamableCore/Public/AutoGen/ClientManifestCsvResponse.h"
+#include "BeamableCore/Public/AutoGen/ClientManifestResponse.h"
 
 #include "GetManifestPublicRequest.generated.h"
 
@@ -41,7 +41,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetManifestPublicSuccess, FBeamRequestContext, Context, UGetManifestPublicRequest*, Request, UClientManifestCsvResponse*, Response);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetManifestPublicSuccess, FBeamRequestContext, Context, UGetManifestPublicRequest*, Request, UClientManifestResponse*, Response);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetManifestPublicError, FBeamRequestContext, Context, UGetManifestPublicRequest*, Request, FBeamErrorResponse, Error);
@@ -49,5 +49,5 @@ DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnGetManifestPublicError, FBeamRequestCont
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnGetManifestPublicComplete, FBeamRequestContext, Context, UGetManifestPublicRequest*, Request);
 
-using FGetManifestPublicFullResponse = FBeamFullResponse<UGetManifestPublicRequest*, UClientManifestCsvResponse*>;
+using FGetManifestPublicFullResponse = FBeamFullResponse<UGetManifestPublicRequest*, UClientManifestResponse*>;
 DECLARE_DELEGATE_OneParam(FOnGetManifestPublicFullResponse, FGetManifestPublicFullResponse);

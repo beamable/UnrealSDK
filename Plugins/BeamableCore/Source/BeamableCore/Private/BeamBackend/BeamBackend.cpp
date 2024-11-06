@@ -21,6 +21,7 @@ const FString UBeamBackend::HEADER_VALUE_ACCEPT_CONTENT_TYPE = FString(TEXT("app
 const FString UBeamBackend::HEADER_AUTHORIZATION = FString(TEXT("Authorization"));
 const FString UBeamBackend::HEADER_REQUEST_SCOPE = FString(TEXT("X-BEAM-SCOPE"));
 const FString UBeamBackend::HEADER_VALUE_AUTHORIZATION = FString(TEXT("Bearer {0}"));
+const FString UBeamBackend::HEADER_ROUTING_KEY_MAP = FString(TEXT("X-BEAM-SERVICE-ROUTING-KEY"));
 const TArray<FString> UBeamBackend::AUTH_ERROR_CODE_RETRY_ALLOWED = TArray<FString>{
 	TEXT("InvalidTokenError"), TEXT("TokenValidationError"), TEXT("ExpiredTokenError")
 };
@@ -144,17 +145,28 @@ TUnrealRequestPtr UBeamBackend::CreateUnpreparedRequest(int64& OutRequestId, con
 
 	// Creates a request with the specified timeout.
 	auto Req = FHttpModule::Get().CreateRequest();
-	Req->SetTimeout(RetryConfig.Timeout);
+
+	// We set the regular timeout to 0 so that we disable UE's bTimedOut checks which makes request objects unusable.
+	Req->SetTimeout(0);
+
+	// We set the activity timeout to the requested timeout since the regular timeout was deprecated in UE 5.4
+	// In UE 5.4, the regular timeout will prevent the request object from being reused after a timeout.
+	// Using ActivityTimeout makes it possible to reuse this request object (which is important for our retry logic --- see TickRetryQueue)
+	Req->SetActivityTimeout(RetryConfig.Timeout);
+
 	// Set the timeout header so that Beamable's Gateway itself knows how long
-	const auto TimeoutInMilliseconds = RetryConfig.Timeout * 1000;
+	long long timeoutInMilliseconds = RetryConfig.Timeout * 1000;
 	// the value should not be lower than 10_000
-	if (TimeoutInMilliseconds >= 10000)
+	if (timeoutInMilliseconds >= 10000)
 	{
-		Req->SetHeader(FString(TEXT("X-BEAM-TIMEOUT")), FString::Printf(TEXT("%lld"), TimeoutInMilliseconds));
+		Req->SetHeader(FString(TEXT("X-BEAM-TIMEOUT")), FString::Printf(TEXT("%lld"), timeoutInMilliseconds));
 	}
-	Req->SetHeader(TEXT("X-KS-USER-AGENT"), FString::Printf(TEXT("Unreal-%s"), *UGameplayStatics::GetPlatformName()));
 
 	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation: TIMEOUT_HEADER=%lld"), RetryConfig.Timeout);
+
+	// So we know this request comes from Unreal or an UnrealServer (dedicated server builds).
+	if (IsRunningDedicatedServer()) Req->SetHeader(TEXT("X-KS-USER-AGENT"), FString::Printf(TEXT("UnrealServer-%s"), *UGameplayStatics::GetPlatformName()));
+	else Req->SetHeader(TEXT("X-KS-USER-AGENT"), FString::Printf(TEXT("Unreal-%s"), *UGameplayStatics::GetPlatformName()));
 
 	// Prepares the Backend system to handle this request.
 	InFlightRequests.Add(OutRequestId, Req);
@@ -197,34 +209,41 @@ bool UBeamBackend::IsConnected() const
 	return CurrentConnectivityStatus.IsConnected;
 }
 
-void UBeamBackend::PrepareBeamableRequestToRealm(const TUnrealRequestPtr& Request, const FBeamRealmHandle& RealmHandle)
+void UBeamBackend::PrepareBeamableRequestToRealm(const TUnrealRequestPtr& UnrealRequest, const FBeamRealmHandle& RealmHandle)
 {
-	Request->SetHeader(HEADER_CONTENT_TYPE, HEADER_VALUE_ACCEPT_CONTENT_TYPE);
-	Request->SetHeader(HEADER_ACCEPT, HEADER_VALUE_ACCEPT_CONTENT_TYPE);
+	UnrealRequest->SetHeader(HEADER_CONTENT_TYPE, HEADER_VALUE_ACCEPT_CONTENT_TYPE);
+	UnrealRequest->SetHeader(HEADER_ACCEPT, HEADER_VALUE_ACCEPT_CONTENT_TYPE);
 
 	const auto Cid = RealmHandle.Cid;
 	const auto Pid = RealmHandle.Pid;
 
-	const auto ScopeHeader = RealmHandle.Pid.AsString.IsEmpty()
-		                         ? RealmHandle.Cid.AsString
-		                         : FString::Format(
-			                         TEXT("{0}.{1}"), {RealmHandle.Cid.AsString, RealmHandle.Pid.AsString});
-	Request->SetHeader(HEADER_REQUEST_SCOPE, ScopeHeader);
-
-	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation: SCOPE_HEADER=%s"), *ScopeHeader);
+	if (!Cid.AsString.IsEmpty())
+	{
+		const auto ScopeHeader = RealmHandle.Pid.AsString.IsEmpty()
+			                         ? RealmHandle.Cid.AsString
+			                         : FString::Format(
+				                         TEXT("{0}.{1}"), {RealmHandle.Cid.AsString, RealmHandle.Pid.AsString});
+		UnrealRequest->SetHeader(HEADER_REQUEST_SCOPE, ScopeHeader);
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation: SCOPE_HEADER=%s"), *ScopeHeader);
+	}
+	else
+	{
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation: Skipped SCOPE_HEADER as no CID was found."));
+	}
 }
 
-void UBeamBackend::PrepareBeamableRequestToRealmWithAuthToken(const TUnrealRequestPtr& Request,
+
+void UBeamBackend::PrepareBeamableRequestToRealmWithAuthToken(const TUnrealRequestPtr& UnrealRequest,
                                                               const FBeamRealmHandle& RealmHandle,
                                                               const FBeamAuthToken& AuthToken)
 {
-	PrepareBeamableRequestToRealm(Request, RealmHandle);
+	PrepareBeamableRequestToRealm(UnrealRequest, RealmHandle);
 
 	if (!IsRunningDedicatedServer())
 	{
 		// For non-dedicated servers, we add an authorization header with the auth token. 
 		const auto AuthTokenHeader = FString::Format(*HEADER_VALUE_AUTHORIZATION, {AuthToken.AccessToken});
-		Request->SetHeader(HEADER_AUTHORIZATION, AuthTokenHeader);
+		UnrealRequest->SetHeader(HEADER_AUTHORIZATION, AuthTokenHeader);
 
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Auth: AUTH_HEADER=%s"), *AuthTokenHeader);
 	}
@@ -240,9 +259,40 @@ void UBeamBackend::PrepareBeamableRequestToRealmWithAuthToken(const TUnrealReque
 				                         TEXT("{0}.{1}"), {
 					                         DedicatedServerRealm.Cid.AsString, DedicatedServerRealm.Pid.AsString
 				                         });
-		Request->SetHeader(HEADER_REQUEST_SCOPE, ScopeHeader);
-		UE_LOG(LogBeamBackend, Display, TEXT("Request Preparation - Target Realm Header: SCOPE_HEADER=%s"),
+		UnrealRequest->SetHeader(HEADER_REQUEST_SCOPE, ScopeHeader);
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Target Realm Header: SCOPE_HEADER=%s"),
 		       *ScopeHeader);
+	}
+}
+
+void UBeamBackend::PrepareBeamableRequestToRealmWithRoutingKey(const TUnrealRequestPtr& Request, FUserSlot Slot)
+{
+	const auto OwnerUserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+	if (IsRunningDedicatedServer())
+	{
+		// For dedicated servers, we set the routing key of whatever is the one for the OwnerUserSlot.		
+		FString RoutingKey = TEXT("No RoutingKey Set.");
+		if (CurrentRoutingKeyMaps.Contains(OwnerUserSlot))
+		{
+			RoutingKey = CurrentRoutingKeyMaps[OwnerUserSlot];
+			Request->SetHeader(HEADER_ROUTING_KEY_MAP, RoutingKey);
+		}
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Set Routing Key Map: ROUTING_KEY_MAP=%s"), *RoutingKey);
+	}
+	else
+	{
+		// For unauthenticated requests, we also use the RoutingKey set for the OwnerUser.
+		if (Slot.Name.IsEmpty())
+			Slot = OwnerUserSlot;
+
+		// For non-dedicated servers, we set the routing key for the given slot.		
+		FString RoutingKey = TEXT("No RoutingKey Set.");
+		if (CurrentRoutingKeyMaps.Contains(Slot))
+		{
+			RoutingKey = CurrentRoutingKeyMaps[Slot];
+			Request->SetHeader(HEADER_ROUTING_KEY_MAP, RoutingKey);
+		}
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Set Routing Key Map: ROUTING_KEY_MAP=%s"), *RoutingKey);
 	}
 }
 
@@ -354,7 +404,9 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 		const auto RetryFalloffIdx = CurrRetryIdx >= RetryConfig.RetryFalloffValues.Num() ? RetryConfig.RetryFalloffValues.Num() - 1 : CurrRetryIdx;
 		const auto TimeToWait = RetryFalloffIdx >= 0 ? RetryConfig.RetryFalloffValues[CurrRetryIdx] : 0;
 
-		UE_LOG(LogBeamBackend, Verbose, TEXT("Failed Request so we are waiting for %.2f before trying again."), TimeToWait);
+		// Log the failed request and add it to the list of requests we have to retry.
+		UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Retry Queue | Failed Request so we are waiting for %.2f before trying again. REQUEST_ID=%lld, ERROR_CODE=%s"),
+		       TimeToWait, ReqId, *FailedRequestCtx.ErrorCode);
 		InFlightProcessingRequests.Add(ReqId, FProcessingRequestRetry{FailedRequestCtx, TimeToWait, 0.0f});
 	}
 
@@ -368,11 +420,26 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 		{
 			const auto RequestToRetry = InFlightProcessingRequest.Value.RequestToRetry;
 			const auto ReqId = RequestToRetry.RequestId;
-			const auto RetryConfig = InFlightRequestContexts.FindChecked(ReqId).RetryConfiguration;
+			const auto ReqContext = InFlightRequestContexts.FindChecked(ReqId);
+			const auto RetryConfig = ReqContext.RetryConfiguration;
 			const auto ReqRealmHandle = RequestToRetry.RealmHandle;
 			const auto ReqAuthToken = RequestToRetry.AuthToken;
 
 			auto& FailedReq = InFlightRequests.FindChecked(ReqId);
+
+			// If the FailedReq object is not valid, something really bad happened and we need a bug report.
+			ensureAlwaysMsgf(FailedReq.IsValid(),
+			                 TEXT(
+				                 "Beamable Retry Queue | Failed Request Object is no longer valid. This should never happen! Please turn-on Verbose logging for `LogBeamBackend` and report a bug to Beamable!"
+			                 ));
+			ensureAlwaysMsgf(FailedReq->GetStatus() != EHttpRequestStatus::Processing,
+			                 TEXT(
+				                 "Beamable Retry Queue | Failed Request Object is still being processed. This should never happen! Please turn-on Verbose logging for `LogBeamBackend` and report a bug to Beamable!"
+			                 ));
+			ensureAlwaysMsgf(ReqContext.BeamStatus == AS_InFlight,
+			                 TEXT(
+				                 "Beamable Retry Queue | This request was already completed. This should never happen! Please turn-on Verbose logging for `LogBeamBackend` and report a bug to Beamable! REQUEST_ID=%lld"
+			                 ), ReqContext.RequestId);
 
 			// If any of these custom errors, we need to re-auth via the refresh token. So we make that request and, when it gets back, we run the original request again.
 			// "InvalidTokenError", "TokenValidationError", "ExpiredTokenError"
@@ -384,6 +451,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 				// Create Login Refresh Token Request.
 				TUnrealRequestPtr ReAuthRequest = FHttpModule::Get().CreateRequest();
 				PrepareBeamableRequestToRealm(ReAuthRequest, ReqRealmHandle);
+				PrepareBeamableRequestToRealmWithRoutingKey(ReAuthRequest, ReqContext.UserSlot);
 
 				ULoginRefreshTokenRequest* Request = NewObject<ULoginRefreshTokenRequest>();
 				Request->RefreshToken = ReqAuthToken.RefreshToken;
@@ -503,27 +571,45 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 			else if (RetryConfig.HttpResponseCodes.Contains(RequestToRetry.ResponseCode) || RetryConfig.CustomErrorCodes.Contains(RequestToRetry.ErrorCode))
 			{
 				// If we should just retry, simply send out the request again.
-				UE_LOG(LogBeamBackend, Verbose, TEXT("Failed Request so we are resending it!!!!."));
+				UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Retry Queue | Failed Request so we are resending it! REQUEST_STATUS=%d."), FailedReq->GetStatus());
 				FailedReq->ProcessRequest();
 			}
+
+			// If we reach this point, it means that a valid request got in here that shouldn't have gotten here.
 			else
 			{
 				const auto Route = FailedReq->GetURL();
 				const auto Verb = FailedReq->GetVerb();
 				const auto Body = FString(UTF8_TO_TCHAR(FailedReq->GetContent().GetData()));
-				ensureAlwaysMsgf(false, TEXT( "This request should not have been enqueued for retry, but it was. REQUEST_ID=%lld, VERB=%s, ROUTE=%s, BODY=%s, RETRY_RESP_CODES=%s, RETRY_ERR_CODES=%s" ),
-				                 ProcessingReq.RequestToRetry.RequestId, *Route, *Verb, *Body,
-				                 *FString::JoinBy(RetryConfig.HttpResponseCodes, TEXT(","), [](int64 c) { return FString::FromInt(c); }),
-				                 *FString::Join(RetryConfig.CustomErrorCodes, TEXT(",")));
+				ensureAlwaysMsgf(
+					false,
+					TEXT(
+						"Beamable Retry Queue | This request should not have been enqueued for retry, but it was. This should never happen! This should never happen! Please turn-on Verbose logging for `LogBeamBackend` and report a bug to Beamable! REQUEST_ID=%lld, VERB=%s, ROUTE=%s, BODY=%s, RETRY_RESP_CODES=%s, RETRY_ERR_CODES=%s"
+					),
+					ProcessingReq.RequestToRetry.RequestId, *Route, *Verb, *Body,
+					*FString::JoinBy(RetryConfig.HttpResponseCodes, TEXT(","), [](int64 c) { return FString::FromInt(c); }),
+					*FString::Join(RetryConfig.CustomErrorCodes, TEXT(",")));
 			}
 
 			RetriesSentOut.Add(InFlightProcessingRequest.Key);
 		}
 	}
 
-	// Clear all retries that were sent out
+	// Clear all retries that were sent out	
+	TArray<FString> RetriesSentOutStr;
 	for (auto SentOut : RetriesSentOut)
+	{
 		InFlightProcessingRequests.Remove(SentOut);
+		RetriesSentOutStr.Add(FString::Printf(TEXT("%ld"), SentOut));
+	}
+
+	// Log out all requests that were actually sent out and removed from the InFlightProcessingRequests list.
+	if(RetriesSentOutStr.Num() > 0)
+	{
+		UE_LOG(LogBeamBackend, Verbose,
+			  TEXT("Beamable Retry Queue | Successfully sent out these requests. REQ_IDS=[%s]"),
+			  *FString::Join(RetriesSentOutStr, TEXT(",")));
+	}
 
 	// Return true to keep this ticking...
 	return true;
@@ -561,11 +647,14 @@ bool UBeamBackend::CleanUpRequestData()
 
 
 	// Clean up all associated data with requests that are ready to be cleaned up.
+	TArray<FString> ReqIdsToCleanUpStr;
 	for (const auto& IdToCleanUp : ReqIdsToCleanUp)
 	{
 		UE_LOG(LogBeamBackend, Verbose,
 		       TEXT("Beamable CleanUp | Cleaning up all Request Data associated with Request. REQUEST_ID=%llu"),
 		       IdToCleanUp);
+
+		ReqIdsToCleanUpStr.Add(FString::Printf(TEXT("%lld"), IdToCleanUp));
 
 		if (InFlightRequests.Contains(IdToCleanUp))
 			InFlightRequests.Remove(IdToCleanUp);
@@ -591,17 +680,21 @@ bool UBeamBackend::CleanUpRequestData()
 			InFlightRequestsCancelled.Remove(IdToCleanUp);
 	}
 
+	UE_LOG(LogBeamBackend, Verbose,
+	       TEXT("Beamable CleanUp | Successfully cleaned up all Request Data. REQ_IDS=[%s]"),
+	       *FString::Join(ReqIdsToCleanUpStr, TEXT(",")));
+
 	// Return true since we don't ever want to stop cleaning up requests
 	return true;
 }
 
 void UBeamBackend::UpdateResponseCache(const FRequestType& RequestType, const UObject* CallingContext, const FHttpRequestPtr& Request, const FString& Content)
 {
-	GEngine->GetEngineSubsystem<UBeamResponseCache>()->
-	         UpdateResponseCache(RequestType, CallingContext, Request, Content);
+	GEngine->GetEngineSubsystem<UBeamResponseCache>()->UpdateResponseCache(RequestType, CallingContext, Request, Content);	
 }
 
-bool UBeamBackend::ExtractDataFromResponse(const FHttpRequestPtr Request, const FHttpResponsePtr Response, const bool bWasRequestCompleted, EHttpRequestStatus::Type& OutRequestStatus, int32& OutResponseCode, FString& OutResponseBody)
+bool UBeamBackend::ExtractDataFromResponse(const FHttpRequestPtr Request, const FHttpResponsePtr Response, const bool bWasRequestCompleted, EHttpRequestStatus::Type& OutRequestStatus,
+                                           int32& OutResponseCode, FString& OutResponseBody)
 {
 	OutRequestStatus = Request->GetStatus();
 	if (bWasRequestCompleted)
@@ -619,8 +712,26 @@ bool UBeamBackend::ExtractDataFromResponse(const FHttpRequestPtr Request, const 
 	}
 	else
 	{
-		OutResponseCode = 408;
-		OutResponseBody = FString(R"({ "status": 408, "error": "Timeout", "service": "Gateway", "message": "Timeout" })");
+		if (!Response.IsValid())
+		{
+			OutResponseCode = 408;
+			OutResponseBody = FString(R"({ "status": 408, "error": "NoResponse", "service": "", "message": "Null Response Found" })");
+		}
+		else if (Response->GetFailureReason() == EHttpFailureReason::ConnectionError)
+		{
+			OutResponseCode = 408;
+			OutResponseBody = FString(R"({ "status": 408, "error": "ConnectionError", "service": "", "message": "Failed to connect" })");
+		}
+		else if (Response->GetFailureReason() == EHttpFailureReason::TimedOut)
+		{
+			OutResponseCode = 408;
+			OutResponseBody = FString(R"({ "status": 408, "error": "Timeout", "service": "Gateway", "message": "Timeout" })");
+		}
+		else
+		{
+			OutResponseCode = 408;
+			OutResponseBody = FString(R"({ "status": 408, "error": "Timeout", "service": "Gateway", "message": "Timeout" })");
+		}
 	}
 	return true;
 }
@@ -638,6 +749,81 @@ bool UBeamBackend::IsRetryingTimeout(FBeamRequestContext Ctx)
 bool UBeamBackend::IsSuccessfulResponse(int32 ResponseCode)
 {
 	return ResponseCode >= 200 && ResponseCode < 300;
+}
+
+/*	 
+	GENERIC-BEAM REQUEST FUNCTION
+*/
+
+TUnrealRequestPtr UBeamBackend::CreateGenericBeamRequest(int64& OutRequestId, const FBeamRetryConfig& RetryConfig, const UGenericBeamRequest* RequestData)
+{
+	UE_LOG(LogBeamBackend, Verbose, TEXT("Request Preparation - Preparing NonBeam Request: VERB=%s, URI=%s, BODY=%s"), *RequestData->Verb, *RequestData->URL, *RequestData->Body);
+
+	// Ensures we get a valid Next Id even if requests get made from multiple threads.
+	int64 ReqId;
+	auto Req = CreateUnpreparedRequest(ReqId, RetryConfig);
+	PrepareBeamableRequestVerbRouteBody(Req, RequestData, RequestData->URL);
+
+	const auto RequestContext = FBeamRequestContext{ReqId, RetryConfig, FBeamRealmHandle{}, -1, FUserSlot(""), AS_None};
+
+	// Keep track of this request and it's data. 
+	InFlightRequestContexts.Add(ReqId, RequestContext);
+	InFlightRequestData.Add(RequestContext, TScriptInterface<IBeamBaseRequestInterface>(const_cast<UGenericBeamRequest*>(RequestData)));
+
+	// Store make sure we have a slot waiting for the response/error value to be added
+	InFlightResponseBodyData.Add(RequestContext, nullptr);
+	InFlightResponseErrorData.Add(RequestContext, FBeamErrorResponse{});
+
+
+	INC_DWORD_STAT(STATID_RequestStarted)
+	OutRequestId = ReqId;
+	return Req;
+}
+
+/*	 
+	ROUTING KEYS
+*/
+
+void UBeamBackend::SetRoutingKeyMap(TArray<FString> BeamoIds, TArray<FString> TargetKeys)
+{
+	ensureAlwaysMsgf(BeamoIds.Num() == TargetKeys.Num(), TEXT("These arrays must have the same number of elements; they're pairs."));
+
+	TArray<FString> Mappings;
+	for (int i = 0; i < BeamoIds.Num(); i++)
+	{
+		Mappings.Add(BeamoIds[i] + TEXT(":") + TargetKeys[i]);
+	}
+
+	SetRoutingKeyMap(FString::Join(Mappings, TEXT(",")));
+}
+
+void UBeamBackend::SetRoutingKeyMap(FUserSlot Slot, TArray<FString> BeamoIds, TArray<FString> TargetKeys)
+{
+	ensureAlwaysMsgf(BeamoIds.Num() == TargetKeys.Num(), TEXT("These arrays must have the same number of elements; they're pairs."));
+
+	TArray<FString> Mappings;
+	for (int i = 0; i < BeamoIds.Num(); i++)
+	{
+		Mappings.Add(BeamoIds[i] + TEXT(":") + TargetKeys[i]);
+	}
+
+	SetRoutingKeyMap(Slot, FString::Join(Mappings, TEXT(",")));
+}
+
+void UBeamBackend::SetRoutingKeyMap(FString RoutingKeyMap)
+{
+	const auto AllRuntimeSlots = GetDefault<UBeamCoreSettings>()->RuntimeUserSlots;
+	for (FString Slot : AllRuntimeSlots)
+		SetRoutingKeyMap(Slot, RoutingKeyMap);
+
+	const auto AllDeveloperSlots = GetDefault<UBeamCoreSettings>()->DeveloperUserSlots;
+	for (FString Slot : AllDeveloperSlots)
+		SetRoutingKeyMap(Slot, RoutingKeyMap);
+}
+
+void UBeamBackend::SetRoutingKeyMap(FUserSlot ForSlot, FString RoutingKeyMap)
+{
+	CurrentRoutingKeyMaps.Add(ForSlot, RoutingKeyMap);
 }
 
 /*

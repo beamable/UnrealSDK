@@ -1,0 +1,6 @@
+{
+  "federations":
+  {
+    "steam":[{"interface": "IFederatedLogin"}]
+  }
+}

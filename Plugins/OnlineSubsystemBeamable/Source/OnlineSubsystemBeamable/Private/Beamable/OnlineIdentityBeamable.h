@@ -1,5 +1,3 @@
-// ================================ Copyright (c) Wildcard Alliance , All Rights Reserved. ================================
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -92,7 +90,7 @@ public:
 	virtual bool Logout(int32 LocalUserNum) override;
 	virtual bool AutoLogin(int32 LocalUserNum) override;
 	virtual void RevokeAuthToken(const FUniqueNetId& UserId, const FOnRevokeAuthTokenCompleteDelegate& Delegate) override;
-	virtual void GetUserPrivilege(const FUniqueNetId& UserId, EUserPrivileges::Type Privilege, const FOnGetUserPrivilegeCompleteDelegate& Delegate) override;
+	virtual void GetUserPrivilege(const FUniqueNetId& UserId, EUserPrivileges::Type Privilege, const FOnGetUserPrivilegeCompleteDelegate& Delegate, EShowPrivilegeResolveUI ShowResolveUI) override;
 
 	// IOnlineIdentity - Locally Cached Sync Calls
 	virtual TSharedPtr<FUserOnlineAccount> GetUserAccount(const FUniqueNetId& UserId) const override;
@@ -160,7 +158,7 @@ private:
 	 *  Delegate we bind to UBeamRuntime::OnUserReadyCode so that we can react to the newly logged user when Beamable is ready for use.
 	 *  This contains the OnBeamableUserReadyHook.
 	 */
-	void OnBeamableUserReady(FUserSlot Slot, TSharedPtr<FUserOnlineAccountBeamable> UserAccountPtr);
+	void OnBeamableUserReady(const FUserSlot& Slot, TSharedPtr<FUserOnlineAccountBeamable> UserAccountPtr);
 
 	// !!! PUBLIC HOOKS !!!
 public:

@@ -1,6 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
+/* BEAMABLE USINGS TO COPY PASTE START */
 using System;
+/* BEAMABLE USINGS TO COPY PASTE END */
+
 using UnrealBuildTool;
 using System.Collections.Generic;
 using System.IO;
@@ -26,7 +29,10 @@ public class BeamableUnrealTarget : TargetRules
 
 		Console.WriteLine($"Configuring standalone project as beamproj={samplePluginName}.");
 		ConfigureIfSandbox(this, samplePluginName);
+		ConfigureIfLiveOpsDemo(this, samplePluginName);
 		ConfigureIfHathoraDemo(this, samplePluginName);
+		ConfigureIfSteamDemo(this, samplePluginName);
+		ConfigureIfDiscordDemo(this, samplePluginName);
 		ApplyProjectOverrides(Target, samplePluginName);
 	}
 
@@ -52,16 +58,34 @@ public class BeamableUnrealTarget : TargetRules
 	{
 		if (beamProj == kBeamProj_Sandbox)
 		{
-			var oss = new Beam.OssConfig()
+			var oss = Beam.OssConfig.Disabled();
+
+			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)
 			{
-				IsEnabled = false,
+				Beam.ConfigureGame(TargetRules, oss);
+			}
+			else if (TargetRules.Type == UnrealBuildTool.TargetType.Editor)
+			{
+				Beam.ConfigureEditor(TargetRules, oss);
+			}
+			else if (TargetRules.Type == UnrealBuildTool.TargetType.Server)
+			{
+				Beam.ConfigureServer(TargetRules, oss);
+			}
+			else
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+		}
+	}
+	
+	public const string kBeamProj_LiveOpsDemo = "BEAMPROJ_LiveOpsDemo";
 
-				HooksEnabled = false,
-				HookSubsystemImplementation = "",
-				HookSubsystemIncludePath = "",
-
-				AdditionalHookModules = Array.Empty<string>(),
-			};
+	public static void ConfigureIfLiveOpsDemo(TargetRules TargetRules, string beamProj)
+	{
+		if (beamProj == kBeamProj_LiveOpsDemo)
+		{
+			var oss = Beam.OssConfig.Disabled();
 
 			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)
 			{
@@ -96,8 +120,63 @@ public class BeamableUnrealTarget : TargetRules
 				HookSubsystemImplementation = "FOnlineSubsystemHathoraDemo",
 				HookSubsystemIncludePath = "Customer/OnlineSubsystemHathoraDemo.h",
 
-				AdditionalHookModules = new[] { "HathoraSDK", "DiscordSDK" }
+				AdditionalHookModules = new[] { "HathoraSDK" }
 			};
+
+			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)
+			{
+				Beam.ConfigureGame(TargetRules, oss);
+			}
+			else if (TargetRules.Type == UnrealBuildTool.TargetType.Editor)
+			{
+				Beam.ConfigureEditor(TargetRules, oss);
+			}
+			else if (TargetRules.Type == UnrealBuildTool.TargetType.Server)
+			{
+				Beam.ConfigureServer(TargetRules, oss);
+			}
+			else
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+		}
+	}
+
+	public const string kBeamProj_SteamDemo = "BEAMPROJ_SteamDemo";
+
+	public static void ConfigureIfSteamDemo(TargetRules TargetRules, string beamProj)
+	{
+		if (beamProj == kBeamProj_SteamDemo)
+		{
+			var oss = Beam.OssConfig.Disabled();
+			TargetRules.bUsesSteam = true;
+
+			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)
+			{
+				Beam.ConfigureGame(TargetRules, oss);
+			}
+			else if (TargetRules.Type == UnrealBuildTool.TargetType.Editor)
+			{
+				Beam.ConfigureEditor(TargetRules, oss);
+			}
+			else if (TargetRules.Type == UnrealBuildTool.TargetType.Server)
+			{
+				Beam.ConfigureServer(TargetRules, oss);
+			}
+			else
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+		}
+	}
+
+	public const string kBeamProj_DiscordDemo = "BEAMPROJ_DiscordDemo";
+
+	public static void ConfigureIfDiscordDemo(TargetRules TargetRules, string beamProj)
+	{
+		if (beamProj == kBeamProj_DiscordDemo)
+		{
+			var oss = Beam.OssConfig.Disabled();
 
 			if (TargetRules.Type == UnrealBuildTool.TargetType.Game)
 			{
@@ -174,7 +253,7 @@ public class BeamableUnrealTarget : TargetRules
 
 /// <summary>
 /// This is a helper class that contains Beamable-owned code to help you configure the Beamable Modules in your project.
-/// Any change made to this class will requires you, the game-maker, to manually re-add them when updating Beamable SDK versions.   
+/// Any change made to this class will requires you, the game-maker, to manually re-add them when updating Beamable SDK versions.
 /// </summary>
 public static class Beam
 {
@@ -208,12 +287,24 @@ public static class Beam
 		/// The primary case for this is adding third-party SDKs you wish to integrate with Beamable (Discord, Hathora, etc...).
 		/// </summary>
 		public string[] AdditionalHookModules;
+
+		public static OssConfig Disabled()
+		{
+			return new OssConfig()
+			{
+				IsEnabled = false,
+				HooksEnabled = false,
+				HookSubsystemImplementation = string.Empty,
+				HookSubsystemIncludePath = string.Empty,
+				AdditionalHookModules = Array.Empty<string>()
+			};
+		}
 	}
 
 
 	/// <summary>
 	/// This is built by <see cref="Beam.ConfigureGame"/> (and others), so we can pass information down to each of the projects `Build.cs` files through <see cref="TargetRules.AdditionalData"/>.
-	/// See <see cref="Beam.GetOrAddAdditionalData{T}"/> and <see cref="Beam.GetAdditionalData{T}"/>. 
+	/// See <see cref="Beam.GetOrAddAdditionalData{T}"/> and <see cref="Beam.GetAdditionalData{T}"/>.
 	/// </summary>
 	public class BeamableAdditionalData
 	{
@@ -394,7 +485,7 @@ public static class Beam
 	/// </summary>
 	private static void ConfigOnlineSubsystem(TargetRules TargetRules, OssConfig OssConfig, BeamableAdditionalData AdditionalData)
 	{
-		// Don't do anything to configure OSS if its not enabled
+		// Don't do anything to configure OSS if it is not enabled
 		if (!OssConfig.IsEnabled) return;
 
 		// Include the OnlineSubsystem modules in the target.
@@ -405,7 +496,7 @@ public static class Beam
 			"OnlineSubsystemBeamable"
 		});
 
-		// If we are building the editor, we also add the OnlineSubsystemBeamableBp module (which is where your BeamFlow nodes for Microservices live when OSS is enabled) 
+		// If we are building the editor, we also add the OnlineSubsystemBeamableBp module (which is where your BeamFlow nodes for Microservices live when OSS is enabled)
 		if (TargetRules.bBuildEditor)
 		{
 			TargetRules.ExtraModuleNames.AddRange(new[]
@@ -424,7 +515,7 @@ public static class Beam
 			TargetRules.ProjectDefinitions.Add($"BEAM_OSS_SUBSYSTEM_IMPLEMENTATION={OssConfig.HookSubsystemImplementation}");
 			TargetRules.ProjectDefinitions.Add($"BEAM_OSS_SUBSYSTEM_INCLUDE=BEAM_STRINGIFY({OssConfig.HookSubsystemIncludePath})");
 
-			// Pass down, to the OnlineSubsystemBeamable plugin, a list of Module names that it'll also depend on 
+			// Pass down, to the OnlineSubsystemBeamable plugin, a list of Module names that it'll also depend on
 			AdditionalData.OssAdditionalModules = OssConfig.AdditionalHookModules;
 		}
 	}

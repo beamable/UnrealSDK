@@ -1,50 +1,27 @@
 #include "BeamCliProjectGeneratePropertiesCommand.h"
 
 #include "BeamLogging.h"
-#include "Misc/MonitoredProcess.h"
 #include "Serialization/JsonSerializerMacros.h"
-		
-TSharedPtr<FMonitoredProcess> UBeamCliProjectGeneratePropertiesCommand::RunImpl(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op)
-{
-	FString Params = ("project generate-properties");
-	for (const auto& CommandParam : CommandParams)
-		Params.Appendf(TEXT(" %s"), *CommandParam);
-	Params = PrepareParams(Params);
-	UE_LOG(LogBeamCli, Verbose, TEXT("BeamCliProjectGenerateProperties Command - Invocation: %s %s"), *PathToCli, *Params)
 
-	const auto CliPath = Cli->GetPathToCli();
-	const auto CliProcess = MakeShared<FMonitoredProcess>(CliPath, Params, FPaths::ProjectDir(), true, true);
-	CliProcess->OnOutput().BindLambda([this, Op](const FString& Out)
+FString UBeamCliProjectGeneratePropertiesCommand::GetCommand()
+{
+	return FString(TEXT("project generate-properties"));
+}
+		
+bool UBeamCliProjectGeneratePropertiesCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+{
+	
+	
+	return false;
+}
+
+void UBeamCliProjectGeneratePropertiesCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)
+{
+	if (OnCompleted)
 	{
-		UE_LOG(LogBeamCli, Verbose, TEXT("BeamCliProjectGenerateProperties Command - Std Out: %s"), *Out);
-		FString OutCopy = Out;
-		FString MessageJson;
-		while (ConsumeMessageFromOutput(OutCopy, MessageJson))
+		AsyncTask(ENamedThreads::GameThread, [this, ResultCode, Op]
 		{
-			auto Bag = FJsonDataBag();
-			if (Bag.FromJson(MessageJson))
-			{
-				const auto ReceivedStreamType = Bag.GetString("type");
-				const auto Timestamp = static_cast<int64>(Bag.GetField("ts")->AsNumber());
-				const auto DataJson = Bag.JsonObject->GetObjectField("data").ToSharedRef();
-				
-				
-			}
-			else
-			{
-				UE_LOG(LogBeamCli, Verbose, TEXT("BeamCliProjectGenerateProperties Command - Skipping non-JSON message: %s"), *MessageJson);
-			}			
-		}
-	});
-	CliProcess->OnCompleted().BindLambda([this, Op](int ResultCode)
-	{
-		if (OnCompleted)
-		{
-			AsyncTask(ENamedThreads::GameThread, [this, ResultCode, Op]
-			{
-				OnCompleted(ResultCode, Op);
-			});
-		}
-	});
-	return CliProcess;
+			OnCompleted(ResultCode, Op);
+		});
+	}
 }

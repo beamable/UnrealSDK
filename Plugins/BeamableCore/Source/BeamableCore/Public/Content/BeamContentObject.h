@@ -11,6 +11,14 @@
 class UContentDefinition;
 struct FLocalContentManifestRow;
 
+UENUM(BlueprintType)
+enum EBeamContentObjectSupportLevel : uint8
+{
+	FullSupport = 0,
+	PartialSupport = 1,
+	NoSupport = 2,
+};
+
 /**
  * This is the base class for all Beamable ContentObjects. This different serialization modes for different use cases:
  * - BasicJson: Mostly used for printing out the contents of the object. Only serializes Id, Version and UPROPERTIES.
@@ -21,13 +29,32 @@ class BEAMABLECORE_API UBeamContentObject : public UObject
 {
 	GENERATED_BODY()
 
+
+	/**
+	 * This list of fields are ignored when iterating through the properties of the content object to build its data.
+	 * This enables us to expose these fields in blueprint and serialize them normally as UObjects (for UBeamContentCache), while correctly skipping them when serializing/deserializing content json
+	 * objects. See BuildPropertiesJsonObject and ParsePropertiesJsonObject for more details.
+	 */
+	inline static TArray<FString> FieldsExcludedFromContentJsonSerialization = {"Id", "Version", "Tags", "Created", "LastChanged", "SupportLevel"};
+
 public:
+	UPROPERTY(BlueprintReadOnly)
 	FString Id;
+	UPROPERTY(BlueprintReadOnly)
 	FString Version;
+	UPROPERTY(BlueprintReadOnly)
 	TArray<FString> Tags;
 
+	UPROPERTY(BlueprintReadOnly)
 	FDateTime Created;
+	UPROPERTY(BlueprintReadOnly)
 	FDateTime LastChanged;
+
+	/**
+	 * This is "true" for instances of content objects that we download BUT cannot find a type in this client into which we can deserialize them. 
+	 */
+	UPROPERTY(BlueprintReadOnly)
+	TEnumAsByte<EBeamContentObjectSupportLevel> SupportLevel = FullSupport;
 
 	/**
 	 * @brief Generates a ContentDefinitionJsonObject. This is used during the publish flow. 
@@ -155,8 +182,77 @@ public:
 			}
 		}
 	}
-};
 
+public:
+	/**
+	 * Find the lowest UClass we have the code for that matches the type id string of this content object; if none is found, return a UBeamContentObject instance.
+	 * For example, with TypeID='items.my_item_type.my_item_sub_type':
+	 * - If we have the code for UMyItemSubType, we'll return an instance of it (with a FullySupported state flag).
+	 * - If we don't have the code for UMyItemSubType but do have the code for UMyItemType, we'll return an instance for it (with a PartiallySupported state flag).
+	 * - If we have the code ONLY for UBeamItemContent (which we are guaranteed to have), we'll return an instance for it (with a PartiallySupported state flag).
+	 * For fully custom hierarchies, for example, with TypeID='my_custom_content.my_sub_content':
+	 * - If we have the code for UMySubContent, we'll return an instance of it (with a FullySupported state flag).
+	 * - If we don't have the code for UMySubContent but do have the code for UMyCustomContent, we'll return an instance for it (with a PartiallySupported state flag).
+	 * - If we don't have the code for UMySubContent nor for UMyCustomContent, we'll return an instance of UBeamContentObject for it (with a Unsupported state flag).
+	 * This process guarantees that if you ever fetch content that you don't have the full source code to interpret it, you'll have the closest possible match.
+	 * Use-cases for this are:
+	 * - Content authored within Unity or Web interfaces that was pushed to the realm to be used by Microservices but Unreal does not yet support it.
+	 * - A developer working on the primary 'dev' realm pushing content whose source only exists on his local machine will not break other developers experience.
+	 *   They simply won't be able to access the properties on the new subclasses.
+	 *   
+	 * @param ContentTypeToContentClass This should always be a mapping, like ContentTypeStringToContentClass, that maps content type strings to their respective UClasses. 
+	 * @param ContentTypeId The type id of a particular content object (this is the object's id without the last component).
+	 * @param OutObject The UBeamContentObject instance that is correct.
+	 */
+	static void NewFromTypeId(const TMap<FString, UClass*>& ContentTypeToContentClass, const FString& ContentTypeId, UBeamContentObject*& OutObject)
+	{
+		UClass* ObjectClass;
+		EBeamContentObjectSupportLevel SupportLevel;
+		GetClassForTypeId(ContentTypeToContentClass, ContentTypeId, ObjectClass, SupportLevel);
+		OutObject = NewObject<UBeamContentObject>(GetTransientPackage(), ObjectClass);
+		OutObject->SupportLevel = SupportLevel;
+	}
+
+	/**
+	 * See NewFromTypeId.
+	 */
+	static void GetClassForTypeId(const TMap<FString, UClass*>& ContentTypeToContentClass, const FString& ContentTypeId, UClass*& OutObjectClass, EBeamContentObjectSupportLevel& OutSupportLevel)
+	{
+		bool bKnowsType;
+		auto TypeStringCpy = ContentTypeId;
+		do
+		{
+			bKnowsType = ContentTypeToContentClass.Contains(TypeStringCpy);
+			if (bKnowsType)
+			{
+				OutObjectClass = *ContentTypeToContentClass.Find(TypeStringCpy);
+
+				// Set the support level to full support only if we found a UClass that's an exact match to the given type id; otherwise, PartialSupport it is. 
+				OutSupportLevel = TypeStringCpy.Equals(ContentTypeId) ? FullSupport : PartialSupport;
+			}
+			else
+			{
+				int32 LastDotIdx;
+				TypeStringCpy.FindLastChar('.', LastDotIdx);
+
+				// Cut off the part of the type and let us fall through to the while clause again.
+				if (LastDotIdx != INDEX_NONE)
+				{
+					TypeStringCpy.MidInline(0, LastDotIdx);
+				}
+				// If we were at the last possible type and we still didn't find a UClass to deserialize it in it...
+				else
+				{
+					// Clear the type string so we fall out of the while loop.
+					TypeStringCpy.Empty();
+					OutObjectClass = UBeamContentObject::StaticClass();
+					OutSupportLevel = NoSupport;
+				}
+			}
+		}
+		while (!bKnowsType && !TypeStringCpy.IsEmpty());
+	}
+};
 
 
 #define DEFINE_CONTENT_TYPE_NAME(ClassName, TypeName) \

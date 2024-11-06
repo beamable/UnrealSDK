@@ -20,6 +20,94 @@
 
 #include "BeamEditor.generated.h"
 
+UENUM(BlueprintType)
+enum class EMessageType : uint8 {
+	VE_Info       UMETA(DisplayName="Info"),
+	VE_Warning    UMETA(DisplayName="Warning"),
+	VE_Error      UMETA(DisplayName="Error"),
+};
+
+
+UENUM(BlueprintType)
+enum class EPortalPage : uint8 {
+	VE_Dashboard       UMETA(DisplayName="Dashboard"),
+	VE_Microservices   UMETA(DisplayName="Microservices"),
+	VE_PlayerSearch    UMETA(DisplayName="PlayerSearch"),
+	VE_RealmConfig     UMETA(DisplayName="RealmConfig"),
+	VE_Content         UMETA(DisplayName="Content"),
+	VE_Campaign        UMETA(DisplayName="Campaign"),
+};
+
+USTRUCT(BlueprintType)
+struct FDocsPageItem
+{
+    GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Beam")
+    FString Id;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Beam")
+    FString Path;
+
+	bool operator==(const FDocsPageItem& Other) const
+	{
+		return Id == Other.Id && Path == Other.Path;
+	}
+};
+
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEditorMessageClickedEvent);
+
+UCLASS(Blueprintable)
+class UBeamableWindowMessage : public UObject
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
+	EMessageType MessageType;
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
+	FString MessageValue;
+	UPROPERTY(BlueprintAssignable)
+	FEditorMessageClickedEvent OnClickEvent;
+
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	void  HandleClick()
+	{
+		this->OnClickEvent.Broadcast();
+	}
+
+	UFUNCTION(BlueprintPure, Category="Beam")
+	FText GetText() const
+	{
+		return FText::FromString(this->MessageValue);
+	}
+
+	UFUNCTION(BlueprintPure, Category="Beam")
+	void GetIcon(FSlateBrush& Out) const
+	{
+		if(this->MessageValue.IsEmpty())
+		{
+			Out = *FAppStyle::Get().GetBrush(TEXT("Sequencer.Empty"));
+			Out.TintColor = FSlateColor(FLinearColor(1.0f, 1.0f, 0.0f, 0.0f));
+			return;
+		}
+		switch(this->MessageType)
+		{
+		case EMessageType::VE_Info:
+			Out = *FAppStyle::Get().GetBrush(TEXT("Icons.Info"));
+			Out.TintColor = FSlateColor(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
+			break;
+		case EMessageType::VE_Warning:
+			Out = *FAppStyle::Get().GetBrush(TEXT("Icons.Warning"));
+			Out.TintColor = FSlateColor(FLinearColor(0.9f, 0.8f, 0.0f, 1.0f));
+			break;
+		case EMessageType::VE_Error:
+			Out = *FAppStyle::Get().GetBrush(TEXT("Icons.Error"));
+			Out.TintColor = FSlateColor(FLinearColor(1.0f, 0.1f, 0.1f, 1.0f));
+			break;
+		}
+	}
+};
+
 
 DECLARE_DELEGATE(FEditorStateChangedHandlerCode);
 DECLARE_DYNAMIC_DELEGATE(FEditorStateChangedHandler);
@@ -60,7 +148,7 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamEditorBootstrapper : public UObject
 	 * Our BeamableWindowUI and other AssetEditor extensions wait for this flag to be true before allowing functionality to be accessed in editor.
 	 */
 	UFUNCTION()
-	void Run_TrySignIntoMainEditorSlot();
+	void Run_TrySignIntoMainEditorSlot(FBeamWaitCompleteEvent Evt);
 
 	/**
 	 * @brief This runs after the SignIn operation the previous step resolves and simply flags the editor as ready. 
@@ -128,6 +216,13 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamEditor : public UEditorSubsystem
 	 */
 	TArray<FBeamOperationHandle> InitalizeFromRealmOps = {};
 	FBeamWaitHandle InitializeFromRealmsWait;
+	
+	/**
+	 * @brief When we change the realm, we notify all UBeamEditorSubsystems that exist so that they can set up their internal state to be correct with the new realm.
+	 * They return operation handles that we wait on. When ALL operations of ALL systems are done, we notify each system that the realm change was finished.
+	 */
+	TArray<FBeamOperationHandle> RealmInitializedOps = {};
+	FBeamWaitHandle RealmInitializedWait;
 
 	/**
 	 * @brief Registered to the global user-slot cleared callback from the user slot system so that we can clean up the editor environment if it was the MainEditorSlot that was cleared. 
@@ -157,12 +252,22 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category="Beam")
 	bool bEditorReady;
 
+	UPROPERTY(BlueprintReadOnly, Category="Beam")
+	UBeamableWindowMessage* WindowMessage;
+
 	UPROPERTY(BlueprintAssignable)
 	FEditorStateChangedEvent OnEnteringPIE;
 
 	UPROPERTY(BlueprintAssignable)
 	FEditorStateChangedEvent OnExitingPIE;
 
+	UPROPERTY(BlueprintReadOnly, Category="Beam")
+	TArray<FDocsPageItem> DocsPages;
+	/**
+	 * Called whenever apply to build is pressed. Only use this to bind things that we can't call directly (from other modules).
+	 */	
+	FEditorStateChangedEvent OnAppliedSettingsToBuild;
+	
 
 	/**
 	 * @brief Gets the current authenticated MainEditorUser slot and it's data.
@@ -197,6 +302,19 @@ public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
 	static UBeamEditor* GetSelf(const UObject* CallingContext);
 
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="OnOperationEvent"))
+	void SetBeamableWindowMessage(UBeamableWindowMessage* message);
+
+	
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="OnOperationEvent"))
+	void UpdateBeamableWindowMessage(FString Message, EMessageType typeOfMessage);
+	
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="OnOperationEvent"))
+	void ClearBeamableWindowMessage();
+
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	void OpenDocsPage(FDocsPageItem item);
+	
 	// Operations
 public:
 	/**
@@ -318,14 +436,26 @@ private:
 	 * @brief Callback for RealmChangedHandler. (See ChangeActiveRealm and OnRealmWillChangeHandler).
 	 */
 	UFUNCTION()
-	void SelectRealm_OnSystemsReady(FBeamWaitCompleteEvent Evt, FBeamRealmHandle NewRealmHandle,
-	                                FBeamOperationHandle Op) const;
+	void SelectRealm_OnRealmInitialized(FBeamWaitCompleteEvent Evt, FBeamRealmHandle NewRealmHandle,
+	                                FBeamOperationHandle Op);
+
+	/**
+	 * Callback for after OnRealmInitialized. 
+	 */
+	UFUNCTION()
+	void SelectRealm_OnSystemsRead(FBeamWaitCompleteEvent Evt, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op);
 
 	/**
 	 * @brief Opens the Beamable Portal, signed into the MainEditorUser's account, at the dashboard page. 
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam")
 	void OpenPortalOnCurrentRealm();
+
+	/**
+	 * @brief Opens the Beamable Portal, signed into the MainEditorUser's account, at the selected page. 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	void OpenPortal(EPortalPage page);
 
 	// Utility Functions
 private:

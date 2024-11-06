@@ -19,16 +19,16 @@ struct FBeamMatchmakingTicket
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
-	FGuid TicketId;
+	FGuid TicketId = {};
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
-	UBeamGameTypeContent* GameType;
+	UBeamGameTypeContent* GameType = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
-	TArray<FUserSlot> SlotsInTicket;
+	TArray<FUserSlot> SlotsInTicket = {};
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
-	TArray<FBeamGamerTag> GamerTagsInTicket;
+	TArray<FBeamGamerTag> GamerTagsInTicket = {};
 
 	/**
 	 * This will be empty until the OnMatchReady callback is invoked.
@@ -150,7 +150,10 @@ public:
 	virtual void InitializeWhenUnrealReady_Implementation(FBeamOperationHandle& ResultOp) override;
 
 	virtual void OnPostUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp) override;
-
+	
+	//Returns a list of subsystems that this system is depending on
+	virtual TArray<TSubclassOf<UBeamRuntimeSubsystem>> GetDependingOnSubsystems() override;
+	
 	// LOCAL STATE GETTERS
 
 	/**

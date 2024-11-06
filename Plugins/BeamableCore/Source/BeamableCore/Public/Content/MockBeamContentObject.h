@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
-#include "GameplayTagsManager.h"
 #include "AutoGen/Arrays/ArrayOfString.h"
 #include "AutoGen/Maps/MapOfString.h"
 #include "AutoGen/Optionals/OptionalArrayOfBeamPid.h"
@@ -37,8 +36,8 @@ struct FContentLinkWrapperTestStruct : public FBeamJsonSerializableUStruct
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		SomeOtherProperty = Bag->GetIntegerField("SomeOtherProperty");
-		UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField("LinkTest"), LinkTest, OuterOwner);
+		SomeOtherProperty = Bag->GetIntegerField(TEXT("SomeOtherProperty"));
+		UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("LinkTest")), LinkTest, OuterOwner);
 	}
 };
 
@@ -66,8 +65,8 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		SomeOtherProperty = Bag->GetIntegerField("SomeOtherProperty");
-		UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField("LinkTest"), LinkTest, OuterOwner);
+		SomeOtherProperty = Bag->GetIntegerField(TEXT("SomeOtherProperty"));
+		UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("LinkTest")), LinkTest, OuterOwner);
 		UBeamJsonUtils::DeserializeUObject("RecursiveLinkTest", Bag, RecursiveLinkTest, OuterOwner);
 	}
 };

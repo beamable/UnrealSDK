@@ -1,7 +1,6 @@
 ﻿// Copyright Epic Games, Inc. All Rights Reserved.
 
 using System.IO;
-using Internal;
 using UnrealBuildTool;
 
 public class DiscordSDK : ModuleRules

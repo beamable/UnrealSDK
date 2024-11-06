@@ -157,10 +157,43 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRuntimeStateChangedEvent);
 
 DECLARE_MULTICAST_DELEGATE(FRuntimeStateChangedEventCode);
 
+DECLARE_DYNAMIC_DELEGATE_OneParam(FUserStateChangedHandler,const FUserSlot&,UserSlot);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUserStateChangedEvent, const FUserSlot&, Slot);
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FUserStateChangedEventCode, FUserSlot);
+DECLARE_MULTICAST_DELEGATE_OneParam(FUserStateChangedEventCode, const FUserSlot&);
 
+DECLARE_DELEGATE_OneParam(FUserStateChangedCode,const FUserSlot&);
+
+DECLARE_DYNAMIC_DELEGATE_OneParam(FRuntimeError,FString, ErrorMessage);
+
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOperationError,const TArray<FBeamOperationEvent>&, OperationEventsWithErrors);
+
+DECLARE_DELEGATE_OneParam(FOperationErrorCode,const TArray<FBeamOperationEvent>&);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSDKInitilizationErrorEvent,const TArray<FBeamOperationEvent>&, OperationEventsWithErrors);
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FSDKInitilizationErrorEventCode,const TArray<FBeamOperationEvent>&) ;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSubsystemsUserInitializationErrorEvent,const FUserSlot&,UserSlot,const TArray<FBeamOperationEvent>&, OperationEventsWithErrors);
+
+DECLARE_MULTICAST_DELEGATE_TwoParams(FSubsystemsUserInitializationErrorEventCode, const FUserSlot&,const TArray<FBeamOperationEvent>&);
+/**
+ * State of SDK intialization.
+ *
+ * - NotInitialized: The sdk initialization did not start yet.
+ * - Initializing: The sdk initialization has begun but did not finish yet.
+ * - Initialized: The sdk is now initialized and ready to be used.
+ * - InitializationFailed : The sdk initialization process started but ended up with error.
+ */
+UENUM()
+enum ESDKState
+{
+	NotInitialized,
+	Initializing,
+	Initialized,
+	InitializationFailed
+};
 
 /**
  * 
@@ -169,26 +202,71 @@ UCLASS(BlueprintType, meta=(Namespace="Beam"))
 class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
-
+	
+	
 	/** @brief Initializes the subsystem.  */
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
+	/** List of subsystems that can not be manually initialized because all the other sub systems are dependent on
+	* Or the sdk will not be functioning without it
+	 */
+	TArray<TSubclassOf<UBeamRuntimeSubsystem>> GetRequiredSubsystems();
 	/**
 	 * @brief This gets called the frame after all the subsystem initializations have happened.
 	 * This enables all subsystems to have a chance to subscribe to BeamRuntime events should they choose to do so.
 	 * This is handled automatically for by all UBeamRuntimeSubsystems.
 	 */
-	virtual void TriggerInitializeWhenUnrealReady();
+	virtual void TriggerInitializeWhenUnrealReady(bool ApplyFrictionlessLogin, FRuntimeStateChangedHandler SDKReadyHandler, FRuntimeError
+	                                              SDKInitilizationErrorHandler);
 
 	/**
-	 * @brief This gets called after all runtime systems had the opportunity to get ready for authentication to happen.
+	 * @brief This gets called after all runtime systems had the opportunity to make requests to Beamable that do not depend on content information.
 	 */
-	void TriggerOnBeamableStarting(FBeamWaitCompleteEvent);
+	void TriggerOnBeamableStarting(FBeamWaitCompleteEvent, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems, bool ApplyFrictionlessLogin, FRuntimeStateChangedHandler
+	                               SDKReadyHandler, FRuntimeError SDKInitilizationErrorHandler);
+
+	/**
+	 * @brief This gets called after all runtime systems had the opportunity to make initialization requests to Beamable that DO depend on content data.
+	 */
+	void TriggerOnContentReady(FBeamWaitCompleteEvent Evt, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems, bool
+	                           ApplyFrictionlessLogin, FRuntimeStateChangedHandler SDKReadyHandler, FRuntimeError
+	                           SDKInitilizationErrorHandler);
+
 	/**
 	 * @brief This gets called after all runtime subsystems have been initialized, but before the Owner Player's auth has been made.
 	 */
-	void TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent);
+	void TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems, bool ApplyFrictionlessLogin, FRuntimeStateChangedHandler
+	                                         SDKReadyHandler, FRuntimeError SDKInitilizationErrorHandler);
 
+	/**
+	 * @brief This function gets called to start the flow of initializing subsystems manually
+	 */
+	void ManuallyInitializeSubsystem(TArray<TSubclassOf<UBeamRuntimeSubsystem>>& SubsystemsTypesToInitialize,
+	                                 bool bInitializeUsers,
+	                                 FBeamOperationHandle OnOperationEvent);
+	/**
+	* @brief This gets called after the first initialize call to set manually subsystems as started but without initializing the content
+	 */
+	void TriggerManuallySetSubsystemStarted(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, bool
+	                                        bInitializeUsers, FBeamOperationHandle OnOperationEvent);
+	/**
+	 * @brief This gets called after all the manually initialized subsystems had the opportunity to make initialization requests to Beamable that DO depend on content data.
+	 */
+	void TriggerManuallySetSubsystemContentReady(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, bool
+	                                             bInitializeUsers, FBeamOperationHandle
+	                                             OnOperationEvent);
+	/**
+	 * @brief This gets called to initialize the users for the manually initialized subsystems.
+	 */
+	void TriggerManuallySetSubsystemsUserReady(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, bool
+	                                           bInitializeUsers, FBeamOperationHandle
+	                                           OnOperationEvent);
+
+	/**
+	 * @brief This gets called to trigger the post user sign in for the manually initialized subsystems.
+	 */
+	void TriggerManuallySubsystemsPostUserSignIn(FBeamWaitCompleteEvent Evt,
+	                                             TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, FBeamOperationHandle OnOperationEvent);
 	/**
 	 * Manages connectivity and recovery for every user slot.
 	 */
@@ -211,7 +289,8 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	/**
 	 * @brief 
 	 */
-	void TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser);
+	void TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, TArray<UBeamRuntimeSubsystem*>
+	                                    AutomaticallyInitializedSubsystems);
 
 	/**
 	 * @brief Callback added to the UserSlot global callback so that we can respond to users signing out. 
@@ -245,10 +324,16 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	FBeamWaitHandle OnInitializeWhenUnrealReadyWait;
 
 	/**
-	 * @brief After beamable has finished it's initialization but has yet to attempt its frictionless auth	 
+	 * @brief After beamable has finished it's initialization but has yet to download its content manifest.	 
 	 */
-	TArray<FBeamOperationHandle> OnBeamableStartedOps = {};
-	FBeamWaitHandle OnBeamableStartedWait;
+	TArray<FBeamOperationHandle> OnBeamableStartingOps = {};
+	FBeamWaitHandle OnBeamableStartingWait;
+
+	/**
+	 * @brief After beamable has finished fetching the content manifest, but has yet to finish initializing the runtime subsystems and has not yet attempted its frictionless auth.	 
+	 */
+	TArray<FBeamOperationHandle> OnBeamableContentReadyOps = {};
+	FBeamWaitHandle OnBeamableContentReadyWait;
 
 	/**
 	 * @brief So that actors and components can react to beamable's initialization flow being finished.
@@ -258,7 +343,20 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	UPROPERTY()
 	FRuntimeStateChangedEvent OnStarted;
 	FRuntimeStateChangedEventCode OnStartedCode;
-
+	
+	/**
+	 * @brief This is called when the operations for starting the sdk fails.
+	 */
+	UPROPERTY()
+	FSDKInitilizationErrorEvent OnSDKInitializationFailed;
+	FSDKInitilizationErrorEventCode OnSDKInitializationFailedCode;
+	
+	/**
+	 * @brief This is a list of the operation that ended with errors after the initialization fails.
+	 */
+	UPROPERTY()
+	TArray<FBeamOperationEvent> CachedInitializationErrors;
+	
 	/**
 	 * @brief Every time a user signs into beamable, we give each subsystem the ability to run an operation for that user.
 	 * We also give them the list of currently authenticated UserSlots (so that they can tell if the user that just signed in is the last one for example).
@@ -282,19 +380,6 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	FRuntimeStateChangedEvent OnFailedUserAuth;
 
 	/**
-	 * @brief So that actors and components can react to beamable's initialization flow being finished for the first time.
-	 *  Use this callback to run code the first time the configured UBeamCoreSettings::GetOwnerPlayerSlot() is authenticated.
-	 *
-	 *  This runs only once during your game's entire run: after the PostUserSignIn call of the OwnerPlayer's authentication.
-	 *  
-	 *  If you wish to instead run code EVERY time a user is authenticated into a slot, use the OnUserReady callbacks instead.	  
-	 */
-	UPROPERTY()
-	FRuntimeStateChangedEvent OnReady;
-
-	FRuntimeStateChangedEventCode OnReadyCode;
-
-	/**
 	 * @brief Every time a user signs out of beamable we give each subsystem the ability to run an operation for that user.
 	 * We also give them the list of currently authenticated User Slots and the reason for the sign out so that they can correctly decide what to do in each instance.
 	 */
@@ -316,6 +401,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	TMap<FUserSlot, FBeamWebSocketHandle> DefaultNotificationChannels;
 
 public:
+	
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
 	static UBeamRuntime* GetSelf(const UObject* CallingContext) { return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamRuntime>(); }
 
@@ -328,7 +414,10 @@ public:
 	UFUNCTION()
 	void PIEExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity);
 
-
+	/** @brief an enum that represents the state of the sdk if it is currently initialized and ready to be used or not */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="SDK State")
+	TEnumAsByte<ESDKState> CurrentSdkState;
+	
 	UPROPERTY()
 	UBeamUserSlots* UserSlotSystem;
 
@@ -338,46 +427,85 @@ public:
 	UPROPERTY()
 	UBeamNotifications* NotificationSystem;
 
+
 	/**
-	 * @brief This flag is used for beamable's automatic initialization.
-	 * It ensures that the OnBeamableReady event is only ever called once in one of two moments after the game boots up:
-	 *  - If UserSlot at index 0 is signed in already, we wait for it's authentication flow to finish and then call it.
-	 *  - If UserSlot at index 0 is NOT signed in already, we call it during DelayedInitialize (for now, we assume this is the "owner" player of the game -- player 1).
-	 *
-	 *  BeamRuntimeSubsystems implement their OnBeamableReady function event to: either set up local data by kicking-off operations to fetch data.
-	 *
-	 *  The OnReady event exposed here is what game makers should use when registering their actors, components, etc... if they wish to depend on beamable's runtime systems.	  
+	 * @brief Call this function to initialize the SDK.
+	 * SDKReadyHandler : Is triggered after the sdk initialization has finished without errors.
+	 * SDKInitilizationErrorHandler : Is triggered if an error happened while initializing the SDK. 
+	 */
+	UFUNCTION(BlueprintCallable)
+	void InitSDK(FRuntimeStateChangedHandler SDKInitializedHandler, FRuntimeError SDKInitilizationErrorHandler);
+
+	/**
+	 * @brief Call this function to initialize the SDK and apply frictionless login.
+	 * UserReadyHandler : Is triggered after the sdk initialization has finished and the user data has been initialized,
+	 * it can be triggered multiple times if there are more than one user slot.
+	 * SDKInitializationErrorHandler :  Is triggered if an error happened while initializing the SDK.
+	 * UserInitilizationError :  Is triggered if an error happened while initializing a user for the SDK.
+	 */
+	UFUNCTION(BlueprintCallable)
+	void InitSDKWithFrictionlessLogin(FUserStateChangedHandler UserReadyHandler,
+	                                  FRuntimeError SDKInitializationErrorHandler, FRuntimeError UserInitilizationError);
+
+
+	/**
+	 * @brief Call this function if you want to initialize a subsystem that was set to manually initialize from the project settings.
+	 * This function will initialize all the passed subsystems
+	 */
+	UFUNCTION(BlueprintCallable)
+	static inline FName GetOperationEventID_SubsystemsInitializedWithoutUserData() { return FName("SUBSYSTEMS_STARTED");}
+	
+	UFUNCTION(BlueprintCallable)
+	FBeamOperationHandle ManuallyInitializeSubsystemOperation(FUserSlot UserSlot, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize,
+	                                                          FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc ManuallyInitializeSubsystemOperation
+	 */
+	FBeamOperationHandle CPP_ManuallyInitializeSubsystemOperation(FUserSlot UserSlot, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize,
+	                                                              FBeamOperationEventHandlerCode OnOperationEvent);
+
+	/**
+	 * @brief Call this function if you want to initialize a subsystem that was set to manually initialize from the project settings.
+	 * This function will initialize all the passed subsystems along with the user data
+	 */
+	UFUNCTION(BlueprintCallable)
+	FBeamOperationHandle ManuallyInitializeSubsystemOperationWithUserData(FUserSlot UserSlot, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize,
+	                                                                      FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @brief This flag indicates if at least one user slot is already authenticated.
 	 */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="IsOwnerUserAuthenticated")
 	bool bDidFirstAuthRun = false;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsFirstAuth() const { return !bDidFirstAuthRun; }
-
+	
 	/**
-	 * @brief This flag is used to verify that beamable has been properly initialized and is ready for authentication.
+	 * @copydoc ManuallyInitializeSubsystemOperationWithUserData
 	 */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="IsBeamableStarted")
-	bool bIsBeamableStarted = false;
+	FBeamOperationHandle CPP_ManuallyInitializeSubsystemOperationWithUserData(FUserSlot UserSlot, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize,
+																  FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
-	 * @brief In BP, use this function to bind initialization functions to OnReady. This will execute the delegate if you're already ready before it binds it. 
+	 * @brief In BP, use this function to bind initialization functions to OnStarted. Which executes after the SDK is initialized. 
 	 */
 	UFUNCTION(BlueprintCallable)
 	void RegisterOnStarted(FRuntimeStateChangedHandler Handler)
 	{
-		if (bIsBeamableStarted) const auto _ = Handler.ExecuteIfBound();
+		if (CurrentSdkState == ESDKState::Initialized) const auto _ = Handler.ExecuteIfBound();
 		OnStarted.Add(Handler);
 	}
 
 	/**
-	 * @brief In BP, use this function to bind initialization functions to OnReady. This will NOT execute the delegate if you're already ready. 
+	 * @brief In BP, use this function to bind initialization functions to OnStarted. This will NOT execute the delegate if you're already ready. 
 	 */
 	UFUNCTION(BlueprintCallable)
 	void RegisterOnStarted_NoExecute(FRuntimeStateChangedHandler Handler) { OnStarted.Add(Handler); }
 
 	/**
-	 * @brief In BP, use this function to unbind initialization custom events to OnReady. 
+	 * @brief In BP, use this function to unbind initialization custom events to OnStarted.  Which executes after the SDK is initialized. 
 	 */
 	UFUNCTION(BlueprintCallable)
 	void UnregisterOnStarted(FRuntimeStateChangedHandler Handler)
@@ -385,15 +513,22 @@ public:
 		if (OnStarted.Contains(Handler))
 			OnStarted.Remove(Handler);
 	}
-
+	/**
+	 * @brief In CPP, use this function to bind initialization functions to OnStarted. Which executes after the SDK is initialized. 
+	 */
 	FDelegateHandle CPP_RegisterOnStarted(FRuntimeStateChangedHandlerCode Handler)
 	{
-		if (bIsBeamableStarted) const auto _ = Handler.ExecuteIfBound();
+		if (CurrentSdkState == ESDKState::Initialized) const auto _ = Handler.ExecuteIfBound();
 		return OnStartedCode.Add(Handler);
 	}
-
+	/**
+	 * @brief In CPP, use this function to bind initialization functions to OnStarted. This will NOT execute the delegate if you're already ready. 
+	 */
 	FDelegateHandle CPP_RegisterOnStarted_NoExecute(FRuntimeStateChangedHandlerCode Handler) { return OnStartedCode.Add(Handler); }
 
+	/**
+	 * @brief In CPP, use this function to unbind initialization custom events to OnStarted.  Which executes after the SDK is initialized. 
+	 */
 	void CPP_UnregisterOnStarted(FDelegateHandle Handle)
 	{
 		OnStartedCode.Remove(Handle);
@@ -403,12 +538,43 @@ public:
 	 * @brief So that actors and components can react to user data being ready for a specific user slot. 
 	 *  The event is what game makers should use when registering their actors, systems, etc... if they wish to depend on a specific user slot's data in BeamRuntimeSubsystems.
 	 *
-	 *  This runs every time a UserSlot is authenticated into. The first time, it runs after the OnReady global callback. 
+	 *  This runs every time a UserSlot is authenticated into. 
 	 */
 	UPROPERTY(BlueprintAssignable)
 	FUserStateChangedEvent OnUserReady;
 	FUserStateChangedEventCode OnUserReadyCode;
+	/**
+	 * @brief In BP, use this function to bind functions that will execute when any user slot is initialized.
+	 */
+	UFUNCTION(BlueprintCallable)
+	void RegisterOnUserReady(FUserStateChangedHandler Handler)
+	{
+		OnUserReady.Add(Handler);
+	}
 
+	/**
+	 * @brief In BP, use this function to unbind functions to the user slot initialization. 
+	 */
+	UFUNCTION(BlueprintCallable)
+	void UnregisterOnUserReady(FUserStateChangedHandler Handler)
+	{
+		if (OnUserReady.Contains(Handler))
+			OnUserReady.Remove(Handler);
+	}
+	/**
+	 * @brief In CPP, use this function to bind functions that will execute when any user slot is initialized.
+	 */
+	FDelegateHandle CPP_RegisterOnUserReady(FUserStateChangedCode Handler)
+	{
+		return OnUserReadyCode.Add(Handler);
+	}
+	/**
+	 * @brief In CPP, use this function to unbind functions that will execute when any user slot is initialized.
+	 */
+	void CPP_UnregisterOnUserReady(FDelegateHandle Handler)
+	{
+		OnUserReadyCode.Remove(Handler);
+	}
 	/**
 	 * @brief So that actors and components can react to user data being cleared for a specific user slot. 
 	 *  The event is what game makers should use when registering their actors, systems, etc... if they wish to react to a specific user slot's data in BeamRuntimeSubsystems being cleared.
@@ -420,42 +586,56 @@ public:
 	FUserStateChangedEventCode OnUserClearedCode;
 
 	/**
-	 * @brief In BP, use this function to bind initialization functions to OnReady. This will execute the delegate if you're already ready before it binds it. 
+	 * @brief This is called when the initialization of the subsystems user slots fails.
+	 */
+	UPROPERTY()
+	FSubsystemsUserInitializationErrorEvent OnSubsystemsUserInitializationFailed;
+	FSubsystemsUserInitializationErrorEventCode OnSubsystemsUserInitializationFailedCode;
+
+	/**
+	 * @brief In BP, use this function to bind error handling logic to OnSDKInitializationFailed. This will execute the delegate if sdk already failed initialization before it binds it. 
 	 */
 	UFUNCTION(BlueprintCallable)
-	void RegisterOnReady(FRuntimeStateChangedHandler Handler)
+	void RegisterOnSDKInitializationFailed(FOperationError Handler)
 	{
-		if (bDidFirstAuthRun) const auto _ = Handler.ExecuteIfBound();
-		OnReady.Add(Handler);
+		if (CurrentSdkState == ESDKState::InitializationFailed) const auto _ = Handler.ExecuteIfBound(CachedInitializationErrors);
+		OnSDKInitializationFailed.Add(Handler);
 	}
 
 	/**
-	 * @brief In BP, use this function to bind initialization functions to OnReady. This will NOT execute the delegate if you're already ready. 
+	 * @brief In BP, use this function to bind error handling logic to OnSDKInitializationFailed. This will NOT execute the delegate if initialization already failed. 
 	 */
 	UFUNCTION(BlueprintCallable)
-	void RegisterOnReady_NoExecute(FRuntimeStateChangedHandler Handler) { OnReady.Add(Handler); }
+	void RegisterOnSDKInitializationFailed_NoExecute(FOperationError Handler) { OnSDKInitializationFailed.Add(Handler); }
 
 	/**
-	 * @brief In BP, use this function to unbind initialization custom events to OnReady. 
+	 * @brief In BP, use this function to unbind error handling events to OnSDKInitializationFailed. 
 	 */
 	UFUNCTION(BlueprintCallable)
-	void UnregisterOnReady(FRuntimeStateChangedHandler Handler)
+	void UnRegisterOnSDKInitializationFailed(FOperationError Handler)
 	{
-		if (OnReady.Contains(Handler))
-			OnReady.Remove(Handler);
+		if (OnSDKInitializationFailed.Contains(Handler))
+			OnSDKInitializationFailed.Remove(Handler);
 	}
-
-	FDelegateHandle CPP_RegisterOnReady(FRuntimeStateChangedHandlerCode Handler)
+	/**
+	 * @brief In CPP, use this function to bind error handling logic to OnSDKInitializationFailed. This will execute the delegate if sdk already failed initialization before it binds it. 
+	 */
+	FDelegateHandle CPP_RegisterOnSDKInitializationFailed(FOperationErrorCode Handler)
 	{
-		if (bDidFirstAuthRun) const auto _ = Handler.ExecuteIfBound();
-		return OnReadyCode.Add(Handler);
+			if (CurrentSdkState == ESDKState::InitializationFailed) const auto _ = Handler.ExecuteIfBound(CachedInitializationErrors);
+			return OnSDKInitializationFailedCode.Add(Handler);
 	}
+	/**
+	 * @brief In CPP, use this function to bind error handling logic to OnSDKInitializationFailed. This will NOT execute the delegate if initialization already failed. 
+	 */
+	FDelegateHandle CPP_RegisterOnSDKInitializationFailed_NoExecute(FOperationErrorCode Handler) { return OnSDKInitializationFailedCode.Add(Handler); }
 
-	FDelegateHandle CPP_RegisterOnReady_NoExecute(FRuntimeStateChangedHandlerCode Handler) { return OnReadyCode.Add(Handler); }
-
-	void CPP_UnregisterOnReady(FDelegateHandle Handle)
+	/**
+	 * @brief In CPP, use this function to unbind error handling events to OnSDKInitializationFailed. 
+	 */
+	void CPP_UnRegisterOnSDKInitializationFailed(FDelegateHandle Handle)
 	{
-		OnReadyCode.Remove(Handle);
+		OnSDKInitializationFailedCode.Remove(Handle);
 	}
 
 	/**
@@ -473,18 +653,21 @@ public:
 	 * @brief An operation that will authenticate a user with the beamable using a Federated Identity and persist that authentication locally.
 	 * If a user is already in the given slot, this operation will sign out entirely before signing in.
 	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle LoginExternalIdentityOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationEventHandler OnOperationEvent);
 	/**
 	 * @brief An operation that will authenticate a user with the beamable using a Federated Identity and persist that authentication locally.
 	 * If a user is already in the given slot, this operation will sign out entirely before signing in.
 	 */
-	FBeamOperationHandle CPP_LoginExternalIdentityOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationEventHandlerCode OnOperationEvent);
+	FBeamOperationHandle CPP_LoginExternalIdentityOperation(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken,
+	                                                        FBeamOperationEventHandlerCode OnOperationEvent);
 
 
 	/**
 	 * @brief An operation that will authenticate a user with the beamable using a Federated Identity and persist that authentication locally.
 	 * If a user is already in the given slot, this operation will sign out entirely before signing in.
 	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle LoginEmailAndPasswordOperation(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationEventHandler OnOperationEvent);
 	/**
 	 * @brief An operation that will authenticate a user with the beamable using a Federated Identity and persist that authentication locally.
@@ -495,16 +678,20 @@ public:
 	/**
 	 * If the given IdentityUserId is NOT attached to an account in the current realm, we attach it to the account in the given slot.
 	 */
-	FBeamOperationHandle AttachExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, FBeamOperationEventHandler OnOperationEvent);
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle AttachExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
+	                                                     FBeamOperationEventHandler OnOperationEvent);
 	/**
 	 * If the given IdentityUserId is NOT attached to an account in the current realm, we attach it to the account in the given slot.
 	 */
-	FBeamOperationHandle CPP_AttachExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, FBeamOperationEventHandlerCode OnOperationEvent);
+	FBeamOperationHandle CPP_AttachExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
+	                                                         FBeamOperationEventHandlerCode OnOperationEvent);
 
 
 	/**	 
 	 * If the given Email is NOT attached to an account in the current realm, we attach it to the account in the given slot.
 	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle AttachEmailAndPasswordOperation(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationEventHandler OnOperationEvent);
 	/**	 	 
 	 * If the given Email is NOT attached to an account in the current realm, we attach it to the account in the given slot.
@@ -515,17 +702,21 @@ public:
 	 * If no user is in the given slot and the given ExternalIdentity is NOT attached to an account in the current realm, we create a new account and attach the given email/password to it as an atomic operation (client-side).
 	 * The new user is authenticated into the target slot at the end of this process ONLY IF THE ENTIRE PROCESS IS SUCCESSFUL.
 	 */
-	FBeamOperationHandle SignUpExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, FBeamOperationEventHandler OnOperationEvent);
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle SignUpExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
+	                                                     FBeamOperationEventHandler OnOperationEvent);
 	/**	 
 	 * If no user is in the given slot and the given ExternalIdentity is NOT attached to an account in the current realm, we create a new account and attach the given email/password to it as an atomic operation (client-side).
 	 * The new user is authenticated into the target slot at the end of this process ONLY IF THE ENTIRE PROCESS IS SUCCESSFUL. 
 	 */
-	FBeamOperationHandle CPP_SignUpExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken, FBeamOperationEventHandlerCode OnOperationEvent);
+	FBeamOperationHandle CPP_SignUpExternalIdentityOperation(FUserSlot UserSlot, FString MicroserviceName, FString IdentityNamespace, FString IdentityUserId, FString IdentityAuthToken,
+	                                                         FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**	 
 	 * If no user is in the given slot and the given Email is NOT attached to an account in the current realm, we create a new account and attach the given email/password to it as an atomic operation (client-side).
 	 * The new user is authenticated into the target slot at the end of this process ONLY IF THE ENTIRE PROCESS IS SUCCESSFUL.
 	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle SignUpEmailAndPasswordOperation(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationEventHandler OnOperationEvent);
 	/**	 
 	 * If no user is in the given slot and the given Email is NOT attached to an account in the current realm, we create a new account and attach the given email/password to it as an atomic operation (client-side).
@@ -539,6 +730,7 @@ public:
 	 *
 	 * When invoking this manually in your game, always pass in USCR_Manual as your reason.
 	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Auth", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle LogoutOperation(FUserSlot UserSlot, EUserSlotClearedReason Reason, bool bRemoveLocalData, FBeamOperationEventHandler OnOperationEvent);
 
 	/**	 
@@ -552,7 +744,7 @@ public:
 private:
 	// Hard-coded special case auth flow	
 	UFUNCTION(BlueprintCallable)
-	void FrictionlessLoginIntoSlot(const FUserSlot& UserSlot);
+	void FrictionlessLoginIntoSlot(const FUserSlot& UserSlot, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems);
 
 	// BP/CPP Independent Operation Implementations
 	void LoginFrictionless(FUserSlot UserSlot, FBeamOperationHandle Op);
@@ -574,11 +766,14 @@ private:
 
 	// Reusable API Calls
 	FBeamRequestContext LoginGuest(FUserSlot UserSlot, FBeamOperationHandle Op, FDelayedOperation OnBeforePostAuthentication = {});
-	FBeamRequestContext CheckExternalIdentityAvailable(FString ExternalService, FString ExternalNamespace, FString ExternalUserId, FBeamOperationHandle Op, FOnGetAvailableExternalIdentityFullResponse Handler) const;
+	FBeamRequestContext CheckExternalIdentityAvailable(FString ExternalService, FString ExternalNamespace, FString ExternalUserId, FBeamOperationHandle Op,
+	                                                   FOnGetAvailableExternalIdentityFullResponse Handler) const;
 	FBeamRequestContext CheckEmailAvailable(FString Email, FBeamOperationHandle Op, FOnGetAvailableFullResponse Handler) const;
-	FBeamRequestContext AttachIdentityToUser(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op, FOnPostExternalIdentityFullResponse Handler) const;
+	FBeamRequestContext AttachIdentityToUser(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op,
+	                                         FOnPostExternalIdentityFullResponse Handler) const;
 	FBeamRequestContext AttachEmailAndPasswordToUser(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op, FOnBasicAccountsPostRegisterFullResponse Handler) const;
-	FBeamRequestContext RemoveIdentityFromUser(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op, FOnDeleteExternalIdentityFullResponse Handler) const;
+	FBeamRequestContext RemoveIdentityFromUser(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op,
+	                                           FOnDeleteExternalIdentityFullResponse Handler) const;
 
 	// Runtime Notification Configuration and Automated Session Tracking 
 	static inline FString BEAM_SESSION_HEADER_PLATFORM = FString(TEXT("X-BEAM-SESSION-PLATFORM"));

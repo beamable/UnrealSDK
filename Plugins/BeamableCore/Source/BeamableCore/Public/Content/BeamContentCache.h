@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include "BeamContentObject.h"
+#include "BeamBackend/ReplacementTypes/BeamRemoteContentManifestEntry.h"
+#include "BeamBackend/ReplacementTypes/BeamTag.h"
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
 #include "BeamBackend/SemanticTypes/BeamContentManifestId.h"
 #include "Engine/DataTable.h"
@@ -26,5 +28,5 @@ public:
 	TMap<FBeamContentId, FString> Hashes;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	UDataTable* LatestRemoteManifest;
+	TArray<FBeamRemoteContentManifestEntry> LatestRemoteManifest;
 };

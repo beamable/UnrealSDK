@@ -33,6 +33,8 @@ public:
 
 	TSharedPtr<SNameComboBox> TypeComboBox;
 	TSharedPtr<SNameComboBox> IdComboBox;
+	bool HasTypeFilter;
+	bool OnlyExplicitTypes;
 
 	void OnTypeComboBoxOpening(const TSharedPtr<IPropertyHandle> AsStringPropertyHandle);
 	void OnTypeSelected(TSharedPtr<FName> ItemSelected, ::ESelectInfo::Type SelectInfo, const TSharedPtr<IPropertyHandle> AsStringPropertyHandle);

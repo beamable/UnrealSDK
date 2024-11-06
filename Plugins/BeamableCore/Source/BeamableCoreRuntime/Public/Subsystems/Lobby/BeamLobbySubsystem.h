@@ -170,7 +170,7 @@ private:
 
 public:
 	// LOCAL STATE
-
+	
 	/**
 	 *  Gets the lobby that the given user is contained.
 	 *  By default, will use the Owner user slot.

@@ -34,9 +34,6 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	FText ContentName;
-
-	UPROPERTY(BlueprintReadOnly)
-	TSubclassOf<UBeamContentObject> ContentType;
 };
 
 USTRUCT(BlueprintType)

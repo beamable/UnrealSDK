@@ -9,6 +9,7 @@
 
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 #include "BeamableCore/Public/AutoGen/LeaderboardListResponse.h"
 
 #include "BasicLeaderboardsGetListRequest.generated.h"
@@ -30,6 +31,8 @@ public:
 	FOptionalInt32 Limit = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Prefix", Category="Beam")
 	FOptionalString Prefix = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Include Partitions", Category="Beam")
+	FOptionalBool bIncludePartitions = {};
 
 	// Body Params
 	
@@ -41,8 +44,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make BasicLeaderboardsGetList",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Skip,_Limit,_Prefix,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UBasicLeaderboardsGetListRequest* Make(FOptionalInt32 _Skip, FOptionalInt32 _Limit, FOptionalString _Prefix, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make BasicLeaderboardsGetList",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Skip,_Limit,_Prefix,_bIncludePartitions,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UBasicLeaderboardsGetListRequest* Make(FOptionalInt32 _Skip, FOptionalInt32 _Limit, FOptionalString _Prefix, FOptionalBool _bIncludePartitions, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

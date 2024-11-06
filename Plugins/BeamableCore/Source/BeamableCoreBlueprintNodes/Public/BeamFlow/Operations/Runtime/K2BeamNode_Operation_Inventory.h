@@ -43,7 +43,7 @@ class UK2BeamNode_Operation_ModifyCurrencies : public UK2BeamNode_Operation
 
 #undef LOCTEXT_NAMESPACE
 
-#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_ModifyCurrencies"
+#define LOCTEXT_NAMESPACE "UK2BeamNode_Operation_FetchAllInventory"
 
 UCLASS(meta=(BeamFlowNode))
 class UK2BeamNode_Operation_FetchAllInventory : public UK2BeamNode_Operation

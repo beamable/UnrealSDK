@@ -232,6 +232,7 @@ class BEAMABLECORE_API UBeamNotifications : public UEngineSubsystem
 
 	TMap<FBeamWebSocketHandle, FOnNotificationEvent> ConnectionEventHandlers;
 	TMultiMap<FBeamWebSocketHandle, FNotificationMessageEventHandler> MessageEventHandlers;
+	TMap<FBeamWebSocketHandle, int> RetryCount;
 
 	UPROPERTY()
 	UBeamUserSlots* UserSlots;

@@ -119,7 +119,7 @@ void SOptionalTypePin::OnCheckboxChanged(ECheckBoxState CheckBoxState)
 	{
 		const auto NewDefault = BuildDefaultValueString();
 		GraphPinObj->GetSchema()->TrySetDefaultText(*GraphPinObj, FText::FromString(NewDefault));
-		UE_LOG(LogTemp, Warning, TEXT("Toggling checkbox of string optional type %c. %s"), CheckBoxState, *GraphPinObj->GetDefaultAsString());
+		UE_LOG(LogTemp, Warning, TEXT("Toggling checkbox of string optional type %c. %s"), TCHAR(CheckBoxState), *GraphPinObj->GetDefaultAsString());
 	}
 }
 

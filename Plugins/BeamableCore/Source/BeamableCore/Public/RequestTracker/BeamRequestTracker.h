@@ -285,54 +285,170 @@ public:
 	/**
 	 * @brief Call only within OnSuccess/OnError/OnComplete or FullResponse handlers when the operation is completed and ended with success. 	 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Operations",
-		meta=(AdvancedDisplay="RequestId", AutoCreateRefTerm="RequestId"))
-	void TriggerOperationSuccess(const FBeamOperationHandle& Op, const FString& EventData,
-	                             const int64& RequestId = -1000);
+	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(AdvancedDisplay="RequestId", AutoCreateRefTerm="RequestId"))
+	void TriggerOperationSuccess(const FBeamOperationHandle& Op, const FString& EventCode, const int64& RequestId = -1000);
 
 	/**
 	 * @brief Call only within OnSuccess/OnError/OnComplete or FullResponse handlers when the operation is completed and ended with an error. 	 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Operations",
-		meta=(AdvancedDisplay="RequestId", AutoCreateRefTerm="RequestId"))
-	void TriggerOperationError(const FBeamOperationHandle& Op, const FString& EventData,
-	                           const int64& RequestId = -1000);
+	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(AdvancedDisplay="RequestId", AutoCreateRefTerm="RequestId"))
+	void TriggerOperationError(const FBeamOperationHandle& Op, const FString& EventCode, const int64& RequestId = -1000);
 
 	/**
 	 * @brief Call only within OnSuccess/OnError/OnComplete or FullResponse handlers when the operation is completed and was cancelled by the user.
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Operations",
-		meta=(AdvancedDisplay="RequestId", AutoCreateRefTerm="RequestId"))
-	void TriggerOperationCancelled(const FBeamOperationHandle& Op, const FString& EventData,
-	                               const int64& RequestId = -1000);
+	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(AdvancedDisplay="RequestId", AutoCreateRefTerm="RequestId"))
+	void TriggerOperationCancelled(const FBeamOperationHandle& Op, const FString& EventCode, const int64& RequestId = -1000);
 
+	/**
+	 * @brief Call only within OnSuccess/OnError/OnComplete or FullResponse handlers when the operation is completed and ended with success. 	 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(AdvancedDisplay="RequestId", AutoCreateRefTerm="RequestId"))
+	void TriggerOperationSuccessWithData(const FBeamOperationHandle& Op, const FString& EventCode, const TScriptInterface<IBeamOperationEventData>& EventData, const int64& RequestId = -1000);
+
+	/**
+	 * @brief Call only within OnSuccess/OnError/OnComplete or FullResponse handlers when the operation is completed and ended with an error. 	 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(AdvancedDisplay="RequestId", AutoCreateRefTerm="RequestId"))
+	void TriggerOperationErrorWithData(const FBeamOperationHandle& Op, const FString& EventCode, const TScriptInterface<IBeamOperationEventData>& EventData, const int64& RequestId = -1000);
+
+	/**
+	 * @brief Call only within OnSuccess/OnError/OnComplete or FullResponse handlers when the operation is completed and was cancelled by the user.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(AdvancedDisplay="RequestId", AutoCreateRefTerm="RequestId"))
+	void TriggerOperationCancelledWithData(const FBeamOperationHandle& Op, const FString& EventCode, const TScriptInterface<IBeamOperationEventData>& EventData, const int64& RequestId = -1000);
 
 	/**
 	 * @brief Call only within OnSuccess/OnError/OnComplete or FullResponse handlers when you wish to trigger an event that does not mean the operation is over. 
 	 * @param Op The Operation whose event is being triggered.
 	 * @param Type The type of the operation event being triggered.
-	 * @param SubEvent The type of the sub-event being triggered.	 
-	 * @param EventData Arbitrary data for the event.	 
+	 * @param EventId The type of the sub-event being triggered.	 
+	 * @param EventCode Arbitrary data for the event.	 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Operations",
-		meta=(AdvancedDisplay="RequestId", AutoCreateRefTerm="RequestId"))
-	void TriggerOperationEvent(const FBeamOperationHandle& Op, const EBeamOperationEventType Type, FName SubEvent,
-	                           const FString& EventData, const int64& RequestId = -1000);
+	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(AdvancedDisplay="RequestId", AutoCreateRefTerm="RequestId"))
+	void TriggerOperationEvent(const FBeamOperationHandle& Op, const EBeamOperationEventType Type, FName EventId, const FString& EventCode, const int64& RequestId = -1000);
+
+	/**
+	 * @brief Call at any point before an operation is completed via the TriggerOperationSuccess|TriggerOperationError|TriggerOperationCancelled functions. 
+	 * @param Op The Operation whose event is being triggered.
+	 * @param Type The type of the operation event being triggered.
+	 * @param EventId The type of the sub-event being triggered.	 
+	 * @param EventCode A string describing the code for the event (sometimes can just be a raw string containing data for the event --- described on each operation's comments).
+	 * @param EventData An optional object structure that has some arbitrary data associated with the event that might be useful for user-code.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(AdvancedDisplay="RequestId", AutoCreateRefTerm="RequestId"))
+	void TriggerOperationEventWithData(const FBeamOperationHandle& Op, const EBeamOperationEventType Type, FName EventId, const FString& EventCode,
+	                                   const TScriptInterface<IBeamOperationEventData> EventData, const int64& RequestId = -1000);
 
 	/**
 	 * @brief Triggers an operation event with the given parameters. 
 	 * @param Op The Operation whose event is being triggered.
 	 * @param Type The type of the operation event being triggered.
-	 * @param SubEvent The type of the sub-event being triggered.
+	 * @param EventId The type of the sub-event being triggered.
 	 * @param UserSlots The user slots involved in triggering.
-	 * @param EventData Arbitrary data for the event.
+	 * @param EventCode Arbitrary data for the event.
+	 * @param EventData
 	 * @param CallingSystem The name of the system triggering the event.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operations")
-	void TriggerOperationEventFull(const FBeamOperationHandle& Op, const EBeamOperationEventType Type, FName SubEvent,
-	                               const TArray<FUserSlot>& UserSlots, const FString& EventData,
-	                               const FString& CallingSystem, const int64 RequestId = -1);
+	void TriggerOperationEventFull(const FBeamOperationHandle& Op, EBeamOperationEventType Type, FName EventId,
+	                               const TArray<FUserSlot>& UserSlots, const FString& EventCode,
+	                               const TScriptInterface<IBeamOperationEventData>& EventData, const FString& CallingSystem, int64 RequestId = -1);
 
+
+	/**
+	 * Queries the triggered events of any particular operation giving you back a subset of these events.
+	 * Mostly used when waiting for several operations and then querying the results of them once all of them are done.
+	 * 
+	 * @param Op The operation to get the events from. 
+	 * @param FilterType The EBeamOperationEventType we want to filter by. EBeamOperationEventType::OET_NONE means no filter will be applied and all types of events will be returned.
+	 * @param FilterId The FBeamOperationEvent.EventId we want to filter by. NAME_All means no filter will be applied and all EventIds will be returned.  
+	 * @param Events The filtered list of events.
+	 * @return True, if the operation is still in memory. False, otherwise.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetOperationEvents(const FBeamOperationHandle& Op, const EBeamOperationEventType& FilterType, const FName& FilterId, TArray<FBeamOperationEvent>& Events);
+
+	/**
+	 * Queries the triggered events of any particular operation giving you back the list of all EBeamOperationEventType::OET_SUCCESS events.
+	 * Mostly used when waiting for several operations and then querying the results of them once all of them are done.
+	 * 
+	 * @param Op The operation to get the events from.	   
+	 * @param Events The filtered list of events.
+	 * @return True, if the operation is still in memory. False, otherwise.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetOperationSuccesses(const FBeamOperationHandle& Op, TArray<FBeamOperationEvent>& Events);
+
+	/**
+	 * Queries the triggered events of any particular operation giving you back the list of all EBeamOperationEventType::OET_ERROR events.
+	 * Mostly used when waiting for several operations and then querying the results of them once all of them are done.
+	 * 
+	 * @param Op The operation to get the events from.	   
+	 * @param Events The filtered list of events.
+	 * @return True, if the operation is still in memory. False, otherwise.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetOperationErrors(const FBeamOperationHandle& Op, TArray<FBeamOperationEvent>& Events);
+
+	/**
+	 * Queries the triggered events of any particular operation giving you back the list of all EBeamOperationEventType::OET_CANCELLED events.
+	 * Mostly used when waiting for several operations and then querying the results of them once all of them are done.
+	 * 
+	 * @param Op The operation to get the events from.	   
+	 * @param Events The filtered list of events.
+	 * @return True, if the operation is still in memory. False, otherwise.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetOperationCancelations(const FBeamOperationHandle& Op, TArray<FBeamOperationEvent>& Events);
+
+	/**
+	 * Queries the triggered events of any particular operation giving you back the list of all EBeamOperationEventType::OET_SUCCESS events filtered by the given FilterId.
+	 * Mostly used when waiting for several operations and then querying the results of them once all of them are done.
+	 * 
+	 * @param Op The operation to get the events from.	   
+	 * @param FilterId The FBeamOperationEvent.EventId we want to filter by. NAME_All means no filter will be applied and all EventIds will be returned.  
+	 * @param Events The filtered list of events.
+	 * @return True, if the operation is still in memory. False, otherwise.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetOperationSuccessesWithId(const FBeamOperationHandle& Op, FName FilterId, TArray<FBeamOperationEvent>& Events);
+
+	/**
+	 * Queries the triggered events of any particular operation giving you back the list of all EBeamOperationEventType::OET_ERROR events filtered by the given FilterId.
+	 * Mostly used when waiting for several operations and then querying the results of them once all of them are done.
+	 * 
+	 * @param Op The operation to get the events from.	   
+	 * @param FilterId The FBeamOperationEvent.EventId we want to filter by. NAME_All means no filter will be applied and all EventIds will be returned.  
+	 * @param Events The filtered list of events.
+	 * @return True, if the operation is still in memory. False, otherwise.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetOperationErrorsWithId(const FBeamOperationHandle& Op, FName FilterId, TArray<FBeamOperationEvent>& Events);
+
+	/**
+	 * Queries the triggered events of any particular operation giving you back the list of all EBeamOperationEventType::OET_CANCELLED events filtered by the given FilterId.
+	 * Mostly used when waiting for several operations and then querying the results of them once all of them are done.
+	 * 
+	 * @param Op The operation to get the events from.	   
+	 * @param FilterId The FBeamOperationEvent.EventId we want to filter by. NAME_All means no filter will be applied and all EventIds will be returned.  
+	 * @param Events The filtered list of events.
+	 * @return True, if the operation is still in memory. False, otherwise.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetOperationCancelationsWithId(const FBeamOperationHandle& Op, FName FilterId, TArray<FBeamOperationEvent>& Events);
+
+	/**
+	 * This is just a short-cut for the most-common-case for an operation (that only has its final Success/Error/Cancelled event). This will return you that event's Code and Data along with its type.
+	 * If the operation has not yet emitted its final event, the return value here will be OET_NONE. 
+	 * 
+	 * @param Op The operation to get the event from.	   
+	 * @param EventCode The FBeamOperationEvent.EventCode for the final emitted event of the operation.  
+	 * @param EventData The FBeamOperationEvent.EventData for the last emitted event of the operation.
+	 * @return OET_NONE, if the operation has not emitted its final event yet. OET_SUCCESS/OET_ERROR/OET_CANCELLED depending on what type was the final event.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operations", meta=(ExpandEnumAsExecs="ReturnValue"))
+	EBeamOperationEventType TryGetOperationResult(const FBeamOperationHandle& Op, FString& EventCode, TScriptInterface<IBeamOperationEventData>& EventData);
 
 	/**
 	 * Shortcut function call that returns an empty operation that is completed with success. 
@@ -343,5 +459,4 @@ public:
 	 * Shortcut function call that returns an empty operation completed with an error error. 
 	 */
 	FBeamOperationHandle CPP_BeginErrorOperation(const TArray<FUserSlot>& Participants, const FString& CallingSystem, FString Error, FBeamOperationEventHandlerCode OnEvent);
-	
 };

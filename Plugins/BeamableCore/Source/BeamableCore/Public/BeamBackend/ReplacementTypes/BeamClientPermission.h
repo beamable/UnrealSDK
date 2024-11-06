@@ -60,7 +60,7 @@ struct BEAMABLECORE_API FBeamClientPermission : public FBeamJsonSerializableUStr
 		if (RepresentationTypeName == TNameOf<FString>::GetName())
 		{
 			const auto JsonString = *((FString*)Data);
-			AsBool = JsonString.Contains("true");
+			AsBool = JsonString.Contains(TEXT("true"));
 			AsString = AsBool ? TEXT("true") : TEXT("false");
 		}
 
@@ -78,20 +78,20 @@ struct BEAMABLECORE_API FBeamClientPermission : public FBeamJsonSerializableUStr
 		return -1;
 	}
 
-	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue("write_self", AsBool);
+		Serializer->WriteValue(TEXT("write_self"), AsBool);
 	}
 
-	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue("write_self", AsBool);
+		Serializer->WriteValue(TEXT("write_self"), AsBool);
 	}
 
 
-	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		AsBool = Bag->GetBoolField("write_self");
+		AsBool = Bag->GetBoolField(TEXT("write_self"));
 		AsString = AsBool ? TEXT("true") : TEXT("false");
 	}
 };

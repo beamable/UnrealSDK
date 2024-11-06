@@ -8,6 +8,7 @@
 #include "RequestTracker/BeamRequestTracker.h"
 
 #include "BeamableCore/Public/AutoGen/SubSystems/Content/GetManifestPublicRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Content/GetManifestPublicJsonRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Content/GetManifestChecksumRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Content/PostManifestsUnarchiveRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Content/BasicContentPostManifestPullRequest.h"
@@ -25,6 +26,7 @@
 #include "BeamableCore/Public/AutoGen/SubSystems/Content/PostManifestsArchiveRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Content/PostContentRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Content/PutManifestRepeatRequest.h"
+#include "BeamableCore/Public/AutoGen/SubSystems/Content/GetManifestPrivateJsonRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Content/GetManifestPrivateRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Content/GetManifestChecksumsRequest.h"
 #include "BeamableCore/Public/AutoGen/SubSystems/Content/BasicContentGetManifestsRequest.h"
@@ -67,6 +69,19 @@ private:
 	 */
 	void CPP_GetManifestPublicImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetManifestPublicRequest* RequestData,
 	                                 const FOnGetManifestPublicFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+
+		
+	/**
+	 * @brief Private implementation that all overloaded BP UFunctions call.	  
+	 */
+	void BP_GetManifestPublicJsonImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetManifestPublicJsonRequest* RequestData,
+	                                const FOnGetManifestPublicJsonSuccess& OnSuccess, const FOnGetManifestPublicJsonError& OnError, const FOnGetManifestPublicJsonComplete& OnComplete,
+	                                int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	/**
+	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
+	 */
+	void CPP_GetManifestPublicJsonImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UGetManifestPublicJsonRequest* RequestData,
+	                                 const FOnGetManifestPublicJsonFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -278,6 +293,18 @@ private:
 	/**
 	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
 	 */
+	void BP_GetManifestPrivateJsonImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UGetManifestPrivateJsonRequest* RequestData,
+	                  const FOnGetManifestPrivateJsonSuccess& OnSuccess, const FOnGetManifestPrivateJsonError& OnError, const FOnGetManifestPrivateJsonComplete& OnComplete, 
+					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+	/**
+	 * @brief Overload version for binding lambdas when in C++ land. Prefer the BP version whenever possible, this is here mostly for quick experimentation purposes.	 
+	 */
+	void CPP_GetManifestPrivateJsonImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UGetManifestPrivateJsonRequest* RequestData,
+	                   const FOnGetManifestPrivateJsonFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+		
+	/**
+	 * @brief Private implementation for requests that require authentication that all overloaded BP UFunctions call.	  
+	 */
 	void BP_GetManifestPrivateImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus, UGetManifestPrivateRequest* RequestData,
 	                  const FOnGetManifestPrivateSuccess& OnSuccess, const FOnGetManifestPrivateError& OnError, const FOnGetManifestPrivateComplete& OnComplete, 
 					  int64& OutRequestId, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
@@ -331,6 +358,21 @@ public:
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
 	 */
 	void CPP_GetManifestPublic(UGetManifestPublicRequest* Request, const FOnGetManifestPublicFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+
+		
+	/**
+	 * @brief Makes a request to the Get /basic/content/manifest/public/json endpoint of the Content Service.
+	 *
+	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
+	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster and for whenever you need to capture variables).
+	 * 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
+	 */
+	void CPP_GetManifestPublicJson(UGetManifestPublicJsonRequest* Request, const FOnGetManifestPublicJsonFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
 
 		
 	/**
@@ -606,6 +648,22 @@ public:
 
 		
 	/**
+	 * @brief Makes an authenticated request to the Get /basic/content/manifest/private/json endpoint of the Content Service.
+	 *
+	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
+	 * (Dynamic delegates do not allow for that so... we autogen this one to make experimenting in CPP a bit faster).
+	 * 
+	 * @param UserSlot The Authenticated User Slot that is making this request.
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param Handler A callback that defines how to handle success, error and completion.
+     * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param OpHandle When made as part of an Operation, you can pass this in and it'll register the request with the operation automatically.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
+	 */
+	void CPP_GetManifestPrivateJson(const FUserSlot& UserSlot, UGetManifestPrivateJsonRequest* Request, const FOnGetManifestPrivateJsonFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr) const;
+
+		
+	/**
 	 * @brief Makes an authenticated request to the Get /basic/content/manifest/private endpoint of the Content Service.
 	 *
 	 * PREFER THE UFUNCTION OVERLOAD AS OPPOSED TO THIS. THIS MAINLY EXISTS TO ALLOW LAMBDA BINDING THE HANDLER.
@@ -666,6 +724,20 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Content", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void GetManifestPublic(UGetManifestPublicRequest* Request, const FOnGetManifestPublicSuccess& OnSuccess, const FOnGetManifestPublicError& OnError, const FOnGetManifestPublicComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+
+		
+	/**
+	 * @brief Makes a request to the Get /basic/content/manifest/public/json endpoint of the Content Service.
+	 *
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches. 
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Content", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext", AutoCreateRefTerm="OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void GetManifestPublicJson(UGetManifestPublicJsonRequest* Request, const FOnGetManifestPublicJsonSuccess& OnSuccess, const FOnGetManifestPublicJsonError& OnError, const FOnGetManifestPublicJsonComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**
@@ -921,6 +993,21 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Content", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void PutManifestRepeat(FUserSlot UserSlot, UPutManifestRepeatRequest* Request, const FOnPutManifestRepeatSuccess& OnSuccess, const FOnPutManifestRepeatError& OnError, const FOnPutManifestRepeatComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
+
+		
+	/**
+	 * @brief Makes an authenticated request to the Get /basic/content/manifest/private/json endpoint of the Content Service.
+	 *
+	 * @param UserSlot The authenticated UserSlot with the user making the request. 
+	 * @param Request The Request UObject. All (de)serialized data the request data creates is tied to the lifecycle of this object.
+	 * @param OnSuccess What to do if the requests receives a successful response.
+	 * @param OnError What to do if the request receives an error response.
+	 * @param OnComplete What to after either OnSuccess or OnError have finished executing.
+	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
+	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Backend|Content", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	void GetManifestPrivateJson(FUserSlot UserSlot, UGetManifestPrivateJsonRequest* Request, const FOnGetManifestPrivateJsonSuccess& OnSuccess, const FOnGetManifestPrivateJsonError& OnError, const FOnGetManifestPrivateJsonComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
 	/**

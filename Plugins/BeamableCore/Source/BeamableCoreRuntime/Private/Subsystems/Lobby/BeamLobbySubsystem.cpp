@@ -5,6 +5,8 @@
 
 #include "AutoGen/Optionals/OptionalArrayOfLobbyLibrary.h"
 #include "AutoGen/SubSystems/BeamLobbyApi.h"
+#include "Subsystems/Inventory/BeamInventorySubsystem.h"
+#include "Subsystems/Matchmaking/BeamMatchmakingSubsystem.h"
 
 void UBeamLobbySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -63,43 +65,6 @@ void UBeamLobbySubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserSlo
 {
 	// Initialize the dictionary of lobby information for this signed in player.
 	InitializeLobbyInfoForSlot(UserSlot, BeamRealmUser);
-
-	// TODO: Clean up this comment later 
-	// ResultOp = CPP_CreateOpenLobbyOperation(UserSlot, FBeamOperationEventHandlerCode::CreateLambda([this, UserSlot](FBeamOperationEvent Evt)
-	// {
-	// 	FString Res = StaticEnum<EBeamOperationEventType>()->GetValueAsString(Evt.EventType);
-	// 	UE_LOG(LogBeamLobby, Warning, TEXT("Lobby Create Operation %s"), *Res);
-	//
-	// 	CPP_UpdateSlotPlayerDataOperation(UserSlot, {FBeamTag("Test", "Val")}, FBeamOperationEventHandlerCode::CreateLambda([this, UserSlot](FBeamOperationEvent EvtPlayerUpdate)
-	// 	{
-	// 		UE_LOG(LogBeamLobby, Warning, TEXT("Lobby Updated My Own Tags"));
-	// 		CPP_DeleteSlotPlayerDataOperation(UserSlot, {FBeamTag("Test", "")}, FBeamOperationEventHandlerCode::CreateLambda([this, UserSlot](FBeamOperationEvent EvtPlayerDel)
-	// 		{
-	// 			UE_LOG(LogBeamLobby, Warning, TEXT("Lobby Delete My Own Tags"));
-	// 		}));
-	// 	}));
-	//
-	// 	if (TryBeginUpdateLobbyData(UserSlot, true))
-	// 	{
-	// 		PrepareUpdateName(UserSlot, FString("Potato"));
-	// 		PrepareUpdateGlobalData(UserSlot, {{FString("Global1"), FString("Global1Val")}});
-	// 		PrepareUpdateGlobalData(UserSlot, {{FString("Global2Val"), FString("Global2Val")}});
-	//
-	// 		CPP_CommitLobbyUpdateOperation(UserSlot, FBeamOperationEventHandlerCode::CreateLambda([this, UserSlot](FBeamOperationEvent EvtCommit)
-	// 		{
-	// 			UE_LOG(LogBeamLobby, Warning, TEXT("Lobby Update Global Data"));
-	// 			if (TryBeginUpdateLobbyData(UserSlot, false))
-	// 			{
-	// 				PrepareDeleteGlobalData(UserSlot, {FString("Global1"), FString("Global2")});
-	// 				CPP_CommitLobbyUpdateOperation(UserSlot, FBeamOperationEventHandlerCode::CreateLambda([this, UserSlot](FBeamOperationEvent EvtCommit2)
-	// 				{
-	// 					UE_LOG(LogBeamLobby, Warning, TEXT("Lobby Delete Global Data"));
-	// 				}));
-	// 			}
-	// 		}));
-	// 	}
-	// }), FString("TestLobby"), FString(), FBeamContentId());
-
 	Super::OnUserSignedIn_Implementation(UserSlot, BeamRealmUser, bIsOwnerUserAuth, ResultOp);
 }
 
@@ -110,6 +75,7 @@ void UBeamLobbySubsystem::OnUserSignedOut_Implementation(const FUserSlot& UserSl
 
 	Super::OnUserSignedOut_Implementation(UserSlot, Reason, BeamRealmUser, ResultOp);
 }
+
 
 // LOCAL STATE
 
@@ -1402,7 +1368,7 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 					}
 					else
 					{
-						UE_LOG(LogBeamLobby, Error, TEXT("Failed to refresh the lobby data. %s"), *Evt.EventData);
+						UE_LOG(LogBeamLobby, Error, TEXT("Failed to refresh the lobby data. %s"), *Evt.EventCode);
 					}
 				}), LobbyId);
 			}

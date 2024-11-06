@@ -25,13 +25,13 @@ bool UDiscordSubsystem::Tick(float)
 void UDiscordSubsystem::ManualInitialize()
 {
 	UE_LOG(LogTemp, Display, TEXT("[Discord SDK] Initializing Discord SDK."));
-	auto Result = discord::Core::Create(DiscordAppId, DiscordCreateFlags_NoRequireDiscord, &Core);
+	auto Result = discord::Core::Create(DiscordAppId, DiscordCreateFlags_Default, &Core);
 	if (Result == discord::Result::Ok)
 	{
 		UE_LOG(LogTemp, Display, TEXT("[Discord SDK] Initialized Discord SDK."));
 		Core->ApplicationManager().GetOAuth2Token([this](discord::Result Result, discord::OAuth2Token const& Token)
 		{
-			UE_LOG(LogTemp, Display, TEXT("[Discord SDK] Found Auth Token."));
+			UE_LOG(LogTemp, Display, TEXT("[Discord SDK] Found Auth Token: %hd"), Result);
 			OnAuthTokenReceived(Result, Token);
 		});
 	}
@@ -91,7 +91,6 @@ void UDiscordSubsystem::OnUserUpdated(discord::OAuth2Token Token)
 		UserData.Discriminator = ANSI_TO_TCHAR(CurrentUser->GetDiscriminator());
 		UserData.Avatar = ANSI_TO_TCHAR(CurrentUser->GetAvatar());
 		UserData.OAuthToken = ANSI_TO_TCHAR(Token.GetAccessToken());
-		
 		OnDiscordInitialized.ExecuteIfBound(true, UserData, "");
 	}
 	else

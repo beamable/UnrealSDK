@@ -1,8 +1,10 @@
 #pragma once
+#include "BeamFullResponse.h"
 #include "BeamLogging.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamBaseResponseBodyInterface.generated.h"
 
+class UGenericBeamRequest;
 /**
  * @brief Wraps around all Beamable Serializable types that we codegen and are used as responses.
  * Enables UBeamBackend to provide guarantees about the lifecycle of every response that goes out while maintaining BP compatibility and keeping compile times low. 
@@ -39,3 +41,21 @@ inline void IBeamBaseResponseBodyInterface::DeserializeRequestResponse(UObject* 
 	// 	UE_LOG(LogBeamBackend, Warning, TEXT("Unsupported response type."))
 	// }	
 }
+
+
+UCLASS(BlueprintType)
+class BEAMABLECORE_API UGenericBeamResponse : public UObject, public IBeamBaseResponseBodyInterface
+{
+	GENERATED_BODY()
+
+public:
+	FString ResponseBody;
+
+	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override
+	{
+		ResponseBody = ResponseContent;
+	}
+};
+
+using FGenericBeamRequestFullResponse = FBeamFullResponse<UGenericBeamRequest*, UGenericBeamResponse*>;
+DECLARE_DELEGATE_OneParam(FOnGenericBeamRequestFullResponse, FGenericBeamRequestFullResponse);

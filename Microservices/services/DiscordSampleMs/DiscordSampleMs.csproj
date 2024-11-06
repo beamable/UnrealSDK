@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    
+    <PropertyGroup Label="Beamable Settings">
+        <!-- All Microservices must have the value, "service" -->
+        <BeamProjectType>service</BeamProjectType>
+        <BeamServiceGroup>BEAMPROJ_DiscordDemo</BeamServiceGroup>
+        <!-- When "true", this will auto-generate client code to any linked unity projects -->
+        <GenerateClientCode>true</GenerateClientCode>
+    </PropertyGroup>
+
+    <!-- These are Special Beamable parameters that we use to keep the beamable packages in-sync to the CLI version your project is using. -->
+    <!-- This makes it so your microservices are auto-updated whenever you update the CLI installed in your project. -->
+    <PropertyGroup Label="Beamable Version">
+        <DotNetConfigPath Condition="'$(DotNetConfigPath)' == '' AND $(DOTNET_RUNNING_IN_CONTAINER)!=true">$([MSBuild]::GetDirectoryNameOfFileAbove("$(MSBuildProjectDirectory)\..", ".config\dotnet-tools.json"))</DotNetConfigPath>
+        <DotNetConfig Condition="'$(DotNetConfig)' == '' AND $(DOTNET_RUNNING_IN_CONTAINER)!=true">$([System.IO.File]::ReadAllText("$(DotNetConfigPath)\.config\dotnet-tools.json"))</DotNetConfig>
+
+        <!-- Extracts the version number from the first tool defined in 'dotnet-tools.json' that starts with "beamable". -->
+        <BeamableVersion Condition="'$(BeamableVersion)' == '' AND $(DOTNET_RUNNING_IN_CONTAINER)!=true">$([System.Text.RegularExpressions.Regex]::Match("$(DotNetConfig)", "beamable.*?\"([0-9]+\.[0-9]+\.[0-9]+(?:-[A-Z]+\.[A-Z0-9]+)?)\",", RegexOptions.Singleline | RegexOptions.IgnorePatternWhitespace).Groups[1].Value)</BeamableVersion>
+        <!-- When running from inside docker, this gets injected via the Dockerfile at build-time. -->
+    </PropertyGroup>
+    
+    <PropertyGroup Label="Dotnet Settings">
+        <!-- net8.0 is the LTS version until 2026. To update your net version, update the <TargetFramework> when Beamable announces support. -->
+        <TargetFramework>net8.0</TargetFramework>
+        <InvariantGlobalization>false</InvariantGlobalization>
+    </PropertyGroup>
+
+    <!-- Put your stuff here OR override our stuff here (some docs): https://docs.beamable.com/docs/cli-guide-microservice-configuration#beamable-properties -->
+    <PropertyGroup Label="User Settings">
+    </PropertyGroup>
+
+    <ItemGroup Label="Nuget References">
+        <!-- 
+        BEAMABLE DEVELOPERS: This is how we reference samples when we are developing them. 
+        This makes it so that, if we have a locally built package set up, we use that one. Otherwise, we use the version below.
+        
+        GAME-MAKERS: You don't need to care about this and if you want to reference packages in your own projects, you can just do it normally.
+        <PackageReference Include="Beamable.Common" Version="2.0.0" />     
+        -->
+        <PackageReference Include="Beamable.Microservice.Runtime" Version="$(BeamableVersion)"/>
+        <PackageReference Include="Beamable.Microservice.SourceGen" Version="$(BeamableVersion)" OutputItemType="Analyzer"/>
+        <PackageReference Include="Discord.Net" Version="3.15.2" />
+    </ItemGroup>
+
+</Project>

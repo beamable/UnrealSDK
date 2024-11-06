@@ -1,5 +1,6 @@
 ﻿#include "BeamContentObject.spec.h"
 
+#include "GameplayTagsManager.h"
 #include "Content/MockBeamContentObject.h"
 #include "Misc/AutomationTest.h"
 

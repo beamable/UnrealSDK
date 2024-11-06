@@ -36,4 +36,6 @@ struct FBeamRealmHandle
 	{
 		return !(Lhs == RHS);
 	}
+
+	bool IsValid() { return !Cid.AsString.IsEmpty(); }
 };

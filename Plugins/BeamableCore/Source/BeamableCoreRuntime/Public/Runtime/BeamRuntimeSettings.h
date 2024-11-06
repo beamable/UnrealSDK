@@ -3,12 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamBackend/SemanticTypes/BeamContentId.h"
 #include "Engine/StreamableManager.h"
 
 
 #include "BeamRuntimeSettings.generated.h"
 class UBeamContentCache;
 class UDataTable;
+class UBeamRuntimeSubsystem;
 /**
  * 
  */
@@ -40,6 +42,14 @@ public:
 	TArray<TSubclassOf<USubsystem>> ClientRuntimeSubsystemBlueprints;
 
 	/**
+	 * @brief List of all the subsystems that is not needed to be initialized at the game start.
+	 * By adding subsystems to this list they will not be initialized at the game start however these subsystems could be
+	 * initialized later by calling ManuallyInitializeSubsystems Function at BeamRuntime
+	 */
+	UPROPERTY(Config,EditAnywhere, BlueprintReadOnly, Category="Beam Systems")
+	TArray<TSubclassOf<UBeamRuntimeSubsystem>> ManualyInitializedRuntimeSubsystems;
+	
+	/**
 	 * @brief As per UE docs, we have a streamable manager declared to load up beamable content asynchronously at runtime: https://docs.unrealengine.com/5.1/en-US/asynchronous-asset-loading-in-unreal-engine/.
 	 */
 	FStreamableManager ContentStreamingManager = {};
@@ -48,8 +58,14 @@ public:
 	 * @brief Whether or not we should download each individual content JSON when beamable is ready for use.
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Content")
-	bool bDownloadIndividualContentOnStart = false;	
-
-
+	bool bDownloadIndividualContentOnStart = false;
+	
+	/**
+	 * @brief Default stores to download by UBeamStoreSubsystem.
+	 * If none are specified it will download all the available Stores content.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Content")
+	TArray<FBeamContentId> StoreContentToDownload; 
+	
 	FStreamableManager& GetStreamableManager() { return ContentStreamingManager; }
 };

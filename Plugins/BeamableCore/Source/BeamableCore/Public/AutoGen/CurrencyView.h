@@ -4,7 +4,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/CurrencyProperty.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArchetypeProxy.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalFederationInfo.h"
 
 #include "CurrencyView.generated.h"
 
@@ -21,7 +21,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Properties", Category="Beam")
 	TArray<UCurrencyProperty*> Properties = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Proxy", Category="Beam")
-	FOptionalArchetypeProxy Proxy = {};
+	FOptionalFederationInfo Proxy = {};
 
 	
 

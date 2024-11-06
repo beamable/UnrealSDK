@@ -50,7 +50,8 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 	       *AuthTokenHeader,
 	       *ScopeHeader)
 
-	const auto OpenSocket = FWebSocketsModule::Get().CreateWebSocket(Uri + TEXT("?send-session-start=true"), TEXT(""), Headers);
+
+	const auto OpenSocket = FWebSocketsModule::Get().CreateWebSocket(Uri + TEXT("?send-session-start=true"), TEXT(""), Headers);	
 	OpenSocket->OnConnected().AddLambda([OutHandle, this]
 	{
 		// If this was a PIE socket and we are no longer in PIE when we connect, we should close up this connection.
@@ -72,12 +73,13 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 
 		const FOnNotificationEvent& EvtHandler = ConnectionEventHandlers.FindChecked(OutHandle);
 		const bool bDidRun = EvtHandler.ExecuteIfBound(Evt);
-		ensureAlwaysMsgf(bDidRun, TEXT("Notification connection handler was not bound correctly! SLOT=%s, ID=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString());
+		ensureAlwaysMsgf(bDidRun, TEXT("Notification connection handler was not bound correctly! SLOT=%s, ID=%s, RETRY_COUNT=%d"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString(),
+			RetryCount.FindChecked(OutHandle));
 
 		UE_LOG(LogBeamNotifications, Verbose, TEXT("Connection Success. SLOT=%s, ID=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString());
 	});
 
-	OpenSocket->OnConnectionError().AddLambda([OutHandle, this](const FString& Error)
+	OpenSocket->OnConnectionError().AddLambda([this, OutHandle, OpenSocket](const FString& Error)
 	{
 		// If this was a PIE socket and we are no longer in PIE when we connect, we should just clean up.
 #if WITH_EDITOR
@@ -91,6 +93,7 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 
 				ConnectionEventHandlers.Remove(OutHandle);
 				MessageEventHandlers.Remove(OutHandle);
+				RetryCount.Remove(OutHandle);
 			}
 			return;
 		}
@@ -101,22 +104,42 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 		Evt.EventType = ENotificationMessageType::ConnectionFailed;
 		Evt.ConnectionFailedData.Error = Error;
 
-		const FOnNotificationEvent& EvtHandler = ConnectionEventHandlers.FindChecked(OutHandle);
-		const bool bDidRun = EvtHandler.ExecuteIfBound(Evt);
-		ensureAlwaysMsgf(bDidRun, TEXT("Notification connection handler was not bound correctly! SLOT=%s, ID=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString());
+		const auto RetryConfig = GetDefault<UBeamCoreSettings>()->WebSocketRetryConfig;
+		auto CurrRetryCount = RetryCount.FindChecked(OutHandle);
 
-		// If there was an error when we tried to connect, we should just remove the connection.
-		if (OpenSockets.Contains(OutHandle.NamespacedSlot))
+		if (CurrRetryCount >= RetryConfig.RetryMaxAttempt)
 		{
-			if (OpenSockets[OutHandle.NamespacedSlot].Contains(OutHandle.Id))
-			{
-				OpenSockets[OutHandle.NamespacedSlot].Remove(OutHandle.Id);
-				ConnectionEventHandlers.Remove(OutHandle);
-				MessageEventHandlers.Remove(OutHandle);
-			}
-		}
+			const FOnNotificationEvent& EvtHandler = ConnectionEventHandlers.FindChecked(OutHandle);
+			const bool bDidRun = EvtHandler.ExecuteIfBound(Evt);
+			ensureAlwaysMsgf(bDidRun, TEXT("Notification connection handler was not bound correctly! SLOT=%s, ID=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString());
 
-		UE_LOG(LogBeamNotifications, Error, TEXT("Connection Error. SLOT=%s, ID=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString());
+			// If there was an error when we tried to connect and failed a bunch of retries, we should just remove the connection.
+			if (OpenSockets.Contains(OutHandle.NamespacedSlot))
+			{
+				if (OpenSockets[OutHandle.NamespacedSlot].Contains(OutHandle.Id))
+				{
+					OpenSockets[OutHandle.NamespacedSlot].Remove(OutHandle.Id);
+					ConnectionEventHandlers.Remove(OutHandle);
+					MessageEventHandlers.Remove(OutHandle);
+					RetryCount.Remove(OutHandle);
+				}
+			}
+
+			UE_LOG(LogBeamNotifications, Error, TEXT("Connection Error. Exceeded retry attempts. SLOT=%s, ID=%s, RETRY_COUNT=%d"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString(),
+			       CurrRetryCount);
+		}
+		else
+		{
+			UE_LOG(LogBeamNotifications, Warning, TEXT("Connection Error. Retrying connection. SLOT=%s, ID=%s, RETRY_COUNT=%d"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString(),
+			       CurrRetryCount);
+
+			// Bump the retry count
+			CurrRetryCount += 1;
+			RetryCount.Add(OutHandle, CurrRetryCount);
+
+			// Try connecting again
+			OpenSocket->Connect();
+		}
 	});
 
 	OpenSocket->OnClosed().AddLambda([OutHandle, this](int32 StatusCode, const FString& Reason, bool bWasClean)
@@ -133,6 +156,7 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 
 				ConnectionEventHandlers.Remove(OutHandle);
 				MessageEventHandlers.Remove(OutHandle);
+				RetryCount.Remove(OutHandle);
 			}
 			return;
 		}
@@ -157,6 +181,7 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 				ConnectionEventHandlers.Remove(OutHandle);
 				MessageEventHandlers.Remove(OutHandle);
 				PlayModeHandles.Remove(OutHandle);
+				RetryCount.Remove(OutHandle);
 			}
 		}
 
@@ -211,8 +236,9 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 	if (ContextObject && ContextObject->GetWorld() && ContextObject->GetWorld()->IsPlayInEditor())
 		PlayModeHandles.Add(OutHandle);
 
-	// Register the ConnectionEventHandler
+	// Register the ConnectionEventHandler and the retry count
 	ConnectionEventHandlers.Add(OutHandle, ConnectionEventHandler);
+	RetryCount.Add(OutHandle, 0);
 
 	// Connect
 	OpenSocket->Connect();

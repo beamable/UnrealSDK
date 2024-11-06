@@ -3,8 +3,9 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfCurrencyProperty.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArchetypeProxy.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalFederationInfo.h"
 
 #include "Currency.generated.h"
 
@@ -14,12 +15,14 @@ class BEAMABLECORE_API UCurrency : public UObject, public IBeamJsonSerializableU
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
-	FString Id = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Amount", Category="Beam")
 	int64 Amount = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
+	FString Id = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Updated At", Category="Beam")
+	FOptionalInt64 UpdatedAt = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Proxy", Category="Beam")
-	FOptionalArchetypeProxy Proxy = {};
+	FOptionalFederationInfo Proxy = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Properties", Category="Beam")
 	FOptionalArrayOfCurrencyProperty Properties = {};
 

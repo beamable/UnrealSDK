@@ -2,7 +2,6 @@
 
 #include "Misc/AutomationTest.h"
 #include "Serialization/BeamJsonUtils.h"
-#include "JsonObjectConverter.h"
 #include "AutoGen/Optionals/OptionalMapOfArrayOfCurrencyProperty.h"
 #include "BeamBackend/SemanticTypes/BeamCid.h"
 
@@ -12,7 +11,7 @@ END_DEFINE_SPEC(FBeamJsonUtilsSpec)
 
 void FBeamJsonUtilsSpec::Define()
 {
-	struct FTestInt : public FBeamJsonSerializableUStruct
+	struct FTestInt : FBeamJsonSerializableUStruct
 	{
 		int a;
 
@@ -28,11 +27,11 @@ void FBeamJsonUtilsSpec::Define()
 
 		virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 		{
-			a = Bag->GetIntegerField("a");
+			a = Bag->GetIntegerField(TEXT("a"));
 		}
 	};
 
-	struct FBeamArrayOfInt : public FBeamArray
+	struct FBeamArrayOfInt : FBeamArray
 	{
 		TArray<int> Values;
 
@@ -138,6 +137,32 @@ void FBeamJsonUtilsSpec::Define()
 		virtual void BeamDeserializeElements(const TSharedPtr<FJsonObject>& Elements) override
 		{
 			UBeamJsonUtils::DeserializeMap<FBeamCid, int64>(Elements, Values);
+		}
+	};
+
+	struct FBeamJsonBlob : public FBeamJsonSerializableUStruct
+	{
+		TSharedPtr<FJsonObject> Blob;
+
+		FBeamJsonBlob() = default;
+
+		FBeamJsonBlob(const TSharedPtr<FJsonObject>& Blob) : Blob(Blob)
+		{
+		}
+
+		virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
+		{
+			UBeamJsonUtils::SerializeJsonObject(TEXT("blob"), Blob, Serializer);
+		}
+
+		virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
+		{
+			UBeamJsonUtils::SerializeJsonObject(TEXT("blob"),Blob, Serializer);
+		}
+
+		virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
+		{
+			UBeamJsonUtils::DeserializeJsonObject(TEXT("blob"), Bag, Blob, OuterOwner);
 		}
 	};
 
@@ -1047,6 +1072,31 @@ void FBeamJsonUtilsSpec::Define()
 				TestEqual("TMap<FString, FBeamMapOfSemanticType> Serialized Correctly", OutJson, Expected);
 			}
 		});
+
+		It("should output a JSON Object with an arbitrary JSON-blob in it", [this]()
+		{
+			FJsonDataBag Bag;
+			if(!Bag.FromJson(TEXT(R"({ "arbitraryBool": false, "arbitraryString": "string", "arbitraryNumber": 0 })")))
+			{
+				TestTrue(TEXT("Should never see this... means the string above isn't valid"), false);				
+			}
+			
+			FBeamJsonBlob Blob{};
+			Blob.Blob = Bag.JsonObject;
+
+			FString OutJson;
+			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
+			UBeamJsonUtils::SerializeUStruct<FBeamJsonBlob>(Blob, JsonSerializer);
+			JsonSerializer->Close();
+
+			// Get a condensed string so we can easily compare with the condensed string we generate.
+			const FString ExpectedTemp = TEXT(R"({"blob":{"arbitraryBool":false,"arbitraryString":"string","arbitraryNumber":0}})");
+			FJsonDataBag ExpectedBag;
+			ExpectedBag.FromJson(ExpectedTemp);
+			const FString Expected = ExpectedBag.ToJson(false);
+
+			TestEqual("Serialization output is not correct", OutJson, Expected);
+		});
 	});
 
 
@@ -1300,8 +1350,8 @@ void FBeamJsonUtilsSpec::Define()
 
 				virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 				{
-					a = Bag->GetIntegerField("a");
-					b = Bag->GetStringField("b");
+					a = Bag->GetIntegerField(TEXT("a"));
+					b = Bag->GetStringField(TEXT("b"));
 				}
 			};
 
@@ -1451,8 +1501,8 @@ void FBeamJsonUtilsSpec::Define()
 
 					virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 					{
-						a = Bag->GetIntegerField("a");
-						b = Bag->GetStringField("b");
+						a = Bag->GetIntegerField(TEXT("a"));
+						b = Bag->GetStringField(TEXT("b"));
 					}
 				};
 
@@ -1619,8 +1669,8 @@ void FBeamJsonUtilsSpec::Define()
 
 					virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 					{
-						a = Bag->GetIntegerField("a");
-						b = Bag->GetStringField("b");
+						a = Bag->GetIntegerField(TEXT("a"));
+						b = Bag->GetStringField(TEXT("b"));
 					}
 				};
 
@@ -1959,8 +2009,8 @@ void FBeamJsonUtilsSpec::Define()
 
 				virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 				{
-					a = Bag->GetIntegerField("a");
-					b = Bag->GetStringField("b");
+					a = Bag->GetIntegerField(TEXT("a"));
+					b = Bag->GetStringField(TEXT("b"));
 				}
 			};
 
@@ -2063,7 +2113,7 @@ void FBeamJsonUtilsSpec::Define()
 
 					virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 					{
-						a = Bag->GetIntegerField("a");
+						a = Bag->GetIntegerField(TEXT("a"));
 					}
 				};
 
@@ -2176,7 +2226,7 @@ void FBeamJsonUtilsSpec::Define()
 
 					virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 					{
-						a = Bag->GetIntegerField("a");
+						a = Bag->GetIntegerField(TEXT("a"));
 					}
 				};
 
@@ -2615,6 +2665,19 @@ void FBeamJsonUtilsSpec::Define()
 				TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.d.FindRef("a2").AsLong == -1);
 				TestTrue("Deserialized TMap<FString, int> map correctly", TestOut.d.FindRef("a3").AsLong == 1);
 			}
+		});
+
+		It("should deserialize a JSON Object containing an arbitrary Json-blob (FJsonObject) in it ", [this]()
+		{
+			// Get a condensed string so we can easily compare with the condensed string we generate.
+			const FString JsonInput = TEXT(R"({"blob":{"arbitraryBool":true,"arbitraryString":"string","arbitraryNumber":1}})");
+
+			FBeamJsonBlob Test{};
+			Test.BeamDeserialize(JsonInput);
+
+			TestTrue("Struct Properties were deserialized correctly", Test.Blob->GetBoolField(TEXT("arbitraryBool")) == true);
+			TestTrue("Struct Properties were deserialized correctly", Test.Blob->GetStringField(TEXT("arbitraryString")) == FString(TEXT("string")));
+			TestTrue("Struct Properties were deserialized correctly", Test.Blob->GetNumberField(TEXT("arbitraryNumber")) == 1);
 		});
 	});
 }

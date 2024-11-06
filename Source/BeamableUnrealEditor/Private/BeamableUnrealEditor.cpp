@@ -4,13 +4,9 @@
 
 #define LOCTEXT_NAMESPACE "FBeamableUnrealEditorModule"
 
-void FBeamableUnrealEditorModule::StartupModule()
-{
-}
+void FBeamableUnrealEditorModule::StartupModule() {}
 
-void FBeamableUnrealEditorModule::ShutdownModule()
-{
-}
+void FBeamableUnrealEditorModule::ShutdownModule() {}
 
 #undef LOCTEXT_NAMESPACE
 

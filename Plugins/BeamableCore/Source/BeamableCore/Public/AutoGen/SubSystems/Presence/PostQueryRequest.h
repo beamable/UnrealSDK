@@ -36,8 +36,8 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Presence", DisplayName="Beam - Make PostQuery",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bToManyRequests,_PlayerIds,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UPostQueryRequest* Make(FOptionalBool _bToManyRequests, FOptionalArrayOfString _PlayerIds, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Presence", DisplayName="Beam - Make PostQuery",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_PlayerIds,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	static UPostQueryRequest* Make(FOptionalArrayOfString _PlayerIds, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

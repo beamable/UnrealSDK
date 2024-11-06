@@ -1,9 +1,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AutoGen/Enums/ContentType.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "Serialization/BeamOptional.h"
 #include "AutoGen/Optionals/OptionalString.h"
+#include "BeamBackend/SemanticTypes/BeamContentId.h"
 #include "Dom/JsonObject.h"
 #include "Serialization/BeamJsonUtils.h"
 

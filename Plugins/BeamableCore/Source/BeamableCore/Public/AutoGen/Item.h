@@ -6,7 +6,7 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/ItemProperty.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalArchetypeProxy.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalFederationInfo.h"
 
 #include "Item.generated.h"
 
@@ -25,7 +25,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Proxy Id", Category="Beam")
 	FOptionalString ProxyId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Proxy", Category="Beam")
-	FOptionalArchetypeProxy Proxy = {};
+	FOptionalFederationInfo Proxy = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created At", Category="Beam")
 	FOptionalInt64 CreatedAt = {};
 

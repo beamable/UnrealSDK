@@ -27,7 +27,7 @@ void UPostQueryRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostQueryRequest* UPostQueryRequest::Make(FOptionalBool _bToManyRequests, FOptionalArrayOfString _PlayerIds, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPostQueryRequest* UPostQueryRequest::Make(FOptionalArrayOfString _PlayerIds, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostQueryRequest* Req = NewObject<UPostQueryRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -37,7 +37,6 @@ UPostQueryRequest* UPostQueryRequest::Make(FOptionalBool _bToManyRequests, FOpti
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
 	Req->Body = NewObject<UOnlineStatusQuery>(Req);
-	Req->Body->bToManyRequests = _bToManyRequests;
 	Req->Body->PlayerIds = _PlayerIds;
 	
 

@@ -11,7 +11,7 @@
 #include "BeamGameTypeContent.generated.h"
 
 UENUM(BlueprintType, Category="Beam|Enums")
-enum class EBeamStatCompareOperation
+enum class EBeamStatCompareOperation : uint8
 {
 	And,
 	Or,
@@ -65,7 +65,7 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		const auto   ConstraintStr = Bag->GetStringField("Constraint");
+		const auto   ConstraintStr = Bag->GetStringField(TEXT("Constraint"));
 		const UEnum* Enum          = StaticEnum<EBeamStatCompareOperation>();
 		for (int32 NameIndex = 0; NameIndex < Enum->NumEnums() - 1; ++NameIndex)
 		{
@@ -75,9 +75,9 @@ public:
 				Constraint = static_cast<EBeamStatCompareOperation>(Enum->GetValueByIndex(NameIndex));
 		}
 
-		UBeamJsonUtils::DeserializeOptional<FString>("Stat", Bag, Stat, this);
-		UBeamJsonUtils::DeserializeArray(Bag->GetArrayField("Values"), Values, this);
-		UBeamJsonUtils::DeserializeArray<UBeamStatComparisonRule*>(Bag->GetArrayField("Rules"), Rules, this);
+		UBeamJsonUtils::DeserializeOptional<FString>(TEXT("Stat"), Bag, Stat, this);
+		UBeamJsonUtils::DeserializeArray(Bag->GetArrayField(TEXT("Values")), Values, this);
+		UBeamJsonUtils::DeserializeArray<UBeamStatComparisonRule*>(Bag->GetArrayField(TEXT("Rules")), Rules, this);
 	}
 };
 

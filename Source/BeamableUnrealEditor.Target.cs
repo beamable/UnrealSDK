@@ -27,6 +27,7 @@ public class BeamableUnrealEditorTarget : TargetRules
 		Console.WriteLine($"Configuring editor project as beamproj={samplePluginName}.");
 		BeamableUnrealTarget.ConfigureIfSandbox(this, samplePluginName);
 		BeamableUnrealTarget.ConfigureIfHathoraDemo(this, samplePluginName);
+		BeamableUnrealTarget.ConfigureIfSteamDemo(this, samplePluginName);
 		BeamableUnrealTarget.ApplyProjectOverrides(Target, samplePluginName);
 	}
 }

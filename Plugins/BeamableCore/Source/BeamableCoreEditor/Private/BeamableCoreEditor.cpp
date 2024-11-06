@@ -17,6 +17,7 @@
 #include "PropertyType/BeamClientPermissionCustomization.h"
 #include "PropertyType/BeamContentIdCustomization.h"
 #include "PropertyType/FBeamOptionalCustomization.h"
+#include "PropertyType/FDocsPageItemCustomization.h"
 #include "PropertyType/RequestTypeCustomization.h"
 #include "Subsystems/BeamEditor.h"
 #include "Subsystems/Content/BeamEditorContent.h"
@@ -84,6 +85,13 @@ void FBeamableCoreEditorModule::StartupModule()
 			FBeamContentId::StaticStruct()->GetFName(),
 			// this is where our MakeInstance() method is useful
 			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamContentIdCustomization::MakeInstance));
+
+		// to register our custom property
+		PropertyModule.RegisterCustomPropertyTypeLayout(
+			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
+			FDocsPageItem::StaticStruct()->GetFName(),
+			// this is where our MakeInstance() method is useful
+			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FDocsPageItemCustomization::MakeInstance));
 
 		// to register our custom property
 		PropertyModule.RegisterCustomPropertyTypeLayout(

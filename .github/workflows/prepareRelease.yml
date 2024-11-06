@@ -1,0 +1,26 @@
+name: Release - Create Release Draft
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        description: The tag for this version in the format "X.Y.Z"
+        required: true        
+      commit:
+        type: string
+        description: Commit hash to deploy
+        default: main        
+
+run-name: Prepare RC - ${{ inputs.commit }} by @${{ github.actor }}
+jobs:
+  buildLinuxServers:
+    uses: ./.github/workflows/build_linux_server.yml    
+    with:
+      buildAll: true
+    
+  buildWindowsClients:    
+    uses: ./.github/workflows/build_windows_client.yml
+    with:
+      buildAll: true
+      

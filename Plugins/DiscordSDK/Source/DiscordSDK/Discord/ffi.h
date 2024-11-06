@@ -2,9 +2,7 @@
 #define _DISCORD_GAME_SDK_H_
 
 #ifdef _WIN32
-#include "Runtime/Core/Public/Windows/AllowWindowsPlatformTypes.h"
-#include "Runtime/Core/Public/Windows/MinWindows.h"
-#include "Runtime/Core/Public/Windows/HideWindowsPlatformTypes.h"
+#include <Windows.h>
 #include <dxgi.h>
 #endif
 

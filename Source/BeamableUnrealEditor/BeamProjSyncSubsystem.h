@@ -25,6 +25,11 @@ class BEAMABLEUNREALEDITOR_API UBeamProjSyncSubsystem : public UBeamEditorSubsys
 {
 	GENERATED_BODY()
 
+public:
+	UPROPERTY(BlueprintReadOnly)
+	FString ActiveBeamProj;
+
+private:	
 	inline static TArray<FString> OverridenDirectories = {TEXT("Config"), TEXT(".beamable/content")};
 	inline static TArray<FDelegateHandle> OverridenDirectoriesHandlers = {{}, {}};
 
@@ -34,19 +39,22 @@ class BEAMABLEUNREALEDITOR_API UBeamProjSyncSubsystem : public UBeamEditorSubsys
 
 	FDelegateHandle OnContentSavedHandle;
 	FDelegateHandle OnUndoRedoHandle;
-	FDelegateHandle OnPreBeginPIEHandle;
+	FDelegateHandle OnPreBeginPIEHandle;	
 
-	FString ActiveBeamProj;
 
 	FString UnrealConfigDir() { return OverridenDirectories[0]; }
 	FString BeamableContentDir() { return OverridenDirectories[1]; }
 
+	
 	virtual FBeamOperationHandle InitializeWhenEditorReady() override;
 	virtual void Deinitialize() override;
 
 	void OnEnterPie(bool) const;
 	void OnObjectRedoUndo() const;
 	void OnContentSaved(FBeamContentManifestId ManifestId, FBeamContentId Id);
+
+	UFUNCTION()
+	void OnAppliedSettingsToBuild();
 
 	void SyncAllOverridenDirectories() const;
 	void GetPaths(const FString& OverridenDirectory, FString& WatchDir, FString& TargetDir, FString& AbsWatchDir, FString& AbsTargetDir) const;

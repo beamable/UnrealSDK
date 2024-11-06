@@ -1,10 +1,7 @@
-// ================================ Copyright (c) Wildcard Alliance , All Rights Reserved. ================================
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Beamable/FInternetAddressBeamable.h"
-#include "HathoraTypes.h"
 #include "Online/CoreOnline.h"
 #include "Misc/ScopeLock.h"
 #include "OnlineSessionSettings.h"

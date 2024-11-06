@@ -466,7 +466,7 @@ bool UBeamRequestTracker::IsWaitFailed(const FBeamWaitCompleteEvent& Evt, TArray
 			for (FBeamOperationEvent TriggeredEvent : OpState->TriggeredEvents)
 			{
 				if (TriggeredEvent.EventType == OET_ERROR)
-					Errors.Add(TriggeredEvent.EventData);
+					Errors.Add(TriggeredEvent.EventCode);
 			}
 		}
 	}
@@ -573,23 +573,29 @@ void UBeamRequestTracker::AddRequestToOperation(const FBeamOperationHandle& Op, 
 	AddRequestToOperation(Op, RequestContext.RequestId);
 }
 
-void UBeamRequestTracker::TriggerOperationEvent(const FBeamOperationHandle& Op, const EBeamOperationEventType Type, FName SubEvent, const FString& EventData, const int64& RequestId)
+void UBeamRequestTracker::TriggerOperationEvent(const FBeamOperationHandle& Op, const EBeamOperationEventType Type, FName EventId, const FString& EventCode, const int64& RequestId)
+{
+	TriggerOperationEventWithData(Op, Type, EventId, EventCode, {}, RequestId);
+}
+
+void UBeamRequestTracker::TriggerOperationEventWithData(const FBeamOperationHandle& Op, const EBeamOperationEventType Type, FName EventId, const FString& EventCode,
+                                                        const TScriptInterface<IBeamOperationEventData> EventData, const int64& RequestId)
 {
 	const auto& OperationState = ActiveOperationState.FindChecked(Op);
 
 	// If we have the default one, let's pass along '-1000' only if there were no dependent requests. If there, were assume it's a sequential chain and we are being called in the latest request's handler.
 	// As such, we pass in the last dependent request id added.
 	const auto ReqId = RequestId == DEFAULT_REQUEST_ID ? (OperationState->DependentRequests.Num() > 0 ? OperationState->DependentRequests.Last() : -1) : RequestId;
-	TriggerOperationEventFull(Op, Type, SubEvent, OperationState->DependentUserSlots, EventData, OperationState->CallingSystem, ReqId);
+	TriggerOperationEventFull(Op, Type, EventId, OperationState->DependentUserSlots, EventCode, EventData, OperationState->CallingSystem, ReqId);
 }
 
-void UBeamRequestTracker::TriggerOperationEventFull(const FBeamOperationHandle& Op, const EBeamOperationEventType Type, FName SubEvent, const TArray<FUserSlot>& UserSlots, const FString& EventData,
-                                                    const FString& CallingSystem, const int64 RequestId)
+void UBeamRequestTracker::TriggerOperationEventFull(const FBeamOperationHandle& Op, const EBeamOperationEventType Type, FName EventId, const TArray<FUserSlot>& UserSlots, const FString& EventCode,
+                                                    const TScriptInterface<IBeamOperationEventData>& EventData, const FString& CallingSystem, const int64 RequestId)
 {
 	UBeamOperationState* State = ActiveOperationState.FindChecked(Op);
 	checkf(State->Status <= 0, TEXT("Cannot trigger an operation event after it's being completed! %s, %d"), *State->CallingSystem, State->Status);
 
-	const FBeamOperationEvent Result{Op, Type, RequestId, SubEvent, CallingSystem, EventData};
+	const FBeamOperationEvent Result{Op, Type, RequestId, EventId, CallingSystem, EventCode, EventData};
 
 	TArray<FString> SlotsStr;
 	for (const auto& UserSlot : UserSlots)
@@ -603,9 +609,9 @@ void UBeamRequestTracker::TriggerOperationEventFull(const FBeamOperationHandle& 
 		       Op.OperationId,
 		       *SlotsJoinedStr,
 		       *StaticEnum<EBeamOperationEventType>()->GetNameStringByValue(static_cast<uint8>(Type)),
-		       *SubEvent.ToString(),
+		       *EventId.ToString(),
 		       *CallingSystem,
-		       *EventData);
+		       *EventCode);
 	}
 
 	if (State->BlueprintHandler.ExecuteIfBound(Result))
@@ -614,12 +620,12 @@ void UBeamRequestTracker::TriggerOperationEventFull(const FBeamOperationHandle& 
 		       Op.OperationId,
 		       *SlotsJoinedStr,
 		       *StaticEnum<EBeamOperationEventType>()->GetNameStringByValue(static_cast<uint8>(Type)),
-		       *SubEvent.ToString(),
+		       *EventId.ToString(),
 		       *CallingSystem,
-		       *EventData);
+		       *EventCode);
 	}
 
-	if (SubEvent == NAME_None)
+	if (EventId == NAME_None)
 	{
 		if (Type == OET_SUCCESS)
 			State->Status = UBeamOperationState::COMPLETE_SUCCESS;
@@ -633,6 +639,79 @@ void UBeamRequestTracker::TriggerOperationEventFull(const FBeamOperationHandle& 
 		CheckAndCompleteWaitHandles(-1);
 	}
 }
+
+bool UBeamRequestTracker::TryGetOperationEvents(const FBeamOperationHandle& Op, const EBeamOperationEventType& FilterType, const FName& FilterId, TArray<FBeamOperationEvent>& Events)
+{
+	if (const auto StatePtr = ActiveOperationState.Find(Op))
+	{
+		const auto State = *StatePtr;
+
+		const auto MaxEventCount = State->TriggeredEvents.Num();
+		Events.Reserve(MaxEventCount);
+
+		for (const auto& TriggeredEvent : State->TriggeredEvents)
+		{
+			auto bShouldInclude = true;
+			bShouldInclude &= FilterType == OET_NONE || TriggeredEvent.EventType == FilterType;
+			bShouldInclude & FilterId == NAME_All || TriggeredEvent.EventId == FilterId;
+
+			if (bShouldInclude)
+			{
+				Events.Add(TriggeredEvent);
+			}
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+bool UBeamRequestTracker::TryGetOperationSuccesses(const FBeamOperationHandle& Op, TArray<FBeamOperationEvent>& Events)
+{
+	return TryGetOperationEvents(Op, OET_SUCCESS, NAME_All, Events);
+}
+
+bool UBeamRequestTracker::TryGetOperationErrors(const FBeamOperationHandle& Op, TArray<FBeamOperationEvent>& Events)
+{
+	return TryGetOperationEvents(Op, OET_ERROR, NAME_All, Events);
+}
+
+bool UBeamRequestTracker::TryGetOperationCancelations(const FBeamOperationHandle& Op, TArray<FBeamOperationEvent>& Events)
+{
+	return TryGetOperationEvents(Op, OET_CANCELLED, NAME_All, Events);
+}
+
+bool UBeamRequestTracker::TryGetOperationSuccessesWithId(const FBeamOperationHandle& Op, FName FilterId, TArray<FBeamOperationEvent>& Events)
+{
+	return TryGetOperationEvents(Op, OET_SUCCESS, FilterId, Events);
+}
+
+bool UBeamRequestTracker::TryGetOperationErrorsWithId(const FBeamOperationHandle& Op, FName FilterId, TArray<FBeamOperationEvent>& Events)
+{
+	return TryGetOperationEvents(Op, OET_ERROR, FilterId, Events);
+}
+
+bool UBeamRequestTracker::TryGetOperationCancelationsWithId(const FBeamOperationHandle& Op, FName FilterId, TArray<FBeamOperationEvent>& Events)
+{
+	return TryGetOperationEvents(Op, OET_CANCELLED, FilterId, Events);
+}
+
+EBeamOperationEventType UBeamRequestTracker::TryGetOperationResult(const FBeamOperationHandle& Op, FString& EventCode, TScriptInterface<IBeamOperationEventData>& EventData)
+{
+	if (TArray<FBeamOperationEvent> Events; TryGetOperationEvents(Op, OET_NONE, NAME_None, Events))
+	{
+		ensureAlwaysMsgf(Events.Num() == 1,
+		                 TEXT("Found more than one completing event. This should be impossible. Please turn on verbose logging for the relevant systems and get in touch with Beamable."));
+
+		EventCode = Events[0].EventCode;
+		EventData = Events[0].EventData;
+		return Events[0].EventType;
+	}
+
+	return OET_NONE;
+}
+
 
 FBeamOperationHandle UBeamRequestTracker::CPP_BeginSuccessfulOperation(const TArray<FUserSlot>& Participants, const FString& CallingSystem, FString Success, FBeamOperationEventHandlerCode OnEvent)
 {
@@ -648,17 +727,33 @@ FBeamOperationHandle UBeamRequestTracker::CPP_BeginErrorOperation(const TArray<F
 	return OpHandle;
 }
 
-void UBeamRequestTracker::TriggerOperationSuccess(const FBeamOperationHandle& Op, const FString& EventData, const int64& RequestId)
+void UBeamRequestTracker::TriggerOperationSuccess(const FBeamOperationHandle& Op, const FString& EventCode, const int64& RequestId)
 {
-	TriggerOperationEvent(Op, EBeamOperationEventType::OET_SUCCESS, NAME_None, EventData, RequestId);
+	TriggerOperationEvent(Op, EBeamOperationEventType::OET_SUCCESS, NAME_None, EventCode, RequestId);
 }
 
-void UBeamRequestTracker::TriggerOperationError(const FBeamOperationHandle& Op, const FString& EventData, const int64& RequestId)
+void UBeamRequestTracker::TriggerOperationError(const FBeamOperationHandle& Op, const FString& EventCode, const int64& RequestId)
 {
-	TriggerOperationEvent(Op, EBeamOperationEventType::OET_ERROR, NAME_None, EventData, RequestId);
+	TriggerOperationEvent(Op, EBeamOperationEventType::OET_ERROR, NAME_None, EventCode, RequestId);
 }
 
-void UBeamRequestTracker::TriggerOperationCancelled(const FBeamOperationHandle& Op, const FString& EventData, const int64& RequestId)
+void UBeamRequestTracker::TriggerOperationCancelled(const FBeamOperationHandle& Op, const FString& EventCode, const int64& RequestId)
 {
-	TriggerOperationEvent(Op, EBeamOperationEventType::OET_CANCELLED, NAME_None, EventData, RequestId);
+	TriggerOperationEvent(Op, EBeamOperationEventType::OET_CANCELLED, NAME_None, EventCode, RequestId);
+}
+
+void UBeamRequestTracker::TriggerOperationSuccessWithData(const FBeamOperationHandle& Op, const FString& EventCode, const TScriptInterface<IBeamOperationEventData>& EventData, const int64& RequestId)
+{
+	TriggerOperationEventWithData(Op, EBeamOperationEventType::OET_SUCCESS, NAME_None, EventCode, EventData, RequestId);
+}
+
+void UBeamRequestTracker::TriggerOperationErrorWithData(const FBeamOperationHandle& Op, const FString& EventCode, const TScriptInterface<IBeamOperationEventData>& EventData, const int64& RequestId)
+{
+	TriggerOperationEventWithData(Op, EBeamOperationEventType::OET_ERROR, NAME_None, EventCode, EventData, RequestId);
+}
+
+void UBeamRequestTracker::TriggerOperationCancelledWithData(const FBeamOperationHandle& Op, const FString& EventCode, const TScriptInterface<IBeamOperationEventData>& EventData,
+                                                            const int64& RequestId)
+{
+	TriggerOperationEventWithData(Op, EBeamOperationEventType::OET_CANCELLED, NAME_None, EventCode, EventData, RequestId);
 }

@@ -12,8 +12,6 @@ public class BEAMPROJ_Sandbox : ModuleRules
 			new string[]
 			{
 				"Core",
-				"BeamableCore",
-				"BeamableCoreRuntime",
 			}
 		);
 		
@@ -27,5 +25,7 @@ public class BEAMPROJ_Sandbox : ModuleRules
 				// ... add private dependencies that you statically link with here ...	
 			}
 		);
+		
+		Beam.AddRuntimeModuleDependencies(this);
 	}
 }

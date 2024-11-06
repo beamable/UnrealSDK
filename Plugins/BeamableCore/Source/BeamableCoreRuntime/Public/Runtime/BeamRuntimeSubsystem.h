@@ -6,16 +6,35 @@
 #include "BeamRuntimeSettings.h"
 #include "UObject/Object.h"
 #include "Runtime/BeamRuntime.h"
-
 #include "BeamRuntimeSubsystem.generated.h"
+
+class UBeamContentSubsystem;
+
+/**
+ * State of Subsystem intialization.
+ *
+ * - UnInitialized: The subsystem is not initialized, using the subsystem in this state may result in a crash
+ * - InitializedNoUserData: The subsystem is initialized but without the user data.
+ * - InitializedWithUserData: The sdk is now initialized and ready to be used.
+ */
+UENUM()
+enum ESubsystemState
+{
+	UnInitialized,
+	InitializedNoUserData,
+	InitializedWithUserData
+};
+
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRuntimeUserSlotDataChangedEvent, FUserSlot, UserSlot);
 
 UCLASS(Abstract, Blueprintable, meta=(IsBlueprintBase=true, ShowWorldContextPin))
-class BEAMABLECORERUNTIME_API UBeamRuntimeSubsystem : public UGameInstanceSubsystem, public FTickableGameObject
+class BEAMABLECORERUNTIME_API	UBeamRuntimeSubsystem : public UGameInstanceSubsystem, public FTickableGameObject
 {
 	GENERATED_BODY()
 
+	friend class UBeamRuntime;
+	
 protected:
 	/** @brief Initializes the subsystem.  */
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
@@ -39,26 +58,17 @@ protected:
 		RETURN_QUICK_DECLARE_CYCLE_STAT(UBeamRuntimeSubsystem, STATGROUP_Tickables);
 	}
 
+	/** @brief an enum that represents the state of the sdk if it is currently initialized and ready to be used or not */
+    UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="Subsystem State", Category="Beam")
+    TEnumAsByte<ESubsystemState> CurrentState;
 public:
 	UPROPERTY()
 	UBeamRuntime* Runtime;
 
-	/**
-	 * @brief This is just a flag that informs the caller on whether or not this specific subsystem has finished it's initialization flow.
-	 * This should never be set before OnBeamableReady has been called. This may be called at some later point if this subsystem's initialization flow needs to kick-off Operations
-	 * on OnBeamableReady in order to get ready for use.
-	 */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	bool bIsStarted = false;
-
-	/**
-	 * @brief This is just a flag that informs the caller on whether or not this specific subsystem has finished it's initialization flow.
-	 * This should never be set before OnBeamableReady has been called. This may be called at some later point if this subsystem's initialization flow needs to kick-off Operations
-	 * on OnBeamableReady in order to get ready for use.
-	 */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	bool bIsReady = false;
-
+	/** @brief returns the state of the subsystem if it is initalized and ready to be used or not */
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	TEnumAsByte<ESubsystemState> GetSubsystemState() {return CurrentState;}
+	
 	/**
 	 * This is called after unreal is fully initialized but Beamable is not. Basically, this runs after all Engine and GameInstance Subsystems have
 	 * completed running their Initialize function. This callback is useful for reading cached local state and local configuration files.  
@@ -68,7 +78,13 @@ public:
 	virtual void InitializeWhenUnrealReady_Implementation(FBeamOperationHandle& ResultOp);
 
 	/**
-	 * @brief UBeamRuntime::OnStarted runs after all these callbacks have completed. At this point, you can make any non-authenticated request to beamable.
+	 * This returns a list of the subsystems that needs to be initialized for this subsystem to work correctly.
+	 */
+	UFUNCTION()
+	virtual TArray<TSubclassOf<UBeamRuntimeSubsystem>> GetDependingOnSubsystems();
+	
+	/**
+	 * @brief At this point, you can make any non-authenticated request to beamable. But... you don't have access to any beamable content types (they are fetched at this point).
 	 * For example, downloading content at the start of a player session (see UBeamContentSubsystem for an example).
 	 * This is guaranteed to run only once per game-client/server session. Also, for UBeamRuntimeSubsystems running in dedicated servers, this is the last of the callbacks here that will actually run.
 	 * After this runs, UBeamRuntime::OnStarted is invoked and user-level code can run to make non-authenticated requests to beamable (ie: game-specific signup/login flows). 
@@ -76,6 +92,16 @@ public:
 	UFUNCTION(BlueprintNativeEvent, Category="Beam")
 	void         OnBeamableStarting(FBeamOperationHandle& ResultOp);
 	virtual void OnBeamableStarting_Implementation(FBeamOperationHandle& ResultOp);
+
+	/**
+	 * @brief UBeamRuntime::OnStarted runs after all these callbacks have completed. At this point, you can make any non-authenticated request to beamable and you have access to your content manifest).
+	 * For example, pre-fetching store data based on store content.
+	 * This is guaranteed to run only once per game-client/server session. Also, for UBeamRuntimeSubsystems running in dedicated servers, this is the last of the callbacks here that will actually run.
+	 * After this runs, UBeamRuntime::OnStarted is invoked and user-level code can run to make non-authenticated requests to beamable (ie: game-specific signup/login flows). 
+	 */
+	UFUNCTION(BlueprintNativeEvent, Category="Beam")
+	void         OnBeamableContentReady(FBeamOperationHandle& ResultOp);
+	virtual void OnBeamableContentReady_Implementation(FBeamOperationHandle& ResultOp);
 
 	/**
 	 * @brief Called whenever a user authenticates into a user slot.

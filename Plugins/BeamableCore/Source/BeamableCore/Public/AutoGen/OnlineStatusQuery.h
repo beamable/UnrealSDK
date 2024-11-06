@@ -4,7 +4,6 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 
 #include "OnlineStatusQuery.generated.h"
 
@@ -14,8 +13,6 @@ class BEAMABLECORE_API UOnlineStatusQuery : public UObject, public IBeamJsonSeri
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B To Many Requests", Category="Beam")
-	FOptionalBool bToManyRequests = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Ids", Category="Beam")
 	FOptionalArrayOfString PlayerIds = {};
 

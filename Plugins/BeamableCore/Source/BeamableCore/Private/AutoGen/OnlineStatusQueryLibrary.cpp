@@ -22,18 +22,16 @@ FString UOnlineStatusQueryLibrary::OnlineStatusQueryToJsonString(const UOnlineSt
 	return Result;
 }	
 
-UOnlineStatusQuery* UOnlineStatusQueryLibrary::Make(FOptionalBool bToManyRequests, FOptionalArrayOfString PlayerIds, UObject* Outer)
+UOnlineStatusQuery* UOnlineStatusQueryLibrary::Make(FOptionalArrayOfString PlayerIds, UObject* Outer)
 {
 	auto Serializable = NewObject<UOnlineStatusQuery>(Outer);
-	Serializable->bToManyRequests = bToManyRequests;
 	Serializable->PlayerIds = PlayerIds;
 	
 	return Serializable;
 }
 
-void UOnlineStatusQueryLibrary::Break(const UOnlineStatusQuery* Serializable, FOptionalBool& bToManyRequests, FOptionalArrayOfString& PlayerIds)
+void UOnlineStatusQueryLibrary::Break(const UOnlineStatusQuery* Serializable, FOptionalArrayOfString& PlayerIds)
 {
-	bToManyRequests = Serializable->bToManyRequests;
 	PlayerIds = Serializable->PlayerIds;
 		
 }

@@ -8,7 +8,7 @@
 void UBeamEditorSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	RequestTracker = GEngine->GetEngineSubsystem<UBeamRequestTracker>();
-	Editor = Cast<UBeamEditor>(Collection.InitializeDependency(UBeamEditor::StaticClass()));	
+	Editor = Cast<UBeamEditor>(Collection.InitializeDependency(UBeamEditor::StaticClass()));
 }
 
 void UBeamEditorSubsystem::Deinitialize()
@@ -35,9 +35,9 @@ FBeamOperationHandle UBeamEditorSubsystem::PrepareForRealmChange(FBeamRealmHandl
 	return Handle;
 }
 
-FBeamOperationHandle UBeamEditorSubsystem::InitializeFromRealm(FBeamRealmHandle NewRealm)
+FBeamOperationHandle UBeamEditorSubsystem::InitializeRealm(FBeamRealmHandle NewRealm)
 {
-	UE_LOG(LogBeamEditor, Display, TEXT("Editor Subsystem %s - Reacting to Realm Change"), *GetName())
+	UE_LOG(LogBeamEditor, Display, TEXT("Editor Subsystem %s - Preparing Editor to work with new Realm"), *GetName())
 
 	// By default, just return an empty completed operation
 	const auto Handle = RequestTracker->BeginOperation({Editor->GetMainEditorSlot()}, GetName(), {});
@@ -46,9 +46,20 @@ FBeamOperationHandle UBeamEditorSubsystem::InitializeFromRealm(FBeamRealmHandle 
 	return Handle;
 }
 
-void UBeamEditorSubsystem::OnRealmInitialized()
+FBeamOperationHandle UBeamEditorSubsystem::OnRealmInitialized(FBeamRealmHandle NewRealm)
 {
-	UE_LOG(LogBeamEditor, Display, TEXT("Editor Subsystem %s - TargetRealmReady"), *GetName())
+	UE_LOG(LogBeamEditor, Display, TEXT("Editor Subsystem %s - Initializing state from new realm"), *GetName())
+
+	// By default, just return an empty completed operation
+	const auto Handle = RequestTracker->BeginOperation({Editor->GetMainEditorSlot()}, GetName(), {});
+	RequestTracker->TriggerOperationSuccess(Handle, {});
+
+	return Handle;
+}
+
+void UBeamEditorSubsystem::OnReady()
+{
+	UE_LOG(LogBeamEditor, Display, TEXT("Editor Subsystem %s - Editor System Ready for use With Realm"), *GetName())
 }
 
 void UBeamEditorSubsystem::OnSignOut()

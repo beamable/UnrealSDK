@@ -41,10 +41,13 @@ public:
 	virtual FBeamOperationHandle PrepareForRealmChange(FBeamRealmHandle CurrRealm, FBeamRealmHandle NewRealm);
 
 	UFUNCTION(Category="Beam")
-	virtual FBeamOperationHandle InitializeFromRealm(FBeamRealmHandle NewRealm);
+	virtual FBeamOperationHandle InitializeRealm(FBeamRealmHandle NewRealm);
 
 	UFUNCTION(Category="Beam")
-	virtual void OnRealmInitialized();
+	virtual FBeamOperationHandle OnRealmInitialized(FBeamRealmHandle NewRealm);
+
+	UFUNCTION(Category="Beam")
+	virtual void OnReady();	
 
 	UFUNCTION(Category="Beam")
 	virtual void OnSignOut();

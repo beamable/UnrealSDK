@@ -45,8 +45,8 @@ struct BEAMABLECORE_API FBeamFederation : public FBeamJsonSerializableUStruct
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	{
-		Service = Bag->GetStringField("service");
-		Namespace = Bag->GetStringField("namespace");
+		Service = Bag->GetStringField(TEXT("service"));
+		Namespace = Bag->GetStringField(TEXT("namespace"));
 	}
 };
 
