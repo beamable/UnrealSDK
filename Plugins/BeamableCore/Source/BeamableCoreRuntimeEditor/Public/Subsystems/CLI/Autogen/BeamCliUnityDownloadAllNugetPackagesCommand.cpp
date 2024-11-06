@@ -8,8 +8,9 @@ FString UBeamCliUnityDownloadAllNugetPackagesCommand::GetCommand()
 	return FString(TEXT("unity download-all-nuget-packages"));
 }
 		
-void UBeamCliUnityDownloadAllNugetPackagesCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliUnityDownloadAllNugetPackagesCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliUnityDownloadAllNugetPackagesStreamData* Data = NewObject<UBeamCliUnityDownloadAllNugetPackagesStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliUnityDownloadAllNugetPackagesCommand::HandleStreamReceived(FBeamOpe
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliUnityDownloadAllNugetPackagesCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

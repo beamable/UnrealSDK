@@ -216,6 +216,19 @@ void UBeamCli::RunCommandSync(UBeamCliCommand* Command, const TArray<FString>& P
 	RunningProcesses.Add(Command);
 }
 
+void UBeamCli::OnCommandCompleted(UBeamCliCommand* Command)
+{
+	RunningProcesses.Remove(Command);
+}
+
+void UBeamCli::StopCommand(UBeamCliCommand* Command)
+{	
+	if(RunningProcesses.Remove(Command))
+	{
+		Command->Stop();
+	}
+}
+
 FString UBeamCli::GetPathToCli() const
 {
 	check(IsInstalled())

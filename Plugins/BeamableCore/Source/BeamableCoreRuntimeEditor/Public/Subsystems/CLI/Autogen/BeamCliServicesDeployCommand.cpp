@@ -8,8 +8,9 @@ FString UBeamCliServicesDeployCommand::GetCommand()
 	return FString(TEXT("services deploy"));
 }
 		
-void UBeamCliServicesDeployCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliServicesDeployCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliServicesDeployStreamData* Data = NewObject<UBeamCliServicesDeployStreamData>(this);
@@ -22,9 +23,12 @@ void UBeamCliServicesDeployCommand::HandleStreamReceived(FBeamOperationHandle Op
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
-if(ReceivedStreamType.Equals(StreamTypeRemoteProgress) && OnRemoteProgressStreamOutput)
+
+	if(ReceivedStreamType.Equals(StreamTypeRemoteProgress) && OnRemoteProgressStreamOutput)
 	{
 		UBeamCliServicesDeployRemoteProgressStreamData* Data = NewObject<UBeamCliServicesDeployRemoteProgressStreamData>(this);
 		Data->OuterOwner = this;
@@ -36,8 +40,12 @@ if(ReceivedStreamType.Equals(StreamTypeRemoteProgress) && OnRemoteProgressStream
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnRemoteProgressStreamOutput(RemoteProgressStream, RemoteProgressTimestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliServicesDeployCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

@@ -8,8 +8,9 @@ FString UBeamCliUnityGetVersionInfoCommand::GetCommand()
 	return FString(TEXT("unity get-version-info"));
 }
 		
-void UBeamCliUnityGetVersionInfoCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliUnityGetVersionInfoCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliUnityGetVersionInfoStreamData* Data = NewObject<UBeamCliUnityGetVersionInfoStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliUnityGetVersionInfoCommand::HandleStreamReceived(FBeamOperationHand
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliUnityGetVersionInfoCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

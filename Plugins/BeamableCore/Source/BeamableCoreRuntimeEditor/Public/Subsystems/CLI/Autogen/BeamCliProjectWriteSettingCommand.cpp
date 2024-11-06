@@ -8,8 +8,9 @@ FString UBeamCliProjectWriteSettingCommand::GetCommand()
 	return FString(TEXT("project write-setting"));
 }
 		
-void UBeamCliProjectWriteSettingCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliProjectWriteSettingCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliProjectWriteSettingStreamData* Data = NewObject<UBeamCliProjectWriteSettingStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliProjectWriteSettingCommand::HandleStreamReceived(FBeamOperationHand
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliProjectWriteSettingCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

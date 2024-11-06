@@ -8,8 +8,9 @@ FString UBeamCliConfigCommand::GetCommand()
 	return FString(TEXT("config"));
 }
 		
-void UBeamCliConfigCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliConfigCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliConfigStreamData* Data = NewObject<UBeamCliConfigStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliConfigCommand::HandleStreamReceived(FBeamOperationHandle Op, FStrin
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliConfigCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

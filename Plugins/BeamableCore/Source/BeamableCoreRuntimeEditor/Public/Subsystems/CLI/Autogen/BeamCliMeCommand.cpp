@@ -8,8 +8,9 @@ FString UBeamCliMeCommand::GetCommand()
 	return FString(TEXT("me"));
 }
 		
-void UBeamCliMeCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliMeCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliMeStreamData* Data = NewObject<UBeamCliMeStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliMeCommand::HandleStreamReceived(FBeamOperationHandle Op, FString Re
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliMeCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

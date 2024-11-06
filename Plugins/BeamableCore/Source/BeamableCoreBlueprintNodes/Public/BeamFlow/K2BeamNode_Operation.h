@@ -16,8 +16,7 @@ class UK2Node_Event;
 UENUM(BlueprintType)
 enum EOperationNodeModes
 {
-	OnCompleted,
-	Success_NonSuccess,
+	OnCompleted,	
 	Success_Error_Cancelled,
 	OnSubEvents
 };
@@ -38,8 +37,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 
 	const FName OP_Operation_Expanded_OnSuccess = FName(TEXT("OnSuccess"));
 	const FName OP_Operation_Expanded_OnError = FName(TEXT("OnError"));
-	const FName OP_Operation_Expanded_OnCancelled = FName(TEXT("OnCancelled"));
-	const FName OP_Operation_Expanded_OnOthers = FName(TEXT("OnOthers"));
+	const FName OP_Operation_Expanded_OnCancelled = FName(TEXT("OnCancelled"));	
 
 	const FString Operation_InvalidPinInFlowMessage = LOCTEXT("InvalidPinInFlowOfBeamOperationNode_Error",
 	                                                          "Node @@ in {0} Flow is attempting to use the {1} Pin! That is only available on {2} Flow(s)!")
@@ -64,23 +62,6 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 
 	UPROPERTY(EditAnywhere, Category="Beam Flow|Operations")
 	TEnumAsByte<EOperationNodeModes> CurrentExpandedMode{OnCompleted};
-
-	/**
-	 * @brief We keep track of the sub events we care about. By default, we care about the final success/error/cancel event that the operation emits.
-	 * All cases that you don't explicitly care about when you declare your own operation-specific enum are handled by a catch-all "others" flow.	 
-	 */
-	UPROPERTY(EditAnywhere, Category="Beam Flow|Operations")
-	TArray<FName> RelevantSuccessEventIds{NAME_None};
-	UPROPERTY(EditAnywhere, Category="Beam Flow|Operations")
-	TArray<FName> RelevantErrorEventIds{NAME_None};
-	UPROPERTY(EditAnywhere, Category="Beam Flow|Operations")
-	TArray<FName> RelevantCancelledEventIds{NAME_None};
-	UPROPERTY()
-	TArray<FName> IrrelevantSuccessEventIds;
-	UPROPERTY()
-	TArray<FName> IrrelevantErrorEventIds;
-	UPROPERTY()
-	TArray<FName> IrrelevantCancelledEventIds;
 
 	UPROPERTY()
 	TArray<FName> SuccessEventFlowPinNames;
@@ -175,14 +156,11 @@ protected:
 	                                               TArray<TArray<UEdGraphNode*>> OutPerFlowNodes, TArray<TArray<UEdGraphNode*>> OutPerFlowEventNodes);
 
 	void SetUpPinsForSubEventsBeamFlow(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UK2Node_CallFunction* CallOperationFunction,
-	                                   UEdGraphPin* OthersFlowPin, UEdGraphPin* OthersDataPin, const TArray<TArray<UEdGraphNode*>>& PerFlowNodes,
+	                                   UEdGraphPin* EventStructPin, const TArray<TArray<UEdGraphNode*>>& PerFlowNodes,
 	                                   const TArray<TArray<UEdGraphNode*>>& PerFlowEventNodes);
 
-	void ExpandBeamFlowSubEvents(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
-	                             UEdGraphPin* OthersFlowPin,
-	                             const TArray<FName>& EventsFlowPinNames,
-	                             const TArray<FName>& RelevantEventIds,
-	                             const TArray<FName>& IrrelevantEventIds, UK2Node_BreakStruct* BreakOperationResultNode, UEdGraphPin* SubEventSwitchExecPin);
+	void ExpandBeamFlowSubEvents(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,	                             
+	                             const TArray<FName>& EventIds, const TArray<FName>& EventsFlowPinNames, UK2Node_BreakStruct* BreakOperationResultNode, UEdGraphPin* SubEventSwitchExecPin);
 };
 
 #undef LOCTEXT_NAMESPACE

@@ -35,8 +35,7 @@ void UK2BeamNode_Operation::BuildPinToolTipMap(TMap<FName, FString>& OutTooltipM
 	OutTooltipMap.Add(OP_Operation_UserSlots, TEXT("The user slot for the user performing this operation. Only relevant if developing a game with local multiplayer."));
 	OutTooltipMap.Add(OP_Operation_Event, TEXT("The data for the raised operation event. Use this to understand what happened and react accordingly."));
 
-	OutTooltipMap.Add(OP_Operation_Expanded_OnSuccess, TEXT("This flow only runs for events of type SUCCESS."));
-	OutTooltipMap.Add(OP_Operation_Expanded_OnOthers, TEXT("This flow runs for all events that don't have specific flows for them. Think of it as a 'default' case in the switch statement."));
+	OutTooltipMap.Add(OP_Operation_Expanded_OnSuccess, TEXT("This flow only runs for events of type SUCCESS."));	
 	OutTooltipMap.Add(OP_Operation_Expanded_OnError, TEXT("This flow runs for events of type ERROR."));
 	OutTooltipMap.Add(OP_Operation_Expanded_OnCancelled, TEXT("This flow runs for events of type CANCELLED."));
 
@@ -132,20 +131,11 @@ void UK2BeamNode_Operation::PostEditChangeProperty(FPropertyChangedEvent& Proper
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 	const auto ExpandModePropName = GET_MEMBER_NAME_CHECKED(UK2BeamNode_Operation, CurrentExpandedMode);
-	const auto SuccessSubEventsPropName = GET_MEMBER_NAME_CHECKED(UK2BeamNode_Operation, RelevantSuccessEventIds);
-	const auto ErrorSubEventsPropName = GET_MEMBER_NAME_CHECKED(UK2BeamNode_Operation, RelevantErrorEventIds);
-	const auto CancelledSubEventsPropName = GET_MEMBER_NAME_CHECKED(UK2BeamNode_Operation, RelevantCancelledEventIds);
 	if (PropertyChangedEvent.Property)
 	{
 		const auto CppName = PropertyChangedEvent.Property->GetNameCPP();
 		const auto bChangedExpandedMode = CppName.Equals(ExpandModePropName.ToString());
-		const auto bRelevantSubEvent = CurrentExpandedMode == OnSubEvents && (
-			CppName.Equals(SuccessSubEventsPropName.ToString()) ||
-			CppName.Equals(ErrorSubEventsPropName.ToString()) ||
-			CppName.Equals(CancelledSubEventsPropName.ToString())
-		);
-
-		const auto bShouldRebuildPins = bChangedExpandedMode || bRelevantSubEvent;
+		const auto bShouldRebuildPins = bChangedExpandedMode;
 		if (bShouldRebuildPins)
 		{
 			if (bIsInBeamFlowMode)
@@ -270,29 +260,7 @@ void UK2BeamNode_Operation::EnforceBeamFlowModePins()
 			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Exec, OP_Operation_OnOperationEvent, PinTooltipMap[OP_Operation_OnOperationEvent]);
 			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_Event, PinTooltipMap[OP_Operation_Event], {}, FBeamOperationEvent::StaticStruct());
 			break;
-		}
-	case Success_NonSuccess:
-		{
-			// Remove all pins except the ones this mode cares about
-			RemoveAllPinsExcept(this, [this](const UEdGraphNode*, const UEdGraphPin* Pin)
-			{
-				const TArray AllowedPins{
-					UEdGraphSchema_K2::PN_Then,
-					OP_Operation_Handle,
-					OP_Operation_UserSlots,
-					OP_Operation_Expanded_OnSuccess,
-					OP_Operation_Expanded_OnOthers,
-					OP_Operation_Event,
-				};
-				return Pin->Direction == EGPD_Input || AllowedPins.Contains(Pin->PinName);
-			});
-
-			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_UserSlots, PinTooltipMap[OP_Operation_UserSlots], Params, FUserSlot::StaticStruct());
-			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Exec, OP_Operation_Expanded_OnSuccess, PinTooltipMap[OP_Operation_Expanded_OnSuccess]);
-			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Exec, OP_Operation_Expanded_OnOthers, PinTooltipMap[OP_Operation_Expanded_OnOthers]);
-			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_Event, PinTooltipMap[OP_Operation_Event], {}, FBeamOperationEvent::StaticStruct());
-			break;
-		}
+		}	
 	case Success_Error_Cancelled:
 		{
 			// Remove all pins except the ones this mode cares about
@@ -332,19 +300,12 @@ void UK2BeamNode_Operation::EnforceBeamFlowModePins()
 			TArray<FName> ErrorTypeSubEvents = GetOperationEventIds(OET_ERROR);
 			TArray<FName> CancelledTypeSubEvents = GetOperationEventIds(OET_CANCELLED);
 
-			const auto EnforceRelevantEventPins = [this](const TArray<FName>& AvailableSubEvents, const TArray<FName>& RelevantSubEvents, const FName& BaseExecPinName,
-			                                             int& AddedCount, TArray<FName>& CreatedFlowPins, TArray<FName>& NotRelevantSubEvents)
+			const auto EnforceRelevantEventPins = [this](const TArray<FName>& AvailableSubEvents, const FName& BaseExecPinName, int& AddedCount, TArray<FName>& CreatedFlowPins)
 			{
 				for (int i = 0; i < AvailableSubEvents.Num(); ++i)
 				{
 					const auto& SubEvent = AvailableSubEvents[i];
 					const auto& SubEventName = SubEvent.ToString();
-
-					if (!RelevantSubEvents.Contains(SubEvent))
-					{
-						NotRelevantSubEvents.Add(SubEvent);
-						continue;
-					}
 
 					// If we have the event name as default, we just name it as the regular operation. Otherwise we name it  
 					const auto ExecPinName = SubEvent == NAME_None ? BaseExecPinName : FName(FString::Printf(TEXT("%s - %s"), *BaseExecPinName.ToString(), *SubEventName));
@@ -359,9 +320,7 @@ void UK2BeamNode_Operation::EnforceBeamFlowModePins()
 			// Enforce the sub events for each type are added in order.
 			auto RelevantEventsAdded = 0;
 			SuccessEventFlowPinNames.Empty();
-			IrrelevantSuccessEventIds.Empty();
-			EnforceRelevantEventPins(SuccessTypeSubEvents, RelevantSuccessEventIds, OP_Operation_Expanded_OnSuccess,
-			                         RelevantEventsAdded, SuccessEventFlowPinNames, IrrelevantSuccessEventIds);
+			EnforceRelevantEventPins(SuccessTypeSubEvents, OP_Operation_Expanded_OnSuccess, RelevantEventsAdded, SuccessEventFlowPinNames);
 			for (int i = 0; i < SuccessEventFlowPinNames.Num(); ++i)
 			{
 				PinsToKeep.Add(SuccessEventFlowPinNames[i]);
@@ -372,28 +331,17 @@ void UK2BeamNode_Operation::EnforceBeamFlowModePins()
 			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_UserSlots, PinTooltipMap[OP_Operation_UserSlots], Params, FUserSlot::StaticStruct());
 
 			ErrorEventFlowPinNames.Empty();
-			IrrelevantErrorEventIds.Empty();
-			EnforceRelevantEventPins(ErrorTypeSubEvents, RelevantErrorEventIds, OP_Operation_Expanded_OnError,
-			                         RelevantEventsAdded, ErrorEventFlowPinNames, IrrelevantErrorEventIds);
+			EnforceRelevantEventPins(ErrorTypeSubEvents, OP_Operation_Expanded_OnError, RelevantEventsAdded, ErrorEventFlowPinNames);
 			for (int i = 0; i < ErrorEventFlowPinNames.Num(); ++i)
 			{
 				PinsToKeep.Add(ErrorEventFlowPinNames[i]);
 			}
 
 			CancelledEventFlowPinNames.Empty();
-			IrrelevantCancelledEventIds.Empty();
-			EnforceRelevantEventPins(CancelledTypeSubEvents, RelevantCancelledEventIds, OP_Operation_Expanded_OnCancelled,
-			                         RelevantEventsAdded, CancelledEventFlowPinNames, IrrelevantCancelledEventIds);
+			EnforceRelevantEventPins(CancelledTypeSubEvents, OP_Operation_Expanded_OnCancelled, RelevantEventsAdded, CancelledEventFlowPinNames);
 			for (int i = 0; i < CancelledEventFlowPinNames.Num(); ++i)
 			{
 				PinsToKeep.Add(CancelledEventFlowPinNames[i]);
-			}
-
-			// If we are not handling all errors, we have a catch all that takes in the raw EventData string as it's parameter pin.
-			if (RelevantEventsAdded < SuccessTypeSubEvents.Num() + ErrorTypeSubEvents.Num() + CancelledTypeSubEvents.Num())
-			{
-				EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Exec, OP_Operation_Expanded_OnOthers, PinTooltipMap[OP_Operation_Expanded_OnOthers]);
-				PinsToKeep.Add(OP_Operation_Expanded_OnOthers);
 			}
 
 			// We always expose the Event Data --- this is the entire `FBeamOperationEvent` struct and is valid in all flows here.
@@ -444,33 +392,7 @@ void UK2BeamNode_Operation::ExpandBeamFlowMode(FKismetCompilerContext& CompilerC
 			SetUpPinsForOnCompleteBeamFlow(CompilerContext, SourceGraph, CallOperationFunction, OutPerFlowNodes[1], OutPerFlowEventNodes[1],
 			                               CompleteFlowPin, ResultPin, UserSlotsPin);
 			break;
-		}
-	case Success_NonSuccess:
-		{
-			// Gets the relevant pins
-			const auto HandlePin = FindPin(OP_Operation_Handle);
-			const auto UserSlotsPin = FindPin(OP_Operation_UserSlots); // This can be either an array pin or a single pin --- depends on whether or not this operation involves multiple users.
-			const auto SuccessFlowPin = FindPin(OP_Operation_Expanded_OnSuccess);
-			const auto OthersFlowPin = FindPin(OP_Operation_Expanded_OnOthers);
-
-			const TArray<UEdGraphPin*> StartingGraphs{ThenPin, SuccessFlowPin, OthersFlowPin};
-			const TArray<FName> RelevantFunctionNames{GET_FUNCTION_NAME_CHECKED(UBeamRequestTracker, WaitAll)};
-			TArray<TArray<UEdGraphNode*>> OutPerFlowNodes;
-			TArray<TArray<UEdGraphNode*>> OutPerFlowEventNodes;
-			GetPerBeamFlowNodes(CompilerContext, this, StartingGraphs, RelevantFunctionNames, OutPerFlowNodes, OutPerFlowEventNodes);
-
-			// Validate that the Synchronous Flow does not use Pins that are not available for them.
-			ValidateOutputPinUsage(CompilerContext, {UserSlotsPin}, {Operation_ResultPinInSynchronousFlowMessage, Operation_UserSlotsPinInSynchronousFlowMessage},
-			                       OutPerFlowNodes[0]);
-
-			// Make sure all output pins in Node node relevant to the complete callback that are connected to nodes in the synchronous flow are correctly configured.
-			SetUpPinsForSynchronousFlow(CompilerContext, OutPerFlowNodes[0], OutPerFlowEventNodes[0], CallOperationFunction, ThenPin, HandlePin);
-
-			// Make sure all output pins in Node node relevant to the complete callback that are connected to nodes in the complete flow are correctly configured.
-			SetUpPinsForSuccessNotSuccessBeamFlow(CompilerContext, SourceGraph, CallOperationFunction, SuccessFlowPin, UserSlotsPin, OthersFlowPin, OutPerFlowNodes,
-			                                      OutPerFlowEventNodes);
-			break;
-		}
+		}	
 	case Success_Error_Cancelled:
 		{
 			// Gets the relevant pins
@@ -508,11 +430,10 @@ void UK2BeamNode_Operation::ExpandBeamFlowMode(FKismetCompilerContext& CompilerC
 			// Gets the relevant pins
 			const auto HandlePin = FindPin(OP_Operation_Handle);
 			const auto UserSlotsPin = FindPin(OP_Operation_UserSlots); // This can be either an array pin or a single pin --- depends on whether or not this operation involves multiple users.
-			const auto OthersFlowPin = FindPin(OP_Operation_Expanded_OnOthers);
-			const auto OthersDataPin = FindPin(OP_Operation_Event);
+			
+			const auto EventPin = FindPin(OP_Operation_Event);
 
-			TArray<UEdGraphPin*> StartingGraphs{ThenPin,};
-			if (OthersFlowPin) StartingGraphs.Add(OthersFlowPin);
+			TArray<UEdGraphPin*> StartingGraphs{ThenPin,};			
 			for (const auto& Pin : SuccessEventFlowPinNames) StartingGraphs.Add(FindPin(Pin));
 			for (const auto& Pin : ErrorEventFlowPinNames) StartingGraphs.Add(FindPin(Pin));
 			for (const auto& Pin : CancelledEventFlowPinNames) StartingGraphs.Add(FindPin(Pin));
@@ -524,16 +445,16 @@ void UK2BeamNode_Operation::ExpandBeamFlowMode(FKismetCompilerContext& CompilerC
 
 			// Validate that the Synchronous Flow does not use Pins that are not available for them.
 			TArray<UEdGraphPin*> InvalidSynchronousFlowPins = {UserSlotsPin,};
-			if (OthersDataPin) InvalidSynchronousFlowPins.Add(OthersDataPin);
+			if (EventPin) InvalidSynchronousFlowPins.Add(EventPin);
 			TArray<FString> InvalidSynchronousFlowPinsValidationErrors = {Operation_UserSlotsPinInSynchronousFlowMessage,};
-			if (OthersDataPin) InvalidSynchronousFlowPinsValidationErrors.Add(Operation_DataPinInSynchronousFlowMessage);
+			if (EventPin) InvalidSynchronousFlowPinsValidationErrors.Add(Operation_DataPinInSynchronousFlowMessage);
 			ValidateOutputPinUsage(CompilerContext, InvalidSynchronousFlowPins, InvalidSynchronousFlowPinsValidationErrors, OutPerFlowNodes[0]);
 
 			// Make sure all output pins in Node node relevant to the complete callback that are connected to nodes in the synchronous flow are correctly configured.
 			SetUpPinsForSynchronousFlow(CompilerContext, OutPerFlowNodes[0], OutPerFlowEventNodes[0], CallOperationFunction, ThenPin, HandlePin);
 
 			// Make sure all output pins in Node node relevant to the complete callback that are connected to nodes in the complete flow are correctly configured.
-			SetUpPinsForSubEventsBeamFlow(CompilerContext, SourceGraph, CallOperationFunction, OthersFlowPin, OthersDataPin, OutPerFlowNodes, OutPerFlowEventNodes);
+			SetUpPinsForSubEventsBeamFlow(CompilerContext, SourceGraph, CallOperationFunction, EventPin, OutPerFlowNodes, OutPerFlowEventNodes);
 			break;
 		}
 	default: break;
@@ -733,8 +654,7 @@ void UK2BeamNode_Operation::SetUpPinsForSuccessErrorCancelledBeamFlow(FKismetCom
 }
 
 void UK2BeamNode_Operation::SetUpPinsForSubEventsBeamFlow(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UK2Node_CallFunction* CallOperationFunction,
-                                                          UEdGraphPin* const OthersFlowPin, UEdGraphPin* const OthersDataPin,
-                                                          const TArray<TArray<UEdGraphNode*>>& PerFlowNodes, const TArray<TArray<UEdGraphNode*>>& PerFlowEventNodes)
+                                                          UEdGraphPin* const EventStructPin, const TArray<TArray<UEdGraphNode*>>& PerFlowNodes, const TArray<TArray<UEdGraphNode*>>& PerFlowEventNodes)
 {
 	const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
 
@@ -753,24 +673,22 @@ void UK2BeamNode_Operation::SetUpPinsForSubEventsBeamFlow(FKismetCompilerContext
 	                                             BreakOperationResultNode->FindPin(GET_MEMBER_NAME_CHECKED(FBeamOperationEvent, EventType)));
 
 	// Expand the Success SubEvents
-	ExpandBeamFlowSubEvents(CompilerContext, SourceGraph, K2Schema, OthersFlowPin, SuccessEventFlowPinNames,
-	                        RelevantSuccessEventIds, IrrelevantSuccessEventIds, BreakOperationResultNode,
+	ExpandBeamFlowSubEvents(CompilerContext, SourceGraph, K2Schema, GetOperationEventIds(OET_SUCCESS), SuccessEventFlowPinNames, BreakOperationResultNode,
 	                        SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_SUCCESS)));
 
 	// Expand the Error SubEvents
-	ExpandBeamFlowSubEvents(CompilerContext, SourceGraph, K2Schema, OthersFlowPin, ErrorEventFlowPinNames,
-	                        RelevantErrorEventIds, IrrelevantErrorEventIds, BreakOperationResultNode,
+	ExpandBeamFlowSubEvents(CompilerContext, SourceGraph, K2Schema, GetOperationEventIds(OET_ERROR), ErrorEventFlowPinNames, BreakOperationResultNode,
 	                        SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_ERROR)));
 
+
 	// Expand the Cancelled SubEvents
-	ExpandBeamFlowSubEvents(CompilerContext, SourceGraph, K2Schema, OthersFlowPin, CancelledEventFlowPinNames,
-	                        RelevantCancelledEventIds, IrrelevantCancelledEventIds, BreakOperationResultNode,
+	ExpandBeamFlowSubEvents(CompilerContext, SourceGraph, K2Schema, GetOperationEventIds(OET_CANCELLED), CancelledEventFlowPinNames, BreakOperationResultNode,
 	                        SwitchEnum->FindPin(StaticEnum<EBeamOperationEventType>()->GetNameByValue(OET_CANCELLED)));
 
 	for (int i = 0; i < PerFlowNodes.Num(); ++i)
 	{
-		// Replace the connections of any of the nodes' pins with any matching pin in the first list with its corresponding pin in the second list.		
-		const TArray<UEdGraphPin*> NodePins{OthersDataPin};
+		// Replace the connections of the nodes' pins with any matching pin in the first list with its corresponding pin in the second list.		
+		const TArray<UEdGraphPin*> NodePins{EventStructPin};
 		const TArray<UEdGraphPin*> IntermediatePins{OperationEventPin};
 
 		const auto Flow = PerFlowNodes[i];
@@ -786,36 +704,25 @@ void UK2BeamNode_Operation::SetUpPinsForSubEventsBeamFlow(FKismetCompilerContext
 }
 
 void UK2BeamNode_Operation::ExpandBeamFlowSubEvents(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
-                                                    UEdGraphPin* const OthersFlowPin, const TArray<FName>& EventsFlowPinNames, const TArray<FName>& RelevantEventIds,
-                                                    const TArray<FName>& IrrelevantEventIds,
+                                                    const TArray<FName>& EventIds, const TArray<FName>& EventsFlowPinNames,
                                                     UK2Node_BreakStruct* const BreakOperationResultNode, UEdGraphPin* const SubEventSwitchExecPin)
 {
 	const auto SubTypeCodePin = BreakOperationResultNode->FindPin(GET_MEMBER_NAME_CHECKED(FBeamOperationEvent, EventId));
 
-	// Switch on it out of the EventIds pin of the EventType switch
-	const auto SubEventSwitch = CreateSwitchNameNode(this, CompilerContext, SourceGraph, K2Schema, RelevantEventIds, SubEventSwitchExecPin, SubTypeCodePin);
+	// Switch on it out of the EventIds pin of the EventType switch	
+	const auto SubEventSwitch = CreateSwitchNameNode(this, CompilerContext, SourceGraph, K2Schema, EventIds, SubEventSwitchExecPin, SubTypeCodePin);
 	for (int i = 0; i < EventsFlowPinNames.Num(); ++i)
 	{
 		const auto FlowPin = FindPin(EventsFlowPinNames[i]);
 
 		// Get the intermediate pins we'll need to connect to all the places our custom node's output pins are connected to.
 		// If we expect a string, than we forward the raw event data string. Otherwise...
-		const auto SubEventValue = RelevantEventIds[i];
+		const auto SubEventValue = EventIds[i];
 		auto IntermediateSubEventFlowPin = SubEventSwitch->FindPin(SubEventValue);
 
 		// Get the flow pins
 		const auto SuccessFlowMoved = CompilerContext.MovePinLinksToIntermediate(*FlowPin, *IntermediateSubEventFlowPin);
 		check(!SuccessFlowMoved.IsFatal());
-	}
-
-	// Move the execution flow of all non-captured cases to the others flow --- only if it exists.
-	if (OthersFlowPin)
-	{
-		for (int i = 0; i < IrrelevantEventIds.Num(); ++i)
-		{
-			const auto IntermediateNonRelevantFlowPin = SubEventSwitch->FindPin(IrrelevantEventIds[i]);
-			const auto NonRelevantFlowMoved = CompilerContext.CopyPinLinksToIntermediate(*OthersFlowPin, *IntermediateNonRelevantFlowPin);
-		}
 	}
 }
 

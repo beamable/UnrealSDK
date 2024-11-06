@@ -150,6 +150,7 @@ Options:
   --with-group, --with-groups <with-group>           A set of BeamServiceGroup tags that will include the associated services
   --force                                            With this flag, we restart any running services. Without it, we skip running services
   --detach                                           With this flag, the service will run the background after it has reached basic startup
+  --no-client-gen                                    We compile services that need compiling before running. This will disable the client-code generation part of the compilation
   --dryrun                                           Should any networking happen?
   --cid <cid>                                        Cid to use; will default to whatever is in the file system
   --pid <pid>                                        Pid to use; will default to whatever is in the file system
@@ -164,6 +165,7 @@ Options:
   --docker-cli-path <docker-cli-path>                a custom location for docker. By default, the CLI will attempt to resolve docker through its usual install locations. You can also use the BEAM_DOCKER_EXE environment variable to specify. 
                                                      Currently, a docker path has been automatically identified. [default: docker]
   --emit-log-streams                                 Out all log messages as data payloads in addition to however they are logged
+  --add-project-path <add-project-path>              additional file paths to be included when building a local project manifest.
   --dir <dir>                                        Directory to use for configuration
   --raw                                              Output raw JSON to standard out. This happens by default when the command is being piped
   --pretty                                           Output syntax highlighted box text. This happens by default when the command is not piped
@@ -195,7 +197,7 @@ public:
 	TFunction<void (const TArray<UBeamCliProjectRunErrorRunFailErrorOutputStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnErrorRunFailErrorOutputStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
-	virtual void HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;
+	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;
 	virtual void HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer) override;
 	virtual FString GetCommand() override;
 };

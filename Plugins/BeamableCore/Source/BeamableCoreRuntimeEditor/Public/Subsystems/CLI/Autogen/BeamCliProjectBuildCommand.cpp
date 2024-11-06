@@ -8,8 +8,9 @@ FString UBeamCliProjectBuildCommand::GetCommand()
 	return FString(TEXT("project build"));
 }
 		
-void UBeamCliProjectBuildCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliProjectBuildCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliProjectBuildStreamData* Data = NewObject<UBeamCliProjectBuildStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliProjectBuildCommand::HandleStreamReceived(FBeamOperationHandle Op, 
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliProjectBuildCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

@@ -8,10 +8,15 @@
 #include "Subsystems/BeamEditorSubsystem.h"
 
 #include "BeamLogging.h"
+#include "AutoGen/Enums/FederationType.h"
 #include "BeamBackend/BeamMicroserviceClientSubsystem.h"
+#include "Containers/CircularQueue.h"
+#include "Containers/SpscQueue.h"
 #include "Subsystems/BeamEditor.h"
 #include "Subsystems/CLI/BeamCli.h"
 #include "Subsystems/CLI/Autogen/BeamCliFederationLocalKeyCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliFederationLocalSettingsGetIFederatedGameServerCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliProjectLogsCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliProjectPsCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliServicesPsCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliProjectOpenSwaggerCommand.h"
@@ -27,6 +32,42 @@ UENUM(BlueprintType)
 enum EBeamServiceType { MicroService, MicroStorage };
 
 USTRUCT(BlueprintType)
+struct FLocalFederationData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	EFederationType Type = {};
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UBeamCliFederationLocalSettingsGetIFederatedGameServerStreamData* LocalSettings_FederatedGamerServer = {};
+};
+
+USTRUCT(BlueprintType)
+struct FLocalFederationIdData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FString FederationId = {};
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<FLocalFederationData> Federations = {};
+};
+
+USTRUCT(BlueprintType)
+struct FLocalFederationPerTargetData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FString Target = {};
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<FLocalFederationIdData> Federations = {};
+};
+
+USTRUCT(BlueprintType)
 struct FLocalMicroserviceData
 {
 	GENERATED_BODY()
@@ -36,6 +77,12 @@ struct FLocalMicroserviceData
 	 */
 	UPROPERTY(BlueprintReadOnly)
 	FString BeamoId;
+
+	/**
+	 * The type of the service.
+	 */
+	UPROPERTY(BlueprintReadOnly)
+	TEnumAsByte<EBeamServiceType> ServiceType;
 
 	/**
 	 * If the service is part of any BeamServiceGroup, the group will show up here.
@@ -70,12 +117,22 @@ struct FLocalMicroserviceData
 	UPROPERTY(BlueprintReadOnly, DisplayName="Targets")
 	TMap<FString, FString> TargetsToRoutingKeys;
 
+	UPROPERTY(BlueprintReadOnly, DisplayName="Targets")
+	TMap<FString, FLocalFederationPerTargetData> TargetsToFederations;
+
 	/**
 	 * The currently selected target from the map of available targets.
 	 */
 	UPROPERTY(BlueprintReadWrite, DisplayName="Selected Target")
 	FString CurrentTarget;
+
+	UPROPERTY()
+	UBeamCliProjectLogsCommand* TailLogsCommand = {};
+
+	UPROPERTY()
+	TArray<UBeamCliLogEntry*> Logs = {};
 };
+
 
 UCLASS(BlueprintType)
 class BEAMABLECORERUNTIMEEDITOR_API UBeamMicroserviceLocalEditorView : public UObject
@@ -100,6 +157,19 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	FString SelectedTarget;
+
+	UPROPERTY(BlueprintReadOnly)
+	FString LocalTarget;
+
+	UPROPERTY(BlueprintReadWrite)
+	TMap<FString, FLocalFederationPerTargetData> FederationData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<UBeamCliLogEntry*> Logs = {};
+
+
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	TArray<UBeamCliLogEntry*> GetFilteredLogs(TArray<FString> VisibleLogTypes, FString TextFilter);
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMicroserviceStateChange);
@@ -116,10 +186,12 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamMicroservicesEditor : public UBeamEdito
 	UBeamCli* Cli;
 	UPROPERTY()
 	UBeamBackend* Backend;
-	
+
 
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
+
+	virtual FBeamOperationHandle OnRealmInitialized(FBeamRealmHandle NewRealm) override;
 
 	virtual void OnReady() override;
 
@@ -144,7 +216,13 @@ public:
 	 */
 	UPROPERTY(BlueprintReadOnly)
 	FString LocalRoutingKey;
-	
+
+	/**
+	 * @brief The Local Target for the local signed in user and PC. 
+	 */
+	UPROPERTY(BlueprintReadOnly)
+	FString LocalTarget;
+
 	/**
 	 * @brief Helper function to be used in custom blueprint nodes.
 	 */
@@ -206,6 +284,24 @@ public:
 	bool OpenSwaggerDocs(FString BeamoId);
 
 	/**
+	 * @brief Opens the mongo-express document for the current running service. 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice", meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool OpenMongoExpress(FString BeamoId);
+
+	/**
+	 * @brief Opens the mongo-express document for the current running service. 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice", meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool ClearMongoLocalData(FString BeamoId);
+
+	/**
+	 * @brief Clears the logs for a particular service. 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice", meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool ClearLogs(FString BeamoId);
+	
+	/**
 	 * Whether or not the currently selected routing key for a particular service is valid right now or not.	  
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice", meta=(ExpandBoolAsExecs="ReturnValue"))
@@ -216,7 +312,7 @@ public:
 	 * Whether or not the currently selected routing key for a particular service is valid right now or not.	  
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice", meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool SetCurrentRoutingKey(FString BeamoId, FString Key);
+	bool SetCurrentRoutingKey(FString BeamoId, FString Target);
 
 
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice")
@@ -227,6 +323,7 @@ protected:
 
 	void RunHostMicroservices(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op);
 	void RunDockerMicroservices(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op);
+	void RunStorageObject(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op);
 
 	void StopHostMicroservices(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op);
 	void StopDockerMicroservices(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op);
@@ -234,6 +331,10 @@ protected:
 	// This is how we actually keep Local Microservice State in sync
 	void OnUpdateLocalStateReceived(const TArray<UBeamCliProjectPsStreamData*>& Stream, const TArray<long long>&, const FBeamOperationHandle&);
 
+
 	// Helper functions
+	void SetupLogTail(FLocalMicroserviceData* RunningService);
+	void AppendToLogs(FLocalMicroserviceData* RunningService, const TArray<UBeamCliLogEntry*>& Log);
+	void StopLogTail(FLocalMicroserviceData* RunningService);
 	void SplitByHostOrDocker(const TArray<FString>& BeamoIds, TArray<FString>& DockerBeamoIds, TArray<FString>& HostBeamoIds);
 };

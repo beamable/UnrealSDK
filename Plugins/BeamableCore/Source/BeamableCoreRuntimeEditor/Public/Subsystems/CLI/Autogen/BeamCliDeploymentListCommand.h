@@ -2,56 +2,56 @@
 
 #include "Subsystems/CLI/BeamCliCommand.h"
 #include "Serialization/BeamJsonUtils.h"
-#include "Subsystems/CLI/Autogen/StreamData/RunningServiceStreamData.h"
-#include "Subsystems/CLI/Autogen/StreamData/RunningFederationStreamData.h"
-#include "BeamCliFederationListenCommand.generated.h"
+#include "Subsystems/CLI/Autogen/StreamData/ManifestViewStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/OptionalStringStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/OptionalLongStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/ServiceReferenceStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/OptionalArrayOfServiceComponentStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/ServiceComponentStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/OptionalArrayOfServiceDependencyReferenceStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/ServiceDependencyReferenceStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/OptionalArrayOfServiceStorageReferenceStreamData.h"
+#include "Subsystems/CLI/Autogen/StreamData/ServiceStorageReferenceStreamData.h"
+#include "BeamCliDeploymentListCommand.generated.h"
 
 
 UCLASS()
-class UBeamCliFederationListenStreamData : public UObject, public IBeamJsonSerializableUObject
+class UBeamCliDeploymentListStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
 	UPROPERTY()
-	FString Cid = {};
-	UPROPERTY()
-	FString Pid = {};
-	UPROPERTY()
-	TArray<URunningServiceStreamData*> Services = {};
+	TArray<UManifestViewStreamData*> Deployments = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("Cid"), Cid);
-		Serializer->WriteValue(TEXT("Pid"), Pid);
-		UBeamJsonUtils::SerializeArray<URunningServiceStreamData*>(TEXT("Services"), Services, Serializer);	
+		UBeamJsonUtils::SerializeArray<UManifestViewStreamData*>(TEXT("deployments"), Deployments, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("Cid"), Cid);
-		Serializer->WriteValue(TEXT("Pid"), Pid);
-		UBeamJsonUtils::SerializeArray<URunningServiceStreamData*>(TEXT("Services"), Services, Serializer);	
+		UBeamJsonUtils::SerializeArray<UManifestViewStreamData*>(TEXT("deployments"), Deployments, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Cid = Bag->GetStringField(TEXT("Cid"));
-		Pid = Bag->GetStringField(TEXT("Pid"));
-		UBeamJsonUtils::DeserializeArray<URunningServiceStreamData*>(Bag->GetArrayField(TEXT("Services")), Services, OuterOwner);	
+		UBeamJsonUtils::DeserializeArray<UManifestViewStreamData*>(Bag->GetArrayField(TEXT("deployments")), Deployments, OuterOwner);	
 	}
 };
 
 
 /**
  Description:
-  [INTERNAL] Listen for changes in the current realm's list of registered microservices
+  List the deployments
 
 Usage:
-  Beamable.Tools federation listen [options]
+  Beamable.Tools deployment list [options]
 
 Options:
+  --limit <limit>                      The limit of resources. A value of -1 means no limit [default: -1]
+  -a, --show-archived                  Include archived (removed) services
   --dryrun                             Should any networking happen?
   --cid <cid>                          Cid to use; will default to whatever is in the file system
   --pid <pid>                          Pid to use; will default to whatever is in the file system
@@ -65,6 +65,7 @@ Options:
   --no-log-file                        By default, logs are automatically written to a temp file so that they can be used in an error case. However, when this option is enabled, logs are not written. Also, if the BEAM_CLI_NO_FILE_LOG environment variable is set, no log file will be written.  [default: False]
   --docker-cli-path <docker-cli-path>  a custom location for docker. By default, the CLI will attempt to resolve docker through its usual install locations. You can also use the BEAM_DOCKER_EXE environment variable to specify. 
                                        Currently, a docker path has been automatically identified. [default: docker]
+  --emit-log-streams                   Out all log messages as data payloads in addition to however they are logged
   --dir <dir>                          Directory to use for configuration
   --raw                                Output raw JSON to standard out. This happens by default when the command is being piped
   --pretty                             Output syntax highlighted box text. This happens by default when the command is not piped
@@ -75,18 +76,18 @@ Options:
 
  */
 UCLASS()
-class UBeamCliFederationListenCommand : public UBeamCliCommand
+class UBeamCliDeploymentListCommand : public UBeamCliCommand
 {
 	GENERATED_BODY()
 
 public:
 	inline static FString StreamType = FString(TEXT("stream"));
-	UPROPERTY() TArray<UBeamCliFederationListenStreamData*> Stream;
+	UPROPERTY() TArray<UBeamCliDeploymentListStreamData*> Stream;
 	UPROPERTY() TArray<int64> Timestamps;
-	TFunction<void (const TArray<UBeamCliFederationListenStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
+	TFunction<void (const TArray<UBeamCliDeploymentListStreamData*>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnStreamOutput;	
 
 	TFunction<void (const int& ResCode, const FBeamOperationHandle& Op)> OnCompleted;
-	virtual void HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;
+	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer) override;
 	virtual void HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer) override;
 	virtual FString GetCommand() override;
 };

@@ -8,8 +8,9 @@ FString UBeamCliServicesManifestsCommand::GetCommand()
 	return FString(TEXT("services manifests"));
 }
 		
-void UBeamCliServicesManifestsCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliServicesManifestsCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliServicesManifestsStreamData* Data = NewObject<UBeamCliServicesManifestsStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliServicesManifestsCommand::HandleStreamReceived(FBeamOperationHandle
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliServicesManifestsCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

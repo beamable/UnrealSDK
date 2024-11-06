@@ -8,8 +8,9 @@ FString UBeamCliServicesRegistryCommand::GetCommand()
 	return FString(TEXT("services registry"));
 }
 		
-void UBeamCliServicesRegistryCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliServicesRegistryCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliServicesRegistryStreamData* Data = NewObject<UBeamCliServicesRegistryStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliServicesRegistryCommand::HandleStreamReceived(FBeamOperationHandle 
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliServicesRegistryCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

@@ -8,8 +8,9 @@ FString UBeamCliTempClearLogsCommand::GetCommand()
 	return FString(TEXT("temp clear logs"));
 }
 		
-void UBeamCliTempClearLogsCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliTempClearLogsCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliTempClearLogsStreamData* Data = NewObject<UBeamCliTempClearLogsStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliTempClearLogsCommand::HandleStreamReceived(FBeamOperationHandle Op,
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliTempClearLogsCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

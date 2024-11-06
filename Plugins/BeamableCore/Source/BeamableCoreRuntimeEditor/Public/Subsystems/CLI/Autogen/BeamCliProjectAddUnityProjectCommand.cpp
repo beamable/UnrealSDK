@@ -8,9 +8,11 @@ FString UBeamCliProjectAddUnityProjectCommand::GetCommand()
 	return FString(TEXT("project add-unity-project"));
 }
 		
-void UBeamCliProjectAddUnityProjectCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliProjectAddUnityProjectCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
 	
+	
+	return false;
 }
 
 void UBeamCliProjectAddUnityProjectCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

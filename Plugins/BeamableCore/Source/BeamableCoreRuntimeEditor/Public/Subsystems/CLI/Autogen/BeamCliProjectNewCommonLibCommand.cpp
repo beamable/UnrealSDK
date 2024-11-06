@@ -8,9 +8,11 @@ FString UBeamCliProjectNewCommonLibCommand::GetCommand()
 	return FString(TEXT("project new common-lib"));
 }
 		
-void UBeamCliProjectNewCommonLibCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliProjectNewCommonLibCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
 	
+	
+	return false;
 }
 
 void UBeamCliProjectNewCommonLibCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

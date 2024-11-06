@@ -8,9 +8,11 @@ FString UBeamCliProjectOpenSwaggerCommand::GetCommand()
 	return FString(TEXT("project open-swagger"));
 }
 		
-void UBeamCliProjectOpenSwaggerCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliProjectOpenSwaggerCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
 	
+	
+	return false;
 }
 
 void UBeamCliProjectOpenSwaggerCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

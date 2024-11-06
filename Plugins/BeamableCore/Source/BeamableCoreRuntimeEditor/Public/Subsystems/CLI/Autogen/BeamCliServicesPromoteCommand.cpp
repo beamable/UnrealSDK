@@ -8,8 +8,9 @@ FString UBeamCliServicesPromoteCommand::GetCommand()
 	return FString(TEXT("services promote"));
 }
 		
-void UBeamCliServicesPromoteCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliServicesPromoteCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliServicesPromoteStreamData* Data = NewObject<UBeamCliServicesPromoteStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliServicesPromoteCommand::HandleStreamReceived(FBeamOperationHandle O
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliServicesPromoteCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

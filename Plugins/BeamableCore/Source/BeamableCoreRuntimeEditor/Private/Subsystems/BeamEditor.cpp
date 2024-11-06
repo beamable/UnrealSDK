@@ -92,6 +92,9 @@ void UBeamEditor::Initialize(FSubsystemCollectionBase& Collection)
 	const auto SoftPathToDefaultBoostrapper = FSoftObjectPath{DefaultBootstrapper->GetPathName()};
 	if (!EditorUtilitySubsystem->StartupObjects.Contains(SoftPathToDefaultBoostrapper))
 		EditorUtilitySubsystem->StartupObjects.Add(SoftPathToDefaultBoostrapper);
+
+	// Make sure we have a window message object...
+	ClearBeamableWindowMessage();
 }
 
 void UBeamEditor::Deinitialize()

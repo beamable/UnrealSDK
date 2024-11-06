@@ -8,8 +8,9 @@ FString UBeamCliContentPullCommand::GetCommand()
 	return FString(TEXT("content pull"));
 }
 		
-void UBeamCliContentPullCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliContentPullCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliContentPullStreamData* Data = NewObject<UBeamCliContentPullStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliContentPullCommand::HandleStreamReceived(FBeamOperationHandle Op, F
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliContentPullCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

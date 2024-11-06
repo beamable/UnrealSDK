@@ -8,8 +8,9 @@ FString UBeamCliServicesServiceMetricsCommand::GetCommand()
 	return FString(TEXT("services service-metrics"));
 }
 		
-void UBeamCliServicesServiceMetricsCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliServicesServiceMetricsCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliServicesServiceMetricsStreamData* Data = NewObject<UBeamCliServicesServiceMetricsStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliServicesServiceMetricsCommand::HandleStreamReceived(FBeamOperationH
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliServicesServiceMetricsCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

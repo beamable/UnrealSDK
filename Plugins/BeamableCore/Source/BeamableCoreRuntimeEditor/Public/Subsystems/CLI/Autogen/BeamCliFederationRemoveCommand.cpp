@@ -8,8 +8,9 @@ FString UBeamCliFederationRemoveCommand::GetCommand()
 	return FString(TEXT("federation remove"));
 }
 		
-void UBeamCliFederationRemoveCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliFederationRemoveCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliFederationRemoveStreamData* Data = NewObject<UBeamCliFederationRemoveStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliFederationRemoveCommand::HandleStreamReceived(FBeamOperationHandle 
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliFederationRemoveCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

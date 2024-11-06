@@ -8,8 +8,9 @@ FString UBeamCliServicesRunCommand::GetCommand()
 	return FString(TEXT("services run"));
 }
 		
-void UBeamCliServicesRunCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliServicesRunCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliServicesRunStreamData* Data = NewObject<UBeamCliServicesRunStreamData>(this);
@@ -22,9 +23,12 @@ void UBeamCliServicesRunCommand::HandleStreamReceived(FBeamOperationHandle Op, F
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
-if(ReceivedStreamType.Equals(StreamTypeLocalProgress) && OnLocalProgressStreamOutput)
+
+	if(ReceivedStreamType.Equals(StreamTypeLocalProgress) && OnLocalProgressStreamOutput)
 	{
 		UBeamCliServicesRunLocalProgressStreamData* Data = NewObject<UBeamCliServicesRunLocalProgressStreamData>(this);
 		Data->OuterOwner = this;
@@ -36,8 +40,12 @@ if(ReceivedStreamType.Equals(StreamTypeLocalProgress) && OnLocalProgressStreamOu
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnLocalProgressStreamOutput(LocalProgressStream, LocalProgressTimestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliServicesRunCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

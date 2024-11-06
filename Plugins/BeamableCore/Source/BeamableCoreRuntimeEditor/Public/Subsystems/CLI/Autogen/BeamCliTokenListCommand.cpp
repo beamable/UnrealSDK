@@ -8,8 +8,9 @@ FString UBeamCliTokenListCommand::GetCommand()
 	return FString(TEXT("token list"));
 }
 		
-void UBeamCliTokenListCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliTokenListCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliTokenListStreamData* Data = NewObject<UBeamCliTokenListStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliTokenListCommand::HandleStreamReceived(FBeamOperationHandle Op, FSt
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliTokenListCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

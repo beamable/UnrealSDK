@@ -8,8 +8,9 @@ FString UBeamCliServicesBundleCommand::GetCommand()
 	return FString(TEXT("services bundle"));
 }
 		
-void UBeamCliServicesBundleCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliServicesBundleCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliServicesBundleStreamData* Data = NewObject<UBeamCliServicesBundleStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliServicesBundleCommand::HandleStreamReceived(FBeamOperationHandle Op
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliServicesBundleCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

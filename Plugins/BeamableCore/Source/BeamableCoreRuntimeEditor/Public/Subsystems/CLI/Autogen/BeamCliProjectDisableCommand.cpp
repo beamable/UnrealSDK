@@ -8,8 +8,9 @@ FString UBeamCliProjectDisableCommand::GetCommand()
 	return FString(TEXT("project disable"));
 }
 		
-void UBeamCliProjectDisableCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliProjectDisableCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliProjectDisableStreamData* Data = NewObject<UBeamCliProjectDisableStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliProjectDisableCommand::HandleStreamReceived(FBeamOperationHandle Op
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliProjectDisableCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

@@ -8,8 +8,9 @@ FString UBeamCliProjectRunCommand::GetCommand()
 	return FString(TEXT("project run"));
 }
 		
-void UBeamCliProjectRunCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliProjectRunCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliProjectRunStreamData* Data = NewObject<UBeamCliProjectRunStreamData>(this);
@@ -22,9 +23,12 @@ void UBeamCliProjectRunCommand::HandleStreamReceived(FBeamOperationHandle Op, FS
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
-if(ReceivedStreamType.Equals(StreamTypeBuildErrors) && OnBuildErrorsStreamOutput)
+
+	if(ReceivedStreamType.Equals(StreamTypeBuildErrors) && OnBuildErrorsStreamOutput)
 	{
 		UBeamCliProjectRunBuildErrorsStreamData* Data = NewObject<UBeamCliProjectRunBuildErrorsStreamData>(this);
 		Data->OuterOwner = this;
@@ -36,9 +40,12 @@ if(ReceivedStreamType.Equals(StreamTypeBuildErrors) && OnBuildErrorsStreamOutput
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnBuildErrorsStreamOutput(BuildErrorsStream, BuildErrorsTimestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
-if(ReceivedStreamType.Equals(StreamTypeErrorRunFailErrorOutput) && OnErrorRunFailErrorOutputStreamOutput)
+
+	if(ReceivedStreamType.Equals(StreamTypeErrorRunFailErrorOutput) && OnErrorRunFailErrorOutputStreamOutput)
 	{
 		UBeamCliProjectRunErrorRunFailErrorOutputStreamData* Data = NewObject<UBeamCliProjectRunErrorRunFailErrorOutputStreamData>(this);
 		Data->OuterOwner = this;
@@ -50,8 +57,12 @@ if(ReceivedStreamType.Equals(StreamTypeErrorRunFailErrorOutput) && OnErrorRunFai
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnErrorRunFailErrorOutputStreamOutput(ErrorRunFailErrorOutputStream, ErrorRunFailErrorOutputTimestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliProjectRunCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

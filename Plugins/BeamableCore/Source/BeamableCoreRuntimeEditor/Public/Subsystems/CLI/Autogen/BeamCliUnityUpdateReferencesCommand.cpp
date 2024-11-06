@@ -8,9 +8,11 @@ FString UBeamCliUnityUpdateReferencesCommand::GetCommand()
 	return FString(TEXT("unity update-references"));
 }
 		
-void UBeamCliUnityUpdateReferencesCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliUnityUpdateReferencesCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
 	
+	
+	return false;
 }
 
 void UBeamCliUnityUpdateReferencesCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

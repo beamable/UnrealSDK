@@ -8,9 +8,11 @@ FString UBeamCliProjectNewStorageCommand::GetCommand()
 	return FString(TEXT("project new storage"));
 }
 		
-void UBeamCliProjectNewStorageCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliProjectNewStorageCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
 	
+	
+	return false;
 }
 
 void UBeamCliProjectNewStorageCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

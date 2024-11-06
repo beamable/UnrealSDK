@@ -8,8 +8,9 @@ FString UBeamCliTokenNewGuestCommand::GetCommand()
 	return FString(TEXT("token new-guest"));
 }
 		
-void UBeamCliTokenNewGuestCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliTokenNewGuestCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliTokenNewGuestStreamData* Data = NewObject<UBeamCliTokenNewGuestStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliTokenNewGuestCommand::HandleStreamReceived(FBeamOperationHandle Op,
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliTokenNewGuestCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

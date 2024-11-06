@@ -2,6 +2,57 @@
 
 const FString UBeamCliCommand::PathToLocalCli = FString(TEXT("dotnet"));
 
+void UBeamCliLogEntry::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+{
+	Serializer->WriteValue(TEXT("logLevel"), LogLevel);
+	Serializer->WriteValue(TEXT("message"), Message);
+	Serializer->WriteValue(TEXT("timestamp"), Timestamp);
+}
+
+void UBeamCliLogEntry::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
+{
+	Serializer->WriteValue(TEXT("logLevel"), LogLevel);
+	Serializer->WriteValue(TEXT("message"), Message);
+	Serializer->WriteValue(TEXT("timestamp"), Timestamp);
+}
+
+void UBeamCliLogEntry::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+{
+	LogLevel = Bag->GetStringField(TEXT("logLevel"));
+	Message = Bag->GetStringField(TEXT("message"));
+	Timestamp = Bag->GetIntegerField(TEXT("timestamp"));
+}
+
+void FBeamCliError::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+{
+	Serializer->WriteValue(TEXT("message"), Message);
+	Serializer->WriteValue(TEXT("invocation"), Invocation);
+	Serializer->WriteValue(TEXT("exitCode"), ExitCode);
+	Serializer->WriteValue(TEXT("typeName"), TypeName);
+	Serializer->WriteValue(TEXT("fullTypeName"), FullTypeName);
+	Serializer->WriteValue(TEXT("stackTrace"), StackTrace);
+}
+
+void FBeamCliError::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
+{
+	Serializer->WriteValue(TEXT("message"), Message);
+	Serializer->WriteValue(TEXT("invocation"), Invocation);
+	Serializer->WriteValue(TEXT("exitCode"), ExitCode);
+	Serializer->WriteValue(TEXT("typeName"), TypeName);
+	Serializer->WriteValue(TEXT("fullTypeName"), FullTypeName);
+	Serializer->WriteValue(TEXT("stackTrace"), StackTrace);
+}
+
+void FBeamCliError::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+{
+	Message = Bag->GetStringField(TEXT("message"));
+	Invocation = Bag->GetStringField(TEXT("invocation"));
+	ExitCode = Bag->GetIntegerField(TEXT("exitCode"));
+	TypeName = Bag->GetStringField(TEXT("typeName"));
+	FullTypeName = Bag->GetStringField(TEXT("fullTypeName"));
+	StackTrace = Bag->GetStringField(TEXT("stackTrace"));
+}
+
 FString UBeamCliCommand::PrepareParams(FString Params)
 {
 	return Params.Append(" -q");
@@ -22,7 +73,7 @@ void UBeamCliCommand::Run(const TArray<FString>& CommandParams, const FBeamOpera
 void UBeamCliCommand::RunSync(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op)
 {
 	Run(CommandParams, Op);
-	
+
 	// Busy wait until this finishes.
 	while (CmdProcess->Update())
 	{
@@ -34,6 +85,7 @@ void UBeamCliCommand::RunServer(const FString Uri, const TArray<FString>& Comman
 	RequestTracker = GEngine->GetEngineSubsystem<UBeamRequestTracker>();
 	Editor = GEditor->GetEditorSubsystem<UBeamEditor>();
 	Cli = GEditor->GetEditorSubsystem<UBeamCli>();
+
 
 	checkf(Cli->IsInstalled(), TEXT("The Beamable CLI must be installed for any CLI commands to be run."))
 
@@ -52,41 +104,140 @@ void UBeamCliCommand::RunServer(const FString Uri, const TArray<FString>& Comman
 	CmdRequest->SetURL(Uri / TEXT("execute"));
 	CmdRequest->SetContentAsString(ReqContent);
 	CmdRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
-	CmdRequest->OnProcessRequestComplete().BindLambda([this, Op, CommandLineToExecute](TSharedPtr<IHttpRequest>, TSharedPtr<IHttpResponse> HttpResponse, bool)
+
+	CmdRequest->OnRequestProgress64().BindLambda([this, Op, CommandLineToExecute](TSharedPtr<IHttpRequest> HttpRequest, int64, int64 BytesReceived)
 	{
-		const auto RespCode = HttpResponse->GetResponseCode();
+		const auto HttpResponse = HttpRequest->GetResponse();
+		if (HttpResponse.IsValid())
+		{
+			auto PotentialMessages = HttpResponse->GetContentAsString();
+			PotentialMessages.ReplaceInline(TEXT("\u200b"),TEXT(""));
+
+			// We process all the message but... we hash them to make sure we haven't processed them already...
+			TArray<FString> PotentialJsons;
+			const auto Messages = PotentialMessages.ParseIntoArrayLines(PotentialJsons);
+			for (auto i = 0; i < Messages; i++)
+			{
+				auto Json = PotentialJsons[i];
+				Json.RemoveFromStart(TEXT("data: "));
+
+				UE_LOG(LogBeamCli, Verbose, TEXT("BeamCli Server - Processing JSON message. CMD=%s, JSON=%s"), *CommandLineToExecute, *Json);
+				auto Bag = FJsonDataBag();
+				if (!ProcessedMessageIndices.Contains(i))
+				{
+					if (Bag.FromJson(Json))
+					{
+						ProcessedMessageIndices.Add(i);
+						UE_LOG(LogBeamCli, Verbose, TEXT("BeamCli Server - Processing JSON message. CMD=%s, JSON=%s"), *CommandLineToExecute, *Json);
+
+						const auto ReceivedStreamType = Bag.GetString(TEXT("type"));
+						const auto Timestamp = static_cast<int64>(Bag.GetField(TEXT("ts"))->AsNumber());
+						const auto DataJson = Bag.JsonObject->GetObjectField(TEXT("data")).ToSharedRef();
+
+						// If the command itself handles the data, we don't fall back to these other handlings  
+						if (!HandleStreamReceived(Op, ReceivedStreamType, Timestamp, DataJson, true))
+						{
+							if (ReceivedStreamType.Equals(TEXT("logs")))
+							{
+								UBeamCliLogEntry* Data = NewObject<UBeamCliLogEntry>();
+								Data->OuterOwner = this;
+								Data->BeamDeserializeProperties(DataJson);
+								
+								LogEntries.Add(Data);
+								LogEntriesTimestamps.Add(Timestamp);
+
+								if (OnLogEntriesStreamOutput)
+								{
+									AsyncTask(ENamedThreads::GameThread, [this, Data, Timestamp, Op]
+									{
+										OnLogEntriesStreamOutput(Data, Timestamp, Op);
+									});
+								}
+							}
+							else if (ReceivedStreamType.StartsWith(TEXT("error")))
+							{
+								FBeamCliError Data = FBeamCliError{};
+								Data.OuterOwner = this;
+								Data.BeamDeserializeProperties(DataJson);
+
+								Errors.Add(Data);
+								ErrorsTimestamps.Add(Timestamp);
+
+								if (OnErrorsStreamOutput)
+								{
+									AsyncTask(ENamedThreads::GameThread, [this, Op]
+									{
+										OnErrorsStreamOutput(Errors, ErrorsTimestamps, Op);
+									});
+								}
+							}
+						}
+					}
+					else
+					{
+						UE_LOG(LogBeamCli, Warning, TEXT("BeamCli Server - Ignoring non-JSON message. CMD=%s, JSON=%s"), *CommandLineToExecute, *Json);
+					}
+				}
+			}
+		}
+	});
+	CmdRequest->OnProcessRequestComplete().BindLambda([this, Op, CommandLineToExecute](TSharedPtr<IHttpRequest> Req, TSharedPtr<IHttpResponse> Resp, bool)
+	{
+		if (!Resp.IsValid())
+		{
+			if (Req.IsValid())
+			{
+				if (Req->GetFailureReason() == EHttpFailureReason::Cancelled)
+				{
+					HandleStreamCompleted(Op, 0, true);
+					UE_LOG(LogBeamCli, Verbose, TEXT("BeamCli Server - Command Cancelled. CMD=%s"), *CommandLineToExecute);
+					return;
+				}
+			}
+
+			UE_LOG(LogBeamCli, Error, TEXT("BeamCli Server - Unexpected error in executing command. CMD=%s"), *CommandLineToExecute);
+			HandleStreamCompleted(Op, 999, true);
+			return;
+		}
+
+		const auto RespCode = Resp->GetResponseCode();
 		if (RespCode >= 200 && RespCode < 300)
 		{
-			auto MessageJson = HttpResponse->GetContentAsString();
-			MessageJson.RemoveAt(0, FString(TEXT("data: ")).Len());
-			
-			UE_LOG(LogBeamCli, Display, TEXT("BeamCli Server - Executed command. CMD=%s, RESPONSE=%s"), *CommandLineToExecute, *MessageJson);
-			
-			auto Bag = FJsonDataBag();
-			if (Bag.FromJson(MessageJson))
-			{
-				UE_LOG(LogBeamCli, Verbose, TEXT("BeamCli Server - Processing JSON message. CMD=%s, JSON=%s"), *CommandLineToExecute, *MessageJson);
+			auto AllMessages = Resp->GetContentAsString();
+			AllMessages.TrimEndInline();
 
-				const auto ReceivedStreamType = Bag.GetString(TEXT("type"));
-				const auto Timestamp = static_cast<int64>(Bag.GetField(TEXT("ts"))->AsNumber());
-				const auto DataJson = Bag.JsonObject->GetObjectField(TEXT("data")).ToSharedRef();
-
-				HandleStreamReceived(Op, ReceivedStreamType, Timestamp, DataJson, true);
-				HandleStreamCompleted(Op, 0, true);
-			}
-			else
-			{
-				UE_LOG(LogBeamCli, Warning, TEXT("BeamCli Server - Ignoring non-JSON message. CMD=%s, JSON=%s"), *CommandLineToExecute, *MessageJson);
-			}
+			HandleStreamCompleted(Op, 0, true);
+			UE_LOG(LogBeamCli, Verbose, TEXT("BeamCli Server - Executed command. CMD=%s, ALL_MESSAGES=%s"), *CommandLineToExecute, *AllMessages);
 		}
 		else
 		{
-			UE_LOG(LogBeamCli, Error, TEXT("BeamCli Server - Error in executing command. CMD=%s, RESPONSE=%s"), *CommandLineToExecute, *HttpResponse->GetContentAsString());
-			HandleStreamCompleted(Op, 1, true);
+			if (Req->GetFailureReason() == EHttpFailureReason::Cancelled)
+			{
+				HandleStreamCompleted(Op, 0, true);
+				UE_LOG(LogBeamCli, Verbose, TEXT("BeamCli Server - Command Cancelled. CMD=%s"), *CommandLineToExecute);
+			}
+			else
+			{
+				UE_LOG(LogBeamCli, Error, TEXT("BeamCli Server - Error in executing command. CMD=%s, ALL_MESSAGES=%s"), *CommandLineToExecute, *Resp->GetContentAsString());
+				HandleStreamCompleted(Op, 1, true);
+			}
 		}
 	});
 
-	CmdRequest->ProcessRequest();	
+	CmdRequest->ProcessRequest();
+}
+
+void UBeamCliCommand::Stop()
+{
+	if (CmdProcess)
+	{
+		CmdProcess->Stop();
+	}
+
+	if (CmdRequest)
+	{
+		CmdRequest->CancelRequest();
+	}
 }
 
 void UBeamCliCommand::PrepareCommandProcess(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op)
@@ -132,15 +283,16 @@ void UBeamCliCommand::PrepareCommandProcess(const TArray<FString>& CommandParams
 	CmdProcess->OnCompleted().BindLambda([this, Op](int ResultCode)
 	{
 		HandleStreamCompleted(Op, ResultCode, false);
+		this->Cli->OnCommandCompleted(this);
 	});
 }
 
 bool UBeamCliCommand::IsDone() const
 {
-	if(CmdProcess.IsValid())
+	if (CmdProcess.IsValid())
 		return CmdProcess->Update();
 
-	if(CmdRequest.IsValid())
+	if (CmdRequest.IsValid())
 		return CmdRequest->GetStatus() != EHttpRequestStatus::NotStarted && CmdRequest->GetStatus() != EHttpRequestStatus::Processing;
 
 	return false;
@@ -183,8 +335,9 @@ FString UBeamCliCommand::GetCommand()
 	return TEXT("");
 }
 
-void UBeamCliCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	return false;
 }
 
 void UBeamCliCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

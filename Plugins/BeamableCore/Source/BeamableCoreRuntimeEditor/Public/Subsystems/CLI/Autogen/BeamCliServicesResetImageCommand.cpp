@@ -8,8 +8,9 @@ FString UBeamCliServicesResetImageCommand::GetCommand()
 	return FString(TEXT("services reset image"));
 }
 		
-void UBeamCliServicesResetImageCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliServicesResetImageCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliServicesResetImageStreamData* Data = NewObject<UBeamCliServicesResetImageStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliServicesResetImageCommand::HandleStreamReceived(FBeamOperationHandl
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliServicesResetImageCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

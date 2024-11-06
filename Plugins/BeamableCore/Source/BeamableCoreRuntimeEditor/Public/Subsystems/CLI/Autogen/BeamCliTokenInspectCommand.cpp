@@ -8,8 +8,9 @@ FString UBeamCliTokenInspectCommand::GetCommand()
 	return FString(TEXT("token inspect"));
 }
 		
-void UBeamCliTokenInspectCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliTokenInspectCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliTokenInspectStreamData* Data = NewObject<UBeamCliTokenInspectStreamData>(this);
@@ -22,9 +23,12 @@ void UBeamCliTokenInspectCommand::HandleStreamReceived(FBeamOperationHandle Op, 
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
-if(ReceivedStreamType.Equals(StreamTypeErrorInvalidTokenErrorOutput) && OnErrorInvalidTokenErrorOutputStreamOutput)
+
+	if(ReceivedStreamType.Equals(StreamTypeErrorInvalidTokenErrorOutput) && OnErrorInvalidTokenErrorOutputStreamOutput)
 	{
 		UBeamCliTokenInspectErrorInvalidTokenErrorOutputStreamData* Data = NewObject<UBeamCliTokenInspectErrorInvalidTokenErrorOutputStreamData>(this);
 		Data->OuterOwner = this;
@@ -36,8 +40,12 @@ if(ReceivedStreamType.Equals(StreamTypeErrorInvalidTokenErrorOutput) && OnErrorI
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnErrorInvalidTokenErrorOutputStreamOutput(ErrorInvalidTokenErrorOutputStream, ErrorInvalidTokenErrorOutputTimestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliTokenInspectCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

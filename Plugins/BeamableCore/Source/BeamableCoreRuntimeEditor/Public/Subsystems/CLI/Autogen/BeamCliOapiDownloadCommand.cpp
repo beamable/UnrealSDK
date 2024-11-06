@@ -8,9 +8,11 @@ FString UBeamCliOapiDownloadCommand::GetCommand()
 	return FString(TEXT("oapi download"));
 }
 		
-void UBeamCliOapiDownloadCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliOapiDownloadCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
 	
+	
+	return false;
 }
 
 void UBeamCliOapiDownloadCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

@@ -8,8 +8,9 @@ FString UBeamCliUnityReleaseSharedCodeCommand::GetCommand()
 	return FString(TEXT("unity release-shared-code"));
 }
 		
-void UBeamCliUnityReleaseSharedCodeCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliUnityReleaseSharedCodeCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliUnityReleaseSharedCodeStreamData* Data = NewObject<UBeamCliUnityReleaseSharedCodeStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliUnityReleaseSharedCodeCommand::HandleStreamReceived(FBeamOperationH
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliUnityReleaseSharedCodeCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

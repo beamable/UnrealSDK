@@ -8,9 +8,11 @@ FString UBeamCliProjectOpenMongoCommand::GetCommand()
 	return FString(TEXT("project open-mongo"));
 }
 		
-void UBeamCliProjectOpenMongoCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliProjectOpenMongoCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
 	
+	
+	return false;
 }
 
 void UBeamCliProjectOpenMongoCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

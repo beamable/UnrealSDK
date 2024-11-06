@@ -8,9 +8,11 @@ FString UBeamCliProjectGeneratePropertiesCommand::GetCommand()
 	return FString(TEXT("project generate-properties"));
 }
 		
-void UBeamCliProjectGeneratePropertiesCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliProjectGeneratePropertiesCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
 	
+	
+	return false;
 }
 
 void UBeamCliProjectGeneratePropertiesCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

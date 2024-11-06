@@ -347,7 +347,7 @@ private:
 	bool CommitInventoryUpdate(FUserSlot Player, FBeamOperationHandle Op);	
 
 	UFUNCTION()
-	void MergeInventoryViewIntoState(const UInventoryView* InventoryView, FBeamInventoryState& Inventory);
+	void MergeInventoryViewIntoState(const UInventoryView* InventoryView, FBeamInventoryState& Inventory, TArray<FString> Scopes);
 	
 	UFUNCTION()
 	void InvokeOnInventoryRefreshed(const FBeamGamerTag& GamerTag, const FUserSlot OwnerPlayer);

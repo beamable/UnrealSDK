@@ -8,9 +8,11 @@ FString UBeamCliServicesStopCommand::GetCommand()
 	return FString(TEXT("services stop"));
 }
 		
-void UBeamCliServicesStopCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliServicesStopCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
 	
+	
+	return false;
 }
 
 void UBeamCliServicesStopCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

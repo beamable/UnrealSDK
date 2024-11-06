@@ -8,8 +8,9 @@ FString UBeamCliFederationDisableCommand::GetCommand()
 	return FString(TEXT("federation disable"));
 }
 		
-void UBeamCliFederationDisableCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliFederationDisableCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliFederationDisableStreamData* Data = NewObject<UBeamCliFederationDisableStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliFederationDisableCommand::HandleStreamReceived(FBeamOperationHandle
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliFederationDisableCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

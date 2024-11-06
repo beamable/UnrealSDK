@@ -8,8 +8,9 @@ FString UBeamCliProfileCheckNbomberCommand::GetCommand()
 	return FString(TEXT("profile check-nbomber"));
 }
 		
-void UBeamCliProfileCheckNbomberCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliProfileCheckNbomberCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliProfileCheckNbomberStreamData* Data = NewObject<UBeamCliProfileCheckNbomberStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliProfileCheckNbomberCommand::HandleStreamReceived(FBeamOperationHand
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliProfileCheckNbomberCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

@@ -8,8 +8,9 @@ FString UBeamCliListenPlayerCommand::GetCommand()
 	return FString(TEXT("listen player"));
 }
 		
-void UBeamCliListenPlayerCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliListenPlayerCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliListenPlayerStreamData* Data = NewObject<UBeamCliListenPlayerStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliListenPlayerCommand::HandleStreamReceived(FBeamOperationHandle Op, 
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliListenPlayerCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

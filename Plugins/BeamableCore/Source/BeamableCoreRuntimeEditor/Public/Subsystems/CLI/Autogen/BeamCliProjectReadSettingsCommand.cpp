@@ -8,8 +8,9 @@ FString UBeamCliProjectReadSettingsCommand::GetCommand()
 	return FString(TEXT("project read-settings"));
 }
 		
-void UBeamCliProjectReadSettingsCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliProjectReadSettingsCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliProjectReadSettingsStreamData* Data = NewObject<UBeamCliProjectReadSettingsStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliProjectReadSettingsCommand::HandleStreamReceived(FBeamOperationHand
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliProjectReadSettingsCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

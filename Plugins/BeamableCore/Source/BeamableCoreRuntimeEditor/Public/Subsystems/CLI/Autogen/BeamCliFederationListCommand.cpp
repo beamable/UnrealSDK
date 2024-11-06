@@ -8,8 +8,9 @@ FString UBeamCliFederationListCommand::GetCommand()
 	return FString(TEXT("federation list"));
 }
 		
-void UBeamCliFederationListCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliFederationListCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliFederationListStreamData* Data = NewObject<UBeamCliFederationListStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliFederationListCommand::HandleStreamReceived(FBeamOperationHandle Op
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliFederationListCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

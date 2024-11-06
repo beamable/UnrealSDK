@@ -8,8 +8,9 @@ FString UBeamCliProjectGenerateEnvCommand::GetCommand()
 	return FString(TEXT("project generate-env"));
 }
 		
-void UBeamCliProjectGenerateEnvCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliProjectGenerateEnvCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliProjectGenerateEnvStreamData* Data = NewObject<UBeamCliProjectGenerateEnvStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliProjectGenerateEnvCommand::HandleStreamReceived(FBeamOperationHandl
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliProjectGenerateEnvCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

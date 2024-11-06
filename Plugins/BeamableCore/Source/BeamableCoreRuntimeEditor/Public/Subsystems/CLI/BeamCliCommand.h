@@ -17,6 +17,50 @@ struct FCliRequest
 	FString commandLine;
 };
 
+UCLASS(BlueprintType)
+class UBeamCliLogEntry : public UObject, public IBeamJsonSerializableUObject
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FString LogLevel = {};
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FString Message = {};
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int64 Timestamp = {};
+
+	
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override;
+};
+
+USTRUCT()
+struct FBeamCliError : public FBeamJsonSerializableUStruct
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString Message = {};
+	UPROPERTY()
+	FString Invocation = {};
+	UPROPERTY()
+	int32 ExitCode = {};
+	UPROPERTY()
+	FString TypeName = {};
+	UPROPERTY()
+	FString FullTypeName = {};
+	UPROPERTY()
+	FString StackTrace = {};
+
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override;
+};
+
 UCLASS(Abstract)
 class UBeamCliCommand : public UObject
 {
@@ -26,10 +70,12 @@ protected:
 	TSharedPtr<FMonitoredProcess> CmdProcess;
 	FHttpRequestPtr CmdRequest;
 
+	TSet<int> ProcessedMessageIndices;
+
 public:
 	UBeamCliCommand() = default;
 
-	const static FString PathToLocalCli;	
+	const static FString PathToLocalCli;
 
 	/**
 	 *  Appends global options we want to pass to every command.
@@ -53,6 +99,11 @@ public:
 	 */
 	virtual void RunServer(const FString Uri, const TArray<FString>& CommandParams, const FBeamOperationHandle& Op = {});
 
+	/**
+	 * Terminates the process or HTTP connection.
+	 */
+	virtual void Stop();
+	
 	/**
 	 * For Run and RunSync, this prepares the CmdProcess to be run. 
 	 */
@@ -79,7 +130,7 @@ public:
 	/**
 	 * Generated via Beam CLI for every cmd subclass. Parses any received JSON and invokes the cmd subclass' appropriate  
 	 */
-	virtual void HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer);
+	virtual bool HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer);
 	virtual void HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer);
 
 	/** END -  Auto Generated Function Overrides */
@@ -94,4 +145,17 @@ protected:
 	UBeamEditor* Editor;
 	UPROPERTY()
 	UBeamCli* Cli;
+
+public:
+	UPROPERTY()
+	TArray<UBeamCliLogEntry*> LogEntries;
+	UPROPERTY()
+	TArray<int64> LogEntriesTimestamps;
+	TFunction<void (UBeamCliLogEntry* StreamData, const int64& Timestamps, const FBeamOperationHandle& Op)> OnLogEntriesStreamOutput;
+
+	UPROPERTY()
+	TArray<FBeamCliError> Errors;
+	UPROPERTY()
+	TArray<int64> ErrorsTimestamps;
+	TFunction<void (const TArray<FBeamCliError>& StreamData, const TArray<int64>& Timestamps, const FBeamOperationHandle& Op)> OnErrorsStreamOutput;
 };

@@ -335,17 +335,18 @@ void UBeamInventorySubsystem::OnUserSignedIn_Implementation(const FUserSlot& Use
 		{
 			UPostInventoryRequest* Req = UPostInventoryRequest::Make(BeamRealmUser.GamerTag, FOptionalArrayOfString{InventoryRefreshNotificationMessage.Scopes}, GetTransientPackage(), {});
 
-			const FOnPostInventoryFullResponse PostInventoryHandler = FOnPostInventoryFullResponse::CreateLambda([this](const FBeamFullResponse<UPostInventoryRequest*, UInventoryView*>& Resp)
-			{
-				FBeamRealmUser RealmUser;
-				if (GEngine->GetEngineSubsystem<UBeamUserSlots>()->GetUserDataAtSlot(Resp.Context.UserSlot, RealmUser, this))
+			const FOnPostInventoryFullResponse PostInventoryHandler = FOnPostInventoryFullResponse::CreateLambda(
+				[this, InventoryRefreshNotificationMessage](const FBeamFullResponse<UPostInventoryRequest*, UInventoryView*>& Resp)
 				{
-					FBeamInventoryState& Inventory = *Inventories.Find(RealmUser.GamerTag);
-					const UInventoryView* InventoryView = Resp.SuccessData;
-					MergeInventoryViewIntoState(InventoryView, Inventory);
-					InvokeOnInventoryRefreshed(Inventory.OwnerPlayerGamerTag, Inventory.OwnerPlayer);
-				}
-			});
+					FBeamRealmUser RealmUser;
+					if (GEngine->GetEngineSubsystem<UBeamUserSlots>()->GetUserDataAtSlot(Resp.Context.UserSlot, RealmUser, this))
+					{
+						FBeamInventoryState& Inventory = *Inventories.Find(RealmUser.GamerTag);
+						const UInventoryView* InventoryView = Resp.SuccessData;
+						MergeInventoryViewIntoState(InventoryView, Inventory, InventoryRefreshNotificationMessage.Scopes);
+						InvokeOnInventoryRefreshed(Inventory.OwnerPlayerGamerTag, Inventory.OwnerPlayer);
+					}
+				});
 			FBeamRequestContext Ctx;
 			InventoryApi->CPP_PostInventory(UserSlot, Req, PostInventoryHandler, Ctx, {}, this);
 		});
@@ -603,7 +604,7 @@ bool UBeamInventorySubsystem::FetchInventoryForSlot(FUserSlot Player, FBeamOpera
 		if (Resp.State == RS_Success)
 		{
 			FBeamInventoryState& Inventory = *Inventories.Find(UserData.GamerTag);
-			MergeInventoryViewIntoState(Resp.SuccessData, Inventory);
+			MergeInventoryViewIntoState(Resp.SuccessData, Inventory, {});
 			InvokeOnInventoryRefreshed(Inventory.OwnerPlayerGamerTag, Inventory.OwnerPlayer);
 			Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
 			return;
@@ -630,7 +631,7 @@ bool UBeamInventorySubsystem::FetchInventoryForPlayer(FUserSlot RequestingSlot, 
 		if (Resp.State == RS_Success)
 		{
 			FBeamInventoryState& Inventory = *Inventories.Find(GamerTag);
-			MergeInventoryViewIntoState(Resp.SuccessData, Inventory);
+			MergeInventoryViewIntoState(Resp.SuccessData, Inventory, {});
 			InvokeOnInventoryRefreshed(Inventory.OwnerPlayerGamerTag, Inventory.OwnerPlayer);
 			Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
 			return;
@@ -713,45 +714,158 @@ bool UBeamInventorySubsystem::CommitInventoryUpdate(FUserSlot Player, FBeamOpera
 	return true;
 }
 
-void UBeamInventorySubsystem::MergeInventoryViewIntoState(const UInventoryView* InventoryView, FBeamInventoryState& Inventory)
+void UBeamInventorySubsystem::MergeInventoryViewIntoState(const UInventoryView* InventoryView, FBeamInventoryState& Inventory, TArray<FString> Scopes)
 {
-	for (const auto Currency : InventoryView->Currencies)
+	TArray<FBeamContentId> LocalCurrencyIds;
+	Inventory.Currencies.GetKeys(LocalCurrencyIds);
+
+	// First we get all the ContentIds/Ptr pairs for all the currencies in the received InventoryView
+	struct FReceivedCurrencyData
 	{
-		const auto CurrencyContentId = FBeamContentId{Currency->Id};
-		if (Inventory.Currencies.Contains(CurrencyContentId))
+		FBeamContentId Id;
+		UCurrencyView* ViewPtr;
+
+		bool operator==(const FReceivedCurrencyData& RHS) const
 		{
-			Inventory.Currencies[CurrencyContentId] = Currency->Amount;
+			return Id == RHS.Id;
 		}
-		else
+
+		bool operator!=(const FReceivedCurrencyData& RHS) const
 		{
-			Inventory.Currencies.Add(CurrencyContentId, Currency->Amount);
+			return Id != RHS.Id;
+		}
+	};
+	TArray<FReceivedCurrencyData> ReceivedCurrencies;
+	for (const auto ReceivedCurrency : InventoryView->Currencies)
+		ReceivedCurrencies.Add({ReceivedCurrency->Id, ReceivedCurrency});
+
+	// Then, we iterate over all local currencies we have and:
+	//   - Remove all whose ContentId fail to match one of the CurrencyViews we received in the InventoryView
+	//   - Update the local state of each currency whose ContentId matches one of the CurrencyViews we received as part of the InventoryView.
+	// As we do the above, we remove matched CurrencyViews from the list of ReceivedCurrencies.	
+	for (const auto& LocalCurrencyId : LocalCurrencyIds)
+	{
+		auto bLocalCurrencyMatchesChangedScope = false;
+		for (const auto& ChangedScope : Scopes)
+		{
+			bLocalCurrencyMatchesChangedScope |= LocalCurrencyId.AsString.StartsWith(ChangedScope);
+		}
+
+		// If I care about this scope, now I need to decide if I should remove the Local item (because it is not inside ReceivedCurrencies) OR if I should replace its local data.
+		if (bLocalCurrencyMatchesChangedScope)
+		{
+			const auto Key = FReceivedCurrencyData{LocalCurrencyId, nullptr};
+			if (const auto FoundCurrencyView = ReceivedCurrencies.FindByKey(Key))
+			{
+				Inventory.Currencies[LocalCurrencyId] = FoundCurrencyView->ViewPtr->Amount;
+				ReceivedCurrencies.Remove(Key);
+			}
+			else
+			{
+				Inventory.Currencies.Remove(LocalCurrencyId);
+			}
 		}
 	}
 
-	Inventory.Items.Empty();
-	
-	for (const auto PerItemIdGroup : InventoryView->Items)
+	// Now that ReceivedCurrencies only has the currencies that we did not know about locally, we can just iterate and add them.
+	for (const auto& Currency : ReceivedCurrencies)
 	{
-		const auto ItemContentId = FBeamContentId{PerItemIdGroup->Id};
+		const auto CurrencyContentId = Currency.Id;
+		Inventory.Currencies.Add(CurrencyContentId, Currency.ViewPtr->Amount);
+	}
 
-		if (!Inventory.Items.Contains(ItemContentId))
-			Inventory.Items.Add(ItemContentId, {});
+	// Now we are done merging currencies.
 
-		auto& ItemsState = *Inventory.Items.Find(ItemContentId);
-		for (UItem* Item : PerItemIdGroup->Items)
+	struct FReceivedItemInstanceData
+	{
+		const FString& Id;
+		const int64& InstanceId;
+		const UItem* ViewPtr;
+
+		bool operator==(const FReceivedItemInstanceData& RHS) const
 		{
-			FBeamItemState State;
-			State.ContentId = ItemContentId;
-			State.InstanceId = Item->Id;
-			State.CreatedAt = Item->CreatedAt.IsSet ? FDateTime::FromUnixTimestamp(Item->CreatedAt.Val) : FDateTime::UtcNow();
-			State.UpdatedAt = Item->UpdatedAt.IsSet ? FDateTime::FromUnixTimestamp(Item->UpdatedAt.Val) : FDateTime::UtcNow();
-			State.FederatedId = Item->ProxyId.IsSet ? Item->ProxyId.Val : TEXT("");
-			for (const auto Property : Item->Properties) State.Properties.Add(Property->Name, Property->Value);
-
-			// Swap whatever exists there with the same id we just received.
-			ItemsState.Remove(State);
-			ItemsState.Add(State);
+			return Id == RHS.Id && InstanceId == RHS.InstanceId;
 		}
+
+		bool operator!=(const FReceivedItemInstanceData& RHS) const
+		{
+			return Id != RHS.Id || InstanceId != RHS.InstanceId;
+		}
+	};
+
+	// First we grab a list of all the local InstanceId/UItem pairs we have in our local state.
+	TArray<FReceivedItemInstanceData> LocalItems;
+	for (const auto& Kvp : Inventory.Items)
+	{
+		for (const auto& ItemState : Kvp.Value)
+		{
+			LocalItems.Add({Kvp.Key.AsString, ItemState.InstanceId, nullptr});
+		}
+	}
+
+	// Then, we gather all the individual InstanceId/UItem pairs we got back in this UInventoryView.
+	TArray<FReceivedItemInstanceData> ReceivedItemInstances;
+	for (const auto& ReceivedItemGroup : InventoryView->Items)
+	{
+		for (const auto& ReceivedItem : ReceivedItemGroup->Items)
+			ReceivedItemInstances.Add({ReceivedItemGroup->Id, ReceivedItem->Id, ReceivedItem});
+	}
+
+	// Then, we iterate over all local currencies we have and:
+	//   - Remove all whose ContentId fail to match one of the CurrencyViews we received in the InventoryView
+	//   - Update the local state of each currency whose ContentId matches one of the CurrencyViews we received as part of the InventoryView.
+	// As we do the above, we remove matched CurrencyViews from the list of ReceivedCurrencies.	
+	for (const auto& LocalItem : LocalItems)
+	{
+		auto bLocalItemMatchesChangedScope = false;
+		for (const auto& ChangedScope : Scopes)
+		{
+			bLocalItemMatchesChangedScope |= LocalItem.Id.StartsWith(ChangedScope);
+		}
+
+		// If I care about this scope, now I need to decide if I should remove the Local item (because it is not inside ReceivedItemInstances) OR if I should replace its local data.
+		if (bLocalItemMatchesChangedScope)
+		{
+			if (const auto& FoundItemView = ReceivedItemInstances.FindByKey(LocalItem))
+			{
+				FBeamItemState State;
+				State.ContentId = FoundItemView->Id;
+				State.InstanceId = FoundItemView->InstanceId;
+				State.CreatedAt = FoundItemView->ViewPtr->CreatedAt.IsSet ? FDateTime::FromUnixTimestamp(FoundItemView->ViewPtr->CreatedAt.Val) : FDateTime::UtcNow();
+				State.UpdatedAt = FoundItemView->ViewPtr->UpdatedAt.IsSet ? FDateTime::FromUnixTimestamp(FoundItemView->ViewPtr->UpdatedAt.Val) : FDateTime::UtcNow();
+				State.FederatedId = FoundItemView->ViewPtr->ProxyId.IsSet ? FoundItemView->ViewPtr->ProxyId.Val : TEXT("");
+				for (const auto Property : FoundItemView->ViewPtr->Properties) State.Properties.Add(Property->Name, Property->Value);
+
+				// Swap whatever exists there with the same id we just received.
+				auto& ItemsState = *Inventory.Items.Find(State.ContentId);
+				ItemsState.Remove(State);
+				ItemsState.Add(State);
+
+				// Remove from the list of received item instances so that we can add the remaining ones.
+				ReceivedItemInstances.Remove(LocalItem);
+			}
+			else
+			{
+				Inventory.Items[LocalItem.Id].Remove(FBeamItemState{LocalItem.Id, LocalItem.InstanceId});
+			}
+		}
+	}
+
+	// Now that we have replaced/removed all the existing items, we just add the ones that are left.
+	for (const auto& ReceivedItemInstance : ReceivedItemInstances)
+	{
+		FBeamItemState State;
+		State.ContentId = ReceivedItemInstance.Id;
+		State.InstanceId = ReceivedItemInstance.InstanceId;
+		State.CreatedAt = ReceivedItemInstance.ViewPtr->CreatedAt.IsSet ? FDateTime::FromUnixTimestamp(ReceivedItemInstance.ViewPtr->CreatedAt.Val) : FDateTime::UtcNow();
+		State.UpdatedAt = ReceivedItemInstance.ViewPtr->UpdatedAt.IsSet ? FDateTime::FromUnixTimestamp(ReceivedItemInstance.ViewPtr->UpdatedAt.Val) : FDateTime::UtcNow();
+		State.FederatedId = ReceivedItemInstance.ViewPtr->ProxyId.IsSet ? ReceivedItemInstance.ViewPtr->ProxyId.Val : TEXT("");
+		for (const auto& Property : ReceivedItemInstance.ViewPtr->Properties) State.Properties.Add(Property->Name, Property->Value);
+
+		// Swap whatever exists there with the same id we just received.
+		auto& ItemsState = *Inventory.Items.Find(State.ContentId);
+		ItemsState.Remove(State);
+		ItemsState.Add(State);
 	}
 }
 

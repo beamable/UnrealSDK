@@ -8,8 +8,9 @@ FString UBeamCliContentPublishCommand::GetCommand()
 	return FString(TEXT("content publish"));
 }
 		
-void UBeamCliContentPublishCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliContentPublishCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliContentPublishStreamData* Data = NewObject<UBeamCliContentPublishStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliContentPublishCommand::HandleStreamReceived(FBeamOperationHandle Op
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliContentPublishCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

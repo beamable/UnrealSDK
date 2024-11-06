@@ -8,9 +8,11 @@ FString UBeamCliServicesUpdateDockerfileCommand::GetCommand()
 	return FString(TEXT("services update-dockerfile"));
 }
 		
-void UBeamCliServicesUpdateDockerfileCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliServicesUpdateDockerfileCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
 	
+	
+	return false;
 }
 
 void UBeamCliServicesUpdateDockerfileCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

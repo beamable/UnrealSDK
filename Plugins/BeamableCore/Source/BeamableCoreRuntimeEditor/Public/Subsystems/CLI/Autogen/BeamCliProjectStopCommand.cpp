@@ -8,8 +8,9 @@ FString UBeamCliProjectStopCommand::GetCommand()
 	return FString(TEXT("project stop"));
 }
 		
-void UBeamCliProjectStopCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliProjectStopCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliProjectStopStreamData* Data = NewObject<UBeamCliProjectStopStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliProjectStopCommand::HandleStreamReceived(FBeamOperationHandle Op, F
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliProjectStopCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

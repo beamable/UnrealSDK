@@ -8,8 +8,9 @@ FString UBeamCliUnityCopyDotnetSrcCommand::GetCommand()
 	return FString(TEXT("unity copy-dotnet-src"));
 }
 		
-void UBeamCliUnityCopyDotnetSrcCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliUnityCopyDotnetSrcCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliUnityCopyDotnetSrcStreamData* Data = NewObject<UBeamCliUnityCopyDotnetSrcStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliUnityCopyDotnetSrcCommand::HandleStreamReceived(FBeamOperationHandl
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliUnityCopyDotnetSrcCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

@@ -21,9 +21,9 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamCli : public UBeamEditorSubsystem
 protected:
 	virtual FBeamOperationHandle InitializeWhenEditorReady() override;
 
-	virtual FBeamOperationHandle InitializeRealm(FBeamRealmHandle NewRealm) override;	
+	virtual FBeamOperationHandle InitializeRealm(FBeamRealmHandle NewRealm) override;
 
-	FOptionalBool bInstalled;	
+	FOptionalBool bInstalled;
 
 	UPROPERTY()
 	TArray<UBeamCliCommand*> RunningProcesses;
@@ -62,6 +62,13 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="Params"))
 	void RunCommandSync(UBeamCliCommand* Command, const TArray<FString>& Params);
+	
+
+	/**
+	 * @brief Stops a long-running command. 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	void StopCommand(UBeamCliCommand* Command);
 
 	/**
 	 * @brief Whether or not the CLI is installed on this machine. We check for all editor integrations that require the CLI to work. 
@@ -74,4 +81,9 @@ public:
 	 */
 	UFUNCTION(BlueprintPure, Category="Beam")
 	FString GetPathToCli() const;
+
+	/**
+	 * Invoked when a command is done so we can cleanup.
+	 */
+	void OnCommandCompleted(UBeamCliCommand* Command);
 };

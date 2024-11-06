@@ -8,8 +8,9 @@ FString UBeamCliFederationLocalKeyCommand::GetCommand()
 	return FString(TEXT("federation local-key"));
 }
 		
-void UBeamCliFederationLocalKeyCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliFederationLocalKeyCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliFederationLocalKeyStreamData* Data = NewObject<UBeamCliFederationLocalKeyStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliFederationLocalKeyCommand::HandleStreamReceived(FBeamOperationHandl
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliFederationLocalKeyCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

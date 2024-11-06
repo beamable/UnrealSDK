@@ -8,9 +8,11 @@ FString UBeamCliProjectDepsCommand::GetCommand()
 	return FString(TEXT("project deps"));
 }
 		
-void UBeamCliProjectDepsCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliProjectDepsCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
 	
+	
+	return false;
 }
 
 void UBeamCliProjectDepsCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

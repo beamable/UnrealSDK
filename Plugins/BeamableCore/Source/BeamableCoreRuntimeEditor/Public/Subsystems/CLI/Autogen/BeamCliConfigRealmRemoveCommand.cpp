@@ -8,8 +8,9 @@ FString UBeamCliConfigRealmRemoveCommand::GetCommand()
 	return FString(TEXT("config realm remove"));
 }
 		
-void UBeamCliConfigRealmRemoveCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliConfigRealmRemoveCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliConfigRealmRemoveStreamData* Data = NewObject<UBeamCliConfigRealmRemoveStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliConfigRealmRemoveCommand::HandleStreamReceived(FBeamOperationHandle
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliConfigRealmRemoveCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

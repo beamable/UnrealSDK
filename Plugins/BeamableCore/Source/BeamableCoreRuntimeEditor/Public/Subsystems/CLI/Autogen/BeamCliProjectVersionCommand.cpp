@@ -8,8 +8,9 @@ FString UBeamCliProjectVersionCommand::GetCommand()
 	return FString(TEXT("project version"));
 }
 		
-void UBeamCliProjectVersionCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliProjectVersionCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
+	
 	if(ReceivedStreamType.Equals(StreamType) && OnStreamOutput)
 	{
 		UBeamCliProjectVersionStreamData* Data = NewObject<UBeamCliProjectVersionStreamData>(this);
@@ -22,8 +23,12 @@ void UBeamCliProjectVersionCommand::HandleStreamReceived(FBeamOperationHandle Op
 		AsyncTask(ENamedThreads::GameThread, [this, Op]
 		{
 			OnStreamOutput(Stream, Timestamps, Op);
-		});				
+		});
+		
+		return true;				
 	}
+	
+	return false;
 }
 
 void UBeamCliProjectVersionCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

@@ -8,9 +8,11 @@ FString UBeamCliProjectRegenerateCommand::GetCommand()
 	return FString(TEXT("project regenerate"));
 }
 		
-void UBeamCliProjectRegenerateCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliProjectRegenerateCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
 	
+	
+	return false;
 }
 
 void UBeamCliProjectRegenerateCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)

@@ -5,9 +5,27 @@
 
 #include "Subsystems/CLI/Autogen/BeamCliFederationListCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliFederationLocalKeyCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliProjectOpenMongoCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliProjectRunCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliProjectStopCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliProjectStorageEraseCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliServicesStopCommand.h"
+
+TArray<UBeamCliLogEntry*> UBeamMicroserviceLocalEditorView::GetFilteredLogs(TArray<FString> VisibleLogTypes, FString TextFilter)
+{
+	TArray<UBeamCliLogEntry*> Entries;
+	Entries.Reserve(Logs.Num());
+	for (const auto& Log : Logs)
+	{
+		const auto bMatchesLogType = VisibleLogTypes.Contains(Log->LogLevel);
+		const auto bMatchesTextFilter = TextFilter.IsEmpty() || Log->Message.Contains(TextFilter); 
+
+		if (bMatchesLogType && bMatchesTextFilter)
+			Entries.Add(Log);
+	}
+
+	return Entries;
+}
 
 void UBeamMicroservicesEditor::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -21,6 +39,16 @@ void UBeamMicroservicesEditor::Deinitialize()
 	Super::Deinitialize();
 	FEditorDelegates::BeginPIE.Remove(BeginPIE);
 	FEditorDelegates::EndPIE.Remove(EndPIE);
+}
+
+FBeamOperationHandle UBeamMicroservicesEditor::OnRealmInitialized(FBeamRealmHandle NewRealm)
+{
+	// Refresh the editor user's email as that is the name of the Local Target.
+	FBeamRealmUser EditorUser;
+	Editor->GetMainEditorSlot(EditorUser);
+	LocalTarget = EditorUser.Email;
+
+	return Super::OnRealmInitialized(NewRealm);
 }
 
 void UBeamMicroservicesEditor::OnReady()
@@ -142,9 +170,13 @@ bool UBeamMicroservicesEditor::TryGetFilteredListOfServices(TArray<FString> Incl
 			ServiceView->BeamoId = MicroserviceData.Key;
 			ServiceView->RunningState = MicroserviceData.Value.RunningState;
 			ServiceView->ServiceGroups = MicroserviceData.Value.ServiceGroups;
-			ServiceView->ServiceType = MicroService;
+			ServiceView->ServiceType = MicroserviceData.Value.ServiceType;
+
 			MicroserviceData.Value.TargetsToRoutingKeys.GetKeys(ServiceView->AvailableTargets);
+			ServiceView->LocalTarget = LocalTarget;
 			ServiceView->SelectedTarget = MicroserviceData.Value.CurrentTarget;
+			ServiceView->FederationData = TMap(MicroserviceData.Value.TargetsToFederations);
+			ServiceView->Logs = MicroserviceData.Value.Logs;
 
 			FilteredServices.Add(ServiceView);
 		}
@@ -175,14 +207,63 @@ bool UBeamMicroservicesEditor::OpenSwaggerDocs(FString BeamoId)
 		return false;
 	}
 
+	TArray<FString> Params;
 	// Prepare the command and validate that you are not trying to open a swagger docs for a service that is not available
 	const auto RoutingKey = LocalMicroservice->TargetsToRoutingKeys[LocalMicroservice->CurrentTarget];
-	TArray<FString> Params{BeamoId, TEXT("--routing-key"), RoutingKey};
+	if (!RoutingKey.IsEmpty())
+		Params.Append({BeamoId, TEXT("--routing-key"), RoutingKey});
+	else
+		Params.Append({BeamoId, TEXT("--routing-key"), TEXT("\"\"")});
 
 	// Run the command
 	const auto OpenSwaggerCommand = NewObject<UBeamCliProjectOpenSwaggerCommand>();
 	Cli->RunCommandServer(OpenSwaggerCommand, Params, {});
 	return true;
+}
+
+bool UBeamMicroservicesEditor::OpenMongoExpress(FString BeamoId)
+{
+	const auto LocalMicroservice = LocalMicroserviceData.Find(BeamoId);
+	if (LocalMicroservice->ServiceType != MicroStorage)
+	{
+		UE_LOG(LogBeamMicroservices, Warning, TEXT("Service is not a Storage. BEAMO_ID=%s"), *BeamoId);
+		return false;
+	}
+
+	TArray<FString> Params{BeamoId};
+
+	// Run the command	
+	const auto OpenMongoExpressCommand = NewObject<UBeamCliProjectOpenMongoCommand>();
+	Cli->RunCommandServer(OpenMongoExpressCommand, Params, {});
+	return true;
+}
+
+bool UBeamMicroservicesEditor::ClearMongoLocalData(FString BeamoId)
+{
+	const auto LocalMicroservice = LocalMicroserviceData.Find(BeamoId);
+	if (LocalMicroservice->ServiceType != MicroStorage)
+	{
+		UE_LOG(LogBeamMicroservices, Warning, TEXT("Service is not a Storage. BEAMO_ID=%s"), *BeamoId);
+		return false;
+	}
+
+	TArray<FString> Params{BeamoId};
+
+	// Run the command	
+	const auto OpenMongoExpressCommand = NewObject<UBeamCliProjectStorageEraseCommand>();
+	Cli->RunCommandServer(OpenMongoExpressCommand, Params, {});
+	return true;
+}
+
+bool UBeamMicroservicesEditor::ClearLogs(FString BeamoId)
+{
+	if (FLocalMicroserviceData* LocalMicroservice = LocalMicroserviceData.Find(BeamoId))
+	{
+		LocalMicroservice->Logs.Reset();
+		OnLocalMicroserviceUpdate.Broadcast();
+		return true;
+	}
+	return false;
 }
 
 bool UBeamMicroservicesEditor::IsCurrentRoutingKeyValid(FString BeamoId)
@@ -191,19 +272,24 @@ bool UBeamMicroservicesEditor::IsCurrentRoutingKeyValid(FString BeamoId)
 	if (!LocalMicroservice)
 		return false;
 
-	return LocalMicroservice->TargetsToRoutingKeys.Contains(LocalMicroservice->CurrentTarget);
+	// For local targets, we only consider them valid if they are running.
+	const auto Target = LocalMicroservice->CurrentTarget;
+	if (LocalTarget == Target)
+		return LocalMicroservice->TargetsToRoutingKeys.Contains(Target) && LocalMicroservice->RunningState != Stopped;
+
+	return LocalMicroservice->TargetsToRoutingKeys.Contains(Target);
 }
 
-bool UBeamMicroservicesEditor::SetCurrentRoutingKey(FString BeamoId, FString Key)
+bool UBeamMicroservicesEditor::SetCurrentRoutingKey(FString BeamoId, FString Target)
 {
 	const auto LocalMicroservice = LocalMicroserviceData.Find(BeamoId);
 	if (!ensureAlwaysMsgf(LocalMicroservice, TEXT("BeamoId not found in local microservices data. BEAMO_ID=%s"), *BeamoId))
 		return false;
 
-	if (!ensureAlwaysMsgf(LocalMicroservice->TargetsToRoutingKeys.Contains(Key), TEXT("RoutingKey not found in list of avaialable routing keys. BEAMO_ID=%s, ROUTING_KEY=%s"), *BeamoId, *Key))
+	if (!ensureAlwaysMsgf(LocalMicroservice->TargetsToRoutingKeys.Contains(Target), TEXT("RoutingKey not found in list of avaialable routing keys. BEAMO_ID=%s, ROUTING_KEY=%s"), *BeamoId, *Target))
 		return false;
 
-	LocalMicroservice->CurrentTarget = Key;
+	LocalMicroservice->CurrentTarget = Target;
 	return true;
 }
 
@@ -226,6 +312,152 @@ FString UBeamMicroservicesEditor::ConstructRoutingKeyMap()
 	}
 
 	return FString::Join(RoutingKeyMapEntries, TEXT(","));
+}
+
+
+void UBeamMicroservicesEditor::OnUpdateLocalStateReceived(const TArray<UBeamCliProjectPsStreamData*>& Stream, const TArray<long long>&, const FBeamOperationHandle&)
+{
+	const UBeamCliProjectPsStreamData* ProjectStatusChange = Stream.Last();
+
+	for (const auto& Service : ProjectStatusChange->Services)
+	{
+		const auto BeamoId = Service->Service;
+
+		const auto ServiceType = Service->ServiceType.Contains("service") ? MicroService : MicroStorage;
+		// Handle Microservice's being turned on.			
+		if (!LocalMicroserviceData.Contains(Service->Service))
+		{
+			UE_LOG(LogBeamMicroservices, Display, TEXT("Detected microservice. Registering it with the editor. BEAMO_ID=%s"), *BeamoId);
+			auto NewServiceDetected = FLocalMicroserviceData{
+				BeamoId, ServiceType, Service->Groups,
+				Stopped,
+				false,
+				{},
+				{},
+				{},
+				{},
+				// We keep up 5.000 log lines in the history.
+				{}
+			};
+			NewServiceDetected.Logs.Reserve(5000);
+			LocalMicroserviceData.Add(BeamoId, NewServiceDetected);
+		}
+
+		// Get a reference to the data so we can update it...
+		FLocalMicroserviceData& MicroserviceData = LocalMicroserviceData.FindChecked(BeamoId);
+
+		// Make sure the Groups are up-to-date
+		MicroserviceData.ServiceGroups = Service->Groups;
+
+		// Reset the targets so that we can always rebuild them from the latest information
+		MicroserviceData.TargetsToRoutingKeys.Reset();
+		MicroserviceData.TargetsToFederations.Reset();
+
+		// Find out if the service is running and collect available routing keys
+		for (const auto& AvailableRoute : Service->AvailableRoutes)
+		{
+			const auto RoutingKey = AvailableRoute->RoutingKey;
+
+			// Let's get the federation data for this target.
+			FLocalFederationPerTargetData TargetData;
+			for (UFederationInstanceStreamData* Federation : AvailableRoute->Federations)
+			{
+				FLocalFederationIdData FederationIdData;
+				FederationIdData.FederationId = Federation->FederationId;
+				for (int i = 0; i < Federation->FederationTypes.Num(); ++i)
+				{
+					const auto FederationType = Federation->FederationTypes[i];
+					const auto FederationLocalSettings = Federation->LocalSettings[i];
+
+					FLocalFederationData FedData;
+					FedData.Type = static_cast<EFederationType>(StaticEnum<EFederationType>()->GetValueByNameString("BEAM_" + FederationType, EGetByNameFlags::CheckAuthoredName));
+					switch (FedData.Type)
+					{
+					case EFederationType::BEAM_IFederatedGameServer:
+						FedData.LocalSettings_FederatedGamerServer = NewObject<UBeamCliFederationLocalSettingsGetIFederatedGameServerStreamData>();
+						FedData.LocalSettings_FederatedGamerServer->BeamDeserialize(FederationLocalSettings);
+						break;
+					default:
+						break;
+					}
+
+					FederationIdData.Federations.Add(FedData);
+				}
+
+				TargetData.Federations.Add(FederationIdData);
+			}
+
+			// If we know there are no running instances of the service, we still want to display the local user's target on the list so that the user can configure it.					
+			if (ServiceType == MicroService && !AvailableRoute->KnownToBeRunning)
+			{
+				MicroserviceData.RunningState = Stopped;
+
+				// Keep track of the federation data for each selectable target.
+				MicroserviceData.TargetsToRoutingKeys.Add(LocalTarget, RoutingKey);
+
+				// Keep track of the federation data for each selectable target.
+				TargetData.Target = LocalTarget;
+				MicroserviceData.TargetsToFederations.Add(LocalTarget, TargetData);
+
+				// Stop the tail log command if its there
+				StopLogTail(&MicroserviceData);
+			}
+			// This is how we know if micro-storages are up and running.
+			else if (ServiceType == MicroStorage && AvailableRoute->KnownToBeRunning)
+			{
+				MicroserviceData.RunningState = RunningOnDocker;
+			}
+			// This is how we know if a micro storage is not running (we don't get instances for them). 
+			else if (ServiceType == MicroStorage && !AvailableRoute->KnownToBeRunning)
+			{
+				MicroserviceData.RunningState = Stopped;
+			}
+
+			// For each running instance with this routing key
+			for (const auto& Instance : AvailableRoute->Instances)
+			{
+				// Empty email, means this instance is the "realm" instance.
+				const auto Target = Instance->StartedByAccountEmail == TEXT("") ? TEXT("realm") : Instance->StartedByAccountEmail;
+				MicroserviceData.TargetsToRoutingKeys.Add(Target, RoutingKey);
+
+				// Keep track of the federation data for each selectable target.
+				TargetData.Target = Target;
+				MicroserviceData.TargetsToFederations.Add(Target, TargetData);
+
+				// Let's keep track of the local-dev's state 
+				if (Target == LocalTarget)
+				{
+					// The service is running on the host machine
+					if (AvailableRoute->KnownToBeRunning && Instance->LatestHostEvent)
+					{
+						MicroserviceData.RunningState = RunningOnHost;
+						SetupLogTail(&MicroserviceData);
+					}
+
+					// The service is running on docker
+					else if (AvailableRoute->KnownToBeRunning && Instance->LatestDockerEvent)
+					{
+						MicroserviceData.RunningState = RunningOnDocker;
+						SetupLogTail(&MicroserviceData);
+					}
+
+					// If the service is the LocalService, change the target for that service to be the one for this service instance.
+					if (RoutingKey == LocalRoutingKey)
+					{
+						MicroserviceData.CurrentTarget = Instance->StartedByAccountEmail;
+					}
+				}
+			}
+		}
+
+		if (!IsCurrentRoutingKeyValid(BeamoId))
+		{
+			if (MicroserviceData.TargetsToRoutingKeys.Contains(TEXT("realm"))) MicroserviceData.CurrentTarget = "realm";
+			else MicroserviceData.CurrentTarget = LocalTarget;
+		}
+	}
+
+	OnLocalMicroserviceUpdate.Broadcast();
 }
 
 
@@ -275,26 +507,25 @@ void UBeamMicroservicesEditor::RunHostMicroservices(const TArray<FString>& Beamo
 {
 	const auto Cmd = NewObject<UBeamCliProjectRunCommand>();
 
+	// Grab the logs for the service...
+	Cmd->OnLogEntriesStreamOutput = [this, BeamoIds](UBeamCliLogEntry* Log, const int64, const FBeamOperationHandle& Op)
+	{
+		for (FString BeamoId : BeamoIds)
+		{
+			auto LoggingService = LocalMicroserviceData.Find(BeamoId);
+			AppendToLogs(LoggingService, {Log});
+		}
+	};
+
 	// Handle completing the operation
 	Cmd->OnCompleted = [this, BeamoIds](const int& ResultCode, const FBeamOperationHandle& Operation)
 	{
-		if (ResultCode == 0)
-		{
-			for (FString BeamoId : BeamoIds)
-			{
-				if (ensureAlwaysMsgf(LocalMicroserviceData.Contains(BeamoId), TEXT("You should never see this.")))
-				{
-					LocalMicroserviceData.Find(BeamoId)->RunningState = RunningOnHost;
-				}
-			}
-			RequestTracker->TriggerOperationSuccess(Operation, TEXT(""));
-		}
-		else
-			RequestTracker->TriggerOperationError(Operation, FString::FromInt(ResultCode));
+		if (ResultCode == 0) RequestTracker->TriggerOperationSuccess(Operation, TEXT(""));
+		else RequestTracker->TriggerOperationError(Operation, FString::FromInt(ResultCode));
 	};
 
 	// Set up ids
-	TArray<FString> Params = {};
+	TArray<FString> Params = {TEXT("--detach"), TEXT("--emit-log-streams"), TEXT("--no-client-gen")};
 	if (!BeamoIds.IsEmpty())
 	{
 		const auto Ids = FString::Printf(TEXT("--ids %s"), *FString::Join(BeamoIds, TEXT(" ")));
@@ -322,9 +553,11 @@ void UBeamMicroservicesEditor::RunDockerMicroservices(const TArray<FString>& Bea
 			// Update the local state of microservice data
 			if (FMath::IsNearlyEqual(ProgressData->LocalDeployProgress, 100.0))
 			{
-				if (ensureAlwaysMsgf(LocalMicroserviceData.Contains(ProgressData->BeamoId), TEXT("You should never see this.")))
+				const auto BeamoId = ProgressData->BeamoId;
+				if (ensureAlwaysMsgf(LocalMicroserviceData.Contains(BeamoId), TEXT("You should never see this.")))
 				{
-					LocalMicroserviceData.Find(ProgressData->BeamoId)->RunningState = RunningOnDocker;
+					auto RunningService = LocalMicroserviceData.Find(BeamoId);
+					RunningService->RunningState = RunningOnDocker;
 				}
 			}
 		};
@@ -351,9 +584,33 @@ void UBeamMicroservicesEditor::RunDockerMicroservices(const TArray<FString>& Bea
 	Cli->RunCommandServer(ServicesDeploy, Params, Op);
 }
 
+void UBeamMicroservicesEditor::RunStorageObject(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op)
+{
+	//UBeamCLiProject	
+}
+
 void UBeamMicroservicesEditor::StopHostMicroservices(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op)
 {
 	const auto Cmd = NewObject<UBeamCliProjectStopCommand>();
+
+	// Stop the tail log command if it's there
+	for (const auto& BeamoId : BeamoIds)
+	{
+		if (auto Service = LocalMicroserviceData.Find(BeamoId))
+		{
+			StopLogTail(Service);
+		}
+	}
+
+	// Get the log output
+	Cmd->OnLogEntriesStreamOutput = [this, BeamoIds](UBeamCliLogEntry* Entry, const int64&, const FBeamOperationHandle&)
+	{
+		for (FString BeamoId : BeamoIds)
+		{
+			auto Service = LocalMicroserviceData.Find(BeamoId);
+			AppendToLogs(Service, {Entry});
+		}		
+	};
 
 	// Handle completing the operation
 	Cmd->OnCompleted = [this, BeamoIds](const int& ResultCode, const FBeamOperationHandle& Operation)
@@ -364,7 +621,8 @@ void UBeamMicroservicesEditor::StopHostMicroservices(const TArray<FString>& Beam
 			{
 				if (ensureAlwaysMsgf(LocalMicroserviceData.Contains(BeamoId), TEXT("You should never see this.")))
 				{
-					LocalMicroserviceData.Find(BeamoId)->RunningState = Stopped;
+					auto Service = LocalMicroserviceData.Find(BeamoId);
+					Service->RunningState = Stopped;
 				}
 			}
 			RequestTracker->TriggerOperationSuccess(Operation, TEXT(""));
@@ -382,6 +640,7 @@ void UBeamMicroservicesEditor::StopHostMicroservices(const TArray<FString>& Beam
 	// Set up ids
 	const auto Ids = FString::Printf(TEXT("--ids %s"), *FString::Join(BeamoIds, TEXT(" ")));
 	Params.Add(Ids);
+	Params.Add(TEXT("--emit-log-streams"));
 
 
 	// Kick of command.
@@ -390,10 +649,29 @@ void UBeamMicroservicesEditor::StopHostMicroservices(const TArray<FString>& Beam
 
 void UBeamMicroservicesEditor::StopDockerMicroservices(const TArray<FString>& BeamoIds, const FBeamOperationHandle& Op)
 {
-	const auto ServicesDeploy = NewObject<UBeamCliServicesStopCommand>();
+	const auto Cmd = NewObject<UBeamCliServicesStopCommand>();
 
+	// Stop the tail log command if it's there
+	for (const auto& BeamoId : BeamoIds)
+	{
+		if (auto Service = LocalMicroserviceData.Find(BeamoId))
+		{
+			StopLogTail(Service);
+		}
+	}
+
+	// Get the log output
+	Cmd->OnLogEntriesStreamOutput = [this, BeamoIds](UBeamCliLogEntry* Entry, const int64&, const FBeamOperationHandle&)
+	{
+		for (FString BeamoId : BeamoIds)
+		{
+			auto Service = LocalMicroserviceData.Find(BeamoId);
+			AppendToLogs(Service, {Entry});
+		}		
+	};
+	
 	// Handle completing the operation
-	ServicesDeploy->OnCompleted = [this, BeamoIds](const int& ResultCode, const FBeamOperationHandle& Operation)
+	Cmd->OnCompleted = [this, BeamoIds](const int& ResultCode, const FBeamOperationHandle& Operation)
 	{
 		if (ResultCode == 0)
 		{
@@ -401,7 +679,10 @@ void UBeamMicroservicesEditor::StopDockerMicroservices(const TArray<FString>& Be
 			{
 				if (ensureAlwaysMsgf(LocalMicroserviceData.Contains(BeamoId), TEXT("You should never see this.")))
 				{
-					LocalMicroserviceData.Find(BeamoId)->RunningState = Stopped;
+					auto Service = LocalMicroserviceData.Find(BeamoId);
+					Service->RunningState = Stopped;
+					Cli->StopCommand(Service->TailLogsCommand);
+					Service->TailLogsCommand = nullptr;
 				}
 			}
 			RequestTracker->TriggerOperationSuccess(Operation, TEXT(""));
@@ -422,89 +703,56 @@ void UBeamMicroservicesEditor::StopDockerMicroservices(const TArray<FString>& Be
 	// Set up ids
 	const auto Ids = FString::Printf(TEXT("--ids %s"), *FString::Join(BeamoIds, TEXT(" ")));
 	Params.Add(Ids);
+	Params.Add(TEXT("--emit-log-streams"));
 
 
 	// Kick of command.
-	Cli->RunCommandServer(ServicesDeploy, Params, Op);
+	Cli->RunCommandServer(Cmd, Params, Op);
 }
 
-void UBeamMicroservicesEditor::OnUpdateLocalStateReceived(const TArray<UBeamCliProjectPsStreamData*>& Stream, const TArray<long long>&, const FBeamOperationHandle&)
+
+void UBeamMicroservicesEditor::SetupLogTail(FLocalMicroserviceData* RunningService)
 {
-	for (const UBeamCliProjectPsStreamData* ProjectStatusChange : Stream)
+	const auto BeamoId = RunningService->BeamoId;
+	if (!RunningService->TailLogsCommand)
 	{
-		for (const auto& Service : ProjectStatusChange->Services)
+		RunningService->TailLogsCommand = NewObject<UBeamCliProjectLogsCommand>();
+		RunningService->TailLogsCommand->OnStreamOutput = [this, BeamoId](const TArray<UBeamCliProjectLogsStreamData*>& Arr, const TArray<int64>&, const FBeamOperationHandle&)
 		{
-			const auto BeamoId = Service->Service;
-
-			if (!LocalMicroserviceData.Contains(Service->Service))
+			auto LoggingService = LocalMicroserviceData.Find(BeamoId);
+			TArray<UBeamCliLogEntry*> Entries;
+			for (const auto& LogStream : Arr)
 			{
-				UE_LOG(LogBeamMicroservices, Display, TEXT("Detected microservice. Registering it with the editor. BEAMO_ID=%s"), *BeamoId);
-				LocalMicroserviceData.Add(BeamoId, FLocalMicroserviceData{
-					                          BeamoId, Service->Groups,
-					                          Stopped,
-					                          false,
-					                          {},
-					                          {}
-				                          });
+				UBeamCliLogEntry* Log = NewObject<UBeamCliLogEntry>();
+				Log->LogLevel = LogStream->LogLevel;
+				Log->Message = LogStream->Message;
+				FDefaultValueHelper::ParseInt64(LogStream->TimeStamp, Log->Timestamp);
+
+				Entries.Add(Log);
 			}
-
-			// Get a reference to the data so we can update it...
-			FLocalMicroserviceData& MicroserviceData = LocalMicroserviceData.FindChecked(BeamoId);
-
-			// Make sure the Groups are up-to-date
-			MicroserviceData.ServiceGroups = Service->Groups;
-
-			// Reset the targets so that we can always rebuild them from the latest information
-			MicroserviceData.TargetsToRoutingKeys.Reset();
-
-			// Find out if the service is running and collect available routing keys
-			for (const auto& AvailableRoute : Service->AvailableRoutes)
-			{
-				const auto RoutingKey = AvailableRoute->RoutingKey;
-
-				for (const auto& Instance : AvailableRoute->Instances)
-				{
-					// Empty email, means this instance is the "realm" instance.
-					if (Instance->StartedByAccountEmail == TEXT(""))
-					{
-						// We add the routing key
-						MicroserviceData.TargetsToRoutingKeys.Add(TEXT("realm"), RoutingKey);
-					}
-					else
-					{
-						// Add the routing key
-						MicroserviceData.TargetsToRoutingKeys.Add(Instance->StartedByAccountEmail, RoutingKey);
-
-						// The service is running on the host machine
-						if (Instance->LatestHostEvent)
-						{
-							MicroserviceData.RunningState = RunningOnHost;
-						}
-
-						// The service is running on docker
-						if (Instance->LatestDockerEvent)
-						{
-							MicroserviceData.RunningState = RunningOnDocker;
-						}
-
-						// If the service is the LocalService, change the target for that service to be the one for this service instance.
-						if (RoutingKey == LocalRoutingKey)
-						{
-							MicroserviceData.CurrentTarget = Instance->StartedByAccountEmail;
-						}
-					}
-				}
-			}
-
-			if (!IsCurrentRoutingKeyValid(BeamoId))
-			{
-				if (MicroserviceData.TargetsToRoutingKeys.Contains(TEXT("realm"))) MicroserviceData.CurrentTarget = "realm";
-				else MicroserviceData.CurrentTarget = "";
-			}
-		}
+			AppendToLogs(LoggingService, Entries);
+		};
+		Cli->RunCommandServer(RunningService->TailLogsCommand, {BeamoId}, {});
 	}
+}
+
+void UBeamMicroservicesEditor::AppendToLogs(FLocalMicroserviceData* RunningService, const TArray<UBeamCliLogEntry*>& Log)
+{
+	if (RunningService->Logs.Num() > 10000)
+		RunningService->Logs.RemoveAt(0, Log.Num());
+
+	RunningService->Logs.Append(Log);
 
 	OnLocalMicroserviceUpdate.Broadcast();
+}
+
+void UBeamMicroservicesEditor::StopLogTail(FLocalMicroserviceData* RunningService)
+{
+	if (RunningService->TailLogsCommand)
+	{
+		Cli->StopCommand(RunningService->TailLogsCommand);
+		RunningService->TailLogsCommand = nullptr;
+	}
 }
 
 void UBeamMicroservicesEditor::SplitByHostOrDocker(const TArray<FString>& BeamoIds, TArray<FString>& DockerBeamoIds, TArray<FString>& HostBeamoIds)

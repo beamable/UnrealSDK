@@ -44,3 +44,7 @@ Regardless of who you are, we recommend run through the [Introduction to the SDK
 - If you are looking to integrate Beamable into your game through Unreal's `IOnlineSubsystem`, take a look at the [Online Subsystem Beamable](https://beamable.github.io/UnrealSDK/Feature%20Guides/Unreal%20SDK%20-%20Online%20Subsystem).
 
 If you have any questions, feel free to contact us through one of our Customer Success channels.
+
+
+## For Beamable Developers
+After cloning this repo, remember to run `init_repo.sh` and `docs_build.sh serve` such that the repo is configured correctly and you have a locally running server that serves the current branch's version of the docs. Please always run them from the root of the repo.

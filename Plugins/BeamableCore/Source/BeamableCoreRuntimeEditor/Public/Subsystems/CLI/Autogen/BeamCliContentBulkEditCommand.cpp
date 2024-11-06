@@ -8,9 +8,11 @@ FString UBeamCliContentBulkEditCommand::GetCommand()
 	return FString(TEXT("content bulk-edit"));
 }
 		
-void UBeamCliContentBulkEditCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
+bool UBeamCliContentBulkEditCommand::HandleStreamReceived(FBeamOperationHandle Op, FString ReceivedStreamType, int64 Timestamp, TSharedRef<FJsonObject> DataJson, bool isServer)
 {
 	
+	
+	return false;
 }
 
 void UBeamCliContentBulkEditCommand::HandleStreamCompleted(FBeamOperationHandle Op, int ResultCode, bool isServer)
