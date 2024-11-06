@@ -6,7 +6,7 @@
 #include "BeamCliProjectStorageRestoreCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliProjectStorageRestoreStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
@@ -32,18 +32,18 @@ public:
 };
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliProjectStorageRestoreMongoLogsStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString LogLevel = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Message = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int64 Timestamp = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

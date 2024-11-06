@@ -6,16 +6,16 @@
 #include "ProjectErrorReportStreamData.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UProjectErrorReportStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool IsSuccess = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UProjectErrorResultStreamData*> Errors = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

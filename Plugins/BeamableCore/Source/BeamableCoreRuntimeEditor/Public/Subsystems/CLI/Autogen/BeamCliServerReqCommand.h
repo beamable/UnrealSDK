@@ -6,7 +6,7 @@
 #include "BeamCliServerReqCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliServerReqStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

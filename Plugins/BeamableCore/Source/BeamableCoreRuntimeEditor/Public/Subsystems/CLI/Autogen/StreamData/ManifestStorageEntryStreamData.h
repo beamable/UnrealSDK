@@ -6,18 +6,18 @@
 #include "ManifestStorageEntryStreamData.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UManifestStorageEntryStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString BeamoId = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString CsprojPath = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool ShouldBeEnabledOnRemote = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

@@ -6,22 +6,22 @@
 #include "RemoteServiceDescriptorStreamData.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class URemoteServiceDescriptorStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Service = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString RoutingKey = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int64 StartedByAccountId = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FString> Groups = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UFederationInstanceStreamData*> Federations = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

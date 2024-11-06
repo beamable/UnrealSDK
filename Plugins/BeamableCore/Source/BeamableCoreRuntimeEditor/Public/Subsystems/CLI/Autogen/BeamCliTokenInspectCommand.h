@@ -6,38 +6,38 @@
 #include "BeamCliTokenInspectCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliTokenInspectStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool WasRefreshToken = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int64 AccountId = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int64 Cid = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int64 Created = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Device = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int64 ExpiresMs = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int64 GamerTag = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Pid = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Platform = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool Revoked = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FString> Scopes = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Token = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Type = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
@@ -93,26 +93,26 @@ public:
 };
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliTokenInspectErrorInvalidTokenErrorOutputStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString RefreshToken = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Message = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Invocation = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 ExitCode = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString TypeName = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString FullTypeName = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString StackTrace = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

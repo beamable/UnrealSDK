@@ -6,14 +6,14 @@
 #include "BeamCliUnityCopyDotnetSrcCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliUnityCopyDotnetSrcStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 FilesCopied = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

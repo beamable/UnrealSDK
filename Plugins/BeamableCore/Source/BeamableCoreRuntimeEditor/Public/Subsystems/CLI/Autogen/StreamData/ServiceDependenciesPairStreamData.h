@@ -6,16 +6,16 @@
 #include "ServiceDependenciesPairStreamData.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UServiceDependenciesPairStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Name = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UDependencyDataStreamData*> Dependencies = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

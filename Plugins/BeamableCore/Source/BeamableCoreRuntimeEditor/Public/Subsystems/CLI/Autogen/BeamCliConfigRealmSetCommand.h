@@ -6,14 +6,14 @@
 #include "BeamCliConfigRealmSetCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliConfigRealmSetStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FString, FString> Config = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

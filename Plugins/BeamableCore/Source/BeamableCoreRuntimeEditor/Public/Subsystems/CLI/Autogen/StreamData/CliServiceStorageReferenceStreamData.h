@@ -6,22 +6,22 @@
 #include "CliServiceStorageReferenceStreamData.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UCliServiceStorageReferenceStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Id = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString StorageType = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool Enabled = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString TemplateId = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Checksum = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

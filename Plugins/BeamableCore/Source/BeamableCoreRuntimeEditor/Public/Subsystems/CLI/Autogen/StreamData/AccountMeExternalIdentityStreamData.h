@@ -6,18 +6,18 @@
 #include "AccountMeExternalIdentityStreamData.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UAccountMeExternalIdentityStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString ProviderNamespace = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString ProviderService = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString UserId = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

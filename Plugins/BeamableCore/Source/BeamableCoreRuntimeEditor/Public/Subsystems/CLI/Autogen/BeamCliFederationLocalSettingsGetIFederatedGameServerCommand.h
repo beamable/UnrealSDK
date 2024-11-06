@@ -6,14 +6,14 @@
 #include "BeamCliFederationLocalSettingsGetIFederatedGameServerCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliFederationLocalSettingsGetIFederatedGameServerStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FString> ContentIds = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

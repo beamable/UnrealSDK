@@ -10,16 +10,16 @@
 #include "BeamCliProjectStopCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliProjectStopStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString ServiceName = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UServiceInstanceStreamData* Instance = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

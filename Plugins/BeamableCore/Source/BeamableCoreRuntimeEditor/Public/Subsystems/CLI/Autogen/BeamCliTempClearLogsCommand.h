@@ -6,16 +6,16 @@
 #include "BeamCliTempClearLogsCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliTempClearLogsStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FString> DeletedFiles = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FString> FailedToDeleteFiles = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

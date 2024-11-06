@@ -9,24 +9,24 @@
 #include "CliServiceManifestStreamData.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UCliServiceManifestStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Id = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int64 Created = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UCliServiceReferenceStreamData*> Manifest = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UCliServiceStorageReferenceStreamData*> StorageReference = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int64 CreatedByAccountId = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Comments = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

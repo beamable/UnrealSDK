@@ -7,26 +7,26 @@
 #include "ManifestServiceEntryStreamData.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UManifestServiceEntryStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString BeamoId = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool ShouldBeEnabledOnRemote = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString CsprojPath = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString BuildDllPath = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FString> StorageDependencies = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UUnityAssemblyReferenceDataStreamData*> UnityReferences = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UFederationEntryStreamData*> Federations = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

@@ -6,16 +6,16 @@
 #include "BeamCliProjectListCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliProjectListStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UServiceInfoStreamData*> LocalServices = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UServiceInfoStreamData*> LocalStorages = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

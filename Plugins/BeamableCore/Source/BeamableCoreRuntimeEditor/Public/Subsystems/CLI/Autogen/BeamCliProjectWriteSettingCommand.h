@@ -6,7 +6,7 @@
 #include "BeamCliProjectWriteSettingCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliProjectWriteSettingStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

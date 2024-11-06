@@ -6,18 +6,18 @@
 #include "BeamCliServicesDockerStatusCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliServicesDockerStatusStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool IsDaemonRunning = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool IsCliAccessible = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString CliLocation = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

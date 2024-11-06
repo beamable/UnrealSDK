@@ -6,7 +6,7 @@
 #include "BeamCliUnityRestoreCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliUnityRestoreStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

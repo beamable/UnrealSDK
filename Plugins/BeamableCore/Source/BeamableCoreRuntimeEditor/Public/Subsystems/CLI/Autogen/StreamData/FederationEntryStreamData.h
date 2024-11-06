@@ -6,16 +6,16 @@
 #include "FederationEntryStreamData.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UFederationEntryStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString InterfaceName = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString FederationId = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

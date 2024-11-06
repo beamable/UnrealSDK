@@ -6,7 +6,7 @@
 #include "BeamCliUnityDownloadNugetPackageCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliUnityDownloadNugetPackageStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

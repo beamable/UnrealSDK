@@ -6,7 +6,7 @@
 #include "BeamCliFederationSetCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliFederationSetStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

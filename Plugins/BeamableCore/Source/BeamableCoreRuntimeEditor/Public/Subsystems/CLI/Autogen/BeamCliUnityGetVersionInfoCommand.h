@@ -6,18 +6,18 @@
 #include "BeamCliUnityGetVersionInfoCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliUnityGetVersionInfoStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString BeamableNugetVersion = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString SdkVersion = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString PackageFolder = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

@@ -7,16 +7,16 @@
 #include "BeamCliProjectBuildCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliProjectBuildStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Service = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UProjectErrorReportStreamData* Report = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

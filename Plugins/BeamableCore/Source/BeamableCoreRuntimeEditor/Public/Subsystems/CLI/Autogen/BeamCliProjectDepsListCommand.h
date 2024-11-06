@@ -7,14 +7,14 @@
 #include "BeamCliProjectDepsListCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliProjectDepsListStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UServiceDependenciesPairStreamData*> Services = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

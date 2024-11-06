@@ -6,16 +6,16 @@
 #include "SettingOutputStreamData.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class USettingOutputStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Key = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Value = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
