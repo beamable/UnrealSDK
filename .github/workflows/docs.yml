@@ -33,9 +33,5 @@ jobs:
           path: .cache
       - run: bash docs_build.sh
       - run: python -m mkdocs gh-deploy --force
-        if: github.ref == 'refs/heads/main'
-        working-directory: ./Docs
-      - run: python -m mkdocs build
-        if: github.ref != 'refs/heads/main'
         working-directory: ./Docs
         
