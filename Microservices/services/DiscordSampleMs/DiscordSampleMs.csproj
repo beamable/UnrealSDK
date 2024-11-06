@@ -15,7 +15,7 @@
         <DotNetConfig Condition="'$(DotNetConfig)' == '' AND $(DOTNET_RUNNING_IN_CONTAINER)!=true">$([System.IO.File]::ReadAllText("$(DotNetConfigPath)\.config\dotnet-tools.json"))</DotNetConfig>
 
         <!-- Extracts the version number from the first tool defined in 'dotnet-tools.json' that starts with "beamable". -->
-        <BeamableVersion Condition="'$(BeamableVersion)' == '' AND $(DOTNET_RUNNING_IN_CONTAINER)!=true">$([System.Text.RegularExpressions.Regex]::Match("$(DotNetConfig)", "beamable.*?\"([0-9]+\.[0-9]+\.[0-9]+(?:-[A-Z]+\.[A-Z0-9]+)?)\",", RegexOptions.Singleline | RegexOptions.IgnorePatternWhitespace).Groups[1].Value)</BeamableVersion>
+        <BeamableVersion Condition="'$(BeamableVersion)' == '' AND $(DOTNET_RUNNING_IN_CONTAINER)!=true">$([System.Text.RegularExpressions.Regex]::Match("$(DotNetConfig)", "beamable.*?\"([0-9]+\.[0-9]+\.[0-9]+.*?)\",", RegexOptions.Singleline | RegexOptions.IgnorePatternWhitespace).Groups[1].Value)</BeamableVersion>
         <!-- When running from inside docker, this gets injected via the Dockerfile at build-time. -->
     </PropertyGroup>
     
