@@ -12,7 +12,7 @@ Start by getting our repo, then installing .NET and Docker Dekstop.
 
  1. Clone [UnrealSDK](https://github.com/beamable/UnrealSDK) repo (make sure you have `git-lfs` installed).
  2. Check out the a [tagged release version](https://github.com/beamable/UnrealSDK/releases) (in the form `X.X.X`).
- 3. Run the `init_repo.sh` script (on Windows, use GitBash or any other shell).
+ 3. Run the `prepare_repo.sh` script (on Windows, use GitBash or any other shell).
  4. Generating Project Files.
  5. Optional - Verify things are working by compiling the editor of our SDK project.
 
