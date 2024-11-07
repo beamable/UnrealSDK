@@ -1,6 +1,34 @@
 name: Windows Build - Template
 
 on:
+  workflow_dispatch:
+    inputs:
+      beamProj:
+        description: "The BEAMPROJ we are building. Ie: BEAMPROJ_Sandbox or BEAMPROJ_HathoraDemo."
+        required: true
+        default: "BEAMPROJ_Sandbox"
+        type: string
+      buildType:
+        type: choice
+        description: 'Either "client", for regular builds, or "server" for dedicated server builds.'
+        required: true
+        default: "client"
+        options:
+          - "client"
+          - "server"
+      targetPlatform:
+        type: choice
+        description: 'Either "Win64", for Windows builds, or "Linux" for Linux builds.'
+        required: true
+        default: "Win64"
+        options:
+          - "Win64"
+          - "Linux"    
+      gitRevision:
+        type: string
+        description: Commit hash to use, can use branch names
+        required: true
+        default: dev
   workflow_call:
     inputs:
       beamProj:
@@ -18,6 +46,11 @@ on:
         description: 'Either "Win64", for Windows builds, or "Linux" for Linux builds.'
         required: true
         default: "Win64"
+      gitRevision:
+        type: string
+        description: Commit hash to use, can use branch names
+        required: true
+        default: dev
 
 permissions:
   contents: write
@@ -34,6 +67,7 @@ jobs:
       # Gets the Unreal Repo and the CLI repo
       - uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.gitRevision }}
           fetch-depth: 0
           lfs: true
           path: BeamableUnreal/
