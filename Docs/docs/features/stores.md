@@ -25,7 +25,7 @@ Purchases and operations on listings are handled through the `UBeamStoreSubsyste
 The purpose of this guide is for game makers to setup a first store purchase using Beamable.
 
 !!! note "Guide assumptions"
-    This guide assumes that game maker already has project with Beamable SDK up and running. If that is not the case please follow [Getting Started Guide](../../guides/intro) first.
+    This guide assumes that game maker already has project with Beamable SDK up and running. If that is not the case please follow [Getting Started Guide](docs/guides/intro.md) first.
 
 First open Beamable Content window and create a new Listing content:
 

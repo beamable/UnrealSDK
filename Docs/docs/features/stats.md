@@ -27,32 +27,48 @@ Second one is stat `domain`, in Unreal represented by enum `EBeamStatsDomain`, i
 - `client`- Can be accessed from both the **Unreal** and **Microservices**.
 - `game`- Cannot be accessed from **Unreal** directly, it can still be accessed via **Microservice** using `ClientCallable` calls.
 
-## Getting started
+## Getting Started
 
-In order to create first Stats commit with Blueprints we will use `BeamStatsSubsystem` created for that purpose.
+In order to create write to a player stat from the client via Blueprints we will use `BeamStatsSubsystem`.
 
-???+ warning "Subsystem assumptions"
-    Make sure that user is logged in. See [Runtime Concepts](../guides/runtime-concepts.md)
+???+ warning "Assumptions"
+    Make sure that user is logged in when the code below runs. See [Runtime Concepts](runtime-concepts.md)
 
-First there should be created a update command with `Try Create Update Command` with new stats values. Then we need to commit that stats update operation using `Commit Stats Operation` in order to send them to Beamable backend. That is it!
+- Call `Try Create Update Command` with a set of key-value pairs that are your stat values.
+- After that,  use the `Commit Stats Operation` node to commit the new stats to Beamable.
+- That is it!
 
 ![unreal-beamable-stats-create](./images/stats-create-stats.png)
 
-Then if we grab the User Id from the Unreal Engine logs, click `Open Portal` in Beamable settings, go to `Engage->Players`, find used player and go to `Stats` and search for `NewStatKey` there should be visible that it exists with correct value:
+To verify it worked, you can:
+- Set aside the `Gamertag/UserId` from the Unreal Engine logs.
+- Click `Open Portal` in Beamable window.
+- Go to `Engage->Players` and search for the player via `Gamertag/UserId`.
+- Go to `Stats` and search for `NewStatKey`.
+- You should see that it exists with correct value.
 
 ![unreal-beamable-stats-portal](./images/stats-portal.png)
-
-
-## Performance Guidelines
-
+## Usage Guidelines
 ### Batching updates
+In this example there is created a new `UpdateCommand` and commited right away. For better performance and reduced calls to Beamable, it is encouraged to:
 
-In this example there is created a new `UpdateCommand` and commited right away. In order to achieve better performance and reduce amount of calls to backend it is encouraged to create `UpdateCommand`, attach as many changes as needed and commit then instead of commiting each change separately.
+- Create `UpdateCommand`
+- Use the other functions in the `UBeamStatsSubsystem` to set up as many changes as possible.
+- Commit.
 
-### Stats keys naming
+When it is possible (and desirable) for your game, this flow reduces the overall latency your players experience and reduces the number of API calls you make to Beamable.
+### Stats Keys & Values
+We do not enforce limitations on stat-keys or values. However, we do *highly recommend* the following guidelines for project organization and performance reasons.
 
-Good rule of thumb for keys is "shorter is better" and keys of 8-20 characters are ideal (purely for human ergonomics) and keeping them under a few hundred characters is best for performance.
+- For Keys:
+	- 8-20 characters are ideal (purely for human ergonomics).
+	- Keeping them under a few hundred characters is best for performance.
+	- Use enforce-able and recognizable patterns for your keys.
+		- Bad: `CharacterTalents` and `LoadoutForCharacter`
+		- Good: `CHAR_Talents` and `CHAR_Loadout`
+	- Keeping your project organized is key (no pun intended).
+- For Values:
+	- Values should be no more than a few hundred characters long.
+	- If you need larger complex data structures, we recommend you use [Storage Objects](microservices.md#storage-objects) instead.
 
-### Stats values length
-
-Values should be no more than a few hundred characters long. This is a performance issue: the MongoDB collection has an index on keys, so the bigger the keys are the bigger that index grows, leading to performance hits in both writing and reading. 
+In our DB, we index on keys for faster reading; the bigger the key sizes, the larger the index grows. Keeping the index smaller, leads to better performance in both reading and writing.

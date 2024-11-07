@@ -54,46 +54,57 @@ Please, follow along these instructions:
 #### Making your First Request
 Once your Editor opens, you'll see the Beamable Logo in your upper-right bar, next to the Settings dropdown. This button opens the Beamable window.
 
-![BeamableWindowLocation](./images/intro-beamable-window-location.png#center)
+![BeamableWindowLocation](intro-beamable-window-location.png#center)
 
 In this window, you can login to the account you just created in the Beamable portal. When you do, you should see the window below:
 
-![](./images/intro-beamable-window-opened.png#center)
+![](intro-beamable-window-opened.png#center)
 
 Here's some a quick tour of Beamable terminology:
 
 - `Realm` is an isolated data environment (think of it as a branch, but for your backend). 
 	- By default, you have one of these these for your `dev`, `staging` and `prod` environments.
-	- The `ApplyToBuild` button sets the realm information in the `Config/DefaultEngine.ini` file of your project. Whatever realm is configured in this file, is the realm your build will be pointed towards. [Dedicated Server Builds](../guides/dedicated-servers.md) don't need to care about their baked in `TargetRealm`. They fetch their target realm from Environment Variables.
-- `Content` opens up the **Content Window**.  See the [Content Docs](../features/content.md) for more info.
-- `Open Portal` opens the **Portal** in your default web-browser already logged in with your editor user and pointed at your current realm.
-- `Microservices` opens the **Microservice Window**. See the [Microservice Docs](../features/microservices.md) for more info.
+	- The `ApplyToBuild` button sets the realm information in the `Config/DefaultEngine.ini` file of your project. Whatever realm is configured in this file, is the realm your build will be pointed towards. [Dedicated Server Builds](dedicated-servers.md) don't need to care about their baked in `TargetRealm`. They fetch their target realm from Environment Variables.
+- `Content` opens up the **Content Window**. 
+	- [Content](../features/content.md) is Beamable's solution for defining game-specific read-only data.
+- `Microservices` opens the **Microservice Window**. 
+	- [Microservices](microservices.md) are Beamable's approach to Cloud-Code.
+- `Open Portal` opens Beamable's **Portal** in your default web-browser.
+	- You'll be logged in with your editor user and pointed at your current realm.
+	- The other buttons are short-cuts to pages you usually need during day-to-day workflows.
 - `Reset PIE Users` (Play-In-Editor) removes your PIE users locally cached data. 
-	- By default, when you sign into a Beamable account in PIE (in your game code), Beamable will use the same user until you delete the files `Saved/Beamable/UserSlots/PIE_XXXXX.json`. This button does that for you. After you click it, the next time you enter PIE, a brand new Beamable player account will be created in your current realm.
+	- By default, when you sign into a Beamable account in PIE (in your game code), Beamable will use the same user until you delete the files `Saved/Beamable/UserSlots/PIE_XXXXX.json`. 
+	- This button does that for you. After you click it, the next time you enter PIE, a brand new Beamable player account will be created in your current realm.
 
 Now that you are familiar with the **Beamable Window**, you are ready to make your first Beamable request (we'll do it via Blueprint, but you can do the exact same flow in C++ by making these calls in your Project's `GameMode` class's `BeginPlay` function).
 
 To get started, open your Level Blueprint and add the following pattern:
 
-![](images/intro-on-beamable-ready.png#center)
+![intro-init-sdk-with-frictionless-login.png](intro-init-sdk-with-frictionless-login.png#center)
 
 The `BeamRuntime` is an `GameInstanceSubsystem` that is responsible for controlling the SDK's lifecycle and, in clients, player authentication. 
 
 !!! warning "Runtime Concepts Guide"
 	The [Runtime Concepts Guide](runtime-concepts.md) explains how the Beamable Runtime works. Please read it after you are done with this guide as the default Beamable configuration might not be the best fit for your type of game and it'll give you examples of common setups.
 
-Now that you have this event hooked up, you can add your first **Beam Flow Node**. These nodes are custom nodes that wrap around the following functionality:
+Calling this function will initialize the SDK and, after that is successful, will automatically log into Beamable as a **Guest Account**. There are 3 exposed callbacks here:
+
+- `On Init Error`: This callback will be invoked if any problems occurred during the SDK's initialization process. If this is called, neither of the other two are called.
+- `On User Ready`: This callback will be invoked after the user is logged in and 100% ready for use; after this callback is invoked, you can make authenticated requests to Beamable.
+- `On User Login Error`: This callback will be invoked if the SDK initialized but the Login fails. You can retry by invoking any of the `Login` functions in `Beam Runtime`.
+
+Now that you have this event hooked up, you can add your first **Beam Flow Node** and make your first request. **Beam Flow Nodes** are custom nodes that wrap around the following flow:
 
 - Creating a new Request `UObject`.
 - Getting a `UBeam___Api` engine subsystem. 
 	- This is a stateless system that exposes an auto-generated API to talk to various services.
 	- This is not the recommended way you'll use Beamable. Its just the simplest way for you to get started.
-- A set of Custom Event nodes (for success, error and completion) of the request being made to the Beamable backe-end.
+- A set of Custom Event nodes (for success, error and completion) of the request being made to Beamable.
 	- Because of this, Unreal does not allow the use of these nodes (or any node that expands to Event nodes) outside of **EventGraphs** or **Macros used in EventGraphs**.
 
-![intro-beam-flow-node.png](./images/intro-beam-flow-node.png#center)
+![intro-beam-flow-node.png](intro-beam-flow-node.png#center)
 
-With the SDKs default configuration and the above setup, you can enter PIE (Play-In-Editor). You should see several requests's responses being written to your Output Log window. After you see the final `GetMe` request, you can exit PIE knowing you've very first request to the Beamable backend.
+With the SDKs default configuration and the above setup, you can enter PIE (Play-In-Editor). You should see several requests's responses being written to your Output Log window. After you see the final `GetMe` request, you can exit PIE knowing you've made your very first request to Beamable.
 
 #### Additional Information
 Before we complete this guide, there's one final thing that is important to know. You can, and should, use verbose logging `log "Category" Verbose` when you encounter an issue stemming from our SDK (Log Categories can be found in `BeambleCore/BeamLogging.h` file). 
@@ -102,6 +113,6 @@ This verbose logging will print out ***everything*** about the request being mad
 
 When reporting an issue, try to reproduce the issue with the logs of the relevant systems set to Verbose and attach them to the issue.
 #### Next Steps
-Now that you've made your first Beamable Request, take a look at the [Runtime Concepts](runtime-concepts.md) page so you understand more about how the SDK is structured and the various paths to using it and the best path for your game.
+Now that you've made your first Beamable Request, before you go onto make your game, take a look at the [Runtime Concepts](../concepts/runtime-concepts.md) page so you can understand more about how the SDK is structured and identify the best path to using it in your game.
 
-If you'd like to see a more complicated example running on Beamable, take a look at [our Samples](../samples/intro.md).
+If you'd like to see a more complicated example running on Beamable, take a look at [our Samples](docs/samples/intro.md).
