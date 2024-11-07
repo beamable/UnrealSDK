@@ -59,11 +59,6 @@ jobs:
   build:
     runs-on: [self-hosted, Windows]
     steps:
-      # Run commands to print out more information about the runner
-      # - name: Print out Additional Runner info
-      #   run: |
-      #     curl https://api.ipify.org
-          
       # Gets the Unreal Repo and the CLI repo
       - uses: actions/checkout@v4
         with:
@@ -92,19 +87,6 @@ jobs:
             BeamableUnreal/BeamableUnreal.sln
           key: unreal-${{ runner.os }}-${{ inputs.targetPlatform }}-${{ inputs.buildType }}-${{ hashFiles('/BeamableUnreal/Source/**') }}
           restore-keys: unreal-${{ runner.os }}-${{ inputs.targetPlatform }}-
-
-      # Sets the buildType ENV var as either server or client.
-      - name: Set buildType ENV var
-        id: set-build-type
-        run: echo "buildType=${{ inputs.buildType }}" >> $env:GITHUB_ENV
-      - name: Set hash ENV var
-        id: get_commit_hash
-        working-directory: ./BeamableUnreal
-        run: echo "commit_hash=$(git rev-parse HEAD)" >> $env:GITHUB_ENV
-      - name: Check buildType ENV var
-        id: check-build-type
-        run: echo "${{ env.buildType }}"
-
       # Installs .NET 8 so we can run init_repo.sh
       - uses: actions/setup-dotnet@v4
         with:
@@ -138,18 +120,18 @@ jobs:
       - name: Build image
         working-directory: ./BeamableUnreal
         shell: bash
-        run: bash windows_build.sh
+        run: bash windows_build.sh ${{ inputs.buildType }} ${{ inputs.targetPlatform }}
 
       # Compress the results
       - name: Compress Directory
-        run: powershell Compress-Archive BeamableUnreal/PackagedProject windows_${{ env.buildType }}_${{ inputs.beamProj }}_${{ env.commit_hash }}.zip 
+        run: powershell Compress-Archive BeamableUnreal/PackagedProject ${{ inputs.targetPlatform }}_${{ inputs.buildType }}_${{ inputs.beamProj }}_${{ inputs.gitRevision }}.zip 
 
       # Uploads the artifacts so we can download the build
       - name: Upload Compressed Folder as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Windows_${{ env.buildType }}_${{ inputs.beamProj }}_${{ env.commit_hash }}
-          path: windows_${{ env.buildType }}_${{ inputs.beamProj }}_${{ env.commit_hash }}.zip
+          name: ${{ inputs.targetPlatform }}_${{ inputs.buildType }}_${{ inputs.beamProj }}_${{ inputs.gitRevision }}
+          path: ${{ inputs.targetPlatform }}_${{ inputs.buildType }}_${{ inputs.beamProj }}_${{ inputs.gitRevision }}.zip
       - name: Cleanup workspace
         if: always()
         shell: bash
