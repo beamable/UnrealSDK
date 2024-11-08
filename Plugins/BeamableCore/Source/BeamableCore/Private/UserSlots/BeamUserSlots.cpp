@@ -591,7 +591,7 @@ bool UBeamUserSlots::TryLoadSlotData(FString SlotDataTypeName, FUserSlot SlotId,
 	if (FFileHelper::LoadFileToString(SlotFile, *FilePath))
 	{
 		const auto DidDeserializeAuthData = FJsonObjectConverter::JsonObjectStringToUStruct(SlotFile, &OutSlotData);
-		ensureAlwaysMsgf(DidDeserializeAuthData, TEXT("Failed deserialization of %s_%s.json file.\nPath=%s"), *NamespacedSlotId, *FilePath);
+		ensureAlwaysMsgf(DidDeserializeAuthData, TEXT("Failed deserialization of %s_%s.json file.\nPath=%s"), *NamespacedSlotId, *SlotDataTypeName, *FilePath);
 		return true;
 	}
 	return false;

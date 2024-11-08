@@ -653,7 +653,7 @@ bool UBeamRequestTracker::TryGetOperationEvents(const FBeamOperationHandle& Op, 
 		{
 			auto bShouldInclude = true;
 			bShouldInclude &= FilterType == OET_NONE || TriggeredEvent.EventType == FilterType;
-			bShouldInclude & FilterId == NAME_All || TriggeredEvent.EventId == FilterId;
+			bShouldInclude &= FilterId == NAME_All || TriggeredEvent.EventId == FilterId;
 
 			if (bShouldInclude)
 			{
