@@ -170,21 +170,21 @@ class BEAMABLECORERUNTIME_API UBeamRuntimeBlueprintSubsystems : public UGameInst
 	{
 		Super::Initialize(Collection);
 		const auto RuntimeSettings = GetDefault<UBeamRuntimeSettings>();
-		for (const auto SubsystemBlueprint : RuntimeSettings->RuntimeSubsystemBlueprints)
+		for (const auto& SubsystemBlueprint : RuntimeSettings->RuntimeSubsystemBlueprints)
 		{
 			Collection.InitializeDependency(SubsystemBlueprint);
 		}
 
 		if (IsRunningDedicatedServer())
 		{
-			for (const auto SubsystemBlueprint : RuntimeSettings->ServerOnlyRuntimeSubsystemBlueprints)
+			for (const auto& SubsystemBlueprint : RuntimeSettings->ServerOnlyRuntimeSubsystemBlueprints)
 			{
 				Collection.InitializeDependency(SubsystemBlueprint);
 			}
 		}
 		else
 		{
-			for (const auto SubsystemBlueprint : RuntimeSettings->ClientRuntimeSubsystemBlueprints)
+			for (const auto& SubsystemBlueprint : RuntimeSettings->ClientRuntimeSubsystemBlueprints)
 			{
 				Collection.InitializeDependency(SubsystemBlueprint);
 			}

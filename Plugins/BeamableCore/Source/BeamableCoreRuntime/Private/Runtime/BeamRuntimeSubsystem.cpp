@@ -22,7 +22,7 @@ bool UBeamRuntimeSubsystem::ShouldCreateSubsystem(UObject* Outer) const
 	if (IsInBlueprint())
 	{
 		const auto RuntimeSettings = GetDefault<UBeamRuntimeSettings>();
-		for (const auto SubsystemBlueprint : RuntimeSettings->RuntimeSubsystemBlueprints)
+		for (const auto& SubsystemBlueprint : RuntimeSettings->RuntimeSubsystemBlueprints)
 		{
 			if (this == SubsystemBlueprint->GetDefaultObject())
 				return true;
@@ -30,7 +30,7 @@ bool UBeamRuntimeSubsystem::ShouldCreateSubsystem(UObject* Outer) const
 
 		if (IsRunningDedicatedServer())
 		{
-			for (const auto SubsystemBlueprint : RuntimeSettings->ServerOnlyRuntimeSubsystemBlueprints)
+			for (const auto& SubsystemBlueprint : RuntimeSettings->ServerOnlyRuntimeSubsystemBlueprints)
 			{
 				if (this == SubsystemBlueprint->GetDefaultObject())
 					return true;
@@ -38,7 +38,7 @@ bool UBeamRuntimeSubsystem::ShouldCreateSubsystem(UObject* Outer) const
 		}
 		else
 		{
-			for (const auto SubsystemBlueprint : RuntimeSettings->ClientRuntimeSubsystemBlueprints)
+			for (const auto& SubsystemBlueprint : RuntimeSettings->ClientRuntimeSubsystemBlueprints)
 			{
 				if (this == SubsystemBlueprint->GetDefaultObject())
 					return true;

@@ -730,7 +730,7 @@ void UBeamContentSubsystem::DownloadLiveContentObjects(const FBeamContentManifes
 
 	// Let's look for the list of content that needs fetching...
 	TArray<FBeamRequestContext> IndividualDownloadRequests;
-	for (const auto ContentEntry : Rows)
+	for (const auto& ContentEntry : Rows)
 	{
 		if (ContentEntry.Type == EContentType::BEAM_content)
 		{

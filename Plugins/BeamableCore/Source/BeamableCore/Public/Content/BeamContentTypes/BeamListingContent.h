@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "AutoGen/Optionals/Optionalint64.h"
+#include "AutoGen/Optionals/OptionalInt64.h"
 #include "AutoGen/Optionals/OptionalString.h"
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
 #include "Content/BeamContentObject.h"
