@@ -1,5 +1,4 @@
-
-## Getting Started with C# Microservices
+# Getting Started with C# Microservices
 To get started with Microservices in your project, you need a couple of things:
 
 - Most Unreal `.[vcs]ignore` file templates will ignore all `*.sln` files. Instead of doing that, make sure to only ignore in the root directory with this  `/*.sln` instead of `*.sln`.

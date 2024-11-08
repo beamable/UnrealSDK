@@ -31,7 +31,7 @@ void UBeamEditor::SetBeamableWindowMessage(UBeamableWindowMessage* message)
 
 void UBeamEditor::UpdateBeamableWindowMessage(FString Message, EMessageType typeOfMessage)
 {
-	if(this->WindowMessage == nullptr)
+	if (this->WindowMessage == nullptr)
 	{
 		this->WindowMessage = NewObject<UBeamableWindowMessage>();
 	}
@@ -47,16 +47,16 @@ void UBeamEditor::ClearBeamableWindowMessage()
 void UBeamEditor::OpenDocsPage(FDocsPageItem item)
 {
 	FString Docs = GetDefault<UBeamCoreSettings>()->BeamableEnvironment->DocsUrl;
-	if(Docs.IsEmpty())
+	if (Docs.IsEmpty())
 	{
 		Docs = FString("https://beamable.github.io/UnrealSDK/");
 	}
-	if(!Docs.EndsWith("/"))
+	if (!Docs.EndsWith("/"))
 	{
 		Docs += FString("/");
 	}
 	const FString FullUri = Docs + item.Path;
-    FPlatformProcess::LaunchURL(*FullUri, nullptr, nullptr);
+	FPlatformProcess::LaunchURL(*FullUri, nullptr, nullptr);
 }
 
 void UBeamEditor::Initialize(FSubsystemCollectionBase& Collection)
@@ -220,7 +220,7 @@ void UBeamEditorBootstrapper::Run_TrySignIntoMainEditorSlot(FBeamWaitCompleteEve
 		FBeamOperationEventHandler OperationEventHandler;
 		OperationEventHandler.BindUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditorBootstrapper, Run_EditorReady));
 		const auto Op = BeamEditor->RequestTracker->BeginOperation({MainEditorSlot}, GetName(), OperationEventHandler);
-		BeamEditor->UpdateSignedInUserData_OnUserSlotAuthenticated(MainEditorSlot, User, this, Op);
+		BeamEditor->UpdateSignedInUserData_OnUserSlotAuthenticated(MainEditorSlot, User, Op, this);
 	}
 	else
 	{
@@ -581,7 +581,7 @@ void UBeamEditor::SelectRealm_OnRealmInitialized(FBeamWaitCompleteEvent, FBeamRe
 		RealmInitializedOps.Add(Handle);
 	}
 	const auto OnCompleteCode = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, SelectRealm_OnSystemsRead), NewRealmHandle, Op);
-	RealmInitializedWait = RequestTracker->CPP_WaitAll({}, InitalizeFromRealmOps, {}, OnCompleteCode);	
+	RealmInitializedWait = RequestTracker->CPP_WaitAll({}, InitalizeFromRealmOps, {}, OnCompleteCode);
 }
 
 void UBeamEditor::SelectRealm_OnSystemsRead(FBeamWaitCompleteEvent, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op)
@@ -616,7 +616,8 @@ void UBeamEditor::OpenPortal(EPortalPage PortalPage)
 		const auto CurrentPid = Data.RealmHandle.Pid.AsString;
 		const auto RefreshToken = Data.AuthToken.RefreshToken;
 		FString Page;
-		switch (PortalPage) {
+		switch (PortalPage)
+		{
 		case EPortalPage::VE_Dashboard:
 			Page = FString("dashboard");
 			break;
@@ -638,7 +639,7 @@ void UBeamEditor::OpenPortal(EPortalPage PortalPage)
 		}
 
 		const auto URL = FString::Format(TEXT("{0}/{1}/games/{2}/realms/{3}/{4}?refresh_token={5}"),
-										 {PortalUrl, Cid, ProductionPid, CurrentPid,Page, RefreshToken});
+		                                 {PortalUrl, Cid, ProductionPid, CurrentPid, Page, RefreshToken});
 
 		FPlatformProcess::LaunchURL(*URL, nullptr, nullptr);
 	}
@@ -793,27 +794,26 @@ void UBeamEditor::UpdateSignedInUserData_OnGetAdminMe(const FBeamFullResponse<UG
 		UserSlots->SaveSlot(Slot, this);
 
 		// Set up a handler for the UserSlot Authentication callback --- pass in the operation handle here so that we can treat this callback as part of the operation. 
-		UserSlotAuthenticatedHandler = UserSlots->GlobalUserSlotAuthenticatedCodeHandler
-		                                        .AddUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, UpdateSignedInUserData_OnUserSlotAuthenticated), Op);
+		UserSlotAuthenticatedHandler = UserSlots->GlobalUserSlotAuthenticatedCodeHandler.AddUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, UpdateSignedInUserData_OnUserSlotAuthenticated));
 
 		// Triggers the authentication callbacks.
-		UserSlots->TriggerUserAuthenticatedIntoSlot(Slot, this);
+		UserSlots->TriggerUserAuthenticatedIntoSlot(Slot, Op, this);
 		return;
 	}
 
 	RequestTracker->TriggerOperationCancelled(Op, TEXT(""), Resp.Context.RequestId);
 }
 
-void UBeamEditor::UpdateSignedInUserData_OnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const UObject* Context, const FBeamOperationHandle Op)
+void UBeamEditor::UpdateSignedInUserData_OnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const FBeamOperationHandle& AuthOperationHandle, const UObject* Context)
 {
 	// If we authenticated into a developer slot, let's gather the customer and project data for that user slot and store it.
 	const auto MainEditorSlot = GetMainEditorSlot();
 	if (UserSlot.Name.Equals(MainEditorSlot.Name))
 	{
 		const auto GetCustomerRequest = UGetCustomerRequest::Make(GetTransientPackage(), {});
-		const auto GetCustomerHandler = FOnGetCustomerFullResponse::CreateUObject(this, &UBeamEditor::UpdateSignedInUserData_OnFetchProjectDataForSlot, Op);
+		const auto GetCustomerHandler = FOnGetCustomerFullResponse::CreateUObject(this, &UBeamEditor::UpdateSignedInUserData_OnFetchProjectDataForSlot, AuthOperationHandle);
 		FBeamRequestContext RequestContext;
-		GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_GetCustomer(MainEditorSlot, GetCustomerRequest, GetCustomerHandler, RequestContext, Op);
+		GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_GetCustomer(MainEditorSlot, GetCustomerRequest, GetCustomerHandler, RequestContext, AuthOperationHandle);
 	}
 }
 
@@ -835,6 +835,7 @@ void UBeamEditor::UpdateSignedInUserData_OnFetchProjectDataForSlot(FGetCustomerF
 		}
 	case RS_Error:
 		{
+			RequestTracker->TriggerOperationError(Op, TEXT(""));
 			SignOut();
 			break;
 		}

@@ -34,53 +34,43 @@
 		},
 		{
 			"Name": "OnlineSubsystem",
-			"Enabled": false,
-			"Optional": true
+			"Enabled": false
 		},
 		{
 			"Name": "OnlineSubsystemUtils",
-			"Enabled": false,
-			"Optional": true
+			"Enabled": false
 		},
 		{
 			"Name": "OnlineSubsystemBeamable",
-			"Enabled": false,
-			"Optional": true
+			"Enabled": false
 		},
 		{
 			"Name": "HathoraSDK",
-			"Enabled": false,
-			"Optional": true
+			"Enabled": false
 		},
 		{
 			"Name": "DiscordSDK",
-			"Enabled": false,
-			"Optional": true
+			"Enabled": false
 		},
 		{
 			"Name": "BEAMPROJ_Sandbox",
-			"Enabled": false,
-			"Optional": true
+			"Enabled": false
 		},
 		{
 			"Name": "BEAMPROJ_SteamDemo",
-			"Enabled": false,
-			"Optional": true
+			"Enabled": false
 		},
 		{
 			"Name": "BEAMPROJ_HathoraDemo",
-			"Enabled": false,
-			"Optional": true
+			"Enabled": false
 		},
 		{
 			"Name": "BEAMPROJ_LiveOpsDemo",
-			"Enabled": false,
-			"Optional": true
+			"Enabled": false
 		},
 		{
 			"Name": "BEAMPROJ_DiscordDemo",
-			"Enabled": false,
-			"Optional": true
+			"Enabled": false
 		},
 		{
 			"Name": "OpenImageDenoise",
@@ -117,6 +107,15 @@
 		{
 			"Name": "AvfMedia",
 			"Enabled": false
+		},
+		{
+			"Name": "Fab",
+			"Enabled": false,
+			"SupportedTargetPlatforms": [
+				"Win64",
+				"Mac",
+				"Linux"
+			]
 		}
 	]
 }

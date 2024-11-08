@@ -405,7 +405,7 @@ private:
 	 */
 	UFUNCTION()
 	void UpdateSignedInUserData_OnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser,
-	                                                    const UObject* Context, FBeamOperationHandle Op);
+	                                                    const FBeamOperationHandle& AuthOperationHandle, const UObject* Context);
 
 	/**
 	 * @brief Callback to respond when we get the project data for the authenticated user during the sign in flow.

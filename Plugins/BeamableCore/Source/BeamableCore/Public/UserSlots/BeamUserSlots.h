@@ -8,6 +8,7 @@
 #include "BeamBackend/SemanticTypes/BeamAccountId.h"
 #include "BeamBackend/SemanticTypes/BeamGamerTag.h"
 #include "BeamBackend/ReplacementTypes/BeamExternalIdentity.h"
+#include "RequestTracker/BeamOperationHandle.h"
 #include "BeamUserSlots.generated.h"
 
 /**
@@ -99,8 +100,8 @@ DECLARE_MULTICAST_DELEGATE_FourParams(FUserSlotClearedCodeHandler, const EUserSl
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FUserSlotClearedHandler, const EUserSlotClearedReason&, Reason, const FUserSlot&, ClearedSlot, const FBeamRealmUser&, SlotContentsOnClear, const UObject*,
                                               TriggeringContext);
 
-DECLARE_MULTICAST_DELEGATE_ThreeParams(FUserSlotAuthenticatedCodeHandler, const FUserSlot&, const FBeamRealmUser&, const UObject*);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FUserSlotAuthenticatedHandler, const FUserSlot&, SlotId, const FBeamRealmUser&, AuthenticatedUser, const UObject*, TriggeringContext);
+DECLARE_MULTICAST_DELEGATE_FourParams(FUserSlotAuthenticatedCodeHandler, const FUserSlot&, const FBeamRealmUser&, const FBeamOperationHandle&, const UObject*);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FUserSlotAuthenticatedHandler, const FUserSlot&, SlotId, const FBeamRealmUser&, AuthenticatedUser, const FBeamOperationHandle&, OperationHandle, const UObject*, TriggeringContext);
 
 /**
  * 
@@ -251,7 +252,7 @@ public:
 	 * This means that it is ready to make authenticated requests as well as any request that requires a user's gamer tag.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	void TriggerUserAuthenticatedIntoSlot(FUserSlot SlotId, const UObject* CallingContext);
+	void TriggerUserAuthenticatedIntoSlot(FUserSlot SlotId, FBeamOperationHandle AuthOp, const UObject* CallingContext);
 
 
 	/**

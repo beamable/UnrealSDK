@@ -69,12 +69,12 @@ Here's some a quick tour of Beamable terminology:
 	- [Content](../features/content.md) is Beamable's solution for defining game-specific read-only data.
 - `Microservices` opens the **Microservice Window**. 
 	- [Microservices](../concepts/microservices.md) are Beamable's approach to Cloud-Code.
-- `Open Portal` opens Beamable's **Portal** in your default web-browser.
-	- You'll be logged in with your editor user and pointed at your current realm.
-	- The other buttons are short-cuts to pages you usually need during day-to-day workflows.
 - `Reset PIE Users` (Play-In-Editor) removes your PIE users locally cached data. 
 	- By default, when you sign into a Beamable account in PIE (in your game code), Beamable will use the same user until you delete the files `Saved/Beamable/UserSlots/PIE_XXXXX.json`. 
 	- This button does that for you. After you click it, the next time you enter PIE, a brand new Beamable player account will be created in your current realm.
+- `Home` opens Beamable's **Portal** in your default web-browser.
+	- You'll be logged in with your editor user and pointed at your current realm.
+	- The other buttons are short-cuts to pages you usually need during day-to-day workflows.
 
 Now that you are familiar with the **Beamable Window**, you are ready to make your first Beamable request (we'll do it via Blueprint, but you can do the exact same flow in C++ by making these calls in your Project's `GameMode` class's `BeginPlay` function).
 

@@ -276,15 +276,15 @@ void UBeamUserSlots::SetExternalIdsAtSlot(const FUserSlot& SlotId, const TArray<
 	UE_LOG(LogBeamUserSlots, Verbose, TEXT("Updated Email at slot!\nUSER_SLOT=%s, IDENTITIES=[%s]"), *NamespacedSlotId, *Identities);
 }
 
-void UBeamUserSlots::TriggerUserAuthenticatedIntoSlot(FUserSlot SlotId, const UObject* CallingContext)
+void UBeamUserSlots::TriggerUserAuthenticatedIntoSlot(FUserSlot SlotId, FBeamOperationHandle AuthOp, const UObject* CallingContext)
 {
 	// Gets the auth'ed user
 	FBeamRealmUser AuthenticatedUser;
 	GetUserDataAtSlot(SlotId, AuthenticatedUser, CallingContext);
 
 	// Broadcast events
-	GlobalUserSlotAuthenticatedCodeHandler.Broadcast(SlotId, AuthenticatedUser, CallingContext);
-	GlobalUserSlotAuthenticatedHandler.Broadcast(SlotId, AuthenticatedUser, CallingContext);
+	GlobalUserSlotAuthenticatedCodeHandler.Broadcast(SlotId, AuthenticatedUser, AuthOp, CallingContext);
+	GlobalUserSlotAuthenticatedHandler.Broadcast(SlotId, AuthenticatedUser, AuthOp, CallingContext);
 }
 
 
