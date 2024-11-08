@@ -16,7 +16,8 @@ main() {
 
     if [ ! -d ".venv" ]; then
         python -m venv .venv
-        source .venv/Scripts/activate
+	activate_path=$(find .venv -type f -name "activate")
+        source $activate_path
         python -m pip install mkdocs-material
         python -m pip install mkdocs-glightbox
         python -m pip install mkdocs-autorefs
