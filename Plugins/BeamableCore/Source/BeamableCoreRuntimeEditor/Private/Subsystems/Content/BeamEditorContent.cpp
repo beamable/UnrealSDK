@@ -242,7 +242,7 @@ bool UBeamEditorContent::DownloadManifest(FBeamContentManifestId ContentManifest
 
 	Cli->RunCommandSync(PullCommand, {FString::Printf(TEXT("--manifest-ids %s"), *ContentManifestId.AsString)});
 	SlowTask->EnterProgressFrame();
-	
+
 	return Res;
 }
 
@@ -558,8 +558,7 @@ bool UBeamEditorContent::DeleteContentObject(const FBeamContentManifestId& Manif
 {
 	const auto FilePath = GetJsonBlobPath(Id.AsString, ManifestId);
 	IFileManager& FileManager = IFileManager::Get();
-	if (FileManager.Delete(*FilePath))
-		return true;
+	const auto bDeleted = FileManager.Delete(*FilePath);
 
 	LoadedContentObjects.Remove(Id);
 	if (auto ManifestPtr = LocalManifestCache.Find(ManifestId))
@@ -571,9 +570,13 @@ bool UBeamEditorContent::DeleteContentObject(const FBeamContentManifestId& Manif
 		});
 	}
 
-	ErrMsg = FString::Format(TEXT("Failed to save the content object {0}"), {Id.AsString});
-	UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
-	return false;
+	if (!bDeleted)
+	{
+		ErrMsg = FString::Format(TEXT("Failed to save the content object {0}"), {Id.AsString});
+		UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
+		return false;
+	}
+	return true;
 }
 
 bool UBeamEditorContent::CreateNewContentInManifest(const FBeamContentManifestId& ManifestId,
