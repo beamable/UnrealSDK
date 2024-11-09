@@ -2,9 +2,11 @@
 
 buildType=${1:-"client"}
 platform=${2:-"Win64"}
-extraArg=""
+unrealPath=${3:-${UNREAL_ENGINE_PATH:-"C:/Users/Administrator/Documents/Git/UnrealEngine/Engine"}}
+
+extraArgs=""
 if [ "$buildType" == "server" ]; then
-    extraArg="-server"
+    extraArgs="-server -serverconfig=Shipping"
 fi
 
 # Check if BeamProjOverride.txt exists and is not empty
@@ -21,20 +23,15 @@ fi
 
 echo "$projectId" > BeamProjOverride.txt
 
-unrealPath="${UNREAL_ENGINE_PATH}"
-
-if [ -z "$UNREAL_ENGINE_PATH" ]; then
-    unrealPath="C:/Users/Administrator/Documents/Git/UnrealEngine/Engine"
-fi
-
 export UE_SELF_BUILT=1
+
 if command -v cygpath >/dev/null 2>&1; then
     parentDirectory=$(cygpath -da "$(dirname "$0")")
 else
     parentDirectory=$(realpath "$0")
 fi
 archiveDir="${parentDirectory}/PackagedProject"
-echo "Starting a $projectId $buildType build for $platform platform."
+echo "Starting a $projectId $buildType build for $platform platform"
 
 rm -rf Plugins/Developer/RiderLink
 
@@ -44,7 +41,12 @@ rm -rf Plugins/Developer/RiderLink
 "${unrealPath}/Build/BatchFiles/RunUAT.bat" BuildCookRun -project="${parentDirectory}/BeamableUnreal.uproject" \
     -utf8output \
     -platform="${platform}" \
-    "$extraArg" \
+    "$extraArgs" \
     -noP4 -nodebuginfo -allmaps \
     -cook -build -stage -prereqs -pak -archive \
     -archivedirectory="${archiveDir}"
+
+if [[ "$buildType" == "server" && "$projectId" == "BEAMPROJ_HathoraDemo" && "$platform" == "Linux" ]]; then
+    cp ${parentDirectory}/Plugins/BEAMPROJ_HathoraDemo/Dockerfile ${archiveDir}/LinuxServer/Dockerfile
+    docker build -t hathora_server ${archiveDir}/LinuxServer
+fi

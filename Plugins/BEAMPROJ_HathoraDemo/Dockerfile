@@ -14,7 +14,7 @@ WORKDIR /home/unreal
 COPY --chown=unreal:unreal . .
 
 RUN chmod +x BeamableUnrealServer.sh
-RUN chmod +x BeamableUnreal/Binaries/Linux/BeamableUnrealServer-Linux-Shipping
+RUN chmod +x BeamableUnreal/Binaries/Linux/BeamableUnrealServer
 
 # Expose the Unreal game server port
 EXPOSE 7777/udp

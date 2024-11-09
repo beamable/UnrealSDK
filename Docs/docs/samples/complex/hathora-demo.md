@@ -72,7 +72,7 @@ Now, you are ready to join a match through PIE.
 In order to play the sample using a dedicated server in Hathora:
 
 1. Set your `Multiplayer Options -> NetMode` to `Play as Standalone` and open the `Hathora Demo` map.
-	1. If you can't find it, turn on `Cotent Browser -> Settings -> Show Plugin Content` and look inside the `BEAMPROJ_HathoraDemo` content folder.
+	1. If you can't find it, turn on `Content Browser -> Settings -> Show Plugin Content` and look inside the `BEAMPROJ_HathoraDemo` content folder.
 2. Run PIE.
 3. The first time you are running, type in an email/password and hit register. 
 	1. In subsequent runs OR if you use the same email/password as your Beamable account, hit Login instead.
