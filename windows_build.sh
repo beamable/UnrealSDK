@@ -6,7 +6,7 @@ unrealPath=${3:-${UNREAL_ENGINE_PATH:-"C:/Users/Administrator/Documents/Git/Unre
 
 extraArgs=""
 if [ "$buildType" == "server" ]; then
-    extraArgs="-server -serverconfig=Shipping"
+    extraArgs="-server"
     
     if [ -z "$LINUX_MULTIARCH_ROOT" ] || [ ! -d "$LINUX_MULTIARCH_ROOT" ]; then
         export LINUX_MULTIARCH_ROOT="C:\UnrealToolchains\v22_clang-16.0.6-centos7"
@@ -53,10 +53,6 @@ rm -rf Plugins/Developer/RiderLink
     -archivedirectory="${archiveDir}"
 
 if [[ "$buildType" == "server" && "$projectId" == "BEAMPROJ_HathoraDemo" && "$platform" == "Linux" ]]; then
-    echo ""
-    echo "ARCHIVE DIR:"
-    ls -R ${archiveDir}
-    echo ""
     cp ${parentDirectory}/Plugins/BEAMPROJ_HathoraDemo/Dockerfile ${archiveDir}/LinuxServer/Dockerfile
     docker build -t hathora_server ${archiveDir}/LinuxServer
 fi
