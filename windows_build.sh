@@ -7,6 +7,13 @@ unrealPath=${3:-${UNREAL_ENGINE_PATH:-"C:/Users/Administrator/Documents/Git/Unre
 extraArgs=""
 if [ "$buildType" == "server" ]; then
     extraArgs="-server -serverconfig=Shipping"
+    
+    if [ -z "$LINUX_MULTIARCH_ROOT" ] || [ ! -d "$LINUX_MULTIARCH_ROOT" ]; then
+        export LINUX_MULTIARCH_ROOT="C:\UnrealToolchains\v22_clang-16.0.6-centos7"
+        echo "Environment variable LINUX_MULTIARCH_ROOT set to: $LINUX_MULTIARCH_ROOT"
+    else
+        echo "Environment variable LINUX_MULTIARCH_ROOT already exists and is valid: $LINUX_MULTIARCH_ROOT"
+    fi
 fi
 
 # Check if BeamProjOverride.txt exists and is not empty
