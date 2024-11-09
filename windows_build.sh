@@ -46,23 +46,16 @@ rm -rf Plugins/Developer/RiderLink
     "${unrealPath}/Binaries/DotNET/UnrealBuildTool/UnrealBuildTool.dll" \
     -ProjectFiles -UsePrecompiled -Game "${parentDirectory}/BeamableUnreal.uproject"
 "${unrealPath}/Build/BatchFiles/RunUAT.bat" BuildCookRun -project="${parentDirectory}/BeamableUnreal.uproject" \
-    -utf8output \
     -platform="${platform}" \
     "$extraArgs" \
-    -noP4 -nodebuginfo -allmaps \
-    -cook -build -stage -prereqs -pak -archive \
+    -noP4 -nodebuginfo -package -allmaps \
+    -cook -build -stage -prereqs -archive \
     -archivedirectory="${archiveDir}"
 
 if [[ "$buildType" == "server" && "$projectId" == "BEAMPROJ_HathoraDemo" && "$platform" == "Linux" ]]; then
     echo ""
-    echo ""
     echo "ARCHIVE DIR:"
-    ls ${archiveDir}
-    echo ""
-    echo ""
-    echo "ARCHIVE DIR LinuxServer"
-    ls ${archiveDir}/LinuxServer
-    echo ""
+    ls -R ${archiveDir}
     echo ""
     cp ${parentDirectory}/Plugins/BEAMPROJ_HathoraDemo/Dockerfile ${archiveDir}/LinuxServer/Dockerfile
     docker build -t hathora_server ${archiveDir}/LinuxServer
