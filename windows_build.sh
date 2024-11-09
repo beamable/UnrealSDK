@@ -54,6 +54,16 @@ rm -rf Plugins/Developer/RiderLink
     -archivedirectory="${archiveDir}"
 
 if [[ "$buildType" == "server" && "$projectId" == "BEAMPROJ_HathoraDemo" && "$platform" == "Linux" ]]; then
+    echo ""
+    echo ""
+    echo "ARCHIVE DIR:"
+    ls ${archiveDir}
+    echo ""
+    echo ""
+    echo "ARCHIVE DIR LinuxServer"
+    ls ${archiveDir}/LinuxServer
+    echo ""
+    echo ""
     cp ${parentDirectory}/Plugins/BEAMPROJ_HathoraDemo/Dockerfile ${archiveDir}/LinuxServer/Dockerfile
     docker build -t hathora_server ${archiveDir}/LinuxServer
 fi
