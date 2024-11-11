@@ -52,7 +52,8 @@ rm -rf Plugins/Developer/RiderLink
     -cook -build -stage -prereqs -archive \
     -archivedirectory="${archiveDir}"
 
-if [[ "$buildType" == "server" && "$projectId" == "BEAMPROJ_HathoraDemo" && "$platform" == "Linux" ]]; then
-    cp ${parentDirectory}/Plugins/BEAMPROJ_HathoraDemo/Dockerfile ${archiveDir}/LinuxServer/Dockerfile
-    docker build -t hathora_server ${archiveDir}/LinuxServer
-fi
+# disabled for now
+# if [[ "$buildType" == "server" && "$projectId" == "BEAMPROJ_HathoraDemo" && "$platform" == "Linux" ]]; then
+#     cp ${parentDirectory}/Plugins/BEAMPROJ_HathoraDemo/Dockerfile ${archiveDir}/LinuxServer/Dockerfile
+#     docker build -t hathora_server ${archiveDir}/LinuxServer
+# fi
