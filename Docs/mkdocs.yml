@@ -71,6 +71,7 @@ nav:
   - How-To Guides: 
     - Getting Started: 'guides/intro.md'
     - Setting Up a Microservice: 'guides/intro-microservices.md'
+    - Linux Builds: 'guides/linux-builds.md'
     - Federations:
         - Federated Login: 'guides/federations/federated-login.md'
         - Federated Inventory: 'guides/federations/federated-inventory.md'
