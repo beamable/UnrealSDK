@@ -1,5 +1,5 @@
 # use the dotnet sdk as a build stage
-FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine as build-env
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine as build-env
 WORKDIR /BeamableSource
 COPY ./BeamableSource/*.nupkg ./
 WORKDIR /subsrc/
@@ -22,7 +22,7 @@ WORKDIR /
 RUN dotnet publish ${BEAM_CSPROJ_PATH} -p:BeamableVersion=${BEAM_VERSION} -c release -o /beamApp
 
 # use the dotnet runtime as the final stage
-FROM mcr.microsoft.com/dotnet/runtime:6.0-alpine
+FROM mcr.microsoft.com/dotnet/runtime:8.0-alpine
 WORKDIR /beamApp
 
 RUN apk add --no-cache icu-libs

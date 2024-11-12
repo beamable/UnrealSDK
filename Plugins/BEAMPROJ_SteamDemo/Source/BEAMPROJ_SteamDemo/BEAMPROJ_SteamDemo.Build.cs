@@ -14,8 +14,6 @@ public class BEAMPROJ_SteamDemo : ModuleRules
 			new string[]
 			{
 				"Core",
-				"BeamableCore",
-				"BeamableCoreRuntime",
 				"OnlineSubsystem",
 				"OnlineSubsystemSteam",
 				"Steamworks"
@@ -32,5 +30,6 @@ public class BEAMPROJ_SteamDemo : ModuleRules
 				// ... add private dependencies that you statically link with here ...
 			}
 		);
+		Beam.AddRuntimeModuleDependencies(this);
 	}
 }
