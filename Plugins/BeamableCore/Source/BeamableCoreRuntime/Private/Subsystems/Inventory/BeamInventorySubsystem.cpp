@@ -862,6 +862,9 @@ void UBeamInventorySubsystem::MergeInventoryViewIntoState(const UInventoryView* 
 		State.FederatedId = ReceivedItemInstance.ViewPtr->ProxyId.IsSet ? ReceivedItemInstance.ViewPtr->ProxyId.Val : TEXT("");
 		for (const auto& Property : ReceivedItemInstance.ViewPtr->Properties) State.Properties.Add(Property->Name, Property->Value);
 
+		if (!Inventory.Items.Contains(ReceivedItemInstance.Id))
+			Inventory.Items.Add(ReceivedItemInstance.Id, {});
+
 		// Swap whatever exists there with the same id we just received.
 		auto& ItemsState = *Inventory.Items.Find(State.ContentId);
 		ItemsState.Remove(State);
