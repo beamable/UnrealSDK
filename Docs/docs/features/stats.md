@@ -50,7 +50,7 @@ To verify it worked, you can:
 ![unreal-beamable-stats-portal](./images/stats-portal.png)
 ## Usage Guidelines
 ### Batching updates
-In this example there is created a new `UpdateCommand` and commited right away. For better performance and reduced calls to Beamable, it is encouraged to:
+In this example there is created a new `UpdateCommand` and committed right away. For better performance and reduced calls to Beamable, it is encouraged to:
 
 - Create `UpdateCommand`
 - Use the other functions in the `UBeamStatsSubsystem` to set up as many changes as possible.

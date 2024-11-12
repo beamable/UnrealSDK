@@ -7,7 +7,7 @@ Here's a bit of our philosophy when desing the SDK so you know a bit what to exp
 	- In case you modify the SDK's source code, we cannot guarantee that its features will work.
 	- We trust you to know when doing so might be worth it for you (VCS are your friend here).
 - The SDK keeps itself as simple as possible, providing extension points and clear documented.
-	- We believe that tools are either helpful **or** useless. If you find yourself working around parts of the SDK instead of using them even with MicroServices/Storages, reach out to us.
+	- We believe that tools should helpful **or** at least not get in your way. If you find yourself working around parts of the SDK instead of using them even with MicroServices/Storages, reach out to us.
 - The SDK is careful about assumptions it makes.
 	- Whenever we ***have to*** make an assumption, we try to be explicit about what it means.
 	- MicroServices/Storages are great ways to "just write what you want instead" when using our default services is not a good fit.
