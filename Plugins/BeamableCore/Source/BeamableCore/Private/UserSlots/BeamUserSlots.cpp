@@ -517,14 +517,17 @@ int32 UBeamUserSlots::TryLoadSavedUserAtSlot(FUserSlot SlotId, UObject* CallingC
 			const auto RefreshToken = SlotSerializedAuthData.RefreshToken;
 			const auto ExpiresIn = SlotSerializedAuthData.ExpiresIn;
 			const auto Cid = SlotSerializedAuthData.Cid;
-			const auto Pid = SlotSerializedAuthData.Pid;
+			auto Pid = SlotSerializedAuthData.Pid;
 
 			// We only consider ourselves authenticated if the realm is the same as it was saved.
 			// TODO: we might want to consider saving the auth data as a JSON Array of FUserSlotAuthData per slot and keeping auth data for each CID/PID... for now,
 			// TODO: we'll just overwrite whenever a realm change happens.
 			const auto TargetRealm = GetDefault<UBeamCoreSettings>()->TargetRealm;
-			if (SlotSerializedAuthData.Cid == TargetRealm.Cid && SlotSerializedAuthData.Pid == TargetRealm.Pid)
+			if (Cid == TargetRealm.Cid)
 			{
+				// We make the user be pointed at the correct realm (the one we are pointed at).
+				Pid = TargetRealm.Pid;
+				
 				// We try to deserialize the user slot data
 				FUserSlotAccountData SlotSerializedAccountData;
 				const auto DidDeserializeAccountData = FJsonObjectConverter::JsonObjectStringToUStruct(SlotAccountFile, &SlotSerializedAccountData);

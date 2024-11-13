@@ -1,10 +1,4 @@
 # Getting Started with C# Microservices
-To get started with Microservices in your project, you need a couple of things:
-
-- Most Unreal `.[vcs]ignore` file templates will ignore all `*.sln` files. Instead of doing that, make sure to only ignore in the root directory with this  `/*.sln` instead of `*.sln`.
-	- You can also just ensure your Microservice `.sln` is not ignored explicitly.
-- Ensure you have the Beamable CLI installed.
-
 Creating your first microservice will automatically create your solution for you. Following the guide below will generate the following recommended folder structure:
 
 ```
@@ -17,6 +11,12 @@ Creating your first microservice will automatically create your solution for you
 |---- MicroserviceName/
 |------ MicroserviceName.csproj
 ```
+
+!!! warning "Unreal and Version Control Systems"
+	Most Unreal `.[vcs]ignore` file templates you can find online ignore all `*.sln` files. Instead of doing that, make sure to only ignore in the root directory with this  `/*.sln` instead of `*.sln`.
+	
+	In Git, you can also ensure your Microservice `.sln` is not ignored explicitly via `!/ProjectNameBeamable/ProjectNameBeamable.sln`.
+
 ### Create the Microservice Solution and Project
 **Make sure the editor is not running before starting this guide.**
 
@@ -29,7 +29,8 @@ dotnet beam project new service MicroserviceName --sln ProjectNameBeamable/Proje
  The created Microservice would look something like the example one below here.
  
 ```csharp
-public class MSPlayground : Microservice  
+[Microservice("MicroserviceName")]
+public partial class MicroserviceName : Microservice  
 {  
     [ClientCallable]  
     public int Add(int a, int b)  
@@ -47,7 +48,9 @@ Afterwards, you can run the command below from your Game Project's root.
 dotnet beam project add-unreal-project .
 ```
  
-Linking a project informs our CLI where it should put generated C++ files for communicating with the Microservice from UE code. To generate the project files, run:
+Linking a project informs our CLI where it should put generated C++ files for communicating with the Microservice from UE code. 
+
+**To generate the project files, run**:
 
 ```bash
 # Run manually whenever you make schema changes to `Callable` method signatures (or types used in them)
@@ -55,14 +58,14 @@ dotnet beam project generate-client ProjectNameBeamable/services/MicroserviceNam
 ```
 
 !!! warning "Automatic Code Generation & Limitations"
-	You can also `<GenerateClientCode>true</GenerateClientCode>` in the `BeamableSettings` **Property Group** inside `MicroserviceName.csproj`; this will run the command on every re-build of the service DLL.
+	You can also add `<GenerateClientCode>true</GenerateClientCode>` to the `BeamableSettings` **Property Group** inside `MicroserviceName.csproj`; this will run the command on every re-build of the service DLL.
 	
 	The automatic code generation is in early experimental stages and might see breaking changes in the near-future. For this reason, it is currently disabled by default.
 
-After the generating the client in your Unreal project, you can:
+After the generating the client in your Unreal project, these are the next steps:
 
 - Add the generated plugin (`ProjectNameMicroserviceClients`) to your `uproject` file and enable it.
-- Add the relevant plugin's modules to your `Target.cs` files.
+- Add the `ProjectNameMicroserviceClients` modules to your `Target.cs` files.
 - Add `ProjectNameMicroserviceClients.AddMicroserviceClients(this)` line to your  `Build.cs` files.
 
 Now, you're ready to write code that invokes the microservice.
@@ -73,13 +76,13 @@ Here's what that would look like:
 // From inside any GameInstanceSubsystem, Actor or Component...
 
 // Get the Generated API subsystem
-const auto MsApi = GEngine->GetEngineSubsystem<UBeamMSPlaygroundApi>();  
+const auto MsApi = GEngine->GetEngineSubsystem<UBeamMicroserviceNameApi>();  
 
 // Create an instance of the generated Request object.
-const auto Req = UMSPlaygroundAddRequest::Make(1, 2, GetTransientPackage(), {});  
+const auto Req = UMicroserviceNameAddRequest::Make(1, 2, GetTransientPackage(), {});  
 
 // Declare the handler for the addition
-const auto Handler = FOnMSPlaygroundAddFullResponse::CreateLambda([this](FMSPlaygroundAddFullResponse Resp)  
+const auto Handler = FOnMicroserviceNameAddFullResponse::CreateLambda([this](FMicroserviceNameAddFullResponse Resp)  
 {  
     // If the request failed or we are retrying, we do nothing  
     if (Resp.State != RS_Success)  

@@ -7,16 +7,16 @@
         <GenerateClientCode>true</GenerateClientCode>
     </PropertyGroup>
 
-    <!-- These are Special Beamable parameters that we use to keep the beamable packages in-sync to the CLI version your project is using. -->
+    <!-- These are special Beamable parameters that we use to keep the beamable packages in-sync to the CLI version your project is using. -->
     <!-- This makes it so your microservices are auto-updated whenever you update the CLI installed in your project. -->
-    <PropertyGroup Label="Beamable Version">
-        <DotNetConfigPath Condition="'$(DotNetConfigPath)' == '' AND $(DOTNET_RUNNING_IN_CONTAINER)!=true">$([MSBuild]::GetDirectoryNameOfFileAbove("$(MSBuildProjectDirectory)\..", ".config\dotnet-tools.json"))</DotNetConfigPath>
-        <DotNetConfig Condition="'$(DotNetConfig)' == '' AND $(DOTNET_RUNNING_IN_CONTAINER)!=true">$([System.IO.File]::ReadAllText("$(DotNetConfigPath)\.config\dotnet-tools.json"))</DotNetConfig>
-
+    <PropertyGroup Label="Beamable Version" Condition="$(DOTNET_RUNNING_IN_CONTAINER)!=true">
+        <DotNetConfigPath Condition="'$(DotNetConfigPath)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove("$(MSBuildProjectDirectory)/..", ".config/dotnet-tools.json"))</DotNetConfigPath>
+        <DotNetConfig Condition="'$(DotNetConfig)' == ''">$([System.IO.File]::ReadAllText("$(DotNetConfigPath)/.config/dotnet-tools.json"))</DotNetConfig>
         <!-- Extracts the version number from the first tool defined in 'dotnet-tools.json' that starts with "beamable". -->
-        <BeamableVersion Condition="'$(BeamableVersion)' == '' AND $(DOTNET_RUNNING_IN_CONTAINER)!=true">$([System.Text.RegularExpressions.Regex]::Match("$(DotNetConfig)", "beamable.*?\"([0-9]+\.[0-9]+\.[0-9]+.*?)\",", RegexOptions.Singleline | RegexOptions.IgnorePatternWhitespace).Groups[1].Value)</BeamableVersion>
+        <BeamableVersion Condition="'$(BeamableVersion)' == ''">$([System.Text.RegularExpressions.Regex]::Match("$(DotNetConfig)", "beamable.*?\"([0-9]+\.[0-9]+\.[0-9]+.*?)\",", RegexOptions.Singleline | RegexOptions.IgnorePatternWhitespace).Groups[1].Value)</BeamableVersion>
         <!-- When running from inside docker, this gets injected via the Dockerfile at build-time. -->
     </PropertyGroup>
+
 
     <!-- Standard dotnet settings-->
     <PropertyGroup Label="Dotnet Settings">

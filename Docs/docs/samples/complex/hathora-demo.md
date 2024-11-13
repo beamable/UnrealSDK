@@ -100,4 +100,4 @@ However, its Beamable code components are free for you to copy and use in your o
 - Content inside the `BEAMPROJ_HathoraDemo` except things inside a `ThirdParty` directory.
 
 !!! note "Why don't we provide a client build too?"
-	Because clients must be pointed at your `hathora-demo` realm. As such, you'd need to generate the build yourself, which you can do by packaging it normally for any of our supported platforms.
+	Because clients must be pointed at your organization's `hathora-demo` realm. As such, you'd need to generate the build yourself, which you can do by packaging it normally for any of our supported platforms.

@@ -1,38 +1,41 @@
-# Processes specific 
+ARG BEAM_DOTNET_VERSION="8.0-alpine"
+FROM mcr.microsoft.com/dotnet/runtime:${BEAM_DOTNET_VERSION}
 
-FROM --platform=$BUILDPLATFORM  mcr.microsoft.com/dotnet/sdk:8.0-alpine as build-env
-ARG TARGETARCH
-WORKDIR /BeamableSource
-COPY ./BeamableSource/*.nupkg ./
-WORKDIR /subsrc/
-RUN dotnet nuget add source /BeamableSource -n BeamableSource
-RUN dotnet nuget update source BeamableSource
+# These args are provided by the Beam CLI
 
-# <BEAM-CLI-COPY-ENV> this line signals the start of environment variables copies into the built container. Do not remove it. This will be overwritten every time a variable changes in the execution of the CLI.
-# </BEAM-CLI-COPY-ENV> this line signals the end of environment variables copies into the built container. Do not remove it.
+# Declares the relative path from the beamable workspace to the pre-build support binaries for BeamService
+#  Normally, this will be /services/BeamService/bin/beamApp/support
+ARG BEAM_SUPPORT_SRC_PATH
 
+# Declares the relative path from the beamable workspace to the pre-built binaries for BeamService
+#  Normally, this will be /services/BeamService/bin/beamApp/app
+ARG BEAM_APP_SRC_PATH
 
-# <BEAM-CLI-COPY-SRC> this line signals the start of Beamable Project Src copies into the built container. Do not remove it. The content between here and the closing tag will change anytime the Beam CLI modifies dependencies.
+# Declares where the built application will exist inside the Docker image.
+#  This value is usually /beamApp/BeamService
+ARG BEAM_APP_DEST
 
-# </BEAM-CLI-COPY-SRC> this line signals the end of Beamable Project Src copies. Do not remove it.
+# <beamReserved> Beamable may inject custom settings into this Dockerfile. Please do not remove these lines. 
+# </beamReserved>
 
-# build the dotnet program
-WORKDIR /
-RUN dotnet publish ${BEAM_CSPROJ_PATH} -p:BeamableVersion=${BEAM_VERSION} -a $TARGETARCH -c release -o /beamApp
-
-# use the dotnet runtime as the final stage
-FROM mcr.microsoft.com/dotnet/runtime:8.0-alpine
+# /beamApp is the directory that will hold the application
 WORKDIR /beamApp
 
 # expose the health port
 EXPOSE 6565 
 
-# copy the built program
-COPY --from=build-env /beamApp .
+# copy general supporting files
+COPY $BEAM_SUPPORT_SRC_PATH .
+
+# copy specific application code
+COPY $BEAM_APP_SRC_PATH .
+
+# ensure that the application is runnable
+RUN chmod +x $BEAM_APP_DEST
+ENV BEAM_APP=$BEAM_APP_DEST
 
 # when starting the container, run dotnet with the built dll
-ENTRYPOINT ["dotnet", "/beamApp/LiveOpsDemoMS.dll"]
+ENTRYPOINT "dotnet" $BEAM_APP
 
 # Swap entrypoints if the container is exploding and you want to keep it alive indefinitely so you can go look into it.
 #ENTRYPOINT ["tail", "-f", "/dev/null"]
-

@@ -31,6 +31,8 @@ public class BEAMPROJ_SteamDemo : ModuleRules
 				// ... add private dependencies that you statically link with here ...
 			}
 		);
+
+		BeamableUnrealMicroserviceClients.AddMicroserviceClients(this);
 		Beam.AddRuntimeModuleDependencies(this);
 	}
 }
