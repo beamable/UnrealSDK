@@ -85,7 +85,13 @@ protected:
 	UFUNCTION()
 	void OnBeamableUserReady(const FUserSlot& UserSlot)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("SteamDemoLogs Initializing after beamable Ready"));
+		if (GetWorld()->WorldType == EWorldType::PIE || GetWorld()->WorldType == EWorldType::Editor) 
+		{
+			UE_LOG(LogTemp, Error, TEXT("SteamDemoLogs, This sample cannot be tested from PIE or Editor, it is required to run as Standalone."))
+			this->OnLoginCompleteDelegate.Broadcast(false,TEXT("This sample cannot be tested from PIE or Editor, it is required to run as Standalone."));
+			return;
+		}
+		UE_LOG(LogTemp, Warning, TEXT("SteamDemoLogs Initializing OnBeamableUserReady"));
 		UGameInstance* GameInstance = GetWorld()->GetGameInstance();
 		UBeamRuntime* Runtime = GameInstance->GetSubsystem<UBeamRuntime>();
 		FUserSlot TargetSlot = FUserSlot(TEXT("Player0"));
@@ -93,15 +99,16 @@ protected:
 		const bool userGrabbed = UserSlots->GetUserDataAtSlot(TargetSlot, User, this);
 		if (!userGrabbed)
 		{
-			UE_LOG(LogTemp, Error, TEXT("SteamDemoLogs, NO USER!"))
+			UE_LOG(LogTemp, Error, TEXT("SteamDemoLogs, Failed to get the Beamable User Data!"));
+			this->OnLoginCompleteDelegate.Broadcast(false,TEXT("Failed to get the Beamable User Data"));
 			return;
 		}
 		const auto AccountID = User.AccountId.AsString;
 		ISteamUser* SteamAccount = SteamUser();
 		if (!SteamAccount)
 		{
-			UE_LOG(LogTemp, Error, TEXT("SteamDemoLogs, NOT A STEAM USER"))
-			this->OnLoginCompleteDelegate.Broadcast(false,TEXT("NOT A STEAM USER"));
+			UE_LOG(LogTemp, Error, TEXT("SteamDemoLogs, Steam User is null. Check if the Steam SDK is initialized correctly and the game has valid settings."))
+			this->OnLoginCompleteDelegate.Broadcast(false,TEXT("Failed to get Steam user info. Check if the Steam SDK is initialized correctly and the game has valid settings."));
 			return;
 		}
 

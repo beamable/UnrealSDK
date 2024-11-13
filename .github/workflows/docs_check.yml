@@ -20,8 +20,10 @@ jobs:
           python-version: 3.x
       - uses: actions/cache@v4
         with:
-          key: ${{ github.ref }}
-          path: .cache
+          key: docs-${{ github.ref }}
+          restore-keys: docs-
+          path: |
+            .venv
       - run: bash docs_build.sh
       - run: python -m mkdocs build
         working-directory: ./Docs

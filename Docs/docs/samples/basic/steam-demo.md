@@ -55,7 +55,12 @@ Now, you'll need to configure a Beamable realm so you can use it:
 15. In main folder (in the built game's folder where the executable is) create `steam_appid.txt` file with Steam Application ID as only content.
 
 Now, you are ready to sign into a game using Steam.
-## Playing the sample through PIE
+
+## Playing the sample
+
+!!! warninig "Starting the sample"
+	Testing the Steam integration from the editor should be performed in `Standalone Game` mode. Steam integration can encounter challenges when running in PIE mode.
+
 
 In order to test the sample:
 
@@ -65,7 +70,8 @@ In order to test the sample:
 
 #### What can you do with this sample?
 
-**This sample is NOT a template you can start your own repository from.** 
+!!! warning 
+	This sample is NOT a template you can start your own repository from.
 
 However, its Beamable code components are free for you to copy and use in your own project. Here's what these are:
 
