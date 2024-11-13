@@ -10,12 +10,13 @@ public class BEAMPROJ_SteamDemo : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
+		DynamicallyLoadedModuleNames.Add("OnlineSubsystemSteam");
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
 				"Core",
 				"OnlineSubsystem",
-				"OnlineSubsystemSteam",
+				"OnlineSubsystemUtils",
 				"Steamworks"
 			}
 		);
