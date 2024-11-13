@@ -199,13 +199,30 @@ public class BeamableUnrealTarget : TargetRules
 
 	public static void ApplyProjectOverrides(TargetInfo Target, string beamProj)
 	{
+		string[] overrides = new[]{
+			"steam_appid.txt"
+		};
+		var projRoot = Target.ProjectFile.Directory.ToDirectoryInfo().ToString();
+		var overridesRoot = Path.Combine(projRoot, "Plugins", beamProj, "Overrides");
+
+		foreach(var entry in overrides)
+		{
+			var filePath = Path.Combine(projRoot, entry);
+			if(File.Exists(filePath)) {
+				File.Delete(filePath);
+			}
+			string targetFilePath = Path.Combine(overridesRoot, entry);
+			if(File.Exists(targetFilePath)){
+				FileInfo file = new FileInfo(targetFilePath);
+				file.CopyTo(Path.Combine(projRoot, entry));
+			}
+		}
 		var overrideFolders = new[] { "Config", ".beamable/content" };
 
 		foreach (var overrideFolder in overrideFolders)
 		{
-			var projRoot = Target.ProjectFile.Directory.ToDirectoryInfo().ToString();
 			var projectPath = Path.Combine(projRoot, overrideFolder);
-			var overridesPath = Path.Combine(projRoot, "Plugins", beamProj, "Overrides", overrideFolder);
+			var overridesPath = Path.Combine(overridesRoot, overrideFolder);
 			if (!Directory.Exists(overridesPath))
 			{
 				Console.WriteLine($"{beamProj} project does not have Overrides directory for this expected override path. Create one at: {overridesPath}");

@@ -102,7 +102,7 @@ Build/
 Intermediate/
 Saved/
 Packaged/
-steam_appid.txt
+/steam_appid.txt
 
 .venv
 Docs/site
