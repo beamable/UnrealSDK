@@ -560,14 +560,20 @@ bool UBeamEditorContent::DeleteContentObject(const FBeamContentManifestId& Manif
 	IFileManager& FileManager = IFileManager::Get();
 	const auto bDeleted = FileManager.Delete(*FilePath);
 
-	LoadedContentObjects.Remove(Id);
+
 	if (auto ManifestPtr = LocalManifestCache.Find(ManifestId))
 	{
 		auto Manifest = *ManifestPtr;
-		Manifest->Entries.RemoveAll([Id](ULocalContentManifestEntryStreamData* Entry)
+		if (const auto Entry = *Manifest->Entries.FindByPredicate([Id](ULocalContentManifestEntryStreamData* E)
 		{
-			return FBeamContentId{Entry->FullId} == Id;
-		});
+		return E->FullId.Equals(Id.AsString);
+		}))
+		{
+			if (Entry->CurrentStatus == EBeamLocalContentStatus::Beam_LocalContentCreated)
+			{
+				Manifest->Entries.Remove(Entry);
+			}
+		}
 	}
 
 	if (!bDeleted)
