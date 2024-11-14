@@ -122,7 +122,7 @@ protected:
 			// Handle the error case
 			UE_LOG(LogTemp, Error, TEXT("SteamDemoLogs, Failed to get Steam auth session ticket"));
 		}
-		const auto Namespace = TEXT("federated_steam");
+		const auto Namespace = TEXT("steam");
 		const auto ServiceName = TEXT("SteamDemo");
 		// Successfully obtained the session ticket
 		FString ExternalToken;
