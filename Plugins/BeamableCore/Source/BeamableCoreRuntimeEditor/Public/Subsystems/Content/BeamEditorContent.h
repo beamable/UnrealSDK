@@ -99,7 +99,7 @@ public:
 	UClass** FindContentTypeByName(FString TypeName);
 	UClass** FindContentTypeByTypeId(FString TypeId);
 
-	void FindSubTypesOfContentType(const TArray<FString>& TypeNames, TMap<FString,TArray<FString>>& OutMappings);
+	void FindSubTypesOfContentType(const TArray<FString>& TypeNames, TMap<FString, TArray<FString>>& OutMappings);
 
 	bool TryLoadContentObject(const FBeamContentManifestId& OwnerManifest, FBeamContentId ContentId, UBeamContentObject*& OutLoadedContentObject);
 
@@ -175,6 +175,12 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Content", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
 	bool RefreshLocalManifests(FString& Err);
+
+	/**
+	 * Checks if the given ContentName is a valid content name. 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Content", meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool IsValidContentName(const FString& ContentName, FText& Err);
 
 private:
 	FBeamOperationHandle RefreshLocalManifests(FBeamOperationHandle Op);

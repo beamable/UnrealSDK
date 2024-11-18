@@ -566,7 +566,7 @@ bool UBeamEditorContent::DeleteContentObject(const FBeamContentManifestId& Manif
 		auto Manifest = *ManifestPtr;
 		if (const auto Entry = *Manifest->Entries.FindByPredicate([Id](ULocalContentManifestEntryStreamData* E)
 		{
-		return E->FullId.Equals(Id.AsString);
+			return E->FullId.Equals(Id.AsString);
 		}))
 		{
 			if (Entry->CurrentStatus == EBeamLocalContentStatus::Beam_LocalContentCreated)
@@ -600,6 +600,9 @@ bool UBeamEditorContent::TryRenameContent(const FBeamContentManifestId& Manifest
 	UBeamContentObject* Obj;
 	const auto bContentFound = GetContent(ManifestId, ContentId, Obj);
 	ensureAlways(bContentFound);
+
+	if(!IsValidContentName(NewContentName, Err))
+		return false;
 
 	const FString ContentTypeString = Obj->BuildContentTypeString();
 	const FString NewId = ContentTypeString + TEXT(".") + NewContentName;
@@ -781,4 +784,26 @@ void UBeamEditorContent::UpdateLocalManifestCache(const TArray<ULocalContentMani
 		UE_LOG(LogBeamEditor, Display, TEXT("Editor Subsystem %s - Found Manifest with Id %s"), *GetName(),
 		       *d->ManifestId)
 	}
+}
+
+bool UBeamEditorContent::IsValidContentName(const FString& ContentName, FText& Err)
+{
+	FString Errs = TEXT("Found Content Name Errors:\n");
+	auto bIsValid = true;
+
+	const auto InvalidChars = TArray{TEXT(" "), TEXT(".")};
+	for (const auto InvalidChar : InvalidChars)
+	{
+		const auto bContainsInvalidChar = ContentName.Contains(InvalidChar);
+		bIsValid &= !bContainsInvalidChar;
+
+		if(bContainsInvalidChar)
+		{
+			Errs += FString::Printf(TEXT("- Content cannot have the character [%s] in them."), InvalidChar);
+		}
+	}	
+
+	if(!bIsValid)
+		Err = FText::FromString(Errs);	
+	return bIsValid;
 }
