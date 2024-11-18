@@ -37,6 +37,13 @@ main() {
     if [[ $argument == "serve" ]]; then
         cd Docs
         python -m mkdocs serve
+    elif [[ $argument == "deploy" ]]; then
+        cd Docs
+        python -m mkdocs build
+        python -m mkdocs gh-deploy --force
+    else
+        cd Docs
+        python -m mkdocs build
     fi
 }
 
