@@ -560,23 +560,25 @@ bool UBeamEditorContent::DeleteContentObject(const FBeamContentManifestId& Manif
 	IFileManager& FileManager = IFileManager::Get();
 	const auto bDeleted = FileManager.Delete(*FilePath);
 
-
-	if (auto ManifestPtr = LocalManifestCache.Find(ManifestId))
+	if (bDeleted)
 	{
-		auto Manifest = *ManifestPtr;
-		if (const auto Entry = *Manifest->Entries.FindByPredicate([Id](ULocalContentManifestEntryStreamData* E)
+		LoadedContentObjects.Remove(Id);
+		if (auto ManifestPtr = LocalManifestCache.Find(ManifestId))
 		{
-			return E->FullId.Equals(Id.AsString);
-		}))
-		{
-			if (Entry->CurrentStatus == EBeamLocalContentStatus::Beam_LocalContentCreated)
+			auto Manifest = *ManifestPtr;
+			if (const auto Entry = *Manifest->Entries.FindByPredicate([Id](ULocalContentManifestEntryStreamData* E)
 			{
-				Manifest->Entries.Remove(Entry);
+			return E->FullId.Equals(Id.AsString);
+			}))
+			{
+				if (Entry->CurrentStatus == EBeamLocalContentStatus::Beam_LocalContentCreated)
+				{
+					Manifest->Entries.Remove(Entry);
+				}
 			}
 		}
 	}
-
-	if (!bDeleted)
+	else
 	{
 		ErrMsg = FString::Format(TEXT("Failed to save the content object {0}"), {Id.AsString});
 		UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
@@ -693,6 +695,24 @@ bool UBeamEditorContent::TryGetFilteredListOfContent(const FBeamContentManifestI
 		FoundLocalContent[FoundLocalContent.Num() - 1]->ContentObject = ObjectsInManifest[i];
 	}
 
+	//Content needs to be sorted to as following : newly created content/modified/unmodified/deletions
+	FoundLocalContent.Sort([](const UBeamContentLocalView& BeamContent1, const UBeamContentLocalView& BeamContent2)
+		{
+				if (BeamContent1.LocalStatus == BeamContent2.LocalStatus)
+				{
+					return BeamContent1.ContentName.ToString() < BeamContent2.ContentName.ToString();
+				}
+				else if (BeamContent1.LocalStatus == EBeamLocalContentStatus::Beam_LocalContentCreated)
+					return true;
+				else if (BeamContent1.LocalStatus == EBeamLocalContentStatus::Beam_LocalContentModified && BeamContent2.LocalStatus != EBeamLocalContentStatus::Beam_LocalContentCreated)
+					return true;
+				else if (BeamContent1.LocalStatus == EBeamLocalContentStatus::Beam_LocalContentUpToDate &&
+					BeamContent2.LocalStatus !=   EBeamLocalContentStatus::Beam_LocalContentCreated && BeamContent2.LocalStatus != EBeamLocalContentStatus::Beam_LocalContentModified)
+					return true;
+	
+					return false;
+		});
+	
 	return true;
 }
 
