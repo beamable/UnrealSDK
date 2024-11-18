@@ -24,6 +24,7 @@ jobs:
           restore-keys: docs-
           path: |
             .venv
+      - run: pip install mkdocs-material 
       - run: bash docs_build.sh
       - run: python -m mkdocs build
         working-directory: ./Docs
