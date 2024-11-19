@@ -12,7 +12,6 @@
 #include "Content/BeamContentTypes/BeamCurrencyContent.h"
 #include "Content/BeamContentTypes/BeamItemContent.h"
 #include "Content/BeamContentTypes/BeamGameTypeContent.h"
-#include "HAL/PlatformProcess.h"
 
 #include "Subsystems/BeamEditorSubsystem.h"
 #include "Misc/MessageDialog.h"
@@ -492,6 +491,11 @@ void UBeamEditor::SignIn_OnAuthenticate(const FAuthenticateFullResponse Resp, co
 
 void UBeamEditor::SelectRealm(const FBeamRealmHandle& NewRealmHandle, const FBeamOperationHandle& Op)
 {
+	auto Message = NewObject<UBeamableWindowMessage>();
+	Message->MessageType = EMessageType::VE_Info;
+	Message->MessageValue = TEXT("Preparing to change Realms...");
+	SetBeamableWindowMessage(Message);	
+	
 	auto Settings = GetMutableDefault<UBeamCoreSettings>();
 	const auto LeavingRealm = Settings->TargetRealm;
 
@@ -502,15 +506,20 @@ void UBeamEditor::SelectRealm(const FBeamRealmHandle& NewRealmHandle, const FBea
 		const auto Handle = Subsystem->PrepareForRealmChange(LeavingRealm, NewRealmHandle);
 		PrepareForRealmChangeOps.Add(Handle);
 	}
-	const auto OnCompleteCode = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, SelectRealm_OnReadyForChange), NewRealmHandle, Op);
-	OnReadyForRealmChangeWait = RequestTracker->CPP_WaitAll({}, PrepareForRealmChangeOps, {}, OnCompleteCode);
+	const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamEditor::SelectRealm_OnReadyForChange, NewRealmHandle, Op);
+	OnReadyForRealmChangeWait = RequestTracker->CPP_WaitAll({}, PrepareForRealmChangeOps, {}, OnCompleteCode);	
 }
 
 void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op)
 {
+	auto Message = NewObject<UBeamableWindowMessage>();
+	Message->MessageType = EMessageType::VE_Info;
+	Message->MessageValue = TEXT("Changing Realms...");
+	SetBeamableWindowMessage(Message);
+	
 	// TODO: Expose error handling for BeamErrorResponses that happen in the PrepareRealmChange operations
-	SetActiveTargetRealmUnsafe(NewRealmHandle);
-
+	SetActiveTargetRealmUnsafe(NewRealmHandle);	
+	
 	// Get the Main Editor Slot and make it point at the new realm
 	FBeamRealmUser UserData;
 	const auto MainEditorSlot = GetMainEditorSlot(UserData);
@@ -527,7 +536,7 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 			else CurrConfig.Add(TEXT("notification|publisher"), TEXT("beamable"));
 			const auto Req = UPutConfigRequest::Make(CurrConfig, GetTransientPackage(), {});
 			const auto Handler = FOnPutConfigFullResponse::CreateLambda([this, Op, NewRealmHandle](FPutConfigFullResponse PutResp)
-			{
+			{				
 				if (PutResp.State == RS_Success)
 				{
 					const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
@@ -537,7 +546,7 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 						const auto Handle = Subsystem->InitializeRealm(NewRealmHandle);
 						InitalizeFromRealmOps.Add(Handle);
 					}
-					const auto OnCompleteCode = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, SelectRealm_OnRealmInitialized), NewRealmHandle, Op);
+					const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamEditor::SelectRealm_OnRealmInitialized, NewRealmHandle, Op);
 					InitializeFromRealmsWait = RequestTracker->CPP_WaitAll({}, InitalizeFromRealmOps, {}, OnCompleteCode);
 					return;
 				}
@@ -564,7 +573,12 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 }
 
 void UBeamEditor::SelectRealm_OnRealmInitialized(FBeamWaitCompleteEvent, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op)
-{
+{	
+	auto Message = NewObject<UBeamableWindowMessage>();
+	Message->MessageType = EMessageType::VE_Info;
+	Message->MessageValue = TEXT("Updating new Realm Local Data...");
+	SetBeamableWindowMessage(Message);
+	
 	// We update the UserSlot info with the new PID.
 	FBeamRealmUser UserData;
 	const auto MainEditorSlot = GetMainEditorSlot(UserData);
@@ -580,17 +594,22 @@ void UBeamEditor::SelectRealm_OnRealmInitialized(FBeamWaitCompleteEvent, FBeamRe
 		const auto Handle = Subsystem->OnRealmInitialized(NewRealmHandle);
 		RealmInitializedOps.Add(Handle);
 	}
-	const auto OnCompleteCode = FOnWaitCompleteCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamEditor, SelectRealm_OnSystemsRead), NewRealmHandle, Op);
-	RealmInitializedWait = RequestTracker->CPP_WaitAll({}, InitalizeFromRealmOps, {}, OnCompleteCode);
+	const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamEditor::SelectRealm_OnSystemsReady, NewRealmHandle, Op);
+	RealmInitializedWait = RequestTracker->CPP_WaitAll({}, RealmInitializedOps, {}, OnCompleteCode);
 }
 
-void UBeamEditor::SelectRealm_OnSystemsRead(FBeamWaitCompleteEvent, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op)
+void UBeamEditor::SelectRealm_OnSystemsReady(FBeamWaitCompleteEvent, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op)
 {
+	auto Message = NewObject<UBeamableWindowMessage>();
+	Message->MessageType = EMessageType::VE_Info;
+	Message->MessageValue = TEXT("Realm Changed!");
+	SetBeamableWindowMessage(Message);
+	
 	const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
 	for (auto& Subsystem : Subsystems)
 	{
 		Subsystem->OnReady();
-	}
+	}	
 
 	RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 }
@@ -804,7 +823,8 @@ void UBeamEditor::UpdateSignedInUserData_OnGetAdminMe(const FBeamFullResponse<UG
 	RequestTracker->TriggerOperationCancelled(Op, TEXT(""), Resp.Context.RequestId);
 }
 
-void UBeamEditor::UpdateSignedInUserData_OnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const FBeamOperationHandle& AuthOperationHandle, const UObject* Context)
+void UBeamEditor::UpdateSignedInUserData_OnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const FBeamOperationHandle& AuthOperationHandle,
+                                                                 const UObject* Context)
 {
 	// If we authenticated into a developer slot, let's gather the customer and project data for that user slot and store it.
 	const auto MainEditorSlot = GetMainEditorSlot();

@@ -603,7 +603,7 @@ bool UBeamEditorContent::TryRenameContent(const FBeamContentManifestId& Manifest
 	const auto bContentFound = GetContent(ManifestId, ContentId, Obj);
 	ensureAlways(bContentFound);
 
-	if(!IsValidContentName(NewContentName, Err))
+	if (!IsValidContentName(NewContentName, Err))
 		return false;
 
 	const FString ContentTypeString = Obj->BuildContentTypeString();
@@ -738,35 +738,24 @@ FBeamContentManifestId UBeamEditorContent::GetManifestIdFromDataTable(const UDat
 }
 
 
-void UBeamEditorContent::BakeManifest(ULocalContentManifestStreamData* LocalManifest, UBeamContentCache* Cache)
+void UBeamEditorContent::BakeManifest(FBeamContentManifestId Manifest, UBeamContentCache* Cache)
 {
-	FString ManifestName = LocalManifest->GetFName().ToString();
-	int32 UnderscoreIdx;
-	ensureAlwaysMsgf(ManifestName.FindChar('_', UnderscoreIdx),
-	                 TEXT("Content Manifests must have their name prefixed with 'BCM_'. %s"),
-	                 *LocalManifest->GetFName().ToString());
+	Cache->ManifestId = Manifest;
 
-	ManifestName.RightChopInline(UnderscoreIdx + 1);
-	ManifestName.ToLowerInline();
-
-	const auto ManifestId = FBeamContentManifestId{ManifestName};
-	Cache->ManifestId = ManifestId;
-
-	const auto Entries = LocalManifest->Entries;
-	for (const auto& Entry : Entries)
+	for (const auto& Entry : LocalManifestCache[Manifest]->Entries)
 	{
+		const auto Hash = Entry->Hash;
 		const bool bNotInCache = !Cache->Hashes.Contains(Entry->FullId);
-		const bool bInCacheButModified = Cache->Hashes.Contains(Entry->FullId) && !Cache->Hashes[Entry->FullId].
-			Equals(Entry->Hash);
+		const bool bInCacheButModified = Cache->Hashes.Contains(Entry->FullId) && !Cache->Hashes[Entry->FullId].Equals(Hash);
 		if (bNotInCache || bInCacheButModified)
 		{
 			// Create a new BeamContentObject instance of each content Object
 			UBeamContentObject* Content;
-			LoadContentObjectInstance(LocalManifest, Entry->FullId, Content, Cache);
+			LoadContentObjectInstance(LocalManifestCache[Manifest], Entry->FullId, Content, Cache);
 
 			// Add it to the BCC_ BeamRuntimeContentCache.
 			Cache->Cache.Add(Entry->FullId, Content);
-			Cache->Hashes.Add(Entry->FullId, Entry->Hash);
+			Cache->Hashes.Add(Entry->FullId, Hash);
 		}
 	}
 	EditorAssetSubsystem->SaveLoadedAsset(Cache, false);
@@ -809,7 +798,7 @@ void UBeamEditorContent::UpdateLocalManifestCache(const TArray<ULocalContentMani
 bool UBeamEditorContent::IsValidContentName(const FString& ContentName, FText& Err)
 {
 	FString Errs = TEXT("Found Content Name Errors:\n");
-	auto bIsValid = true;
+	auto bIsValid = !ContentName.IsEmpty();
 
 	const auto InvalidChars = TArray{TEXT(" "), TEXT(".")};
 	for (const auto InvalidChar : InvalidChars)
@@ -817,13 +806,13 @@ bool UBeamEditorContent::IsValidContentName(const FString& ContentName, FText& E
 		const auto bContainsInvalidChar = ContentName.Contains(InvalidChar);
 		bIsValid &= !bContainsInvalidChar;
 
-		if(bContainsInvalidChar)
+		if (bContainsInvalidChar)
 		{
 			Errs += FString::Printf(TEXT("- Content cannot have the character [%s] in them."), InvalidChar);
 		}
-	}	
+	}
 
-	if(!bIsValid)
-		Err = FText::FromString(Errs);	
+	if (!bIsValid)
+		Err = FText::FromString(Errs);
 	return bIsValid;
 }

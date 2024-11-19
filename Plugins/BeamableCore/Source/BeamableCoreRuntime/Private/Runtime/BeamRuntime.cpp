@@ -445,7 +445,7 @@ void UBeamRuntime::TriggerOnContentReady(FBeamWaitCompleteEvent Evt,
 			const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this,
 			                                                               &UBeamRuntime::TriggerOnStartedAndFrictionlessAuth, AutomaticallyInitializedSubsystems, ApplyFrictionlessLogin,
 			                                                               SDKInitializedHandler, SDKInitializationErrorHandler);
-			OnBeamableContentReadyWait = RequestTrackerSystem->CPP_WaitAll({}, OnBeamableStartingOps, {}, OnCompleteCode);
+			OnBeamableContentReadyWait = RequestTrackerSystem->CPP_WaitAll({}, OnBeamableContentReadyOps, {}, OnCompleteCode);
 		}
 	}
 }

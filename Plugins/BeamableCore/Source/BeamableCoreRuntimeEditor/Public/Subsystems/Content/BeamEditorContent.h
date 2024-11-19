@@ -144,7 +144,7 @@ public:
 	static FBeamContentManifestId GetManifestIdFromDataTable(const UDataTable* Table);
 
 	UFUNCTION(BlueprintCallable)
-	void BakeManifest(ULocalContentManifestStreamData* LocalManifest, UBeamContentCache* Cache);
+	void BakeManifest(FBeamContentManifestId Manifest, UBeamContentCache* Cache);
 
 	/**
 	 * @brief Downloads the remote manifest and content objects to the local cache. This destroys all local changes. 

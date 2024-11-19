@@ -653,6 +653,7 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 			const auto BakedContentManifest = LoadedObject.Get();
 			const auto ManifestId = BakedContentManifest->ManifestId;
 			BakedContent.Add(ManifestId, BakedContentManifest);
+			LiveContent.Add(ManifestId, DuplicateObject<UBeamContentCache>(BakedContentManifest, GetTransientPackage()));
 		}
 
 		GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
@@ -751,7 +752,7 @@ void UBeamContentSubsystem::DownloadLiveContentObjects(const FBeamContentManifes
 				//  - Tries to save the downloaded file to the local '.beamable' folder.
 				//  - Checks to see if it was the last download and, if so, invoke the appropriate on success/error callback.
 				const auto IndividualContentHandler = FOnGenericBeamRequestFullResponse::CreateLambda([this, Op, ManifestId, ContentEntry](FGenericBeamRequestFullResponse Resp)
-				{								
+				{
 					if (Resp.State == RS_Success)
 					{
 						auto ResponseJson = Resp.SuccessData->ResponseBody;
@@ -768,9 +769,9 @@ void UBeamContentSubsystem::DownloadLiveContentObjects(const FBeamContentManifes
 						ResponseJson.ReplaceInline(TEXT("\":null"), TEXT("\":Null"));
 
 						// Create the ContentObject instance of the appropriate type.
-						UBeamContentObject* ContentObject;						
+						UBeamContentObject* ContentObject;
 						UBeamContentObject::NewFromTypeId(ContentTypeStringToContentClass, ContentTypeId, ContentObject);
-						
+
 						// We should never reach here without a ContentObject instance.
 						ensureAlwaysMsgf(ContentObject, TEXT("ContentObject was not created successfully. ManifestId=%s, ContentId=%s"), *ManifestId.AsString, *Id.AsString);
 						UE_LOG(LogBeamContent, Verbose, TEXT("Downloaded content and preparing to parse its Json. CONTENT_ID=%s, JSON=%s, SUPPORT_LEVEL=%s"),
@@ -811,25 +812,32 @@ void UBeamContentSubsystem::DownloadLiveContentObjects(const FBeamContentManifes
 		}
 	}
 
-	const auto WaitIndividualDownloadsHandler = FOnWaitCompleteCode::CreateLambda([this, Op](FBeamWaitCompleteEvent Evt)
+	if (IndividualDownloadRequests.Num() > 0)
 	{
-		if (this->Runtime)
+		const auto WaitIndividualDownloadsHandler = FOnWaitCompleteCode::CreateLambda([this, Op](FBeamWaitCompleteEvent Evt)
 		{
-			if (this->Runtime->RequestTrackerSystem->IsWaitSuccessful(Evt))
+			if (this->Runtime)
 			{
-				this->Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, {});
-				return;
-			}
+				if (this->Runtime->RequestTrackerSystem->IsWaitSuccessful(Evt))
+				{
+					this->Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, {});
+					return;
+				}
 
-			TArray<FString> Errs;
-			if (this->Runtime->RequestTrackerSystem->IsWaitFailed(Evt, Errs))
-			{
-				this->Runtime->RequestTrackerSystem->TriggerOperationError(Op, FString::Join(Errs, TEXT("\n")));
-				return;
+				TArray<FString> Errs;
+				if (this->Runtime->RequestTrackerSystem->IsWaitFailed(Evt, Errs))
+				{
+					this->Runtime->RequestTrackerSystem->TriggerOperationError(Op, FString::Join(Errs, TEXT("\n")));
+					return;
+				}
 			}
-		}
-	});
-	Runtime->RequestTrackerSystem->CPP_WaitAll(IndividualDownloadRequests, {}, {}, WaitIndividualDownloadsHandler);
+		});
+		Runtime->RequestTrackerSystem->CPP_WaitAll(IndividualDownloadRequests, {}, {}, WaitIndividualDownloadsHandler);
+	}
+	else
+	{
+		this->Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, {});
+	}
 }
 
 bool UBeamContentSubsystem::TryGetContent(FBeamContentId ContentId, UBeamContentObject*& OutContent)
@@ -1017,8 +1025,10 @@ void UBeamContentSubsystem::FetchContentManifest(FBeamContentManifestId Manifest
 			Cache->Cache.Reserve(NumEntries);
 			Cache->Hashes.Reserve(NumEntries);
 
+			TMap<FBeamContentId, FString> CurrentLocalHashes = {};
 			if (LiveContent.Contains(ManifestId))
 			{
+				CurrentLocalHashes = LiveContent[ManifestId]->Hashes;
 				LiveContent[ManifestId]->LatestRemoteManifest = Cache->LatestRemoteManifest;
 			}
 			else
@@ -1047,7 +1057,7 @@ void UBeamContentSubsystem::FetchContentManifest(FBeamContentManifestId Manifest
 						}
 					});
 					const auto DownloadOp = Runtime->RequestTrackerSystem->CPP_BeginOperation({}, GetName(), DownloadOpHandler);
-					DownloadLiveContentObjects(ManifestId, ContentCache->LatestRemoteManifest, ContentCache->Hashes, DownloadOp);
+					DownloadLiveContentObjects(ManifestId, ContentCache->LatestRemoteManifest, CurrentLocalHashes, DownloadOp);
 				}
 				else
 				{

@@ -35,6 +35,7 @@ In order to create write to a player stat from the client via Blueprints we will
     Make sure that user is logged in when the code below runs. See [Runtime Concepts](runtime-concepts.md)
 
 - Call `Try Create Update Command` with a set of key-value pairs that are your stat values.
+	- Optionally call `AddStatToUpdateCommand` and `RemoveStatFromUpdateCommand`.
 - After that,  use the `Commit Stats Operation` node to commit the new stats to Beamable.
 - That is it!
 
