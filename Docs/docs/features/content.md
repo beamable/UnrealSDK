@@ -7,19 +7,17 @@ img[src*='#center'] {
 # Content
 
 ## Overview 
-
 Beamable's Content feature is a read-only (at runtime) arbitrary data store that you can
 use to define your game's data. Several of Beamable's own managed features also
 use content in some way or another.
 
 ## `UBeamContentObject` and Sub-types
-
-In Unreal, you define content schemas as sub-classes of UBeamContentObject or any
-of its sub-types available in the SDK ( UBeamItemContent , UBeamGameType , etc...). Every
+In Unreal, you define content schemas as sub-classes of `UBeamContentObject` or any
+of its sub-types available in the SDK ( `UBeamItemContent` , `UBeamGameTypeContent` , etc...). Every
 content type must define a unique string id for that particular type and a function that
 returns it.
 
-The following example of UBeamCurrencyContent shows how that can be done:
+The following example of `UBeamCurrencyContent` shows how that can be done:
 
 ```c++
 UCLASS(BlueprintType)
@@ -49,7 +47,7 @@ Please remember to annotate your `UPROPERTY` with `EditAnywhere` and either:
 - `BlueprintReadWrite` if you are writing utilities to create the objects for you.
 
 !!! note "Microservices"
-	In a lot of cases, you will want to access these content objects in Microservices.	For all of Beamable's own content-types ( UBeamCurrencyContent , etc...) you will find equivalents in the Microservice SDK. For your own custom types, you'll need to declare them in C#. To do so, use the serialization table below as reference to know how to map types from C++ to C#.
+	In a lot of cases, you will want to access these content objects in Microservices.	For all of Beamable's own content-types ( `UBeamCurrencyContent` , etc...) you will find equivalents in the Microservice SDK. For your own custom types, you'll need to declare them in C#. To do so, use the serialization table below as reference to know how to map types from C++ to C#.
 
 ### Supported Content Serialization
 
@@ -87,40 +85,78 @@ below:
 
 > ContentTypeId.ContentName
 
-ContentType expands to the hierarchy of UBeamContentObject types, starting from the root type. For example:
+`ContentType` expands to the hierarchy of `UBeamContentObject` types, starting from the root type. For example:
 
 > `UMyGameItemContent` inherits from `UBeamItemContent`
 > `items.mygameitem.MyGameItemName`
 
 The last part of the id is the only one you should edit through the **Content Window**.
+
+### Content Window
+The content window is how you can create and edit content inside the editor. Here's what it looks like:
+
+![](../features/images/content-window.png)
+
+!!! note "Where can I find the content files?"
+	 While you edit the content objects as `UObject` and a details panel, these are not stored as `UDataAsset` or anything inside Unreal itself. These are stored as individual JSON objects inside `ProjectRoot/.beamable/content/global` folder. This makes it more VCS-friendly.
+
+#### Creating and Deleting Content
+To create a new piece of content, you should:
+
+1. Select a content type from the **Content Type** dropdown.
+2. Type in a name for the content; it cannot contain whitespaces or `.`.
+3. Click the `Create` button.
+
+After that you should see a new content of that type which you can edit. **Deleting** content can be done simply by selecting one and pressing `Del` on your keyboard.
+#### Visualizing Content
+The list of content objects displayed in the content window is very similar to a "Status" window in Git or some other VCS system. It isn't just showing you your local state; it is showing you the differences between your local state and the state in your currently targeted `Realm`.
+
+These differences are represented by the `[+]`, `[M]`, `[NC]` and `[-]` signs. 
+
+- `[+]`: Means the content exists locally but NOT in the realm.
+- `[M]`: Means the content exists BOTH locally and in the realm AND that it is modified relative to the one in the realm.
+- `[NC]`: Means the content exists BOTH locally and in the realm AND that it has no changes relative to the one in the realm.
+- `[-]`: Means the content DOES NOT exists locally but DOES exist in the realm.
+
+![](../features/images/content-window-statuses.png#center)
+
+The window will display these sorted by these status types in the following order: `[+]` first, then `[M]` and `[NC]`, followed by `[-]` last.
+
+!!! warning "Changing Realm"
+	Changing Realms does NOT auto-sync your local content with that realm's content. This means that you will see changes to these (`[+]`, `[M]`, `[NC]`, `[-]`) signs to reflect their new status against the new target realm.
+#### Download & Publish
+**Download** is pretty straight-forward, it'll fetch the content in the realm, replacing any `[M]` and restoring any `[-]` values to match the ones in the realm. It is similar to selecting all non-new files in a version control and "discarding changes".
+
+**Publish** is similar to a commit. This will make the content in the realm the same as your local content. After publish, all pieces of content will match the realm and `[-]` content should disappear. Unless you **publish** your content, Beamable system's won't be able to see changes made to them; so don't forget to publish before testing your changes.
+
+!!! warning "Sharing Realms between Designers"
+	At the moment, we recommend each designer working in content have their own realm. This is because **publishing is an atomic process**. It'll replace the entire content in the realm with whatever is being published. 
+	
+	This means designers might accidentally override their changes if they don't **Download** before publishing and/or are editing the same objects.
+
 ### At Runtime
 The SDK fetches the content manifest before the `OnBeamableStarted` callback is
-triggered. By default, it downloads the content manifest and each individual piece of content. You can enable and disable this behaviour it can be configured to do so inside `Project Settings -> Beamable Runtime`.
+triggered. By default, it downloads the content manifest and each individual piece of content. You can enable and disable this behavior it can be configured to do so inside `Project Settings -> Beamable Runtime`.
 
 ![DownloadIndividualContent](./images/content-download-individual-on-start.png#center)
 
-The SDK also supports automated content updates: once a user is signed into Beamable, our `UBeamContentSubsystem` begins to listen for notifications that the realm's content manifest has been updated from Beamable's server. If that happens, we will re-download the manifest. Again, we only download individual content pieces if that setting is on. There is an API you can use to manually download individual content pieces: `FetchIndividualContentBatchOperation` and `FetchIndividualContentOperation`.
-### The Content Manifest
-At any given time, a Beamable realm has one or more active Content Manifests. By default, and for most cases, the automatically created global manifest is the only one you need. To create, update and delete modify and access `UBeamContentObject` instances at authoring time, you need to:
+The SDK also supports automated content updates.
 
-1. Synchronize your local state with what's in the realm (**download** the manifest).
-2. Create content JSON files inside the `.beamable/content` folder.
-	1. The Content Window is the easiest way of doing so.
-3. Synchronize your changes to the Realm (**publish** the manifest).
+While signed into Beamable, `UBeamContentSubsystem` listens for notifications that the realm's content manifest has been updated. If that happens, we will re-download the manifest. If the SDK is configured to download individual content pieces automatically, we do so for all changed content.
 
-In Unreal, you interact with your content objects through the Content Window. It shows you the current state of content relative to your current realm and allows you:
+If you disable this setting and want to control fetching the actual content objects yourself, there are APIs you can use to manually download individual content pieces: `FetchIndividualContentBatchOperation` and `FetchIndividualContentOperation`.
 
-- **Download:** Download the content files currently published to your realm. This is non-destructive; it **won't** discard new files, just restore deleted ones and discard changes of existing ones.
-- **Reset**: This is a destructive version of download. After it ends, your local content will 100% reflect what's in the realm.
-- **Publish**: This is the reverse-reset. It'll make your realm an 100% match to your local content.
-
-This UX looks and follows what you expect of editing any `UObject`. The difference is that the `UBeamContentObject` instances are NOT stored inside your Unreal project. They are the `.json` files inside `.beamable/content` folder.
 ### Baking Content
-In preparation for our Offline Mode support, we provide a editor utility that will bake a content manifest into a `UBeamContentCache`; this is a special asset type that has the `UBeamContentObject` instances serialized using UE's serialization as opposed to JSON. 
+In a couple of cases, you might want to bake content to distribute it with your build:
 
-This is loaded automatically by the `UBeamContentSubsystem` if it exists and is configured correctly. We provide an editor utility blueprint you can run to generate and configure the cache for each of your content manifests. The `EBP_BakeContent` utility can be found in Beamable Core's plugin folder under `/Editor/Utility/EBP_BakeContent.EBP_BakeContent`.
+- If you plan to release a new build every time you want to update your game.
+- If you want to trade-off some binary size for spending less time waiting for the individual content download at initialization time.
+
+To enable those cases, we provide an editor utility that will bake your local content into a `UBeamContentCache`; this is a special asset type that has the `UBeamContentObject` instances serialized using UE's serialization as opposed to JSON. **Keep in mind that this utility uses your local content; so make sure your content matches the realm's content before running it**.
+
+The utility is called `EBP_BakeContent` and can be found in Beamable Core's plugin folder under `/Editor/Utility/EBP_BakeContent.EBP_BakeContent`. Running this utility goes through your local content and bakes them into a `BCC_` assets ( `UBeamContentCache` ) stored in `/Game/Beamable/Content/Manifests/Cooked/` directory. This directory is configured, by default, to be included in packaged games.
 
 !!! warning "I can't find the Beamable Core Content in the Content Browser"
 	UE's Content Browser does not show Plugin content folders by default. If you want to see these, you need to turn it on at `Content Browser -> Settings -> Show Plugin Content`.
 
-Running this utility goes through each of your manifests (`.beamable/content/{manifest}`) and turns them into `BCC_` assets ( `UBeamContentCache` ) stored in `/Game/Beamable/Content/Manifests/Cooked/` directory.
+At runtime, any `UBeamContentCache` is loaded automatically by the `UBeamContentSubsystem` if it exists and is configured correctly; so you don't have to do anything to have it work.
