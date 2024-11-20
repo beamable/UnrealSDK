@@ -138,8 +138,13 @@ bool UBeamEditorContent::TryGetLocalManifestById(const FBeamContentManifestId& I
 
 FBeamOperationHandle UBeamEditorContent::RefreshLocalManifests(FBeamOperationHandle Op)
 {
+	UBeamEditor* BeamEditor = UBeamEditor::GetSelf(this);
+
+	BeamEditor->UpdateBeamableWindowMessage("Updating Local Content...",EMessageType::VE_Info);
+	
 	if (!Cli->IsInstalled())
 		return RequestTracker->CPP_BeginSuccessfulOperation({}, GetName(), TEXT(""), {});
+		
 	// Ensure the CLI is installed
 	checkf(Cli->IsInstalled(), TEXT("Editor Subsystem %s - Content depends on the CLI. It was not found locally."),
 	       *GetName());
