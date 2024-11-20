@@ -317,6 +317,13 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	FDelegateHandle UserSlotClearedHandler;
 
 	/**
+	 * @brief In a bunch of cases, we want to automatically sign a user out and, once done, sign a new user in.
+	 * This is done in most login calls, and we need a place to store the lambda handle so that we can clean it up after it runs. 
+	 */
+	FDelegateHandle UserSlotClearedEnqueuedHandle;
+
+
+	/**
 	 * @brief When we boot up the game instance (and it's subsystems), after all Initialize calls have finished, we allow BeamSubsystems to kick-off operations in parallel.
 	 * They return operation handles that we wait on. When done, these subsystems are be ready to make unauthenticated requests to the Beamable backend.
 	 */

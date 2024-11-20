@@ -15,6 +15,7 @@
 #include "AutoGen/Optionals/OptionalArrayOfBeamGamerTag.h"
 #include "AutoGen/Optionals/OptionalArrayOfBeamTag.h"
 #include "BeamBackend/ReplacementTypes/BeamClientPermission.h"
+#include "Content/BeamContentTypes/BeamListingContent.h"
 #include "Kismet2/KismetEditorUtilities.h"
 #include "PropertyType/BeamClientPermissionCustomization.h"
 #include "PropertyType/BeamContentIdCustomization.h"
@@ -131,6 +132,13 @@ void FBeamableCoreEditorModule::StartupModule()
 			FOptionalBeamAccountId::StaticStruct()->GetFName(),
 			// this is where our MakeInstance() method is useful
 			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamOptionalCustomization<FOptionalBeamAccountId>::MakeInstance));
+
+		PropertyModule.RegisterCustomPropertyTypeLayout(
+			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
+			FBeamOptionalSchedule::StaticStruct()->GetFName(),
+			// this is where our MakeInstance() method is useful
+			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamOptionalCustomization<FBeamOptionalSchedule>::MakeInstance));
+		
 		
 		PropertyModule.NotifyCustomizationModuleChanged();
 	}

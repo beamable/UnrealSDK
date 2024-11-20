@@ -1355,11 +1355,15 @@ void UBeamRuntime::LoginExternalIdentity(FUserSlot UserSlot, FString ExternalSer
 	if (UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
 	{
 		// Configure us to wait until the slot is fully unauthenticated and then sign in.
-		OnUserClearedCode.AddLambda([this, AuthSubsystem](FUserSlot UserSlot, FBeamOperationHandle OpHandle, UAuthenticateRequest* AuthReq)
+		UserSlotClearedEnqueuedHandle = OnUserClearedCode.AddLambda([this, AuthSubsystem](FUserSlot UserSlot, FBeamOperationHandle OpHandle, UAuthenticateRequest* AuthReq)
 		{
 			const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnAuthenticated, UserSlot, OpHandle, FDelayedOperation{});
 			FBeamRequestContext RequestContext;
 			AuthSubsystem->CPP_Authenticate(AuthReq, AuthenticateHandler, RequestContext, OpHandle);
+
+			// Clean Up handle
+			OnUserClearedCode.Remove(UserSlotClearedEnqueuedHandle);
+			UserSlotClearedEnqueuedHandle = {};
 		}, Op, Req);
 		UserSlotSystem->ClearUserAtSlot(UserSlot, USCR_Manual, true, this);
 	}
@@ -1386,11 +1390,15 @@ void UBeamRuntime::LoginEmailAndPassword(FUserSlot UserSlot, FString Email, FStr
 	if (UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
 	{
 		// Configure us to wait until the slot is fully unauthenticated and then sign in.
-		OnUserClearedCode.AddLambda([this, AuthSubsystem](FUserSlot UserSlot, FBeamOperationHandle OpHandle, UAuthenticateRequest* AuthReq)
+		UserSlotClearedEnqueuedHandle = OnUserClearedCode.AddLambda([this, AuthSubsystem](FUserSlot UserSlot, FBeamOperationHandle OpHandle, UAuthenticateRequest* AuthReq)
 		{
 			const auto AuthenticateHandler = FOnAuthenticateFullResponse::CreateUObject(this, &UBeamRuntime::OnAuthenticated, UserSlot, OpHandle, FDelayedOperation{});
 			FBeamRequestContext RequestContext;
 			AuthSubsystem->CPP_Authenticate(AuthReq, AuthenticateHandler, RequestContext, OpHandle);
+
+			// Clean Up handle
+			OnUserClearedCode.Remove(UserSlotClearedEnqueuedHandle);
+			UserSlotClearedEnqueuedHandle = {};
 		}, Op, Req);
 		UserSlotSystem->ClearUserAtSlot(UserSlot, USCR_Manual, true, this);
 	}
@@ -1643,12 +1651,12 @@ void UBeamRuntime::Logout(FUserSlot UserSlot, EUserSlotClearedReason Reason, boo
 	FBeamRealmUser RealmUser;
 	if (UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
 	{
-		// Configure us to wait until the slot is fully unauthenticated and then sign in.		 
-		FDelegateHandle Handle;
-		Handle = OnUserClearedCode.AddLambda([this, Op, &Handle](FUserSlot UserSlot)
+		// Configure us to wait until the slot is fully unauthenticated and then sign in.	 
+		UserSlotClearedEnqueuedHandle = OnUserClearedCode.AddLambda([this, Op](FUserSlot UserSlot)
 		{
 			// Remove this lambda from the list of callbacks
-			OnUserClearedCode.Remove(Handle);
+			OnUserClearedCode.Remove(UserSlotClearedEnqueuedHandle);
+			UserSlotClearedEnqueuedHandle = {};
 
 			// Trigger the operation success
 			RequestTrackerSystem->TriggerOperationSuccess(Op, UserSlot.Name);

@@ -45,6 +45,20 @@ void UBeamMatchmakingSubsystem::OnPostUserSignedIn_Implementation(const FUserSlo
 	Super::OnPostUserSignedIn_Implementation(UserSlot, BeamRealmUser, bIsOwnerUserAuth, ResultOp);
 }
 
+void UBeamMatchmakingSubsystem::OnUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp)
+{
+	this->Slots[UserSlot] = FBeamMatchmakingState{UserSlot, FGuid{}};
+	for (auto& LiveTicket : this->LiveTickets)
+	{
+		if (LiveTicket.SlotsInTicket.Contains(UserSlot))
+		{
+			InvalidateLiveTicket(LiveTicket);
+		}
+	}
+	
+	Super::OnUserSignedOut_Implementation(UserSlot, Reason, BeamRealmUser, ResultOp);
+}
+
 TArray<TSubclassOf<UBeamRuntimeSubsystem>> UBeamMatchmakingSubsystem::GetDependingOnSubsystems()
 {
 	TArray<TSubclassOf<UBeamRuntimeSubsystem>> DependantSubsystems =

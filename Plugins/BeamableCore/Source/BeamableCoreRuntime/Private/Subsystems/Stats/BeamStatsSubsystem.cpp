@@ -103,11 +103,8 @@ void UBeamStatsSubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserSlo
 
 void UBeamStatsSubsystem::OnUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp)
 {
-	FBeamRealmUser RealmUser;
-	checkf(UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this), TEXT("This should be impossible!"));
-
 	// Let's just stop keeping a cache for each possible user key when they log out.
-	const FBeamGamerTag UserGamerTag = RealmUser.GamerTag;
+	const FBeamGamerTag UserGamerTag = BeamRealmUser.GamerTag;
 	const UEnum* DomainEnum = StaticEnum<EBeamStatsDomain>();
 	const UEnum* VisibilityEnum = StaticEnum<EBeamStatsVisibility>();
 	for (int i = 0; i < DomainEnum->NumEnums(); ++i)

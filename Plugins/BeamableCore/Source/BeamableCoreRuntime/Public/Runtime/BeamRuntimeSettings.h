@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AutoGen/Optionals/OptionalArrayOfBeamContentId.h"
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
 #include "Engine/StreamableManager.h"
 
@@ -11,6 +12,8 @@
 class UBeamContentCache;
 class UDataTable;
 class UBeamRuntimeSubsystem;
+class UBeamContentObject;
+
 /**
  * 
  */
@@ -46,9 +49,9 @@ public:
 	 * By adding subsystems to this list they will not be initialized at the game start however these subsystems could be
 	 * initialized later by calling ManuallyInitializeSubsystems Function at BeamRuntime
 	 */
-	UPROPERTY(Config,EditAnywhere, BlueprintReadOnly, Category="Beam Systems")
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Beam Systems")
 	TArray<TSubclassOf<UBeamRuntimeSubsystem>> ManualyInitializedRuntimeSubsystems;
-	
+
 	/**
 	 * @brief As per UE docs, we have a streamable manager declared to load up beamable content asynchronously at runtime: https://docs.unrealengine.com/5.1/en-US/asynchronous-asset-loading-in-unreal-engine/.
 	 */
@@ -59,13 +62,17 @@ public:
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Content")
 	bool bDownloadIndividualContentOnStart = false;
-	
+
 	/**
-	 * @brief Default stores to download by UBeamStoreSubsystem.
-	 * If none are specified it will download all the available Stores content.
+	 * @brief Specify filters for which content to download when bDownloadIndividualContentOnStart is true. This has 3 cases:
+	 * - If the content type is NOT listed in this map OR it IS listed but the FOptionalArrayOfBeamContentId is NOT set, we download all the content of that type.
+	 * - If the content type IS listed in this map and FOptionalArrayOfBeamContentId is set as an Empty array, we download NONE of the content of that type.
+	 * - If the content type IS listed in this map and FOptionalArrayOfBeamContentId is set as an non-Empty array, we download ONLY of the content of that type that matches the IDs in the array.
+	 *
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Content")
-	TArray<FBeamContentId> StoreContentToDownload; 
-	
+	TMap<TSubclassOf<UBeamContentObject>, FOptionalArrayOfBeamContentId> IndividualContentDownloadFilter = {};
+
+
 	FStreamableManager& GetStreamableManager() { return ContentStreamingManager; }
 };
