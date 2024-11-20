@@ -121,7 +121,7 @@ protected:
 			UE_LOG(LogTemp, Error, TEXT("DiscordDemo Main Menu, NO USER!"))
 			return;
 		}
-		const auto AccountID = User.AccountId.AsString;
+		const auto AccountID = UserData.UserId;
 		const auto Namespace = TEXT("discord");
 		const auto ServiceName = TEXT("DiscordSampleMs");
 
@@ -133,13 +133,13 @@ protected:
 					UE_LOG(LogTemp,
 					       Warning,
 					       TEXT(
-						       "SteamDemoLogs [Federated Identity] Successfully SignedUp using federated identity!"
+						       "[Federated Identity] Successfully SignedUp using federated identity!"
 					       ));
 					LoggedIn = true;
 					this->HandleLoggedIn(true, TEXT(""));
 					return;
 				}
-				UE_LOG(LogTemp, Error, TEXT("SteamDemoLogs, FAILED TO LOGIN: %s"), *Evt.EventCode);
+				UE_LOG(LogTemp, Error, TEXT("[Federated Identity] FAILED TO LOGIN: %s"), *Evt.EventCode);
 				this->HandleLoggedIn(false, *Evt.EventCode);
 			});
 		const auto OnSignUpWithDiscord = FBeamOperationEventHandlerCode::CreateLambda(
@@ -162,18 +162,18 @@ protected:
 					UE_LOG(LogTemp,
 					       Warning,
 					       TEXT(
-						       "[Federated Identity] User already associated with beamable account. Logging in instead."
+						       "[Federated Identity] User already associated with beamable account. Lo ging in instead."
 					       ));
-					Runtime->CPP_LoginExternalIdentityOperation(this->UserSlot, ServiceName, Namespace,
+					Runtime->CPP_LoginExternalIdentityOperation(UserSlot, ServiceName, Namespace,
 					                                            UserData.OAuthToken, LoginHandler);
 				}
 				else
 				{
-					UE_LOG(LogTemp, Warning, TEXT("[Federated Identity] Failed To Sign Up. Reason=%s."), *Evt.EventCode);
+					UE_LOG(LogTemp, Warning, TEXT("[Federated Identity] Failed To Sign Up. Reason=%s"), *Evt.EventCode);
 					this->HandleLoggedIn(false, *Evt.EventCode);
 				}
 			});
-		Runtime->CPP_AttachExternalIdentityOperation(this->UserSlot, ServiceName, Namespace,
+		Runtime->CPP_AttachExternalIdentityOperation(UserSlot, ServiceName, Namespace,
 		                                             AccountID, UserData.OAuthToken,
 		                                             OnSignUpWithDiscord);
 	}
