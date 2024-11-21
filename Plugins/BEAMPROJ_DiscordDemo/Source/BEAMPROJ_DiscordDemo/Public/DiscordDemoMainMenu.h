@@ -78,6 +78,8 @@ class BEAMPROJ_DISCORDDEMO_API UDiscordDemoMainMenu : public UBeamLevelSubsystem
 	bool CanPerformMatchmaking = false;
 	UPROPERTY()
 	bool LoggedIn = false;
+	UPROPERTY()
+	bool DiscordInitialized = false;
 
 	FUserSlot UserSlot = FUserSlot(TEXT("Player0"));
 
@@ -111,6 +113,7 @@ protected:
 			UE_LOG(LogTemp, Display, TEXT("Initialized BeamDiscord Demo Main Menu: Discord failed to initialize: %s"), *Error);
 			return;
 		}
+		DiscordInitialized = success;
 		UE_LOG(LogTemp, Display, TEXT("Initialized BeamDiscord Demo Main Menu: Discord Initialized"));
 		UGameInstance* GameInstance = GetWorld()->GetGameInstance();
 		Runtime = GameInstance->GetSubsystem<UBeamRuntime>();
@@ -162,7 +165,7 @@ protected:
 					UE_LOG(LogTemp,
 					       Warning,
 					       TEXT(
-						       "[Federated Identity] User already associated with beamable account. Lo ging in instead."
+						       "[Federated Identity] User already associated with beamable account. Login in started on the account with third party identity."
 					       ));
 					Runtime->CPP_LoginExternalIdentityOperation(UserSlot, ServiceName, Namespace,
 					                                            UserData.OAuthToken, LoginHandler);
@@ -247,6 +250,8 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void InitializeDiscordDemo()
 	{
+		if(DiscordInitialized)
+			return;
 		UGameInstance* GameInstance = GetWorld()->GetGameInstance();
 		UDiscordSubsystem* discordGameSystem = GameInstance->GetSubsystem<UDiscordSubsystem>();
 		discordGameSystem->OnDiscordInitialized.BindUFunction(
