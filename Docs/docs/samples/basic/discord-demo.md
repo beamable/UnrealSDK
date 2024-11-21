@@ -56,6 +56,7 @@ Now, you'll need to configure a Beamable realm so you can use it.
    1. `matchmaking_roles_whitelist -> Your copied Role Id, can be multiple separated by comma`
    2. `bot_token -> Your Bot Token`
    3. `guild_id -> Your Discord Server ID` 
+   4. `notify_channel -> Optional- Discord channel ID that bot will notify about status changes` 
 7. Compile and open the `BeamableUnreal` editor (it'll be configured as the `BEAMPROJ_DiscordDemo`) project.
 8. Sign into your Beamable account and go to the `discord-demo` realm.
 	1. Hit `Apply to Build`.
@@ -75,6 +76,9 @@ In order to test the sample:
 - After logging in, you should see information about being able to participate in matchmaking.
 - Adding and/or removing the role to the signed in user on Discord Server.
 - Observe the text on the UI changing to reflect your ability to participate in matchmaking.
+- Also, if `notify_channel` was specified correctly in configuration bot should inform about status change:
+
+![](../images/discord_sample_notify.png#center)
 
 In order to actually gate matchmaking you'll need to set up a rule in your `GameType` content that excludes people from the queue that do not have the role. This is not shown on this demo.
 #### What can you do with this sample?
