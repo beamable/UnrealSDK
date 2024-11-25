@@ -424,7 +424,7 @@ FBeamOperationHandle UBeamInventorySubsystem::CPP_ModifyCurrenciesOperation(FUse
 	return Handle;
 }
 
-bool UBeamInventorySubsystem::TryGetCurrencyAmount(FUserSlot Player, const FBeamContentId& CurrencyId, int64& Amount)
+bool UBeamInventorySubsystem::TryGetCurrencyAmount(FUserSlot Player, FBeamContentId CurrencyId, int64& Amount)
 {
 	Amount = 0;
 
@@ -457,7 +457,7 @@ bool UBeamInventorySubsystem::TryGetAllItems(FUserSlot Player, TArray<FBeamItemS
 	return TryGetAllItemsByGamerTag(RealmUser.GamerTag, ItemStates);
 }
 
-bool UBeamInventorySubsystem::TryGetCurrencyAmountByGamerTag(const FBeamGamerTag& GamerTag, const FBeamContentId& CurrencyId, int64& Amount)
+bool UBeamInventorySubsystem::TryGetCurrencyAmountByGamerTag(const FBeamGamerTag& GamerTag, FBeamContentId CurrencyId, int64& Amount)
 {
 	Amount = 0;
 
