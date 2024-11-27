@@ -502,12 +502,16 @@ void UBeamRuntime::TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent Ev
 
 void UBeamRuntime::TriggerOnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const FBeamOperationHandle& AuthOpHandle, const UObject* Context)
 {
-	if (!Context || (Context && (Context->GetWorld() != GetWorld())))
+	if (!Context)
 	{
 		RequestTrackerSystem->TriggerOperationError(AuthOpHandle, "ERR_INVALID_WORLD_CONTEXT");
 		return;
 	}
-
+	else if (Context && (Context->GetWorld() != GetWorld()))
+	{
+		//This can happen in multiplayer mode in which this function will be triggered more than once for every running instance
+		return;
+	}
 	const auto RequestTracker = RequestTrackerSystem;
 
 	if (!OnUserSignedInOps.Contains(UserSlot))
