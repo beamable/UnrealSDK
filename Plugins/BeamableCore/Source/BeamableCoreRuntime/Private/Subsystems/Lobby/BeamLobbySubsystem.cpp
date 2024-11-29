@@ -189,7 +189,7 @@ void UBeamLobbySubsystem::PrepareUpdateName(const FUserSlot& Slot, const FString
 	UpdateCommands[Slot]->NewLobbyName = FOptionalString(NewName);
 }
 
-void UBeamLobbySubsystem::PrepareUpdateDescription(const FUserSlot& Slot, const FString& NewDesc)
+void UBeamLobbySubsystem::PrepareUpdateDescription(FUserSlot Slot, const FString& NewDesc)
 {
 	UBeamLobbyState* LobbyState;
 	if (!GuardSlotIsInLobby(Slot, LobbyState)) return;
@@ -199,7 +199,7 @@ void UBeamLobbySubsystem::PrepareUpdateDescription(const FUserSlot& Slot, const 
 	UpdateCommands[Slot]->NewLobbyDescription = FOptionalString(NewDesc);
 }
 
-void UBeamLobbySubsystem::PrepareUpdateRestriction(const FUserSlot& Slot, const ELobbyRestriction& NewLobbyRestriction)
+void UBeamLobbySubsystem::PrepareUpdateRestriction(FUserSlot Slot, const ELobbyRestriction& NewLobbyRestriction)
 {
 	UBeamLobbyState* LobbyState;
 	if (!GuardSlotIsInLobby(Slot, LobbyState)) return;
@@ -209,7 +209,7 @@ void UBeamLobbySubsystem::PrepareUpdateRestriction(const FUserSlot& Slot, const 
 	UpdateCommands[Slot]->NewRestriction = FOptionalLobbyRestriction(NewLobbyRestriction);
 }
 
-void UBeamLobbySubsystem::PrepareUpdateGameType(const FUserSlot& Slot, const FBeamContentId& NewGameType)
+void UBeamLobbySubsystem::PrepareUpdateGameType(FUserSlot Slot, const FBeamContentId& NewGameType)
 {
 	UBeamLobbyState* LobbyState;
 	if (!GuardSlotIsInLobby(Slot, LobbyState)) return;
@@ -219,7 +219,7 @@ void UBeamLobbySubsystem::PrepareUpdateGameType(const FUserSlot& Slot, const FBe
 	UpdateCommands[Slot]->NewGameType = FOptionalBeamContentId(NewGameType);
 }
 
-void UBeamLobbySubsystem::PrepareUpdateHost(const FUserSlot& Slot, const FBeamGamerTag& NewHost)
+void UBeamLobbySubsystem::PrepareUpdateHost(FUserSlot Slot, const FBeamGamerTag& NewHost)
 {
 	UBeamLobbyState* LobbyState;
 	if (!GuardSlotIsInLobby(Slot, LobbyState)) return;
@@ -229,7 +229,7 @@ void UBeamLobbySubsystem::PrepareUpdateHost(const FUserSlot& Slot, const FBeamGa
 	UpdateCommands[Slot]->NewHost = FOptionalBeamGamerTag(NewHost);
 }
 
-void UBeamLobbySubsystem::PrepareUpdateMaxPlayers(const FUserSlot& Slot, const int32& NewMaxPlayers)
+void UBeamLobbySubsystem::PrepareUpdateMaxPlayers(FUserSlot Slot, const int32& NewMaxPlayers)
 {
 	UBeamLobbyState* LobbyState;
 	if (!GuardSlotIsInLobby(Slot, LobbyState)) return;
@@ -239,7 +239,7 @@ void UBeamLobbySubsystem::PrepareUpdateMaxPlayers(const FUserSlot& Slot, const i
 	UpdateCommands[Slot]->NewMaxPlayers = FOptionalInt32(NewMaxPlayers);
 }
 
-void UBeamLobbySubsystem::PrepareUpdateGlobalData(const FUserSlot& Slot, const TMap<FString, FString>& UpdatedGlobalData)
+void UBeamLobbySubsystem::PrepareUpdateGlobalData(FUserSlot Slot, const TMap<FString, FString>& UpdatedGlobalData)
 {
 	UBeamLobbyState* LobbyState;
 	if (!GuardSlotIsInLobby(Slot, LobbyState)) return;
@@ -249,7 +249,7 @@ void UBeamLobbySubsystem::PrepareUpdateGlobalData(const FUserSlot& Slot, const T
 	UpdateCommands[Slot]->GlobalDataUpdates = FOptionalMapOfString(UpdatedGlobalData);
 }
 
-void UBeamLobbySubsystem::PrepareDeleteGlobalData(const FUserSlot& Slot, const TArray<FString>& GlobalDataToRemove)
+void UBeamLobbySubsystem::PrepareDeleteGlobalData(FUserSlot Slot, const TArray<FString>& GlobalDataToRemove)
 {
 	UBeamLobbyState* LobbyState;
 	if (!GuardSlotIsInLobby(Slot, LobbyState)) return;

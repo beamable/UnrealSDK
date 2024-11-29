@@ -235,7 +235,7 @@ public:
 	 * Will fail if you are not the lobby host.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void PrepareUpdateDescription(const FUserSlot& Slot, const FString& NewDesc);
+	void PrepareUpdateDescription(FUserSlot Slot, const FString& NewDesc);
 
 	/**
 	 * After calling TryBeginUpdateLobbyData, call this to set the new restriction for the lobby.
@@ -243,42 +243,42 @@ public:
 	 * Will fail if you are not the lobby host.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void PrepareUpdateRestriction(const FUserSlot& Slot, const ELobbyRestriction& NewLobbyRestriction);
+	void PrepareUpdateRestriction(FUserSlot Slot, const ELobbyRestriction& NewLobbyRestriction);
 
 	/**
 	 * After calling TryBeginUpdateLobbyData, call this to set the new UBeamGameTypeContent (or subclass) for the lobby.	 
 	 * Will fail if you are not the lobby host.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void PrepareUpdateGameType(const FUserSlot& Slot, const FBeamContentId& NewGameType);
+	void PrepareUpdateGameType(FUserSlot Slot, const FBeamContentId& NewGameType);
 
 	/**
 	 * After calling TryBeginUpdateLobbyData, call this to set the new host for the lobby. Must be one of the players in the lobby.	 
 	 * Will fail if you are not the lobby host.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void PrepareUpdateHost(const FUserSlot& Slot, const FBeamGamerTag& NewHost);
+	void PrepareUpdateHost(FUserSlot Slot, const FBeamGamerTag& NewHost);
 
 	/**
 	 * After calling TryBeginUpdateLobbyData, call this to set the new MaxPlayer count for the lobby.	 
 	 * Will fail if you are not the lobby host or if there are more players in the lobby than the new max players.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void PrepareUpdateMaxPlayers(const FUserSlot& Slot, const int32& NewMaxPlayers);
+	void PrepareUpdateMaxPlayers(FUserSlot Slot, const int32& NewMaxPlayers);
 
 	/**
 	 * After calling TryBeginUpdateLobbyData, call this to set the which entries in ULobby::Data should added or updated in the lobby.	 
 	 * Will fail if you are not the lobby host.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void PrepareUpdateGlobalData(const FUserSlot& Slot, const TMap<FString, FString>& UpdatedGlobalData);
+	void PrepareUpdateGlobalData(FUserSlot Slot, const TMap<FString, FString>& UpdatedGlobalData);
 
 	/**
 	 * After calling TryBeginUpdateLobbyData, call this to set the which entries in ULobby::Data should be removed from the lobby.	 
 	 * Will fail if you are not the lobby host.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void PrepareDeleteGlobalData(const FUserSlot& Slot, const TArray<FString>& GlobalDataToRemove);
+	void PrepareDeleteGlobalData(FUserSlot Slot, const TArray<FString>& GlobalDataToRemove);
 
 
 	// OPERATIONS
