@@ -82,7 +82,7 @@ struct FLocalMicroserviceData
 	 * The type of the service.
 	 */
 	UPROPERTY(BlueprintReadOnly)
-	TEnumAsByte<EBeamServiceType> ServiceType;
+	TEnumAsByte<EBeamServiceType> ServiceType = {};
 
 	/**
 	 * If the service is part of any BeamServiceGroup, the group will show up here.

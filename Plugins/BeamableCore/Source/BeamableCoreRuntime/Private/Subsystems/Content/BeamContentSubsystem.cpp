@@ -528,6 +528,7 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 			UE_LOG(LogTemp, Display, TEXT("Initializing Beam Runtime Content System - TYPE=%s, TYPE_ID=%s"), *TypeName, *ContentTypeId);
 			AllContentTypes.Add(ContentTypeClass);
 			ContentTypeStringToContentClass.Add(ContentTypeId, ContentTypeClass);
+			ContentClassToContentTypeString.Add(ContentTypeClass, ContentTypeId);
 
 
 			// Map paths to FBeamContentLink recursively descending into all USTRUCT/UOBJECTS
@@ -865,6 +866,60 @@ void UBeamContentSubsystem::DownloadContentObjects(const FBeamContentManifestId 
 	{
 		this->Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, {});
 	}
+}
+
+bool UBeamContentSubsystem::AreContentsOfType(TSubclassOf<UBeamContentObject> AllowedType, TArray<FBeamContentId> Contents, TArray<FBeamContentId>& InvalidContentIds)
+{
+	return ValidateContentsType({AllowedType}, Contents, InvalidContentIds);
+}
+
+bool UBeamContentSubsystem::AreContentsOfTypeHierarchy(TSubclassOf<UBeamContentObject> AllowedType, TArray<FBeamContentId> Contents, TArray<FBeamContentId>& InvalidContentIds)
+{
+	return ValidateContentsTypeHierarchy({AllowedType}, Contents, InvalidContentIds);
+}
+
+bool UBeamContentSubsystem::ValidateContentsType(TArray<TSubclassOf<UBeamContentObject>> AllowedTypes, TArray<FBeamContentId> Contents, TArray<FBeamContentId>& InvalidContentIds)
+{
+	TArray<FString> TypeStrings;
+	for (TSubclassOf<UBeamContentObject> AllowedType : AllowedTypes)
+	{
+		const auto TypeString = ContentClassToContentTypeString[*AllowedType];
+		TypeStrings.Add(TypeString);
+	}
+
+	for (FBeamContentId Content : Contents)
+	{
+		auto bIsAllowed = false;
+		for (FString TypeString : TypeStrings)
+			bIsAllowed |= Content.GetTypeId().Equals(TypeString);
+
+		if (!bIsAllowed)
+			InvalidContentIds.Add(Content);
+	}
+
+	return InvalidContentIds.IsEmpty();
+}
+
+bool UBeamContentSubsystem::ValidateContentsTypeHierarchy(TArray<TSubclassOf<UBeamContentObject>> AllowedTypes, TArray<FBeamContentId> Contents, TArray<FBeamContentId>& InvalidContentIds)
+{
+	TArray<FString> TypeStrings;
+	for (TSubclassOf<UBeamContentObject> AllowedType : AllowedTypes)
+	{
+		const auto TypeString = ContentClassToContentTypeString[*AllowedType];		
+		TypeStrings.Add(TypeString);
+	}
+
+	for (FBeamContentId Content : Contents)
+	{
+		auto bIsAllowed = false;
+		for (FString TypeString : TypeStrings)
+			bIsAllowed |= Content.GetTypeId().StartsWith(TypeString);
+
+		if (!bIsAllowed)
+			InvalidContentIds.Add(Content);
+	}
+
+	return InvalidContentIds.IsEmpty();
 }
 
 bool UBeamContentSubsystem::TryGetContent(FBeamContentId ContentId, UBeamContentObject*& OutContent)

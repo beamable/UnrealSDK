@@ -44,6 +44,7 @@ Since this sample requires several resources, we do not host it ourselves. So, i
 	3. Right click on the server icon and select `Settings->Roles`. 
 	4. Create a `enabled-matchmaking` role.
 	5. Right click on the role and select the option `Copy Role ID` and set it aside.
+	6. Pick any text channel. Right click on the channel select the option `Copy Channel ID` and set it aside.
 
 Now, you'll need to configure a Beamable realm so you can use it.
 
@@ -57,13 +58,20 @@ Now, you'll need to configure a Beamable realm so you can use it.
    2. `bot_token -> Your Bot Token`
    3. `guild_id -> Your Discord Server ID` 
    4. `notify_channel -> Optional- Discord channel ID that bot will notify about status changes` 
-7. Compile and open the `BeamableUnreal` editor (it'll be configured as the `BEAMPROJ_DiscordDemo`) project.
-8. Sign into your Beamable account and go to the `discord-demo` realm.
+7. Open the `Plugins/BEAMPROJ_DiscordDemo/Overrides/Config/DefaultGame.ini`. 
+	1. Replace the `DiscordAppId` in it with `Your App Id`.
+	2. Regenerate project files.
+8. Compile and open the `BeamableUnreal` editor (it'll be configured as the `BEAMPROJ_DiscordDemo`) project.
+9. Sign into your Beamable account and go to the `discord-demo` realm.
 	1. Hit `Apply to Build`.
-9.  Open a bash terminal at the `BeamableUnreal` root directory.
-10. Run `dotnet beam enable --with-group BEAMPROJ_DiscordDemo`
-11. Make sure Docker is running and then run `dotnet beam services deploy` in that directory to get the microservices to your `discord-demo` realm.
-12. Go to the Portal (`Operate -> Microservices`) and verify that the microservices have initialized.
+10.  Open a bash terminal at the `BeamableUnreal` root directory.
+11. Run `dotnet beam project enable --with-group BEAMPROJ_DiscordDemo`
+12. Run `dotnet beam project disable --without-group BEAMPROJ_DiscordDemo`
+13. Run `dotnet beam deploy plan`. 
+	1. This tells you details about the services you would deploy given your project's local state.
+14. Run `dotnet beam deploy release --latest-plan`. 
+	1. This deploys the services outlined by the generated plan in the previous command. 
+15. Go to the Portal (`Operate -> Microservices`) and verify that the microservices have initialized.
 
 Now, you are ready to sign into a game using Discord.
 

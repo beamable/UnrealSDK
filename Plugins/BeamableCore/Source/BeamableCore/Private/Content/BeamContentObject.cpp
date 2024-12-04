@@ -696,9 +696,10 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 					TArray<TSharedPtr<FJsonValue>> ArrayJson;
 					const auto StructProp = CastField<FStructProperty>(ArrayProperty->Inner);
 					if (StructProp && StructProp->Struct->IsChildOf(FBeamContentLink::StaticStruct()))
-					{
-						const TArray<TSharedPtr<FJsonValue>>* ArrayJsonPtr = &ArrayJson;
-						if (!JsonProperties->GetObjectField(PropName)->TryGetArrayField(TEXT("$links"), ArrayJsonPtr))
+					{						
+						if (JsonProperties->GetObjectField(PropName)->HasField(TEXT("$links")))
+							ArrayJson = JsonProperties->GetObjectField(PropName)->GetArrayField(TEXT("$links"));
+						else if (JsonProperties->GetObjectField(PropName)->HasField(TEXT("links")))
 							ArrayJson = JsonProperties->GetObjectField(PropName)->GetArrayField(TEXT("links"));
 					}
 					else
@@ -886,9 +887,10 @@ void UBeamContentObject::ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>
 			TArray<TSharedPtr<FJsonValue>> ArrayJson;
 			const auto StructProp = CastField<FStructProperty>(ArrayProperty->Inner);
 			if (StructProp && StructProp->Struct->IsChildOf(FBeamContentLink::StaticStruct()))
-			{
-				const TArray<TSharedPtr<FJsonValue>>* ArrayJsonPtr = &ArrayJson;
-				if (!JsonProperties->GetObjectField(PropName)->TryGetArrayField(TEXT("$links"), ArrayJsonPtr))
+			{				
+				if (JsonProperties->GetObjectField(PropName)->HasField(TEXT("$links")))
+					ArrayJson = JsonProperties->GetObjectField(PropName)->GetArrayField(TEXT("$links"));					
+				else if (JsonProperties->GetObjectField(PropName)->HasField(TEXT("links")))
 					ArrayJson = JsonProperties->GetObjectField(PropName)->GetArrayField(TEXT("links"));
 			}
 			else

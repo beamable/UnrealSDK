@@ -27,17 +27,17 @@ void FBeamContentIdCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 	HasTypeFilter = false;
 	OnlyExplicitTypes = false;
 	if (const auto StructProp = CastField<FStructProperty>(StructPropertyHandle->GetProperty()))
-	{
-		if (StructProp->HasMetaData("BeamContentTypeFilterMode"))
+	{		
+		if (StructPropertyHandle->HasMetaData("BeamContentTypeFilterMode"))
 		{
-			const auto FilterMode = StructProp->GetMetaData("BeamContentTypeFilterMode");
+			const auto FilterMode = StructPropertyHandle->GetMetaData("BeamContentTypeFilterMode");
 			OnlyExplicitTypes = FilterMode.Equals(FString("root"));
 		}
-		if (StructProp->HasMetaData("BeamContentTypeFilter"))
+		if (StructPropertyHandle->HasMetaData("BeamContentTypeFilter"))
 		{
 			TArray<FString> BeamContentTypeFilterArray;
 			HasTypeFilter = true;
-			const auto BeamContentTypeFilter = StructProp->GetMetaData("BeamContentTypeFilter");
+			const auto BeamContentTypeFilter = StructPropertyHandle->GetMetaData("BeamContentTypeFilter");
 			BeamContentTypeFilter.ParseIntoArray(BeamContentTypeFilterArray, TEXT(","));
 			TArray<FName> TypesToRemove;
 			TMap<FString,TArray<FString>> OutMappings;

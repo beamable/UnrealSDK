@@ -262,7 +262,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	bool SaveSlot(FUserSlot SlotId, const UObject* CallingContext);
 
-
 	/**
 	 * @brief Clears the user and realm data at the give slot id.
 	 */
@@ -293,6 +292,12 @@ public:
 	template <class T>
 	bool SaveSlotData(FString SlotDataTypeName, FUserSlot SlotId, T SlotData, const UObject* CallingContext);
 
+	/**
+	 * Call to clear all slots that have the "PIE_" string in them. 
+	 */
+	UFUNCTION(BlueprintCallable)
+	void DeleteUserSlotCacheForPIE();
+	
 	/**
 	 * Returned by TryLoadSavedUserAtSlot when no slot was found.
 	 */

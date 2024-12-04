@@ -10,8 +10,11 @@ using UnityEngine;
 
 namespace Beamable.SteamDemo
 {
+    [FederationId("steam")]
+    public class SteamId : IFederationId;
+    
     [Microservice("SteamDemo")]
-    public partial class SteamDemo : Microservice
+    public partial class SteamDemo : Microservice, IFederatedLogin<SteamId>
     {
         private const string BaseUri = "https://partner.steam-api.com";
         private const string AuthenticateUserTicketUri = BaseUri + "/ISteamUserAuth/AuthenticateUserTicket/v1";

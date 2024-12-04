@@ -47,19 +47,26 @@ Now, you'll need to configure a Beamable realm so you can use it:
 8. Sign into your Beamable account and go to the `steam-demo` realm.
 	1. Hit `Apply to Build`.
 9.  Open a bash terminal at the `BeamableUnreal` root directory.
-10. Run `dotnet beam enable --with-group BEAMPROJ_SteamDemo`
-11. Make sure Docker is running and then run `dotnet beam services deploy` in that directory to get the microservices to your `steam-demo` realm.
-12. Go to the Portal (`Operate -> Microservices`) and verify that the microservices have initialized.
-13. In `DefaultEngine.ini` set the value of `SteamDevAppId` to your Steam Application ID. For more there tutorial [here](https://docs.unrealengine.com/4.27/en-US/ProgrammingAndScripting/Online/Steam/).
-14. Package the project.
-15. In main folder (in the built game's folder where the executable is) create `steam_appid.txt` file with Steam Application ID as only content.
+10. Run `dotnet beam project enable --with-group BEAMPROJ_SteamDemo`
+11. Run `dotnet beam project disable --without-group BEAMPROJ_SteamDemo`
+12. Guarantee `Docker` is open and running.
+13. Run `dotnet beam deploy plan`. 
+	1. This tells you details about the services you would deploy given your project's local state.
+14. Run `dotnet beam deploy release --latest-plan`. 
+	1. This deploys the services outlined by the generated plan in the previous command. 
+15. Go to the Portal (`Operate -> Microservices`) to verify that the microservices have initialized.
+17. In `DefaultEngine.ini` set the value of `SteamDevAppId` to your Steam Application ID. For more there tutorial [here](https://docs.unrealengine.com/4.27/en-US/ProgrammingAndScripting/Online/Steam/).
+18. Package the project.
+19. In main folder (in the built game's folder where the executable is) create `steam_appid.txt` file with Steam Application ID as only content.
 
 Now, you are ready to sign into a game using Steam.
 
 ## Playing the sample
 
 !!! warninig "Starting the sample"
-	Testing the Steam integration from the editor should be performed in `Standalone Game` mode. Steam integration can encounter challenges when running in PIE mode. 
+	Testing the Steam integration from the editor should be performed in `Standalone Game` mode. 
+	![](./images/steam-demo-PIE-mode.png#center)
+	Steam integration can encounter challenges when running in PIE mode. 
 	Microservice needs to be deployed, atm the local federation does work only with PIE.
 
 

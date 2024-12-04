@@ -353,6 +353,19 @@ bool UBeamUserSlots::SaveSlot(FUserSlot SlotId, const UObject* CallingContext)
 	return bWasAuthenticated;
 }
 
+void UBeamUserSlots::DeleteUserSlotCacheForPIE()
+{
+	const auto savedSlots = GetSavedSlotsDirectory();
+	TArray<FString> Files;
+	FPlatformFileManager::Get().GetPlatformFile().FindFiles(Files, *GetSavedSlotsDirectory(), TEXT(".json"));
+	for (FString File : Files)
+	{
+		if (File.Contains("PIE_"))
+		{
+			FPlatformFileManager::Get().GetPlatformFile().DeleteFile(*File);			
+		}
+	}
+}
 
 void UBeamUserSlots::ClearUserAtSlot(FUserSlot SlotId, const EUserSlotClearedReason& Reason, const bool& bShouldRemoveSavedData, const UObject* CallingContext)
 {

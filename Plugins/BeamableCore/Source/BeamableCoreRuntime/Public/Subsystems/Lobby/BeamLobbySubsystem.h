@@ -60,10 +60,6 @@ public:
 	FOnLobbyEvent OnLeftLobby;
 	FOnLobbyEventCode OnLeftLobbyCode;
 
-	UPROPERTY(BlueprintAssignable)
-	FOnLobbyEvent OnHostChanged;
-	FOnLobbyEventCode OnHostChangedCode;
-
 	friend bool operator==(const ULobby& Lhs, const UBeamLobbyState& RHS)
 	{
 		return Lhs.LobbyId.Val.Equals(RHS.LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower));
@@ -169,7 +165,8 @@ private:
 	FGuid DedicatedServerInstanceLobbyId;
 
 public:
-	// LOCAL STATE
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
+	static UBeamLobbySubsystem* GetSelf(const UObject* CallingContext) { return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>(); }
 	
 	/**
 	 *  Gets the lobby that the given user is contained.
@@ -416,7 +413,7 @@ public:
 	FBeamOperationHandle CPP_UpdateSlotPlayerDataOperation(FUserSlot UserSlot, TArray<FBeamTag> Tags, FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
-	 * @brief You can delete your own player tags when you are inside the lobby. You can delete any player's tags if you are the host.
+	 * @brief You can delete any player's tags if you are the host.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby")
 	FBeamOperationHandle DeletePlayerDataOperation(FUserSlot UserSlot, FBeamGamerTag TargetPlayer, TArray<FBeamTag> Tags, FBeamOperationEventHandler OnOperationEvent);

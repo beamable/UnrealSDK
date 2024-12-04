@@ -495,6 +495,9 @@ void UBeamEditor::SelectRealm(const FBeamRealmHandle& NewRealmHandle, const FBea
 	Message->MessageType = EMessageType::VE_Info;
 	Message->MessageValue = TEXT("Preparing to change Realms...");
 	SetBeamableWindowMessage(Message);	
+
+	// Clear all PIE user slots
+	UserSlots->DeleteUserSlotCacheForPIE();
 	
 	auto Settings = GetMutableDefault<UBeamCoreSettings>();
 	const auto LeavingRealm = Settings->TargetRealm;
@@ -635,13 +638,14 @@ void UBeamEditor::OpenPortal(EPortalPage PortalPage)
 		const auto CurrentPid = Data.RealmHandle.Pid.AsString;
 		const auto RefreshToken = Data.AuthToken.RefreshToken;
 		FString Page;
+		TArray<FString> AdditionalQueryArgs = {};
 		switch (PortalPage)
 		{
 		case EPortalPage::VE_Dashboard:
 			Page = FString("dashboard");
 			break;
 		case EPortalPage::VE_Microservices:
-			Page = FString("microservices");
+			Page = FString("microservices");			
 			break;
 		case EPortalPage::VE_PlayerSearch:
 			Page = FString("players");
@@ -657,8 +661,16 @@ void UBeamEditor::OpenPortal(EPortalPage PortalPage)
 			break;
 		}
 
-		const auto URL = FString::Format(TEXT("{0}/{1}/games/{2}/realms/{3}/{4}?refresh_token={5}"),
-		                                 {PortalUrl, Cid, ProductionPid, CurrentPid, Page, RefreshToken});
+		const auto URL = FString::Format(TEXT("{0}/{1}/games/{2}/realms/{3}/{4}?refresh_token={5}{6}"),
+		                                 {
+		                                 	PortalUrl,
+		                                 	Cid,
+		                                 	ProductionPid,
+		                                 	CurrentPid,
+		                                 	Page,
+		                                 	RefreshToken,
+		                                 	FString::Join(AdditionalQueryArgs, TEXT(""))
+		                                 });
 
 		FPlatformProcess::LaunchURL(*URL, nullptr, nullptr);
 	}

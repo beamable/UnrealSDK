@@ -18,6 +18,7 @@ Arguments:
   <service>  The name of the service to update the references
 
 Options:
+  --sln <sln>                            Relative path to the .sln file to use for the new project. If the .sln file does not exist, it will be created. When no option is configured, if this command is executing inside a .beamable folder, then the first .sln found in .beamable/.. will be used. If no .sln is found, the .sln path will be <name>.sln. If no .beamable folder exists, then the <project>/<project>.sln will be used [default: BeamableUnreal.sln]
   --paths <paths>                        The path of the project that will be referenced
   --names <names>                        The name of the Assembly Definition
   --dryrun                               Should any networking happen?

@@ -37,11 +37,6 @@ void FLobbyUpdateNotificationMessage::BeamSerializeProperties(TUnrealJsonSeriali
 			Serializer->WriteValue(TEXT("playerId"), PlayerKickedData.KickedGamerTag.AsString);
 			break;
 		}
-	case EBeamLobbyEvent::BEAM_HostPlayerChanged:
-		{
-			Serializer->WriteValue(TEXT("playerId"), HostPlayerChangedData.NewHostGamerTag.AsString);
-			break;
-		}
 	default:
 		{
 			break;
@@ -81,11 +76,6 @@ void FLobbyUpdateNotificationMessage::BeamSerializeProperties(TUnrealPrettyJsonS
 			Serializer->WriteValue(TEXT("playerId"), PlayerKickedData.KickedGamerTag.AsString);
 			break;
 		}
-	case EBeamLobbyEvent::BEAM_HostPlayerChanged:
-		{
-			Serializer->WriteValue(TEXT("playerId"), HostPlayerChangedData.NewHostGamerTag.AsString);
-			break;
-		}
 	default:
 		{
 			break;
@@ -123,11 +113,6 @@ void FLobbyUpdateNotificationMessage::BeamDeserializeProperties(const TSharedPtr
 	case EBeamLobbyEvent::BEAM_PlayerKicked:
 		{
 			PlayerKickedData.KickedGamerTag = Bag->GetStringField(TEXT("playerId"));
-			break;
-		}
-	case EBeamLobbyEvent::BEAM_HostPlayerChanged:
-		{
-			HostPlayerChangedData.NewHostGamerTag = Bag->GetStringField(TEXT("playerId"));
 			break;
 		}
 	default:

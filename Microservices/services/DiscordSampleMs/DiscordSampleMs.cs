@@ -18,8 +18,11 @@ using EmptyResponse = Beamable.Common.Api.EmptyResponse;
 
 namespace Beamable.DiscordSampleMs;
 
+[FederationId("discord")]
+public class DiscordId : IFederationId;
+
 [Microservice("DiscordSampleMs")]
-public partial class DiscordSampleMs : Microservice
+public partial class DiscordSampleMs : Microservice, IFederatedLogin<DiscordId>
 {
     [Serializable]
     public class DiscordWhitelistedInfo

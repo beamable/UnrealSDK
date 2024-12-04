@@ -1373,39 +1373,7 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 				}), LobbyId);
 			}
 		}
-	}
-
-	if (Msg.Type == EBeamLobbyEvent::BEAM_HostPlayerChanged)
-	{
-		if (UBeamLobbyState** Info = LocalPlayerLobbyInfo.Find(Slot))
-		{
-			auto Lobby = *Info;
-			const auto LobbyId = Lobby->LobbyId;
-
-			// Refresh the lobby's data and notify the user that the lobby data has changed. 
-			CPP_RefreshLobbyDataOperation(Slot, FBeamOperationEventHandlerCode::CreateLambda([this, Slot, LobbyId, Lobby, Msg](FBeamOperationEvent Evt)
-			{
-				if (Evt.EventType == OET_SUCCESS)
-				{
-					// Get the lobby's data and update whether or not you are still the host
-					ULobby* LobbyData;
-					if (TryGetLobbyById(LobbyId, LobbyData))
-					{
-						Lobby->bIsLobbyOwner = Lobby->OwnerGamerTag == LobbyData->Host.Val;
-						Lobby->OnHostChangedCode.Broadcast(Slot, LobbyData, Msg);
-						Lobby->OnHostChanged.Broadcast(Slot, LobbyData, Msg);
-						UE_LOG(LogBeamLobby, Verbose, TEXT("Lobby data refreshed due to the lobby host having changed. %s NEW_HOST_ID=%s"),
-						       Lobby->bIsLobbyOwner ? TEXT("You are the new host.") : TEXT("You are not the new host."),
-						       *LobbyData->Host.Val.AsString);
-					}
-					else
-					{
-						UE_LOG(LogBeamLobby, Error, TEXT("You should not be seeing this. This lobby should be here if the operation succeeded. %s"), *LobbyId.ToString());
-					}
-				}
-			}), LobbyId);
-		}
-	}
+	}	
 }
 
 // HELPER FUNCTIONS

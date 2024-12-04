@@ -18,8 +18,9 @@ Arguments:
   <service-name>  Name of the service to open swagger to []
 
 Options:
-  -k, --routing-key <routing-key>        The routing key for the service instance we want. If not passed, defaults to the local service [default: desktop-54b40oj_5ef76e7ad97cac577bf24405ad5d8c8f]
+  -k, --routing-key <routing-key>        The routing key for the service instance we want. If not passed, defaults to the local service [default: desktop-54b40oj_2f6b9064aeb63292d9fff0bba2c3b7a6]
   -r, --remote                           When set, enforces the routing key to be the one for the service deployed to the realm. Cannot be specified when --routing-key is also set
+  --src-tool <src-tool>                  A hint to the Portal page which tool is being used [default: cli]
   --dryrun                               Should any networking happen?
   --cid <cid>                            Cid to use; will default to whatever is in the file system
   --pid <pid>                            Pid to use; will default to whatever is in the file system

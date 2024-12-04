@@ -26,11 +26,6 @@ TArray<TSubclassOf<UBeamRuntimeSubsystem>> UBeamStoreSubsystem::GetDependingOnSu
 	return DependentSystems;
 }
 
-void UBeamStoreSubsystem::OnBeamableContentReady_Implementation(FBeamOperationHandle& ResultOp)
-{
-	ResultOp = Runtime->RequestTrackerSystem->CPP_BeginSuccessfulOperation({}, GetName(), {}, {});
-}
-
 FBeamOperationHandle UBeamStoreSubsystem::PerformPurchaseOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, FBeamContentId StoreId, FBeamContentId ListingId)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
@@ -44,6 +39,43 @@ FBeamOperationHandle UBeamStoreSubsystem::CPP_PerformPurchaseOperation(FUserSlot
 	PerformPurchase(UserSlot, StoreId, ListingId, Handle);
 	return Handle;
 }
+
+FBeamOperationHandle UBeamStoreSubsystem::RefreshStoresOperation(FUserSlot UserSlot, TArray<FBeamContentId> StoreIds, FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	RefreshStoreView(UserSlot, StoreIds, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamStoreSubsystem::CPP_RefreshStoresOperation(FUserSlot UserSlot, TArray<FBeamContentId> StoreIds, FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	RefreshStoreView(UserSlot, StoreIds, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamStoreSubsystem::RefreshStoreOperation(FUserSlot UserSlot, FBeamContentId StoreId, FBeamOperationEventHandler OnOperationEvent)
+{
+	return RefreshStoresOperation(UserSlot, {StoreId}, OnOperationEvent);
+}
+
+FBeamOperationHandle UBeamStoreSubsystem::CPP_RefreshStoreOperation(FUserSlot UserSlot, FBeamContentId StoreId, FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	return CPP_RefreshStoresOperation(UserSlot, {StoreId}, OnOperationEvent);
+}
+
+bool UBeamStoreSubsystem::TryGetStoreView(FUserSlot Slot, FBeamContentId StoreContentId, UBeamStoreView*& Store)
+{
+	FBeamPlayerStoreHandle Handle{Slot, StoreContentId};
+	if (const auto Ptr = StoreViews.Find(Handle))
+	{
+		Store = *Ptr;
+		return true;
+	}
+
+	return false;		
+}
+
 
 void UBeamStoreSubsystem::PerformPurchase(FUserSlot UserSlot, FBeamContentId StoreId, FBeamContentId ListingId, FBeamOperationHandle Op)
 {
@@ -84,48 +116,77 @@ void UBeamStoreSubsystem::PerformPurchase(FUserSlot UserSlot, FBeamContentId Sto
 		}
 
 		UE_LOG(LogBeamStore, Verbose, TEXT("[BeamStore] Request succesfull: %s"), *Resp.SuccessData->Result);
-		const auto InventoryHandler = FBeamOperationEventHandlerCode::CreateLambda([this, Op, UserSlot](FBeamOperationEvent)
+		const auto InventoryHandler = FBeamOperationEventHandlerCode::CreateLambda([this, Op, UserSlot](FBeamOperationEvent Evt)
 		{
-			UE_LOG(LogBeamStore, Verbose, TEXT("[BeamStore] Inventory updated"));
+			if (Evt.EventType == OET_SUCCESS)
+				UE_LOG(LogBeamStore, Verbose, TEXT("[BeamStore] Inventory updated"));
+
+			if (Evt.EventType == OET_ERROR)
+				UE_LOG(LogBeamStore, Error, TEXT("[BeamStore] Purchase successful,but failed to update local inventory data"));
+
+			// Whether we successfully fetched the inventory or not, we should trigger the purchase operation as a success.
+			// TODO: Ideally, we should be updating the local inventory state manually here instead of making a request to fetch it since we have all the info to apply locally. 
 			RequestTracker->TriggerOperationSuccess(Op, {});
 		});
 
 		const auto Inventory = UBeamInventorySubsystem::GetSelf(this);
-		Inventory->CPP_FetchPlayerInventoryOperation(UserSlot, RealmUser.GamerTag, InventoryHandler);
+		Inventory->CPP_FetchAllInventoryOperation(UserSlot, InventoryHandler);
 	});
 	FBeamRequestContext Ctx;
 	CommerceApi->CPP_PostPurchase(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
-bool UBeamStoreSubsystem::TryGetItemsFromListing(FBeamContentId ListingId, TArray<FBeamOfferObtainItem>& items)
-{
-	if (UBeamListingContent* content; ContentSubsystem->TryGetContentOfType(ListingId, content))
-	{
-		items = content->offer.ObtainItems;
-	}
-	return false;
-}
 
-bool UBeamStoreSubsystem::TryGetCurrenciesFromListing(FBeamContentId ListingId, TArray<FBeamOfferObtainCurrency>& currencies)
+void UBeamStoreSubsystem::RefreshStoreView(FUserSlot UserSlot, TArray<FBeamContentId> StoreIds, FBeamOperationHandle Op)
 {
-	if (UBeamListingContent* content; ContentSubsystem->TryGetContentOfType(
-		ListingId, content))
+	FBeamRealmUser RealmUser;
+	if (!UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
 	{
-		currencies = content->offer.ObtainCurrency;
+		RequestTracker->TriggerOperationError(Op, TEXT("NO_AUTHENTICATED_USER_AT_SLOT"));
+		return;
 	}
-	return false;
-}
 
-bool UBeamStoreSubsystem::GetFormattedPrice(FBeamContentId ListingId, FString& FormattedPrice)
-{
-	if (UBeamListingContent* content; ContentSubsystem->TryGetContentOfType(
-		ListingId, content))
+	TArray<FBeamContentId> InvalidIds = {};
+	if (!ContentSubsystem->ValidateContentsTypeHierarchy({UBeamStoreContent::StaticClass()}, StoreIds, InvalidIds))
 	{
-		FormattedPrice = TEXT("");
-		FormattedPrice.AppendInt(content->price.Amount);
-		FormattedPrice.Append(TEXT(" "));
-		FormattedPrice.Append(content->price.Symbol.AsString);
-		return true;
+		auto Data = NewObject<UBeamOperationEventData_ContentIds>();
+		Data->Ids = InvalidIds;
+		RequestTracker->TriggerOperationErrorWithData(Op, TEXT("INVALID_STORE_CONTENT_IDS"), Data);
+		return;
 	}
-	return false;
+
+	TArray<FString> Scopes = {};
+	for (const auto& StoreId : StoreIds) Scopes.Add(StoreId.AsString);
+
+	const auto Scope = FOptionalString{Scopes.Num() > 1 ? FString::Join(Scopes, TEXT(",")) : Scopes[0]};
+	const auto Request = UGetCommerceRequest::Make(RealmUser.GamerTag.AsLong, Scope, GetTransientPackage(), {});
+	const auto Handler = FOnGetCommerceFullResponse::CreateLambda([this, Op, Scope, UserSlot](const FGetCommerceFullResponse& Resp)
+	{
+		if (Resp.State == RS_Retrying)
+			return;
+
+		if (Resp.State != RS_Success)
+		{
+			UE_LOG(LogBeamStore, Verbose, TEXT("[BeamStore] Request failed: %s"), *Resp.ErrorData.error);
+			RequestTracker->TriggerOperationError(Op, Resp.ErrorData.error);
+			return;
+		}
+
+		UE_LOG(LogBeamStore, Verbose, TEXT("[BeamStore] Successfully refreshed stores: %s"), *Scope.Val);
+
+		for (UPlayerStoreView* Store : Resp.SuccessData->Stores)
+		{
+			FBeamPlayerStoreHandle Handle{UserSlot, Store->Symbol};
+			auto StoreView = NewObject<UBeamStoreView>();
+			StoreView->OwnerSlot = UserSlot;
+			StoreView->CurrentStoreView = DuplicateObject<UPlayerStoreView>(Resp.SuccessData->Stores.Last(), GetTransientPackage());
+
+			if (StoreViews.Contains(Handle)) StoreViews[Handle] = StoreView;
+			else StoreViews.Add(Handle, StoreView);
+		}
+
+		RequestTracker->TriggerOperationSuccess(Op, TEXT("STORES_REFRESHED"));
+	});
+	FBeamRequestContext Ctx;
+	CommerceApi->CPP_GetCommerce(UserSlot, Request, Handler, Ctx, Op, this);
 }

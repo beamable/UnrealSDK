@@ -215,6 +215,9 @@ bool UBeamMicroservicesEditor::OpenSwaggerDocs(FString BeamoId)
 	else
 		Params.Append({BeamoId, TEXT("--routing-key"), TEXT("\"\"")});
 
+	// Tell the portal we are opening this from unreal
+	Params.Append({TEXT("--src-tool"), TEXT("unreal") });
+
 	// Run the command
 	const auto OpenSwaggerCommand = NewObject<UBeamCliProjectOpenSwaggerCommand>();
 	Cli->RunCommandServer(OpenSwaggerCommand, Params, {});

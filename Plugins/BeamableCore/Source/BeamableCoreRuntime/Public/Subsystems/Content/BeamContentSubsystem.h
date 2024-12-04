@@ -57,7 +57,7 @@ class BEAMABLECORERUNTIME_API UBeamContentSubsystem : public UBeamRuntimeSubsyst
 
 	UPROPERTY()
 	TMap<FString, UClass*> ContentTypeStringToContentClass;
-
+	TMap<UClass*, FString> ContentClassToContentTypeString;
 
 	TMap<UClass*, TArray<TArray<const FProperty*>>> PathsToContentLinks;
 	TMap<UClass*, TArray<TArray<const FProperty*>>> PathsToRecursiveSelves;
@@ -88,7 +88,18 @@ private:
 	 * Run OnSuccess if all downloads succeed. OnError, otherwise.
 	 */
 	void DownloadContentObjects(FBeamContentManifestId ManifestId, TArray<FBeamRemoteContentManifestEntry> Rows, TMap<FBeamContentId, FString> Checksums,
-	                                bool bIgnoreFilterMap, FBeamOperationHandle Op);
+	                            bool bIgnoreFilterMap, FBeamOperationHandle Op);
+
+	// Static helpers
+public:
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool AreContentsOfType(TSubclassOf<UBeamContentObject> AllowedType, TArray<FBeamContentId> Contents, TArray<FBeamContentId>& InvalidContentIds);
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool AreContentsOfTypeHierarchy(TSubclassOf<UBeamContentObject> AllowedType, TArray<FBeamContentId> Contents, TArray<FBeamContentId>& InvalidContentIds);
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool ValidateContentsType(TArray<TSubclassOf<UBeamContentObject>> AllowedTypes, TArray<FBeamContentId> Contents, TArray<FBeamContentId>& InvalidContentIds);
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool ValidateContentsTypeHierarchy(TArray<TSubclassOf<UBeamContentObject>> AllowedTypes, TArray<FBeamContentId> Contents, TArray<FBeamContentId>& InvalidContentIds);
 
 public:
 	/**
@@ -202,7 +213,7 @@ public:
 	 * @brief Downloads the newest individual content objects of the given manifest.
 	 * 
 	 * @param ManifestId The ManifestId for the content manifest containing the given Ids. 
-	 * @param ContentToDownload The list of ContentIds, contained in the given manifest, to download the JSON for.
+	 * @param ContentToDownloadFetch The list of ContentIds, contained in the given manifest, to download the JSON for.
 	 */
 	FBeamOperationHandle CPP_FetchIndividualContentBatchOperation(FBeamContentManifestId ManifestId, TArray<FBeamContentId> ContentToDownloadFetch, FBeamOperationEventHandlerCode OnOperationEvent);
 

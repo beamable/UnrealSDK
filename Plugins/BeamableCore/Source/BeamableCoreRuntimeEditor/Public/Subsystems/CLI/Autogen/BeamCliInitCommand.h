@@ -61,6 +61,7 @@ Options:
   --pid <pid>                            Pid to use; will default to whatever is in the file system
   --refresh-token <refresh-token>        Refresh token to use for the requests
   --save-extra-paths <save-extra-paths>  Overwrite the stored extra paths for where to find projects []
+  --paths-to-ignore <paths-to-ignore>    Paths to ignore when searching for services []
   --save-to-environment                  Save login refresh token to environment variable
   --no-token-save                        Prevent auth tokens from being saved to disk. This replaces the legacy --save-to-file option [default: False]
   --customer-scoped                      Make request customer scoped instead of product only
