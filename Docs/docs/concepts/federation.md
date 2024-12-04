@@ -48,7 +48,7 @@ In other words, an id is just a unique `string` that you pass along in specific 
 ## Adding/Removing Federations
 Federations can be added and removed from services using  `dotnet beam fed` command pallet of the CLI.
 
-In code, Federations are tied to interfaces implemented in your `Microservice` inherited class --- these federations and its ids are automatically added by a C# Source Generator the `Microservice.csproj` references.
+In code, Federations are tied to interfaces implemented in your `Microservice` inherited class --- these federations and its ids are automatically validated by a C# Analyzer that will tell you if you've missing things.
 
 ```bash
 # Adds an IFederatedLogin implementation to the MyMicroservice service with the "cool" id.
@@ -58,34 +58,28 @@ dotnet beam fed add MyMicroservice cool IFederatedLogin
 dotnet beam fed add MyMicroservice hathora IFederatedGameServer
 ```
 
-The source generator will create a few things (which you can inspect in most IDEs): a ***MyMicroservice.FederationIds.g.cs*** containing all Federated Id classes in use by this service and, for each unique id, it'll create a ***MyMicroservice.uniqueId.g.cs***.
-
 ```csharp
-// MyMicroservice.FederationIds.g.cs
-// ... Generated IFederationId Implementation for the "cool" id
-public class CoolId : IFederationId {  
-    public string UniqueName => "cool";  
-}
-// ... Generated IFederationId Implementation for the "hathora" id
-public class HathoraId : IFederationId {  
-    public string UniqueName => "hathora";  
-}
+// FederationIds.cs
+[FederationId("cool")]
+public class CoolId : IFederationId;
 
-// MyMicroservice.hathora.g.cs
-// ... Generated implementations using the generated Id classes
+[FederationId("hathora")]
+public class HathoraId : IFederationId;
+
+// MyMicroservice.cool.cs
 public partial class MyMicroservice : IFederatedLogin<CoolId> { }
+// MyMicroservice.hathora.cs
 public partial class MyMicroservice : IFederatedGameServer<HathoraId> { }
 ```
 
 After adding any federation, your IDE will likely complain that you are not implementing the functions of the interfaces above; most IDEs will then offer you the option of generating the function signatures for those interfaces. After that, all you have to do is write the code for it.
 
-!!! note "Why Source Generators"
-	We needed a consistent source of truth that would allow us to create the in-editor UXs *without needing the built DLL* or doing a bunch of text parsing of your microservice `.cs` files to find which interfaces your service implements. This source of truth is the `BeamSourceGenConfig.json` file the commands above manage for you. 
+!!! note "Why do you need the `federations.json`?"
+	We needed a consistent source of truth that would allow us to create the in-editor UXs *without needing the built DLL* to find which interfaces your service implements (because this is very slow and we can't guarantee this file's existence and "up-to-date-ness" easily).
 	
-	This approach also allows us to detect implementation errors and emit compile-time errors for invalid or incorrect usage of microservice functionality. So... it was a win-win type of decision.
+	 This source of truth is the `federations.json` file the commands above manage for you. 
 	
-	Keep in mind that you can declare all interfaces and Id classes yourself; however, if they don't exist declared in the `BeamSourceGenConfig.json` file for that microservice; our CLI and engine integrations WILL NOT see it and it won't work at runtime.
-	
+	This approach also allows us to detect implementation errors and emit compile-time errors for invalid or incorrect usage of microservice functionality. So... it was a win-win situation.
 
 ### Workflows for Developing Federations
 Most federations are inside complex application paths. As such, you need a way to iterate on them locally, much like how you do with `Callables` (see [Microservices](../concepts/microservices.md#common-developer-workflows)). This is the reason we differentiate between In-Band calls to Federations and Out-of-Band calls to federations.

@@ -71,6 +71,10 @@ nav:
   - How-To Guides: 
     - Getting Started: 'guides/intro.md'
     - Setting Up a Microservice: 'guides/intro-microservices.md'
+    - Federations:
+      - IFederatedInventory: 'guides/federations/federated-inventory.md'
+      - IFederatedGameServer: 'guides/federations/federated-game-server.md'
+      - IFederatedLogin: 'guides/federations/federated-login.md'      
     - Unreal Gems:
         - Linux Builds: 'guides/unreal-gems/linux-builds.md'  
   - Samples: 
