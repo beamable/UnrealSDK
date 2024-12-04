@@ -30,22 +30,28 @@ Since this sample requires several resources, we do not host it ourselves. So, i
 4. Compile and open the `BeamableUnreal` editor (it'll be configured as the `BEAMPROJ_HathoraDemo`) project.
 5. Sign into your Beamable account and go to the `hathora-demo` realm.
 	1. Hit `Apply to Build`.
-6. Open the `Content Window` -- verify that there are two `game_types`: `solo_queue` and `training`.
-	1. If you fail to see content here, close the editor and try again. There's a known issue in the UE SDK when accessing content for the first time that may cause them to not appear.
-7. Hit `Publish` and wait. Go to the Portal (`Operate -> Content`) and verify that the content is there.
-8. Open a bash terminal at the `BeamableUnreal` root directory.
-9. Run `dotnet beam enable --with-group BEAMPROJ_HathoraDemo`
-10. Make sure Docker is running and then run `dotnet beam services deploy` in that directory to get the microservices to your `hathora-demo` realm.
-11. Go to the Portal (`Operate -> Microservices`) and verify that the microservices have initialized.
-
+6. Open the `Content Window`.
+	1. Verify that there are two `game_types`: `solo_queue` and `training`.
+7. Hit `Publish` and wait. 
+8. Go to the Portal (`Operate -> Content`) and verify that the content is there.
+9. Open a bash terminal at the `BeamableUnreal` root directory.
+10. Run `dotnet beam project enable --with-group BEAMPROJ_HathoraDemo`
+11. Run `dotnet beam project disable --without-group BEAMPROJ_HathoraDemo`
+12. Guarantee `Docker` is open and running.
+13. Run `dotnet beam deploy plan`. 
+	1. This tells you details about the services you would deploy given your project's local state.
+14. Run `dotnet beam deploy release --latest-plan`. 
+	1. This deploys the services outlined by the generated plan in the previous command. 
+15. Go to the Portal (`Operate -> Microservices`) to verify that the microservices have initialized.
 
 Now, we'll go set up a Hathora account and upload the sample dedicated server build:
 
 1. Log into your [Hathora](https://console.hathora.dev/) account.
 2. Create an App and set aside its `AppId`.
 3. In the Hathora Portal, go to `Profile -> Settings`.
-4. Create and set aside two dev-tokens: `game-server` and `matchmaking-server`.
+4. Create and set aside [two tokens](https://hathora.dev/docs/guides/generate-developer-token): `game-server` and `matchmaking-server`.
 5. Deploy a new version by uploading the .tar file we provided for the sample.
+	1. Configure the `Instance Profile` as a "medium".
 6. Set up the following environment variables with the values you set aside:
 	1. `BEAMABLE_CUSTOMER_OVERRIDE` = `Your CustomerId (CID)`
 	2. `BEAMABLE_REALM_OVERRIDE` = `Your hathora-demo Realm's PID`
@@ -89,6 +95,14 @@ To test this out with two players (this is max players for this sample):
 2. Sign into different accounts in each PIE instance.
 3. Hit the `Solo Queue` button instead of the `Training` one in both PIE instances.
 4. Wait for a bit and both PIE instances will be matched against each other.
+## Known Issue - Network Version Mismatch
+There's a known issue that'll prevent you from actually getting PIE to connect to the Hathora URL; its an version mismatch problem with the Linux Build we generate. The error is called `OutdatedClient` --- and was seen even when the versions *should* be matching exactly. **This is being actively investigated** and a fix should be released in the next version.
+
+**You can still see the entire flow happening.**
+- If you look at your UE client logs, you can see that you correctly receive the lobby information with a valid Hathora connection string.
+- If you look at your Hathora Console, you can see the room being created and even the connection attempt.
+
+So there's still some value in looking into this sample in this version until this is fixed so we opted to release it anyway.
 
 #### What can you do with this sample?
 **This sample is NOT a template you can start your own repository from.** 

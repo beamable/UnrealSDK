@@ -442,8 +442,9 @@ void FOnlineIdentityBeamable::OnBeamableLoginOperationComplete(FBeamOperationEve
 		const FUniqueNetIdRepl IdRep(NewIdRef);
 		LocalPlayer->SetCachedUniqueNetId(IdRep);
 
-		auto BeamRuntime = GameInstance->GetSubsystem<UBeamRuntime>();
-		OnUserReadyCodeHandle = BeamRuntime->OnUserReadyCode.AddRaw(this, &FOnlineIdentityBeamable::OnBeamableUserReady, UserAccountPtr);
+		//auto BeamRuntime = GameInstance->GetSubsystem<UBeamRuntime>();
+		OnBeamableUserReady(LoggedInSlot, UserAccountPtr);
+		//OnUserReadyCodeHandle = BeamRuntime->OnUserReadyCode.AddRaw(this, &FOnlineIdentityBeamable::OnBeamableUserReady, UserAccountPtr);
 	}
 }
 
