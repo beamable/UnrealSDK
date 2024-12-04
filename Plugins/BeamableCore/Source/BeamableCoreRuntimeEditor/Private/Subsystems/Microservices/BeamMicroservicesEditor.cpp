@@ -5,6 +5,7 @@
 
 #include "Subsystems/CLI/Autogen/BeamCliFederationListCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliFederationLocalKeyCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliFederationLocalSettingsSetIFederatedGameServerCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliProjectOpenMongoCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliProjectRunCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliProjectStopCommand.h"
@@ -18,7 +19,7 @@ TArray<UBeamCliLogEntry*> UBeamMicroserviceLocalEditorView::GetFilteredLogs(TArr
 	for (const auto& Log : Logs)
 	{
 		const auto bMatchesLogType = VisibleLogTypes.Contains(Log->LogLevel);
-		const auto bMatchesTextFilter = TextFilter.IsEmpty() || Log->Message.Contains(TextFilter); 
+		const auto bMatchesTextFilter = TextFilter.IsEmpty() || Log->Message.Contains(TextFilter);
 
 		if (bMatchesLogType && bMatchesTextFilter)
 			Entries.Add(Log);
@@ -216,7 +217,7 @@ bool UBeamMicroservicesEditor::OpenSwaggerDocs(FString BeamoId)
 		Params.Append({BeamoId, TEXT("--routing-key"), TEXT("\"\"")});
 
 	// Tell the portal we are opening this from unreal
-	Params.Append({TEXT("--src-tool"), TEXT("unreal") });
+	Params.Append({TEXT("--src-tool"), TEXT("unreal")});
 
 	// Run the command
 	const auto OpenSwaggerCommand = NewObject<UBeamCliProjectOpenSwaggerCommand>();
@@ -463,6 +464,36 @@ void UBeamMicroservicesEditor::OnUpdateLocalStateReceived(const TArray<UBeamCliP
 	OnLocalMicroserviceUpdate.Broadcast();
 }
 
+void UBeamMicroservicesEditor::SaveFederationProperties(FString ServiceId, FString FedId, FLocalFederationData Federation)
+{
+	auto Cmd = NewObject<UBeamCliFederationLocalSettingsSetIFederatedGameServerCommand>();
+	TArray<FString> Params;
+	Params.Add(TEXT("--beamo-id"));
+	Params.Add(ServiceId);
+	Params.Add(TEXT("--fed-id"));
+	Params.Add(FedId);
+	if (Federation.Type == EFederationType::BEAM_IFederatedGameServer)
+	{
+		if (Federation.LocalSettings_FederatedGamerServer->ContentIds.Num())
+		{
+			FString ContentFilter = FString::Join(Federation.LocalSettings_FederatedGamerServer->ContentIds, TEXT(" "));
+			Params.Add(TEXT("--content-ids"));
+			Params.Add(ContentFilter);
+		}
+	}
+
+	
+	Cmd->OnCompleted = [this](const int& ResCode, const FBeamOperationHandle& Op)
+	{
+		if (ResCode != 0)
+			UE_LOG(LogBeamMicroservices, Display, TEXT("Found a problem saving this. Try using the CLI command to run it for more details."))
+		else
+			UE_LOG(LogBeamMicroservices, Display, TEXT("Successfully saved your local settings for this service."))
+	};
+
+	Cli->RunCommandServer(Cmd, Params, {});
+}
+
 
 void UBeamMicroservicesEditor::DeployMicroservices(const TArray<FString>& EnableBeamoIds, const TArray<FString>& DisableBeamoIds, const FBeamOperationHandle& Op) const
 {
@@ -612,7 +643,7 @@ void UBeamMicroservicesEditor::StopHostMicroservices(const TArray<FString>& Beam
 		{
 			auto Service = LocalMicroserviceData.Find(BeamoId);
 			AppendToLogs(Service, {Entry});
-		}		
+		}
 	};
 
 	// Handle completing the operation
@@ -670,9 +701,9 @@ void UBeamMicroservicesEditor::StopDockerMicroservices(const TArray<FString>& Be
 		{
 			auto Service = LocalMicroserviceData.Find(BeamoId);
 			AppendToLogs(Service, {Entry});
-		}		
+		}
 	};
-	
+
 	// Handle completing the operation
 	Cmd->OnCompleted = [this, BeamoIds](const int& ResultCode, const FBeamOperationHandle& Operation)
 	{
