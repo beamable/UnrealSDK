@@ -136,13 +136,61 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 	}
 }
 
-void UBeamRuntime::InitSDK(FRuntimeStateChangedHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler)
+void UBeamRuntime::UnregisterAllCallbacks()
+{
+	// Clean up initialization successful handlers
+	for (const auto H : OnStarted_RegisteredHandles)
+		OnStarted.Remove(H);
+	OnStarted_RegisteredHandles.Empty();
+
+	for (const auto H : OnStartedCode_RegisteredHandles)
+		OnStartedCode.Remove(H);
+	OnStartedCode_RegisteredHandles.Empty();
+
+	// Clean up initialization error handlers
+	for (const auto H : OnStartedError_RegisteredHandles)
+		OnStartedFailed.Remove(H);
+	OnStartedError_RegisteredHandles.Empty();
+
+	for (const auto H : OnStartedFailedCode_RegisteredHandles)
+		OnStartedFailedCode.Remove(H);
+	OnStartedFailedCode_RegisteredHandles.Empty();
+
+	// Clean up user ready handlers
+	for (const auto H : OnUserReady_RegisteredHandles)
+		OnUserReady.Remove(H);
+	OnUserReady_RegisteredHandles.Empty();
+
+	for (const auto H : OnUserReadyCode_RegisteredHandles)
+		OnUserReadyCode.Remove(H);
+	OnUserReadyCode_RegisteredHandles.Empty();
+
+	// Clean up user initialization failure handles
+	for (const auto H : OnUserInitFailed_RegisteredHandles)
+		OnUserInitFailed.Remove(H);
+	OnUserInitFailed_RegisteredHandles.Empty();
+
+	for (const auto H : OnUserInitFailedCode_RegisteredHandles)
+		OnUserInitFailedCode.Remove(H);
+	OnUserInitFailedCode_RegisteredHandles.Empty();
+
+	// Clean up user initialization failed handlers
+	for (const auto H : OnUserCleared_RegisteredHandles)
+		OnUserCleared.Remove(H);
+	OnUserCleared_RegisteredHandles.Empty();
+
+	for (const auto H : OnUserClearedCode_RegisteredHandles)
+		OnUserClearedCode.Remove(H);
+	OnUserClearedCode_RegisteredHandles.Empty();
+}
+
+void UBeamRuntime::InitSDK(FBeamRuntimeHandler OnStartedHandler, FRuntimeError SDKInitializationErrorHandler)
 {
 	if (CurrentSdkState == ESDKState::NotInitialized || CurrentSdkState == ESDKState::InitializationFailed)
 	{
-		ExecuteOnGameThread(TEXT("Initialize"), [this,SDKInitializedHandler,SDKInitializationErrorHandler]()
+		ExecuteOnGameThread(TEXT("Initialize"), [this,OnStartedHandler,SDKInitializationErrorHandler]()
 		{
-			this->TriggerInitializeWhenUnrealReady(false, SDKInitializedHandler, SDKInitializationErrorHandler);
+			this->TriggerInitializeWhenUnrealReady(false, OnStartedHandler, SDKInitializationErrorHandler);
 		});
 		CurrentSdkState = ESDKState::Initializing;
 	}
@@ -154,24 +202,24 @@ void UBeamRuntime::InitSDK(FRuntimeStateChangedHandler SDKInitializedHandler, FR
 	}
 }
 
-void UBeamRuntime::InitSDKWithFrictionlessLogin(FUserStateChangedHandler UserReadyHandler, FRuntimeError SDKInitializationErrorHandler,
-                                                FRuntimeError UserInitilizationError)
+void UBeamRuntime::InitSDKWithFrictionlessLogin(FUserStateChangedHandler OnUserReadyHandler, FRuntimeError OnStartedFailedHandler,
+                                                FRuntimeError OnUserInitFailedHandler)
 {
 	if (CurrentSdkState == ESDKState::NotInitialized || CurrentSdkState == ESDKState::InitializationFailed)
 	{
-		OnUserReady.Add(UserReadyHandler);
-		OnSubsystemsUserInitializationFailed.Add(UserInitilizationError);
-		ExecuteOnGameThread(TEXT("Initialize"), [this,UserReadyHandler,SDKInitializationErrorHandler]()
+		OnUserReady.Add(OnUserReadyHandler);
+		OnUserInitFailed.Add(OnUserInitFailedHandler);
+		ExecuteOnGameThread(TEXT("Initialize"), [this,OnUserReadyHandler,OnStartedFailedHandler]()
 		{
-			FRuntimeStateChangedHandler EmptyHandler;
-			this->TriggerInitializeWhenUnrealReady(true, EmptyHandler, SDKInitializationErrorHandler);
+			FBeamRuntimeHandler EmptyHandler;
+			this->TriggerInitializeWhenUnrealReady(true, EmptyHandler, OnStartedFailedHandler);
 		});
 		CurrentSdkState = ESDKState::Initializing;
 	}
 	else
 	{
 		FString ErrMsg = TEXT("Trying to call InitSDKWithFrictionlessLogin while the SDK is already initialized");
-		SDKInitializationErrorHandler.ExecuteIfBound(ErrMsg);
+		OnStartedFailedHandler.ExecuteIfBound(ErrMsg);
 		UE_LOG(LogBeamRuntime, Warning, TEXT("%s"), *ErrMsg);
 	}
 }
@@ -223,7 +271,7 @@ void UBeamRuntime::PIEExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivit
 
 // On Beamable Start Flow
 
-void UBeamRuntime::TriggerInitializeWhenUnrealReady(bool ApplyFrictionlessLogin, FRuntimeStateChangedHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler)
+void UBeamRuntime::TriggerInitializeWhenUnrealReady(bool ApplyFrictionlessLogin, FBeamRuntimeHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler)
 {
 	const FBeamRealmHandle TargetRealm = GetDefault<UBeamCoreSettings>()->TargetRealm;
 	const FString TargetAPIUrl = GEngine->GetEngineSubsystem<UBeamEnvironment>()->GetAPIUrl();
@@ -259,6 +307,8 @@ void UBeamRuntime::TriggerInitializeWhenUnrealReady(bool ApplyFrictionlessLogin,
 #endif
 		CurrentSdkState = ESDKState::InitializationFailed;
 
+		OnStartedFailed.Broadcast({});
+		OnStartedFailedCode.Broadcast({});
 		SDKInitializationErrorHandler.ExecuteIfBound(TEXT("Trying to initialize the SDK without having a Target Realm configured"));
 	}
 	else
@@ -327,7 +377,7 @@ void UBeamRuntime::TriggerInitializeWhenUnrealReady(bool ApplyFrictionlessLogin,
 
 void UBeamRuntime::TriggerOnBeamableStarting(FBeamWaitCompleteEvent Evt,
                                              TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems,
-                                             bool ApplyFrictionlessLogin, FRuntimeStateChangedHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler)
+                                             bool ApplyFrictionlessLogin, FBeamRuntimeHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler)
 {
 	// Handle errors in operations we were waiting on...
 	TArray<FString> Errors;
@@ -344,8 +394,8 @@ void UBeamRuntime::TriggerOnBeamableStarting(FBeamWaitCompleteEvent Evt,
 		{
 			RequestTrackerSystem->TryGetOperationEvents(Op, EBeamOperationEventType::OET_ERROR, NAME_All, CachedInitializationErrors);
 		}
-		OnSDKInitializationFailed.Broadcast(CachedInitializationErrors);
-		OnSDKInitializationFailedCode.Broadcast(CachedInitializationErrors);
+		OnStartedFailed.Broadcast(CachedInitializationErrors);
+		OnStartedFailedCode.Broadcast(CachedInitializationErrors);
 
 		SDKInitializationErrorHandler.ExecuteIfBound(Err);
 		// Early out and don't initialize if errors happen here.
@@ -404,7 +454,7 @@ void UBeamRuntime::TriggerOnBeamableStarting(FBeamWaitCompleteEvent Evt,
 
 void UBeamRuntime::TriggerOnContentReady(FBeamWaitCompleteEvent Evt,
                                          TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems,
-                                         bool ApplyFrictionlessLogin, FRuntimeStateChangedHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler)
+                                         bool ApplyFrictionlessLogin, FBeamRuntimeHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler)
 {
 	// Handle errors in operations we were waiting on...
 	TArray<FString> Errors;
@@ -421,8 +471,8 @@ void UBeamRuntime::TriggerOnContentReady(FBeamWaitCompleteEvent Evt,
 		{
 			RequestTrackerSystem->TryGetOperationEvents(Op, EBeamOperationEventType::OET_ERROR, NAME_All, CachedInitializationErrors);
 		}
-		OnSDKInitializationFailed.Broadcast(CachedInitializationErrors);
-		OnSDKInitializationFailedCode.Broadcast(CachedInitializationErrors);
+		OnStartedFailed.Broadcast(CachedInitializationErrors);
+		OnStartedFailedCode.Broadcast(CachedInitializationErrors);
 
 		SDKInitializationErrorHandler.ExecuteIfBound(Err);
 		// Early out and don't initialize if errors happen here.
@@ -452,7 +502,7 @@ void UBeamRuntime::TriggerOnContentReady(FBeamWaitCompleteEvent Evt,
 
 void UBeamRuntime::TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent Evt,
                                                        TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems,
-                                                       bool ApplyFrictionlessLogin, FRuntimeStateChangedHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler)
+                                                       bool ApplyFrictionlessLogin, FBeamRuntimeHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler)
 {
 	// Handle errors in operations we were waiting on...
 	TArray<FString> Errors;
@@ -469,8 +519,8 @@ void UBeamRuntime::TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent Ev
 		{
 			RequestTrackerSystem->TryGetOperationEvents(Op, EBeamOperationEventType::OET_ERROR, NAME_All, CachedInitializationErrors);
 		}
-		OnSDKInitializationFailed.Broadcast(CachedInitializationErrors);
-		OnSDKInitializationFailedCode.Broadcast(CachedInitializationErrors);
+		OnStartedFailed.Broadcast(CachedInitializationErrors);
+		OnStartedFailedCode.Broadcast(CachedInitializationErrors);
 
 		SDKInitializationErrorHandler.ExecuteIfBound(Err);
 		// Early out and don't initialize if errors happen here.
@@ -588,8 +638,8 @@ void UBeamRuntime::TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent Evt, FU
 			RequestTrackerSystem->TryGetOperationEvents(Op, EBeamOperationEventType::OET_ERROR, NAME_All, ErrorEvents);
 		}
 
-		OnSubsystemsUserInitializationFailed.Broadcast(UserSlot, ErrorEvents);
-		OnSubsystemsUserInitializationFailedCode.Broadcast(UserSlot, ErrorEvents);
+		OnUserInitFailed.Broadcast(UserSlot, ErrorEvents);
+		OnUserInitFailedCode.Broadcast(UserSlot, ErrorEvents);
 		RequestTrackerSystem->TriggerOperationError(AuthOpHandle, {});
 		// Early out and don't initialize if errors happen here.
 		return;
@@ -632,8 +682,8 @@ void UBeamRuntime::TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent Evt, FU
 						RequestTrackerSystem->TryGetOperationEvents(Op, EBeamOperationEventType::OET_ERROR, NAME_All, ErrorEvents);
 					}
 
-					OnSubsystemsUserInitializationFailed.Broadcast(UserSlot, ErrorEvents);
-					OnSubsystemsUserInitializationFailedCode.Broadcast(UserSlot, ErrorEvents);
+					OnUserInitFailed.Broadcast(UserSlot, ErrorEvents);
+					OnUserInitFailedCode.Broadcast(UserSlot, ErrorEvents);
 					RequestTrackerSystem->TriggerOperationError(AuthOpHandle, {});
 
 					// Early out and don't initialize if errors happen here.
@@ -643,7 +693,7 @@ void UBeamRuntime::TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent Evt, FU
 				{
 					Subsystem->CurrentState = ESubsystemState::InitializedWithUserData;
 				}
-				bDidFirstAuthRun = true;
+				
 				OnUserReadyCode.Broadcast(UserSlot);
 				OnUserReady.Broadcast(UserSlot);
 				RequestTrackerSystem->TriggerOperationSuccess(AuthOpHandle, {});
@@ -2032,3 +2082,4 @@ void UBeamRuntime::SendAnalyticsEvent(const FUserSlot& Slot, const FString& Even
 	}
 }
 #undef LOCTEXT_NAMESPACE
+

@@ -149,21 +149,21 @@ public:
 };
 
 
-DECLARE_DYNAMIC_DELEGATE(FRuntimeStateChangedHandler);
+DECLARE_DYNAMIC_DELEGATE(FBeamRuntimeHandler);
 
-DECLARE_DELEGATE(FRuntimeStateChangedHandlerCode);
+DECLARE_DELEGATE(FBeamRuntimeHandlerCode);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FRuntimeStateChangedEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBeamRuntimeEvent);
 
-DECLARE_MULTICAST_DELEGATE(FRuntimeStateChangedEventCode);
+DECLARE_MULTICAST_DELEGATE(FBeamRuntimeEventCode);
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FUserStateChangedHandler, const FUserSlot&, UserSlot);
+
+DECLARE_DELEGATE_OneParam(FUserStateChangedHandlerCode, const FUserSlot&);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUserStateChangedEvent, const FUserSlot&, Slot);
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FUserStateChangedEventCode, const FUserSlot&);
-
-DECLARE_DELEGATE_OneParam(FUserStateChangedCode, const FUserSlot&);
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FRuntimeError, FString, ErrorMessage);
 
@@ -171,13 +171,18 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FOperationError, const TArray<FBeamOperationEv
 
 DECLARE_DELEGATE_OneParam(FOperationErrorCode, const TArray<FBeamOperationEvent>&);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSDKInitilizationErrorEvent, const TArray<FBeamOperationEvent>&, OperationEventsWithErrors);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSdkInitFailedEvent, const TArray<FBeamOperationEvent>&, OperationEventsWithErrors);
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FSDKInitilizationErrorEventCode, const TArray<FBeamOperationEvent>&) ;
+DECLARE_MULTICAST_DELEGATE_OneParam(FSdkInitFailedEventCode, const TArray<FBeamOperationEvent>&) ;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSubsystemsUserInitializationErrorEvent, const FUserSlot&, UserSlot, const TArray<FBeamOperationEvent>&, OperationEventsWithErrors);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FUserInitFailedHandler, const FUserSlot&, UserSlot, const TArray<FBeamOperationEvent>&, OperationEventsWithErrors);
 
-DECLARE_MULTICAST_DELEGATE_TwoParams(FSubsystemsUserInitializationErrorEventCode, const FUserSlot&, const TArray<FBeamOperationEvent>&);
+DECLARE_DELEGATE_TwoParams(FUserInitFailedHandlerCode, const FUserSlot&, const TArray<FBeamOperationEvent>&);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FUserInitFailedEvent, const FUserSlot&, UserSlot, const TArray<FBeamOperationEvent>&, OperationEventsWithErrors);
+
+DECLARE_MULTICAST_DELEGATE_TwoParams(FUserInitFailedEventCode, const FUserSlot&, const TArray<FBeamOperationEvent>&);
+
 /**
  * State of SDK intialization.
  *
@@ -211,62 +216,57 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	* Or the sdk will not be functioning without it
 	 */
 	TArray<TSubclassOf<UBeamRuntimeSubsystem>> GetRequiredSubsystems();
+
 	/**
 	 * @brief This gets called the frame after all the subsystem initializations have happened.
 	 * This enables all subsystems to have a chance to subscribe to BeamRuntime events should they choose to do so.
 	 * This is handled automatically for by all UBeamRuntimeSubsystems.
 	 */
-	virtual void TriggerInitializeWhenUnrealReady(bool ApplyFrictionlessLogin, FRuntimeStateChangedHandler SDKReadyHandler, FRuntimeError
-	                                              SDKInitilizationErrorHandler);
+	virtual void TriggerInitializeWhenUnrealReady(bool ApplyFrictionlessLogin, FBeamRuntimeHandler SDKReadyHandler, FRuntimeError SDKInitilizationErrorHandler);
 
 	/**
 	 * @brief This gets called after all runtime systems had the opportunity to make requests to Beamable that do not depend on content information.
 	 */
-	void TriggerOnBeamableStarting(FBeamWaitCompleteEvent, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems, bool ApplyFrictionlessLogin, FRuntimeStateChangedHandler
-	                               SDKReadyHandler, FRuntimeError SDKInitilizationErrorHandler);
+	void TriggerOnBeamableStarting(FBeamWaitCompleteEvent, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems, bool ApplyFrictionlessLogin,
+	                               FBeamRuntimeHandler SDKReadyHandler, FRuntimeError SDKInitilizationErrorHandler);
 
 	/**
 	 * @brief This gets called after all runtime systems had the opportunity to make initialization requests to Beamable that DO depend on content data.
 	 */
-	void TriggerOnContentReady(FBeamWaitCompleteEvent Evt, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems, bool
-	                           ApplyFrictionlessLogin, FRuntimeStateChangedHandler SDKReadyHandler, FRuntimeError
-	                           SDKInitilizationErrorHandler);
+	void TriggerOnContentReady(FBeamWaitCompleteEvent Evt, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems, bool ApplyFrictionlessLogin,
+	                           FBeamRuntimeHandler SDKReadyHandler, FRuntimeError SDKInitilizationErrorHandler);
 
 	/**
 	 * @brief This gets called after all runtime subsystems have been initialized, but before the Owner Player's auth has been made.
 	 */
-	void TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems, bool ApplyFrictionlessLogin, FRuntimeStateChangedHandler
-	                                         SDKReadyHandler, FRuntimeError SDKInitilizationErrorHandler);
+	void TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems, bool ApplyFrictionlessLogin,
+	                                         FBeamRuntimeHandler SDKReadyHandler, FRuntimeError SDKInitilizationErrorHandler);
 
 	/**
 	 * @brief This function gets called to start the flow of initializing subsystems manually
 	 */
-	void ManuallyInitializeSubsystem(TArray<TSubclassOf<UBeamRuntimeSubsystem>>& SubsystemsTypesToInitialize,
-	                                 bool bInitializeUsers,
-	                                 FBeamOperationHandle OnOperationEvent);
+	void ManuallyInitializeSubsystem(TArray<TSubclassOf<UBeamRuntimeSubsystem>>& SubsystemsTypesToInitialize, bool bInitializeUsers, FBeamOperationHandle OnOperationEvent);
 	/**
 	* @brief This gets called after the first initialize call to set manually subsystems as started but without initializing the content
 	 */
-	void TriggerManuallySetSubsystemStarted(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, bool
-	                                        bInitializeUsers, FBeamOperationHandle OnOperationEvent);
+	void TriggerManuallySetSubsystemStarted(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, bool bInitializeUsers,
+	                                        FBeamOperationHandle OnOperationEvent);
 	/**
 	 * @brief This gets called after all the manually initialized subsystems had the opportunity to make initialization requests to Beamable that DO depend on content data.
 	 */
-	void TriggerManuallySetSubsystemContentReady(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, bool
-	                                             bInitializeUsers, FBeamOperationHandle
-	                                             OnOperationEvent);
+	void TriggerManuallySetSubsystemContentReady(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, bool bInitializeUsers,
+	                                             FBeamOperationHandle OnOperationEvent);
 	/**
 	 * @brief This gets called to initialize the users for the manually initialized subsystems.
 	 */
-	void TriggerManuallySetSubsystemsUserReady(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, bool
-	                                           bInitializeUsers, FBeamOperationHandle
-	                                           OnOperationEvent);
+	void TriggerManuallySetSubsystemsUserReady(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, bool bInitializeUsers,
+	                                           FBeamOperationHandle OnOperationEvent);
 
 	/**
 	 * @brief This gets called to trigger the post user sign in for the manually initialized subsystems.
 	 */
-	void TriggerManuallySubsystemsPostUserSignIn(FBeamWaitCompleteEvent Evt,
-	                                             TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, FBeamOperationHandle OnOperationEvent);
+	void TriggerManuallySubsystemsPostUserSignIn(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, FBeamOperationHandle OnOperationEvent);
+
 	/**
 	 * Manages connectivity and recovery for every user slot.
 	 */
@@ -343,22 +343,6 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	FBeamWaitHandle OnBeamableContentReadyWait;
 
 	/**
-	 * @brief So that actors and components can react to beamable's initialization flow being finished.
-	 * This runs only once during your game's execution: after all UBeamRuntimeSubsystem::OnBeamableStarted have run.
-	 * If you have Automatic Frictionless Auth disabled, from this point forward, you can make Authentication calls to Beamable.
-	 */
-	UPROPERTY()
-	FRuntimeStateChangedEvent OnStarted;
-	FRuntimeStateChangedEventCode OnStartedCode;
-
-	/**
-	 * @brief This is called when the operations for starting the sdk fails.
-	 */
-	UPROPERTY()
-	FSDKInitilizationErrorEvent OnSDKInitializationFailed;
-	FSDKInitilizationErrorEventCode OnSDKInitializationFailedCode;
-
-	/**
 	 * @brief This is a list of the operation that ended with errors after the initialization fails.
 	 */
 	UPROPERTY()
@@ -384,7 +368,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 * This runs after all of the BeamRuntimeSubsystems have run their OnFailedUserAuth callback. 
 	 */
 	UPROPERTY(BlueprintAssignable)
-	FRuntimeStateChangedEvent OnFailedUserAuth;
+	FBeamRuntimeEvent OnFailedUserAuth;
 
 	/**
 	 * @brief Every time a user signs out of beamable we give each subsystem the ability to run an operation for that user.
@@ -433,6 +417,24 @@ public:
 	UPROPERTY()
 	UBeamNotifications* NotificationSystem;
 
+	/**
+	 * Returns true when the SDK was initialized.  
+	 */
+	UFUNCTION(BlueprintCallable)
+	bool IsInitialized() { return CurrentSdkState == Initialized; }
+
+	/**
+	 * For cases where you want to de-register all the callbacks to the various runtime events:
+	 *  - OnStarted
+	 *  - OnStartedFailed
+	 *  - OnUserReady
+	 *  - OnUserInitFailed
+	 *  - OnUserCleared
+	 *
+	 *  If your game, reloads to your main menu, you can use this to reset all your bound callbacks to make it easier to write your initialization logic.
+	 */
+	UFUNCTION(Blueprintable)
+	void UnregisterAllCallbacks();
 
 	/**
 	 * @brief Call this function to initialize the SDK.
@@ -440,7 +442,7 @@ public:
 	 * SDKInitilizationErrorHandler : Is triggered if an error happened while initializing the SDK. 
 	 */
 	UFUNCTION(BlueprintCallable)
-	void InitSDK(FRuntimeStateChangedHandler SDKInitializedHandler, FRuntimeError SDKInitilizationErrorHandler);
+	void InitSDK(FBeamRuntimeHandler OnStartedHandler, FRuntimeError OnStartedFailedHandler);
 
 	/**
 	 * @brief Call this function to initialize the SDK and apply frictionless login.
@@ -450,9 +452,7 @@ public:
 	 * UserInitilizationError :  Is triggered if an error happened while initializing a user for the SDK.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void InitSDKWithFrictionlessLogin(FUserStateChangedHandler UserReadyHandler,
-	                                  FRuntimeError SDKInitializationErrorHandler, FRuntimeError UserInitilizationError);
-
+	void InitSDKWithFrictionlessLogin(FUserStateChangedHandler OnUserReadyHandler, FRuntimeError OnStartedFailedHandler, FRuntimeError OnUserInitFailedHandler);
 
 	/**
 	 * @brief Call this function if you want to initialize a subsystem that was set to manually initialize from the project settings.
@@ -480,59 +480,93 @@ public:
 	                                                                      FBeamOperationEventHandler OnOperationEvent);
 
 	/**
-	 * @brief This flag indicates if at least one user slot is already authenticated.
-	 */
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="IsOwnerUserAuthenticated")
-	bool bDidFirstAuthRun = false;
-
-	UFUNCTION(BlueprintCallable)
-	bool IsFirstAuth() const { return !bDidFirstAuthRun; }
-
-	/**
 	 * @copydoc ManuallyInitializeSubsystemOperationWithUserData
 	 */
 	FBeamOperationHandle CPP_ManuallyInitializeSubsystemOperationWithUserData(FUserSlot UserSlot, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize,
 	                                                                          FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
+	 * Whether a particular slot has a user authenticated in it.	  
+	 */
+	UFUNCTION(BlueprintPure)
+	bool IsLoggedIn(FUserSlot Slot) const { return UserSlotSystem->IsUserSlotAuthenticated(Slot, this); }
+
+private:
+	/**
+	 * @brief So that actors and components can react to beamable's initialization flow being finished.
+	 * This runs only once during your game's execution: after all UBeamRuntimeSubsystem::OnBeamableStarted have run.
+	 * If you have Automatic Frictionless Auth disabled, from this point forward, you can make Authentication calls to Beamable.
+	 */
+	UPROPERTY()
+	FBeamRuntimeEvent OnStarted;
+	FBeamRuntimeEventCode OnStartedCode;
+	TArray<FBeamRuntimeHandler> OnStarted_RegisteredHandles;
+	TArray<FDelegateHandle> OnStartedCode_RegisteredHandles;
+
+	/**
+	 * @brief This is called when the operations for starting the sdk fails.
+	 */
+	UPROPERTY()
+	FSdkInitFailedEvent OnStartedFailed;
+	FSdkInitFailedEventCode OnStartedFailedCode;
+	TArray<FOperationError> OnStartedError_RegisteredHandles;
+	TArray<FDelegateHandle> OnStartedFailedCode_RegisteredHandles;
+
+public:
+	/**
 	 * @brief In BP, use this function to bind initialization functions to OnStarted. Which executes after the SDK is initialized. 
 	 */
 	UFUNCTION(BlueprintCallable)
-	void RegisterOnStarted(FRuntimeStateChangedHandler Handler)
+	void RegisterOnStarted(FBeamRuntimeHandler Handler)
 	{
 		if (CurrentSdkState == ESDKState::Initialized) const auto _ = Handler.ExecuteIfBound();
 		OnStarted.Add(Handler);
+		OnStarted_RegisteredHandles.Add(Handler);
 	}
 
 	/**
 	 * @brief In BP, use this function to bind initialization functions to OnStarted. This will NOT execute the delegate if you're already ready. 
 	 */
 	UFUNCTION(BlueprintCallable)
-	void RegisterOnStarted_NoExecute(FRuntimeStateChangedHandler Handler) { OnStarted.Add(Handler); }
+	void RegisterOnStarted_NoExecute(FBeamRuntimeHandler Handler)
+	{
+		OnStarted.Add(Handler);
+		OnStarted_RegisteredHandles.Add(Handler);
+	}
 
 	/**
 	 * @brief In BP, use this function to unbind initialization custom events to OnStarted.  Which executes after the SDK is initialized. 
 	 */
 	UFUNCTION(BlueprintCallable)
-	void UnregisterOnStarted(FRuntimeStateChangedHandler Handler)
+	void UnregisterOnStarted(FBeamRuntimeHandler Handler)
 	{
 		if (OnStarted.Contains(Handler))
+		{
 			OnStarted.Remove(Handler);
+			OnStarted_RegisteredHandles.Remove(Handler);
+		}
 	}
 
 	/**
 	 * @brief In CPP, use this function to bind initialization functions to OnStarted. Which executes after the SDK is initialized. 
 	 */
-	FDelegateHandle CPP_RegisterOnStarted(FRuntimeStateChangedHandlerCode Handler)
+	FDelegateHandle CPP_RegisterOnStarted(FBeamRuntimeHandlerCode Handler)
 	{
 		if (CurrentSdkState == ESDKState::Initialized) const auto _ = Handler.ExecuteIfBound();
-		return OnStartedCode.Add(Handler);
+		const auto Handle = OnStartedCode.Add(Handler);
+		OnStartedCode_RegisteredHandles.Add(Handle);
+		return Handle;
 	}
 
 	/**
 	 * @brief In CPP, use this function to bind initialization functions to OnStarted. This will NOT execute the delegate if you're already ready. 
 	 */
-	FDelegateHandle CPP_RegisterOnStarted_NoExecute(FRuntimeStateChangedHandlerCode Handler) { return OnStartedCode.Add(Handler); }
+	FDelegateHandle CPP_RegisterOnStarted_NoExecute(FBeamRuntimeHandlerCode Handler)
+	{
+		const auto Handle = OnStartedCode.Add(Handler);
+		OnStartedCode_RegisteredHandles.Add(Handle);
+		return Handle;
+	}
 
 	/**
 	 * @brief In CPP, use this function to unbind initialization custom events to OnStarted.  Which executes after the SDK is initialized. 
@@ -540,8 +574,74 @@ public:
 	void CPP_UnregisterOnStarted(FDelegateHandle Handle)
 	{
 		OnStartedCode.Remove(Handle);
+		OnStartedCode_RegisteredHandles.Remove(Handle);
 	}
 
+	/**
+	 * @brief In BP, use this function to bind error handling logic to OnSDKInitializationFailed. This will execute the delegate if sdk already failed initialization before it binds it. 
+	 */
+	UFUNCTION(BlueprintCallable)
+	void RegisterOnSdkInitFailed(FOperationError Handler)
+	{
+		if (CurrentSdkState == ESDKState::InitializationFailed) const auto _ = Handler.ExecuteIfBound(CachedInitializationErrors);
+		OnStartedFailed.Add(Handler);
+		OnStartedError_RegisteredHandles.Add(Handler);
+	}
+
+	/**
+	 * @brief In BP, use this function to bind error handling logic to OnSDKInitializationFailed. This will NOT execute the delegate if initialization already failed. 
+	 */
+	UFUNCTION(BlueprintCallable)
+	void RegisterOnSdkInitFailed_NoExecute(FOperationError Handler)
+	{
+		OnStartedFailed.Add(Handler);
+		OnStartedError_RegisteredHandles.Add(Handler);
+	}
+
+	/**
+	 * @brief In BP, use this function to unbind error handling events to OnSDKInitializationFailed. 
+	 */
+	UFUNCTION(BlueprintCallable)
+	void UnregisterOnSdkInitFailed(FOperationError Handler)
+	{
+		if (OnStartedFailed.Contains(Handler))
+		{
+			OnStartedFailed.Remove(Handler);
+			OnStartedError_RegisteredHandles.Remove(Handler);
+		}
+	}
+
+	/**
+	 * @brief In CPP, use this function to bind error handling logic to OnSDKInitializationFailed. This will execute the delegate if sdk already failed initialization before it binds it. 
+	 */
+	FDelegateHandle CPP_RegisterOnSdkInitFailed(FOperationErrorCode Handler)
+	{
+		if (CurrentSdkState == ESDKState::InitializationFailed) const auto _ = Handler.ExecuteIfBound(CachedInitializationErrors);
+		const auto Handle = OnStartedFailedCode.Add(Handler);
+		OnStartedFailedCode_RegisteredHandles.Add(Handle);
+		return Handle;
+	}
+
+	/**
+	 * @brief In CPP, use this function to bind error handling logic to OnSDKInitializationFailed. This will NOT execute the delegate if initialization already failed. 
+	 */
+	FDelegateHandle CPP_RegisterOnSdkInitFailed_NoExecute(FOperationErrorCode Handler)
+	{
+		const auto Handle = OnStartedFailedCode.Add(Handler);
+		OnStartedFailedCode_RegisteredHandles.Add(Handle);
+		return Handle;
+	}
+
+	/**
+	 * @brief In CPP, use this function to unbind error handling events to OnSDKInitializationFailed. 
+	 */
+	void CPP_UnregisterOnSdkInitFailed(FDelegateHandle Handle)
+	{
+		OnStartedFailedCode.Remove(Handle);
+		OnStartedFailedCode_RegisteredHandles.Remove(Handle);
+	}
+
+private:
 	/**
 	 * @brief So that actors and components can react to user data being ready for a specific user slot. 
 	 *  The event is what game makers should use when registering their actors, systems, etc... if they wish to depend on a specific user slot's data in BeamRuntimeSubsystems.
@@ -551,40 +651,17 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FUserStateChangedEvent OnUserReady;
 	FUserStateChangedEventCode OnUserReadyCode;
-	/**
-	 * @brief In BP, use this function to bind functions that will execute when any user slot is initialized.
-	 */
-	UFUNCTION(BlueprintCallable)
-	void RegisterOnUserReady(FUserStateChangedHandler Handler)
-	{
-		OnUserReady.Add(Handler);
-	}
+	TArray<FUserStateChangedHandler> OnUserReady_RegisteredHandles;
+	TArray<FDelegateHandle> OnUserReadyCode_RegisteredHandles;
 
 	/**
-	 * @brief In BP, use this function to unbind functions to the user slot initialization. 
+	 * @brief This is called when the initialization of the subsystems user slots fails.
 	 */
-	UFUNCTION(BlueprintCallable)
-	void UnregisterOnUserReady(FUserStateChangedHandler Handler)
-	{
-		if (OnUserReady.Contains(Handler))
-			OnUserReady.Remove(Handler);
-	}
-
-	/**
-	 * @brief In CPP, use this function to bind functions that will execute when any user slot is initialized.
-	 */
-	FDelegateHandle CPP_RegisterOnUserReady(FUserStateChangedCode Handler)
-	{
-		return OnUserReadyCode.Add(Handler);
-	}
-
-	/**
-	 * @brief In CPP, use this function to unbind functions that will execute when any user slot is initialized.
-	 */
-	void CPP_UnregisterOnUserReady(FDelegateHandle Handler)
-	{
-		OnUserReadyCode.Remove(Handler);
-	}
+	UPROPERTY()
+	FUserInitFailedEvent OnUserInitFailed;
+	FUserInitFailedEventCode OnUserInitFailedCode;
+	TArray<FUserInitFailedHandler> OnUserInitFailed_RegisteredHandles;
+	TArray<FDelegateHandle> OnUserInitFailedCode_RegisteredHandles;
 
 	/**
 	 * @brief So that actors and components can react to user data being cleared for a specific user slot. 
@@ -595,62 +672,139 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FUserStateChangedEvent OnUserCleared;
 	FUserStateChangedEventCode OnUserClearedCode;
+	TArray<FUserStateChangedHandler> OnUserCleared_RegisteredHandles;
+	TArray<FDelegateHandle> OnUserClearedCode_RegisteredHandles;
 
+public:
 	/**
-	 * @brief This is called when the initialization of the subsystems user slots fails.
-	 */
-	UPROPERTY()
-	FSubsystemsUserInitializationErrorEvent OnSubsystemsUserInitializationFailed;
-	FSubsystemsUserInitializationErrorEventCode OnSubsystemsUserInitializationFailedCode;
-
-	/**
-	 * @brief In BP, use this function to bind error handling logic to OnSDKInitializationFailed. This will execute the delegate if sdk already failed initialization before it binds it. 
+	 * @brief In BP, use this function to bind functions that will execute when any user slot is initialized.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void RegisterOnSDKInitializationFailed(FOperationError Handler)
+	void RegisterOnUserReady(FUserStateChangedHandler Handler)
 	{
-		if (CurrentSdkState == ESDKState::InitializationFailed) const auto _ = Handler.ExecuteIfBound(CachedInitializationErrors);
-		OnSDKInitializationFailed.Add(Handler);
+		OnUserReady.Add(Handler);
+		OnUserReady_RegisteredHandles.Add(Handler);
 	}
 
 	/**
-	 * @brief In BP, use this function to bind error handling logic to OnSDKInitializationFailed. This will NOT execute the delegate if initialization already failed. 
+	 * @brief In BP, use this function to unbind functions to the user slot initialization. 
 	 */
 	UFUNCTION(BlueprintCallable)
-	void RegisterOnSDKInitializationFailed_NoExecute(FOperationError Handler) { OnSDKInitializationFailed.Add(Handler); }
+	void UnregisterOnUserReady(FUserStateChangedHandler Handler)
+	{
+		if (OnUserReady.Contains(Handler))
+		{
+			OnUserReady.Remove(Handler);
+			OnUserReady_RegisteredHandles.Remove(Handler);
+		}
+	}
 
 	/**
-	 * @brief In BP, use this function to unbind error handling events to OnSDKInitializationFailed. 
+	 * @brief In CPP, use this function to bind functions that will execute when any user slot is initialized.
+	 */
+	FDelegateHandle CPP_RegisterOnUserReady(FUserStateChangedHandlerCode Handler)
+	{
+		const auto Handle = OnUserReadyCode.Add(Handler);
+		OnUserReadyCode_RegisteredHandles.Add(Handle);
+		return Handle;
+	}
+
+	/**
+	 * @brief In CPP, use this function to unbind functions that will execute when any user slot is initialized.
+	 */
+	void CPP_UnregisterOnUserReady(FDelegateHandle Handler)
+	{
+		OnUserReadyCode.Remove(Handler);
+		OnUserReadyCode_RegisteredHandles.Remove(Handler);
+	}
+
+	/**
+	 * @brief In BP, use this function to bind functions that will execute when any user slot is initialized.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void UnRegisterOnSDKInitializationFailed(FOperationError Handler)
+	void RegisterOnUserInitFailed(FUserInitFailedHandler Handler)
 	{
-		if (OnSDKInitializationFailed.Contains(Handler))
-			OnSDKInitializationFailed.Remove(Handler);
+		OnUserInitFailed.Add(Handler);
+		OnUserInitFailed_RegisteredHandles.Add(Handler);
 	}
 
 	/**
-	 * @brief In CPP, use this function to bind error handling logic to OnSDKInitializationFailed. This will execute the delegate if sdk already failed initialization before it binds it. 
+	 * @brief In BP, use this function to unbind functions to the user slot initialization. 
 	 */
-	FDelegateHandle CPP_RegisterOnSDKInitializationFailed(FOperationErrorCode Handler)
+	UFUNCTION(BlueprintCallable)
+	void UnregisterOnUserInitFailed(FUserInitFailedHandler Handler)
 	{
-		if (CurrentSdkState == ESDKState::InitializationFailed) const auto _ = Handler.ExecuteIfBound(CachedInitializationErrors);
-		return OnSDKInitializationFailedCode.Add(Handler);
+		if (OnUserInitFailed.Contains(Handler))
+		{
+			OnUserInitFailed.Remove(Handler);
+			OnUserInitFailed_RegisteredHandles.Remove(Handler);
+		}
 	}
 
 	/**
-	 * @brief In CPP, use this function to bind error handling logic to OnSDKInitializationFailed. This will NOT execute the delegate if initialization already failed. 
+	 * @brief In CPP, use this function to bind functions that will execute when any user slot is initialized.
 	 */
-	FDelegateHandle CPP_RegisterOnSDKInitializationFailed_NoExecute(FOperationErrorCode Handler) { return OnSDKInitializationFailedCode.Add(Handler); }
-
-	/**
-	 * @brief In CPP, use this function to unbind error handling events to OnSDKInitializationFailed. 
-	 */
-	void CPP_UnRegisterOnSDKInitializationFailed(FDelegateHandle Handle)
+	FDelegateHandle CPP_RegisterOnUserInitFailed(FUserInitFailedHandlerCode Handler)
 	{
-		OnSDKInitializationFailedCode.Remove(Handle);
+		const auto Handle = OnUserInitFailedCode.Add(Handler);
+		OnUserInitFailedCode_RegisteredHandles.Add(Handle);
+		return Handle;
 	}
 
+	/**
+	 * @brief In CPP, use this function to unbind functions that will execute when any user slot is initialized.
+	 */
+	void CPP_UnregisterOnUserInitFailed(FDelegateHandle Handler)
+	{
+		OnUserInitFailedCode.Remove(Handler);
+		OnUserInitFailedCode_RegisteredHandles.Remove(Handler);
+	}
+
+	/**
+	 * @brief In BP, use this function to bind functions that will execute when any user slot is initialized.
+	 */
+	UFUNCTION(BlueprintCallable)
+	void RegisterOnUserCleared(FUserStateChangedHandler Handler)
+	{
+		OnUserCleared.Add(Handler);
+		OnUserCleared_RegisteredHandles.Add(Handler);
+	}
+
+	/**
+	 * @brief In BP, use this function to unbind functions to the user slot initialization. 
+	 */
+	UFUNCTION(BlueprintCallable)
+	void UnregisterOnUserCleared(FUserStateChangedHandler Handler)
+	{
+		if (OnUserCleared.Contains(Handler))
+		{
+			OnUserCleared.Remove(Handler);
+			OnUserCleared_RegisteredHandles.Remove(Handler);
+		}
+	}
+
+	/**
+	 * @brief In CPP, use this function to bind functions that will execute when any user slot is initialized.
+	 */
+	FDelegateHandle CPP_RegisterOnUserCleared(FUserStateChangedHandlerCode Handler)
+	{
+		const auto Handle = OnUserClearedCode.Add(Handler);
+		OnUserClearedCode_RegisteredHandles.Add(Handle);
+		return Handle;
+	}
+
+	/**
+	 * @brief In CPP, use this function to unbind functions that will execute when any user slot is initialized.
+	 */
+	void CPP_UnregisterOnUserCleared(FDelegateHandle Handler)
+	{
+		OnUserClearedCode.Remove(Handler);
+		OnUserClearedCode_RegisteredHandles.Remove(Handler);
+	}
+
+
+	// OPERATIONS
+public:
 	/**
 	 * @brief An operation that will authenticate a user with the beamable and persist that authentication locally.
 	 */

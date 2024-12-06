@@ -88,7 +88,7 @@ FBeamOperationHandle UBeamCli::InitializeWhenEditorReady()
 			if (ResCode == 0)
 			{
 				bInstalled = FOptionalBool{true};
-				StartCliServer(Op);
+				RequestTracker->TriggerOperationSuccess(Op, CurrentCliServerUri);
 			}
 			else
 			{

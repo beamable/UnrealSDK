@@ -506,8 +506,8 @@ void FOnlineIdentityBeamable::OnBeamableUserReady(const FUserSlot& Slot, TShared
 			return;
 		}
 
-		TriggerOnLoginCompleteDelegates(0, true, *UserAccountPtr->GetUserId(), "");
-		GameInstance->GetSubsystem<UBeamRuntime>()->OnUserReadyCode.Remove(OnUserReadyCodeHandle);
+		TriggerOnLoginCompleteDelegates(0, true, *UserAccountPtr->GetUserId(), "");		
+		GameInstance->GetSubsystem<UBeamRuntime>()->CPP_UnregisterOnUserReady(OnUserReadyCodeHandle);
 	});
 
 	FBeamWaitHandle WaitHandle;
