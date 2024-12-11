@@ -53,6 +53,7 @@ Rest of the fields:
 
 ## Getting Started
 To use the inventory system, you will need to first:
+
 1. Go to the Content Window.
 2. Select `item` as a type.
 3. Create an item content definition.
@@ -62,6 +63,7 @@ To use the inventory system, you will need to first:
 7. Publish this content to the realm.
 
 Now that you have items and currencies published, follow the steps below to create a BP function that adds some currencies and grants an item to the player:
+
 1. Open your Level Blueprint (or some other BP).
 2. Get the `BeamInventorySubsystem`
 3. Call `BeginInventoryUpdate`. This begins building a set of changes we will submit to the Beamable backend later.

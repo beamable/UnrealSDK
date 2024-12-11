@@ -48,9 +48,9 @@ void FBeamContentIdCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 				const auto ExampleContent = Map.Value[0].Get()->ToString();
 				const auto TypeId = FBeamContentId(ExampleContent).GetTypeId();
 				bool GoodContent = false;
-				for(const auto TT : OutMappings)
+				for(const auto& TT : OutMappings)
 				{
-					for(const auto El: TT.Value)
+					for(const auto& El: TT.Value)
 					{
 						if (!OnlyExplicitTypes && TypeId.StartsWith(El))
 						{
@@ -69,7 +69,7 @@ void FBeamContentIdCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> St
 					TypesToRemove.Add(Map.Key);
 				}
 			}
-			for (const auto Rem : TypesToRemove)
+			for (const auto& Rem : TypesToRemove)
 			{
 				ContentTypeToIdsMap.Remove(Rem);
 			}

@@ -233,7 +233,7 @@ private:
 	bool CleanUpRequestData();
 
 	/**
-	 * @brief Tracks whether or not we are in PIE mode.
+	 * @brief Tracks whether we are in PIE mode.
 	 */
 	bool bIsInPIE;
 
@@ -313,13 +313,13 @@ public:
 	bool AlwaysRunGlobalHandlers;
 
 	/**
-	 * @brief When set to true, we will log all success responses regardless of whether or not you passed in a handler. 
+	 * @brief When set to true, we will log all success responses regardless of whether you passed in a handler. 
 	 */
 	UPROPERTY(BlueprintReadOnly, Category="Beam|Config")
 	bool AlwaysLogSuccessResponses;
 
 	/**
-	 * @brief When set to true, we will log all error responses regardless of whether or not you passed in a handler. 
+	 * @brief When set to true, we will log all error responses regardless of whether you passed in a handler. 
 	 */
 	UPROPERTY(BlueprintReadOnly, Category="Beam|Config")
 	bool AlwaysLogErrorResponses;
@@ -911,8 +911,8 @@ public:
 		StaticCheckForResponseType<TResponseData>();
 
 		// Update the context to pass into the response callbacks.
-		auto Context = InFlightRequestContexts.Find(RequestId);
-		Context->ResponseCode = ResponseCode;
+		auto Context = *InFlightRequestContexts.Find(RequestId);
+		Context.ResponseCode = ResponseCode;
 
 
 		// If the request was cancelled, we'll only run the OnComplete call 
@@ -922,7 +922,7 @@ public:
 			       RequestId);
 
 			// Execute the handler if it's bound.
-			const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(*Context, RequestData);
+			const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(Context, RequestData);
 			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 			{
 				UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, NUM_FAILURES=%d"),
@@ -930,18 +930,18 @@ public:
 			}
 
 			// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
-			Context->BeamStatus = AS_Completed;
-
+			Context.BeamStatus = AS_Completed;
+			InFlightRequestContexts[RequestId] = Context;
 			return;
 		}
 
-		// Stores whether or not the request was successful
+		// Stores whether the request was successful
 		const auto bWasSuccess = IsSuccessfulResponse(ResponseCode);
 
 
 		// Get retry stuff
 		auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
-		const auto RetryConfig = Context->RetryConfiguration;
+		const auto RetryConfig = Context.RetryConfiguration;
 		const auto bShouldRetryIfFail = RetryConfig.RetryMaxAttempt == -1 || CurrFailedCount < RetryConfig.RetryMaxAttempt;
 
 		// If it was an error, we'll compute this based on the error data.
@@ -954,10 +954,10 @@ public:
 			SuccessData->DeserializeRequestResponse(RequestData, ContentAsString);
 
 			// Store it so wait handles can grab at it later
-			InFlightResponseBodyData[*Context] = SuccessData;
+			InFlightResponseBodyData[Context] = SuccessData;
 
 			// Run the callsite handler
-			const auto ExecutedCallsiteHandler = OnSuccess.ExecuteIfBound(*Context, RequestData, SuccessData);
+			const auto ExecutedCallsiteHandler = OnSuccess.ExecuteIfBound(Context, RequestData, SuccessData);
 
 			// We only log the response if no callsite is given or if we are configured to always run it.
 			if (AlwaysLogSuccessResponses || !ExecutedCallsiteHandler)
@@ -976,11 +976,11 @@ public:
 			FBeamErrorResponse ErrorData;
 			FJsonObjectConverter::JsonObjectStringToUStruct(*ContentAsString, &ErrorData);
 
-			// Now that we know we had an error, compute whether or not we should retry.
+			// Now that we know we had an error, compute whether we should retry.
 			bWillRetry &= RetryConfig.HttpResponseCodes.Contains(ResponseCode) || RetryConfig.CustomErrorCodes.Contains(ErrorData.error);
 
 			// Store it so wait handles can grab at it later
-			InFlightResponseErrorData[*Context] = ErrorData;
+			InFlightResponseErrorData[Context] = ErrorData;
 
 			// Bump the failed count associated with this request id.
 			CurrFailedCount += 1;
@@ -999,14 +999,14 @@ public:
 			}
 
 			// Run the callsite handler, if any.
-			const auto ExecutedCallsiteHandler = OnError.ExecuteIfBound(*Context, RequestData, ErrorData);
+			const auto ExecutedCallsiteHandler = OnError.ExecuteIfBound(Context, RequestData, ErrorData);
 
 			// We fallback to global handler only if we didn't run the callsite one OR if we are configured to always run it.
 			bool bExecutedGlobalHandler = false;
 			if ((AlwaysRunGlobalHandlers || !ExecutedCallsiteHandler) && (GlobalRequestErrorHandler.IsBound() || GlobalRequestErrorCodeHandler.IsBound()))
 			{
-				GlobalRequestErrorHandler.Broadcast(*Context, ErrorData);
-				const auto _ = GlobalRequestErrorCodeHandler.ExecuteIfBound(*Context, ErrorData);
+				GlobalRequestErrorHandler.Broadcast(Context, ErrorData);
+				const auto _ = GlobalRequestErrorCodeHandler.ExecuteIfBound(Context, ErrorData);
 
 				bExecutedGlobalHandler = true;
 			}
@@ -1027,10 +1027,10 @@ public:
 		if (bWasSuccess || !bWillRetry)
 		{
 			// Update Connectivity Status
-			UpdateConnectivity(*Context, RequestStatus, FRequestType{TRequestData::StaticClass()->GetName()});
+			UpdateConnectivity(Context, RequestStatus, FRequestType{TRequestData::StaticClass()->GetName()});
 
 			// Execute the handler if it's bound.
-			const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(*Context, RequestData);
+			const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(Context, RequestData);
 			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 			{
 				UE_LOG(LogBeamBackend, Display, TEXT( "Beamable Request Completed | REQUEST_ID=%lld, RESPONSE_CODE=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d" ),
@@ -1038,7 +1038,8 @@ public:
 			}
 
 			// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
-			Context->BeamStatus = AS_Completed;
+			Context.BeamStatus = AS_Completed;
+			InFlightRequestContexts[RequestId] = Context;
 		}
 	}
 
@@ -1174,9 +1175,9 @@ public:
 			AuthToken.RefreshToken, RealmHandle.Pid, User, UserSlot, NamespacedSlotId);
 
 		// Create the context to pass into the callbacks	
-		auto Context = InFlightRequestContexts.Find(RequestId);
-		Context->ResponseCode = ResponseCode;
-		Context->UserSlot = bWasMadeWithUserSlot ? UserSlot : FUserSlot("");
+		auto Context = *InFlightRequestContexts.Find(RequestId);
+		Context.ResponseCode = ResponseCode;
+		Context.UserSlot = bWasMadeWithUserSlot ? UserSlot : FUserSlot("");
 
 		// If the request was cancelled, we'll only run the OnComplete call 
 		if (InFlightRequestsCancelled.Contains(RequestId))
@@ -1185,7 +1186,7 @@ public:
 			       RequestId);
 
 			// Execute the handler if it's bound.		
-			const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(*Context, RequestData);
+			const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(Context, RequestData);
 			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 			{
 				UE_LOG(LogBeamBackend, Display,
@@ -1195,18 +1196,18 @@ public:
 			}
 
 			// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
-			Context->BeamStatus = AS_Completed;
-
+			Context.BeamStatus = AS_Completed;
+			InFlightRequestContexts[RequestId] = Context;
 			return;
 		}
 		// Then, we handle success and error cases.
 
 		// Get retry stuff
 		auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
-		const auto RetryConfig = Context->RetryConfiguration;
+		const auto RetryConfig = Context.RetryConfiguration;
 		const auto bShouldRetryIfFail = RetryConfig.RetryMaxAttempt == -1 || CurrFailedCount < RetryConfig.RetryMaxAttempt;
 
-		// Stores whether or not the request was successful
+		// Stores whether the request was successful
 		const auto bWasSuccess = IsSuccessfulResponse(ResponseCode);
 
 		// If it was an error, we'll compute if we should re-auth/retry based on the error data.
@@ -1220,10 +1221,10 @@ public:
 			SuccessData->DeserializeRequestResponse(RequestData, ContentAsString);
 
 			// Store it so wait handles can grab at it later
-			InFlightResponseBodyData[*Context] = SuccessData;
+			InFlightResponseBodyData[Context] = SuccessData;
 
 			// Run the callsite handler
-			const auto ExecutedCallsiteHandler = OnSuccess.ExecuteIfBound(*Context, RequestData, SuccessData);
+			const auto ExecutedCallsiteHandler = OnSuccess.ExecuteIfBound(Context, RequestData, SuccessData);
 
 			// We only log the response if no callsite is given or if we are configured to always run it.
 			if (AlwaysLogSuccessResponses || !ExecutedCallsiteHandler)
@@ -1240,9 +1241,9 @@ public:
 			FJsonObjectConverter::JsonObjectStringToUStruct(*ContentAsString, &ErrorData);
 
 			// Store it so wait handles can grab at it later
-			InFlightResponseErrorData[*Context] = ErrorData;
+			InFlightResponseErrorData[Context] = ErrorData;
 
-			// Now that we know we had an error, compute whether or not we should retry.		
+			// Now that we know we had an error, compute whether we should retry.		
 			bWillReAuth &= AUTH_ERROR_CODE_RETRY_ALLOWED.Contains(ErrorData.error);
 			bWillRetry &= RetryConfig.HttpResponseCodes.Contains(ResponseCode) || RetryConfig.CustomErrorCodes.Contains(ErrorData.error);
 			// We always enqueue for retry if we need the re-auth, even if we are "out of retries". That's because Re-Auth retries don't count towards the retry limit.
@@ -1271,14 +1272,14 @@ public:
 			if (!bWillReAuth)
 			{
 				// Run the callsite handler, if any.
-				const auto ExecutedCallsiteHandler = OnError.ExecuteIfBound(*Context, RequestData, ErrorData);
+				const auto ExecutedCallsiteHandler = OnError.ExecuteIfBound(Context, RequestData, ErrorData);
 
 				// We fallback to global handler only if we didn't run the callsite one OR if we are configured to always run it.
 				bool bExecutedGlobalHandler = false;
 				if ((AlwaysRunGlobalHandlers || !ExecutedCallsiteHandler) && (GlobalRequestErrorHandler.IsBound() || GlobalRequestErrorCodeHandler.IsBound()))
 				{
-					GlobalRequestErrorHandler.Broadcast(*Context, ErrorData);
-					const auto _ = GlobalRequestErrorCodeHandler.ExecuteIfBound(*Context, ErrorData);
+					GlobalRequestErrorHandler.Broadcast(Context, ErrorData);
+					const auto _ = GlobalRequestErrorCodeHandler.ExecuteIfBound(Context, ErrorData);
 
 					bExecutedGlobalHandler = true;
 				}
@@ -1301,10 +1302,10 @@ public:
 		if (bWasSuccess || !bWillRetry)
 		{
 			// Update Connectivity Status
-			UpdateConnectivity(*Context, RequestStatus, FRequestType{TRequestData::StaticClass()->GetName()});
+			UpdateConnectivity(Context, RequestStatus, FRequestType{TRequestData::StaticClass()->GetName()});
 
 			// Execute the handler if it's bound.
-			const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(*Context, RequestData);
+			const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(Context, RequestData);
 			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 			{
 				UE_LOG(LogBeamBackend, Display, TEXT( "Beamable Request Completed | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d" ),
@@ -1312,7 +1313,8 @@ public:
 			}
 
 			// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
-			Context->BeamStatus = AS_Completed;
+			Context.BeamStatus = AS_Completed;
+			InFlightRequestContexts[RequestId] = Context;
 		}
 	}
 
@@ -1422,16 +1424,16 @@ public:
 		auto FullResponse = FBeamFullResponse<TRequestData*, TResponseData*>();
 
 		// Update and sets the request id for the request
-		auto Context = InFlightRequestContexts.Find(RequestId);
-		Context->ResponseCode = ResponseCode;
-		Context->UserSlot = FUserSlot("");
-		FullResponse.Context = *Context;
+		auto Context = *InFlightRequestContexts.Find(RequestId);		
+		Context.ResponseCode = ResponseCode;
+		Context.UserSlot = FUserSlot("");
+		FullResponse.Context = Context;
 
 		// Store the Request's data into the full response
 		FullResponse.RequestData = RequestData;
 
 		const bool bIsCancelled = InFlightRequestsCancelled.Contains(RequestId);
-		// Stores whether or not the request was successful, error or cancelled
+		// Stores whether the request was successful, error or cancelled
 		if (bIsCancelled)
 			FullResponse.State = RS_Cancelled;
 		else
@@ -1439,7 +1441,7 @@ public:
 
 		// Get retry stuff
 		auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
-		const auto RetryConfig = Context->RetryConfiguration;
+		const auto RetryConfig = Context.RetryConfiguration;
 		const auto bShouldRetryIfFail = !bIsCancelled && (RetryConfig.RetryMaxAttempt == -1 || RetryConfig.RetryMaxAttempt > CurrFailedCount);
 
 		// Stores which attempt we are in
@@ -1455,18 +1457,18 @@ public:
 			FullResponse.SuccessData->DeserializeRequestResponse(RequestData, ContentAsString);
 
 			// Store it so wait handles can grab at it later
-			InFlightResponseBodyData[*Context] = FullResponse.SuccessData;
+			InFlightResponseBodyData[Context] = FullResponse.SuccessData;
 		}
 		else if (FullResponse.State == RS_Error)
 		{
 			// Otherwise, parse the body as an error response callback and store it in the full response data.				
 			FJsonObjectConverter::JsonObjectStringToUStruct(*ContentAsString, &FullResponse.ErrorData);
 
-			// Now that we know we had an error, compute whether or not we should retry.
+			// Now that we know we had an error, compute whether we should retry.
 			bWillRetry &= RetryConfig.HttpResponseCodes.Contains(ResponseCode) || RetryConfig.CustomErrorCodes.Contains(FullResponse.ErrorData.error);
 
 			// Store it so wait handles can grab at it later
-			InFlightResponseErrorData[*Context] = FullResponse.ErrorData;
+			InFlightResponseErrorData[Context] = FullResponse.ErrorData;
 
 			// Bump the failed count associated with this request id.
 			CurrFailedCount = CurrFailedCount + 1;
@@ -1547,7 +1549,8 @@ public:
 			}
 
 			// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
-			Context->BeamStatus = AS_Completed;
+			Context.BeamStatus = AS_Completed;
+			InFlightRequestContexts[RequestId] = Context;
 		}
 	}
 
@@ -1673,23 +1676,23 @@ public:
 		auto FullResponse = FBeamFullResponse<TRequestData*, TResponseData*>();
 
 		// Sets the request id for the request
-		auto Context = InFlightRequestContexts.Find(RequestId);
-		Context->ResponseCode = ResponseCode;
-		Context->UserSlot = bWasMadeWithUserSlot ? UserSlot : FUserSlot("");
-		FullResponse.Context = *Context;
+		auto Context = *InFlightRequestContexts.Find(RequestId);
+		Context.ResponseCode = ResponseCode;
+		Context.UserSlot = bWasMadeWithUserSlot ? UserSlot : FUserSlot("");
+		FullResponse.Context = Context;
 
 		// Store the Request's data into the full response
 		FullResponse.RequestData = RequestData;
 
 		bool bIsCancelled = InFlightRequestsCancelled.Contains(RequestId);
-		// Stores whether or not the request was successful, error or cancelled
+		// Stores whether the request was successful, error or cancelled
 		if (bIsCancelled)
 			FullResponse.State = RS_Cancelled;
 		else
 			FullResponse.State = IsSuccessfulResponse(ResponseCode) ? RS_Success : RS_Error;
 
 		auto CurrFailedCount = InFlightFailureCount.FindChecked(RequestId);
-		const auto RetryConfig = Context->RetryConfiguration;
+		const auto RetryConfig = Context.RetryConfiguration;
 		const auto bShouldRetryIfFail = !bIsCancelled && (RetryConfig.RetryMaxAttempt == -1 || RetryConfig.RetryMaxAttempt > CurrFailedCount);
 
 		// Stores which attempt we are in
@@ -1706,21 +1709,21 @@ public:
 			FullResponse.SuccessData->DeserializeRequestResponse(RequestData, ContentAsString);
 
 			// Store it so wait handles can grab at it later
-			InFlightResponseBodyData[*Context] = FullResponse.SuccessData;
+			InFlightResponseBodyData[Context] = FullResponse.SuccessData;
 		}
 		else if (FullResponse.State == RS_Error)
 		{
 			// Otherwise, parse the body as an error response callback and store it in the full response data.				
 			FJsonObjectConverter::JsonObjectStringToUStruct(*ContentAsString, &FullResponse.ErrorData);
 
-			// Now that we know we had an error, compute whether or not we should retry.
+			// Now that we know we had an error, compute whether we should retry.
 			bWillReAuth &= AUTH_ERROR_CODE_RETRY_ALLOWED.Contains(FullResponse.ErrorData.error);
 			bWillRetry &= RetryConfig.HttpResponseCodes.Contains(ResponseCode) || RetryConfig.CustomErrorCodes.Contains(FullResponse.ErrorData.error);
 			// We always enqueue for retry if we need the re-auth, even if we are "out of retries". That's because Re-Auth retries don't count towards the retry limit.
 			bWillRetry |= bWillReAuth;
 
 			// Store it so wait handles can grab at it later
-			InFlightResponseErrorData[*Context] = FullResponse.ErrorData;
+			InFlightResponseErrorData[Context] = FullResponse.ErrorData;
 
 			// Bump the failed count associated with this request id.
 			CurrFailedCount = bWillReAuth ? CurrFailedCount : CurrFailedCount + 1;
@@ -1813,7 +1816,8 @@ public:
 			}
 
 			// Update the context's status to completed so we can clean it up in the next tick of TickCleanUpRequests if no one depends on it.
-			Context->BeamStatus = AS_Completed;
+			Context.BeamStatus = AS_Completed;
+			InFlightRequestContexts[RequestId] = Context;
 		}
 	}
 

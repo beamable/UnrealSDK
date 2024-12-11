@@ -61,7 +61,7 @@ Inside the method body, there are a few concepts that are relevant:
 !!! warning "Logging and Microservices"
 	We provide ways of dynamically changing the current log-level for deployed services. Finally, `BeamableLogger` is the correct way to log things from within your Microservice code.
 
-[For more information on how to write microservice functions, take a look at our these docs as well.]()
+[For more information on how to write microservice functions, you can take a look at our these docs as well.](https://docs.beamable.com/docs/microservices-feature-overview)
 
 ### Constraints on Callable Functions
 Our CLI is capable of generating Unreal bindings that will allow your Unreal code to call your microservice much like you would make an API call to Beamable. In order to generate these bindings, we have *some* restrictions on what types can and can't be on method signatures for `Callables`. 

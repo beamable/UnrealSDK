@@ -267,10 +267,10 @@ UClass** UBeamEditorContent::FindContentTypeByTypeId(FString TypeId)
 void UBeamEditorContent::FindSubTypesOfContentType(const TArray<FString>& TypeNames,
                                                    TMap<FString, TArray<FString>>& OutMappings)
 {
-	for (const auto Pair : ContentTypeStringToContentClass)
+	for (const auto& Pair : ContentTypeStringToContentClass)
 	{
 		const FString CurrentId = Pair.Key;
-		for (const auto TypeName : TypeNames)
+		for (const auto& TypeName : TypeNames)
 		{
 			if (CurrentId.StartsWith(TypeName))
 			{
@@ -703,19 +703,17 @@ bool UBeamEditorContent::TryGetFilteredListOfContent(const FBeamContentManifestI
 	//Content needs to be sorted to as following : newly created content/modified/unmodified/deletions
 	FoundLocalContent.Sort([](const UBeamContentLocalView& BeamContent1, const UBeamContentLocalView& BeamContent2)
 		{
-				if (BeamContent1.LocalStatus == BeamContent2.LocalStatus)
-				{
-					return BeamContent1.ContentName.ToString() < BeamContent2.ContentName.ToString();
-				}
-				else if (BeamContent1.LocalStatus == EBeamLocalContentStatus::Beam_LocalContentCreated)
-					return true;
-				else if (BeamContent1.LocalStatus == EBeamLocalContentStatus::Beam_LocalContentModified && BeamContent2.LocalStatus != EBeamLocalContentStatus::Beam_LocalContentCreated)
-					return true;
-				else if (BeamContent1.LocalStatus == EBeamLocalContentStatus::Beam_LocalContentUpToDate &&
-					BeamContent2.LocalStatus !=   EBeamLocalContentStatus::Beam_LocalContentCreated && BeamContent2.LocalStatus != EBeamLocalContentStatus::Beam_LocalContentModified)
-					return true;
-	
-					return false;
+			if (BeamContent1.LocalStatus == BeamContent2.LocalStatus)
+				return BeamContent1.ContentName.ToString() < BeamContent2.ContentName.ToString();
+			else if (BeamContent1.LocalStatus == EBeamLocalContentStatus::Beam_LocalContentCreated)
+				return true;
+			else if (BeamContent1.LocalStatus == EBeamLocalContentStatus::Beam_LocalContentModified && BeamContent2.LocalStatus != EBeamLocalContentStatus::Beam_LocalContentCreated)
+				return true;
+			else if (BeamContent1.LocalStatus == EBeamLocalContentStatus::Beam_LocalContentUpToDate &&
+				BeamContent2.LocalStatus != EBeamLocalContentStatus::Beam_LocalContentCreated && BeamContent2.LocalStatus != EBeamLocalContentStatus::Beam_LocalContentModified)
+				return true;
+
+			return false;
 		});
 	
 	return true;

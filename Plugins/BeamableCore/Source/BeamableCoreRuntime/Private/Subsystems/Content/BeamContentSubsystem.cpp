@@ -668,16 +668,8 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 }
 
 void UBeamContentSubsystem::OnBeamableStarting_Implementation(FBeamOperationHandle& ResultOp)
-{
-	FBeamOperationEventHandlerCode OpHandler;
-	OpHandler.BindLambda([](FBeamOperationEvent OpEvent)
-	{
-		if (OpEvent.EventType == OET_ERROR)
-		{
-			// TODO: How should we handle when S3 explodes for some reason?
-		}
-	});
-	FBeamOperationHandle Op = GEngine->GetEngineSubsystem<UBeamRequestTracker>()->CPP_BeginOperation({}, GetName(), OpHandler);
+{	
+	FBeamOperationHandle Op = GEngine->GetEngineSubsystem<UBeamRequestTracker>()->CPP_BeginOperation({}, GetName(), {});
 
 	const auto ManifestId = FBeamContentManifestId{TEXT("global")};
 	const auto bShouldDownloadIndividuals = GetDefault<UBeamRuntimeSettings>()->bDownloadIndividualContentOnStart;

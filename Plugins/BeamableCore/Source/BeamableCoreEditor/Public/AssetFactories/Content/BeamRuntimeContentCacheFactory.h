@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "AssetTypeActions_Base.h"
 #include "Subsystems/Content/BeamContentSubsystem.h"
+#include "Factories/Factory.h"
 
 #include "BeamRuntimeContentCacheFactory.generated.h"
 

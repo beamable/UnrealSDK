@@ -6,6 +6,7 @@
 #include "BeamK2.h"
 #include "BlueprintActionDatabaseRegistrar.h"
 #include "BlueprintNodeSpawner.h"
+#include "ScopedTransaction.h"
 #include "ToolMenu.h"
 
 #define LOCTEXT_NAMESPACE "BeamK2_BeamFlow"

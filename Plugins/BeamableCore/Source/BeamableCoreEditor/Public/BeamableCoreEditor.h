@@ -2,6 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "AssetFactories/Content/BeamRuntimeContentCacheFactory.h"
+#include "K2Node.h"
+#include "Factories/Factory.h"
 
 #include "BeamableCoreEditor.generated.h"
 

@@ -6,7 +6,7 @@
 #include "BeamFlow/K2BeamNode_Operation.h"
 #include "Subsystems/Matchmaking/BeamMatchmakingSubsystem.h"
 
-#include "K2BeamNode_Operation_MatchMaking.generated.h"
+#include "K2BeamNode_Operation_Matchmaking.generated.h"
 
 #define LOCTEXT_NAMESPACE "UK2BeamNode_Operation_TryJoinQueue"
 

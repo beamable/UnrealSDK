@@ -12,6 +12,7 @@
 #include "Content/BeamContentTypes/BeamCurrencyContent.h"
 #include "Content/BeamContentTypes/BeamItemContent.h"
 #include "Content/BeamContentTypes/BeamGameTypeContent.h"
+#include "Engine/NetworkSettings.h"
 
 #include "Subsystems/BeamEditorSubsystem.h"
 #include "Misc/MessageDialog.h"
@@ -114,6 +115,19 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 	const auto RequestTracker = GEngine->GetEngineSubsystem<UBeamRequestTracker>();
 	const auto BeamEditor = GEditor->GetEditorSubsystem<UBeamEditor>();
 
+	// This needs to be enabled as it'll make UE add its configured certificates to its HTTP/Websocket clients (which Beamable depends on).
+	// This must be on, otherwise, the you are risking this error happening in rare cases: "SSL certificate problem: unable to get local issuer certificate"
+	// These rare cases happen due to the cert situation on the machine of whoever is running. Turning this on ensures that UE bundle along the necessary certificates
+	// (or any inside the "ProjectRoot/Certificates" directory) along with the build.
+	// More information here: https://forums.unrealengine.com/t/when-playing-in-the-editor-websocket-connection-successful-but-failed-when-playing-in-packaged-why/436199/18
+	auto EngineNetworkSettings = GetMutableDefault<UNetworkSettings>();
+	if (!EngineNetworkSettings->bVerifyPeer)
+	{
+		UE_LOG(LogBeamEditor, Display, TEXT("Enforcing VerifyPeer=true"));
+		EngineNetworkSettings->bVerifyPeer = true;
+		EngineNetworkSettings->SaveConfig(CPF_Config, *EngineNetworkSettings->GetDefaultConfigFilename());
+	}
+	
 	/* INFO - Make sure our core settings and environment settings are correctly set up for our users.
 	 * When this plugin gets added to the project, there are some default settings that we can pre-set for our users so that they don't have to do it.
 	 * This is where we do that.

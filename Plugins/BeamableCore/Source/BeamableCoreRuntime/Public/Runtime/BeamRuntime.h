@@ -452,7 +452,7 @@ public:
 	 * UserInitilizationError :  Is triggered if an error happened while initializing a user for the SDK.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void InitSDKWithFrictionlessLogin(FUserStateChangedHandler OnUserReadyHandler, FRuntimeError OnStartedFailedHandler, FRuntimeError OnUserInitFailedHandler);
+	void InitSDKWithFrictionlessLogin(FUserStateChangedHandler OnUserReadyHandler, FRuntimeError OnStartedFailedHandler, FRuntimeError OnUserReadyFailedHandler);
 
 	/**
 	 * @brief Call this function if you want to initialize a subsystem that was set to manually initialize from the project settings.
@@ -499,9 +499,7 @@ private:
 	 */
 	UPROPERTY()
 	FBeamRuntimeEvent OnStarted;
-	FBeamRuntimeEventCode OnStartedCode;
-	TArray<FBeamRuntimeHandler> OnStarted_RegisteredHandles;
-	TArray<FDelegateHandle> OnStartedCode_RegisteredHandles;
+	FBeamRuntimeEventCode OnStartedCode;	
 
 	/**
 	 * @brief This is called when the operations for starting the sdk fails.
@@ -509,8 +507,6 @@ private:
 	UPROPERTY()
 	FSdkInitFailedEvent OnStartedFailed;
 	FSdkInitFailedEventCode OnStartedFailedCode;
-	TArray<FOperationError> OnStartedError_RegisteredHandles;
-	TArray<FDelegateHandle> OnStartedFailedCode_RegisteredHandles;
 
 public:
 	/**
@@ -521,7 +517,6 @@ public:
 	{
 		if (CurrentSdkState == ESDKState::Initialized) const auto _ = Handler.ExecuteIfBound();
 		OnStarted.Add(Handler);
-		OnStarted_RegisteredHandles.Add(Handler);
 	}
 
 	/**
@@ -531,7 +526,6 @@ public:
 	void RegisterOnStarted_NoExecute(FBeamRuntimeHandler Handler)
 	{
 		OnStarted.Add(Handler);
-		OnStarted_RegisteredHandles.Add(Handler);
 	}
 
 	/**
@@ -541,10 +535,7 @@ public:
 	void UnregisterOnStarted(FBeamRuntimeHandler Handler)
 	{
 		if (OnStarted.Contains(Handler))
-		{
 			OnStarted.Remove(Handler);
-			OnStarted_RegisteredHandles.Remove(Handler);
-		}
 	}
 
 	/**
@@ -553,9 +544,7 @@ public:
 	FDelegateHandle CPP_RegisterOnStarted(FBeamRuntimeHandlerCode Handler)
 	{
 		if (CurrentSdkState == ESDKState::Initialized) const auto _ = Handler.ExecuteIfBound();
-		const auto Handle = OnStartedCode.Add(Handler);
-		OnStartedCode_RegisteredHandles.Add(Handle);
-		return Handle;
+		return OnStartedCode.Add(Handler);
 	}
 
 	/**
@@ -563,9 +552,7 @@ public:
 	 */
 	FDelegateHandle CPP_RegisterOnStarted_NoExecute(FBeamRuntimeHandlerCode Handler)
 	{
-		const auto Handle = OnStartedCode.Add(Handler);
-		OnStartedCode_RegisteredHandles.Add(Handle);
-		return Handle;
+		return OnStartedCode.Add(Handler);
 	}
 
 	/**
@@ -574,7 +561,6 @@ public:
 	void CPP_UnregisterOnStarted(FDelegateHandle Handle)
 	{
 		OnStartedCode.Remove(Handle);
-		OnStartedCode_RegisteredHandles.Remove(Handle);
 	}
 
 	/**
@@ -585,7 +571,6 @@ public:
 	{
 		if (CurrentSdkState == ESDKState::InitializationFailed) const auto _ = Handler.ExecuteIfBound(CachedInitializationErrors);
 		OnStartedFailed.Add(Handler);
-		OnStartedError_RegisteredHandles.Add(Handler);
 	}
 
 	/**
@@ -595,7 +580,6 @@ public:
 	void RegisterOnSdkInitFailed_NoExecute(FOperationError Handler)
 	{
 		OnStartedFailed.Add(Handler);
-		OnStartedError_RegisteredHandles.Add(Handler);
 	}
 
 	/**
@@ -607,7 +591,6 @@ public:
 		if (OnStartedFailed.Contains(Handler))
 		{
 			OnStartedFailed.Remove(Handler);
-			OnStartedError_RegisteredHandles.Remove(Handler);
 		}
 	}
 
@@ -617,9 +600,7 @@ public:
 	FDelegateHandle CPP_RegisterOnSdkInitFailed(FOperationErrorCode Handler)
 	{
 		if (CurrentSdkState == ESDKState::InitializationFailed) const auto _ = Handler.ExecuteIfBound(CachedInitializationErrors);
-		const auto Handle = OnStartedFailedCode.Add(Handler);
-		OnStartedFailedCode_RegisteredHandles.Add(Handle);
-		return Handle;
+		return OnStartedFailedCode.Add(Handler);
 	}
 
 	/**
@@ -627,9 +608,7 @@ public:
 	 */
 	FDelegateHandle CPP_RegisterOnSdkInitFailed_NoExecute(FOperationErrorCode Handler)
 	{
-		const auto Handle = OnStartedFailedCode.Add(Handler);
-		OnStartedFailedCode_RegisteredHandles.Add(Handle);
-		return Handle;
+		return OnStartedFailedCode.Add(Handler);
 	}
 
 	/**
@@ -638,7 +617,6 @@ public:
 	void CPP_UnregisterOnSdkInitFailed(FDelegateHandle Handle)
 	{
 		OnStartedFailedCode.Remove(Handle);
-		OnStartedFailedCode_RegisteredHandles.Remove(Handle);
 	}
 
 private:
@@ -650,18 +628,14 @@ private:
 	 */
 	UPROPERTY(BlueprintAssignable)
 	FUserStateChangedEvent OnUserReady;
-	FUserStateChangedEventCode OnUserReadyCode;
-	TArray<FUserStateChangedHandler> OnUserReady_RegisteredHandles;
-	TArray<FDelegateHandle> OnUserReadyCode_RegisteredHandles;
+	FUserStateChangedEventCode OnUserReadyCode;	
 
 	/**
 	 * @brief This is called when the initialization of the subsystems user slots fails.
 	 */
 	UPROPERTY()
 	FUserInitFailedEvent OnUserInitFailed;
-	FUserInitFailedEventCode OnUserInitFailedCode;
-	TArray<FUserInitFailedHandler> OnUserInitFailed_RegisteredHandles;
-	TArray<FDelegateHandle> OnUserInitFailedCode_RegisteredHandles;
+	FUserInitFailedEventCode OnUserInitFailedCode;	
 
 	/**
 	 * @brief So that actors and components can react to user data being cleared for a specific user slot. 
@@ -671,9 +645,7 @@ private:
 	 */
 	UPROPERTY(BlueprintAssignable)
 	FUserStateChangedEvent OnUserCleared;
-	FUserStateChangedEventCode OnUserClearedCode;
-	TArray<FUserStateChangedHandler> OnUserCleared_RegisteredHandles;
-	TArray<FDelegateHandle> OnUserClearedCode_RegisteredHandles;
+	FUserStateChangedEventCode OnUserClearedCode;	
 
 public:
 	/**
@@ -683,7 +655,6 @@ public:
 	void RegisterOnUserReady(FUserStateChangedHandler Handler)
 	{
 		OnUserReady.Add(Handler);
-		OnUserReady_RegisteredHandles.Add(Handler);
 	}
 
 	/**
@@ -695,7 +666,6 @@ public:
 		if (OnUserReady.Contains(Handler))
 		{
 			OnUserReady.Remove(Handler);
-			OnUserReady_RegisteredHandles.Remove(Handler);
 		}
 	}
 
@@ -704,9 +674,7 @@ public:
 	 */
 	FDelegateHandle CPP_RegisterOnUserReady(FUserStateChangedHandlerCode Handler)
 	{
-		const auto Handle = OnUserReadyCode.Add(Handler);
-		OnUserReadyCode_RegisteredHandles.Add(Handle);
-		return Handle;
+		return OnUserReadyCode.Add(Handler);
 	}
 
 	/**
@@ -715,7 +683,6 @@ public:
 	void CPP_UnregisterOnUserReady(FDelegateHandle Handler)
 	{
 		OnUserReadyCode.Remove(Handler);
-		OnUserReadyCode_RegisteredHandles.Remove(Handler);
 	}
 
 	/**
@@ -725,7 +692,6 @@ public:
 	void RegisterOnUserInitFailed(FUserInitFailedHandler Handler)
 	{
 		OnUserInitFailed.Add(Handler);
-		OnUserInitFailed_RegisteredHandles.Add(Handler);
 	}
 
 	/**
@@ -737,7 +703,6 @@ public:
 		if (OnUserInitFailed.Contains(Handler))
 		{
 			OnUserInitFailed.Remove(Handler);
-			OnUserInitFailed_RegisteredHandles.Remove(Handler);
 		}
 	}
 
@@ -746,9 +711,7 @@ public:
 	 */
 	FDelegateHandle CPP_RegisterOnUserInitFailed(FUserInitFailedHandlerCode Handler)
 	{
-		const auto Handle = OnUserInitFailedCode.Add(Handler);
-		OnUserInitFailedCode_RegisteredHandles.Add(Handle);
-		return Handle;
+		return OnUserInitFailedCode.Add(Handler);
 	}
 
 	/**
@@ -757,7 +720,6 @@ public:
 	void CPP_UnregisterOnUserInitFailed(FDelegateHandle Handler)
 	{
 		OnUserInitFailedCode.Remove(Handler);
-		OnUserInitFailedCode_RegisteredHandles.Remove(Handler);
 	}
 
 	/**
@@ -767,7 +729,6 @@ public:
 	void RegisterOnUserCleared(FUserStateChangedHandler Handler)
 	{
 		OnUserCleared.Add(Handler);
-		OnUserCleared_RegisteredHandles.Add(Handler);
 	}
 
 	/**
@@ -779,7 +740,6 @@ public:
 		if (OnUserCleared.Contains(Handler))
 		{
 			OnUserCleared.Remove(Handler);
-			OnUserCleared_RegisteredHandles.Remove(Handler);
 		}
 	}
 
@@ -788,9 +748,7 @@ public:
 	 */
 	FDelegateHandle CPP_RegisterOnUserCleared(FUserStateChangedHandlerCode Handler)
 	{
-		const auto Handle = OnUserClearedCode.Add(Handler);
-		OnUserClearedCode_RegisteredHandles.Add(Handle);
-		return Handle;
+		return OnUserClearedCode.Add(Handler);
 	}
 
 	/**
@@ -799,7 +757,6 @@ public:
 	void CPP_UnregisterOnUserCleared(FDelegateHandle Handler)
 	{
 		OnUserClearedCode.Remove(Handler);
-		OnUserClearedCode_RegisteredHandles.Remove(Handler);
 	}
 
 

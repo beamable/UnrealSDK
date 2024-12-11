@@ -93,9 +93,9 @@ The `BeamRuntime` is an `GameInstanceSubsystem` that is responsible for controll
 
 Calling this function will initialize the SDK and, after that is successful, will automatically log into Beamable as a **Guest Account**. There are 3 exposed callbacks here:
 
-- `On Init Error`: This callback will be invoked if any problems occurred during the SDK's initialization process. If this is called, neither of the other two are called.
+- `On Started Error`: This callback will be invoked if any problems occurred during the SDK's initialization process. If this is called, neither of the other two are called.
 - `On User Ready`: This callback will be invoked after the user is logged in and 100% ready for use; after this callback is invoked, you can make authenticated requests to Beamable.
-- `On User Login Error`: This callback will be invoked if the SDK initialized but the Login fails. You can retry by invoking any of the `Login` functions in `Beam Runtime`.
+- `On User Ready Failed`: This callback will be invoked if the SDK initialized but the Login fails. You can retry by invoking any of the `Login` functions in `Beam Runtime`.
 
 Now that you have this event hooked up, you can add your first **Beam Flow Node** and make your first request. **Beam Flow Nodes** are custom nodes that wrap around the following flow:
 

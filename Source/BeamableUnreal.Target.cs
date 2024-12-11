@@ -18,7 +18,7 @@ public class BeamableUnrealTarget : TargetRules
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.Latest;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
-
+			
 		ExtraModuleNames.AddRange(new string[]
 		{
 			"BeamableUnreal",
@@ -342,18 +342,7 @@ public static class Beam
 		var additionalData = GetOrAddAdditionalData<BeamableAdditionalData>(TargetRules);
 		AddUtilityMacros(TargetRules);
 		ConfigOnlineSubsystem(TargetRules, OssConfig, additionalData);
-
-		TargetRules.ExtraModuleNames.AddRange(new[]
-		{
-			"BeamableCore",
-			"BeamableCoreBlueprintNodes",
-			"BeamableCoreRuntime",
-			"BeamableCoreRuntimeEditor",
-			"BeamableCoreEditor",
-
-			"Json",
-			"JsonUtilities",
-		});
+		Console.WriteLine($"Beamable - Ran ConfigureEditor - With OSS: {OssConfig.IsEnabled}");
 	}
 
 	/// <summary>
@@ -366,15 +355,7 @@ public static class Beam
 		var additionalData = GetOrAddAdditionalData<BeamableAdditionalData>(TargetRules);
 		AddUtilityMacros(TargetRules);
 		ConfigOnlineSubsystem(TargetRules, OssConfig, additionalData);
-
-		TargetRules.ExtraModuleNames.AddRange(new[]
-		{
-			"BeamableCore",
-			"BeamableCoreRuntime",
-
-			"Json",
-			"JsonUtilities",
-		});
+		Console.WriteLine($"Beamable - Ran ConfigureServer - With OSS: {OssConfig.IsEnabled}");
 	}
 
 	/// <summary>
@@ -387,15 +368,7 @@ public static class Beam
 		var additionalData = GetOrAddAdditionalData<BeamableAdditionalData>(TargetRules);
 		AddUtilityMacros(TargetRules);
 		ConfigOnlineSubsystem(TargetRules, OssConfig, additionalData);
-
-		TargetRules.ExtraModuleNames.AddRange(new[]
-		{
-			"BeamableCore",
-			"BeamableCoreRuntime",
-
-			"Json",
-			"JsonUtilities",
-		});
+		Console.WriteLine($"Beamable - Ran ConfigureGame - With OSS: {OssConfig.IsEnabled}");
 	}
 
 	/// <summary>
@@ -415,8 +388,11 @@ public static class Beam
 			"JsonUtilities",
 		});
 
-		if (ModuleRules.Target.bBuildEditor)
+		if (ModuleRules.Target.bCompileAgainstEditor)
+		{
+			Console.WriteLine($"Beamable - Adding Runtime Editor From Runtime Module");
 			l.Add("BeamableCoreRuntimeEditor");
+		}
 	}
 
 	/// <summary>
@@ -437,8 +413,11 @@ public static class Beam
 			"JsonUtilities",
 		});
 
-		if (ModuleRules.Target.bBuildEditor)
+		if (ModuleRules.Target.bCompileAgainstEditor)
+		{
+			Console.WriteLine($"Beamable - Adding Runtime Editor From Runtime Module");
 			l.Add("BeamableCoreRuntimeEditor");
+		}
 	}
 
 	/// <summary>

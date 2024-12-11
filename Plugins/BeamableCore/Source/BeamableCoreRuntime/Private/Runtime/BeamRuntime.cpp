@@ -25,8 +25,9 @@
 
 void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 {
-	Super::Initialize(Collection);
-
+	Super::Initialize(Collection);	
+	CurrentSdkState = NotInitialized;
+	
 	// We do some initialization for dedicated servers... 
 	if (GetGameInstance()->IsDedicatedServerInstance())
 	{
@@ -139,49 +140,24 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 void UBeamRuntime::UnregisterAllCallbacks()
 {
 	// Clean up initialization successful handlers
-	for (const auto H : OnStarted_RegisteredHandles)
-		OnStarted.Remove(H);
-	OnStarted_RegisteredHandles.Empty();
-
-	for (const auto H : OnStartedCode_RegisteredHandles)
-		OnStartedCode.Remove(H);
-	OnStartedCode_RegisteredHandles.Empty();
+	OnStarted.Clear();
+	OnStartedCode.Clear();		
 
 	// Clean up initialization error handlers
-	for (const auto H : OnStartedError_RegisteredHandles)
-		OnStartedFailed.Remove(H);
-	OnStartedError_RegisteredHandles.Empty();
+	OnStartedFailed.Clear();
+	OnStartedFailedCode.Clear();
 
-	for (const auto H : OnStartedFailedCode_RegisteredHandles)
-		OnStartedFailedCode.Remove(H);
-	OnStartedFailedCode_RegisteredHandles.Empty();
-
-	// Clean up user ready handlers
-	for (const auto H : OnUserReady_RegisteredHandles)
-		OnUserReady.Remove(H);
-	OnUserReady_RegisteredHandles.Empty();
-
-	for (const auto H : OnUserReadyCode_RegisteredHandles)
-		OnUserReadyCode.Remove(H);
-	OnUserReadyCode_RegisteredHandles.Empty();
+	// Clean up user ready handlers	
+	OnUserReady.Clear();
+	OnUserReadyCode.Clear();	
 
 	// Clean up user initialization failure handles
-	for (const auto H : OnUserInitFailed_RegisteredHandles)
-		OnUserInitFailed.Remove(H);
-	OnUserInitFailed_RegisteredHandles.Empty();
-
-	for (const auto H : OnUserInitFailedCode_RegisteredHandles)
-		OnUserInitFailedCode.Remove(H);
-	OnUserInitFailedCode_RegisteredHandles.Empty();
+	OnUserInitFailed.Clear();
+	OnUserInitFailedCode.Clear();
 
 	// Clean up user initialization failed handlers
-	for (const auto H : OnUserCleared_RegisteredHandles)
-		OnUserCleared.Remove(H);
-	OnUserCleared_RegisteredHandles.Empty();
-
-	for (const auto H : OnUserClearedCode_RegisteredHandles)
-		OnUserClearedCode.Remove(H);
-	OnUserClearedCode_RegisteredHandles.Empty();
+	OnUserCleared.Clear();	
+	OnUserClearedCode.Clear();	
 }
 
 void UBeamRuntime::InitSDK(FBeamRuntimeHandler OnStartedHandler, FRuntimeError SDKInitializationErrorHandler)
@@ -203,12 +179,12 @@ void UBeamRuntime::InitSDK(FBeamRuntimeHandler OnStartedHandler, FRuntimeError S
 }
 
 void UBeamRuntime::InitSDKWithFrictionlessLogin(FUserStateChangedHandler OnUserReadyHandler, FRuntimeError OnStartedFailedHandler,
-                                                FRuntimeError OnUserInitFailedHandler)
+                                                FRuntimeError OnUserReadyFailedHandler)
 {
 	if (CurrentSdkState == ESDKState::NotInitialized || CurrentSdkState == ESDKState::InitializationFailed)
 	{
 		OnUserReady.Add(OnUserReadyHandler);
-		OnUserInitFailed.Add(OnUserInitFailedHandler);
+		OnUserInitFailed.Add(OnUserReadyFailedHandler);
 		ExecuteOnGameThread(TEXT("Initialize"), [this,OnUserReadyHandler,OnStartedFailedHandler]()
 		{
 			FBeamRuntimeHandler EmptyHandler;

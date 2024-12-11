@@ -188,7 +188,7 @@ bool UBeamMicroservicesEditor::TryGetFilteredListOfServices(TArray<FString> Incl
 TArray<FString> UBeamMicroservicesEditor::GetServiceGroupFilterOptions() const
 {
 	TArray<FString> Options;
-	for (const auto MicroserviceData : LocalMicroserviceData)
+	for (const auto& MicroserviceData : LocalMicroserviceData)
 	{
 		const auto Groups = MicroserviceData.Value.ServiceGroups;
 		for (FString Group : Groups)
