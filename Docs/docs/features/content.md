@@ -95,7 +95,7 @@ The last part of the id is the only one you should edit through the **Content Wi
 ### Content Window
 The content window is how you can create and edit content inside the editor. Here's what it looks like:
 
-![](../features/images/content-window.png)
+![](images/content-window.png#center)
 
 !!! note "Where can I find the content files?"
 	 While you edit the content objects as `UObject` and a details panel, these are not stored as `UDataAsset` or anything inside Unreal itself. These are stored as individual JSON objects inside `ProjectRoot/.beamable/content/global` folder. This makes it more VCS-friendly.
@@ -118,7 +118,7 @@ These differences are represented by the `[+]`, `[M]`, `[NC]` and `[-]` signs.
 - `[NC]`: Means the content exists BOTH locally and in the realm AND that it has no changes relative to the one in the realm.
 - `[-]`: Means the content DOES NOT exists locally but DOES exist in the realm.
 
-![](../features/images/content-window-statuses.png#center)
+![](images/content-window-statuses.png#center)
 
 The window will display these sorted by these status types in the following order: `[+]` first, then `[M]` and `[NC]`, followed by `[-]` last.
 
@@ -138,7 +138,7 @@ The window will display these sorted by these status types in the following orde
 The SDK fetches the content manifest before the `OnBeamableStarted` callback is
 triggered. By default, it downloads the content manifest and each individual piece of content. You can enable and disable this behavior it can be configured to do so inside `Project Settings -> Beamable Runtime`.
 
-![DownloadIndividualContent](./images/content-download-individual-on-start.png#center)
+![DownloadIndividualContent](images/content-download-individual-on-start.png#center)
 
 The SDK also supports automated content updates.
 

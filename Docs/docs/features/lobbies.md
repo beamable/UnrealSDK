@@ -1,3 +1,9 @@
+<style>
+img[src*='#center'] { 
+    display: block;
+    margin: auto;
+}
+</style>
 # Lobby
 Beamable's Lobby system can be used primarily for 2 cases:
 

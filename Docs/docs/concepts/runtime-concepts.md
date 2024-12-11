@@ -38,11 +38,11 @@ The `UBeamUserSlots` Engine Subsystem is responsible for:
 
 The image below describes how the SDK's lifecycle injects itself into UE's lifecycle:
 
-![InitFlow](../concepts/images/runtime-concepts-init-flow.png#center)
+![InitFlow](images/runtime-concepts-init-flow.png#center)
 
 The next image shows a high-level description of the authentication flows supported by the SDK:
 
-![](runtime-concept-authflow.png#center)
+![runtime-concept-authflow.png#center](images/runtime-concept-authflow.png#center)
 
 Now that you have a high-level understanding of the SDK's initialization flows, read up on how to achieve the two most common Sign Up and Login flows among the ones we provide.
 
