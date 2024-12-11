@@ -6,7 +6,7 @@
 #include "BeamCliProjectRemoveCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliProjectRemoveStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

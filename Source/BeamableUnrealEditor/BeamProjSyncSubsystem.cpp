@@ -137,6 +137,10 @@ FBeamOperationHandle UBeamProjSyncSubsystem::InitializeWhenEditorReady()
 		const auto OnChanged = IDirectoryWatcher::FDirectoryChanged::CreateLambda([this, AbsWatchDir, AbsTargetDir](const TArray<FFileChangeData>& FileChanges)
 		{
 			IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+
+			if (PlatformFile.DirectoryExists(*AbsTargetDir))
+				PlatformFile.DeleteDirectoryRecursively(*AbsTargetDir);
+			
 			PlatformFile.CopyDirectoryTree(*AbsTargetDir, *AbsWatchDir, true);
 			UE_LOG(LogTemp, Display, TEXT("Keeping BEAMPROJ in Sync. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
 		});

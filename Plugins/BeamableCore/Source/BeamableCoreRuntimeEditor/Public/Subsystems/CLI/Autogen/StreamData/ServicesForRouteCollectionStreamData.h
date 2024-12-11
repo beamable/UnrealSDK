@@ -10,20 +10,20 @@
 #include "ServicesForRouteCollectionStreamData.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UServicesForRouteCollectionStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool KnownToBeRunning = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString RoutingKey = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UServiceInstanceStreamData*> Instances = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UFederationInstanceStreamData*> Federations = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

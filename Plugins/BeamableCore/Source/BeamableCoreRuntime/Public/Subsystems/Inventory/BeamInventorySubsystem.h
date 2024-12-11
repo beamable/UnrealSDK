@@ -245,7 +245,7 @@ public:
 	 * @brief Given a currency FBeamContentId, gets the amount the player has. Returns false if no player is signed into th given slot.
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetCurrencyAmount(FUserSlot Player, const FBeamContentId& CurrencyId, int64& Amount);
+	bool TryGetCurrencyAmount(FUserSlot Player, FBeamContentId CurrencyId, int64& Amount);
 
 	/**
 	 * @brief Gets the list of all currencies the given player has. Returns false if no player is signed into th given slot.
@@ -263,7 +263,7 @@ public:
 	 * @brief Given a currency FBeamContentId, gets the amount the player has. Returns false if no player is signed into th given slot.
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetCurrencyAmountByGamerTag(const FBeamGamerTag& GamerTag, const FBeamContentId& CurrencyId, int64& Amount);
+	bool TryGetCurrencyAmountByGamerTag(const FBeamGamerTag& GamerTag, FBeamContentId CurrencyId, int64& Amount);
 
 	/**
 	 * @brief Gets the list of all currencies the given player has. Returns false if no player is signed into th given slot.

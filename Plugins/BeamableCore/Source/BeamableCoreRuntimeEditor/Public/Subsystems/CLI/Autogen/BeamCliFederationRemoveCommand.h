@@ -6,7 +6,7 @@
 #include "BeamCliFederationRemoveCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliFederationRemoveStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

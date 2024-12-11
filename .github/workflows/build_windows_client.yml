@@ -20,7 +20,7 @@ on:
         type: string
         description: 'Build all BEAMPROJS.'
         required: true
-        default: false
+        default: "false"
 
 permissions:
   contents: write
@@ -117,3 +117,4 @@ jobs:
       beamProj: ${{ matrix.beamProj }}
       buildType: client
       targetPlatform: "Win64"
+      gitRevision: ${{ github.sha }}

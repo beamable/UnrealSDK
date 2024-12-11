@@ -6,7 +6,7 @@
 #include "BeamCliProjectStorageEraseCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliProjectStorageEraseStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
@@ -32,18 +32,18 @@ public:
 };
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliProjectStorageEraseMongoLogsStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString LogLevel = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Message = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int64 Timestamp = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

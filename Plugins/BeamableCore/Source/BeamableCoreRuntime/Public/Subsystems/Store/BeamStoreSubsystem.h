@@ -5,40 +5,65 @@
 #include "AutoGen/SubSystems/BeamInventoryApi.h"
 #include "Content/BeamContentTypes/BeamListingContent.h"
 #include "Content/BeamContentTypes/BeamStoreContent.h"
+#include "RequestTracker/EventDataTypes/BeamOperationEventData_ContentIds.h"
 #include "Runtime/BeamRuntimeSubsystem.h"
 #include "BeamStoreSubsystem.generated.h"
 
-
-UCLASS(BlueprintType)
-class BEAMABLECORERUNTIME_API UBeamPurchaseListingOperation : public UObject
+UCLASS()
+class UBeamStoreView : public UObject
 {
 	GENERATED_BODY()
 
+	friend class UBeamStoreSubsystem;
+
 	UPROPERTY()
-	UBeamStoreSubsystem* StoreSubsystem;
+	UBeamStoreSubsystem* Subsystem;
 
 public:
-	explicit UBeamPurchaseListingOperation() = default;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	FUserSlot OwnerSlot;
 
-	void Init(UBeamStoreSubsystem* Subsystem, FUserSlot Slot, FBeamContentId StoreId, FBeamContentId ListingId);
-
-	UPROPERTY(BlueprintReadOnly)
-	FUserSlot UserSlot;
-
-	UPROPERTY(BlueprintReadOnly)
-	FBeamContentId StoreId;
-	
-	UPROPERTY(BlueprintReadOnly)
-	FBeamContentId ListingId;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UPlayerStoreView* CurrentStoreView;
 };
+
+USTRUCT(BlueprintType)
+struct FBeamPlayerStoreHandle
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+	FUserSlot Slot;
+
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, meta=(BeamContentTypeFilter="store", BeamContentTypeFilterMode="tree"))
+	FBeamContentId StoreId;
+
+	friend bool operator==(const FBeamPlayerStoreHandle& Lhs, const FBeamPlayerStoreHandle& RHS)
+	{
+		return Lhs.Slot == RHS.Slot && Lhs.StoreId == RHS.StoreId;
+	}
+
+	friend bool operator!=(const FBeamPlayerStoreHandle& Lhs, const FBeamPlayerStoreHandle& RHS)
+	{
+		return !(Lhs == RHS);
+	}
+};
+
+// Hash function to use FBeamPlayerStoreHandle in TMap
+inline uint32 GetTypeHash(const FBeamPlayerStoreHandle& Hash)
+{
+	return GetTypeHash(Hash.Slot) ^ GetTypeHash(Hash.StoreId);
+}
 
 UCLASS()
 class BEAMABLECORERUNTIME_API UBeamStoreSubsystem : public UBeamRuntimeSubsystem
 {
 	GENERATED_BODY()
+
 public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
 	static UBeamStoreSubsystem* GetSelf(const UObject* CallingContext) { return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamStoreSubsystem>(); }
+
 	UPROPERTY()
 	UBeamUserSlots* UserSlots;
 	UPROPERTY()
@@ -47,31 +72,20 @@ public:
 	UBeamRequestTracker* RequestTracker;
 	UPROPERTY()
 	UBeamContentSubsystem* ContentSubsystem;
-	UPROPERTY()
-	TArray<UBeamStoreContent*> StoreContents;
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	TMap<FUserSlot, UBeamPurchaseListingOperation*> PurchaseCommands;
 
 private:
+	UPROPERTY()
+	TMap<FBeamPlayerStoreHandle, UBeamStoreView*> StoreViews = {};
+
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
+	virtual TArray<TSubclassOf<UBeamRuntimeSubsystem>> GetDependingOnSubsystems() override;
 
 public:
-	virtual void OnBeamableContentReady_Implementation(FBeamOperationHandle& ResultOp) override;
+
+
+	// OPERATIONS
 	
-	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="Store", ExpandBoolAsExecs="ReturnValue"))
-	bool TryCreatePurchaseListingOperation(FUserSlot Slot, FBeamContentId StoreId, FBeamContentId ListingId, UBeamPurchaseListingOperation*& Command);
-	
-	/**
-	 * @brief Takes whatever is the current purchase listing command for the given user slot and submits it to the Beamable backend.
-	 * Call this only after you've called TryCreatePurchaseListingOperation for this slot.
-	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Store", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle CommitPurchaseListingOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent);
-	/**
-	 * @copydoc CommitStatsOperation
-	 */
-	FBeamOperationHandle CPP_CommitPurchaseListingOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent);
 	/**
 	 * @brief Performs a purchase operation of a listing content from a specified store content.
 	 */
@@ -84,25 +98,37 @@ public:
 	FBeamOperationHandle CPP_PerformPurchaseOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent, FBeamContentId StoreId, FBeamContentId ListingId);
 
 	/**
-	 * @brief Performs a purchase operation of a listing content from a specified store content.
+	 * @brief This will refresh the player's view of a configured store.
+	 * Call this before displaying the store to ensure you have the correct view of listings for a particular player.
+	 * 
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Store")
-	FBeamOperationHandle RefreshStoreOperation(FBeamOperationEventHandler ResultOp);
+	FBeamOperationHandle RefreshStoresOperation(FUserSlot UserSlot, TArray<FBeamContentId> StoreIds, FBeamOperationEventHandler OnOperationEvent);
+
 	/**
-	 * @copydoc RefreshStoreOperation 
+	 * \copybrief RefreshStoresOperation
 	 */
-	FBeamOperationHandle CPP_RefreshStoreOperation(FBeamOperationEventHandlerCode ResultOp);
+	FBeamOperationHandle CPP_RefreshStoresOperation(FUserSlot UserSlot, TArray<FBeamContentId> StoreIds, FBeamOperationEventHandlerCode OnOperationEvent);
 
-	// Helper Functions
-	UFUNCTION(BlueprintCallable)
-	bool TryGetItemsFromListing(FBeamContentId ListingId, TArray<FBeamOfferObtainItem>& items);
-	UFUNCTION(BlueprintCallable)
-	bool TryGetCurrenciesFromListing(FBeamContentId ListingId, TArray<FBeamOfferObtainCurrency>& currencies);
-	UFUNCTION(BlueprintCallable)
-	bool GetFormattedPrice(FBeamContentId ListingId, FString& FormattedPrice);
+	/**
+	 * \copybrief RefreshStoresOperation
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Store")
+	FBeamOperationHandle RefreshStoreOperation(FUserSlot UserSlot, FBeamContentId StoreId, FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * \copybrief RefreshStoresOperation
+	 */
+	FBeamOperationHandle CPP_RefreshStoreOperation(FUserSlot UserSlot, FBeamContentId StoreId, FBeamOperationEventHandlerCode OnOperationEvent);
+
+	// LOCAL STATE FETCHING
+	
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetStoreView(FUserSlot Slot, FBeamContentId StoreContentId, UBeamStoreView*& Store);
+
 private:
-	void PerformPurchase(FUserSlot UserSlot, FBeamContentId StoreId, FBeamContentId ListingId, FBeamOperationHandle Op = {});
-	void RefreshStores(FBeamOperationHandle Op = {});
-	void CommitPurchaseListings(FUserSlot UserSlot, FBeamOperationHandle Op);
 
+	// OPERATION IMPLEMENTATIONS
+	void PerformPurchase(FUserSlot UserSlot, FBeamContentId StoreId, FBeamContentId ListingId, FBeamOperationHandle Op = {});
+	void RefreshStoreView(FUserSlot UserSlot, TArray<FBeamContentId> StoreIds, FBeamOperationHandle Op = {});
 };

@@ -8,6 +8,7 @@
 #include "BeamFlow/K2BeamNode_BeamFlow.h"
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "Kismet2/Breakpoint.h"
+#include "ScopedTransaction.h"
 #include "Kismet2/KismetDebugUtilities.h"
 
 

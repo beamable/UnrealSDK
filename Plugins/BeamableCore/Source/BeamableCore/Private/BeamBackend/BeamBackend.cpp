@@ -45,11 +45,11 @@ void UBeamBackend::Initialize(FSubsystemCollectionBase& Collection)
 	CurrentConnectivityStatus = FBeamConnectivity{true, FDateTime::UtcNow().GetTicks()};
 
 	// Initialize a buffer of 16 simultaneous requests.
-	InFlightRequests.Reserve(16);
-	InFlightRequestContexts.Reserve(16);
-	InFlightFailureCount.Reserve(16);
-	InFlightRequestsCancelled.Reserve(16);
-	InFlightProcessingRequests.Reserve(16);
+	InFlightRequests.Reserve(1024 * 4);
+	InFlightRequestContexts.Reserve(1024 * 4);
+	InFlightFailureCount.Reserve(1024 * 4);
+	InFlightRequestsCancelled.Reserve(1024 * 4);
+	InFlightProcessingRequests.Reserve(1024 * 4);
 
 
 	const auto ExecuteRequestImpl = GET_FUNCTION_NAME_CHECKED(UBeamBackend, DefaultExecuteRequestImpl);
@@ -604,11 +604,11 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 	}
 
 	// Log out all requests that were actually sent out and removed from the InFlightProcessingRequests list.
-	if(RetriesSentOutStr.Num() > 0)
+	if (RetriesSentOutStr.Num() > 0)
 	{
 		UE_LOG(LogBeamBackend, Verbose,
-			  TEXT("Beamable Retry Queue | Successfully sent out these requests. REQ_IDS=[%s]"),
-			  *FString::Join(RetriesSentOutStr, TEXT(",")));
+		       TEXT("Beamable Retry Queue | Successfully sent out these requests. REQ_IDS=[%s]"),
+		       *FString::Join(RetriesSentOutStr, TEXT(",")));
 	}
 
 	// Return true to keep this ticking...
@@ -690,7 +690,7 @@ bool UBeamBackend::CleanUpRequestData()
 
 void UBeamBackend::UpdateResponseCache(const FRequestType& RequestType, const UObject* CallingContext, const FHttpRequestPtr& Request, const FString& Content)
 {
-	GEngine->GetEngineSubsystem<UBeamResponseCache>()->UpdateResponseCache(RequestType, CallingContext, Request, Content);	
+	GEngine->GetEngineSubsystem<UBeamResponseCache>()->UpdateResponseCache(RequestType, CallingContext, Request, Content);
 }
 
 bool UBeamBackend::ExtractDataFromResponse(const FHttpRequestPtr Request, const FHttpResponsePtr Response, const bool bWasRequestCompleted, EHttpRequestStatus::Type& OutRequestStatus,

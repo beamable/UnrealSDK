@@ -30,7 +30,7 @@ public:
 	FString ActiveBeamProj;
 
 private:	
-	inline static TArray<FString> OverridenDirectories = {TEXT("Config"), TEXT(".beamable/content")};
+	inline static TArray<FString> OverridenDirectories = {TEXT("Config"), TEXT(".beamable")};
 	inline static TArray<FDelegateHandle> OverridenDirectoriesHandlers = {{}, {}};
 
 

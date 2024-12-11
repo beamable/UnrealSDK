@@ -6,7 +6,7 @@
 #include "BeamCliFederationDisableCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliFederationDisableStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

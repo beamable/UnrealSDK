@@ -18,6 +18,7 @@
 #include "Kismet2/BlueprintEditorUtils.h"
 #include "Misc/DefaultValueHelper.h"
 #include "Widgets/Notifications/SNotificationList.h"
+#include "ScopedTransaction.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_WaitAll"
 

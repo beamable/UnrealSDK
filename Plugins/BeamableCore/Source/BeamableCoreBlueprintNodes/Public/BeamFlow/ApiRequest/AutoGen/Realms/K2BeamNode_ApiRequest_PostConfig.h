@@ -3,7 +3,6 @@
 
 #include "CoreMinimal.h"
 #include "BeamFlow/ApiRequest/K2BeamNode_ApiRequest.h"
-
 #include "K2BeamNode_ApiRequest_PostConfig.generated.h"
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_ApiRequest_PostConfig"

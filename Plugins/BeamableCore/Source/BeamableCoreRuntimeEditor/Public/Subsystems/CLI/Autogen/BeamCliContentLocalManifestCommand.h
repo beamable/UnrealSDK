@@ -7,14 +7,14 @@
 #include "BeamCliContentLocalManifestCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliContentLocalManifestStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<ULocalContentManifestStreamData*> Manifests = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

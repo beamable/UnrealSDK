@@ -13,9 +13,6 @@ public class BEAMPROJ_DiscordDemo : ModuleRules
 			{
 				"Core",
 				"DiscordSDK",
-				
-				// Because we are making microservice calls, we add the microservice plugin for our project
-				"BeamableUnrealMicroserviceClients"
 			}
 		);
 		
@@ -30,6 +27,7 @@ public class BEAMPROJ_DiscordDemo : ModuleRules
 			}
 		);
 		
+		BeamableUnrealMicroserviceClients.AddMicroserviceClients(this);
 		Beam.AddRuntimeModuleDependencies(this);
 	}
 }

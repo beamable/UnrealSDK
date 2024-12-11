@@ -14,8 +14,11 @@ using Lobby = Beamable.Experimental.Api.Lobbies.Lobby;
 
 namespace Beamable.HathoraDemo
 {
+    [FederationId("hathora")]
+    public class HathoraId : IFederationId;
+    
     [Microservice("HathoraDemo")]
-    public partial class HathoraDemo : Microservice
+    public partial class HathoraDemo : Microservice, IFederatedGameServer<HathoraId>
     {
         [ClientCallable]
         public async Promise InitializePlayer()
@@ -33,7 +36,7 @@ namespace Beamable.HathoraDemo
         public async Promise<ServerInfo> CreateGameServer(Lobby lobby)
         {
             var roomId = lobby.lobbyId;
-            BeamableLogger.Log($"Trying to provision game server for lobby={roomId} --- From={Context.UserId}");
+            BeamableLogger.Log($"Trying to provision game server for lobby={roomId} with gametype={lobby.matchType.Value.id} --- From={Context.UserId}");
 
             RealmConfig config = await Services.RealmConfig.GetRealmConfigSettings();
 

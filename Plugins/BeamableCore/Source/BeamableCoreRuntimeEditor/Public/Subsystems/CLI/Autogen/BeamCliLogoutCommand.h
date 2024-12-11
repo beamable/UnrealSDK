@@ -6,7 +6,7 @@
 #include "BeamCliLogoutCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliLogoutStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()

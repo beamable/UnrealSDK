@@ -1452,10 +1452,6 @@ void FOnlineSessionBeamable::OnLobbyUpdated(const FUserSlot& UserSlot, ULobby* L
 			TriggerOnSessionParticipantLeftDelegates(SessionName, FUniqueNetIdBeamable::Create(Evt.PlayerKickedData.KickedGamerTag.AsString).Get(), EOnSessionParticipantLeftReason::Kicked);
 			break;
 		}
-	case EBeamLobbyEvent::BEAM_HostPlayerChanged:
-		{
-			break;
-		}
 	default:
 		break;;
 	}

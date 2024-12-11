@@ -81,14 +81,14 @@ FBeamOperationHandle UBeamCli::InitializeWhenEditorReady()
 		});
 	});
 	IsInstalledProcess->OnCompleted().BindLambda([this, Op, ExpectedVersion](int ResCode)
-	{
+	{		
 		AsyncTask(ENamedThreads::GameThread, [this, Op, ResCode, ExpectedVersion]
 		{
 			// Kick off our CLI running in server mode ONLY if the version command worked as expected.
 			if (ResCode == 0)
 			{
-				bInstalled = FOptionalBool{true};
-				StartCliServer(Op);
+				bInstalled = FOptionalBool{true};				
+				RequestTracker->TriggerOperationSuccess(Op, CurrentCliServerUri);				
 			}
 			else
 			{

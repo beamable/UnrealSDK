@@ -57,7 +57,7 @@ class BEAMABLECORERUNTIME_API UBeamContentSubsystem : public UBeamRuntimeSubsyst
 
 	UPROPERTY()
 	TMap<FString, UClass*> ContentTypeStringToContentClass;
-
+	TMap<UClass*, FString> ContentClassToContentTypeString;
 
 	TMap<UClass*, TArray<TArray<const FProperty*>>> PathsToContentLinks;
 	TMap<UClass*, TArray<TArray<const FProperty*>>> PathsToRecursiveSelves;
@@ -87,8 +87,19 @@ private:
 	 * Given a list of FBeamRemoteContentManifestEntry (contains public content only) and a FBeamContentManifestId, we make requests to the URLs where the actual content JSON is stored.
 	 * Run OnSuccess if all downloads succeed. OnError, otherwise.
 	 */
-	void DownloadLiveContentObjects(const FBeamContentManifestId ManifestId, const TArray<FBeamRemoteContentManifestEntry> Rows, const TMap<FBeamContentId, FString> Checksums,
-	                                FBeamOperationHandle Op);
+	void DownloadContentObjects(FBeamContentManifestId ManifestId, TArray<FBeamRemoteContentManifestEntry> Rows, TMap<FBeamContentId, FString> Checksums,
+	                            bool bIgnoreFilterMap, FBeamOperationHandle Op);
+
+	// Static helpers
+public:
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool AreContentsOfType(TSubclassOf<UBeamContentObject> AllowedType, TArray<FBeamContentId> Contents, TArray<FBeamContentId>& InvalidContentIds);
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool AreContentsOfTypeHierarchy(TSubclassOf<UBeamContentObject> AllowedType, TArray<FBeamContentId> Contents, TArray<FBeamContentId>& InvalidContentIds);
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool ValidateContentsType(TArray<TSubclassOf<UBeamContentObject>> AllowedTypes, TArray<FBeamContentId> Contents, TArray<FBeamContentId>& InvalidContentIds);
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool ValidateContentsTypeHierarchy(TArray<TSubclassOf<UBeamContentObject>> AllowedTypes, TArray<FBeamContentId> Contents, TArray<FBeamContentId>& InvalidContentIds);
 
 public:
 	/**
@@ -169,23 +180,25 @@ public:
 	}
 
 	/**
-	 * @brief Asks the Beamable server for the newest CSV representing the public content manifest with the given Id. Updates the runtime content cache's received manifest, but only downloads each individual content
-	 * if the flag is set.
+	 * @brief Asks the Beamable server for the newest CSV representing the public content manifest with the given Id.
+	 * Updates the runtime content cache's received manifest, but only downloads each individual content if the flag is set.
 	 * 
 	 * @param ManifestId The ManifestId to fetch. 
-	 * @param bDownloadIndividualContent Whether or not we should download the entire manifest.
+	 * @param bDownloadIndividualContent Whether we should download the entire manifest.
+	 * @param bIgnoreFilterMap Whether the UBeamRuntimeSettings::IndividualContentDownloadFilter should be used to filter the individual content that is downloaded (only useful when bDownloadIndividualContent is true).
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Content", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle FetchContentManifestOperation(FBeamContentManifestId ManifestId, bool bDownloadIndividualContent, FBeamOperationEventHandler OnOperationEvent);
+	FBeamOperationHandle FetchContentManifestOperation(FBeamContentManifestId ManifestId, bool bDownloadIndividualContent, bool bIgnoreFilterMap, FBeamOperationEventHandler OnOperationEvent);
 
 	/**	 
 	 * @brief Asks the Beamable server for the newest CSV representing the public content manifest with the given Id. Updates the runtime content cache's received manifest, but only downloads each individual content
 	 * if the flag is set.
 	 * 
 	 * @param ManifestId The ManifestId to fetch. 
-	 * @param bDownloadIndividualContent Whether or not we should download the entire manifest.
+	 * @param bDownloadIndividualContent Whether we should download the entire manifest.
+	 * @param bIgnoreFilterMap Whether the UBeamRuntimeSettings::IndividualContentDownloadFilter should be used to filter the individual content that is downloaded (only useful when bDownloadIndividualContent is true).
 	 */
-	FBeamOperationHandle CPP_FetchContentManifestOperation(FBeamContentManifestId ManifestId, bool bDownloadIndividualContent, FBeamOperationEventHandlerCode OnOperationEvent);
+	FBeamOperationHandle CPP_FetchContentManifestOperation(FBeamContentManifestId ManifestId, bool bDownloadIndividualContent, bool bIgnoreFilterMap, FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * @brief Downloads the newest individual content objects of the given manifest.
@@ -200,7 +213,7 @@ public:
 	 * @brief Downloads the newest individual content objects of the given manifest.
 	 * 
 	 * @param ManifestId The ManifestId for the content manifest containing the given Ids. 
-	 * @param ContentToDownload The list of ContentIds, contained in the given manifest, to download the JSON for.
+	 * @param ContentToDownloadFetch The list of ContentIds, contained in the given manifest, to download the JSON for.
 	 */
 	FBeamOperationHandle CPP_FetchIndividualContentBatchOperation(FBeamContentManifestId ManifestId, TArray<FBeamContentId> ContentToDownloadFetch, FBeamOperationEventHandlerCode OnOperationEvent);
 
@@ -223,7 +236,7 @@ public:
 
 	// Operation Definitions
 	UFUNCTION()
-	void FetchContentManifest(FBeamContentManifestId ManifestId, bool bDownloadIndividualContent, FBeamOperationHandle Op);
+	void FetchContentManifest(FBeamContentManifestId ManifestId, bool bDownloadIndividualContent, bool bIgnoreFilterMap, FBeamOperationHandle Op);
 
 	UFUNCTION()
 	void FetchIndividualContent(FBeamContentManifestId ManifestId, TArray<FBeamContentId> ContentToDownloadFetch, FBeamOperationHandle Op);

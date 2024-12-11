@@ -97,6 +97,9 @@ class BEAMABLECORERUNTIME_API UBeamMatchmakingSubsystem : public UBeamRuntimeSub
 	UBeamContentSubsystem* ContentSubsystem;
 
 public:
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
+	static UBeamMatchmakingSubsystem* GetSelf(const UObject* CallingContext) { return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamMatchmakingSubsystem>(); }
+	
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TArray<FBeamMatchmakingTicket> LiveTickets;
 
@@ -150,6 +153,7 @@ public:
 	virtual void InitializeWhenUnrealReady_Implementation(FBeamOperationHandle& ResultOp) override;
 
 	virtual void OnPostUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp) override;
+	virtual void OnUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp) override;
 	
 	//Returns a list of subsystems that this system is depending on
 	virtual TArray<TSubclassOf<UBeamRuntimeSubsystem>> GetDependingOnSubsystems() override;
@@ -195,6 +199,25 @@ public:
 	FBeamOperationHandle CPP_TryJoinQueueOperation(FUserSlot UserSlot, const FBeamContentId& GameTypeQueue, FOptionalString Team, FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
+	 * @brief Joins the given game type queue.
+	 * The user in the given user slot is added to the queue. If that user is in a party:
+	 *   - If its the party leader, the entire party will be added to the queue and other clients will receive notifications for it.
+	 *   - If its not the party leader, the operation will fail.
+	 *
+	 * If the user is already in a queue, it'll fail. If the queue type has more than one team, the provided team must match one of the team names.
+	 * If the queue type has a single team (FFA, for example), you can leave the team blank. Queue types with no teams are not valid.
+	 *
+	 * The array of tags here are added to ULobbyPlayer::Tags when the match gets made.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Matchmaking", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle TryJoinQueueWithTagsOperation(FUserSlot UserSlot, FBeamContentId GameTypeQueue, FOptionalString Team, TArray<FBeamTag> Tags, FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc TryJoinQueueWithTagsOperation 
+	 */
+	FBeamOperationHandle CPP_TryJoinQueueWithTagsOperation(FUserSlot UserSlot, const FBeamContentId& GameTypeQueue, FOptionalString Team, TArray<FBeamTag> Tags, FBeamOperationEventHandlerCode OnOperationEvent);
+	
+	/**
 	 * @brief Leaves the given queue. If the user is not in a queue, this fails.
 	 * The user in the given user slot is added to the queue. If that user is in a party:
 	 *   - If its the party leader, the entire party will be added to the queue and other clients will receive notifications for it.
@@ -213,7 +236,7 @@ public:
 
 private:
 	// Operation Implementations
-	void TryJoinQueue(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FBeamOperationHandle Op);
+	void TryJoinQueue(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, FBeamOperationHandle Op);
 	void TryLeaveQueue(FUserSlot Slot, FBeamOperationHandle Op);
 
 	// Notification Handlers

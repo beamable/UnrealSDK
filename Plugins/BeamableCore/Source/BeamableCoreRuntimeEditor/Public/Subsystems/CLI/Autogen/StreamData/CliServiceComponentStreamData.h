@@ -6,14 +6,14 @@
 #include "CliServiceComponentStreamData.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UCliServiceComponentStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Name = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

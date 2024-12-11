@@ -45,6 +45,20 @@ void UBeamMatchmakingSubsystem::OnPostUserSignedIn_Implementation(const FUserSlo
 	Super::OnPostUserSignedIn_Implementation(UserSlot, BeamRealmUser, bIsOwnerUserAuth, ResultOp);
 }
 
+void UBeamMatchmakingSubsystem::OnUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp)
+{
+	this->Slots[UserSlot] = FBeamMatchmakingState{UserSlot, FGuid{}};
+	for (auto& LiveTicket : this->LiveTickets)
+	{
+		if (LiveTicket.SlotsInTicket.Contains(UserSlot))
+		{
+			InvalidateLiveTicket(LiveTicket);
+		}
+	}
+	
+	Super::OnUserSignedOut_Implementation(UserSlot, Reason, BeamRealmUser, ResultOp);
+}
+
 TArray<TSubclassOf<UBeamRuntimeSubsystem>> UBeamMatchmakingSubsystem::GetDependingOnSubsystems()
 {
 	TArray<TSubclassOf<UBeamRuntimeSubsystem>> DependantSubsystems =
@@ -91,14 +105,30 @@ bool UBeamMatchmakingSubsystem::TryGetTicket(const FUserSlot& Slot, FBeamMatchma
 FBeamOperationHandle UBeamMatchmakingSubsystem::TryJoinQueueOperation(FUserSlot UserSlot, FBeamContentId GameTypeQueue, FOptionalString Team, FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	TryJoinQueue(UserSlot, GameTypeQueue, Team, Handle);
+	TryJoinQueue(UserSlot, GameTypeQueue, Team, {}, Handle);
 	return Handle;
 }
 
 FBeamOperationHandle UBeamMatchmakingSubsystem::CPP_TryJoinQueueOperation(FUserSlot UserSlot, const FBeamContentId& GameTypeQueue, FOptionalString Team, FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	TryJoinQueue(UserSlot, GameTypeQueue, Team, Handle);
+	TryJoinQueue(UserSlot, GameTypeQueue, Team, {}, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamMatchmakingSubsystem::TryJoinQueueWithTagsOperation(FUserSlot UserSlot, FBeamContentId GameTypeQueue, FOptionalString Team, TArray<FBeamTag> Tags,
+	FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	TryJoinQueue(UserSlot, GameTypeQueue, Team, FOptionalArrayOfBeamTag{Tags}, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamMatchmakingSubsystem::CPP_TryJoinQueueWithTagsOperation(FUserSlot UserSlot, const FBeamContentId& GameTypeQueue, FOptionalString Team, TArray<FBeamTag> Tags,
+	FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	TryJoinQueue(UserSlot, GameTypeQueue, Team, FOptionalArrayOfBeamTag{Tags}, Handle);
 	return Handle;
 }
 
@@ -118,7 +148,7 @@ FBeamOperationHandle UBeamMatchmakingSubsystem::CPP_TryLeaveQueueOperation(FUser
 
 // OPERATION IMPLEMENTATIONS
 
-void UBeamMatchmakingSubsystem::TryJoinQueue(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FBeamOperationHandle Op)
+void UBeamMatchmakingSubsystem::TryJoinQueue(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, FBeamOperationHandle Op)
 {
 	// Validate the user is not already in the queue.
 	if (IsUserSlotInQueue(Slot))
@@ -234,7 +264,7 @@ void UBeamMatchmakingSubsystem::TryJoinQueue(FUserSlot Slot, FBeamContentId Game
 	});
 
 	FBeamRequestContext Ctx;
-	const auto Req = UPostTicketsRequest::Make(FOptionalBool{true}, {}, Team, {}, FOptionalArrayOfBeamContentId{{GameTypeQueue}}, {}, GetTransientPackage(), {});
+	const auto Req = UPostTicketsRequest::Make(FOptionalBool{true}, {}, Team, {}, FOptionalArrayOfBeamContentId{{GameTypeQueue}}, Tags, GetTransientPackage(), {});
 	MatchmakingApi->CPP_PostTickets(Slot, Req, Handler, Ctx, Op, this);
 }
 
@@ -423,9 +453,9 @@ void UBeamMatchmakingSubsystem::OnMatchmakingTimeoutReceived(FMatchmakingTimeout
 	{
 		if (LiveTicket.TicketId != MsgTicketId) continue;
 
-		OnMatchCancelled.Broadcast(LiveTicket);
+		OnMatchTimedOut.Broadcast(LiveTicket);
 		TArray<FOnMatchmakingTicketUpdatedCode> CodeCallbacks;
-		OnMatchCancelledCode.MultiFind(MsgTicketId, CodeCallbacks, true);
+		OnMatchTimedOutCode.MultiFind(MsgTicketId, CodeCallbacks, true);
 		for (auto Callback : CodeCallbacks) auto _ = Callback.ExecuteIfBound(LiveTicket);
 
 		InvalidateLiveTicket(LiveTicket);

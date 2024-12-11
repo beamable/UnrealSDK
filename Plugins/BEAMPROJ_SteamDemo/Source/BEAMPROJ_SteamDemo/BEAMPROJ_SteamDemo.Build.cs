@@ -10,14 +10,13 @@ public class BEAMPROJ_SteamDemo : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
+		DynamicallyLoadedModuleNames.Add("OnlineSubsystemSteam");
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
 				"Core",
-				"BeamableCore",
-				"BeamableCoreRuntime",
 				"OnlineSubsystem",
-				"OnlineSubsystemSteam",
+				"OnlineSubsystemUtils",
 				"Steamworks"
 			}
 		);
@@ -32,5 +31,8 @@ public class BEAMPROJ_SteamDemo : ModuleRules
 				// ... add private dependencies that you statically link with here ...
 			}
 		);
+
+		BeamableUnrealMicroserviceClients.AddMicroserviceClients(this);
+		Beam.AddRuntimeModuleDependencies(this);
 	}
 }

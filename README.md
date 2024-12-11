@@ -47,4 +47,4 @@ If you have any questions, feel free to contact us through one of our Customer S
 
 
 ## For Beamable Developers
-After cloning this repo, remember to run `init_repo.sh` and `docs_build.sh serve` such that the repo is configured correctly and you have a locally running server that serves the current branch's version of the docs. Please always run them from the root of the repo.
+After cloning this repo, remember to run `prepare_repo.sh` and `docs_build.sh serve` such that the repo is configured correctly and you have a locally running server that serves the current branch's version of the docs. Please always run them from the root of the repo.

@@ -26,7 +26,7 @@ struct BEAMABLECORE_API FBeamJsonSerializableUStruct
 {
 	GENERATED_BODY()
 	
-	UPROPERTY()
+	UPROPERTY(Transient, meta=(EditCondition = "false", EditConditionHides))
 	TWeakObjectPtr<UObject> OuterOwner = nullptr;
 
 	virtual ~FBeamJsonSerializableUStruct();

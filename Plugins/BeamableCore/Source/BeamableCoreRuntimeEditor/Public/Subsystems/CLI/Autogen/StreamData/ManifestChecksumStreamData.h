@@ -6,18 +6,18 @@
 #include "ManifestChecksumStreamData.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UManifestChecksumStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Id = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Checksum = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int64 CreatedAt = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

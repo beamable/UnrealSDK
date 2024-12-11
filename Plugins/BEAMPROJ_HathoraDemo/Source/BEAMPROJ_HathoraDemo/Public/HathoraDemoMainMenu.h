@@ -98,7 +98,7 @@ protected:
 
 		UE_LOG(LogTemp, Warning, TEXT("Setting OnBeamStarted"));
 		UBeamRuntime* Runtime = GI->GetSubsystem<UBeamRuntime>();
-		OnBeamableStarted = Runtime->CPP_RegisterOnStarted(FRuntimeStateChangedHandlerCode::CreateLambda([this, GI, Runtime]
+		OnBeamableStarted = Runtime->CPP_RegisterOnStarted(FBeamRuntimeHandlerCode::CreateLambda([this, GI, Runtime]
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Initializing after beamable started"));
 
@@ -117,6 +117,9 @@ protected:
 			// Unregister this after execution so that when we reload this scene we don't have multiple callbacks bound to this.
 			Runtime->CPP_UnregisterOnStarted(OnBeamableStarted);
 		}));
+		FBeamRuntimeHandler RuntimeChangedHandler;
+		FRuntimeError SDKInitializationErrorHandler;        
+		Runtime->InitSDK(RuntimeChangedHandler,SDKInitializationErrorHandler);
 	}
 
 public:

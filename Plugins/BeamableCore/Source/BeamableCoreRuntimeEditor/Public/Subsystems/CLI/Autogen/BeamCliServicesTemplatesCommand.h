@@ -6,14 +6,14 @@
 #include "BeamCliServicesTemplatesCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliServicesTemplatesStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UServiceTemplateStreamData*> Templates = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

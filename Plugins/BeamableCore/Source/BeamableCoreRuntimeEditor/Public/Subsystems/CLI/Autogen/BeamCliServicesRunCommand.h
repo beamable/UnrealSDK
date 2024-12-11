@@ -6,16 +6,16 @@
 #include "BeamCliServicesRunCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliServicesRunStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool Success = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString FailureReason = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
@@ -38,16 +38,16 @@ public:
 };
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliServicesRunLocalProgressStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString BeamoId = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	double LocalDeployProgress = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

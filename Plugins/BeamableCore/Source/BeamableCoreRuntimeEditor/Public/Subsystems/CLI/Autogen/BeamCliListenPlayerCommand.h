@@ -6,16 +6,16 @@
 #include "BeamCliListenPlayerCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliListenPlayerStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Context = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Payload = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

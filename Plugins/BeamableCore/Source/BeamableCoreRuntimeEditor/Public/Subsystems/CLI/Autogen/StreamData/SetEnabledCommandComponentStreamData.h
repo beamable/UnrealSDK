@@ -6,16 +6,16 @@
 #include "SetEnabledCommandComponentStreamData.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class USetEnabledCommandComponentStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Service = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Enabled = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

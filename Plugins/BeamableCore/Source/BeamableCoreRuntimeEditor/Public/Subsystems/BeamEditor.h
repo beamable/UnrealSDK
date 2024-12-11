@@ -405,7 +405,7 @@ private:
 	 */
 	UFUNCTION()
 	void UpdateSignedInUserData_OnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser,
-	                                                    const UObject* Context, FBeamOperationHandle Op);
+	                                                    const FBeamOperationHandle& AuthOperationHandle, const UObject* Context);
 
 	/**
 	 * @brief Callback to respond when we get the project data for the authenticated user during the sign in flow.
@@ -427,23 +427,20 @@ private:
 
 	/**
 	 * @brief Callback for RealmWillChangeHandler. Takes an extra NewRealmHandle that is captured when we kick off the realm change flow. (See ChangeActiveRealm). 
-	 */
-	UFUNCTION()
+	 */	
 	void SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent Evt, FBeamRealmHandle NewRealmHandle,
 	                                  FBeamOperationHandle Op);
 
 	/**
 	 * @brief Callback for RealmChangedHandler. (See ChangeActiveRealm and OnRealmWillChangeHandler).
 	 */
-	UFUNCTION()
 	void SelectRealm_OnRealmInitialized(FBeamWaitCompleteEvent Evt, FBeamRealmHandle NewRealmHandle,
-	                                FBeamOperationHandle Op);
+	                                    FBeamOperationHandle Op);
 
 	/**
 	 * Callback for after OnRealmInitialized. 
-	 */
-	UFUNCTION()
-	void SelectRealm_OnSystemsRead(FBeamWaitCompleteEvent Evt, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op);
+	 */	
+	void SelectRealm_OnSystemsReady(FBeamWaitCompleteEvent Evt, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op);
 
 	/**
 	 * @brief Opens the Beamable Portal, signed into the MainEditorUser's account, at the dashboard page. 

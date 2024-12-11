@@ -6,14 +6,14 @@
 #include "BeamCliProjectGenerateEnvCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliProjectGenerateEnvStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UEnvVarOutputStreamData*> EnvVars = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

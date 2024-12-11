@@ -6,20 +6,20 @@
 #include "GetTokenListElementStreamData.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UGetTokenListElementStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Created = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Device = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Platform = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Token = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

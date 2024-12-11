@@ -7,12 +7,12 @@ Here's a bit of our philosophy when desing the SDK so you know a bit what to exp
 	- In case you modify the SDK's source code, we cannot guarantee that its features will work.
 	- We trust you to know when doing so might be worth it for you (VCS are your friend here).
 - The SDK keeps itself as simple as possible, providing extension points and clear documented.
-	- We believe that tools are either helpful **or** useless. If you find yourself working around parts of the SDK instead of using them even with MicroServices/Storages, reach out to us.
+	- We believe that tools should helpful **or** at least not get in your way. If you find yourself working around parts of the SDK instead of using them even with MicroServices/Storages, reach out to us.
 - The SDK is careful about assumptions it makes.
 	- Whenever we ***have to*** make an assumption, we try to be explicit about what it means.
 	- MicroServices/Storages are great ways to "just write what you want instead" when using our default services is not a good fit.
 ### Requirements for Beamable
-Beamable currently supports **Unreal 5.3.2**. It'll release the official SDK 1.0 version with 5.4 support only.
+Beamable currently supports **Unreal 5.4.X**.
 
 Beamable also has a dependency on  [.NET](https://dotnet.microsoft.com/en-us/download/dotnet/8.0). This is needed for:
 
@@ -31,15 +31,15 @@ Most of the Beamable workflows are enabled through the Beamable CLI; our editor 
 The SDK is tightly integrated with the CLI in some ways more than others. For example:
 
 - [Content](features/content.md), being designer-focused, has its own UE-familiar content editing UI so you can edit the various JSON blobs that defines your game's content. 
-- [Microservices](features/microservices.md), however, being more engineer focused, leans more directly on the CLI.
+- [Microservices](concepts/microservices.md), however, being more engineer focused, leans more directly on the CLI.
 
 In other words: **The Beamable CLI is invisible to the user where it needs to be and explicit to users that need to work with them.**
 ## Where to start?
 
-Regardless of who you are, we recommend run through the [Introduction to the SDK](guides/intro.md) and [Runtime Concepts](guides/runtime-concepts.md) documents. After this, it depends on what you're game is or what you are looking to do.
+Regardless of who you are, we recommend run through the [Introduction to the SDK](guides/intro.md) and [Runtime Concepts](concepts/runtime-concepts.md) documents. After this, it depends on what you're game is or what you are looking to do.
 
 - If you are a game maker looking to implement simple and common back-end features, take a look at the docs for [Inventory](features/inventory.md), for currency and items, and [Stats](features/stats.md), for player-scoped key-value stores.
-- If you are a game maker looking to implement highly specific features, browse the documentation for [Content](features/content.md) and [Microservices](features/microservices.md) to think about how to structure your game's data and custom data with Beamable.
-- If you are looking to integrate Beamable into your game through Unreal's `IOnlineSubsystem`, take a look at the [Online Subsystem Beamable](features/online-subsystem.md).
+- If you are a game maker looking to implement highly specific features, browse the documentation for [Content](features/content.md) and [Microservices](concepts/microservices.md) to think about how to structure your game's data and custom data with Beamable.
+- If you are looking to integrate Beamable into your game through Unreal's `IOnlineSubsystem`, take a look at the [Online Subsystem Beamable](concepts/online-subsystem.md).
 
 If you have any questions, feel free to contact us through one of our Customer Success channels.

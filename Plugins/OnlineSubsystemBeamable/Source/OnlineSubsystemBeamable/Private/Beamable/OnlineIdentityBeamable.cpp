@@ -442,8 +442,9 @@ void FOnlineIdentityBeamable::OnBeamableLoginOperationComplete(FBeamOperationEve
 		const FUniqueNetIdRepl IdRep(NewIdRef);
 		LocalPlayer->SetCachedUniqueNetId(IdRep);
 
-		auto BeamRuntime = GameInstance->GetSubsystem<UBeamRuntime>();
-		OnUserReadyCodeHandle = BeamRuntime->OnUserReadyCode.AddRaw(this, &FOnlineIdentityBeamable::OnBeamableUserReady, UserAccountPtr);
+		//auto BeamRuntime = GameInstance->GetSubsystem<UBeamRuntime>();
+		OnBeamableUserReady(LoggedInSlot, UserAccountPtr);
+		//OnUserReadyCodeHandle = BeamRuntime->OnUserReadyCode.AddRaw(this, &FOnlineIdentityBeamable::OnBeamableUserReady, UserAccountPtr);
 	}
 }
 
@@ -505,8 +506,8 @@ void FOnlineIdentityBeamable::OnBeamableUserReady(const FUserSlot& Slot, TShared
 			return;
 		}
 
-		TriggerOnLoginCompleteDelegates(0, true, *UserAccountPtr->GetUserId(), "");
-		GameInstance->GetSubsystem<UBeamRuntime>()->OnUserReadyCode.Remove(OnUserReadyCodeHandle);
+		TriggerOnLoginCompleteDelegates(0, true, *UserAccountPtr->GetUserId(), "");		
+		GameInstance->GetSubsystem<UBeamRuntime>()->CPP_UnregisterOnUserReady(OnUserReadyCodeHandle);
 	});
 
 	FBeamWaitHandle WaitHandle;

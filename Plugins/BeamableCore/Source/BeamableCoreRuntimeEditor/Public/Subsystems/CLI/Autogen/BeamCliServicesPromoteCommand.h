@@ -6,14 +6,14 @@
 #include "BeamCliServicesPromoteCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliServicesPromoteStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UManifestChecksumStreamData*> Manifests = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

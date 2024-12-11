@@ -17,9 +17,7 @@ enum class EBeamLobbyEvent : uint8
 	// GamerTag
 	BEAM_PlayerLeft,
 	// GamerTag
-	BEAM_PlayerKicked,
-	BEAM_HostPlayerChanged,
-	// 	
+	BEAM_PlayerKicked,	 	
 };
 
 UCLASS(BlueprintType, Category="Beam|Enums")

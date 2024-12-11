@@ -113,7 +113,7 @@ void FBeamUserSlotsSpec::Define()
 		{
 			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, FakeAccessToken, FakeRefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), FakeExpiresIn, FakeCid, FakePid, nullptr);
 			BeamUserSlots->SetGamerTagAtSlot(TestSlot, FakeGamerTag, nullptr);
-			BeamUserSlots->TriggerUserAuthenticatedIntoSlot(TestSlot, nullptr);
+			BeamUserSlots->TriggerUserAuthenticatedIntoSlot(TestSlot, {}, nullptr);
 			BeamUserSlots->SaveSlot(TestSlot, nullptr);
 
 			FBeamRealmUser RealmUser;
@@ -153,7 +153,7 @@ void FBeamUserSlotsSpec::Define()
 		{
 			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, FakeAccessToken, FakeRefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), FakeExpiresIn, FakeCid, FakePid, nullptr);
 			BeamUserSlots->SetGamerTagAtSlot(TestSlot, FakeGamerTag, nullptr);
-			BeamUserSlots->TriggerUserAuthenticatedIntoSlot(TestSlot, nullptr);
+			BeamUserSlots->TriggerUserAuthenticatedIntoSlot(TestSlot, {}, nullptr);
 			BeamUserSlots->SaveSlot(TestSlot, nullptr);
 
 			FBeamRealmUser RealmUser;
@@ -205,7 +205,7 @@ void FBeamUserSlotsSpec::Define()
 		{
 			BeamUserSlots->SetAuthenticationDataAtSlot(TestSlot, FakeAccessToken, FakeRefreshToken, FDateTime::UtcNow().ToUnixTimestamp(), FakeExpiresIn, FakeCid, FakePid, nullptr);
 			BeamUserSlots->SetGamerTagAtSlot(TestSlot, FakeGamerTag, nullptr);
-			BeamUserSlots->TriggerUserAuthenticatedIntoSlot(TestSlot, nullptr);
+			BeamUserSlots->TriggerUserAuthenticatedIntoSlot(TestSlot, {}, nullptr);
 			BeamUserSlots->SaveSlot(TestSlot, nullptr);
 
 			FBeamRealmUser RealmUser;

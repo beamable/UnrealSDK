@@ -60,10 +60,6 @@ public:
 	FOnLobbyEvent OnLeftLobby;
 	FOnLobbyEventCode OnLeftLobbyCode;
 
-	UPROPERTY(BlueprintAssignable)
-	FOnLobbyEvent OnHostChanged;
-	FOnLobbyEventCode OnHostChangedCode;
-
 	friend bool operator==(const ULobby& Lhs, const UBeamLobbyState& RHS)
 	{
 		return Lhs.LobbyId.Val.Equals(RHS.LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower));
@@ -169,7 +165,8 @@ private:
 	FGuid DedicatedServerInstanceLobbyId;
 
 public:
-	// LOCAL STATE
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
+	static UBeamLobbySubsystem* GetSelf(const UObject* CallingContext) { return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>(); }
 	
 	/**
 	 *  Gets the lobby that the given user is contained.
@@ -235,7 +232,7 @@ public:
 	 * Will fail if you are not the lobby host.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void PrepareUpdateDescription(const FUserSlot& Slot, const FString& NewDesc);
+	void PrepareUpdateDescription(FUserSlot Slot, const FString& NewDesc);
 
 	/**
 	 * After calling TryBeginUpdateLobbyData, call this to set the new restriction for the lobby.
@@ -243,42 +240,42 @@ public:
 	 * Will fail if you are not the lobby host.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void PrepareUpdateRestriction(const FUserSlot& Slot, const ELobbyRestriction& NewLobbyRestriction);
+	void PrepareUpdateRestriction(FUserSlot Slot, const ELobbyRestriction& NewLobbyRestriction);
 
 	/**
 	 * After calling TryBeginUpdateLobbyData, call this to set the new UBeamGameTypeContent (or subclass) for the lobby.	 
 	 * Will fail if you are not the lobby host.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void PrepareUpdateGameType(const FUserSlot& Slot, const FBeamContentId& NewGameType);
+	void PrepareUpdateGameType(FUserSlot Slot, const FBeamContentId& NewGameType);
 
 	/**
 	 * After calling TryBeginUpdateLobbyData, call this to set the new host for the lobby. Must be one of the players in the lobby.	 
 	 * Will fail if you are not the lobby host.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void PrepareUpdateHost(const FUserSlot& Slot, const FBeamGamerTag& NewHost);
+	void PrepareUpdateHost(FUserSlot Slot, const FBeamGamerTag& NewHost);
 
 	/**
 	 * After calling TryBeginUpdateLobbyData, call this to set the new MaxPlayer count for the lobby.	 
 	 * Will fail if you are not the lobby host or if there are more players in the lobby than the new max players.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void PrepareUpdateMaxPlayers(const FUserSlot& Slot, const int32& NewMaxPlayers);
+	void PrepareUpdateMaxPlayers(FUserSlot Slot, const int32& NewMaxPlayers);
 
 	/**
 	 * After calling TryBeginUpdateLobbyData, call this to set the which entries in ULobby::Data should added or updated in the lobby.	 
 	 * Will fail if you are not the lobby host.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void PrepareUpdateGlobalData(const FUserSlot& Slot, const TMap<FString, FString>& UpdatedGlobalData);
+	void PrepareUpdateGlobalData(FUserSlot Slot, const TMap<FString, FString>& UpdatedGlobalData);
 
 	/**
 	 * After calling TryBeginUpdateLobbyData, call this to set the which entries in ULobby::Data should be removed from the lobby.	 
 	 * Will fail if you are not the lobby host.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void PrepareDeleteGlobalData(const FUserSlot& Slot, const TArray<FString>& GlobalDataToRemove);
+	void PrepareDeleteGlobalData(FUserSlot Slot, const TArray<FString>& GlobalDataToRemove);
 
 
 	// OPERATIONS
@@ -416,7 +413,7 @@ public:
 	FBeamOperationHandle CPP_UpdateSlotPlayerDataOperation(FUserSlot UserSlot, TArray<FBeamTag> Tags, FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
-	 * @brief You can delete your own player tags when you are inside the lobby. You can delete any player's tags if you are the host.
+	 * @brief You can delete any player's tags if you are the host.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby")
 	FBeamOperationHandle DeletePlayerDataOperation(FUserSlot UserSlot, FBeamGamerTag TargetPlayer, TArray<FBeamTag> Tags, FBeamOperationEventHandler OnOperationEvent);

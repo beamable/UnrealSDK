@@ -99,7 +99,7 @@ public:
 	UClass** FindContentTypeByName(FString TypeName);
 	UClass** FindContentTypeByTypeId(FString TypeId);
 
-	void FindSubTypesOfContentType(const TArray<FString>& TypeNames, TMap<FString,TArray<FString>>& OutMappings);
+	void FindSubTypesOfContentType(const TArray<FString>& TypeNames, TMap<FString, TArray<FString>>& OutMappings);
 
 	bool TryLoadContentObject(const FBeamContentManifestId& OwnerManifest, FBeamContentId ContentId, UBeamContentObject*& OutLoadedContentObject);
 
@@ -144,7 +144,7 @@ public:
 	static FBeamContentManifestId GetManifestIdFromDataTable(const UDataTable* Table);
 
 	UFUNCTION(BlueprintCallable)
-	void BakeManifest(ULocalContentManifestStreamData* LocalManifest, UBeamContentCache* Cache);
+	void BakeManifest(FBeamContentManifestId Manifest, UBeamContentCache* Cache);
 
 	/**
 	 * @brief Downloads the remote manifest and content objects to the local cache. This destroys all local changes. 
@@ -175,6 +175,12 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Content", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
 	bool RefreshLocalManifests(FString& Err);
+
+	/**
+	 * Checks if the given ContentName is a valid content name. 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Content", meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool IsValidContentName(const FString& ContentName, FText& Err);
 
 private:
 	FBeamOperationHandle RefreshLocalManifests(FBeamOperationHandle Op);

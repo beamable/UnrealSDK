@@ -138,8 +138,13 @@ bool UBeamEditorContent::TryGetLocalManifestById(const FBeamContentManifestId& I
 
 FBeamOperationHandle UBeamEditorContent::RefreshLocalManifests(FBeamOperationHandle Op)
 {
+	UBeamEditor* BeamEditor = UBeamEditor::GetSelf(this);
+
+	BeamEditor->UpdateBeamableWindowMessage("Updating Local Content...",EMessageType::VE_Info);
+	
 	if (!Cli->IsInstalled())
 		return RequestTracker->CPP_BeginSuccessfulOperation({}, GetName(), TEXT(""), {});
+		
 	// Ensure the CLI is installed
 	checkf(Cli->IsInstalled(), TEXT("Editor Subsystem %s - Content depends on the CLI. It was not found locally."),
 	       *GetName());
@@ -242,7 +247,7 @@ bool UBeamEditorContent::DownloadManifest(FBeamContentManifestId ContentManifest
 
 	Cli->RunCommandSync(PullCommand, {FString::Printf(TEXT("--manifest-ids %s"), *ContentManifestId.AsString)});
 	SlowTask->EnterProgressFrame();
-	
+
 	return Res;
 }
 
@@ -262,10 +267,10 @@ UClass** UBeamEditorContent::FindContentTypeByTypeId(FString TypeId)
 void UBeamEditorContent::FindSubTypesOfContentType(const TArray<FString>& TypeNames,
                                                    TMap<FString, TArray<FString>>& OutMappings)
 {
-	for (const auto Pair : ContentTypeStringToContentClass)
+	for (const auto& Pair : ContentTypeStringToContentClass)
 	{
 		const FString CurrentId = Pair.Key;
-		for (const auto TypeName : TypeNames)
+		for (const auto& TypeName : TypeNames)
 		{
 			if (CurrentId.StartsWith(TypeName))
 			{
@@ -558,22 +563,33 @@ bool UBeamEditorContent::DeleteContentObject(const FBeamContentManifestId& Manif
 {
 	const auto FilePath = GetJsonBlobPath(Id.AsString, ManifestId);
 	IFileManager& FileManager = IFileManager::Get();
-	if (FileManager.Delete(*FilePath))
-		return true;
+	const auto bDeleted = FileManager.Delete(*FilePath);
 
-	LoadedContentObjects.Remove(Id);
-	if (auto ManifestPtr = LocalManifestCache.Find(ManifestId))
+	if (bDeleted)
 	{
-		auto Manifest = *ManifestPtr;
-		Manifest->Entries.RemoveAll([Id](ULocalContentManifestEntryStreamData* Entry)
+		LoadedContentObjects.Remove(Id);
+		if (auto ManifestPtr = LocalManifestCache.Find(ManifestId))
 		{
-			return FBeamContentId{Entry->FullId} == Id;
-		});
+			auto Manifest = *ManifestPtr;
+			if (const auto Entry = *Manifest->Entries.FindByPredicate([Id](ULocalContentManifestEntryStreamData* E)
+			{
+			return E->FullId.Equals(Id.AsString);
+			}))
+			{
+				if (Entry->CurrentStatus == EBeamLocalContentStatus::Beam_LocalContentCreated)
+				{
+					Manifest->Entries.Remove(Entry);
+				}
+			}
+		}
 	}
-
-	ErrMsg = FString::Format(TEXT("Failed to save the content object {0}"), {Id.AsString});
-	UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
-	return false;
+	else
+	{
+		ErrMsg = FString::Format(TEXT("Failed to save the content object {0}"), {Id.AsString});
+		UE_LOG(LogBeamContent, Error, TEXT("%s"), *ErrMsg);
+		return false;
+	}
+	return true;
 }
 
 bool UBeamEditorContent::CreateNewContentInManifest(const FBeamContentManifestId& ManifestId,
@@ -591,6 +607,9 @@ bool UBeamEditorContent::TryRenameContent(const FBeamContentManifestId& Manifest
 	UBeamContentObject* Obj;
 	const auto bContentFound = GetContent(ManifestId, ContentId, Obj);
 	ensureAlways(bContentFound);
+
+	if (!IsValidContentName(NewContentName, Err))
+		return false;
 
 	const FString ContentTypeString = Obj->BuildContentTypeString();
 	const FString NewId = ContentTypeString + TEXT(".") + NewContentName;
@@ -681,6 +700,22 @@ bool UBeamEditorContent::TryGetFilteredListOfContent(const FBeamContentManifestI
 		FoundLocalContent[FoundLocalContent.Num() - 1]->ContentObject = ObjectsInManifest[i];
 	}
 
+	//Content needs to be sorted to as following : newly created content/modified/unmodified/deletions
+	FoundLocalContent.Sort([](const UBeamContentLocalView& BeamContent1, const UBeamContentLocalView& BeamContent2)
+		{
+			if (BeamContent1.LocalStatus == BeamContent2.LocalStatus)
+				return BeamContent1.ContentName.ToString() < BeamContent2.ContentName.ToString();
+			else if (BeamContent1.LocalStatus == EBeamLocalContentStatus::Beam_LocalContentCreated)
+				return true;
+			else if (BeamContent1.LocalStatus == EBeamLocalContentStatus::Beam_LocalContentModified && BeamContent2.LocalStatus != EBeamLocalContentStatus::Beam_LocalContentCreated)
+				return true;
+			else if (BeamContent1.LocalStatus == EBeamLocalContentStatus::Beam_LocalContentUpToDate &&
+				BeamContent2.LocalStatus != EBeamLocalContentStatus::Beam_LocalContentCreated && BeamContent2.LocalStatus != EBeamLocalContentStatus::Beam_LocalContentModified)
+				return true;
+
+			return false;
+		});
+	
 	return true;
 }
 
@@ -706,35 +741,24 @@ FBeamContentManifestId UBeamEditorContent::GetManifestIdFromDataTable(const UDat
 }
 
 
-void UBeamEditorContent::BakeManifest(ULocalContentManifestStreamData* LocalManifest, UBeamContentCache* Cache)
+void UBeamEditorContent::BakeManifest(FBeamContentManifestId Manifest, UBeamContentCache* Cache)
 {
-	FString ManifestName = LocalManifest->GetFName().ToString();
-	int32 UnderscoreIdx;
-	ensureAlwaysMsgf(ManifestName.FindChar('_', UnderscoreIdx),
-	                 TEXT("Content Manifests must have their name prefixed with 'BCM_'. %s"),
-	                 *LocalManifest->GetFName().ToString());
+	Cache->ManifestId = Manifest;
 
-	ManifestName.RightChopInline(UnderscoreIdx + 1);
-	ManifestName.ToLowerInline();
-
-	const auto ManifestId = FBeamContentManifestId{ManifestName};
-	Cache->ManifestId = ManifestId;
-
-	const auto Entries = LocalManifest->Entries;
-	for (const auto& Entry : Entries)
+	for (const auto& Entry : LocalManifestCache[Manifest]->Entries)
 	{
+		const auto Hash = Entry->Hash;
 		const bool bNotInCache = !Cache->Hashes.Contains(Entry->FullId);
-		const bool bInCacheButModified = Cache->Hashes.Contains(Entry->FullId) && !Cache->Hashes[Entry->FullId].
-			Equals(Entry->Hash);
+		const bool bInCacheButModified = Cache->Hashes.Contains(Entry->FullId) && !Cache->Hashes[Entry->FullId].Equals(Hash);
 		if (bNotInCache || bInCacheButModified)
 		{
 			// Create a new BeamContentObject instance of each content Object
 			UBeamContentObject* Content;
-			LoadContentObjectInstance(LocalManifest, Entry->FullId, Content, Cache);
+			LoadContentObjectInstance(LocalManifestCache[Manifest], Entry->FullId, Content, Cache);
 
 			// Add it to the BCC_ BeamRuntimeContentCache.
 			Cache->Cache.Add(Entry->FullId, Content);
-			Cache->Hashes.Add(Entry->FullId, Entry->Hash);
+			Cache->Hashes.Add(Entry->FullId, Hash);
 		}
 	}
 	EditorAssetSubsystem->SaveLoadedAsset(Cache, false);
@@ -772,4 +796,26 @@ void UBeamEditorContent::UpdateLocalManifestCache(const TArray<ULocalContentMani
 		UE_LOG(LogBeamEditor, Display, TEXT("Editor Subsystem %s - Found Manifest with Id %s"), *GetName(),
 		       *d->ManifestId)
 	}
+}
+
+bool UBeamEditorContent::IsValidContentName(const FString& ContentName, FText& Err)
+{
+	FString Errs = TEXT("Found Content Name Errors:\n");
+	auto bIsValid = !ContentName.IsEmpty();
+
+	const auto InvalidChars = TArray{TEXT(" "), TEXT(".")};
+	for (const auto InvalidChar : InvalidChars)
+	{
+		const auto bContainsInvalidChar = ContentName.Contains(InvalidChar);
+		bIsValid &= !bContainsInvalidChar;
+
+		if (bContainsInvalidChar)
+		{
+			Errs += FString::Printf(TEXT("- Content cannot have the character [%s] in them."), InvalidChar);
+		}
+	}
+
+	if (!bIsValid)
+		Err = FText::FromString(Errs);
+	return bIsValid;
 }

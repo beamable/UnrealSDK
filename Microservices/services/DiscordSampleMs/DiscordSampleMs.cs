@@ -18,8 +18,11 @@ using EmptyResponse = Beamable.Common.Api.EmptyResponse;
 
 namespace Beamable.DiscordSampleMs;
 
+[FederationId("discord")]
+public class DiscordId : IFederationId;
+
 [Microservice("DiscordSampleMs")]
-public partial class DiscordSampleMs : Microservice
+public partial class DiscordSampleMs : Microservice, IFederatedLogin<DiscordId>
 {
     [Serializable]
     public class DiscordWhitelistedInfo
@@ -152,7 +155,7 @@ public class DiscordBot
     private readonly IMicroserviceStatsApi _beamableStatsService;
     private readonly IMicroserviceNotificationsApi _notificationsApi;
     private readonly DiscordSocketClient _discordClient;
-    private HashSet<string> _discordRolesWhitelist;
+    private DiscordRealmConfig _discordRealmConfig;
 
     public DiscordBot(IBeamableRequester requester, IMicroserviceRealmConfigService realmConfigService,
         IMicroserviceStatsApi statsService, IMicroserviceNotificationsApi notificationsApi)
@@ -186,23 +189,20 @@ public class DiscordBot
     {
         if (_discordClient.ConnectionState == ConnectionState.Disconnected)
         {
-            var settings = await Requests.GetDiscordRealmConfig(_beamableConfigService);
-            var botToken = settings.BotToken;
-            var rolesConfig = settings.RoleIds;
+            _discordRealmConfig = await Requests.GetDiscordRealmConfig(_beamableConfigService);
+            var botToken = _discordRealmConfig.BotToken;
+            var rolesConfig = _discordRealmConfig.RoleIds;
             if (string.IsNullOrEmpty(botToken))
             {
                 BeamableLogger.LogWarning("Discord Bot Token not configured. Connection Aborted!");
                 return;
             }
 
-            if (rolesConfig.Length == 0)
+            if (rolesConfig.Count == 0)
             {
                 BeamableLogger.LogWarning("Discord Roles whitelist is empty. Connection Aborted!");
                 return;
             }
-
-            _discordRolesWhitelist = new HashSet<string>(rolesConfig);
-
 
             await _discordClient.LoginAsync(TokenType.Bot, botToken);
             await _discordClient.StartAsync();
@@ -238,16 +238,17 @@ public class DiscordBot
                 BeamableLogger.Log($"Roles: {string.Join(",", roles)}");
 
                 var hasAccess = postUpdateUser.Roles.Any(role =>
-                    _discordRolesWhitelist.Contains(role.Id.ToString())
+                    _discordRealmConfig.RoleIds.Contains(role.Id.ToString())
                 );
 
-                await UpdateAccess(cachedUser.Id.ToString(), hasAccess);
+                await UpdateAccess(cachedUser.Value, hasAccess);
             }
         }
     }
 
-    private async Task UpdateAccess(string discordUserId, bool hasAccess)
+    private async Task UpdateAccess(SocketGuildUser discordUser, bool hasAccess)
     {
+        var discordUserId = discordUser.Id.ToString();
         try
         {
             var account = await Requests.GetBeamableAccountFromDiscordId(_beamableRequester, discordUserId);
@@ -266,9 +267,17 @@ public class DiscordBot
                 }
             );
             await _notificationsApi.NotifyUser(gamerTagAssociation.gamerTag, hasAccess);
-
-            BeamableLogger.Log(
-                $"Updated Access for Beamable PlayerId '{gamerTagAssociation.gamerTag}', Discord UserId '{discordUserId}' to '{hasAccess}'.");
+            if (_discordRealmConfig.NotifyChannel == 0)
+            {
+                return;
+            }
+            var channel = await _discordClient.GetChannelAsync(_discordRealmConfig.NotifyChannel);
+            if (channel is IMessageChannel messageChannel)
+            {
+                await messageChannel.SendMessageAsync($"{discordUser.Mention} Updated matchmaking status: {(hasAccess ? "access gained" : "access denied")}");
+            }
+            BeamableLogger.Log($"Updated Access for Beamable PlayerId '{gamerTagAssociation.gamerTag}', Discord UserId '{discordUserId}' to '{hasAccess}'."
+            );
         }
         catch (WebsocketRequesterException ex) when (ex.Status == 404)
         {
@@ -392,12 +401,14 @@ public static class Requests
     {
         var realmConfig = await realmConfigService.GetRealmConfigSettings();
         var discordRealmConfig = realmConfig.GetNamespace("discord_integration");
+        var notifyChannelSetting = discordRealmConfig.GetSetting("notify_channel");
         return new DiscordRealmConfig
         {
             BotToken = discordRealmConfig.GetSetting("bot_token"),
             GuildId = discordRealmConfig.GetSetting("guild_id"),
-            RoleIds = discordRealmConfig.GetSetting("matchmaking_roles_whitelist")?.Trim().Split(",") ??
-                      Array.Empty<string>(),
+            NotifyChannel = ulong.TryParse(notifyChannelSetting, out var value) ? value : 0,
+            RoleIds = discordRealmConfig.GetSetting("matchmaking_roles_whitelist")?.Trim().Split(",").ToHashSet() ??
+                      [],
         };
     }
 }
@@ -426,7 +437,8 @@ public class DiscordRealmConfig
 {
     public string BotToken;
     public string GuildId;
-    public string[] RoleIds;
+    public ulong NotifyChannel;
+    public HashSet<string> RoleIds;
 }
 
 [Serializable]

@@ -6,22 +6,22 @@
 #include "ProjectErrorResultErrorRunFailErrorOutputStreamData.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UProjectErrorResultErrorRunFailErrorOutputStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Level = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString FormattedMessage = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Uri = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Line = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Column = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

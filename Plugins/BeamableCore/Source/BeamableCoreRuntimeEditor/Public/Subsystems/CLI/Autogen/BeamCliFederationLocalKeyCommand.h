@@ -6,14 +6,14 @@
 #include "BeamCliFederationLocalKeyCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliFederationLocalKeyStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString RoutingKey = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

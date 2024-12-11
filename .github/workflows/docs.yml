@@ -1,12 +1,12 @@
 name: Docs - Deploy
 
 on:
-  push:
-    branches:
-      - main
-      - dev
-    paths:
-      - Docs/**
+  workflow_dispatch:
+    inputs:
+      commit:
+        type: string
+        description: Commit hash to deploy
+        default: main
 
 permissions:
   contents: write
@@ -22,7 +22,8 @@ jobs:
           
       - uses: actions/checkout@v4
         with: 
-            lfs: true
+            lfs: true   
+            ref: ${{ inputs.commit }}
       - uses: actions/setup-python@v5
         with:
           python-version: 3.x
@@ -30,11 +31,6 @@ jobs:
         with:
           key: ${{ github.ref }}
           path: .cache
-      - run: bash docs_build.sh
-      - run: python -m mkdocs gh-deploy --force
-        if: github.ref == 'refs/heads/main'
-        working-directory: ./Docs
-      - run: python -m mkdocs build
-        if: github.ref != 'refs/heads/main'
-        working-directory: ./Docs
+      - name: Build and deploy Docs
+        run: bash docs_build.sh deploy
         

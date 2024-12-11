@@ -6,16 +6,16 @@
 #include "BeamCliProjectGenerateClientCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliProjectGenerateClientStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString BeamoId = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString FilePath = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
@@ -56,6 +56,7 @@ Options:
   --output-links                                       When true, generate the source client files to all associated projects [default: True]
   --existing-fed-ids <existing-fed-ids>                A set of existing federation ids
   --existing-fed-type-names <existing-fed-type-names>  A set of existing class names for federations
+  --output-path-hints <output-path-hints>              A special format, BEAMOID=PATH, that tells the generator where to place the client. The path should be relative to the linked project root
   --dryrun                                             Should any networking happen?
   --cid <cid>                                          Cid to use; will default to whatever is in the file system
   --pid <pid>                                          Pid to use; will default to whatever is in the file system

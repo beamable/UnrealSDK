@@ -6,16 +6,16 @@
 #include "BeamCliTokenListCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliTokenListStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 ItemCount = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UGetTokenListElementStreamData*> Items = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

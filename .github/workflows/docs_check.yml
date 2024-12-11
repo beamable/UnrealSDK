@@ -1,0 +1,29 @@
+name: Docs - Checks
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - Docs/**
+  
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: 
+            lfs: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+      - uses: actions/cache@v4
+        with:
+          key: docs-${{ github.ref }}
+          restore-keys: docs-
+          path: |
+            .venv
+      - name: Build Docs
+        run: bash docs_build.sh

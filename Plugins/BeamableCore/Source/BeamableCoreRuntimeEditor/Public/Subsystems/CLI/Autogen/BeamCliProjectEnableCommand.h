@@ -6,14 +6,14 @@
 #include "BeamCliProjectEnableCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliProjectEnableStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<USetEnabledCommandComponentStreamData*> ModifiedServices = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

@@ -6,14 +6,14 @@
 #include "BeamCliServicesUploadApiCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliServicesUploadApiStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString UploadUrl = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

@@ -57,7 +57,7 @@ class BEAMPROJ_HATHORADEMO_API AFirstPersonMapGameMode : public AGameModeBase
 			return;
 		}
 
-		FRuntimeStateChangedHandler OnStartedHandler;
+		FBeamRuntimeHandler OnStartedHandler;
 		OnStartedHandler.BindDynamic(this, &ThisClass::OnBeamableStarted);
 		BeamRuntime->RegisterOnStarted(OnStartedHandler);
 	}

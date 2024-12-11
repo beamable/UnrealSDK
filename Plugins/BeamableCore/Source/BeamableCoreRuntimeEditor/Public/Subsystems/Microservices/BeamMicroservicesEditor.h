@@ -82,7 +82,7 @@ struct FLocalMicroserviceData
 	 * The type of the service.
 	 */
 	UPROPERTY(BlueprintReadOnly)
-	TEnumAsByte<EBeamServiceType> ServiceType;
+	TEnumAsByte<EBeamServiceType> ServiceType = {};
 
 	/**
 	 * If the service is part of any BeamServiceGroup, the group will show up here.
@@ -317,7 +317,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice")
 	FString ConstructRoutingKeyMap();
-
+	
+	UFUNCTION(BlueprintCallable, Category="Beam|Editor|Microservice")
+	void SaveFederationProperties(FString ServiceId, FString FedId, FLocalFederationData Federation);
+	
 protected:
 	void DeployMicroservices(const TArray<FString>& EnableBeamoIds, const TArray<FString>& DisableBeamoIds, const FBeamOperationHandle& Op) const;
 
@@ -332,7 +335,7 @@ protected:
 	void OnUpdateLocalStateReceived(const TArray<UBeamCliProjectPsStreamData*>& Stream, const TArray<long long>&, const FBeamOperationHandle&);
 
 
-	// Helper functions
+	// Helper functions	
 	void SetupLogTail(FLocalMicroserviceData* RunningService);
 	void AppendToLogs(FLocalMicroserviceData* RunningService, const TArray<UBeamCliLogEntry*>& Log);
 	void StopLogTail(FLocalMicroserviceData* RunningService);

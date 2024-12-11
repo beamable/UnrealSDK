@@ -55,23 +55,38 @@ plugins:
    - search
    - autorefs
 
-nav:  
-  - Use Guide: 
-    - Getting Started: 'guides/intro.md'
-    - Runtime Concepts: 'guides/runtime-concepts.md'
-    - Operations & Waits: 'guides/operations-and-waits.md'
-    - Dedicated Servers: 'guides/dedicated-servers.md'
-    - Feature Guides:
+nav:
+  - Concepts:
+      - Runtime Concepts: 'concepts/runtime-concepts.md'
+      - Operations & Waits: 'concepts/operations-and-waits.md'
+      - Microservices: 'concepts/microservices.md'
+      - Dedicated Servers: 'concepts/dedicated-servers.md'
+      - Online Subsystem: 'concepts/online-subsystem.md'
+      - Federation: 'concepts/federation.md'
+  - Managed Services:
       - Content: 'features/content.md'
       - Stats: 'features/stats.md'
       - Inventory: 'features/inventory.md'
-      - Microservices: 'features/microservices.md'
       - Stores: 'features/stores.md'
+  - How-To Guides: 
+    - Getting Started: 'guides/intro.md'
+    - Setting Up a Microservice: 'guides/intro-microservices.md'
+    - Upgrades:
+      - 1.0.0-PREVIEW to 1.0.0: 'guides/upgrades/upgrade-1.0.0-preview-to-1.0.0.md'
+    - Federations:
+      - IFederatedInventory: 'guides/federations/federated-inventory.md'
+      - IFederatedGameServer: 'guides/federations/federated-game-server.md'
+      - IFederatedLogin: 'guides/federations/federated-login.md'      
+    - Unreal:
+        - Linux Builds: 'guides/unreal/linux-builds.md'  
   - Samples: 
-    - Samples Intro: 'samples/intro.md'
-    - Hathora Demo: 'samples/hathora-demo.md'
-    - Discord Demo: 'samples/discord-demo.md'
-    - Steam Demo: 'samples/steam-demo.md'
+    - Intro: 'samples/intro.md'
+    - Basic Samples:    
+      - Discord Demo: 'samples/basic/discord-demo.md'
+      - Steam Demo: 'samples/basic/steam-demo.md'      
+    - Complex Samples:
+      - LiveOps Demo: 'samples/complex/live-ops-demo.md'
+      - Hathora Demo: 'samples/complex/hathora-demo.md'
 
 copyright: |
   &copy; 2024 <a href="https://github.com/Beamable"  target="_blank" rel="noopener">Beamable</a>

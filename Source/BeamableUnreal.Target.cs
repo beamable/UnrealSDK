@@ -18,7 +18,7 @@ public class BeamableUnrealTarget : TargetRules
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.Latest;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
-
+			
 		ExtraModuleNames.AddRange(new string[]
 		{
 			"BeamableUnreal",
@@ -199,13 +199,30 @@ public class BeamableUnrealTarget : TargetRules
 
 	public static void ApplyProjectOverrides(TargetInfo Target, string beamProj)
 	{
+		string[] overrides = new[]{
+			"steam_appid.txt"
+		};
+		var projRoot = Target.ProjectFile.Directory.ToDirectoryInfo().ToString();
+		var overridesRoot = Path.Combine(projRoot, "Plugins", beamProj, "Overrides");
+
+		foreach(var entry in overrides)
+		{
+			var filePath = Path.Combine(projRoot, entry);
+			if(File.Exists(filePath)) {
+				File.Delete(filePath);
+			}
+			string targetFilePath = Path.Combine(overridesRoot, entry);
+			if(File.Exists(targetFilePath)){
+				FileInfo file = new FileInfo(targetFilePath);
+				file.CopyTo(Path.Combine(projRoot, entry));
+			}
+		}
 		var overrideFolders = new[] { "Config", ".beamable/content" };
 
 		foreach (var overrideFolder in overrideFolders)
 		{
-			var projRoot = Target.ProjectFile.Directory.ToDirectoryInfo().ToString();
 			var projectPath = Path.Combine(projRoot, overrideFolder);
-			var overridesPath = Path.Combine(projRoot, "Plugins", beamProj, "Overrides", overrideFolder);
+			var overridesPath = Path.Combine(overridesRoot, overrideFolder);
 			if (!Directory.Exists(overridesPath))
 			{
 				Console.WriteLine($"{beamProj} project does not have Overrides directory for this expected override path. Create one at: {overridesPath}");
@@ -325,18 +342,7 @@ public static class Beam
 		var additionalData = GetOrAddAdditionalData<BeamableAdditionalData>(TargetRules);
 		AddUtilityMacros(TargetRules);
 		ConfigOnlineSubsystem(TargetRules, OssConfig, additionalData);
-
-		TargetRules.ExtraModuleNames.AddRange(new[]
-		{
-			"BeamableCore",
-			"BeamableCoreBlueprintNodes",
-			"BeamableCoreRuntime",
-			"BeamableCoreRuntimeEditor",
-			"BeamableCoreEditor",
-
-			"Json",
-			"JsonUtilities",
-		});
+		Console.WriteLine($"Beamable - Ran ConfigureEditor - With OSS: {OssConfig.IsEnabled}");
 	}
 
 	/// <summary>
@@ -349,15 +355,7 @@ public static class Beam
 		var additionalData = GetOrAddAdditionalData<BeamableAdditionalData>(TargetRules);
 		AddUtilityMacros(TargetRules);
 		ConfigOnlineSubsystem(TargetRules, OssConfig, additionalData);
-
-		TargetRules.ExtraModuleNames.AddRange(new[]
-		{
-			"BeamableCore",
-			"BeamableCoreRuntime",
-
-			"Json",
-			"JsonUtilities",
-		});
+		Console.WriteLine($"Beamable - Ran ConfigureServer - With OSS: {OssConfig.IsEnabled}");
 	}
 
 	/// <summary>
@@ -370,15 +368,7 @@ public static class Beam
 		var additionalData = GetOrAddAdditionalData<BeamableAdditionalData>(TargetRules);
 		AddUtilityMacros(TargetRules);
 		ConfigOnlineSubsystem(TargetRules, OssConfig, additionalData);
-
-		TargetRules.ExtraModuleNames.AddRange(new[]
-		{
-			"BeamableCore",
-			"BeamableCoreRuntime",
-
-			"Json",
-			"JsonUtilities",
-		});
+		Console.WriteLine($"Beamable - Ran ConfigureGame - With OSS: {OssConfig.IsEnabled}");
 	}
 
 	/// <summary>
@@ -398,8 +388,11 @@ public static class Beam
 			"JsonUtilities",
 		});
 
-		if (ModuleRules.Target.bBuildEditor)
+		if (ModuleRules.Target.bCompileAgainstEditor)
+		{
+			Console.WriteLine($"Beamable - Adding Runtime Editor From Runtime Module");
 			l.Add("BeamableCoreRuntimeEditor");
+		}
 	}
 
 	/// <summary>
@@ -420,8 +413,11 @@ public static class Beam
 			"JsonUtilities",
 		});
 
-		if (ModuleRules.Target.bBuildEditor)
+		if (ModuleRules.Target.bCompileAgainstEditor)
+		{
+			Console.WriteLine($"Beamable - Adding Runtime Editor From Runtime Module");
 			l.Add("BeamableCoreRuntimeEditor");
+		}
 	}
 
 	/// <summary>

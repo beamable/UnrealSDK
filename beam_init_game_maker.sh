@@ -53,7 +53,11 @@ CLI_VERSION=$(
     # It prints out this: "beamable.tools": {"version": "0.0.123"    
     grep -Eo '"beamable.tools": {"version": "[^,]*"' |
     # Extract the semantic version number out of that string
-    grep -Eo '[0-9]+.[0-9]+.[0-9]+'
+    # It prints out this: 0.0.123"
+    grep -Eo '[0-9]+.[0-9]+.[0-9]+.*' |
+    # Extract all double-quotes
+    # It prints out this: 0.0.123
+    sed 's/"$//'
 )
 
 # Check for a dotnet tool manifest --- this defines your CLI version

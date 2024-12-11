@@ -6,14 +6,14 @@
 #include "BeamCliServicesRegistryCommand.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UBeamCliServicesRegistryStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString RegistryUrl = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override

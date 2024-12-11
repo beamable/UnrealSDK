@@ -424,7 +424,7 @@ FBeamOperationHandle UBeamInventorySubsystem::CPP_ModifyCurrenciesOperation(FUse
 	return Handle;
 }
 
-bool UBeamInventorySubsystem::TryGetCurrencyAmount(FUserSlot Player, const FBeamContentId& CurrencyId, int64& Amount)
+bool UBeamInventorySubsystem::TryGetCurrencyAmount(FUserSlot Player, FBeamContentId CurrencyId, int64& Amount)
 {
 	Amount = 0;
 
@@ -457,7 +457,7 @@ bool UBeamInventorySubsystem::TryGetAllItems(FUserSlot Player, TArray<FBeamItemS
 	return TryGetAllItemsByGamerTag(RealmUser.GamerTag, ItemStates);
 }
 
-bool UBeamInventorySubsystem::TryGetCurrencyAmountByGamerTag(const FBeamGamerTag& GamerTag, const FBeamContentId& CurrencyId, int64& Amount)
+bool UBeamInventorySubsystem::TryGetCurrencyAmountByGamerTag(const FBeamGamerTag& GamerTag, FBeamContentId CurrencyId, int64& Amount)
 {
 	Amount = 0;
 
@@ -861,6 +861,9 @@ void UBeamInventorySubsystem::MergeInventoryViewIntoState(const UInventoryView* 
 		State.UpdatedAt = ReceivedItemInstance.ViewPtr->UpdatedAt.IsSet ? FDateTime::FromUnixTimestamp(ReceivedItemInstance.ViewPtr->UpdatedAt.Val) : FDateTime::UtcNow();
 		State.FederatedId = ReceivedItemInstance.ViewPtr->ProxyId.IsSet ? ReceivedItemInstance.ViewPtr->ProxyId.Val : TEXT("");
 		for (const auto& Property : ReceivedItemInstance.ViewPtr->Properties) State.Properties.Add(Property->Name, Property->Value);
+
+		if (!Inventory.Items.Contains(ReceivedItemInstance.Id))
+			Inventory.Items.Add(ReceivedItemInstance.Id, {});
 
 		// Swap whatever exists there with the same id we just received.
 		auto& ItemsState = *Inventory.Items.Find(State.ContentId);

@@ -9,24 +9,24 @@
 #include "ServiceInstanceStreamData.generated.h"
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class UServiceInstanceStreamData : public UObject, public IBeamJsonSerializableUObject
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int64 StartedByAccountId = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString StartedByAccountEmail = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString PrimaryKey = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDockerServiceDescriptorStreamData* LatestDockerEvent = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UHostServiceDescriptorStreamData* LatestHostEvent = {};
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	URemoteServiceDescriptorStreamData* LatestRemoteEvent = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
