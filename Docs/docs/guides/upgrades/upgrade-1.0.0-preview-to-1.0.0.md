@@ -63,6 +63,7 @@ Now, if you have microservices, do the following steps. If not, skip to the next
 - `Target.cs` file and `Beam.Configure___` functions
 	- We now add code to your project's `Target.cs` file. This code is callable from any `Target.cs` and `Build.cs` files.
 	- Before, you had to manually add the various `BeamableCore` modules to these things by hand. Now, you can call the respective functions based on the Type of `Target` or `Module`.
+	- You can refer to the [intro guide](../../intro) to see which functions can be called in which `Target`/`Modules`.
 
 **Initialization** is now manual in all cases.
 
