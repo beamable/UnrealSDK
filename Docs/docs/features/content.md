@@ -95,7 +95,7 @@ The last part of the id is the only one you should edit through the **Content Wi
 ### Content Window
 The content window is how you can create and edit content inside the editor. Here's what it looks like:
 
-![](images/content-window.png#center)
+![](./images/content-window.png#center)
 
 !!! note "Where can I find the content files?"
 	 While you edit the content objects as `UObject` and a details panel, these are not stored as `UDataAsset` or anything inside Unreal itself. These are stored as individual JSON objects inside `ProjectRoot/.beamable/content/global` folder. This makes it more VCS-friendly.
