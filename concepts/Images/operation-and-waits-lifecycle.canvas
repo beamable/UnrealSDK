@@ -1,0 +1,12 @@
+{
+	"nodes":[
+		{"id":"2c83349f12374f89","type":"text","text":"\\[BEAM or GAME-MAKER] \n`UBeamRequestTracker::BeginOperation()` OR `UBeamRequestTracker::CPP_BeginOperation()`\n\nThis will start an Operation with an `FBeamOperationEventHandler[Code]` Handler and some other tracking information. The event handler is called whenever any event of any type is triggered; the `FBeamOperationEvent` struct has data in it useful for deciding how to respond to the event.","x":-29,"y":-260,"width":814,"height":180},
+		{"id":"53f012a492c2f3e3","type":"text","text":"\\[BEAM or GAME-MAKER] **Optional**\n`UBeamRequestTracker::TriggerOperationEvent()` with the `EventId` different than `NAME_None`.\n\nYou can emit any number of non-`NAME_None` events while the operation is `ONGOING`. Each of them invoke the configured callback. The callback should be implemented in a way that it checks for the relevant `EventType` and `EventId` in order to properly handle each outcome of the Operation.\n\nThis call does not alter the operation's status. It remains `ONGOING`.","x":540,"y":60,"width":814,"height":220},
+		{"id":"8274cf945433d6fc","type":"text","text":"\\[BEAM or GAME-MAKER]\n`UBeamRequestTracker::TriggerOperationSuccess()` (or the error/cancel flavors)\n\nOnce per operation, you may trigger one of these special events. These events are mutually exclusive (can only call a single one of them), will modify the operation status and trigger the provided callback one last time. In practice, these are just wrappers around `TriggerOperationEvent` with a `SubEvent == NAME_None`.","x":-29,"y":380,"width":814,"height":220}
+	],
+	"edges":[
+		{"id":"173ec441a8e9a10e","fromNode":"2c83349f12374f89","fromSide":"right","toNode":"53f012a492c2f3e3","toSide":"top","label":"Triggers \nIntermediate Events"},
+		{"id":"dde6f05fb8b1e161","fromNode":"53f012a492c2f3e3","fromSide":"bottom","toNode":"8274cf945433d6fc","toSide":"right","label":"Trigger Final \nEvent"},
+		{"id":"18a051bc5df26ad7","fromNode":"2c83349f12374f89","fromSide":"bottom","toNode":"8274cf945433d6fc","toSide":"top","label":"Single Event \nOperation"}
+	]
+}

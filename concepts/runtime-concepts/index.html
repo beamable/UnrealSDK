@@ -1,0 +1,1707 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://beamable.github.io/UnrealSDK/concepts/runtime-concepts/">
+      
+      
+      
+        <link rel="next" href="../operations-and-waits/">
+      
+      
+      <link rel="icon" href="../../assets/images/beamable-badge.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.48">
+    
+    
+      
+        <title>Runtime Concepts - Unreal SDK</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+   <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+    html.glightbox-open { overflow: initial; height: 100%; }
+    .gslide-title { margin-top: 0px; user-select: text; }
+    .gslide-desc { color: #666; user-select: text; }
+    .gslide-image img { background: white; }
+    .gscrollbar-fixer { padding-right: 15px; }
+    .gdesc-inner { font-size: 0.75rem; }
+    body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+    body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+    body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}</style> <script src="../../assets/javascripts/glightbox.min.js"></script></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#unreal-sdk-runtime-concepts" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Unreal SDK" class="md-header__button md-logo" aria-label="Unreal SDK" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Unreal SDK
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Runtime Concepts
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Beamable/UnrealSDK" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Beamable/UnrealSDK
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  Concepts
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../features/content/" class="md-tabs__link">
+          
+  
+  Managed Services
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/intro/" class="md-tabs__link">
+          
+  
+  How-To Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../samples/intro/" class="md-tabs__link">
+          
+  
+  Samples
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Unreal SDK" class="md-nav__button md-logo" aria-label="Unreal SDK" data-md-component="logo">
+      
+  <img src="../../assets/images/logo.png" alt="logo">
+
+    </a>
+    Unreal SDK
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Beamable/UnrealSDK" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Beamable/UnrealSDK
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Concepts
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            Concepts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Runtime Concepts
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Runtime Concepts
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ubeamuserslots-and-fuserslot" class="md-nav__link">
+    <span class="md-ellipsis">
+      UBeamUserSlots and FUserSlot
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="UBeamUserSlots and FUserSlot">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ubeamruntime-ubeamruntimesubsystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      UBeamRuntime &amp; UBeamRuntimeSubsystem
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#player-sign-up-and-login-flows-with-beamable" class="md-nav__link">
+    <span class="md-ellipsis">
+      Player Sign Up and Login Flows with Beamable
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Player Sign Up and Login Flows with Beamable">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#login-flow-mobile-games-style-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Login Flow - "Mobile Games" Style Authentication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#login-flow-pcconsole-style-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Login Flow - "PC/Console" Style Authentication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#understanding-beamruntimesubsystems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding BeamRuntimeSubsystems
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lower-level-sdk-subsystems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lower-Level SDK Subsystems
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lower-Level SDK Subsystems">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docs-c-version-of-blueprint-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docs: C++ version of Blueprint examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operations-and-waits/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Operations & Waits
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../microservices/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Microservices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dedicated-servers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Dedicated Servers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../online-subsystem/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Online Subsystem
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../federation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Federation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Managed Services
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Managed Services
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/content/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Content
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/stats/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Stats
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/inventory/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Inventory
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/stores/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Stores
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    How-To Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            How-To Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/intro/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting Started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/intro-microservices/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Setting Up a Microservice
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Upgrades
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            Upgrades
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/upgrades/upgrade-1.0.0-preview-to-1.0.0/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    1.0.0-PREVIEW to 1.0.0
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Federations
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            Federations
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/federations/federated-inventory/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    IFederatedInventory
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/federations/federated-game-server/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    IFederatedGameServer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/federations/federated-login/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    IFederatedLogin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Unreal
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            Unreal
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/unreal/linux-builds/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Linux Builds
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Samples
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Samples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../samples/intro/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Intro
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Basic Samples
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            Basic Samples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../samples/basic/discord-demo/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Discord Demo
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../samples/basic/steam-demo/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Steam Demo
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Complex Samples
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Complex Samples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../samples/complex/live-ops-demo/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LiveOps Demo
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../samples/complex/hathora-demo/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Hathora Demo
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ubeamuserslots-and-fuserslot" class="md-nav__link">
+    <span class="md-ellipsis">
+      UBeamUserSlots and FUserSlot
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="UBeamUserSlots and FUserSlot">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ubeamruntime-ubeamruntimesubsystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      UBeamRuntime &amp; UBeamRuntimeSubsystem
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#player-sign-up-and-login-flows-with-beamable" class="md-nav__link">
+    <span class="md-ellipsis">
+      Player Sign Up and Login Flows with Beamable
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Player Sign Up and Login Flows with Beamable">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#login-flow-mobile-games-style-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Login Flow - "Mobile Games" Style Authentication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#login-flow-pcconsole-style-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Login Flow - "PC/Console" Style Authentication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#understanding-beamruntimesubsystems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding BeamRuntimeSubsystems
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lower-level-sdk-subsystems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lower-Level SDK Subsystems
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lower-Level SDK Subsystems">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docs-c-version-of-blueprint-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docs: C++ version of Blueprint examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<style>
+img[src*='#center'] { 
+    display: block;
+    margin: auto;
+}
+</style>
+<h1 id="unreal-sdk-runtime-concepts">Unreal SDK - Runtime Concepts<a class="headerlink" href="#unreal-sdk-runtime-concepts" title="Permanent link">¶</a></h1>
+<p>The Beamable SDK is a collection of custom UE <code>Engine</code>, <code>Editor</code> and <code>GameInstance</code> Subsystems. <strong>Game-Maker Code</strong> (as in, code the Beamable customer writes) can take advantage of various guarantees we provide by understanding how these subsystems work.</p>
+<h2 id="ubeamuserslots-and-fuserslot"><code>UBeamUserSlots</code> and <code>FUserSlot</code><a class="headerlink" href="#ubeamuserslots-and-fuserslot" title="Permanent link">¶</a></h2>
+<p>The concept of a <code>UserSlot</code> represents a named "local player" slot. By default, we ship with two lists of User Slots inside the <code>UBeamCoreSettings</code>(found in <code>Project Settings -&gt; Engine</code>) :</p>
+<ul>
+<li>The <code>RuntimeUserSlots</code> , that contains a default slot at index 0, called <code>Player0</code>. <ul>
+<li>The first index of this list is referred to as the <code>OwnerPlayerSlot</code>.</li>
+<li>This list is the list of expected player slots for every running client of your game.</li>
+<li>If you're game does not need multiple users logged into the same game-client, you don't need multiple slots.</li>
+</ul>
+</li>
+<li>The <code>EditorUserSlots</code>, that contains a default slot at index 0, called <code>MainEditorDeveloperSlot</code>. <ul>
+<li>The Beamable Editor integration also uses the user slot system to authenticate the requests it makes to the Beamable servers. So... when you signed into the editor, you're data is associated to this default slot.</li>
+</ul>
+</li>
+</ul>
+<p>The <code>UBeamUserSlots</code> Engine Subsystem is responsible for:</p>
+<ul>
+<li>Enabling local co-op games to have multiple players logged in at the same time.</li>
+<li>Name-spacing slots to support Multiplayer PIE-mode. <ul>
+<li>This is why, like UE, we take in a <code>UObject* CallingContext</code> in certain parts of our APIs.</li>
+</ul>
+</li>
+<li>Assert that only slots defined in the <code>UBeamCoreSettings</code> are in use. <ul>
+<li>Any User Slot with <code>Test</code> in its name is exempt from this rule so you can write automated tests with arbitrary amounts of user slots by using user slots with <code>Test</code> in their names.</li>
+</ul>
+</li>
+</ul>
+<p><strong><em>This subsystem does not handle the actual logging in and logging out.</em></strong> That is handled by two other Subsystems:</p>
+<ul>
+<li><code>UBeamRuntime</code> , a <code>GameInstanceSubsystem</code>, is responsible for PIE instances and packaged games. </li>
+<li><code>UBeamEditor</code>, an <code>EditorSubsystem</code>, is responsible for the Editor integration.</li>
+</ul>
+<h3 id="ubeamruntime-ubeamruntimesubsystem"><code>UBeamRuntime</code> &amp; <code>UBeamRuntimeSubsystem</code><a class="headerlink" href="#ubeamruntime-ubeamruntimesubsystem" title="Permanent link">¶</a></h3>
+<p><code>UBeamRuntime</code> is the entry point for the Beamable SDK at runtime (PIE, packaged game clients and dedicated servers). It is a <code>GameInstanceSubsystem</code> and follows its lifecycle rules. It is responsible for a couple of things:</p>
+<ul>
+<li>It controls the SDK's runtime initialization flow.</li>
+<li>It controls the various SDK's user [un]-authentication flows.</li>
+<li>It controls <code>UBeamRuntimeSubsystems'</code> lifecycle with respect to the SDK itself and <code>FUserSlots</code>.</li>
+</ul>
+<p>The image below describes how the SDK's lifecycle injects itself into UE's lifecycle:</p>
+<p><a class="glightbox" href="../Images/runtime-concepts-init-flow.png#center" data-type="image" data-width="auto" data-height="auto" data-desc-position="bottom"><img alt="InitFlow" src="../Images/runtime-concepts-init-flow.png#center" /></a></p>
+<p>The next image shows a high-level description of the authentication flows supported by the SDK:</p>
+<p><a class="glightbox" href="../Images/runtime-concept-authflow.png#center" data-type="image" data-width="auto" data-height="auto" data-desc-position="bottom"><img alt="runtime-concept-authflow.png#center" src="../Images/runtime-concept-authflow.png#center" /></a></p>
+<p>Now that you have a high-level understanding of the SDK's initialization flows, read up on how to achieve the two most common Sign Up and Login flows among the ones we provide.</p>
+<h2 id="player-sign-up-and-login-flows-with-beamable">Player Sign Up and Login Flows with Beamable<a class="headerlink" href="#player-sign-up-and-login-flows-with-beamable" title="Permanent link">¶</a></h2>
+<p>The Beamable SDK comes with a set of pre-implemented operations for common sign-up use-cases. Here are how to set up a few of the common login/signup flows using Beamable.</p>
+<div class="admonition warning">
+<p class="admonition-title">Mobile and Console Support</p>
+<p>We DO NOT provide mobile support yet. This version of the SDK is focused on PC (Windows/Linux) and Dedicated Servers. Console and Mobile support will be added later.</p>
+</div>
+<h3 id="login-flow-mobile-games-style-authentication">Login Flow - "Mobile Games" Style Authentication<a class="headerlink" href="#login-flow-mobile-games-style-authentication" title="Permanent link">¶</a></h3>
+<p>Mobile games often want to create a <strong>Guest Account</strong> for the player so they can start playing quickly and later decide if they want to <code>Attach</code> that guest account to a more permanent identity.</p>
+<p>The SDK supports this flow via the <code>UBeamRuntime::InitSDKWithFrictionlessLogin</code> function. Initializing the SDK with this function will immediately attempt to create a <strong>Guest Account</strong> at the <code>OwnerPlayerSlot</code> as soon as the SDK finishes initializing itself. If an account is already locally cached at that <code>FUserSlot</code> we'll login to that one automatically without making a request to Beamable.</p>
+<p>The <code>On User Ready</code> callback provided to the <code>InitSDKWithFrictionlessLogin</code> function runs after the Guest Account was successfully created and, at that point, you can make further requests to Beamable. </p>
+<p><strong>Guest Accounts are lost if signed out (or have its locally cached data lost for any reason)</strong>. To avoid that, players can to "attach" some persistent identity information to that guest account. <code>UBeamRuntime::Attach_____</code> do that. After a successful attach call, a player will be able to login via the corresponding <code>UBeamRuntime::Login____</code> operation. For example, if you <code>AttachEmailAndPassword</code> you'll be able to <code>LoginEmailAndPassword</code> to sign back into the account.</p>
+<p>This user sign in flow does not run in Dedicated Servers even if <code>InitSDKWithFrictionlessLogin</code> is called. Dedicated Servers use a different form of authentication that is not based on <code>FUserSlots</code>.</p>
+<h3 id="login-flow-pcconsole-style-authentication">Login Flow - "PC/Console" Style Authentication<a class="headerlink" href="#login-flow-pcconsole-style-authentication" title="Permanent link">¶</a></h3>
+<p>In PC/Console titles, often the user can sign-in and up from inside the game. That can happen either through an active form-filling process, an active request to third-party authentication (Discord, Google, etc...) or an automatic store-based login (Epic Online Services, PSN, Steam, etc...). </p>
+<p><strong><em>If your game has these flows, we recommend you use <code>InitSDK</code> and manage the login/signup flows in your game code instead. The steps below explain how to do that.</em></strong></p>
+<p>In your <code>BeginPlay</code> implementation, call <code>UBeamRuntime::InitSDK</code>. It provides you different callbacks to handle initialization success or failure. At the end of a successful initialization, you can call <code>UBeamRuntime::SignUp____</code> or <code>UBeamRuntime::Login____</code> Operations with the appropriate parameters to login a user. </p>
+<p>You can react to the successful Login/SignUp either via registering a callback to <code>UBeamRuntime::OnUserReady</code> OR by the <a href="../operations-and-waits/">operation's own events</a>.</p>
+<p>We treat these operations as atomic inside the SDK and will clear any invalid partial state in case of any failure during their internal multi-step process; triggering <code>UBeamRuntime::OnUserReady</code> only in the case that the user is fully ready for use.</p>
+<h3 id="understanding-beamruntimesubsystems">Understanding <code>BeamRuntimeSubsystems</code><a class="headerlink" href="#understanding-beamruntimesubsystems" title="Permanent link">¶</a></h3>
+<p><code>BeamRuntimeSubsystems</code> are stateful subsystems that provide some specific Beamable functionality. They are built on top of our Auto Generated <code>UBeam____Api</code> classses to make it simpler to leverage our APIs; that way:</p>
+<ol>
+<li>You don't have to set up the common case.</li>
+<li>You can use them and their extension points for variations of the common case.</li>
+<li>You can use them as reference implementations to implement your own custom use cases outside of the common case.</li>
+</ol>
+<p>These are hand-written. Here's a few examples of existing ones:</p>
+<ul>
+<li><code>UBeamContentSubsystem</code>: This leverages the Beamable Content system to receive dynamic updates to read-only game data definition; also supports baked in-build content through the same API.</li>
+<li><code>UBeamInventorySubsystem</code>: This provides builder functions around our Inventory APIs that allows you to combine what would be multiple API requests into a single batched inventory update. It also receives inventory notifications coming from the server and keeps those in sync.</li>
+<li><code>UBeamMatchmakingSubsystem</code>: This provides you a stateful way of joining/canceling a matchmaking queue and receiving updates when a match is found.</li>
+</ul>
+<p>These systems make use of the various <code>UBeamRuntime::____</code> callbacks to keep their state correct and expose callbacks and configuration options for <strong>Game-Maker Code</strong> to run with semantically relevant guarantees.</p>
+<p>If the exposed hooks on these are not enough for your use case and constraints, as a user you can create your own <code>UBeamRuntimeSubsystem</code>. The SDK tries not to hide things from you so you can use the provided <code>UBeamRuntimeSubsystems</code> to understand how they are set up when creating your own. The documentation in [Lower-Level SDK Subsystems][#lower-level-sdk-subsystems] can also be useful when implementing your own <code>UBeamRuntimeSubsystems</code>. </p>
+<p>You can also opt out of these entirely by adding them to <code>UBeamCoreSettings</code> 's property: <code>ManuallyInitializedRuntimeSubsystems</code>. All subsystems in this list, and any other subsystem that depends on it, are not automatically initialized by the SDK. For example: adding <code>UBeamInventorySubsystem</code> to this list makes it so the SDK's default implementation of an inventory system will not be in-use until you manually initialize it. </p>
+<p>You can leverage the above to:</p>
+<ul>
+<li>Delay initialization of subsystems to a later point to reduce startup times.</li>
+<li>Remove our implementation of a set of systems so that you can use your own implementation of those systems.</li>
+<li>Disable systems that you do not want to use to reduce the SDK's request overhead.</li>
+</ul>
+<p>Keep in mind that the simplest way is to build your features <em>on top of</em> these subsystems instead of replacing them. However, there are complex cases where it may be easier to make your own system <em>instead of</em> these subsystems. That's why we allow you to enable/disable systems with this granularity.</p>
+<h3 id="lower-level-sdk-subsystems">Lower-Level SDK Subsystems<a class="headerlink" href="#lower-level-sdk-subsystems" title="Permanent link">¶</a></h3>
+<p>This section talks about lower-level details of how requests to Beamable get made. <strong><em>You don't need to read this</em></strong>, but... you might want to if you plan on implementing your own <code>UBeamRuntimeSubsystem</code>. Here's why you'd want to do this:</p>
+<ul>
+<li>You want to replace one of our implementations with something quite custom and want to provide guarantees about your system's lifecycle that are similar to the ones we provide.</li>
+<li>You wish to guarantee that <code>On User Ready</code> has access to custom data fetched via Microservices and Microstorages.</li>
+</ul>
+<p>We don't recommend writing your own unless you're confident you understand the topics below and are trying to solve one of the two problems listed above.</p>
+<p>The lowest layer of systems are shared between the SDK's UE Editor integration and the SDK's Runtime integration:</p>
+<ul>
+<li>
+<p><code>UBeamUserSlots</code>: As explained at the start of this document, tracks multiple local signed-in users (for local co-op cases).</p>
+</li>
+<li>
+<p><code>UBeam_____Api</code>:  Code-Generated Subsystems from our Backend OpenAPI spec.</p>
+<ul>
+<li>These are stateless subsystems.</li>
+<li>These provides you low-level access to every end-point of our backend even if we don't have utilities in the SDK that do exactly what you want.</li>
+<li>As UE doesn't allow for namespaces AND BP-compatibility, this is verbose. We recommend more liberal use of <code>auto</code> when dealing with Code-Gen API Types.</li>
+</ul>
+</li>
+<li>
+<p><code>UBeamBackend</code>: Contains BP-Compatible and Lambda compatible implementations of Request/Response handling functions. It handles:</p>
+<ul>
+<li>Request/Response serialization and deserialization.</li>
+<li>Configurable Retry Logic. Request, User and call-site granularity.</li>
+<li>Transparent and Automatic Re-Auth in case of expired <code>AccessToken</code> through a user's <code>RefreshToken</code>.</li>
+<li><code>LogBeamBackend Verbose</code> also is a useful diagnostic tool as it will print out the entire process of building the request, sending it out and receiving its response.</li>
+</ul>
+</li>
+<li>
+<p><code>UBeamNotifications</code> and <code>UBeam_____Notifications</code>: Leverages UE's WebSocket implementation and associates different web-socket connections with different user slots. </p>
+<ul>
+<li><code>UBeam_____Notifications</code> are implemented per Beamable backend system (inventory, stats, etc...) to expose two UE function versions, one BP-Compatible and the other Lambda-Compatible, that register a handler to process a specific type of notification.</li>
+<li>These are used by <code>UBeamRuntimeSubsystem</code> based on their semantic needs. For example, <code>UBeamMatchmakingNotifications</code> subscribes to notifications for the matchmaking ticket while a UserSlot is on a given queue. </li>
+<li>You can use Microservices to send out custom notifications --- those can be received in clients by creating your own subsystem modeled after these.</li>
+</ul>
+</li>
+<li>
+<p><code>UBeamRequestTracker</code>: A BP-compatible implementation of Async Operations that can emit various Events as it goes along --- you can think of these as "BP-Compatible Promises".</p>
+<ul>
+<li>These are integrated with our <code>UBeam____Api</code> subsystems. </li>
+<li><code>BeginOperation</code> is effectively the same a creating a new promise. </li>
+<li><code>TriggerOperationSuccess</code>, <code>TriggerOperationError</code> and <code>TriggerOperationCancelled</code> should be called when you want to complete the Operation.</li>
+<li>This is a somewhat complex subsystem so we recommend you read <a href="../operations-and-waits">Operations &amp; Waits</a>.</li>
+</ul>
+</li>
+</ul>
+<p>The systems above are used by various environments the Beamable SDK runs in: PIE, Editor, Dedicated Server Builds and regular game builds. Their code is pretty heavily commented; so, feel free to read it and figure things out that way.</p>
+<h4 id="docs-c-version-of-blueprint-examples">Docs: C++ version of Blueprint examples<a class="headerlink" href="#docs-c-version-of-blueprint-examples" title="Permanent link">¶</a></h4>
+<p>Most of our docs contains examples using Blueprints. Unless described otherwise there is option to achieve same results in C++ while following Blueprint sample. In C++, the subsystems and function names are the same except that, for lambda-binding, you'll need to use the <code>CPP_</code> versions of functions.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy; 2024 <a href="https://github.com/Beamable"  target="_blank" rel="noopener">Beamable</a>
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.83f73b43.min.js"></script>
+      
+    
+  <script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(() => { lightbox.reload() });
+</script></body>
+</html>
