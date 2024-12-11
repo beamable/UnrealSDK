@@ -20,7 +20,7 @@ Most implementations of Server-Side Callbacks are fire-and-forget (similar to a 
 
 Here's a high-level diagram of what federations are:
 
-![microservices-architecture-federation-general.png](./images/microservices-architecture-federation-general.png#center)
+![microservices-architecture-federation-general.png](./Images/microservices-architecture-federation-general.png#center)
 
 As such, each of the **Federations** we provide have their own semantics, usage guidelines, performance characteristics and constraints described in their own unique [How-To](../guides/federations/federated-login.md) guides.
 ## Federation Calls
@@ -31,11 +31,11 @@ There are two types of **Federations Calls** our Backend makes:
 
 **In-Band Federations** are any Federation call that **is in the path of a request originating from a game's client or real-time game server**. Examples of these are `IFederatedLogin`, `IFederatedInventory` or `IFederatedGameServer`(when called via the Lobby system's `ProvisionGameServer` from a client).
 
-![microservices-architecture-federation-in-band.png](./images/microservices-architecture-federations-in-band.png#center)
+![microservices-architecture-federation-in-band.png](./Images/microservices-architecture-federations-in-band.png#center)
 
 **Out-of-Band Federations** are any Federation calls that **are triggered by some server event that originates from inside the Beamable's Managed Services**. The most obvious example is `IFederatedGameServer` (when called for each match found as part of a matchmaking queue tick).
 
-![microservices-architecture-federations-out-of-band.png](./images/microservices-architecture-federations-out-of-band.png#center)
+![microservices-architecture-federations-out-of-band.png](./Images/microservices-architecture-federations-out-of-band.png#center)
 
 [For more information about the workflow implications of the difference between both **Federation Call** types, see below.](#workflows-for-developing-federations)
 
@@ -99,5 +99,5 @@ For **In-Band Calls** that reach a federated endpoint, the selected [Microservic
 
 In order to configure these filters, you can use the **Local - Federations** tab of your **[Microservice Inspector](../concepts/microservices.md#microservice-window)**. The filters, when out-of-band calls can be made to a particular federated endpoint, are described in [each federation's How-To guides](../guides/federations/federated-game-server.md).
 
-![microservices-window-federation.png](./images/microservices-window-federation.png)
+![microservices-window-federation.png](./Images/microservices-window-federation.png)
 
