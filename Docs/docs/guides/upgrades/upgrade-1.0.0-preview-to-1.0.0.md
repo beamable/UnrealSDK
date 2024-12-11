@@ -56,7 +56,8 @@ Now, if you have microservices, do the following steps. If not, skip to the next
 - If you want, re-enable Automatic Code Generation by setting `<GenerateClientCode>true</GenerateClientCode>` in every service's `csproj` file.
   - If you don't want, you can read about manual generation [here](../../../concepts/microservices/#integrating-with-unreal).
 
-Now, let's go into the Unreal Solution.
+**Now, let's go into the Unreal Solution.**
+
 - There were a number of renames and changes, so the project is likely NOT compiling at this point; if most of your work was in Blueprints, those may not be compiling even if the editor is.
 
 - `Target.cs` file and `Beam.Configure___` functions
