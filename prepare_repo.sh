@@ -2,13 +2,13 @@
 
 if ! command -v dotnet >/dev/null 2>&1; then
     echo ".NET is not installed."
-    exit 1
+    return 1
 fi
 
 # Verify that the dotnet tool is callable by listing installed tools
 if ! dotnet tool list >/dev/null 2>&1; then
     echo "The dotnet tool cannot be called, which may indicate a misconfiguration. Make sure that Dotnet SDK is installed."
-    exit 1
+    return 1
 fi
 
 # Install the SDK in your project

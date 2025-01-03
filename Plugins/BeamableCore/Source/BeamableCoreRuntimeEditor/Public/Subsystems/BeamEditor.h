@@ -119,6 +119,7 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamEditorBootstrapper : public UObject
 {
 	GENERATED_BODY()
 
+public:
 	/**
 	 * @brief Called when the editor finishes starting up.
 	 */
@@ -195,6 +196,11 @@ class BEAMABLECORERUNTIMEEDITOR_API UBeamEditor : public UEditorSubsystem
 	 * @brief Stored lambda delegate handle for what this subsystem does when we exit PIE mode (mostly just trigger a callback).
 	 */
 	FDelegateHandle EndPIEHandler;
+
+	/**
+	 * @brief Stored lambda delegate handle for what this subsystem does when the editor is fully initialized (kick off the Beamable Editor Integration initialization flow).
+	 */
+	FDelegateHandle EditorInitializedHandle;
 
 	/**
 	 * @brief When a realm change is requested, we notify all UBeamEditorSubsystems that exist so that they can prepare for the change.
