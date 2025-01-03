@@ -17,8 +17,7 @@
     <!-- When running from inside docker, this gets injected via the Dockerfile at build-time. -->
   </PropertyGroup>
   <!-- Standard dotnet settings-->
-  <PropertyGroup Label="Dotnet Settings">
-    <!-- As of Beamable 1.0, net6.0 is required. -->
+  <PropertyGroup Label="Dotnet Settings">    
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <!-- Put your stuff here OR override our stuff here (some docs): https://docs.beamable.com/docs/cli-guide-microservice-configuration#beamable-properties -->

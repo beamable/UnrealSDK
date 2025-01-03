@@ -1,9 +1,17 @@
 # Changelog
 
+## [1.2.0] - Unreleased
 
-## [Release not Planned]
+## [1.1.0] - Unreleased
 
-## [1.0.0] - Unreleased
+### Changed
+- Samples are now selected by running `dotnet beam unreal select-sample BEAMPROJ_Name` instead of `BeamProjOverride.txt`
+
+### Fixed
+- Fixed issue that could cause an internal engine check to fail during editor startup in very rare cases (PostObjectLoad issue).
+
+
+## [1.0.0] - Released 
 
 ### Added
 

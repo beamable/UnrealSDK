@@ -7,11 +7,10 @@ using System;
 using UnrealBuildTool;
 using System.Collections.Generic;
 using System.IO;
+using EpicGames.Core;
 
 public class BeamableUnrealTarget : TargetRules
 {
-	public const string kCurrentBeamProj = kBeamProj_Sandbox;
-
 	public BeamableUnrealTarget(TargetInfo Target) : base(Target)
 	{
 		bOverrideBuildEnvironment = true;
@@ -25,9 +24,8 @@ public class BeamableUnrealTarget : TargetRules
 		});
 
 		var samplePluginName = GetCurrBeamProj(Target);
-		EnablePlugins.Add(samplePluginName);
-
 		Console.WriteLine($"Configuring standalone project as beamproj={samplePluginName}.");
+		
 		ConfigureIfSandbox(this, samplePluginName);
 		ConfigureIfLiveOpsDemo(this, samplePluginName);
 		ConfigureIfHathoraDemo(this, samplePluginName);
@@ -38,18 +36,24 @@ public class BeamableUnrealTarget : TargetRules
 
 	public static string GetCurrBeamProj(TargetInfo Target)
 	{
-		string samplePluginName = kCurrentBeamProj;
-
-		var samplePluginOverrideFile = Path.Combine(Target.ProjectFile.Directory.ToDirectoryInfo().ToString(), "BeamProjOverride.txt");
-		Console.WriteLine($"Looking for 'BeamProjOverride.txt' at '{samplePluginOverrideFile}'.");
-		if (File.Exists(samplePluginOverrideFile))
+		var uproject = File.ReadAllText(Target.ProjectFile.FullName);
+		var uprojectJson = JsonObject.Parse(uproject);
+		var plugins = uprojectJson.GetObjectArrayField("Plugins");
+		foreach (var p in plugins)
 		{
-			var overrideBeamProj = File.ReadAllText(samplePluginOverrideFile).Trim();
-			Console.WriteLine($"Found plugin override file. Swapping beamproj={samplePluginName} for override={overrideBeamProj}.");
-			samplePluginName = overrideBeamProj;
+			var name = p.GetStringField("Name");
+			if (name.StartsWith("BEAMPROJ_"))
+			{
+				Console.WriteLine($"Checking {name} to see if this is the currently selected sample.");
+				if (p.GetBoolField("Enabled"))
+				{
+					Console.WriteLine($"Sample {name} is the currently selected sample");
+					return name;
+				}
+			}
 		}
-
-		return samplePluginName;
+		
+		return kBeamProj_Sandbox;
 	}
 
 	public const string kBeamProj_Sandbox = "BEAMPROJ_Sandbox";
