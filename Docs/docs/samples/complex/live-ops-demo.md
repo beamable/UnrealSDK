@@ -12,9 +12,7 @@ Aside from our `BeamableCore` Plugin, here's what the sample contains:
 - **`BEAMPROJ_LiveOpsDemo` Unreal Plugin.**: Contains the UE implementation for the sample's client. The core code is inside `LiveOpsDemoMainMenu.h` and part of the implementation is done through BPs inside the folder `UI_BPs` folder of the `BEAMPROJ_LiveOpsDemo` project.
 - **`Microservice/LiveOpsDemo` Microservice**: Microservice containing code that's used by the sample for various inventory and stat related things.
 
-To set up this sample you'll need a a Beamable Account and a Realm. To configure the repo for the sample:
-- Set the `BeamProjOverride.txt` to `BEAMPROJ_LiveOpsDemo`.
-- Re-generate your project files.
+To set up this sample you'll need a a Beamable Account and a Realm. To configure the repo for the sample run `dotnet beam unreal select-sample BEAMPROJ_LiveOpsDemo`.
 ## Setting up the Beamable Realm
 To set up an organization and realm to run this sample, follow the steps below.
 

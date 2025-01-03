@@ -5,19 +5,18 @@ img[src*='#center'] {
 }
 </style>
 
-Unreal Beamable Samples are distributed as a configuration of the Unreal SDK repository. We call these `BeamProj`. The `BeamProjOverride.txt` file at the root of the Unreal SDK project defines which of the `BEAMPROJ_` plugins is the active sample.
+Unreal Beamable Samples are distributed as a configuration of the Unreal SDK repository. We call these `BeamProj`. The selected `BeamProj` is defined by which of the `BEAMPROJ_` plugins is the enabled one inside the `BeamableUnreal.uproject` file.
 
 To look at any given sample, you need to:
 
 1. Have our dependencies installed ( [.NET](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) and [Docker](https://www.docker.com/products/docker-desktop/))
 2. Clone our [UnrealSDK](https://github.com/beamable/UnrealSDK) repository.
 3. Run the `prepare_repo.sh` script (we run it through GitBash but any similar shell *should* work).
-4. Change the contents of the `BeamProjOverride.txt` file to match the `BEAMPROJ_Plugin` of your choice. 
+4. Run `dotnet beam unreal select-sample BEAMPROJ_Plugin` to match the `BEAMPROJ_Plugin` of your choice. 
 	1. For example, `BEAMPROJ_HathoraDemo` sets the repository as the Hathora Demo sample.
 	2. You can find the correct `BEAMPROJ_` at the each sample's page.
-5. Generate Project Files.
-6. Open the project's `.sln` and do a clean build of the `Editor` target.
-7. Open the editor and `Project Settings -> Beamable Core -> Beamable Environment` and verify that it is set to `BeamProdEnv` before signing into a Beamable account.
+5. Open the project's `.sln` and do a clean build of the `Editor` target.
+6. Open the editor and `Project Settings -> Beamable Core -> Beamable Environment` and verify that it is set to `BeamProdEnv` before signing into a Beamable account.
 
 Further instructions for seeing each sample can be found in their respective sample docs.
 

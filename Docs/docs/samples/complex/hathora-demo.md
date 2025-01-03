@@ -20,7 +20,7 @@ To set up this sample you'll need a few things:
 - A Hathora Account.
 - A downloaded build (link to git-hub action artifacts of release tag build).
 
-To configure the sample, set the `BeamProjOverride.txt` to `BEAMPROJ_HathoraDemo`, re-generate your project files and run the `BeamableUnreal` project (it'll be configured as the `BEAMPROJ_HathoraDemo` sample).
+To configure the sample, run `dotnet beam unreal select-sample BEAMPROJ_HathoraDemo`.
 ## Setting up Beamable & Hathora
 Since this sample requires several resources, we do not host it ourselves. So, in order to access the sample you'll need to configure a Beamable realm so you can use it.
 

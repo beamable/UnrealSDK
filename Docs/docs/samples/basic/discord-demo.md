@@ -17,7 +17,7 @@ To set up this sample you'll need a few things:
 - A Beamable Account and a Realm.
 - A Discord Developer Account.
 
-To configure the sample, set the `BeamProjOverride.txt` to `BEAMPROJ_DiscordDemo`, re-generate your project files and run the `BeamableUnreal` project (it'll be configured as the `BEAMPROJ_DiscordDemo` sample).
+To configure the sample, run `dotnet beam unreal select-sample BEAMPROJ_DiscordDemo`.
 
 ## Setting up Beamable & Discord Application
 

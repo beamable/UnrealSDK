@@ -17,7 +17,7 @@ To set up this sample you'll need a few things:
 - A Beamable Account and a Realm.
 - A Steam Developer Account.
 
-To configure the sample, set the `BeamProjOverride.txt` to `BEAMPROJ_SteamDemo`, re-generate your project files and run the `BeamableUnreal` project (it'll be configured as the `BEAMPROJ_SteamDemo` sample).
+To configure the sample, run `dotnet beam unreal select-sample BEAMPROJ_SteamDemo`.
 
 ## Setting up Beamable & Steam Application
 
