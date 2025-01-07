@@ -22,6 +22,7 @@ namespace Beamable.HathoraDemo
         [ClientCallable]
         public async Promise InitializePlayer()
         {
+            BeamableLogger.Log($"Initializing Player");
             await Services.Stats.SetProtectedPlayerStat(Context.UserId, "win_count", "0");
         }
         

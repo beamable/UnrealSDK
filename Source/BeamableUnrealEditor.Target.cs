@@ -22,7 +22,6 @@ public class BeamableUnrealEditorTarget : TargetRules
 		});
 		
 		var samplePluginName = BeamableUnrealTarget.GetCurrBeamProj(Target);
-		EnablePlugins.Add(samplePluginName);
 		
 		Console.WriteLine($"Configuring editor project as beamproj={samplePluginName}.");
 		BeamableUnrealTarget.ConfigureIfSandbox(this, samplePluginName);

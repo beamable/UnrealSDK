@@ -227,45 +227,45 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	/**
 	 * @brief This gets called after all runtime systems had the opportunity to make requests to Beamable that do not depend on content information.
 	 */
-	void TriggerOnBeamableStarting(FBeamWaitCompleteEvent, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems, bool ApplyFrictionlessLogin,
-	                               FBeamRuntimeHandler SDKReadyHandler, FRuntimeError SDKInitilizationErrorHandler);
+	void TriggerOnBeamableStarting(FBeamWaitCompleteEvent, bool ApplyFrictionlessLogin,
+	                               FBeamRuntimeHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler);
 
 	/**
 	 * @brief This gets called after all runtime systems had the opportunity to make initialization requests to Beamable that DO depend on content data.
 	 */
-	void TriggerOnContentReady(FBeamWaitCompleteEvent Evt, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems, bool ApplyFrictionlessLogin,
-	                           FBeamRuntimeHandler SDKReadyHandler, FRuntimeError SDKInitilizationErrorHandler);
+	void TriggerOnContentReady(FBeamWaitCompleteEvent Evt, bool ApplyFrictionlessLogin,
+	                           FBeamRuntimeHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler);
 
 	/**
 	 * @brief This gets called after all runtime subsystems have been initialized, but before the Owner Player's auth has been made.
 	 */
-	void TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems, bool ApplyFrictionlessLogin,
-	                                         FBeamRuntimeHandler SDKReadyHandler, FRuntimeError SDKInitilizationErrorHandler);
+	void TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent, bool ApplyFrictionlessLogin,
+	                                         FBeamRuntimeHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler);
 
 	/**
 	 * @brief This function gets called to start the flow of initializing subsystems manually
 	 */
-	void ManuallyInitializeSubsystem(TArray<TSubclassOf<UBeamRuntimeSubsystem>>& SubsystemsTypesToInitialize, bool bInitializeUsers, FBeamOperationHandle OnOperationEvent);
+	void ManuallyInitializeSubsystem(TArray<TSubclassOf<UBeamRuntimeSubsystem>>& SubsystemsToInit, bool bInitializeUsers, FBeamOperationHandle Op);
 	/**
 	* @brief This gets called after the first initialize call to set manually subsystems as started but without initializing the content
 	 */
-	void TriggerManuallySetSubsystemStarted(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, bool bInitializeUsers,
-	                                        FBeamOperationHandle OnOperationEvent);
+	void TriggerManuallySetSubsystemStarted(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsToInit, bool bInitializeUsers,
+	                                        FBeamOperationHandle Op);
 	/**
 	 * @brief This gets called after all the manually initialized subsystems had the opportunity to make initialization requests to Beamable that DO depend on content data.
 	 */
-	void TriggerManuallySetSubsystemContentReady(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, bool bInitializeUsers,
-	                                             FBeamOperationHandle OnOperationEvent);
+	void TriggerManuallySetSubsystemContentReady(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsToInit, bool bInitializeUsers,
+	                                             FBeamOperationHandle Op);
 	/**
 	 * @brief This gets called to initialize the users for the manually initialized subsystems.
 	 */
-	void TriggerManuallySetSubsystemsUserReady(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, bool bInitializeUsers,
-	                                           FBeamOperationHandle OnOperationEvent);
+	void TriggerManuallySetSubsystemsUserReady(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsToInit, bool bInitializeUsers,
+	                                           FBeamOperationHandle Op);
 
 	/**
 	 * @brief This gets called to trigger the post user sign in for the manually initialized subsystems.
 	 */
-	void TriggerManuallySubsystemsPostUserSignIn(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, FBeamOperationHandle OnOperationEvent);
+	void TriggerManuallySubsystemsPostUserSignIn(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsToInit, FBeamOperationHandle Op);
 
 	/**
 	 * Manages connectivity and recovery for every user slot.
@@ -289,7 +289,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	/**
 	 * @brief 
 	 */
-	void TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems,
+	void TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser,
 	                                    FBeamOperationHandle AuthOpHandle);
 
 	/**
@@ -322,6 +322,10 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 */
 	FDelegateHandle UserSlotClearedEnqueuedHandle;
 
+	/**
+	 * Automatically initialized systems. This is computed during the process for initializing the SDK and then never updated. 
+	 */
+	TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems;
 
 	/**
 	 * @brief When we boot up the game instance (and it's subsystems), after all Initialize calls have finished, we allow BeamSubsystems to kick-off operations in parallel.
@@ -367,7 +371,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 * @brief So that actors and components can react to failures in the user authentication flow.
 	 * This runs after all of the BeamRuntimeSubsystems have run their OnFailedUserAuth callback. 
 	 */
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, meta=(DeprecatedProperty, DeprecationMessage = "Use OnUserReadyFailed instead for the same semantics."))
 	FBeamRuntimeEvent OnFailedUserAuth;
 
 	/**
@@ -867,10 +871,10 @@ public:
 
 private:
 	// Hard-coded special case auth flow	
-	UFUNCTION(BlueprintCallable)
-	void FrictionlessLoginIntoSlot(const FUserSlot& UserSlot, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems);
+	UFUNCTION(BlueprintCallable, meta=(DeprecatedFunction, DeprecationMessage="This is no longer needed. Use the LoginFrictionlessOperation instead for the same behavior but more control."))
+	void FrictionlessLoginIntoSlot(const FUserSlot& UserSlot);	
 
-	// BP/CPP Independent Operation Implementations
+	// BP/CPP Independent Operation Implementations	
 	void LoginFrictionless(FUserSlot UserSlot, FBeamOperationHandle Op);
 	void LoginExternalIdentity(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op);
 	void LoginEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op);
@@ -880,7 +884,6 @@ private:
 	void SignUpEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op);
 	void Logout(FUserSlot UserSlot, EUserSlotClearedReason Reason, bool bRemoveLocalData, FBeamOperationHandle Op);
 
-
 	// Reusable Operation Callbacks
 	void OnAuthenticated(FAuthenticateFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op, FDelayedOperation BeforeUserNotifyOperation);
 	void AuthenticateWithToken(FUserSlot UserSlot, const UTokenResponse* Token, FBeamOperationHandle Op, FDelayedOperation BeforeUserNotifyOperation);
@@ -888,7 +891,8 @@ private:
 	void RunPostAuthenticationSetup_OnGetMe(FBasicAccountsGetMeFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op);
 	void RunPostAuthenticationSetup_PrepareNotificationService(FGetClientDefaultsFullResponse Resp, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op);
 
-	// Reusable API Calls
+	// Reusable Helper Functions
+	void LoadCachedUserAtSlot(FUserSlot UserSlot, FBeamOperationHandle AuthOp, FSimpleDelegate RunIfNoUser);
 	FBeamRequestContext LoginGuest(FUserSlot UserSlot, FBeamOperationHandle Op, FDelayedOperation OnBeforePostAuthentication = {});
 	FBeamRequestContext CheckExternalIdentityAvailable(FString ExternalService, FString ExternalNamespace, FString ExternalUserId, FBeamOperationHandle Op,
 	                                                   FOnGetAvailableExternalIdentityFullResponse Handler) const;

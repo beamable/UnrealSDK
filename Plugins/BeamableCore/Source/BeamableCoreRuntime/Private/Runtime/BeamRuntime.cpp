@@ -25,9 +25,10 @@
 
 void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 {
-	Super::Initialize(Collection);	
+	Super::Initialize(Collection);
 	CurrentSdkState = NotInitialized;
-	
+	AutomaticallyInitializedSubsystems = {};
+
 	// We do some initialization for dedicated servers... 
 	if (GetGameInstance()->IsDedicatedServerInstance())
 	{
@@ -141,7 +142,7 @@ void UBeamRuntime::UnregisterAllCallbacks()
 {
 	// Clean up initialization successful handlers
 	OnStarted.Clear();
-	OnStartedCode.Clear();		
+	OnStartedCode.Clear();
 
 	// Clean up initialization error handlers
 	OnStartedFailed.Clear();
@@ -149,15 +150,15 @@ void UBeamRuntime::UnregisterAllCallbacks()
 
 	// Clean up user ready handlers	
 	OnUserReady.Clear();
-	OnUserReadyCode.Clear();	
+	OnUserReadyCode.Clear();
 
 	// Clean up user initialization failure handles
 	OnUserInitFailed.Clear();
 	OnUserInitFailedCode.Clear();
 
 	// Clean up user initialization failed handlers
-	OnUserCleared.Clear();	
-	OnUserClearedCode.Clear();	
+	OnUserCleared.Clear();
+	OnUserClearedCode.Clear();
 }
 
 void UBeamRuntime::InitSDK(FBeamRuntimeHandler OnStartedHandler, FRuntimeError SDKInitializationErrorHandler)
@@ -245,7 +246,7 @@ void UBeamRuntime::PIEExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivit
 		: BeamBackend->DefaultExecuteRequestImpl(ActiveRequestId, Connectivity);
 }
 
-// On Beamable Start Flow
+// On Start Flow
 
 void UBeamRuntime::TriggerInitializeWhenUnrealReady(bool ApplyFrictionlessLogin, FBeamRuntimeHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler)
 {
@@ -298,9 +299,7 @@ void UBeamRuntime::TriggerInitializeWhenUnrealReady(bool ApplyFrictionlessLogin,
 			{
 				const TArray<UBeamRuntimeSubsystem*> Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
 
-				TArray<TSubclassOf<UBeamRuntimeSubsystem>> ManuallyInitializedSubsystems =
-					GetDefault<UBeamRuntimeSettings>()->ManualyInitializedRuntimeSubsystems;
-				TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems;
+				TArray<TSubclassOf<UBeamRuntimeSubsystem>> ManuallyInitializedSubsystems = GetDefault<UBeamRuntimeSettings>()->ManualyInitializedRuntimeSubsystems;
 
 				bool DependencyWarning = false;
 				FString WarningMsg;
@@ -343,17 +342,15 @@ void UBeamRuntime::TriggerInitializeWhenUnrealReady(bool ApplyFrictionlessLogin,
 					}
 				}
 
-				const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::TriggerOnBeamableStarting, AutomaticallyInitializedSubsystems,
-				                                                               ApplyFrictionlessLogin, SDKInitializedHandler, SDKInitializationErrorHandler);
+				const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::TriggerOnBeamableStarting, ApplyFrictionlessLogin, SDKInitializedHandler,
+				                                                               SDKInitializationErrorHandler);
 				OnInitializeWhenUnrealReadyWait = RequestTracker->CPP_WaitAll({}, InitializeWhenUnrealReadyOps, {}, OnCompleteCode);
 			}
 		}
 	}
 }
 
-void UBeamRuntime::TriggerOnBeamableStarting(FBeamWaitCompleteEvent Evt,
-                                             TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems,
-                                             bool ApplyFrictionlessLogin, FBeamRuntimeHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler)
+void UBeamRuntime::TriggerOnBeamableStarting(FBeamWaitCompleteEvent Evt, bool ApplyFrictionlessLogin, FBeamRuntimeHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler)
 {
 	// Handle errors in operations we were waiting on...
 	TArray<FString> Errors;
@@ -421,16 +418,13 @@ void UBeamRuntime::TriggerOnBeamableStarting(FBeamWaitCompleteEvent Evt,
 				Subsystem->OnBeamableStarting(Handle);
 				OnBeamableStartingOps.Add(Handle);
 			}
-			const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::TriggerOnContentReady, AutomaticallyInitializedSubsystems,
-			                                                               ApplyFrictionlessLogin, SDKInitializedHandler, SDKInitializationErrorHandler);
+			const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::TriggerOnContentReady, ApplyFrictionlessLogin, SDKInitializedHandler, SDKInitializationErrorHandler);
 			OnBeamableStartingWait = RequestTrackerSystem->CPP_WaitAll({}, OnBeamableStartingOps, {}, OnCompleteCode);
 		}
 	}
 }
 
-void UBeamRuntime::TriggerOnContentReady(FBeamWaitCompleteEvent Evt,
-                                         TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems,
-                                         bool ApplyFrictionlessLogin, FBeamRuntimeHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler)
+void UBeamRuntime::TriggerOnContentReady(FBeamWaitCompleteEvent Evt, bool ApplyFrictionlessLogin, FBeamRuntimeHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler)
 {
 	// Handle errors in operations we were waiting on...
 	TArray<FString> Errors;
@@ -468,17 +462,14 @@ void UBeamRuntime::TriggerOnContentReady(FBeamWaitCompleteEvent Evt,
 				OnBeamableContentReadyOps.Add(Handle);
 			}
 
-			const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this,
-			                                                               &UBeamRuntime::TriggerOnStartedAndFrictionlessAuth, AutomaticallyInitializedSubsystems, ApplyFrictionlessLogin,
-			                                                               SDKInitializedHandler, SDKInitializationErrorHandler);
+			const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::TriggerOnStartedAndFrictionlessAuth, ApplyFrictionlessLogin, SDKInitializedHandler,
+			                                                               SDKInitializationErrorHandler);
 			OnBeamableContentReadyWait = RequestTrackerSystem->CPP_WaitAll({}, OnBeamableContentReadyOps, {}, OnCompleteCode);
 		}
 	}
 }
 
-void UBeamRuntime::TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent Evt,
-                                                       TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems,
-                                                       bool ApplyFrictionlessLogin, FBeamRuntimeHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler)
+void UBeamRuntime::TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent Evt, bool ApplyFrictionlessLogin, FBeamRuntimeHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler)
 {
 	// Handle errors in operations we were waiting on...
 	TArray<FString> Errors;
@@ -520,11 +511,11 @@ void UBeamRuntime::TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent Ev
 	// Sign in automatically to the owner player slot (if configured to do so).
 	else if (ApplyFrictionlessLogin)
 	{
-		FrictionlessLoginIntoSlot(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(), AutomaticallyInitializedSubsystems);
+		CPP_LoginFrictionlessOperation(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(), {});
 	}
 }
 
-// On Beamable Ready / OnUserReady flow
+// OnUserReady flow / OnUserCleared flow
 
 void UBeamRuntime::TriggerOnUserSlotAuthenticated(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const FBeamOperationHandle& AuthOpHandle, const UObject* Context)
 {
@@ -546,59 +537,31 @@ void UBeamRuntime::TriggerOnUserSlotAuthenticated(const FUserSlot& UserSlot, con
 	if (!OnUserSignedInWaits.Contains(UserSlot))
 		OnUserSignedInWaits.Add(UserSlot, {});
 
-	auto& SignedInOps = *OnUserSignedInOps.Find(UserSlot);
+	auto& SignedInOps = *OnUserSignedInOps.Find(UserSlot);	
 	auto& SignedInOpsWait = *OnUserSignedInWaits.Find(UserSlot);
+	SignedInOps.Empty();	
 
 	if (const UWorld* World = GetWorld())
 	{
 		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			const TArray<UBeamRuntimeSubsystem*> Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
-
-			TArray<TSubclassOf<UBeamRuntimeSubsystem>> ManuallyInitializedSubsystems =
-				GetDefault<UBeamRuntimeSettings>()->ManualyInitializedRuntimeSubsystems;
-
-			TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems;
-
-			//Search for subsystems that depend on subsystems that will be manually initialized and add them to the list of manually initialized subsystems
 			for (auto& Subsystem : Subsystems)
 			{
-				if (!ManuallyInitializedSubsystems.Contains(Subsystem->GetClass()))
-				{
-					TArray<TSubclassOf<UBeamRuntimeSubsystem>> DependingSubsystems = Subsystem->GetDependingOnSubsystems();
-
-					for (auto& DependingSubsystem : DependingSubsystems)
-					{
-						if (ManuallyInitializedSubsystems.Contains(DependingSubsystem) && !GetRequiredSubsystems().Contains(DependingSubsystem))
-						{
-							ManuallyInitializedSubsystems.AddUnique(Subsystem->GetClass());
-						}
-					}
-				}
-			}
-			SignedInOps.Reset(Subsystems.Num() - ManuallyInitializedSubsystems.Num());
-
-			for (auto& Subsystem : Subsystems)
-			{
-				if (!ManuallyInitializedSubsystems.Contains(Subsystem->GetClass())
-					|| GetRequiredSubsystems().Contains(Subsystem->GetClass()))
+				if (Subsystem->CurrentState == InitializedNoUserData)
 				{
 					FBeamOperationHandle Handle;
 					Subsystem->OnUserSignedIn(UserSlot, BeamRealmUser, GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot().Equals(UserSlot), Handle);
 					SignedInOps.Add(Handle);
-					AutomaticallyInitializedSubsystems.Add(Subsystem);
 				}
 			}
-			const auto SignedInOpsHandler = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::TriggerSubsystemPostUserSignIn, UserSlot, BeamRealmUser, AutomaticallyInitializedSubsystems,
-			                                                                   AuthOpHandle);
+			const auto SignedInOpsHandler = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::TriggerSubsystemPostUserSignIn, UserSlot, BeamRealmUser, AuthOpHandle);
 			SignedInOpsWait = RequestTracker->CPP_WaitAll({}, SignedInOps, {}, SignedInOpsHandler);
 		}
 	}
 }
 
-
-void UBeamRuntime::TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent Evt, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems,
-                                                  FBeamOperationHandle AuthOpHandle)
+void UBeamRuntime::TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent Evt, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, FBeamOperationHandle AuthOpHandle)
 {
 	// Handle errors in operations we were waiting on...
 	TArray<FString> Errors;
@@ -630,19 +593,24 @@ void UBeamRuntime::TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent Evt, FU
 
 	FBeamWaitHandle& SignedInOpsWait = *OnPostUserSignedInWaits.Find(UserSlot);
 	TArray<FBeamOperationHandle>& SignedInOps = *OnPostUserSignedInOps.Find(UserSlot);
+	SignedInOps.Empty();
 
 	if (const UWorld* World = GetWorld())
 	{
 		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
-			for (auto& Subsystem : AutomaticallyInitializedSubsystems)
+			const TArray<UBeamRuntimeSubsystem*> Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
+			for (auto& Subsystem : Subsystems)
 			{
-				FBeamOperationHandle Handle;
-				Subsystem->OnPostUserSignedIn(UserSlot, BeamRealmUser, GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot().Equals(UserSlot), Handle);
-				SignedInOps.Add(Handle);
+				if (Subsystem->CurrentState == InitializedNoUserData)
+				{
+					FBeamOperationHandle Handle;
+					Subsystem->OnPostUserSignedIn(UserSlot, BeamRealmUser, GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot().Equals(UserSlot), Handle);
+					SignedInOps.Add(Handle);
+				}
 			}
 
-			const auto SignedInOpsHandler = FOnWaitCompleteCode::CreateLambda([this, UserSlot,AutomaticallyInitializedSubsystems, AuthOpHandle](const FBeamWaitCompleteEvent& PostEvt)
+			const auto SignedInOpsHandler = FOnWaitCompleteCode::CreateLambda([this, UserSlot, Subsystems, AuthOpHandle](const FBeamWaitCompleteEvent& PostEvt)
 			{
 				// Handle errors in operations we were waiting on...
 				TArray<FString> Errors;
@@ -665,16 +633,130 @@ void UBeamRuntime::TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent Evt, FU
 					// Early out and don't initialize if errors happen here.
 					return;
 				}
-				for (auto& Subsystem : AutomaticallyInitializedSubsystems)
+
+				for (auto& Subsystem : Subsystems)
 				{
-					Subsystem->CurrentState = ESubsystemState::InitializedWithUserData;
+					if (Subsystem->CurrentState == InitializedNoUserData)
+					{
+						Subsystem->CurrentState = ESubsystemState::InitializedWithUserData;
+					}
 				}
-				
+
 				OnUserReadyCode.Broadcast(UserSlot);
 				OnUserReady.Broadcast(UserSlot);
 				RequestTrackerSystem->TriggerOperationSuccess(AuthOpHandle, {});
 			});
 			SignedInOpsWait = RequestTrackerSystem->CPP_WaitAll({}, SignedInOps, {}, SignedInOpsHandler);
+		}
+	}
+}
+
+void UBeamRuntime::TriggerOnUserSlotCleared(const EUserSlotClearedReason& Reason, const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const UObject* Context)
+{
+	if (!Context || (Context && (Context->GetWorld() != GetWorld()))) return;
+
+	// We unsubscribe automatically all notification handlers associated with a user slot when that user signs out --- then we close the connection
+	NotificationSystem->TryUnsubscribeAllFromSlot(UserSlot, DefaultNotificationChannel, this);
+	NotificationSystem->CloseSocketsForSlot(UserSlot, this);
+
+	// If we clear the slot during login or signup due to failure, we don't need to run the rest of the flow.
+	if (Reason == USCR_FailedAuthentication)
+		return;
+
+	// Let BeamRuntimeSubsystems run their callbacks
+	UBeamRequestTracker* RequestTracker = RequestTrackerSystem;
+	if (!OnUserSignedOutOps.Contains(UserSlot))
+		OnUserSignedOutOps.Add(UserSlot, {});
+
+	if (!OnUserSignedOutWaits.Contains(UserSlot))
+		OnUserSignedOutWaits.Add(UserSlot, {});
+
+	FBeamWaitHandle& SignedOutOpsWait = *OnUserSignedOutWaits.Find(UserSlot);
+	TArray<FBeamOperationHandle>& SignedOutOps = *OnUserSignedOutOps.Find(UserSlot);
+	SignedOutOps.Empty();
+
+	if (const UWorld* World = GetWorld())
+	{
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
+		{
+			const TArray<UBeamRuntimeSubsystem*> Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
+
+			SignedOutOps.Reset(Subsystems.Num());
+			for (auto& Subsystem : Subsystems)
+			{
+				FBeamOperationHandle Handle;
+				Subsystem->OnUserSignedOut(UserSlot, Reason, BeamRealmUser, Handle);
+				SignedOutOps.Add(Handle);
+			}
+
+			const auto SignedOutOpsHandler = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::TriggerPostUserSignedOut, UserSlot, Reason, BeamRealmUser);
+			SignedOutOpsWait = RequestTracker->CPP_WaitAll({}, SignedOutOps, {}, SignedOutOpsHandler);
+		}
+	}
+}
+
+void UBeamRuntime::TriggerPostUserSignedOut(FBeamWaitCompleteEvent Evt, FUserSlot UserSlot, EUserSlotClearedReason Reason, FBeamRealmUser BeamRealmUser)
+{
+	// Handle errors in operations we were waiting on...
+	TArray<FString> Errors;
+	if (RequestTrackerSystem->IsWaitFailed(Evt, Errors))
+	{
+		FString Err;
+		for (const auto& Error : Errors) Err += Error + TEXT("\n");
+		UE_LOG(LogBeamRuntime, Error, TEXT("%s"), *Err);
+
+		// Early out and don't initialize if errors happen here.
+		return;
+	}
+
+	// Everything went well with the first step in the user sign out flow so lets continue 
+	if (!OnPostUserSignedOutOps.Contains(UserSlot))
+		OnPostUserSignedOutOps.Add(UserSlot, {});
+
+	if (!OnPostUserSignedOutWaits.Contains(UserSlot))
+		OnPostUserSignedOutWaits.Add(UserSlot, {});
+
+	FBeamWaitHandle& SignedOutOpsWait = *OnPostUserSignedOutWaits.Find(UserSlot);
+	TArray<FBeamOperationHandle>& SignedOutOps = *OnPostUserSignedOutOps.Find(UserSlot);
+	SignedOutOps.Empty();
+
+	if (const UWorld* World = GetWorld())
+	{
+		if (const UGameInstance* GameInstance = World->GetGameInstance())
+		{
+			const TArray<UBeamRuntimeSubsystem*> Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
+
+			SignedOutOps.Reset(Subsystems.Num());
+			for (auto& Subsystem : Subsystems)
+			{
+				FBeamOperationHandle Handle;
+				Subsystem->OnPostUserSignedOut(UserSlot, Reason, BeamRealmUser, Handle);
+				SignedOutOps.Add(Handle);
+			}
+
+			const auto SignedOutOpsHandler = FOnWaitCompleteCode::CreateLambda([this, UserSlot, Subsystems](const FBeamWaitCompleteEvent& PostEvt)
+			{
+				// Handle errors in operations we were waiting on...
+				TArray<FString> Errors;
+				if (RequestTrackerSystem->IsWaitFailed(PostEvt, Errors))
+				{
+					FString Err;
+					for (const auto& Error : Errors) Err += Error + TEXT("\n");
+					UE_LOG(LogBeamRuntime, Error, TEXT("%s"), *Err);
+
+					// Early out and don't initialize if errors happen here.
+					return;
+				}
+
+				for (auto& Subsystem : Subsystems)
+				{
+					Subsystem->CurrentState = InitializedNoUserData;
+				}
+
+				OnUserClearedCode.Broadcast(UserSlot);
+				OnUserCleared.Broadcast(UserSlot);
+			});
+			SignedOutOpsWait = RequestTrackerSystem->CPP_WaitAll({}, SignedOutOps, {}, SignedOutOpsHandler);
 		}
 	}
 }
@@ -726,8 +808,7 @@ FBeamOperationHandle UBeamRuntime::CPP_ManuallyInitializeSubsystemOperationWithU
 }
 
 
-void UBeamRuntime::ManuallyInitializeSubsystem(TArray<TSubclassOf<UBeamRuntimeSubsystem>>& SubsystemsTypesToInitialize,
-                                               bool bInitializeUsers, FBeamOperationHandle OnOperationEvent)
+void UBeamRuntime::ManuallyInitializeSubsystem(TArray<TSubclassOf<UBeamRuntimeSubsystem>>& SubsystemsToInit, bool bInitializeUsers, FBeamOperationHandle Op)
 {
 	if (const UWorld* World = GetWorld())
 	{
@@ -735,21 +816,21 @@ void UBeamRuntime::ManuallyInitializeSubsystem(TArray<TSubclassOf<UBeamRuntimeSu
 		{
 			if (CurrentSdkState == ESDKState::Initialized)
 			{
-				for (int i = 0; i < SubsystemsTypesToInitialize.Num(); i++)
+				for (int i = 0; i < SubsystemsToInit.Num(); i++)
 				{
-					UBeamRuntimeSubsystem* Subsystem = Cast<UBeamRuntimeSubsystem>(GameInstance->GetSubsystemBase(SubsystemsTypesToInitialize[i]));
+					UBeamRuntimeSubsystem* Subsystem = Cast<UBeamRuntimeSubsystem>(GameInstance->GetSubsystemBase(SubsystemsToInit[i]));
 
 					if (Subsystem->GetSubsystemState() == ESubsystemState::InitializedWithUserData
 						|| (Subsystem->GetSubsystemState() == ESubsystemState::InitializedNoUserData && !bInitializeUsers))
 					{
-						SubsystemsTypesToInitialize.RemoveAt(i);
+						SubsystemsToInit.RemoveAt(i);
 						i--;
 					}
 				}
-				if (SubsystemsTypesToInitialize.Num() == 0)
+				if (SubsystemsToInit.Num() == 0)
 				{
 					const auto RequestTracker = RequestTrackerSystem;
-					RequestTracker->TriggerOperationCancelled(OnOperationEvent,
+					RequestTracker->TriggerOperationCancelled(Op,
 					                                          TEXT("Attempting to initialize subsystems that are already initialized"));
 					return;
 				}
@@ -758,7 +839,7 @@ void UBeamRuntime::ManuallyInitializeSubsystem(TArray<TSubclassOf<UBeamRuntimeSu
 				bool DependencyError = false;
 				FString ErrorMessage;
 				//Check subsystems  dependency before proceeding with initialization
-				for (auto& SubsystemType : SubsystemsTypesToInitialize)
+				for (auto& SubsystemType : SubsystemsToInit)
 				{
 					UBeamRuntimeSubsystem* Subsystem = Cast<UBeamRuntimeSubsystem>(GameInstance->GetSubsystemBase(SubsystemType));
 
@@ -766,7 +847,7 @@ void UBeamRuntime::ManuallyInitializeSubsystem(TArray<TSubclassOf<UBeamRuntimeSu
 
 					for (auto& SingleDependingSubsystemType : DependingSubsystemsTypes)
 					{
-						if (!SubsystemsTypesToInitialize.Contains(SingleDependingSubsystemType))
+						if (!SubsystemsToInit.Contains(SingleDependingSubsystemType))
 						{
 							UBeamRuntimeSubsystem* DependingSubsystem = Cast<UBeamRuntimeSubsystem>(GameInstance->GetSubsystemBase(SingleDependingSubsystemType));
 
@@ -786,9 +867,9 @@ void UBeamRuntime::ManuallyInitializeSubsystem(TArray<TSubclassOf<UBeamRuntimeSu
 
 
 				TArray<FBeamOperationHandle> ManualInitializeWhenUnrealReadyOps;
-				ManualInitializeWhenUnrealReadyOps.Reset(SubsystemsTypesToInitialize.Num());
+				ManualInitializeWhenUnrealReadyOps.Reset(SubsystemsToInit.Num());
 
-				for (auto& SubsystemType : SubsystemsTypesToInitialize)
+				for (auto& SubsystemType : SubsystemsToInit)
 				{
 					UBeamRuntimeSubsystem* Subsystem = Cast<UBeamRuntimeSubsystem>(GameInstance->GetSubsystemBase(SubsystemType));
 
@@ -801,22 +882,20 @@ void UBeamRuntime::ManuallyInitializeSubsystem(TArray<TSubclassOf<UBeamRuntimeSu
 				}
 
 				const auto RequestTracker = RequestTrackerSystem;
-				const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this,
-				                                                               &UBeamRuntime::TriggerManuallySetSubsystemStarted, SubsystemsTypesToInitialize, bInitializeUsers, OnOperationEvent);
+				const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::TriggerManuallySetSubsystemStarted, SubsystemsToInit, bInitializeUsers,
+				                                                               Op);
 				RequestTracker->CPP_WaitAll({}, ManualInitializeWhenUnrealReadyOps, {}, OnCompleteCode);
 			}
 			else
 			{
 				UE_LOG(LogBeamRuntime, Error, TEXT("Attempting to manually initialize subsystem while the sdk is not initialized"));
-				RequestTrackerSystem->TriggerOperationError(OnOperationEvent, TEXT("Beamable SDK Not Initalized"));
+				RequestTrackerSystem->TriggerOperationError(Op, TEXT("Beamable SDK Not Initalized"));
 			}
 		}
 	}
 }
 
-void UBeamRuntime::TriggerManuallySetSubsystemStarted(FBeamWaitCompleteEvent Evt,
-                                                      TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, bool bInitializeUsers
-                                                      , FBeamOperationHandle OnOperationEvent)
+void UBeamRuntime::TriggerManuallySetSubsystemStarted(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsToInit, bool bInitializeUsers, FBeamOperationHandle Op)
 {
 	TArray<FString> Errors;
 	if (RequestTrackerSystem->IsWaitFailed(Evt, Errors))
@@ -825,7 +904,7 @@ void UBeamRuntime::TriggerManuallySetSubsystemStarted(FBeamWaitCompleteEvent Evt
 		for (const auto& Error : Errors) Err += Error + TEXT("\n");
 		UE_LOG(LogBeamRuntime, Error, TEXT("%s"), *Err);
 
-		RequestTrackerSystem->TriggerOperationError(OnOperationEvent, *Err);
+		RequestTrackerSystem->TriggerOperationError(Op, *Err);
 
 		// Early out and don't initialize if errors happen here.;
 		return;
@@ -835,9 +914,9 @@ void UBeamRuntime::TriggerManuallySetSubsystemStarted(FBeamWaitCompleteEvent Evt
 		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			TArray<FBeamOperationHandle> ManualInitializeWhenSubsystemsStartedOps;
-			ManualInitializeWhenSubsystemsStartedOps.Reset(SubsystemsTypesToInitialize.Num());
+			ManualInitializeWhenSubsystemsStartedOps.Reset(SubsystemsToInit.Num());
 
-			for (auto& SubsystemType : SubsystemsTypesToInitialize)
+			for (auto& SubsystemType : SubsystemsToInit)
 			{
 				UBeamRuntimeSubsystem* Subsystem = Cast<UBeamRuntimeSubsystem>(GameInstance->GetSubsystemBase(SubsystemType));
 
@@ -850,16 +929,14 @@ void UBeamRuntime::TriggerManuallySetSubsystemStarted(FBeamWaitCompleteEvent Evt
 			}
 
 			const auto RequestTracker = RequestTrackerSystem;
-			const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this,
-			                                                               &UBeamRuntime::TriggerManuallySetSubsystemContentReady, SubsystemsTypesToInitialize, bInitializeUsers, OnOperationEvent);
+			const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::TriggerManuallySetSubsystemContentReady, SubsystemsToInit, bInitializeUsers,
+			                                                               Op);
 			RequestTracker->CPP_WaitAll({}, ManualInitializeWhenSubsystemsStartedOps, {}, OnCompleteCode);
 		}
 	}
 }
 
-void UBeamRuntime::TriggerManuallySetSubsystemContentReady(FBeamWaitCompleteEvent Evt,
-                                                           TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, bool bInitializeUsers
-                                                           , FBeamOperationHandle OnOperationEvent)
+void UBeamRuntime::TriggerManuallySetSubsystemContentReady(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsToInit, bool bInitializeUsers, FBeamOperationHandle Op)
 {
 	TArray<FString> Errors;
 	if (RequestTrackerSystem->IsWaitFailed(Evt, Errors))
@@ -868,7 +945,7 @@ void UBeamRuntime::TriggerManuallySetSubsystemContentReady(FBeamWaitCompleteEven
 		for (const auto& Error : Errors) Err += Error + TEXT("\n");
 		UE_LOG(LogBeamRuntime, Error, TEXT("%s"), *Err);
 
-		RequestTrackerSystem->TriggerOperationError(OnOperationEvent, *Err);
+		RequestTrackerSystem->TriggerOperationError(Op, *Err);
 
 		// Early out and don't initialize if errors happen here.
 		return;
@@ -878,9 +955,9 @@ void UBeamRuntime::TriggerManuallySetSubsystemContentReady(FBeamWaitCompleteEven
 		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			TArray<FBeamOperationHandle> ManualInitializeWhenContentReadyOps;
-			ManualInitializeWhenContentReadyOps.Reset(SubsystemsTypesToInitialize.Num());
+			ManualInitializeWhenContentReadyOps.Reset(SubsystemsToInit.Num());
 
-			for (auto& SubsystemType : SubsystemsTypesToInitialize)
+			for (auto& SubsystemType : SubsystemsToInit)
 			{
 				UBeamRuntimeSubsystem* Subsystem = Cast<UBeamRuntimeSubsystem>(GameInstance->GetSubsystemBase(SubsystemType));
 
@@ -893,17 +970,14 @@ void UBeamRuntime::TriggerManuallySetSubsystemContentReady(FBeamWaitCompleteEven
 			}
 
 			const auto RequestTracker = RequestTrackerSystem;
-			const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::TriggerManuallySetSubsystemsUserReady,
-			                                                               SubsystemsTypesToInitialize, bInitializeUsers, OnOperationEvent);
+			const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::TriggerManuallySetSubsystemsUserReady, SubsystemsToInit, bInitializeUsers, Op);
 
 			RequestTracker->CPP_WaitAll({}, ManualInitializeWhenContentReadyOps, {}, OnCompleteCode);
 		}
 	}
 }
 
-void UBeamRuntime::TriggerManuallySetSubsystemsUserReady(FBeamWaitCompleteEvent Evt,
-                                                         TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, bool bInitializeUsers
-                                                         , FBeamOperationHandle OnOperationEvent)
+void UBeamRuntime::TriggerManuallySetSubsystemsUserReady(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsToInit, bool bInitializeUsers, FBeamOperationHandle Op)
 {
 	TArray<FString> Errors;
 	if (RequestTrackerSystem->IsWaitFailed(Evt, Errors))
@@ -912,7 +986,7 @@ void UBeamRuntime::TriggerManuallySetSubsystemsUserReady(FBeamWaitCompleteEvent 
 		for (const auto& Error : Errors) Err += Error + TEXT("\n");
 		UE_LOG(LogBeamRuntime, Error, TEXT("%s"), *Err);
 
-		RequestTrackerSystem->TriggerOperationError(OnOperationEvent, *Err);
+		RequestTrackerSystem->TriggerOperationError(Op, *Err);
 
 		// Early out and don't initialize if errors happen here.
 		return;
@@ -921,7 +995,7 @@ void UBeamRuntime::TriggerManuallySetSubsystemsUserReady(FBeamWaitCompleteEvent 
 	{
 		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
-			for (auto& SubsystemType : SubsystemsTypesToInitialize)
+			for (auto& SubsystemType : SubsystemsToInit)
 			{
 				UBeamRuntimeSubsystem* Subsystem = Cast<UBeamRuntimeSubsystem>(GameInstance->GetSubsystemBase(SubsystemType));
 
@@ -931,22 +1005,19 @@ void UBeamRuntime::TriggerManuallySetSubsystemsUserReady(FBeamWaitCompleteEvent 
 	}
 	if (!bInitializeUsers)
 	{
-		RequestTrackerSystem->TriggerOperationSuccess(OnOperationEvent,TEXT(""));
+		RequestTrackerSystem->TriggerOperationSuccess(Op,TEXT(""));
 		return;
 	}
-	else
-	{
-		RequestTrackerSystem->TriggerOperationEvent(OnOperationEvent, EBeamOperationEventType::OET_SUCCESS,
-		                                            GetOperationEventID_SubsystemsInitializedWithoutUserData(), "");
-	}
+
+	RequestTrackerSystem->TriggerOperationEvent(Op, OET_SUCCESS, GetOperationEventID_SubsystemsInitializedWithoutUserData(), "");
 	if (const UWorld* World = GetWorld())
 	{
 		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			TArray<FBeamOperationHandle> ManualInitializeOnUserReadyOps;
-			ManualInitializeOnUserReadyOps.Reset(SubsystemsTypesToInitialize.Num());
+			ManualInitializeOnUserReadyOps.Reset(SubsystemsToInit.Num());
 
-			for (auto& SubsystemType : SubsystemsTypesToInitialize)
+			for (auto& SubsystemType : SubsystemsToInit)
 			{
 				UBeamRuntimeSubsystem* Subsystem = Cast<UBeamRuntimeSubsystem>(GameInstance->GetSubsystemBase(SubsystemType));
 
@@ -963,16 +1034,13 @@ void UBeamRuntime::TriggerManuallySetSubsystemsUserReady(FBeamWaitCompleteEvent 
 			}
 
 			const auto RequestTracker = RequestTrackerSystem;
-			const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this,
-			                                                               &UBeamRuntime::TriggerManuallySubsystemsPostUserSignIn, SubsystemsTypesToInitialize, OnOperationEvent);
+			const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::TriggerManuallySubsystemsPostUserSignIn, SubsystemsToInit, Op);
 			RequestTracker->CPP_WaitAll({}, ManualInitializeOnUserReadyOps, {}, OnCompleteCode);
 		}
 	}
 }
 
-void UBeamRuntime::TriggerManuallySubsystemsPostUserSignIn(FBeamWaitCompleteEvent Evt,
-                                                           TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize,
-                                                           FBeamOperationHandle OnOperationEvent)
+void UBeamRuntime::TriggerManuallySubsystemsPostUserSignIn(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsToInit, FBeamOperationHandle Op)
 {
 	TArray<FString> Errors;
 	if (RequestTrackerSystem->IsWaitFailed(Evt, Errors))
@@ -981,7 +1049,7 @@ void UBeamRuntime::TriggerManuallySubsystemsPostUserSignIn(FBeamWaitCompleteEven
 		for (const auto& Error : Errors) Err += Error + TEXT("\n");
 		UE_LOG(LogBeamRuntime, Error, TEXT("%s"), *Err);
 
-		RequestTrackerSystem->TriggerOperationError(OnOperationEvent, *Err);
+		RequestTrackerSystem->TriggerOperationError(Op, *Err);
 
 		// Early out and don't initialize if errors happen here.
 		return;
@@ -991,7 +1059,7 @@ void UBeamRuntime::TriggerManuallySubsystemsPostUserSignIn(FBeamWaitCompleteEven
 		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
 			//this lambda will be called after post user sign in is called on all subsystems
-			const auto SignedInOpsHandler = FOnWaitCompleteCode::CreateLambda([this,OnOperationEvent,SubsystemsTypesToInitialize](const FBeamWaitCompleteEvent& PostEvt)
+			const auto SignedInOpsHandler = FOnWaitCompleteCode::CreateLambda([this,Op,SubsystemsToInit](const FBeamWaitCompleteEvent& PostEvt)
 			{
 				// Handle errors in operations we were waiting on...
 				TArray<FString> Errors;
@@ -1001,7 +1069,7 @@ void UBeamRuntime::TriggerManuallySubsystemsPostUserSignIn(FBeamWaitCompleteEven
 					for (const auto& Error : Errors) Err += Error + TEXT("\n");
 					UE_LOG(LogBeamRuntime, Error, TEXT("%s"), *Err);
 
-					RequestTrackerSystem->TriggerOperationError(OnOperationEvent, *Err);
+					RequestTrackerSystem->TriggerOperationError(Op, *Err);
 
 					// Early out and don't initialize if errors happen here.
 					return;
@@ -1010,21 +1078,20 @@ void UBeamRuntime::TriggerManuallySubsystemsPostUserSignIn(FBeamWaitCompleteEven
 				{
 					if (const UGameInstance* GameInstance = World->GetGameInstance())
 					{
-						for (auto& SubsystemType : SubsystemsTypesToInitialize)
+						for (auto& SubsystemType : SubsystemsToInit)
 						{
 							UBeamRuntimeSubsystem* Subsystem = Cast<UBeamRuntimeSubsystem>(GameInstance->GetSubsystemBase(SubsystemType));
-
 							Subsystem->CurrentState = ESubsystemState::InitializedWithUserData;
 						}
 					}
 				}
-				RequestTrackerSystem->TriggerOperationSuccess(OnOperationEvent, TEXT(""));
+				RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
 			});
 
 			TArray<FBeamOperationHandle> ManualInitializePostUserSignInOps;
-			ManualInitializePostUserSignInOps.Reset(SubsystemsTypesToInitialize.Num());
+			ManualInitializePostUserSignInOps.Reset(SubsystemsToInit.Num());
 
-			for (auto& SubsystemType : SubsystemsTypesToInitialize)
+			for (auto& SubsystemType : SubsystemsToInit)
 			{
 				UBeamRuntimeSubsystem* Subsystem = Cast<UBeamRuntimeSubsystem>(GameInstance->GetSubsystemBase(SubsystemType));
 
@@ -1045,110 +1112,6 @@ void UBeamRuntime::TriggerManuallySubsystemsPostUserSignIn(FBeamWaitCompleteEven
 		}
 	}
 }
-
-void UBeamRuntime::TriggerOnUserSlotCleared(const EUserSlotClearedReason& Reason, const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const UObject* Context)
-{
-	if (!Context || (Context && (Context->GetWorld() != GetWorld()))) return;
-
-	// We unsubscribe automatically all notification handlers associated with a user slot when that user signs out --- then we close the connection
-	NotificationSystem->TryUnsubscribeAllFromSlot(UserSlot, DefaultNotificationChannel, this);
-	NotificationSystem->CloseSocketsForSlot(UserSlot, this);
-
-	// If we clear the slot during login or signup due to failure, we don't need to run the rest of the flow.
-	if (Reason == USCR_FailedAuthentication)
-		return;
-
-	// Let BeamRuntimeSubsystems run their callbacks
-	UBeamRequestTracker* RequestTracker = RequestTrackerSystem;
-	if (!OnUserSignedOutOps.Contains(UserSlot))
-		OnUserSignedOutOps.Add(UserSlot, {});
-
-	if (!OnUserSignedOutWaits.Contains(UserSlot))
-		OnUserSignedOutWaits.Add(UserSlot, {});
-
-	FBeamWaitHandle& SignedOutOpsWait = *OnUserSignedOutWaits.Find(UserSlot);
-	TArray<FBeamOperationHandle>& SignedOutOps = *OnUserSignedOutOps.Find(UserSlot);
-
-	if (const UWorld* World = GetWorld())
-	{
-		if (const UGameInstance* GameInstance = World->GetGameInstance())
-		{
-			const TArray<UBeamRuntimeSubsystem*> Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
-
-			SignedOutOps.Reset(Subsystems.Num());
-			for (auto& Subsystem : Subsystems)
-			{
-				FBeamOperationHandle Handle;
-				Subsystem->OnUserSignedOut(UserSlot, Reason, BeamRealmUser, Handle);
-				SignedOutOps.Add(Handle);
-			}
-
-			const auto SignedOutOpsHandler = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::TriggerPostUserSignedOut, UserSlot, Reason, BeamRealmUser);
-			SignedOutOpsWait = RequestTracker->CPP_WaitAll({}, SignedOutOps, {}, SignedOutOpsHandler);
-		}
-	}
-}
-
-void UBeamRuntime::TriggerPostUserSignedOut(FBeamWaitCompleteEvent Evt, FUserSlot UserSlot, EUserSlotClearedReason Reason, FBeamRealmUser BeamRealmUser)
-{
-	// Handle errors in operations we were waiting on...
-	TArray<FString> Errors;
-	if (RequestTrackerSystem->IsWaitFailed(Evt, Errors))
-	{
-		FString Err;
-		for (const auto& Error : Errors) Err += Error + TEXT("\n");
-		UE_LOG(LogBeamRuntime, Error, TEXT("%s"), *Err);
-
-		// Early out and don't initialize if errors happen here.
-		return;
-	}
-
-	// Everything went well with the first step in the user sign out flow so lets continue 
-	if (!OnPostUserSignedOutOps.Contains(UserSlot))
-		OnPostUserSignedOutOps.Add(UserSlot, {});
-
-	if (!OnPostUserSignedOutWaits.Contains(UserSlot))
-		OnPostUserSignedOutWaits.Add(UserSlot, {});
-
-	FBeamWaitHandle& SignedOutOpsWait = *OnPostUserSignedOutWaits.Find(UserSlot);
-	TArray<FBeamOperationHandle>& SignedOutOps = *OnPostUserSignedOutOps.Find(UserSlot);
-
-	if (const UWorld* World = GetWorld())
-	{
-		if (const UGameInstance* GameInstance = World->GetGameInstance())
-		{
-			const TArray<UBeamRuntimeSubsystem*> Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
-
-			SignedOutOps.Reset(Subsystems.Num());
-			for (auto& Subsystem : Subsystems)
-			{
-				FBeamOperationHandle Handle;
-				Subsystem->OnPostUserSignedOut(UserSlot, Reason, BeamRealmUser, Handle);
-				SignedOutOps.Add(Handle);
-			}
-
-			const auto SignedOutOpsHandler = FOnWaitCompleteCode::CreateLambda([this, UserSlot](const FBeamWaitCompleteEvent& PostEvt)
-			{
-				// Handle errors in operations we were waiting on...
-				TArray<FString> Errors;
-				if (RequestTrackerSystem->IsWaitFailed(PostEvt, Errors))
-				{
-					FString Err;
-					for (const auto& Error : Errors) Err += Error + TEXT("\n");
-					UE_LOG(LogBeamRuntime, Error, TEXT("%s"), *Err);
-
-					// Early out and don't initialize if errors happen here.
-					return;
-				}
-
-				OnUserClearedCode.Broadcast(UserSlot);
-				OnUserCleared.Broadcast(UserSlot);
-			});
-			SignedOutOpsWait = RequestTrackerSystem->CPP_WaitAll({}, SignedOutOps, {}, SignedOutOpsHandler);
-		}
-	}
-}
-
 
 // Login/Signup/Attach Operations
 
@@ -1272,8 +1235,7 @@ FBeamOperationHandle UBeamRuntime::CPP_LogoutOperation(FUserSlot UserSlot, EUser
 }
 
 
-void UBeamRuntime::FrictionlessLoginIntoSlot(const FUserSlot& UserSlot,
-                                             TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems)
+void UBeamRuntime::FrictionlessLoginIntoSlot(const FUserSlot& UserSlot)
 {
 	/**
 	 * If runs the FrictionlessAuthentication flow for the given user slot. You can make this call whenever you want to create a new user into a new slot.
@@ -1283,90 +1245,29 @@ void UBeamRuntime::FrictionlessLoginIntoSlot(const FUserSlot& UserSlot,
 	// No-Op if we are already authed at this slot.
 	if (UserSlotSystem->IsUserSlotAuthenticated(UserSlot, this)) return;
 
-	// Create the OperationHandle for the FrictionlessAuth operation
-	// This will handle errors by clearing up the data for the slot being signed into into and triggering the FailedUserAuth callback of all BeamRuntimeSubsystems.
-	const FBeamOperationEventHandlerCode AuthOpHandler = FBeamOperationEventHandlerCode::CreateLambda([this, UserSlot,AutomaticallyInitializedSubsystems](FBeamOperationEvent Evt)
-	{
-		// If any errors occur during this process, 
-		if (Evt.EventType == OET_ERROR)
-		{
-			// Make sure any partial state for the user slot is cleared (this is necessary since authentication is a multi-step process)
-			UserSlotSystem->ClearUserAtSlot(UserSlot, USCR_FailedAuthentication);
-
-			// TODO: Set offline mode for this user slot.						
-
-			// Call OnUserFailedFrictionlessAuth on all RuntimeSubsystems
-			if (const UWorld* World = GetWorld())
-			{
-				if (const UGameInstance* GameInstance = World->GetGameInstance())
-				{
-					for (auto& Subsystem : AutomaticallyInitializedSubsystems)
-					{
-						Subsystem->OnFailedUserAuth(UserSlot);
-					}
-				}
-			}
-			this->OnFailedUserAuth.Broadcast();
-		}
-	});
-	FBeamOperationHandle AuthOp = RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetName(), AuthOpHandler);
-
-	// Try to load the user at a specific slot
-	const int32 Result = UserSlotSystem->TryLoadSavedUserAtSlot(UserSlot, this);
-	if (Result != UBeamUserSlots::LoadSavedUserResult_Failed)
-	{
-		// If expired, let's make a request to get a new token through the auto-refresh for expired tokens and then trigger the auth.
-		if (Result == UBeamUserSlots::LoadSavedUserResult_ExpiredToken)
-		{
-			const FOnBasicAccountsGetMeFullResponse Handler = FOnBasicAccountsGetMeFullResponse::CreateLambda([this, UserSlot, AuthOp](const FBasicAccountsGetMeFullResponse& Resp)
-			{
-				if (Resp.State == EBeamFullResponseState::RS_Success)
-				{
-					RunPostAuthenticationSetup(UserSlot, AuthOp);
-					UE_LOG(LogBeamRuntime, Display, TEXT("Authenticated User at Slot! SLOT=%s"), *UserSlot.Name);
-				}
-				// If this request failed entirely (all retries)... 
-				else if (Resp.State == EBeamFullResponseState::RS_Error)
-				{
-					RequestTrackerSystem->TriggerOperationError(AuthOp, Resp.ErrorData.message);
-				}
-			});
-
-			const UBeamAccountsApi* AccountsApi = GEngine->GetEngineSubsystem<UBeamAccountsApi>();
-			UBasicAccountsGetMeRequest* MeReq = UBasicAccountsGetMeRequest::Make(GetTransientPackage(), {});
-			FBeamRequestContext Ctx;
-			AccountsApi->CPP_GetMe(UserSlot, MeReq, Handler, Ctx, AuthOp, this);
-			UE_LOG(LogBeamRuntime, Display, TEXT("User at Slot has an expired token. Refreshing the token. SLOT=%s"), *UserSlot.Name);
-		}
-
-		// If we loaded and the token wasn't expired. Let's continue the auth setup flow.
-		if (Result == UBeamUserSlots::LoadSavedUserResult_Success)
-		{
-			RunPostAuthenticationSetup(UserSlot, AuthOp);
-			UE_LOG(LogBeamRuntime, Display, TEXT("Authenticated User at Slot! SLOT=%s"), *UserSlot.Name);
-		}
-	}
-	else
-	{
-		LoginFrictionless(UserSlot, AuthOp);
-	}
+	// Try to load the user at a specific slot and if it fails... we login with a guest account.
+	FBeamOperationHandle AuthOp = RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetName(), {});
+	this->LoginFrictionless(UserSlot, AuthOp);	
 }
-
 
 void UBeamRuntime::LoginFrictionless(FUserSlot UserSlot, FBeamOperationHandle Op)
 {
-	FBeamRealmUser RealmUser;
+	// Try to load the user at a specific slot and if it fails... we login with a guest account.
+	LoadCachedUserAtSlot(UserSlot, Op, FSimpleDelegate::CreateLambda([this, UserSlot, Op]()
+	{
+		FBeamRealmUser RealmUser;
 
-	// If we are already authenticated (we had a saved user in this slot), we simply broadcast this message out
-	if (UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
-	{
-		RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
-	}
-	else
-	{
-		UE_LOG(LogBeamRuntime, Verbose, TEXT("Frictionless Auth - Not signed into slot! Starting Frictionless Auth process! SLOT=%s"), *UserSlot.Name);
-		LoginGuest(UserSlot, Op);
-	}
+		// If we are already authenticated (we had a saved user in this slot), we simply broadcast this message out
+		if (UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
+		{
+			RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
+		}
+		else
+		{
+			UE_LOG(LogBeamRuntime, Verbose, TEXT("Frictionless Auth - Not signed into slot! Starting Frictionless Auth process! SLOT=%s"), *UserSlot.Name);
+			LoginGuest(UserSlot, Op);
+		}
+	}));
 }
 
 void UBeamRuntime::LoginExternalIdentity(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op)
@@ -1488,7 +1389,7 @@ void UBeamRuntime::AttachExternalIdentity(FUserSlot UserSlot, FString Microservi
 	// If we are NOT already authenticated (we had a saved user in this slot), we fail the attach.
 	if (!UserSlotSystem->IsUserSlotAuthenticated(UserSlot, this))
 	{
-		RequestTrackerSystem->TriggerOperationError(Op, TEXT("UserSlot contains no account to attach to."));
+		RequestTrackerSystem->TriggerOperationError(Op, TEXT("NO_SIGNED_IN_USER_AT_SLOT"));
 		return;
 	}
 
@@ -1531,7 +1432,7 @@ void UBeamRuntime::AttachEmailAndPassword(FUserSlot UserSlot, FString Email, FSt
 			else
 			{
 				// If this email is already in use we error out.
-				GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, TEXT("Email is already in use."));
+				GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, TEXT("EMAIL_IN_USE"));
 			}
 			return;
 		}
@@ -1542,7 +1443,7 @@ void UBeamRuntime::AttachEmailAndPassword(FUserSlot UserSlot, FString Email, FSt
 	// If we are NOT already authenticated (we had a saved user in this slot), we fail the attach.
 	if (!UserSlotSystem->IsUserSlotAuthenticated(UserSlot, this))
 	{
-		RequestTrackerSystem->TriggerOperationError(Op, TEXT("UserSlot contains no account to attach to."));
+		RequestTrackerSystem->TriggerOperationError(Op, TEXT("NO_SIGNED_IN_USER_AT_SLOT"));
 		return;
 	}
 
@@ -1605,7 +1506,7 @@ void UBeamRuntime::SignUpExternalIdentity(FUserSlot UserSlot, FString Microservi
 	// If we are already authenticated (we had a saved user in this slot), we fail the sign up.
 	if (UserSlotSystem->IsUserSlotAuthenticated(UserSlot, this))
 	{
-		RequestTrackerSystem->TriggerOperationError(Op, TEXT("UserSlot already contains a signed in user. Sign out first."));
+		RequestTrackerSystem->TriggerOperationError(Op, TEXT("ALREADY_SIGNED_IN"));
 		return;
 	}
 
@@ -1668,7 +1569,7 @@ void UBeamRuntime::SignUpEmailAndPassword(FUserSlot UserSlot, FString Email, FSt
 	// If we are already authenticated (we had a saved user in this slot), we fail the sign up
 	if (UserSlotSystem->IsUserSlotAuthenticated(UserSlot, this))
 	{
-		RequestTrackerSystem->TriggerOperationError(Op, TEXT("User already at slot."));
+		RequestTrackerSystem->TriggerOperationError(Op, TEXT("ALREADY_SIGNED_IN"));
 		return;
 	}
 
@@ -1848,25 +1749,53 @@ void UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService(FGetCli
 	// If we failed the ClientDefaults request
 	else if (Resp.State == RS_Error)
 	{
-		// TODO: Set offline mode for this user slot.	
-
-		// Call OnUserFailedFrictionlessAuth on all RuntimeSubsystems
-		if (const UWorld* World = GetWorld())
-		{
-			if (const UGameInstance* GameInstance = World->GetGameInstance())
-			{
-				const auto Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
-				for (auto& Subsystem : Subsystems)
-				{
-					Subsystem->OnFailedUserAuth(UserSlot);
-				}
-			}
-		}
 		UserSlotSystem->ClearUserAtSlot(UserSlot, USCR_FailedAuthentication, true, this);
 		RequestTrackerSystem->TriggerOperationError(Op, Resp.ErrorData.message);
 	}
 }
 
+void UBeamRuntime::LoadCachedUserAtSlot(FUserSlot UserSlot, FBeamOperationHandle AuthOp, FSimpleDelegate RunIfNoUser)
+{
+	// Try to load the user at a specific slot
+	const int32 Result = UserSlotSystem->TryLoadSavedUserAtSlot(UserSlot, this);
+	if (Result != UBeamUserSlots::LoadSavedUserResult_Failed)
+	{
+		// If expired, let's make a request to get a new token through the auto-refresh for expired tokens and then trigger the auth.
+		if (Result == UBeamUserSlots::LoadSavedUserResult_ExpiredToken)
+		{
+			const FOnBasicAccountsGetMeFullResponse Handler = FOnBasicAccountsGetMeFullResponse::CreateLambda([this, UserSlot, AuthOp](const FBasicAccountsGetMeFullResponse& Resp)
+			{
+				if (Resp.State == EBeamFullResponseState::RS_Success)
+				{
+					RunPostAuthenticationSetup(UserSlot, AuthOp);
+					UE_LOG(LogBeamRuntime, Display, TEXT("Authenticated User at Slot! SLOT=%s"), *UserSlot.Name);
+				}
+				// If this request failed entirely (all retries)... 
+				else if (Resp.State == EBeamFullResponseState::RS_Error)
+				{
+					RequestTrackerSystem->TriggerOperationError(AuthOp, Resp.ErrorData.message);
+				}
+			});
+
+			const UBeamAccountsApi* AccountsApi = GEngine->GetEngineSubsystem<UBeamAccountsApi>();
+			UBasicAccountsGetMeRequest* MeReq = UBasicAccountsGetMeRequest::Make(GetTransientPackage(), {});
+			FBeamRequestContext Ctx;
+			AccountsApi->CPP_GetMe(UserSlot, MeReq, Handler, Ctx, AuthOp, this);
+			UE_LOG(LogBeamRuntime, Display, TEXT("User at Slot has an expired token. Refreshing the token. SLOT=%s"), *UserSlot.Name);
+		}
+
+		// If we loaded and the token wasn't expired. Let's continue the auth setup flow.
+		if (Result == UBeamUserSlots::LoadSavedUserResult_Success)
+		{
+			RunPostAuthenticationSetup(UserSlot, AuthOp);
+			UE_LOG(LogBeamRuntime, Display, TEXT("Authenticated User at Slot! SLOT=%s"), *UserSlot.Name);
+		}
+	}
+	else
+	{
+		auto _ = RunIfNoUser.ExecuteIfBound();
+	}
+}
 
 FBeamRequestContext UBeamRuntime::LoginGuest(FUserSlot UserSlot, FBeamOperationHandle Op, FDelayedOperation OnBeforePostAuthentication)
 {
@@ -2058,4 +1987,3 @@ void UBeamRuntime::SendAnalyticsEvent(const FUserSlot& Slot, const FString& Even
 	}
 }
 #undef LOCTEXT_NAMESPACE
-
