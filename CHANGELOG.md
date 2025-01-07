@@ -13,6 +13,7 @@
 ### Fixed
 - Fixed issue that could cause an internal engine check to fail during editor startup in very rare cases (PostObjectLoad issue).
 - Fixed issue that could cause a crash when re-logging into any particular UserSlot (a cleaned up operation could be waited on; no longer possible now)
+- Fixed an issue that would cause a subsystem initialized with `UBeamRuntime::ManuallyInitializeSubsystem` to not load its user's data correctly if the user signed in **after** the system was initialized. 
 
 ## [1.0.0] - 2024-12-11
 
