@@ -263,24 +263,47 @@ public:
 		{
 			if (const auto& UserSockets = OpenSockets.FindChecked(NamespacedSlot); UserSockets.Contains(SocketName))
 			{
-				// Make sure the Message type is a FBeamJsonSerializable
-				static_assert(TIsDerivedFrom<TMessage, FBeamJsonSerializableUStruct>::Value);
-
-				const FOnNotificationEvent EventHandler = FOnNotificationEvent::CreateLambda([Slot, SocketName, ContextKey, Handler](FNotificationEvent Evt)
+				static_assert(TIsDerivedFrom<TMessage, FBeamJsonSerializableUStruct>::Value || TIsDerivedFrom<typename TRemovePointer<TMessage>::Type, IBeamJsonSerializableUObject>::Value,
+					"TMessage must be a subclass of either UBeamJsonSerializableUObject* (subclass) OR FBeamJsonSerializableUStruct.");
+				
+				// Make sure the Message type is a FBeamJsonSerializable				
+				if constexpr (TIsDerivedFrom<TMessage, FBeamJsonSerializableUStruct>::Value)
 				{
-					ensureAlways(Evt.EventType == Message);
-					ensureAlways(Evt.MessageData.Context.Equals(ContextKey));
+					const FOnNotificationEvent EventHandler = FOnNotificationEvent::CreateLambda([Slot, SocketName, ContextKey, Handler](FNotificationEvent Evt)
+					{
+						ensureAlways(Evt.EventType == Message);
+						ensureAlways(Evt.MessageData.Context.Equals(ContextKey));
 
-					TMessage MsgData;
-					MsgData.BeamDeserialize(Evt.MessageData.MessageFull);
+						TMessage MsgData;
+						MsgData.BeamDeserialize(Evt.MessageData.MessageFull);
 
-					const bool bDidRun = Handler.ExecuteIfBound(MsgData);
-					ensureAlwaysMsgf(bDidRun, TEXT("The notification message handler was not bound. SLOT=%s, ID=%s, CONTEXT=%s"), *Slot.Name, *SocketName.ToString(), *ContextKey);
-				});
+						const bool bDidRun = Handler.ExecuteIfBound(MsgData);
+						ensureAlwaysMsgf(bDidRun, TEXT("The notification message handler was not bound. SLOT=%s, ID=%s, CONTEXT=%s"), *Slot.Name, *SocketName.ToString(), *ContextKey);
+					});
 
-				OutHandle = EventHandler.GetHandle();
-				MessageEventHandlers.Add(FBeamWebSocketHandle(NamespacedSlot, SocketName, this), FNotificationMessageEventHandler{ContextKey, EventHandler});
-				return true;
+					OutHandle = EventHandler.GetHandle();
+					MessageEventHandlers.Add(FBeamWebSocketHandle(NamespacedSlot, SocketName, this), FNotificationMessageEventHandler{ContextKey, EventHandler});
+					return true;
+				}
+				
+				if constexpr (TIsDerivedFrom<typename TRemovePointer<TMessage>::Type, IBeamJsonSerializableUObject>::Value)
+				{
+					const FOnNotificationEvent EventHandler = FOnNotificationEvent::CreateLambda([Slot, SocketName, ContextKey, Handler](FNotificationEvent Evt)
+					{						
+						ensureAlways(Evt.EventType == Message);
+						ensureAlways(Evt.MessageData.Context.Equals(ContextKey));
+
+						TMessage MsgData = NewObject<typename TRemovePointer<TMessage>::Type>();
+						MsgData->BeamDeserialize(Evt.MessageData.MessageFull);
+
+						const bool bDidRun = Handler.ExecuteIfBound(MsgData);
+						ensureAlwaysMsgf(bDidRun, TEXT("The notification message handler was not bound. SLOT=%s, ID=%s, CONTEXT=%s"), *Slot.Name, *SocketName.ToString(), *ContextKey);
+					});
+
+					OutHandle = EventHandler.GetHandle();
+					MessageEventHandlers.Add(FBeamWebSocketHandle(NamespacedSlot, SocketName, this), FNotificationMessageEventHandler{ContextKey, EventHandler});
+					return true;
+				}
 			}
 		}
 

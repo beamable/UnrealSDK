@@ -12,7 +12,9 @@
 - `beam_init_game_maker.sh` will now try to remove any read-only flags of files inside the existing `Plugins/BeamableCore` folder. 
    This is needed because UE's integrations with VCSs (Git, P4) will often lock binary files at the file system level; which then 
    leads to our CLI being unable to replace the folder with newer versions (due to "access denied" problems). If you are using a VCS that 
-   makes files read-only at the file-system level and you run into "access denied" issues when running this script, please make them not read-only and try again.
+   makes files read-only at the file-system level, and you run into "access denied" issues when running this script, please make them not read-only and try again.
+- `UBeamNotifications::TrySubscribeForMessage` now also accepts any type implementing `IBeamJsonSerializableUObject` for its message type.
+   This enables usage of the `BeamGenerateSchema` attribute in microservice code to keep custom notification payloads in-sync between Microservice and UE code. 
 
 ### Fixed
 - Fixed issue that could cause an internal engine check to fail during editor startup in very rare cases (PostObjectLoad issue).

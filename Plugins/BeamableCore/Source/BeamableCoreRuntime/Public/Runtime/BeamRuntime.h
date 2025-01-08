@@ -503,7 +503,7 @@ private:
 	 */
 	UPROPERTY()
 	FBeamRuntimeEvent OnStarted;
-	FBeamRuntimeEventCode OnStartedCode;	
+	FBeamRuntimeEventCode OnStartedCode;
 
 	/**
 	 * @brief This is called when the operations for starting the sdk fails.
@@ -632,14 +632,14 @@ private:
 	 */
 	UPROPERTY(BlueprintAssignable)
 	FUserStateChangedEvent OnUserReady;
-	FUserStateChangedEventCode OnUserReadyCode;	
+	FUserStateChangedEventCode OnUserReadyCode;
 
 	/**
 	 * @brief This is called when the initialization of the subsystems user slots fails.
 	 */
 	UPROPERTY()
 	FUserInitFailedEvent OnUserInitFailed;
-	FUserInitFailedEventCode OnUserInitFailedCode;	
+	FUserInitFailedEventCode OnUserInitFailedCode;
 
 	/**
 	 * @brief So that actors and components can react to user data being cleared for a specific user slot. 
@@ -649,7 +649,7 @@ private:
 	 */
 	UPROPERTY(BlueprintAssignable)
 	FUserStateChangedEvent OnUserCleared;
-	FUserStateChangedEventCode OnUserClearedCode;	
+	FUserStateChangedEventCode OnUserClearedCode;
 
 public:
 	/**
@@ -872,7 +872,7 @@ public:
 private:
 	// Hard-coded special case auth flow	
 	UFUNCTION(BlueprintCallable, meta=(DeprecatedFunction, DeprecationMessage="This is no longer needed. Use the LoginFrictionlessOperation instead for the same behavior but more control."))
-	void FrictionlessLoginIntoSlot(const FUserSlot& UserSlot);	
+	void FrictionlessLoginIntoSlot(const FUserSlot& UserSlot);
 
 	// BP/CPP Independent Operation Implementations	
 	void LoginFrictionless(FUserSlot UserSlot, FBeamOperationHandle Op);
@@ -930,4 +930,38 @@ public:
 	 * Sends analytics events to Beamable. 
 	 */
 	void SendAnalyticsEvent(const FUserSlot& Slot, const FString& EventOpCode, const FString& EventCategory, const FString& EventName, const TArray<TSharedRef<FJsonObject>>& EventParamsObj) const;
+
+
+	/**
+	 * Utility that can be used to subscribe to custom Notifications in an easier way than with UBeamNotifications::TrySubscribeForMessage.
+	 * @tparam THandler Type of the Notification Handler. Its signature should be "void (TMessage)".
+	 * @tparam TMessage Type of the message. A subtype of either IBeamJsonSerializableUObject (UMyType*) or FBeamJsonSerializableUStruct (FMyType). 
+	 * @param UserSlot The user that will be listening for this notification.
+	 * @param Key The Notification "context" key.
+	 * @param Handler An instance of THandler.
+	 * @return The delegate handle that you can use with UBeamRuntime::UnsubscribeToCustomNotification.
+	 */
+	template <typename THandler, typename TMessage>
+	FDelegateHandle SubscribeToCustomNotification(const FUserSlot& UserSlot, FString Key, THandler Handler)
+	{
+		FDelegateHandle Handle;
+		if (NotificationSystem->TrySubscribeForMessage<THandler, TMessage>(UserSlot, DefaultNotificationChannel, Key, Handler, Handle, this))
+		{
+			return Handle;
+		}
+
+		return {};
+	}
+
+	/**
+	 * Unsubscribes a specific handler for a specific notification.
+	 * @param UserSlot The user that is listening for this notification.
+	 * @param Key The Notification "context" key.
+	 * @param Handle The handle returned by SubscribeToCustomNotification.
+	 * @return Whether the subscribed handle was found and removed.
+	 */
+	bool UnsubscribeToCustomNotification(const FUserSlot& UserSlot, FString Key, FDelegateHandle Handle)
+	{
+		return NotificationSystem->TryUnsubscribeFromMessage(UserSlot, DefaultNotificationChannel, Key, Handle, this);
+	}
 };

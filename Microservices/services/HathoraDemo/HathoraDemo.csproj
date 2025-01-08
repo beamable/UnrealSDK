@@ -5,7 +5,7 @@
     <BeamProjectType>service</BeamProjectType>
     <BeamServiceGroup>BEAMPROJ_HathoraDemo</BeamServiceGroup>
     <GenerateClientCode>true</GenerateClientCode>
-    <BeamEnabled>true</BeamEnabled>
+    <BeamEnabled>false</BeamEnabled>
   </PropertyGroup>
   <!-- These are special Beamable parameters that we use to keep the beamable packages in-sync to the CLI version your project is using. -->
   <!-- This makes it so your microservices are auto-updated whenever you update the CLI installed in your project. -->
@@ -17,7 +17,7 @@
     <!-- When running from inside docker, this gets injected via the Dockerfile at build-time. -->
   </PropertyGroup>
   <!-- Standard dotnet settings-->
-  <PropertyGroup Label="Dotnet Settings">    
+  <PropertyGroup Label="Dotnet Settings">
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <!-- Put your stuff here OR override our stuff here (some docs): https://docs.beamable.com/docs/cli-guide-microservice-configuration#beamable-properties -->
