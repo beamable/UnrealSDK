@@ -8,6 +8,7 @@
 - `OnlineSubsystemBeamable` plugin now supports Frictionless Authentication and Identity Attaching 
 
 ### Changed
+- The Content Editor received a complete rework improving the usability and fixing many bugs. Now the content is presented in a list of itens improving the visualization of large amount of data; The filters were fixed on the top and all changes in the data are now updated properly with realtime feedbacks without need to reload the window manually.
 - Samples are now selected by running `dotnet beam unreal select-sample BEAMPROJ_Name` instead of `BeamProjOverride.txt`
 - `beam_init_game_maker.sh` will now try to remove any read-only flags of files inside the existing `Plugins/BeamableCore` folder. 
    This is needed because UE's integrations with VCSs (Git, P4) will often lock binary files at the file system level; which then 
@@ -19,7 +20,8 @@
 ### Fixed
 - Fixed issue that could cause an internal engine check to fail during editor startup in very rare cases (PostObjectLoad issue).
 - Fixed issue that could cause a crash when re-logging into any particular UserSlot (a cleaned up operation could be waited on; no longer possible now)
-- Fixed an issue that would cause a subsystem initialized with `UBeamRuntime::ManuallyInitializeSubsystem` to not load its user's data correctly if the user signed in **after** the system was initialized. 
+- Fixed an issue that would cause a subsystem initialized with `UBeamRuntime::ManuallyInitializeSubsystem` to not load its user's data correctly if the user signed in **after** the system was initialized.
+- Fixed multiple cases where the Content Screen did not update automatically after changes
 
 ## [1.0.0] - 2024-12-11
 

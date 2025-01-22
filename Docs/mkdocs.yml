@@ -90,3 +90,6 @@ nav:
 
 copyright: |
   &copy; 2024 <a href="https://github.com/Beamable"  target="_blank" rel="noopener">Beamable</a>
+  
+extra_css:
+  - stylesheets/extra.css

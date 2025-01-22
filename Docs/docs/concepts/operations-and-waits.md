@@ -1,9 +1,3 @@
-<style>
-img[src*='#center'] { 
-    display: block;
-    margin: auto;
-}
-</style>
 # Unreal SDK - Operations & Waits
 The Beamable SDK uses slight variation on Promises we named Operations. These provide the same semantics as promises but their implementation is slightly different to allow for a BP-compatible API.
 
@@ -24,7 +18,7 @@ Every Operation has an `int64` id called the `FBeamOperationHandle`. We use it t
 
 The lifecycle of an operation goes as follows:
 
-![operation-and-waits-lifecycle.png](./Images/operation-and-waits-lifecycle.png#center)
+![operation-and-waits-lifecycle.png](./Images/operation-and-waits-lifecycle.png)
 
 ## Writing and Exposing your Own Operations
 We try and expose all of our main SDK operations in both BP and CPP flavors. If you'd like to do the same thing, this section is for you. If you're looking for how to write hooks in C++, look into the next section.
@@ -116,7 +110,7 @@ Feel free to copy-paste them as a template of how to implement and reason about 
 
 Beam-Flow nodes are the purple nodes with Beamable Icons that you can find. There are two flavors of them; one are Raw Requests that you can use to hit our APIs; the other is the Operation Beam Flow node.
 
-![beam-flow-node](./Images/operation-and-waits-beam-flow-nodes.png#center)
+![beam-flow-node](./Images/operation-and-waits-beam-flow-nodes.png)
 
 Beamable Operation Flow Nodes assume a few things:
 
