@@ -1,10 +1,3 @@
-<style>
-img[src*='#center'] { 
-    display: block;
-    margin: auto;
-}
-</style>
-
 This demo, created from UE's FPS Template, show-cases how you can use the **Unreal SDK**, **OnlineSubsystemBeamable** and **Beamable Microservices** to integrate with Hathora (a game server orchestration provider).
 
 Aside from our `BeamableCore` Plugin and assets from the FPS Template, here's what the sample contains:
@@ -51,13 +44,13 @@ Now, we'll go set up a Hathora account and upload the sample dedicated server bu
 3. In the Hathora Portal, go to `Profile -> Settings`.
 4. Create and set aside [two tokens](https://hathora.dev/docs/guides/generate-developer-token): `game-server` and `matchmaking-server`.
 5. Deploy a new version by uploading the .tar file we provided for the sample.
-	1. Configure the `Instance Profile` as a "medium".
+      1. Configure the `Instance Profile` as a "medium".
 6. Set up the following environment variables with the values you set aside:
-	1. `BEAMABLE_CUSTOMER_OVERRIDE` = `Your CustomerId (CID)`
-	2. `BEAMABLE_REALM_OVERRIDE` = `Your hathora-demo Realm's PID`
-	3. `BEAMABLE_REALM_SECRET` = `You hathora-demo Realm's Secret`
-	4. `BEAMABLE_ENVIRONMENT_OVERRIDE` = `BeamProdEnv`
-	5. `HATHORA_DEV_TOKEN` = `The game-server dev token`.
+      1. `BEAMABLE_CUSTOMER_OVERRIDE` = `Your CustomerId (CID)`
+      2. `BEAMABLE_REALM_OVERRIDE` = `Your hathora-demo Realm's PID`
+      3. `BEAMABLE_REALM_SECRET` = `You hathora-demo Realm's Secret`
+      4. `BEAMABLE_ENVIRONMENT_OVERRIDE` = `BeamProdEnv`
+      5. `HATHORA_DEV_TOKEN` = `The game-server dev token`.
 7. Make sure the `7777` UDP port is exposed.
 8. Make sure that the number of rooms per processes is `1`.
 9. Finish the deployment process and verify that the deployment was successful.
@@ -70,18 +63,18 @@ Now that your Hathora account is configured to boot up our provided build, we ne
 1. Go to the Beamable Portal and open the Realm Config page of the `hathora-demo` realm (`Operate -> Config`).
 2. Hit the `Add Config` button.
 3. Set the following key-value pairs for the namespace `hathora_integration`.
-	1. `app_id -> Your Hathora AppId`
-	2. `dev_token -> Your matchmaking-server dev token` 
+      1. `app_id -> Your Hathora AppId`
+      2. `dev_token -> Your matchmaking-server dev token` 
 
 Now, you are ready to join a match through PIE.
 ## Playing the sample through PIE
 In order to play the sample using a dedicated server in Hathora:
 
 1. Set your `Multiplayer Options -> NetMode` to `Play as Standalone` and open the `Hathora Demo` map.
-	1. If you can't find it, turn on `Content Browser -> Settings -> Show Plugin Content` and look inside the `BEAMPROJ_HathoraDemo` content folder.
+      1. If you can't find it, turn on `Content Browser -> Settings -> Show Plugin Content` and look inside the `BEAMPROJ_HathoraDemo` content folder.
 2. Run PIE.
 3. The first time you are running, type in an email/password and hit register. 
-	1. In subsequent runs OR if you use the same email/password as your Beamable account, hit Login instead.
+      1. In subsequent runs OR if you use the same email/password as your Beamable account, hit Login instead.
 4. After you're signed in, hit the `Training` button and observe the logs. If you look at Hathora's Portal, you'll be able to see the server spinning up for you to play in. If you look at the your Microservice logs (`Operate -> Microservice -> HathoraDemo -> Logs`), you'll be able to see its communication with Hathora.
 5. After a match is found --- 30 seconds later you'll connect to the actual server and see the match. 
 6. Move around a while and then simply PIE.

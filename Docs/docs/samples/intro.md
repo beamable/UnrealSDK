@@ -7,8 +7,8 @@ To look at any given sample, you need to:
 2. Clone our [UnrealSDK](https://github.com/beamable/UnrealSDK) repository.
 3. Run the `prepare_repo.sh` script (we run it through GitBash but any similar shell *should* work).
 4. Run `dotnet beam unreal select-sample BEAMPROJ_Plugin` to match the `BEAMPROJ_Plugin` of your choice. 
-	1. For example, `BEAMPROJ_HathoraDemo` sets the repository as the Hathora Demo sample.
-	2. You can find the correct `BEAMPROJ_` at the each sample's page.
+      1. For example, `BEAMPROJ_HathoraDemo` sets the repository as the Hathora Demo sample.
+      2. You can find the correct `BEAMPROJ_` at the each sample's page.
 5. Open the project's `.sln` and do a clean build of the `Editor` target.
 6. Open the editor and `Project Settings -> Beamable Core -> Beamable Environment` and verify that it is set to `BeamProdEnv` before signing into a Beamable account.
 

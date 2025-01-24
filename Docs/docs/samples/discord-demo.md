@@ -21,23 +21,23 @@ Since this sample requires several resources, we do not host it ourselves. So, i
 
 1. Log into your [Discord.dev](https://discord.com/developers/applications) account.
 2. Create an App. Set aside its `AppId` in a notepad for future use.
-	1. Fill out General Information about your app.
-	2. No need for providing any of the URLs at the bottom of the General Information page.
+      1. Fill out General Information about your app.
+      2. No need for providing any of the URLs at the bottom of the General Information page.
 3. Go to App `Settings->OAuth2` and set the Redirects Url: `http://127.0.0.1`. Make sure that changes are saved.
 4. Go to App `Settings->Bot`.
-	1. Set a Bot username.
-	2. Set as true all **Privileged Gateway Intents**, especially the **Server Members Intent**.
-	3. Press the `Reset Token` button and set it aside (it will be required later on).
+      1. Set a Bot username.
+      2. Set as true all **Privileged Gateway Intents**, especially the **Server Members Intent**.
+      3. Press the `Reset Token` button and set it aside (it will be required later on).
 5. Go to App `Settings->Installation`.
-	1. In `Install Link` select `Discord Provided Link`, copy and paste it into browser. 
-	2. Install the App into your Discord server of choice.
+      1. In `Install Link` select `Discord Provided Link`, copy and paste it into browser. 
+      2. Install the App into your Discord server of choice.
 6. Now open the Discord application.
-	1. Open `Settings->Advanced` and enable the `Developer Mode` so that we can copy various Ids by right-clicking things in the UI.
-	2. Right click on the server icon and select the option `Copy server ID` and set it aside.
-	3. Right click on the server icon and select `Settings->Roles`. 
-	4. Create a `enabled-matchmaking` role.
-	5. Right click on the role and select the option `Copy Role ID` and set it aside.
-	6. Pick any text channel. Right click on the channel select the option `Copy Channel ID` and set it aside.
+      1. Open `Settings->Advanced` and enable the `Developer Mode` so that we can copy various Ids by right-clicking things in the UI.
+      2. Right click on the server icon and select the option `Copy server ID` and set it aside.
+      3. Right click on the server icon and select `Settings->Roles`. 
+      4. Create a `enabled-matchmaking` role.
+      5. Right click on the role and select the option `Copy Role ID` and set it aside.
+      6. Pick any text channel. Right click on the channel select the option `Copy Channel ID` and set it aside.
 
 Now, you'll need to configure a Beamable realm so you can use it.
 
@@ -47,23 +47,23 @@ Now, you'll need to configure a Beamable realm so you can use it.
 4. On the Portal open the Realm Config page of the `discord-demo` realm (`Operate -> Config`).
 5. Hit the `Add Config` button.
 6. Set the following key-value pairs for the namespace `discord_integration`:
-   1. `matchmaking_roles_whitelist -> Your copied Role Id, can be multiple separated by comma`
-   2. `bot_token -> Your Bot Token`
-   3. `guild_id -> Your Discord Server ID` 
-   4. `notify_channel -> Optional- Discord channel ID that bot will notify about status changes` 
+      1. `matchmaking_roles_whitelist -> Your copied Role Id, can be multiple separated by comma`
+      2. `bot_token -> Your Bot Token`
+      3. `guild_id -> Your Discord Server ID` 
+      4. `notify_channel -> Optional- Discord channel ID that bot will notify about status changes` 
 7. Open the `Plugins/BEAMPROJ_DiscordDemo/Overrides/Config/DefaultGame.ini`. 
-	1. Replace the `DiscordAppId` in it with `Your App Id`.
-	2. Regenerate project files.
+      1. Replace the `DiscordAppId` in it with `Your App Id`.
+      2. Regenerate project files.
 8. Compile and open the `BeamableUnreal` editor (it'll be configured as the `BEAMPROJ_DiscordDemo`) project.
 9. Sign into your Beamable account and go to the `discord-demo` realm.
-	1. Hit `Apply to Build`.
+      1. Hit `Apply to Build`.
 10.  Open a bash terminal at the `BeamableUnreal` root directory.
 11. Run `dotnet beam project enable --with-group BEAMPROJ_DiscordDemo`
 12. Run `dotnet beam project disable --without-group BEAMPROJ_DiscordDemo`
 13. Run `dotnet beam deploy plan`. 
-	1. This tells you details about the services you would deploy given your project's local state.
+      1. This tells you details about the services you would deploy given your project's local state.
 14. Run `dotnet beam deploy release --latest-plan`. 
-	1. This deploys the services outlined by the generated plan in the previous command. 
+      1. This deploys the services outlined by the generated plan in the previous command. 
 15. Go to the Portal (`Operate -> Microservices`) and verify that the microservices have initialized.
 
 Now, you are ready to sign into a game using Discord.
