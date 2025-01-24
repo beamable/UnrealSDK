@@ -67,6 +67,7 @@ nav:
   - User Reference:
       - SDK Technical Overview: 'user-reference/overview.md'
       - Runtime Systems:
+          - User Slots: 'user-reference/runtime-systems/user-slots.md'
           - Operations & Waits: 'user-reference/runtime-systems/operations-and-waits.md'
           - Lower Level SDK: 'user-reference/runtime-systems/lower-level.md'
       - Beamable Services:
@@ -75,6 +76,8 @@ nav:
           - Stats: 'user-reference/beamable-services/stats.md'
           - Inventory: 'user-reference/beamable-services/inventory.md'
           - Stores: 'user-reference/beamable-services/stores.md'
+          - Lobbies: 'user-reference/beamable-services/lobbies.md'
+          - Matchmaking: 'user-reference/beamable-services/matchmaking.md'
       - Microservices:
           - Overview: 'user-reference/microservices/microservices.md'
           - Setting Up Microservices: 'user-reference/microservices/setting-microservices.md'
@@ -102,7 +105,7 @@ copyright: |
   &copy; 2024 <a href="https://github.com/Beamable"  target="_blank" rel="noopener">Beamable</a>
   
 extra_css:
-  - stylesheets/extra.css
+  - assets/stylesheets/extra.css
 
 extra_javascript:
-  - javascripts/extra.js
+  - assets/javascripts/extra.js

@@ -67,6 +67,6 @@ We do not enforce limitations on stat-keys or values. However, we do *highly rec
 	- Keeping your project organized is key (no pun intended).
 - For Values:
 	- Values should be no more than a few hundred characters long.
-	- If you need larger complex data structures, we recommend you use [Storage Objects](microservices.md#storage-objects) instead.
+	- If you need larger complex data structures, we recommend you use [Storage Objects](../microservices/microservices.md#micro-storages) instead.
 
 In our DB, we index on keys for faster reading; the bigger the key sizes, the larger the index grows. Keeping the index smaller, leads to better performance in both reading and writing.

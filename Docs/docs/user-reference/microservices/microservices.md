@@ -288,7 +288,7 @@ For smaller teams that like to move fast and can rely on lots of direct communic
 # Micro Storages
 Beamable Microservices allow you to store data in Beamable's own managed services such as `Stats`(Per-Player key-value stores) and `Inventory` (Per-Player fungible and non-fungible data tracking). However, there are cases where you want to control your own data-model and database. It might be necessary to hit your performance targets OR maybe it just makes your particular problem simpler to solve (instead of trying to fit it into our default stores).
 
-For those cases, Beamable offers a `MicroStorage`. This is a wrapper around a database that you can write to from your microservices. At the moment, we only support `MongoDB`. Like Microservices, these are scoped by realm as well (as in, data from Realm A is only visible in Realm A). [You can find out more about here](docs link to SAMS Micro Storage!).
+For those cases, Beamable offers a `MicroStorage`. This is a wrapper around a database that you can write to from your microservices. At the moment, we only support `MongoDB`. Like Microservices, these are scoped by realm as well (as in, data from Realm A is only visible in Realm A). [Micro Storages](../microservices/microservices.md#micro-storages).
 
 !!! note "Relevancy for API Design and Client-Code Generation"
 	While there's no compilation problem in using types declared in the `MicroStorage` project as part of the signatures of `Callable` functions, we **DO NOT RECOMMEND** you expose these types in Callable functions.

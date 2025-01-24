@@ -2,7 +2,7 @@
 Beamable's Lobby system can be used primarily for 2 cases:
 
 - **Open/Closed Custom Lobbies/Rooms**: Player-created custom rooms for room-based games
-- **Resulting Matchmaking Matches**: Matchmaking queues output lobbies with players in them at each matchmaking queue. See more in [Matchmaking](../features/matchmaking.md).
+- **Resulting Matchmaking Matches**: Matchmaking queues output lobbies with players in them at each matchmaking queue. See more in [Matchmaking](matchmaking.md).
 
 Conceptually, Lobbies are room containing only online players and a set of arbitrary room properties and player properties. There are a few rules you should be aware off:
 
@@ -37,7 +37,7 @@ Both lobby types have the same schema and are represented by the `ULobby` class.
 	- **Joined**: A ISO-8601 Date Time string for when the player.
 	- **Tags**: An array of Key-Value pairs (allows duplicates).
 - **Data**: An arbitrary data store that can be filled and updated by the host of the lobby.
-	- Can be filled via [Federation](../guides/federations/federated-game-server.md) as well.
+	- Can be filled via [Federations](../federation/federated-game-server.md) as well.
 - **Created**: A ISO-8601 Date Time string for when the Lobby was created.
 
 ## Hosting Lobbies
@@ -47,7 +47,7 @@ To use the SDK to enable a player to host a Beamable Lobby, you'll need the foll
 - `UpdatePlayerDataOperation`, `DeletePlayerDataOperation` and `KickPlayerOperation` to manage players and their in-lobby data.
 - `CommitLobbyUpdateOperation` to manage lobby settings and `Data`.
 	- This can be used in conjunction with `TryBeginUpdateLobby` and the set of `Prepare____` functions to batch the changes along in order to minimize requests made.
-- For dedicated server games, use `ProvisionGameServerOperation` and [Federation](../guides/federations/federated-game-server.md) to boot up a server instance for the game.
+- For dedicated server games, use `ProvisionGameServerOperation` and [Federation](../federation/federated-game-server.md) to boot up a server instance for the game.
 
 !!! note "About Parties"
 	Only the party leader is allowed to create a Lobby. Doing so will also places all party members into the created Lobby.

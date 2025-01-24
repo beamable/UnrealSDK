@@ -28,11 +28,11 @@ Currencies are used to buy items with our [Store system](stores.md) (e.g., Gold)
 
 In Unreal SDK Currency is represented by `UBeamCurrencyContent` type. Each currency can specify a `startingAmount` that is used to pre-seed player accounts with that amount of currency.
 
-You can [subclass this content type](content.md#subclassing-content) if you want to add more information to currency that is specific to your like, such as UI related `ObjectPaths` and other references to assets that might be relevant to your game. 
+You can [subclass](content.md#defining-custom-content-types) this content type if you want to add more information to currency that is specific to your like, such as UI related `ObjectPaths` and other references to assets that might be relevant to your game. 
 ### Items
 The Items feature allows for the creation and management of various in-game objects, such as equipment, consumables, and resources.
 
-In the Unreal SDK, Items are represented by the `UBeamItemContent` type. You can [subclass this content type](content.md#subclassing-content) to add game-specific information to item content which is then accessible via the `UBeamContentSubsystem` and in Microservices.
+In the Unreal SDK, Items are represented by the `UBeamItemContent` type. You can [subclass](content.md#defining-custom-content-types) this content type to add game-specific information to item content which is then accessible via the `UBeamContentSubsystem` and in Microservices.
 #### Item State
 Each item instance inside a player's inventory is represented by `FBeamItemState`. These instances have the following properties:
 
@@ -98,5 +98,5 @@ As with most key-value pairs for arbitrary data, try to follow the guidelines be
 - For Values:
 	- Values should be no more than a few hundred characters long.
 
-If you need larger complex data structures, we recommend you use [Storage Objects](microservices.md#storage-objects) instead of this key-value store. This is especially true if you do NOT need to use the data in these properties at the same time as you need the list of items; for example, a list view which then opens some sort of details view. This reduces pressure on the inventory service and can help reduce latency of inventory query requests.
+If you need larger complex data structures, we recommend you use [Micro Storages](../microservices/microservices.md#micro-storages) instead of this key-value store. This is especially true if you do NOT need to use the data in these properties at the same time as you need the list of items; for example, a list view which then opens some sort of details view. This reduces pressure on the inventory service and can help reduce latency of inventory query requests.
 

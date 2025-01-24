@@ -49,7 +49,7 @@ Certain games allow players to [create custom lobbies](../../features/lobbies.md
 5. Once all players are ready, the lobby host can invoke the `UBeamLobbySubsystem`'s `ProvisionGameServerForLobby` function.
 6. This function requests that  the configured federation on the `UBeamGameTypeContent`'s `CreateGameServer` implementation.This function can then do one or more of the following things:
 	1. Use a 3rd Party API to provision a game server, wait for it to spin up and add the connection information to the `ServerInfo` return object.
-	2. Pre-fetch data associated from each player from [Stats](../beamable-services/stats.md), [Inventory](../beamable-services/inventory.md) or [Storage Objects](../../concepts/microservices.md) and add that data into the `ServerInfo` return object.
+	2. Pre-fetch data associated from each player from [Stats](../beamable-services/stats.md), [Inventory](../beamable-services/inventory.md) or [Micro Storages](../microservices/microservices.md#micro-storages) and add that data into the `ServerInfo` return object.
 7. Once that function returns, it'll trigger `UBeamLobbyState`'s `OnLobbyUpdated` callback for the lobby each particular player is in.
 	1. You can check if the connection information you generated inside `CreateGameServer` is within the lobby's global properties (`ULobby::Data`) and use that to connect all players to the newly created game server instance.
 
