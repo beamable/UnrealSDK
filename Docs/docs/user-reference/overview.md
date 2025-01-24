@@ -1,4 +1,4 @@
-# SDK Runtime Systems
+# SDK Technical Overview
 The Beamable SDK is a collection of custom UE `Engine`, `Editor` and `GameInstance` Subsystems. **Game-Maker Code** (as in, code the Beamable customer writes) can take advantage of various guarantees we provide by understanding how these subsystems work.
 ## `UBeamUserSlots` and `FUserSlot`
 The concept of a `UserSlot` represents a named "local player" slot. By default, we ship with two lists of User Slots inside the `UBeamCoreSettings`(found in `Project Settings -> Engine`) :
@@ -32,12 +32,10 @@ The `UBeamUserSlots` Engine Subsystem is responsible for:
 
 The image below describes how the SDK's lifecycle injects itself into UE's lifecycle:
 
-![InitFlow](./Images/runtime-concepts-init-flow.png#center)
-
+![runtime-concepts-init-flow.png](../media/imgs/runtime-concepts-init-flow.png)
 The next image shows a high-level description of the authentication flows supported by the SDK:
 
-![runtime-concept-authflow.png#center](./Images/runtime-concept-authflow.png#center)
-
+![runtime-concept-authflow.png](../media/imgs/runtime-concept-authflow.png)
 Now that you have a high-level understanding of the SDK's initialization flows, read up on how to achieve the two most common Sign Up and Login flows among the ones we provide.
 
 ### Understanding `BeamRuntimeSubsystems`
@@ -55,7 +53,7 @@ These are hand-written. Here's a few examples of existing ones:
 
 These systems make use of the various `UBeamRuntime::____` callbacks to keep their state correct and expose callbacks and configuration options for **Game-Maker Code** to run with semantically relevant guarantees.
 
-If the exposed hooks on these are not enough for your use case and constraints, as a user you can create your own `UBeamRuntimeSubsystem`. The SDK tries not to hide things from you so you can use the provided `UBeamRuntimeSubsystems` to understand how they are set up when creating your own. The documentation in [Lower-Level SDK Subsystems][#lower-level-sdk-subsystems] can also be useful when implementing your own `UBeamRuntimeSubsystems`. 
+If the exposed hooks on these are not enough for your use case and constraints, as a user you can create your own `UBeamRuntimeSubsystem`. The SDK tries not to hide things from you so you can use the provided `UBeamRuntimeSubsystems` to understand how they are set up when creating your own. The documentation in [Lower Level SDK](runtime-systems/lower-level.md) can also be useful when implementing your own `UBeamRuntimeSubsystems`. 
 
 You can also opt out of these entirely by adding them to `UBeamCoreSettings` 's property: `ManuallyInitializedRuntimeSubsystems`. All subsystems in this list, and any other subsystem that depends on it, are not automatically initialized by the SDK. For example: adding `UBeamInventorySubsystem` to this list makes it so the SDK's default implementation of an inventory system will not be in-use until you manually initialize it. 
 

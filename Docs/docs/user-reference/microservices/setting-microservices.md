@@ -99,7 +99,7 @@ FBeamRequestContext Ctx;
 MsApi->CPP_Add(UserSlot, Req, Handler, Ctx, {}, this);
 ```
 
-Take a look at the [Microservices docs](../concepts/microservices.md) for more information about where to go from here.
+Take a look at the [Microservices docs](microservices.md) for more information about where to go from here.
 
 ## Optional - Create a MicroStorage
 MicroStorages are a Beamable feature that allows you, the Game-Maker, access to a MongoDB you can use to define your own custom persisted data formats to go along with your own custom microservice logic. 

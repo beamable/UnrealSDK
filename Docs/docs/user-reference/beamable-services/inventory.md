@@ -24,15 +24,15 @@ Inventory manages two types of data- items and virtual currencies. One thing tha
     Regardlesss of the value of the `clientPermission` field it is possible to view and modify players inventory through the Portal. More info [here](https://docs.beamable.com/docs/portal-inventory).
 
 ### Virtual Currencies
-Currencies are used to buy items with our [Store system](../features/stores.md) (e.g., Gold). It can also be used to symbolize the player's progress through the game, such as experience points (XP).
+Currencies are used to buy items with our [Store system](stores.md) (e.g., Gold). It can also be used to symbolize the player's progress through the game, such as experience points (XP).
 
 In Unreal SDK Currency is represented by `UBeamCurrencyContent` type. Each currency can specify a `startingAmount` that is used to pre-seed player accounts with that amount of currency.
 
-You can [subclass this content type](../features/content.md#subclassing-content) if you want to add more information to currency that is specific to your like, such as UI related `ObjectPaths` and other references to assets that might be relevant to your game. 
+You can [subclass this content type](content.md#subclassing-content) if you want to add more information to currency that is specific to your like, such as UI related `ObjectPaths` and other references to assets that might be relevant to your game. 
 ### Items
 The Items feature allows for the creation and management of various in-game objects, such as equipment, consumables, and resources.
 
-In the Unreal SDK, Items are represented by the `UBeamItemContent` type. You can [subclass this content type](../features/content.md#subclassing-content) to add game-specific information to item content which is then accessible via the `UBeamContentSubsystem` and in Microservices.
+In the Unreal SDK, Items are represented by the `UBeamItemContent` type. You can [subclass this content type](content.md#subclassing-content) to add game-specific information to item content which is then accessible via the `UBeamContentSubsystem` and in Microservices.
 #### Item State
 Each item instance inside a player's inventory is represented by `FBeamItemState`. These instances have the following properties:
 
@@ -44,7 +44,7 @@ Rest of the fields:
 
 - **CreatedAt**: when item instance was created.
 - **UpdatedAt**: last edit date.
-- **FederatedId**: See [Inventory Federation](../federations/federated-inventory.md) for more information about this field.
+- **FederatedId**: See [Inventory Federation](../federation/federated-inventory.md) for more information about this field.
 
 ## Getting Started
 To use the inventory system, you will need to first:
@@ -67,10 +67,10 @@ Now that you have items and currencies published, follow the steps below to crea
 
 Now, call this function while a user is signed in to grant the currency/item to the player.
 
-???+ warning "Assumptions"
-    Make sure that user is logged in when you call this function. See [Runtime Concepts](runtime-concepts.md)
+???+ warning "Logging in" 
+    Make sure that user is logged in when you call this function. See [Identity](identity.md)
 
-![unreal-inventory-operations](images/inventory-operations.png)
+![inventory-operations.png](../../media/imgs/inventory-operations.png)
 
 After running the above function at least once, you should be able to see the results of these calls in the Beamable portal. To do so:
 
@@ -79,7 +79,8 @@ After running the above function at least once, you should be able to see the re
 - Go to `Engage->Players` and search for the player via `Gamertag/UserId`.
 - Go to `Inventory` and see that the appropriate currency and items are inside the user's inventory. 
 
-![unreal-beamable-inventory-portal](images/inventory-portal.png)
+![inventory-portal.png](../../media/imgs/inventory-portal.png)
+
 ## Performance Guidelines
 
 ### Batching updates

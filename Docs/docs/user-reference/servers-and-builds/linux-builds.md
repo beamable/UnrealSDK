@@ -15,7 +15,7 @@ In order to get cross compilation to work it requires:
 2. Update environment variables by adding new variable `LINUX_MULTIARCH_ROOT` with value being the path to the newly installed toolchain. It should be something like `F:\UnrealToolchains\v22_clang-16.0.6-centos7`.
 3. Now when game is open in editor it should be possible to build for the `Linux` Target platform:
 
-![](../images/linux-builds-editor.png)
+![linux-builds-editor.png](../../media/imgs/linux-builds-editor.png)
 
 ## Testing the build
 
@@ -37,7 +37,7 @@ For the server ones it is easy to test them on Windows machine in two different 
 
 ### Docker
 
-Docker is often used by Game Server Orchestrators for running built Game Servers. Beamable does provide a working example of that workflow in [Hathora Sample](../../samples/complex/hathora-demo.md).
+Docker is often used by Game Server Orchestrators for running built Game Servers. Beamable does provide a working example of that workflow in [Hathora Sample](../../samples/hathora-demo.md).
 
 !!! note Assumption
     This part of tutorial is written with assumption that Docker is installed and operational.

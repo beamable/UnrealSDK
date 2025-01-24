@@ -7,6 +7,9 @@ This section talks about lower-level details of how requests to Beamable get mad
 
 We don't recommend writing your own unless you're confident you understand the topics below and are trying to solve one of the two problems listed above.
 
+!!! warning "Low Level Usage"
+    The systems described here are used by various environments the Beamable SDK runs in: PIE, Editor, Dedicated Server Builds and regular game builds. Their code is pretty heavily commented; so, feel free to read it and figure things out that way.
+
 The lowest layer of systems are shared between the SDK's UE Editor integration and the SDK's Runtime integration:
 
 - `UBeamUserSlots`: As explained at the start of this document, tracks multiple local signed-in users (for local co-op cases).
@@ -31,7 +34,4 @@ The lowest layer of systems are shared between the SDK's UE Editor integration a
     - These are integrated with our `UBeam____Api` subsystems.
     - `BeginOperation` is effectively the same a creating a new promise.
     - `TriggerOperationSuccess`, `TriggerOperationError` and `TriggerOperationCancelled` should be called when you want to complete the Operation.
-    - This is a somewhat complex subsystem so we recommend you read [Operations & Waits](../operations-and-waits).
-
-!!! warning "Low Level Usage"
-    The systems above are used by various environments the Beamable SDK runs in: PIE, Editor, Dedicated Server Builds and regular game builds. Their code is pretty heavily commented; so, feel free to read it and figure things out that way.
+    - This is a somewhat complex subsystem so we recommend you read [operations-and-waits.md](operations-and-waits.md)

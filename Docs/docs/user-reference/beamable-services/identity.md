@@ -19,6 +19,6 @@ In PC/Console titles, often the user can sign-in and up from inside the game. Th
 
 In your `BeginPlay` implementation, call `UBeamRuntime::InitSDK`. It provides you different callbacks to handle initialization success or failure. At the end of a successful initialization, you can call `UBeamRuntime::SignUp____` or `UBeamRuntime::Login____` Operations with the appropriate parameters to login a user.
 
-You can react to the successful Login/SignUp either via registering a callback to `UBeamRuntime::OnUserReady` OR by the [operation's own events](../concepts/operations-and-waits.md).
+You can react to the successful Login/SignUp either via registering a callback to `UBeamRuntime::OnUserReady` OR by the [operatoion's own events](../runtime-systems/operations-and-waits.md)
 
 We treat these operations as atomic inside the SDK and will clear any invalid partial state in case of any failure during their internal multi-step process; triggering `UBeamRuntime::OnUserReady` only in the case that the user is fully ready for use.

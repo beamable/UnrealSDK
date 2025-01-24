@@ -25,24 +25,26 @@ Second one is stat `domain`, in Unreal represented by enum `EBeamStatsDomain`, i
 
 In order to create write to a player stat from the client via Blueprints we will use `BeamStatsSubsystem`.
 
-???+ warning "Assumptions"
-    Make sure that user is logged in when the code below runs. See [Runtime Concepts](runtime-concepts.md)
+???+ warning "Logging in"
+    Make sure that user is logged in when the code below runs. See [Identity](identity.md)
 
 - Call `Try Create Update Command` with a set of key-value pairs that are your stat values.
-	- Optionally call `AddStatToUpdateCommand` and `RemoveStatFromUpdateCommand`.
+- Optionally call `AddStatToUpdateCommand` and `RemoveStatFromUpdateCommand`.
 - After that,  use the `Commit Stats Operation` node to commit the new stats to Beamable.
 - That is it!
 
-![unreal-beamable-stats-create](images/stats-create-stats.png)
+![stats-create-stats.png](../../media/imgs/stats-create-stats.png)
 
 To verify it worked, you can:
+
 - Set aside the `Gamertag/UserId` from the Unreal Engine logs.
 - Click `Open Portal` in Beamable window.
 - Go to `Engage->Players` and search for the player via `Gamertag/UserId`.
 - Go to `Stats` and search for `NewStatKey`.
 - You should see that it exists with correct value.
 
-![unreal-beamable-stats-portal](images/stats-portal.png)
+![stats-portal.png](../../media/imgs/stats-portal.png)
+
 ## Usage Guidelines
 ### Batching updates
 In this example there is created a new `UpdateCommand` and committed right away. For better performance and reduced calls to Beamable, it is encouraged to:
@@ -52,6 +54,7 @@ In this example there is created a new `UpdateCommand` and committed right away.
 - Commit.
 
 When it is possible (and desirable) for your game, this flow reduces the overall latency your players experience and reduces the number of API calls you make to Beamable.
+
 ### Stats Keys & Values
 We do not enforce limitations on stat-keys or values. However, we do *highly recommend* the following guidelines for project organization and performance reasons.
 

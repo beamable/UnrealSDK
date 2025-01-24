@@ -2,14 +2,14 @@
 # Beamable Microservices
 Beamable Microservices are Beamable's Cloud Code solution. It is a wrapper around a HTTP Server that makes the development process much simpler. These are written in C# and come with a set of development tools that are tightly integrated with the UE Editor and Beamable CLI.
 
-This page explains the high-to-low-level concepts of Microservices and to what end they can be used. [Take a look here for a getting started guide](../guides/intro-microservices.md).
+This page explains the high-to-low-level concepts of Microservices and to what end they can be used. [Take a look here for a getting started guide](setting-microservices.md)
 
 ## Why this approach to Cloud-Code?
 A lot of cloud-code solutions sacrifice a lot of flexibility, cost-efficiency, performance or developer experience in exchange for simplifying the simple case. Our goal was to focus on helping you with the complex cases while keeping the simple case easy to work.
 
 We do so by this architecture:
 
-![Pasted image 20241112093931.png](./Images/microservices-architecture.png)
+![microservices-architecture.png](../../media/imgs/microservices-architecture.png)
 
 The Microservice is:
 
@@ -30,7 +30,33 @@ public int Add(int a, int b)
 }
 ```
 
-The next three sections explain [Microservice Coding](#microservice-coding), [Common Developer Workflows](#common-developer-workflows), the [Microservice Window](#microservice-window) and [MicroStorages](#micro-storages). 
+## Microservice Window
+The Microservice Window enables developers to start/stop local services, to read local service logs while in PIE and to configure local server settings for the collaborative workflow and for federations.
+
+![microservices-window-home.png](../../media/imgs/microservices-window-home.png)
+
+The left side of the window provides you a list of all services in your project with a set of filters based on **Service Groups**. The right side is the **Details Panel**.
+
+!!! note "Service Groups"
+In very rare cases, a project may require a non-trivial amount of services/storages. For Beamable's own internal development this is true (as we have microservices for each sample).
+
+	In cases like these, a line can be added to the `csproj` file of each service to assign them to groups. These can then be used by the CLI's `project` pallet as filters while also being used as a filter in this window. The line to be added to the `BeamableSettings` **PropertyGroup** : `<BeamServiceGroup>SomeGroupId</BeamServiceGroup>`
+	
+	There are no limits on group names other than that `BEAMPROJ_` is a reserved prefix.
+
+### The Details Panel
+The Details panel provides a detailed view of the microservices and access to a few features:
+
+- Start/Stop the service in your local machine.
+- Display logs for the service running on your local machine.
+- Open the Beamable Portal targeting **your local service**.
+- [Configure which **Microservice Target** the Play-in-Editor sessions will target](#collaborative-debugging).
+- [Configure Federation-specific settings](../federation/federation.md).
+#### Local - Logs Tab
+As the name implies, you can explore the logs for any running Microservice. You can filter by **Log Level**, substring search and also clear stored logs.
+
+![microservices-window-logs.png](../../media/imgs/microservices-window-logs.png)
+
 
 ## Microservice Coding
 Microservices inherit from the `Microservice` base class and are `partial` by default. Inside each Microservice class, you can annotate instance methods with the following attributes to various effects:
@@ -39,7 +65,7 @@ Microservices inherit from the `Microservice` base class and are `partial` by de
 - `ClientCallable`: This is equivalent to an authenticated request. Any authenticated user in the same realm as the microservice is able to run this.
 - `AdminOnlyCallable`: These are similar to `ClientCallables` but requires the user to have admin privileges. They are useful for making utility endpoints called by internal developer tools.
 - `ServerCallable`: This is equivalent to a trusted-server request. It requires authentication in the form of a Signed Request. Primarily, these are callable from your game's Dedicated Server builds.
-- `Federated Endpoints`: [Federations](../concepts/federation.md) generate routes implicitly and **do not need any `Callable` attributes**.
+- `Federated Endpoints`: [Federations](../federation/federation.md) generate routes implicitly and **do not need any `Callable` attributes**.
 
 Inside the method body, there are a few concepts that are relevant:
 
@@ -80,8 +106,8 @@ When declaring `Callable` functions, you should be aware of a few limitations re
 	- For code-reuse in the Microservice, write non-`Callable` static functions and call them inside the `Callable` body. 
 - Must be an instance methods (no `static` keyword).
 	- Currently, every request is handled by a unique instance of the Microservice class.
-	- This also means that it is highly discouraged to put member fields in the the instance itself.
-- If you are using [Federations](../concepts/federation.md), you should be aware that each federation introduces certain reserved routes that you are then NOT allowed to use.
+	- This also means that it is highly discouraged to put member fields in the the instance itself
+- If you are using [Federations](../federation/federation.md), you should be aware that each federation introduces certain reserved routes that you are then NOT allowed to use.
 
 Keep in mind that only a few things actually affect the shape of any particular `Callable`'s generated client code. This means that different signatures can effectively represent the same endpoint.
 
@@ -157,39 +183,12 @@ When you make a request to a microservice, you're not actually directly talking 
 This allows us to integrate microservices running in your local machine "as though they" are part of the realm in two specific ways:
 
 - Requests made from this editor's PIE instance can chose a **Microservice Target**.
-- [Out-of-band Federations can be configured with opt-in filters that "steal" traffic](../concepts/federation.md).
+- [Out-of-band Federations can be configured with opt-in filters that "steal" traffic](../federation/federation.md).
 
-![microservices-architecture-targets.png](./Images/microservices-architecture-targets.png)
+![microservices-architecture-targets.png](../../media/imgs/microservices-architecture-targets.png)
 
 Enabling these two cases at the push of a button enables very fast development iteration speed.
 
-## Microservice Window
-The Microservice Window enables developers to start/stop local services, to read local service logs while in PIE and to configure local server settings for the collaborative workflow and for federations.
-
-![microservices-window-home.png](./Images/microservices-window-home.png)
-
-The left side of the window provides you a list of all services in your project with a set of filters based on **Service Groups**. The right side is the **Details Panel**.
-
-!!! note "Service Groups"
-	In very rare cases, a project may require a non-trivial amount of services/storages. For Beamable's own internal development this is true (as we have microservices for each sample).
-	
-	In cases like these, a line can be added to the `csproj` file of each service to assign them to groups. These can then be used by the CLI's `project` pallet as filters while also being used as a filter in this window. The line to be added to the `BeamableSettings` **PropertyGroup** : `<BeamServiceGroup>SomeGroupId</BeamServiceGroup>`
-	
-	There are no limits on group names other than that `BEAMPROJ_` is a reserved prefix.
-
-### The Details Panel
-The Details panel provides a detailed view of the microservices and access to a few features:
-
-- Start/Stop the service in your local machine.
-- Display logs for the service running on your local machine.
-- Open the Beamable Portal targeting **your local service**.
-- [Configure which **Microservice Target** the Play-in-Editor sessions will target](#collaborative-debugging).
-- [Configure Federation-specific settings](../concepts/federation.md).
-
-#### Local - Logs Tab
-As the name implies, you can explore the logs for any running Microservice. You can filter by **Log Level**, substring search and also clear stored logs.
-
-![microservices-window-logs.png](./Images/microservices-window-logs.png)
 
 ## Common Developer Workflows
 There are a few different ways to work with Microservices in Unreal, each with their own advantages and disadvantages. So, here we make our recommendations about them.
@@ -213,7 +212,7 @@ Here are the steps:
 This allows you to get services that might have complex logic working first and integrating them into Unreal later. [Keep in mind the type restrictions on method signatures mentioned here](#constraints-on-callable-functions).
 
 #### Integrating with Unreal
-Whenever it becomes preferable or necessary (see [Federations](federation.md)) to test the microservice directly from Unreal's PIE mode, you can generate bindings for your `Callable` types and use them inside your game's code.
+Whenever it becomes preferable or necessary (see [Federations](../federation/federation.md)) to test the microservice directly from Unreal's PIE mode, you can generate bindings for your `Callable` types and use them inside your game's code.
 
 Here you have two options:
 
@@ -236,7 +235,7 @@ Once you have these, you can:
 4. Run PIE and hit the point where you call your microservice.
 5. See your local service's `Callable`'s be hit.
 
-If you are using [Federations](../concepts/federation.md), there are a few particulars of this workflow of which you should be aware. If not, the above works as described.
+If you are using [Federations](../federation/federation.md), there are a few particulars of this workflow of which you should be aware. If not, the above works as described.
 
 #### Deploying to a Realm
 Once you have things working locally, you'll likely want to make the Microservice available to other team members working on the realm. If you just push your code up, other team members would also have to run the service locally and that might not always be desirable.
@@ -282,7 +281,7 @@ Or... you could instead use Beamable's Collaborative Debugging workflow:
 - As the engineer, observe your (conditional or data) breakpoint is hit or read your additional `BeamableLogger` log lines.
 - Quickly diagnose the issue and unblock the designer.
 
-![microservices-window-collaboration.png](./Images/microservices-window-collaboration.png)
+![microservices-window-collaboration.png](../../media/imgs/microservices-window-collaboration.png)
 
 For smaller teams that like to move fast and can rely on lots of direct communication between designers and engineers, this workflow is a **massive improvement to the current available alternatives**.
 

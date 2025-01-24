@@ -22,8 +22,7 @@ The last part of the id is the only one you should edit through the **Content Wi
 ## Content Window
 The content window is the main tool to create, edit and publish new content to your project.
 
-![](./images/content-window.png)
-
+![content-window.png](../../media/imgs/content-window.png)
 The list of content objects displayed in the content window is very similar to a "Status" window in Git or some other version control systems. Beside show your local content it also present the differences between your local state and the state in your currently targeted `Realm`.
 
 These differences are represented by the `[+]`,`[-]` and `[M]` signs.
@@ -42,7 +41,8 @@ If the content is not marked with any of these signs, it means it is in sync wit
 
 ### Creating and Deleting Content
 
-![content-add-content.gif](images/content-add-content.gif)
+![content-add-content.gif](../../media/imgs/content-add-content.gif)
+
 To create a new piece of content Locally:
 
 1. Select a content type from the **Type** dropdown.
@@ -144,7 +144,7 @@ Take a look at `UMockBeamContentObject` to see the supported types.
 The SDK fetches the content manifest before the `OnBeamableStarted` callback is
 triggered. By default, it downloads the content manifest and each individual piece of content. You can enable and disable this behavior it can be configured to do so inside `Project Settings -> Beamable Runtime`.
 
-![DownloadIndividualContent](images/content-download-individual-on-start.png#center)
+![content-download-individual-on-start.png](../../media/imgs/content-download-individual-on-start.png)
 
 The SDK also supports automated content updates.
 

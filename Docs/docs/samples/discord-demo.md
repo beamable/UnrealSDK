@@ -1,10 +1,3 @@
-<style>
-img[src*='#center'] { 
-    display: block;
-    margin: auto;
-}
-</style>
-
 This demo, showcases how you can use the **Unreal SDK** and **Beamable Microservices** to integrate with Discord for community management tools.
 
 Aside from our `BeamableCore` Plugin, here's what the sample contains:
@@ -86,7 +79,7 @@ In order to test the sample:
 - Observe the text on the UI changing to reflect your ability to participate in matchmaking.
 - Also, if `notify_channel` was specified correctly in configuration bot should inform about status change:
 
-![](../images/discord_sample_notify.png#center)
+![discord_sample_notify.png](../media/imgs/discord_sample_notify.png)
 
 In order to actually gate matchmaking you'll need to set up a rule in your `GameType` content that excludes people from the queue that do not have the role. This is not shown on this demo.
 #### What can you do with this sample?

@@ -60,46 +60,49 @@ plugins:
 
 nav:
   - Introduction: 'index.md'
-  - Getting Started: 'guides/intro.md'
+  - Getting Started: 'getting-started.md'
   - What's New:
       - 1.1.0: 'whatsnew/1.1.0.md'
       - 1.0.0: 'whatsnew/1.0.0.md'
   - User Reference:
+      - SDK Technical Overview: 'user-reference/overview.md'
       - Runtime Systems:
-          - Overview: 'concepts/runtime-concepts.md'
-          - Operations & Waits: 'concepts/operations-and-waits.md'
-          - Lower Level SDK: 'concepts/lower-level.md'
+          - Operations & Waits: 'user-reference/runtime-systems/operations-and-waits.md'
+          - Lower Level SDK: 'user-reference/runtime-systems/lower-level.md'
       - Beamable Services:
-          - Indentity: 'features/identity.md'
-          - Content: 'features/content.md'
-          - Stats: 'features/stats.md'
-          - Inventory: 'features/inventory.md'
-          - Stores: 'features/stores.md'
+          - Indentity: 'user-reference/beamable-services/identity.md'
+          - Content: 'user-reference/beamable-services/content.md'
+          - Stats: 'user-reference/beamable-services/stats.md'
+          - Inventory: 'user-reference/beamable-services/inventory.md'
+          - Stores: 'user-reference/beamable-services/stores.md'
       - Microservices:
-          - Overview: 'concepts/microservices.md'
-          - Setting Up Microservices: 'guides/intro-microservices.md'
+          - Overview: 'user-reference/microservices/microservices.md'
+          - Setting Up Microservices: 'user-reference/microservices/setting-microservices.md'
       - Federation:
-          - Overview: 'concepts/federation.md'
-          - Federated Inventory: 'guides/federations/federated-inventory.md'
-          - Federated Game Server: 'guides/federations/federated-game-server.md'
-          - Federated Login: 'guides/federations/federated-login.md'
+          - Overview: 'user-reference/federation/federation.md'
+          - Federated Inventory: 'user-reference/federation/federated-inventory.md'
+          - Federated Game Server: 'user-reference/federation/federated-game-server.md'
+          - Federated Login: 'user-reference/federation/federated-login.md'
       - Servers and Builds:
-          - Dedicated Servers: 'concepts/dedicated-servers.md'
-          - Linux Builds: 'guides/linux-builds.md'
+          - Dedicated Servers: 'user-reference/servers-and-builds/dedicated-servers.md'
+          - Linux Builds: 'user-reference/servers-and-builds/linux-builds.md'
       - Unreal Online Subsystems:
-        - Overview: 'concepts/online-subsystem.md'
-        - Identity: 'features/online-subsystem-identity.md'
+        - Overview: 'user-reference/online-subsystems/online-subsystem.md'
+        - Online Subsystem Identity: 'user-reference/online-subsystems/online-subsystem-identity.md'
 
   - Samples: 
     - Setup Sample Projects: 'samples/intro.md'
     - Sample Projects:    
-      - Discord: 'samples/basic/discord-demo.md'
-      - Steam: 'samples/basic/steam-demo.md'      
-      - LiveOps: 'samples/complex/live-ops-demo.md'
-      - Hathora: 'samples/complex/hathora-demo.md'
+      - Discord: 'samples/discord-demo.md'
+      - Steam: 'samples/steam-demo.md'      
+      - LiveOps: 'samples/live-ops-demo.md'
+      - Hathora: 'samples/hathora-demo.md'
 
 copyright: |
   &copy; 2024 <a href="https://github.com/Beamable"  target="_blank" rel="noopener">Beamable</a>
   
 extra_css:
   - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/extra.js

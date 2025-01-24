@@ -1,7 +1,7 @@
 # Dedicated Servers
 
 ## Overview
-The Beamable Unreal SDK was made with support for a dedicated servers in mind from the start. We also develop and maintain a simple [Sample Project](../samples/complex/hathora-demo.md) containing a `Dockerfile` for a Linux server container builds and a microservice example of how to integrate with a Game Server Orchestrator.
+The Beamable Unreal SDK was made with support for a dedicated servers in mind from the start. We also develop and maintain a simple [Sample Project](../../samples/hathora-demo.md) containing a `Dockerfile` for a Linux server container builds and a microservice example of how to integrate with a Game Server Orchestrator.
 
 ## SDK Dedicated Server Initialization
 By default, each dedicated server instance it is expected to run a single lobby. When the server starts up and you call `UBeamRuntime::InitSDK`, the server will look for some overrides and parameters coming in from Environment Variables OR Command-Line Arguments. **Command Line Arguments override Environment Variables when both are present**.
@@ -30,12 +30,12 @@ This means a few things:
 - Calling APIs that write to user data is not recommended via regular SDK functions (see below for the alternative).
 
 ### Writing User State
-The current recommended way of changing user state from dedicated server code is to write a `ServerCallable` functions in Microservices and invoking those. See [Microservices](../concepts/microservices.md) for more information about the various types of `Callable`.
+The current recommended way of changing user state from dedicated server code is to write a `ServerCallable` functions in Microservices and invoking those. See [Microservices](../microservices/microservices.md) for more information about the various types of `Callable`.
 
 ### Microservices & Federation
 Beamable does not provide Game Server Orchestration. This means that, while we have Lobbies, Matchmaking and can find matches between players, we do NOT run the actual Game Server. For this, we partner with other companies and provide a simple way to integrate our Matchmaking and Lobbies with them.
 
-You can read more about this in the [Federated Game Server](../guides/federations/federated-game-server.md) guide, but conceptually here's what happens:
+You can read more about this in the [Federated Game Server](../federation/federated-game-server.md) guide, but conceptually here's what happens:
 
 1. Players are in a Matchmaking queue or Lobby.
 2. A Match is found or a Lobby leader asks for a Game Server for their match.
@@ -47,4 +47,4 @@ You can read more about this in the [Federated Game Server](../guides/federation
 4. The Beamable Backend then notifies all relevant game clients that the server is ready.
 5. The SDK detects that and invokes a callback where you can read set properties.
 
-Our [Hathora Sample Project](../samples/complex/hathora-demo.md) contains example of the flow above.
+Our [Hathora Sample Project](../../samples/hathora-demo.md) contains example of the flow above.
