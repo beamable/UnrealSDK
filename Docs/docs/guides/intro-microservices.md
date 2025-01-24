@@ -1,4 +1,6 @@
-# Getting Started with C# Microservices
+# Setting Up Microservices
+
+## Getting Started with C# Microservices
 Creating your first microservice will automatically create your solution for you. Following the guide below will generate the following recommended folder structure:
 
 ```

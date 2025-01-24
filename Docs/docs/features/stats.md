@@ -1,9 +1,3 @@
-<style>
-img[src*='#center'] { 
-    display: block;
-    margin: auto;
-}
-</style>
 # Stats
 
 ## Overview
@@ -39,7 +33,7 @@ In order to create write to a player stat from the client via Blueprints we will
 - After that,  use the `Commit Stats Operation` node to commit the new stats to Beamable.
 - That is it!
 
-![unreal-beamable-stats-create](images/stats-create-stats.png#center)
+![unreal-beamable-stats-create](images/stats-create-stats.png)
 
 To verify it worked, you can:
 - Set aside the `Gamertag/UserId` from the Unreal Engine logs.
@@ -48,7 +42,7 @@ To verify it worked, you can:
 - Go to `Stats` and search for `NewStatKey`.
 - You should see that it exists with correct value.
 
-![unreal-beamable-stats-portal](images/stats-portal.png#center)
+![unreal-beamable-stats-portal](images/stats-portal.png)
 ## Usage Guidelines
 ### Batching updates
 In this example there is created a new `UpdateCommand` and committed right away. For better performance and reduced calls to Beamable, it is encouraged to:

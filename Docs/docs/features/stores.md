@@ -1,10 +1,3 @@
-<style>
-img[src*='#center'] { 
-    display: block;
-    margin: auto;
-}
-</style>
-
 ## Overview
 Beamable's Store feature enables game-makers to create an in-game storefront where users can purchase items using virtual currency.
 

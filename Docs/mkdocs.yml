@@ -5,8 +5,6 @@ theme:
   logo: assets/images/logo.png
   favicon: assets/images/beamable-badge.png
   features:
-    - navigation.tabs
-    - navigation.sections
     - navigation.top
     - search.suggest
     - search.highlight
@@ -36,13 +34,18 @@ markdown_extensions:
       anchor_linenums: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.details
+  - pymdownx.superfences
   - admonition
   - pymdownx.arithmatex:
       generic: true
   - footnotes
-  - pymdownx.details
-  - pymdownx.superfences
-  - pymdownx.mark
+  - md_in_html
   - attr_list
   - def_list
   - pymdownx.tasklist:
@@ -56,37 +59,44 @@ plugins:
    - autorefs
 
 nav:
-  - Concepts:
-      - Runtime Concepts: 'concepts/runtime-concepts.md'
-      - Operations & Waits: 'concepts/operations-and-waits.md'
-      - Microservices: 'concepts/microservices.md'
-      - Dedicated Servers: 'concepts/dedicated-servers.md'
-      - Online Subsystem: 'concepts/online-subsystem.md'
-      - Federation: 'concepts/federation.md'
-  - Managed Services:
-      - Content: 'features/content.md'
-      - Stats: 'features/stats.md'
-      - Inventory: 'features/inventory.md'
-      - Stores: 'features/stores.md'
-  - How-To Guides: 
-    - Getting Started: 'guides/intro.md'
-    - Setting Up a Microservice: 'guides/intro-microservices.md'
-    - Upgrades:
-      - 1.0.0-PREVIEW to 1.0.0: 'guides/upgrades/upgrade-1.0.0-preview-to-1.0.0.md'
-    - Federations:
-      - IFederatedInventory: 'guides/federations/federated-inventory.md'
-      - IFederatedGameServer: 'guides/federations/federated-game-server.md'
-      - IFederatedLogin: 'guides/federations/federated-login.md'      
-    - Unreal:
-        - Linux Builds: 'guides/unreal/linux-builds.md'  
+  - Introduction: 'index.md'
+  - Getting Started: 'guides/intro.md'
+  - What's New:
+      - 1.1.0: 'whatsnew/1.1.0.md'
+      - 1.0.0: 'whatsnew/1.0.0.md'
+  - User Reference:
+      - Runtime Systems:
+          - Overview: 'concepts/runtime-concepts.md'
+          - Operations & Waits: 'concepts/operations-and-waits.md'
+          - Lower Level SDK: 'concepts/lower-level.md'
+      - Beamable Services:
+          - Indentity: 'features/identity.md'
+          - Content: 'features/content.md'
+          - Stats: 'features/stats.md'
+          - Inventory: 'features/inventory.md'
+          - Stores: 'features/stores.md'
+      - Microservices:
+          - Overview: 'concepts/microservices.md'
+          - Setting Up Microservices: 'guides/intro-microservices.md'
+      - Federation:
+          - Overview: 'concepts/federation.md'
+          - Federated Inventory: 'guides/federations/federated-inventory.md'
+          - Federated Game Server: 'guides/federations/federated-game-server.md'
+          - Federated Login: 'guides/federations/federated-login.md'
+      - Servers and Builds:
+          - Dedicated Servers: 'concepts/dedicated-servers.md'
+          - Linux Builds: 'guides/linux-builds.md'
+      - Unreal Online Subsystems:
+        - Overview: 'concepts/online-subsystem.md'
+        - Identity: 'features/online-subsystem-identity.md'
+
   - Samples: 
-    - Intro: 'samples/intro.md'
-    - Basic Samples:    
-      - Discord Demo: 'samples/basic/discord-demo.md'
-      - Steam Demo: 'samples/basic/steam-demo.md'      
-    - Complex Samples:
-      - LiveOps Demo: 'samples/complex/live-ops-demo.md'
-      - Hathora Demo: 'samples/complex/hathora-demo.md'
+    - Setup Sample Projects: 'samples/intro.md'
+    - Sample Projects:    
+      - Discord: 'samples/basic/discord-demo.md'
+      - Steam: 'samples/basic/steam-demo.md'      
+      - LiveOps: 'samples/complex/live-ops-demo.md'
+      - Hathora: 'samples/complex/hathora-demo.md'
 
 copyright: |
   &copy; 2024 <a href="https://github.com/Beamable"  target="_blank" rel="noopener">Beamable</a>

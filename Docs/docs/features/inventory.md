@@ -1,9 +1,4 @@
-<style>
-img[src*='#center'] { 
-    display: block;
-    margin: auto;
-}
-</style>
+
 # Inventory
 
 ## Overview
@@ -75,7 +70,7 @@ Now, call this function while a user is signed in to grant the currency/item to 
 ???+ warning "Assumptions"
     Make sure that user is logged in when you call this function. See [Runtime Concepts](runtime-concepts.md)
 
-![unreal-inventory-operations](images/inventory-operations.png#center)
+![unreal-inventory-operations](images/inventory-operations.png)
 
 After running the above function at least once, you should be able to see the results of these calls in the Beamable portal. To do so:
 
@@ -84,7 +79,7 @@ After running the above function at least once, you should be able to see the re
 - Go to `Engage->Players` and search for the player via `Gamertag/UserId`.
 - Go to `Inventory` and see that the appropriate currency and items are inside the user's inventory. 
 
-![unreal-beamable-inventory-portal](images/inventory-portal.png#center)
+![unreal-beamable-inventory-portal](images/inventory-portal.png)
 ## Performance Guidelines
 
 ### Batching updates

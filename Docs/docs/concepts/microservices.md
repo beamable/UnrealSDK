@@ -1,9 +1,3 @@
-<style>
-img[src*='#center'] { 
-    display: block;
-    margin: auto;
-}
-</style>
 
 # Beamable Microservices
 Beamable Microservices are Beamable's Cloud Code solution. It is a wrapper around a HTTP Server that makes the development process much simpler. These are written in C# and come with a set of development tools that are tightly integrated with the UE Editor and Beamable CLI.
@@ -15,7 +9,7 @@ A lot of cloud-code solutions sacrifice a lot of flexibility, cost-efficiency, p
 
 We do so by this architecture:
 
-![Pasted image 20241112093931.png](./Images/microservices-architecture.png#center)
+![Pasted image 20241112093931.png](./Images/microservices-architecture.png)
 
 The Microservice is:
 
@@ -165,14 +159,14 @@ This allows us to integrate microservices running in your local machine "as thou
 - Requests made from this editor's PIE instance can chose a **Microservice Target**.
 - [Out-of-band Federations can be configured with opt-in filters that "steal" traffic](../concepts/federation.md).
 
-![microservices-architecture-targets.png](./Images/microservices-architecture-targets.png#center)
+![microservices-architecture-targets.png](./Images/microservices-architecture-targets.png)
 
 Enabling these two cases at the push of a button enables very fast development iteration speed.
 
 ## Microservice Window
 The Microservice Window enables developers to start/stop local services, to read local service logs while in PIE and to configure local server settings for the collaborative workflow and for federations.
 
-![microservices-window-home.png](./Images/microservices-window-home.png#center)
+![microservices-window-home.png](./Images/microservices-window-home.png)
 
 The left side of the window provides you a list of all services in your project with a set of filters based on **Service Groups**. The right side is the **Details Panel**.
 
@@ -195,7 +189,7 @@ The Details panel provides a detailed view of the microservices and access to a 
 #### Local - Logs Tab
 As the name implies, you can explore the logs for any running Microservice. You can filter by **Log Level**, substring search and also clear stored logs.
 
-![microservices-window-logs.png](./Images/microservices-window-logs.png#center)
+![microservices-window-logs.png](./Images/microservices-window-logs.png)
 
 ## Common Developer Workflows
 There are a few different ways to work with Microservices in Unreal, each with their own advantages and disadvantages. So, here we make our recommendations about them.
@@ -288,7 +282,7 @@ Or... you could instead use Beamable's Collaborative Debugging workflow:
 - As the engineer, observe your (conditional or data) breakpoint is hit or read your additional `BeamableLogger` log lines.
 - Quickly diagnose the issue and unblock the designer.
 
-![microservices-window-collaboration.png](./Images/microservices-window-collaboration.png#center)
+![microservices-window-collaboration.png](./Images/microservices-window-collaboration.png)
 
 For smaller teams that like to move fast and can rely on lots of direct communication between designers and engineers, this workflow is a **massive improvement to the current available alternatives**.
 

@@ -1,10 +1,4 @@
-<style>
-img[src*='#center'] { 
-    display: block;
-    margin: auto;
-}
-</style>
-
+# Setup Sample Projects
 Unreal Beamable Samples are distributed as a configuration of the Unreal SDK repository. We call these `BeamProj`. The selected `BeamProj` is defined by which of the `BEAMPROJ_` plugins is the enabled one inside the `BeamableUnreal.uproject` file.
 
 To look at any given sample, you need to:

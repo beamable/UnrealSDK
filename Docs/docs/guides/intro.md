@@ -1,12 +1,9 @@
-<style>
-img[src*='#center'] { 
-    display: block;
-    margin: auto;
-}
-</style>
-
 # Getting Started
-Before you can start using Beamable in your project, sign-up in [our portal](https://portal.beamable.com/login/). 
+This guide will walk you through the process of setting up Beamable in your Unreal Engine project and making your first request.
+
+## Signing Up Account
+To start using Beamable in your project you need to have a valid Account in our Platform. you can sign-up an account in [our portal](https://portal.beamable.com/login/).
+
 ## Cloning and Installing Dependencies
 Start by getting our repo, then installing .NET and Docker Dekstop.
 
@@ -26,7 +23,8 @@ Next up, install our dependencies.
  - [.NET](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
 Once you have our repo and dependencies set up in your machine, follow along one of the next section to set up the SDK in your project.
-### Set up the Beamable SDK - Fast Path
+
+## Set up the Beamable SDK - Fast Path
 Setting up the SDK in your project is done by manually copying over a set of files from our **Unreal SDK** repo to your project. 
 
 !!! note "Unreal Project Requirements"
@@ -55,14 +53,15 @@ Please, follow along these instructions:
 	2. Check there is a `.config/dotnet-tools.json` file in your project directory.
 	3. Run `dotnet beam --version` from inside your project root directory and see that it outputs a valid `X.Y.Z` string.
 7. Open Rider/VS and compile your editor.
-#### Making your First Request
+
+## Making your First Request
 Once your Editor opens, you'll see the Beamable Logo in your upper-right bar, next to the Settings dropdown. This button opens the Beamable window.
 
-![BeamableWindowLocation](./images/intro-beamable-window-location.png#center)
+![BeamableWindowLocation](./images/intro-beamable-window-location.png)
 
 In this window, you can login to the account you just created in the Beamable portal. When you do, you should see the window below:
 
-![](./images/intro-beamable-window-opened.png#center)
+![](./images/intro-beamable-window-opened.png)
 
 Here's some a quick tour of Beamable terminology:
 
@@ -84,7 +83,7 @@ Now that you are familiar with the **Beamable Window**, you are ready to make yo
 
 To get started, open your Level Blueprint and add the following pattern:
 
-![intro-init-sdk-with-frictionless-login.png](./images/intro-init-sdk-with-frictionless-login.png#center)
+![intro-init-sdk-with-frictionless-login.png](./images/intro-init-sdk-with-frictionless-login.png)
 
 The `BeamRuntime` is an `GameInstanceSubsystem` that is responsible for controlling the SDK's lifecycle and, in clients, player authentication. 
 
@@ -106,17 +105,20 @@ Now that you have this event hooked up, you can add your first **Beam Flow Node*
 - A set of Custom Event nodes (for success, error and completion) of the request being made to Beamable.
 	- Because of this, Unreal does not allow the use of these nodes (or any node that expands to Event nodes) outside of **EventGraphs** or **Macros used in EventGraphs**.
 
-![intro-beam-flow-node.png](./images/intro-beam-flow-node.png#center)
+![intro-beam-flow-node.png](./images/intro-beam-flow-node.png)
 
 With the SDKs default configuration and the above setup, you can enter PIE (Play-In-Editor). You should see several requests's responses being written to your Output Log window. After you see the final `GetMe` request, you can exit PIE knowing you've made your very first request to Beamable.
 
-#### Additional Information
-Before we complete this guide, there's one final thing that is important to know. You can, and should, use verbose logging `log "Category" Verbose` when you encounter an issue stemming from our SDK (Log Categories can be found in `BeambleCore/BeamLogging.h` file). 
+## Additional Tips
+Before we complete this guide, there's one final thing that is important to know. We higly recommend to use verbose logging `log "Category" Verbose` when  encountering an issue stemming from our SDK (Log Categories can be found in `BeambleCore/BeamLogging.h` file).
 
 This verbose logging will print out ***everything*** about the request being made. Its meant to aid us in diagnosing issues that you may encounter when using the SDK AND not for production use. To turn it off in the same editor session, just run `log LogBeamBackend Display` in the editor console.
 
 When reporting an issue, try to reproduce the issue with the logs of the relevant systems set to Verbose and attach them to the issue.
-#### Next Steps
-Now that you've made your first Beamable Request, before you go onto make your game, take a look at the [Runtime Concepts](../concepts/runtime-concepts.md) page so you can understand more about how the SDK is structured and identify the best path to using it in your game.
 
-If you'd like to see a more complicated example running on Beamable, take a look at [our Samples](../samples/intro.md).
+## Next Steps
+Now that you've made your first Beamable Request, take a look at the [Runtime Concepts](../concepts/runtime-concepts.md) page so you can understand more about how the SDK is structured and identify the best path to using it in your game.
+
+If you'd like to see a more samples running on Beamable, take a look at [our Samples](../samples/intro.md).
+
+If you want to contact us for support, doubts or suggestions, you can do so through one of our [Discord Channel](https://discord.com/invite/beamable). 
