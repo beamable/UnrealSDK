@@ -20,7 +20,7 @@ void UBeamDiscordSampleMsApi::Deinitialize()
 
 
 
-void UBeamDiscordSampleMsApi::BP_UpdateFromDiscordImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamDiscordSampleMsApi::BP_UpdateFromDiscordImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
                                 UDiscordSampleMsUpdateFromDiscordRequest* RequestData, const FOnDiscordSampleMsUpdateFromDiscordSuccess& OnSuccess, const FOnDiscordSampleMsUpdateFromDiscordError& OnError, const FOnDiscordSampleMsUpdateFromDiscordComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
@@ -47,11 +47,11 @@ void UBeamDiscordSampleMsApi::BP_UpdateFromDiscordImpl(const FBeamRealmHandle& T
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
-void UBeamDiscordSampleMsApi::CPP_UpdateFromDiscordImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamDiscordSampleMsApi::CPP_UpdateFromDiscordImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, 
                               UDiscordSampleMsUpdateFromDiscordRequest* RequestData, const FOnDiscordSampleMsUpdateFromDiscordFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
@@ -77,12 +77,12 @@ void UBeamDiscordSampleMsApi::CPP_UpdateFromDiscordImpl(const FBeamRealmHandle& 
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
 		
-void UBeamDiscordSampleMsApi::BP_UpdateUserWhitelistedStatusImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamDiscordSampleMsApi::BP_UpdateUserWhitelistedStatusImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
                                 UDiscordSampleMsUpdateUserWhitelistedStatusRequest* RequestData, const FOnDiscordSampleMsUpdateUserWhitelistedStatusSuccess& OnSuccess, const FOnDiscordSampleMsUpdateUserWhitelistedStatusError& OnError, const FOnDiscordSampleMsUpdateUserWhitelistedStatusComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
@@ -109,11 +109,11 @@ void UBeamDiscordSampleMsApi::BP_UpdateUserWhitelistedStatusImpl(const FBeamReal
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
-void UBeamDiscordSampleMsApi::CPP_UpdateUserWhitelistedStatusImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamDiscordSampleMsApi::CPP_UpdateUserWhitelistedStatusImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, 
                               UDiscordSampleMsUpdateUserWhitelistedStatusRequest* RequestData, const FOnDiscordSampleMsUpdateUserWhitelistedStatusFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
@@ -139,7 +139,7 @@ void UBeamDiscordSampleMsApi::CPP_UpdateUserWhitelistedStatusImpl(const FBeamRea
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
@@ -158,7 +158,7 @@ void UBeamDiscordSampleMsApi::CPP_UpdateFromDiscord(const FUserSlot& UserSlot, U
 	Backend->GetRetryConfigForUserSlotAndRequestType(UDiscordSampleMsUpdateFromDiscordRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_UpdateFromDiscordImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_UpdateFromDiscordImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -173,7 +173,7 @@ void UBeamDiscordSampleMsApi::CPP_UpdateUserWhitelistedStatus(const FUserSlot& U
 	Backend->GetRetryConfigForUserSlotAndRequestType(UDiscordSampleMsUpdateUserWhitelistedStatusRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_UpdateUserWhitelistedStatusImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_UpdateUserWhitelistedStatusImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -192,7 +192,7 @@ void UBeamDiscordSampleMsApi::UpdateFromDiscord(FUserSlot UserSlot, UDiscordSamp
 	Backend->GetRetryConfigForUserSlotAndRequestType(UDiscordSampleMsUpdateFromDiscordRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_UpdateFromDiscordImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	BP_UpdateFromDiscordImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -207,7 +207,7 @@ void UBeamDiscordSampleMsApi::UpdateUserWhitelistedStatus(FUserSlot UserSlot, UD
 	Backend->GetRetryConfigForUserSlotAndRequestType(UDiscordSampleMsUpdateUserWhitelistedStatusRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_UpdateUserWhitelistedStatusImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	BP_UpdateUserWhitelistedStatusImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 

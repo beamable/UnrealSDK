@@ -40,10 +40,7 @@ void UBeamBackend::Initialize(FSubsystemCollectionBase& Collection)
 	// Get subsystem dependency...
 	BeamEnvironment = Cast<UBeamEnvironment>(Collection.InitializeDependency(UBeamEnvironment::StaticClass()));
 	BeamUserSlots = Cast<UBeamUserSlots>(Collection.InitializeDependency(UBeamUserSlots::StaticClass()));
-
-	// Assumes we are connected to the internet until first request fails.
-	CurrentConnectivityStatus = FBeamConnectivity{true, FDateTime::UtcNow().GetTicks()};
-
+	
 	// Initialize a buffer of 16 simultaneous requests.
 	InFlightRequests.Reserve(1024 * 4);
 	InFlightRequestContexts.Reserve(1024 * 4);
@@ -100,29 +97,6 @@ void UBeamBackend::TryTriggerRequestCompleteDelegates(const int64& RequestId)
 
 		// After all request complete delegates have run, we try to clean up request data
 		const auto _ = CleanUpRequestData();
-	}
-}
-
-void UBeamBackend::UpdateConnectivity(const FBeamRequestContext& RequestContext, const TUnrealRequestStatus RequestStatus, const FRequestType RequestType)
-{
-	if (RequestStatus == EHttpRequestStatus::Succeeded || RequestStatus == EHttpRequestStatus::Failed)
-	{
-		if (!CurrentConnectivityStatus.IsConnected)
-		{
-			GlobalConnectivityChangedHandler.Broadcast(RequestContext, RequestType, true);
-			GlobalConnectivityChangedCodeHandler.Broadcast(RequestContext, RequestType, true);
-		}
-		CurrentConnectivityStatus.IsConnected = true;
-		CurrentConnectivityStatus.LastTimeSinceSuccessfulRequest = FDateTime::UtcNow().GetTicks();
-	}
-	else if (RequestStatus == EHttpRequestStatus::Failed_ConnectionError)
-	{
-		if (CurrentConnectivityStatus.IsConnected == true)
-		{
-			GlobalConnectivityChangedHandler.Broadcast(RequestContext, RequestType, false);
-			GlobalConnectivityChangedCodeHandler.Broadcast(RequestContext, RequestType, false);
-		}
-		CurrentConnectivityStatus.IsConnected = false;
 	}
 }
 
@@ -204,10 +178,6 @@ int UBeamBackend::GetRequestFailureCount(int64 RequestId) const
 	return 0;
 }
 
-bool UBeamBackend::IsConnected() const
-{
-	return CurrentConnectivityStatus.IsConnected;
-}
 
 void UBeamBackend::PrepareBeamableRequestToRealm(const TUnrealRequestPtr& UnrealRequest, const FBeamRealmHandle& RealmHandle)
 {
@@ -316,7 +286,7 @@ bool UBeamBackend::HandlePIESessionRequestGuard(TUnrealRequestPtr Request, int64
 	return false;
 }
 
-void UBeamBackend::DefaultExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity)
+void UBeamBackend::DefaultExecuteRequestImpl(int64 ActiveRequestId)
 {
 	UE_LOG(LogBeamBackend, Display, TEXT("Sending Request via Unreal HttpRequest's ProcessRequest. REQUEST_ID=%llu"),
 	       ActiveRequestId);
@@ -334,13 +304,9 @@ void UBeamBackend::ExtractUrlForSignature(const FString& FullUrl, FString& Url)
 	                                     ESearchCase::IgnoreCase, ESearchDir::FromStart,
 	                                     FullUrl.Find(TEXT(".")) - 1)
 	);
-
-	// This gets stripped off at the load-balancer level so its not part of the actual signature...
-	// This all eventually gets replaced by Server Tokens + User Slots.
-	Url.RemoveFromStart("/api");
 }
 
-void UBeamBackend::DedicatedServerExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity)
+void UBeamBackend::DedicatedServerExecuteRequestImpl(int64 ActiveRequestId)
 {
 	UE_LOG(LogBeamBackend, Verbose,
 	       TEXT("Sending Signed Request via Unreal HttpRequest's ProcessRequest . REQUEST_ID=%llu"), ActiveRequestId);
@@ -469,20 +435,7 @@ bool UBeamBackend::TickRetryQueue(float DeltaTime)
 						FString NamespacedSlotId;
 						const auto WasMadeWithUserSlot = BeamUserSlots->GetUserDataWithRefreshTokenAndPid(
 							ReqAuthToken.RefreshToken, ReqRealmHandle.Pid, RealmUserData, UserSlot, NamespacedSlotId);
-
-						const auto RequestStatus = Request->GetStatus();
-						// Update Connectivity Status
-						if (RequestStatus == EHttpRequestStatus::Succeeded || RequestStatus ==
-							EHttpRequestStatus::Failed)
-						{
-							CurrentConnectivityStatus.IsConnected = true;
-							CurrentConnectivityStatus.LastTimeSinceSuccessfulRequest = FDateTime::UtcNow().GetTicks();
-						}
-						else if (RequestStatus == EHttpRequestStatus::Failed_ConnectionError)
-						{
-							CurrentConnectivityStatus.IsConnected = false;
-						}
-
+						
 						const auto ResponseCode = Response->GetResponseCode();
 						const auto ResponseBody = Response->GetContentAsString();
 

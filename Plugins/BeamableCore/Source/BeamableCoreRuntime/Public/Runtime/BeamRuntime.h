@@ -27,8 +27,8 @@ class UBeamNotifications;
 /**
  * State of connectivity for a specific UserSlot.
  *
- * - Offline: UserSlot is not authenticated. 
- * - Fixup: UserSlot is in the process of synchronizing all the supported OfflineOperations with the Beamable Backend (see FOfflineOperationData)
+ * - Offline: UserSlot is not authenticated OR the websocket connection for that slot was lost. 
+ * - Fixup: UserSlot's websocket connection has been reestablished but user-code has not yet called 
  * - Online: UserSlot is connected and has the local state synchronized with the Beamable Backend.
  */
 UENUM()
@@ -39,33 +39,52 @@ enum EBeamRuntimeConnectivityState
 	CONN_Online,
 };
 
-/**
- * While in the Offline state, BeamRuntimeSubsystems can record offline operations into a DAG of operations.
- * The DAG is played back during the Fixup process after connection has been established, each layer of the DAG being executed in parallel.
- * It is the BeamRuntimeSubsystem's responsibility to know whether it can run in parallel or not and call the correct API to register OfflineOperations into the DAG.
- *
- * The data required for an offline operation to be played-back during fixed is stored in serialized form in the memory archive here.
- * The BeamRuntimeSubsystem that makes the operation is responsible for the data format of this buffer. 
- */
-struct FOfflineOperationData
-{
-	FName OperationKey;
-	TArray<uint8> OperationRequestDataBackingArray;
-	FMemoryArchive OperationRequestData;
-};
+class UBeamConnectivityManager;
+DECLARE_DELEGATE_OneParam(FOnBeamConnectivityUpdate, UBeamConnectivityManager*)
 
 /**
  * Manager that tracks connectivity states and the DAG of FOfflineOperationData to run during the Fixup process.
  * Exposes an API to manage the DAG while in Offline modes.
  */
 UCLASS()
-class URuntimeConnectivityManager : public UObject
+class UBeamConnectivityManager : public UObject
 {
 	GENERATED_BODY()
 
-public:
-	FUserSlot OwnerSlot;
+	friend class UBeamRuntime;
+
 	EBeamRuntimeConnectivityState CurrentState;
+	FTSTicker::FDelegateHandle FixupUpdateHandle;
+	FTSTicker::FDelegateHandle ReconnectingUpdateHandle;
+
+	/**
+	 * Websocket notifications connection handler. 
+	 */
+	void ConnectionHandler(const FNotificationEvent& Evt, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op);
+
+public:
+	UPROPERTY()
+	UBeamRuntime* Runtime;
+	UPROPERTY()
+	UBeamUserSlots* UserSlots;
+	UPROPERTY()
+	UBeamRequestTracker* RequestTracker;
+	UPROPERTY()
+	UBeamNotifications* Notifications;
+
+	UPROPERTY()
+	FUserSlot UserSlot;
+
+
+	/**
+	 * Bind a function to this that defines the process of recovering from a connectivity loss event (CurrentState == CONN_Fixup).
+	 */
+	FOnBeamConnectivityUpdate FixupUpdate;
+
+	/**
+	 * Bind a function to this that defines a tick function that runs every frame while this user's CurrentState == CONN_Offline.  
+	 */
+	FOnBeamConnectivityUpdate ReconnectionUpdate;
 
 
 	/**
@@ -74,15 +93,11 @@ public:
 	 */
 	int32 ConnectionLostCountInSession;
 
-	/**
-	 * TODO: API for systems to build layers of operations for playback during Fixup.
-	 */
-	TArray<TMap<TSubclassOf<UBeamRuntimeSubsystem>, TArray<FOfflineOperationData>>> FixupOperationDAG;
 
 	/**
-	 * Count of FOfflineOperationData across all layers.
+	 * Current number of reconnection attempts.
 	 */
-	int32 CurrentFixupOperationCount;
+	int32 CurrentReconnectionCount;
 
 	/**
 	 * The last time in which we detected a connection loss.
@@ -90,19 +105,11 @@ public:
 	 */
 	FDateTime CurrentConnectionLostTime;
 
-	/**
-	 * During fixup can be a long running process with multiple operations and Waits, so we track which layer of the FixupOperationDAG we are currently resolving.
-	 * This is so we can correctly react to connection losses mid-fixup.
-	 */
-	int32 CurrentFixupLayer;
-	TArray<FBeamOperationHandle> CurrentFixupLayerOperations;
-	FBeamWaitHandle CurrentFixupLayerWaitHandle;
-
 
 	/**
 	 * @return Whether or not the owner of this manager is authenticated.
 	 */
-	bool IsAuthenticated() const { return GEngine->GetEngineSubsystem<UBeamUserSlots>()->IsUserSlotAuthenticated(OwnerSlot, this); }
+	bool IsAuthenticated() const { return GEngine->GetEngineSubsystem<UBeamUserSlots>()->IsUserSlotAuthenticated(UserSlot, this); }
 
 	/**
 	 * @return Whether or not the slot this manager is associated with is authenticated AND if we are offline. The common case being: frictionless auth is disabled.
@@ -120,32 +127,14 @@ public:
 	bool IsDisconnected() const { return IsAuthenticated() && CurrentState == CONN_Offline && ConnectionLostCountInSession; }
 
 	/**
-	 * TODO: After we've reconnected with the websocket, kick-off the fixup process.
+	 * @return If we are authenticated, lost our websocket connection and then recovered it; we are now in Fixup. 
 	 */
-	void StartRecoveryFixup()
-	{
-		if (!CurrentFixupOperationCount)
-		{
-			CurrentState = CONN_Online;
-			return;
-		}
-
-		CurrentState = CONN_Fixup;
-		// TODO: configure chain of operations for each DAG layer passing them along to UBeamRuntimeSubsystems then waiting on them to finish.
-	}
+	bool IsInFixup() const { return IsAuthenticated() && CurrentState == CONN_Fixup; }
 
 	/**
-	 * TODO: Kick off attempts to reconnect to the Default notification channel. Must do so with exponential backoff using default retry configs.
+	 * Game-makers should call this from inside their FixupUpdate once their fix up is finished.
 	 */
-	void StartRecoveryFromDisconnection()
-	{
-		// Just do nothing if we haven't lost connection or if we are not Offline.
-		if (!ConnectionLostCountInSession) return;
-		if (CurrentState != CONN_Offline) return;
-
-		// TODO: call try connect on Notification system again
-		// TODO: figure out a way to keep 
-	}
+	void NotifyFixupComplete() { if (IsInFixup()) { CurrentState = CONN_Online; } }
 };
 
 
@@ -206,8 +195,9 @@ enum ESDKState
 UCLASS(BlueprintType, meta=(Namespace="Beam"))
 class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 {
-	GENERATED_BODY()
+	friend class UBeamConnectivityManager;
 
+	GENERATED_BODY()
 
 	/** @brief Initializes the subsystem.  */
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
@@ -271,7 +261,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 * Manages connectivity and recovery for every user slot.
 	 */
 	UPROPERTY()
-	TMap<FUserSlot, URuntimeConnectivityManager*> ConnectivityState;
+	TMap<FUserSlot, UBeamConnectivityManager*> ConnectivityState;
 
 
 	/**
@@ -406,7 +396,7 @@ public:
 	 * 
 	 */
 	UFUNCTION()
-	void PIEExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity);
+	void PIEExecuteRequestImpl(int64 ActiveRequestId);
 
 	/** @brief an enum that represents the state of the sdk if it is currently initialized and ready to be used or not */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="SDK State")
@@ -621,6 +611,38 @@ public:
 	void CPP_UnregisterOnSdkInitFailed(FDelegateHandle Handle)
 	{
 		OnStartedFailedCode.Remove(Handle);
+	}
+
+	/**
+	 * @brief In CPP, use this function to bind a tick function that will run while this user is offline. 
+	 */
+	void CPP_RegisterReconnectionUpdate(FUserSlot UserSlot, FOnBeamConnectivityUpdate ReconnectionUpdate)
+	{
+		ConnectivityState[UserSlot]->ReconnectionUpdate = ReconnectionUpdate;
+	}
+
+	/**
+	 * @brief In CPP, use this function to bind a tick function that will run while this user has reconnected. 
+	 */
+	void CPP_RegisterConnectionFixupUpdate(FUserSlot UserSlot, FOnBeamConnectivityUpdate ConnectionFixupUpdate)
+	{
+		ConnectivityState[UserSlot]->FixupUpdate = ConnectionFixupUpdate;
+	}
+
+	/**
+	 * @brief In CPP, use this function to unbind an tick function that will run while this user is offline. 
+	 */
+	void CPP_UnregisterReconnectUpdate(FUserSlot UserSlot)
+	{
+		ConnectivityState[UserSlot]->ReconnectionUpdate.Unbind();
+	}
+
+	/**
+	 * @brief In CPP, use this function to unbind an tick function that will run while this user has reconnected. 
+	 */
+	void CPP_UnregisterConnectionFixupUpdate(FUserSlot UserSlot)
+	{
+		ConnectivityState[UserSlot]->FixupUpdate.Unbind();
 	}
 
 private:
@@ -945,9 +967,13 @@ public:
 	FDelegateHandle SubscribeToCustomNotification(const FUserSlot& UserSlot, FString Key, THandler Handler)
 	{
 		FDelegateHandle Handle;
-		if (NotificationSystem->TrySubscribeForMessage<THandler, TMessage>(UserSlot, DefaultNotificationChannel, Key, Handler, Handle, this))
+		FBeamWebSocketHandle DefaultHandle;
+		if (GetDefaultNotificationChannel(UserSlot, DefaultHandle))
 		{
-			return Handle;
+			if (NotificationSystem->TrySubscribeForMessage<THandler, TMessage>(UserSlot, DefaultHandle.Id, Key, Handler, Handle, this))
+			{
+				return Handle;
+			}
 		}
 
 		return {};
@@ -962,6 +988,9 @@ public:
 	 */
 	bool UnsubscribeToCustomNotification(const FUserSlot& UserSlot, FString Key, FDelegateHandle Handle)
 	{
-		return NotificationSystem->TryUnsubscribeFromMessage(UserSlot, DefaultNotificationChannel, Key, Handle, this);
+		FBeamWebSocketHandle DefaultHandle;
+		if (GetDefaultNotificationChannel(UserSlot, DefaultHandle))
+			return NotificationSystem->TryUnsubscribeFromMessage(UserSlot, DefaultNotificationChannel, Key, Handle, this);
+		return false;
 	}
 };

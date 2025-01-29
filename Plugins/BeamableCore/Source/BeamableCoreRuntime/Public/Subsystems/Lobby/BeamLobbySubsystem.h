@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include <AutoGen/SubSystems/Lobby/ApiLobbyPostServerRequest.h>
+#include <AutoGen/SubSystems/Lobby/ApiLobbyGetLobbiesRequest.h>
+#include <AutoGen/SubSystems/Lobby/ApiLobbyPostServerByIdRequest.h>
 
 #include "CoreMinimal.h"
-#include "AutoGen/SubSystems/Lobby/ApiLobbyPutMetadataRequest.h"
+#include "AutoGen/SubSystems/Lobby/ApiLobbyPutMetadataByIdRequest.h"
 #include "AutoGen/SubSystems/Lobby/DeleteLobbyRequest.h"
 #include "AutoGen/SubSystems/Lobby/DeleteTagsRequest.h"
-#include "AutoGen/SubSystems/Lobby/GetLobbiesRequest.h"
 #include "AutoGen/SubSystems/Lobby/GetLobbyRequest.h"
 #include "AutoGen/SubSystems/Lobby/PostLobbiesRequest.h"
 #include "AutoGen/SubSystems/Lobby/PutLobbyRequest.h"
@@ -466,18 +466,18 @@ private:
 	FBeamRequestContext RequestJoin(const FUserSlot& UserSlot, FGuid LobbyId, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op, FOnPutLobbyFullResponse Handler) const;
 	FBeamRequestContext RequestJoinByPassword(const FUserSlot& UserSlot, FString Passcode, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op, FOnPutPasscodeFullResponse Handler) const;
 	FBeamRequestContext RequestGetLobby(const FUserSlot& UserSlot, FGuid LobbyId, FBeamOperationHandle Op, FOnGetLobbyFullResponse Handler) const;
-	FBeamRequestContext RequestGetLobbies(const FUserSlot& UserSlot, FBeamContentId MatchTypeFilter, int32 PageStart, int32 PageSize, FBeamOperationHandle Op, FOnGetLobbiesFullResponse Handler) const;
+	FBeamRequestContext RequestGetLobbies(const FUserSlot& UserSlot, FBeamContentId MatchTypeFilter, int32 PageStart, int32 PageSize, FBeamOperationHandle Op, FOnApiLobbyGetLobbiesFullResponse Handler) const;
 	FBeamRequestContext RequestPostLobbies(const FUserSlot& UserSlot, FString LobbyName, FString LobbyDescription, ELobbyRestriction Restriction, FBeamContentId MatchType, int32 PasscodeLength,
 	                                       int32 MaxPlayers, TMap<FString, FString> LobbyData, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op, FOnPostLobbiesFullResponse Handler) const;
 	FBeamRequestContext RequestRemoveFromLobby(const FUserSlot& UserSlot, FGuid LobbyId, FBeamGamerTag GamerTag, FBeamOperationHandle Op, FOnDeleteLobbyFullResponse Handler) const;
 	FBeamRequestContext RequestUpdateLobbyMetadata(const FUserSlot& UserSlot, FGuid LobbyId, FOptionalString LobbyName, FOptionalString LobbyDescription, FOptionalLobbyRestriction Restriction,
 	                                               FOptionalBeamContentId MatchType, FOptionalBeamGamerTag NewHost, FOptionalInt32 MaxPlayers, FOptionalMapOfString GlobalDataUpdates,
-	                                               FOptionalArrayOfString GlobalDataDeletes, FBeamOperationHandle Op, FOnApiLobbyPutMetadataFullResponse Handler) const;
+	                                               FOptionalArrayOfString GlobalDataDeletes, FBeamOperationHandle Op, FOnApiLobbyPutMetadataByIdFullResponse Handler) const;
 	FBeamRequestContext RequestUpdatePlayerTag(const FUserSlot& UserSlot, FGuid LobbyId, FBeamGamerTag PlayerId, TArray<FBeamTag> PlayerTags, bool bShouldReplace, FBeamOperationHandle Op,
 	                                           FOnPutTagsFullResponse Handler) const;
 	FBeamRequestContext RequestDeletePlayerTags(const FUserSlot& UserSlot, FGuid LobbyId, FBeamGamerTag PlayerId, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op,
 	                                            FOnDeleteTagsFullResponse Handler) const;
-	FBeamRequestContext RequestPostServer(const FUserSlot& UserSlot, FGuid LobbyId, FOptionalBeamContentId SelectedMatchType, FBeamOperationHandle Op, FOnApiLobbyPostServerFullResponse Handler) const;
+	FBeamRequestContext RequestPostServer(const FUserSlot& UserSlot, FGuid LobbyId, FOptionalBeamContentId SelectedMatchType, FBeamOperationHandle Op, FOnApiLobbyPostServerByIdFullResponse Handler) const;
 
 
 	// Notification Hooks

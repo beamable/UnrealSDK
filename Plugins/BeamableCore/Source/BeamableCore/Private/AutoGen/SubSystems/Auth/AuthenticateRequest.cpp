@@ -27,7 +27,7 @@ void UAuthenticateRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UAuthenticateRequest* UAuthenticateRequest::Make(FString _GrantType, FOptionalBool _bCustomerScoped, FOptionalString _DeviceId, FOptionalString _ProviderService, FOptionalString _Token, FOptionalString _Code, FOptionalString _ExternalToken, FOptionalChallengeSolution _ChallengeSolution, FOptionalString _ProviderNamespace, FOptionalString _RedirectUri, FOptionalString _ThirdParty, FOptionalContextInfo _Context, FOptionalString _RefreshToken, FOptionalString _Username, FOptionalString _ClientId, FOptionalString _Password, FOptionalArrayOfString _Scope, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UAuthenticateRequest* UAuthenticateRequest::Make(FString _GrantType, FOptionalBool _bCustomerScoped, FOptionalString _DeviceId, FOptionalString _ProviderService, FOptionalString _Token, FOptionalString _Code, FOptionalString _ExternalToken, FOptionalChallengeSolution _ChallengeSolution, FOptionalString _ProviderNamespace, FOptionalString _RedirectUri, FOptionalString _ThirdParty, FOptionalContextInfo _Context, FOptionalString _RefreshToken, FOptionalString _Username, FOptionalString _ClientId, FOptionalString _Password, FOptionalArrayOfString _Scope, FOptionalMapOfString _InitProperties, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UAuthenticateRequest* Req = NewObject<UAuthenticateRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -54,6 +54,7 @@ UAuthenticateRequest* UAuthenticateRequest::Make(FString _GrantType, FOptionalBo
 	Req->Body->ClientId = _ClientId;
 	Req->Body->Password = _Password;
 	Req->Body->Scope = _Scope;
+	Req->Body->InitProperties = _InitProperties;
 	
 
 	return Req;

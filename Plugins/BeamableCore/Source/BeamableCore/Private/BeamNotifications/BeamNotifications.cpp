@@ -51,7 +51,7 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 	       *ScopeHeader)
 
 
-	const auto OpenSocket = FWebSocketsModule::Get().CreateWebSocket(Uri + TEXT("?send-session-start=true"), TEXT(""), Headers);	
+	const auto OpenSocket = FWebSocketsModule::Get().CreateWebSocket(Uri + TEXT("?send-session-start=true"), TEXT(""), Headers);
 	OpenSocket->OnConnected().AddLambda([OutHandle, this]
 	{
 		// If this was a PIE socket and we are no longer in PIE when we connect, we should close up this connection.
@@ -74,7 +74,10 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 		const FOnNotificationEvent& EvtHandler = ConnectionEventHandlers.FindChecked(OutHandle);
 		const bool bDidRun = EvtHandler.ExecuteIfBound(Evt);
 		ensureAlwaysMsgf(bDidRun, TEXT("Notification connection handler was not bound correctly! SLOT=%s, ID=%s, RETRY_COUNT=%d"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString(),
-			RetryCount.FindChecked(OutHandle));
+		                 RetryCount.FindChecked(OutHandle));
+
+		// Reset the retry count
+		RetryCount.Add(OutHandle, 0);
 
 		UE_LOG(LogBeamNotifications, Verbose, TEXT("Connection Success. SLOT=%s, ID=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString());
 	});
@@ -104,42 +107,20 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 		Evt.EventType = ENotificationMessageType::ConnectionFailed;
 		Evt.ConnectionFailedData.Error = Error;
 
-		const auto RetryConfig = GetDefault<UBeamCoreSettings>()->WebSocketRetryConfig;
-		auto CurrRetryCount = RetryCount.FindChecked(OutHandle);
+		// Bump the retry count
+		Evt.ConnectionFailedData.RetryCount = 1 + RetryCount.FindChecked(OutHandle);
+		RetryCount.Add(OutHandle, Evt.ConnectionFailedData.RetryCount);
 
-		if (CurrRetryCount >= RetryConfig.RetryMaxAttempt)
-		{
-			const FOnNotificationEvent& EvtHandler = ConnectionEventHandlers.FindChecked(OutHandle);
-			const bool bDidRun = EvtHandler.ExecuteIfBound(Evt);
-			ensureAlwaysMsgf(bDidRun, TEXT("Notification connection handler was not bound correctly! SLOT=%s, ID=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString());
+		// Run the connection failed handler and retry.
+		const FOnNotificationEvent& EvtHandler = ConnectionEventHandlers.FindChecked(OutHandle);
+		const bool bDidRun = EvtHandler.ExecuteIfBound(Evt);
+		ensureAlwaysMsgf(bDidRun, TEXT("Notification connection handler was not bound correctly! SLOT=%s, ID=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString());
 
-			// If there was an error when we tried to connect and failed a bunch of retries, we should just remove the connection.
-			if (OpenSockets.Contains(OutHandle.NamespacedSlot))
-			{
-				if (OpenSockets[OutHandle.NamespacedSlot].Contains(OutHandle.Id))
-				{
-					OpenSockets[OutHandle.NamespacedSlot].Remove(OutHandle.Id);
-					ConnectionEventHandlers.Remove(OutHandle);
-					MessageEventHandlers.Remove(OutHandle);
-					RetryCount.Remove(OutHandle);
-				}
-			}
+		// Try connecting again
+		OpenSocket->Connect();
 
-			UE_LOG(LogBeamNotifications, Error, TEXT("Connection Error. Exceeded retry attempts. SLOT=%s, ID=%s, RETRY_COUNT=%d"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString(),
-			       CurrRetryCount);
-		}
-		else
-		{
-			UE_LOG(LogBeamNotifications, Warning, TEXT("Connection Error. Retrying connection. SLOT=%s, ID=%s, RETRY_COUNT=%d"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString(),
-			       CurrRetryCount);
-
-			// Bump the retry count
-			CurrRetryCount += 1;
-			RetryCount.Add(OutHandle, CurrRetryCount);
-
-			// Try connecting again
-			OpenSocket->Connect();
-		}
+		UE_LOG(LogBeamNotifications, Error, TEXT("Failed to connect. Retrying connection... SLOT=%s, ID=%s, RETRY_COUNT=%d, ERROR=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString(),
+		       Evt.ConnectionFailedData.RetryCount, *Error);
 	});
 
 	OpenSocket->OnClosed().AddLambda([OutHandle, this](int32 StatusCode, const FString& Reason, bool bWasClean)
@@ -172,18 +153,6 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 		const FOnNotificationEvent& EvtHandler = ConnectionEventHandlers.FindChecked(OutHandle);
 		const bool bDidRun = EvtHandler.ExecuteIfBound(Evt);
 		ensureAlwaysMsgf(bDidRun, TEXT("Notification connection handler was not bound correctly! SLOT=%s, ID=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString());
-
-		if (OpenSockets.Contains(OutHandle.NamespacedSlot))
-		{
-			if (OpenSockets[OutHandle.NamespacedSlot].Contains(OutHandle.Id))
-			{
-				OpenSockets[OutHandle.NamespacedSlot].Remove(OutHandle.Id);
-				ConnectionEventHandlers.Remove(OutHandle);
-				MessageEventHandlers.Remove(OutHandle);
-				PlayModeHandles.Remove(OutHandle);
-				RetryCount.Remove(OutHandle);
-			}
-		}
 
 		UE_LOG(LogBeamNotifications, Verbose, TEXT("Connection Closed. SLOT=%s, ID=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString());
 	});
@@ -268,7 +237,16 @@ void UBeamNotifications::CloseSocketsForSlot(const FUserSlot& Slot, UObject* Con
 	{
 		for (const auto& WebSocket : *Slots)
 		{
+			FBeamWebSocketHandle Handle;
+			Handle.NamespacedSlot = NamespacedSlot;
+			Handle.Id = WebSocket.Key;
+
 			WebSocket.Value->Close(1000, TEXT("User signed out"));
+
+			ConnectionEventHandlers.Remove(Handle);
+			MessageEventHandlers.Remove(Handle);
+			PlayModeHandles.Remove(Handle);
+			RetryCount.Remove(Handle);
 		}
 		Slots->Reset();
 	}
@@ -298,6 +276,23 @@ void UBeamNotifications::ClearPIESockets(UObject* ContextObject)
 			{
 				Socket->Close(1000, TEXT("PIE Closed"));
 				UE_LOG(LogBeamNotifications, Verbose, TEXT("Closed runtime websocket for slot. SLOT=%s"), *PlayModeHandle.NamespacedSlot);
+			}
+		}
+	}
+}
+
+void UBeamNotifications::Reconnect(FBeamWebSocketHandle Value)
+{
+	if (OpenSockets.Contains(Value.NamespacedSlot))
+	{
+		if (const auto& UserSockets = OpenSockets.FindChecked(Value.NamespacedSlot); UserSockets.Contains(Value.Id))
+		{
+			const FBeamWebSocketHandle Key(Value.NamespacedSlot, Value.Id, this);
+
+			auto Connection = UserSockets[Value.Id];
+			if (!Connection->IsConnected())
+			{
+				Connection->Connect();
 			}
 		}
 	}

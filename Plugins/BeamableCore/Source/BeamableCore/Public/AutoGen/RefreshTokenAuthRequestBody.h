@@ -6,6 +6,7 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamCid.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamPid.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalContextInfo.h"
 
 #include "RefreshTokenAuthRequestBody.generated.h"
 
@@ -21,6 +22,8 @@ public:
 	FOptionalBeamCid CustomerId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Realm Id", Category="Beam")
 	FOptionalBeamPid RealmId = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Context", Category="Beam")
+	FOptionalContextInfo Context = {};
 
 	
 

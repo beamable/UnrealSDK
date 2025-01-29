@@ -20,7 +20,7 @@ void UBeamPresenceApi::Deinitialize()
 
 
 
-void UBeamPresenceApi::BP_PostQueryImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamPresenceApi::BP_PostQueryImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
                                 UPostQueryRequest* RequestData, const FOnPostQuerySuccess& OnSuccess, const FOnPostQueryError& OnError, const FOnPostQueryComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
@@ -47,11 +47,11 @@ void UBeamPresenceApi::BP_PostQueryImpl(const FBeamRealmHandle& TargetRealm, con
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
-void UBeamPresenceApi::CPP_PostQueryImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamPresenceApi::CPP_PostQueryImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, 
                               UPostQueryRequest* RequestData, const FOnPostQueryFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
@@ -77,7 +77,7 @@ void UBeamPresenceApi::CPP_PostQueryImpl(const FBeamRealmHandle& TargetRealm, co
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
@@ -96,7 +96,7 @@ void UBeamPresenceApi::CPP_PostQuery(const FUserSlot& UserSlot, UPostQueryReques
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostQueryRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_PostQueryImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_PostQueryImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -115,7 +115,7 @@ void UBeamPresenceApi::PostQuery(FUserSlot UserSlot, UPostQueryRequest* Request,
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostQueryRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PostQueryImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	BP_PostQueryImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 

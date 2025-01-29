@@ -22,7 +22,7 @@ FString UContextInfoLibrary::ContextInfoToJsonString(const UContextInfo* Seriali
 	return Result;
 }	
 
-UContextInfo* UContextInfoLibrary::Make(FString Platform, FString Device, UObject* Outer)
+UContextInfo* UContextInfoLibrary::Make(FOptionalString Platform, FOptionalString Device, UObject* Outer)
 {
 	auto Serializable = NewObject<UContextInfo>(Outer);
 	Serializable->Platform = Platform;
@@ -31,7 +31,7 @@ UContextInfo* UContextInfoLibrary::Make(FString Platform, FString Device, UObjec
 	return Serializable;
 }
 
-void UContextInfoLibrary::Break(const UContextInfo* Serializable, FString& Platform, FString& Device)
+void UContextInfoLibrary::Break(const UContextInfo* Serializable, FOptionalString& Platform, FOptionalString& Device)
 {
 	Platform = Serializable->Platform;
 	Device = Serializable->Device;

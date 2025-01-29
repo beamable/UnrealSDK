@@ -18,7 +18,7 @@ void UBeamTournamentsApi::Deinitialize()
 }
 
 
-void UBeamTournamentsApi::BP_PostSearchGroupsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UPostSearchGroupsRequest* RequestData,
+void UBeamTournamentsApi::BP_PostSearchGroupsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, UPostSearchGroupsRequest* RequestData,
                                                   const FOnPostSearchGroupsSuccess& OnSuccess, const FOnPostSearchGroupsError& OnError, const FOnPostSearchGroupsComplete& OnComplete,
                                                   int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
@@ -43,11 +43,11 @@ void UBeamTournamentsApi::BP_PostSearchGroupsImpl(const FBeamRealmHandle& Target
 		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UPostSearchGroupsRequest, UGetStatusForGroupsResponse, FOnPostSearchGroupsSuccess, FOnPostSearchGroupsError, FOnPostSearchGroupsComplete>
 			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);		
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);		
 	}	
 }
 
-void UBeamTournamentsApi::CPP_PostSearchGroupsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::CPP_PostSearchGroupsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, 
                                                UPostSearchGroupsRequest* RequestData, const FOnPostSearchGroupsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
@@ -73,12 +73,12 @@ void UBeamTournamentsApi::CPP_PostSearchGroupsImpl(const FBeamRealmHandle& Targe
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
 		
-void UBeamTournamentsApi::BP_BasicTournamentsGetTournamentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UBasicTournamentsGetTournamentsRequest* RequestData,
+void UBeamTournamentsApi::BP_BasicTournamentsGetTournamentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, UBasicTournamentsGetTournamentsRequest* RequestData,
                                                   const FOnBasicTournamentsGetTournamentsSuccess& OnSuccess, const FOnBasicTournamentsGetTournamentsError& OnError, const FOnBasicTournamentsGetTournamentsComplete& OnComplete,
                                                   int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
@@ -103,11 +103,11 @@ void UBeamTournamentsApi::BP_BasicTournamentsGetTournamentsImpl(const FBeamRealm
 		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UBasicTournamentsGetTournamentsRequest, UTournamentQueryResponse, FOnBasicTournamentsGetTournamentsSuccess, FOnBasicTournamentsGetTournamentsError, FOnBasicTournamentsGetTournamentsComplete>
 			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);		
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);		
 	}	
 }
 
-void UBeamTournamentsApi::CPP_BasicTournamentsGetTournamentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::CPP_BasicTournamentsGetTournamentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, 
                                                UBasicTournamentsGetTournamentsRequest* RequestData, const FOnBasicTournamentsGetTournamentsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
@@ -133,12 +133,12 @@ void UBeamTournamentsApi::CPP_BasicTournamentsGetTournamentsImpl(const FBeamReal
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
 		
-void UBeamTournamentsApi::BP_PostScoreImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus, UPostScoreRequest* RequestData,
+void UBeamTournamentsApi::BP_PostScoreImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, UPostScoreRequest* RequestData,
                                                   const FOnPostScoreSuccess& OnSuccess, const FOnPostScoreError& OnError, const FOnPostScoreComplete& OnComplete,
                                                   int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
@@ -163,11 +163,11 @@ void UBeamTournamentsApi::BP_PostScoreImpl(const FBeamRealmHandle& TargetRealm, 
 		const auto BeamRequestProcessor = Backend->MakeBlueprintRequestProcessor<UPostScoreRequest, UEmptyResponse, FOnPostScoreSuccess, FOnPostScoreError, FOnPostScoreComplete>
 			(OutRequestId, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);		
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);		
 	}	
 }
 
-void UBeamTournamentsApi::CPP_PostScoreImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::CPP_PostScoreImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, 
                                                UPostScoreRequest* RequestData, const FOnPostScoreFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
@@ -193,13 +193,13 @@ void UBeamTournamentsApi::CPP_PostScoreImpl(const FBeamRealmHandle& TargetRealm,
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
 
 
-void UBeamTournamentsApi::BP_PostTournamentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::BP_PostTournamentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
                                 UPostTournamentsRequest* RequestData, const FOnPostTournamentsSuccess& OnSuccess, const FOnPostTournamentsError& OnError, const FOnPostTournamentsComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
@@ -226,11 +226,11 @@ void UBeamTournamentsApi::BP_PostTournamentsImpl(const FBeamRealmHandle& TargetR
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
-void UBeamTournamentsApi::CPP_PostTournamentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::CPP_PostTournamentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, 
                               UPostTournamentsRequest* RequestData, const FOnPostTournamentsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
@@ -256,12 +256,12 @@ void UBeamTournamentsApi::CPP_PostTournamentsImpl(const FBeamRealmHandle& Target
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
 		
-void UBeamTournamentsApi::BP_GetMeGroupImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::BP_GetMeGroupImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
                                 UGetMeGroupRequest* RequestData, const FOnGetMeGroupSuccess& OnSuccess, const FOnGetMeGroupError& OnError, const FOnGetMeGroupComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
@@ -288,11 +288,11 @@ void UBeamTournamentsApi::BP_GetMeGroupImpl(const FBeamRealmHandle& TargetRealm,
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
-void UBeamTournamentsApi::CPP_GetMeGroupImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::CPP_GetMeGroupImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, 
                               UGetMeGroupRequest* RequestData, const FOnGetMeGroupFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
@@ -318,12 +318,12 @@ void UBeamTournamentsApi::CPP_GetMeGroupImpl(const FBeamRealmHandle& TargetRealm
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
 		
-void UBeamTournamentsApi::BP_GetRewardsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::BP_GetRewardsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
                                 UGetRewardsRequest* RequestData, const FOnGetRewardsSuccess& OnSuccess, const FOnGetRewardsError& OnError, const FOnGetRewardsComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
@@ -350,11 +350,11 @@ void UBeamTournamentsApi::BP_GetRewardsImpl(const FBeamRealmHandle& TargetRealm,
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
-void UBeamTournamentsApi::CPP_GetRewardsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::CPP_GetRewardsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, 
                               UGetRewardsRequest* RequestData, const FOnGetRewardsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
@@ -380,12 +380,12 @@ void UBeamTournamentsApi::CPP_GetRewardsImpl(const FBeamRealmHandle& TargetRealm
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
 		
-void UBeamTournamentsApi::BP_PostRewardsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::BP_PostRewardsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
                                 UPostRewardsRequest* RequestData, const FOnPostRewardsSuccess& OnSuccess, const FOnPostRewardsError& OnError, const FOnPostRewardsComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
@@ -412,11 +412,11 @@ void UBeamTournamentsApi::BP_PostRewardsImpl(const FBeamRealmHandle& TargetRealm
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
-void UBeamTournamentsApi::CPP_PostRewardsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::CPP_PostRewardsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, 
                               UPostRewardsRequest* RequestData, const FOnPostRewardsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
@@ -442,12 +442,12 @@ void UBeamTournamentsApi::CPP_PostRewardsImpl(const FBeamRealmHandle& TargetReal
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
 		
-void UBeamTournamentsApi::BP_GetGlobalImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::BP_GetGlobalImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
                                 UGetGlobalRequest* RequestData, const FOnGetGlobalSuccess& OnSuccess, const FOnGetGlobalError& OnError, const FOnGetGlobalComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
@@ -474,11 +474,11 @@ void UBeamTournamentsApi::BP_GetGlobalImpl(const FBeamRealmHandle& TargetRealm, 
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
-void UBeamTournamentsApi::CPP_GetGlobalImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::CPP_GetGlobalImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, 
                               UGetGlobalRequest* RequestData, const FOnGetGlobalFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
@@ -504,12 +504,12 @@ void UBeamTournamentsApi::CPP_GetGlobalImpl(const FBeamRealmHandle& TargetRealm,
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
 		
-void UBeamTournamentsApi::BP_GetStandingsGroupImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::BP_GetStandingsGroupImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
                                 UGetStandingsGroupRequest* RequestData, const FOnGetStandingsGroupSuccess& OnSuccess, const FOnGetStandingsGroupError& OnError, const FOnGetStandingsGroupComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
@@ -536,11 +536,11 @@ void UBeamTournamentsApi::BP_GetStandingsGroupImpl(const FBeamRealmHandle& Targe
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
-void UBeamTournamentsApi::CPP_GetStandingsGroupImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::CPP_GetStandingsGroupImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, 
                               UGetStandingsGroupRequest* RequestData, const FOnGetStandingsGroupFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
@@ -566,12 +566,12 @@ void UBeamTournamentsApi::CPP_GetStandingsGroupImpl(const FBeamRealmHandle& Targ
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
 		
-void UBeamTournamentsApi::BP_GetStandingsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::BP_GetStandingsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
                                 UGetStandingsRequest* RequestData, const FOnGetStandingsSuccess& OnSuccess, const FOnGetStandingsError& OnError, const FOnGetStandingsComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
@@ -598,11 +598,11 @@ void UBeamTournamentsApi::BP_GetStandingsImpl(const FBeamRealmHandle& TargetReal
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
-void UBeamTournamentsApi::CPP_GetStandingsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::CPP_GetStandingsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, 
                               UGetStandingsRequest* RequestData, const FOnGetStandingsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
@@ -628,12 +628,12 @@ void UBeamTournamentsApi::CPP_GetStandingsImpl(const FBeamRealmHandle& TargetRea
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
 		
-void UBeamTournamentsApi::BP_GetAdminPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::BP_GetAdminPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
                                 UGetAdminPlayerRequest* RequestData, const FOnGetAdminPlayerSuccess& OnSuccess, const FOnGetAdminPlayerError& OnError, const FOnGetAdminPlayerComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
@@ -660,11 +660,11 @@ void UBeamTournamentsApi::BP_GetAdminPlayerImpl(const FBeamRealmHandle& TargetRe
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
-void UBeamTournamentsApi::CPP_GetAdminPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::CPP_GetAdminPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, 
                               UGetAdminPlayerRequest* RequestData, const FOnGetAdminPlayerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
@@ -690,12 +690,12 @@ void UBeamTournamentsApi::CPP_GetAdminPlayerImpl(const FBeamRealmHandle& TargetR
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
 		
-void UBeamTournamentsApi::BP_PutAdminPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::BP_PutAdminPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
                                 UPutAdminPlayerRequest* RequestData, const FOnPutAdminPlayerSuccess& OnSuccess, const FOnPutAdminPlayerError& OnError, const FOnPutAdminPlayerComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
@@ -722,11 +722,11 @@ void UBeamTournamentsApi::BP_PutAdminPlayerImpl(const FBeamRealmHandle& TargetRe
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
-void UBeamTournamentsApi::CPP_PutAdminPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::CPP_PutAdminPlayerImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, 
                               UPutAdminPlayerRequest* RequestData, const FOnPutAdminPlayerFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
@@ -752,12 +752,12 @@ void UBeamTournamentsApi::CPP_PutAdminPlayerImpl(const FBeamRealmHandle& TargetR
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
 		
-void UBeamTournamentsApi::BP_GetMeImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::BP_GetMeImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
                                 UBasicTournamentsGetMeRequest* RequestData, const FOnBasicTournamentsGetMeSuccess& OnSuccess, const FOnBasicTournamentsGetMeError& OnError, const FOnBasicTournamentsGetMeComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
@@ -784,11 +784,11 @@ void UBeamTournamentsApi::BP_GetMeImpl(const FBeamRealmHandle& TargetRealm, cons
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
-void UBeamTournamentsApi::CPP_GetMeImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::CPP_GetMeImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, 
                               UBasicTournamentsGetMeRequest* RequestData, const FOnBasicTournamentsGetMeFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
@@ -814,12 +814,12 @@ void UBeamTournamentsApi::CPP_GetMeImpl(const FBeamRealmHandle& TargetRealm, con
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
 		
-void UBeamTournamentsApi::BP_GetChampionsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::BP_GetChampionsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
                                 UGetChampionsRequest* RequestData, const FOnGetChampionsSuccess& OnSuccess, const FOnGetChampionsError& OnError, const FOnGetChampionsComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
@@ -846,11 +846,11 @@ void UBeamTournamentsApi::BP_GetChampionsImpl(const FBeamRealmHandle& TargetReal
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
-void UBeamTournamentsApi::CPP_GetChampionsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::CPP_GetChampionsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, 
                               UGetChampionsRequest* RequestData, const FOnGetChampionsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
@@ -876,12 +876,12 @@ void UBeamTournamentsApi::CPP_GetChampionsImpl(const FBeamRealmHandle& TargetRea
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
 		
-void UBeamTournamentsApi::BP_GetGroupsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::BP_GetGroupsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
                                 UBasicTournamentsGetGroupsRequest* RequestData, const FOnBasicTournamentsGetGroupsSuccess& OnSuccess, const FOnBasicTournamentsGetGroupsError& OnError, const FOnBasicTournamentsGetGroupsComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
@@ -908,11 +908,11 @@ void UBeamTournamentsApi::BP_GetGroupsImpl(const FBeamRealmHandle& TargetRealm, 
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
-void UBeamTournamentsApi::CPP_GetGroupsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
+void UBeamTournamentsApi::CPP_GetGroupsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, 
                               UBasicTournamentsGetGroupsRequest* RequestData, const FOnBasicTournamentsGetGroupsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
@@ -938,13 +938,13 @@ void UBeamTournamentsApi::CPP_GetGroupsImpl(const FBeamRealmHandle& TargetRealm,
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
 		
-void UBeamTournamentsApi::BP_ObjectTournamentsGetTournamentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                                UObjectTournamentsGetTournamentsRequest* RequestData, const FOnObjectTournamentsGetTournamentsSuccess& OnSuccess, const FOnObjectTournamentsGetTournamentsError& OnError, const FOnObjectTournamentsGetTournamentsComplete& OnComplete, 
+void UBeamTournamentsApi::BP_ObjectTournamentsGetTournamentsByObjectIdImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken,
+                                UObjectTournamentsGetTournamentsByObjectIdRequest* RequestData, const FOnObjectTournamentsGetTournamentsByObjectIdSuccess& OnSuccess, const FOnObjectTournamentsGetTournamentsByObjectIdError& OnError, const FOnObjectTournamentsGetTournamentsByObjectIdComplete& OnComplete, 
 								int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...	
@@ -958,24 +958,24 @@ void UBeamTournamentsApi::BP_ObjectTournamentsGetTournamentsImpl(const FBeamReal
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedBlueprintRequestProcessor<UObjectTournamentsGetTournamentsRequest, UTournamentClientView, FOnObjectTournamentsGetTournamentsSuccess, FOnObjectTournamentsGetTournamentsError, FOnObjectTournamentsGetTournamentsComplete>
+		Backend->RunAuthenticatedBlueprintRequestProcessor<UObjectTournamentsGetTournamentsByObjectIdRequest, UTournamentClientView, FOnObjectTournamentsGetTournamentsByObjectIdSuccess, FOnObjectTournamentsGetTournamentsByObjectIdError, FOnObjectTournamentsGetTournamentsByObjectIdComplete>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)
-		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UObjectTournamentsGetTournamentsRequest, UTournamentClientView, FOnObjectTournamentsGetTournamentsSuccess, FOnObjectTournamentsGetTournamentsError, FOnObjectTournamentsGetTournamentsComplete>
+		const auto BeamRequestProcessor = Backend->MakeAuthenticatedBlueprintRequestProcessor<UObjectTournamentsGetTournamentsByObjectIdRequest, UTournamentClientView, FOnObjectTournamentsGetTournamentsByObjectIdSuccess, FOnObjectTournamentsGetTournamentsByObjectIdError, FOnObjectTournamentsGetTournamentsByObjectIdComplete>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, OnSuccess, OnError, OnComplete);
 		Request->OnProcessRequestComplete().BindLambda(BeamRequestProcessor);
 	    
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
-void UBeamTournamentsApi::CPP_ObjectTournamentsGetTournamentsImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, FBeamConnectivity& ConnectivityStatus,
-                              UObjectTournamentsGetTournamentsRequest* RequestData, const FOnObjectTournamentsGetTournamentsFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamTournamentsApi::CPP_ObjectTournamentsGetTournamentsByObjectIdImpl(const FBeamRealmHandle& TargetRealm, const FBeamRetryConfig& RetryConfig, const FBeamAuthToken& AuthToken, 
+                              UObjectTournamentsGetTournamentsByObjectIdRequest* RequestData, const FOnObjectTournamentsGetTournamentsByObjectIdFullResponse& Handler, int64& OutRequestId, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	const auto Request = Backend->CreateAuthenticatedRequest(OutRequestId, TargetRealm, RetryConfig, AuthToken, RequestData);
@@ -988,19 +988,19 @@ void UBeamTournamentsApi::CPP_ObjectTournamentsGetTournamentsImpl(const FBeamRea
 	if(FString CachedResponse; ResponseCache->TryHitResponseCache(RequestData, Request, CallingContext,  CachedResponse))
 	{
 		UE_LOG(LogBeamBackend, Verbose, TEXT("Found data in cache.REQUEST_TYPE=%s\\n%s"), *RequestData->GetRequestType().Name, *CachedResponse);
-		Backend->RunAuthenticatedCodeRequestProcessor<UObjectTournamentsGetTournamentsRequest, UTournamentClientView>
+		Backend->RunAuthenticatedCodeRequestProcessor<UObjectTournamentsGetTournamentsByObjectIdRequest, UTournamentClientView>
 			(200, CachedResponse, EHttpRequestStatus::Succeeded, OutRequestId, TargetRealm, AuthToken, RequestData, Handler);		
 	}
 	// If not cached...
 	else
 	{
 		// Binds the handler to the static response handler (pre-generated)	
-		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UObjectTournamentsGetTournamentsRequest, UTournamentClientView>
+		auto ResponseProcessor = Backend->MakeAuthenticatedCodeRequestProcessor<UObjectTournamentsGetTournamentsByObjectIdRequest, UTournamentClientView>
 			(OutRequestId, TargetRealm, AuthToken, RequestData, Handler);
 		Request->OnProcessRequestComplete().BindLambda(ResponseProcessor);
 
 		// Logic that actually talks to the backend --- if you pass in some other delegate, that means you can avoid making the actual back-end call.	
-		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId, ConnectivityStatus);	
+		Backend->ExecuteRequestDelegate.ExecuteIfBound(OutRequestId);	
 	}
 }
 
@@ -1013,7 +1013,7 @@ void UBeamTournamentsApi::CPP_PostSearchGroups(UPostSearchGroupsRequest* Request
 	Backend->GetRetryConfigForRequestType(UPostSearchGroupsRequest::StaticClass()->GetName(), RetryConfig);
 	
     int64 OutRequestId;
-	CPP_PostSearchGroupsImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_PostSearchGroupsImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
@@ -1024,7 +1024,7 @@ void UBeamTournamentsApi::CPP_BasicTournamentsGetTournaments(UBasicTournamentsGe
 	Backend->GetRetryConfigForRequestType(UBasicTournamentsGetTournamentsRequest::StaticClass()->GetName(), RetryConfig);
 	
     int64 OutRequestId;
-	CPP_BasicTournamentsGetTournamentsImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_BasicTournamentsGetTournamentsImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
@@ -1035,7 +1035,7 @@ void UBeamTournamentsApi::CPP_PostScore(UPostScoreRequest* Request, const FOnPos
 	Backend->GetRetryConfigForRequestType(UPostScoreRequest::StaticClass()->GetName(), RetryConfig);
 	
     int64 OutRequestId;
-	CPP_PostScoreImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_PostScoreImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
@@ -1051,7 +1051,7 @@ void UBeamTournamentsApi::CPP_PostTournaments(const FUserSlot& UserSlot, UPostTo
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostTournamentsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_PostTournamentsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_PostTournamentsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1066,7 +1066,7 @@ void UBeamTournamentsApi::CPP_GetMeGroup(const FUserSlot& UserSlot, UGetMeGroupR
 	Backend->GetRetryConfigForUserSlotAndRequestType(UGetMeGroupRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_GetMeGroupImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_GetMeGroupImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1081,7 +1081,7 @@ void UBeamTournamentsApi::CPP_GetRewards(const FUserSlot& UserSlot, UGetRewardsR
 	Backend->GetRetryConfigForUserSlotAndRequestType(UGetRewardsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_GetRewardsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_GetRewardsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1096,7 +1096,7 @@ void UBeamTournamentsApi::CPP_PostRewards(const FUserSlot& UserSlot, UPostReward
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostRewardsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_PostRewardsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_PostRewardsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1111,7 +1111,7 @@ void UBeamTournamentsApi::CPP_GetGlobal(const FUserSlot& UserSlot, UGetGlobalReq
 	Backend->GetRetryConfigForUserSlotAndRequestType(UGetGlobalRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_GetGlobalImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_GetGlobalImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1126,7 +1126,7 @@ void UBeamTournamentsApi::CPP_GetStandingsGroup(const FUserSlot& UserSlot, UGetS
 	Backend->GetRetryConfigForUserSlotAndRequestType(UGetStandingsGroupRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_GetStandingsGroupImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_GetStandingsGroupImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1141,7 +1141,7 @@ void UBeamTournamentsApi::CPP_GetStandings(const FUserSlot& UserSlot, UGetStandi
 	Backend->GetRetryConfigForUserSlotAndRequestType(UGetStandingsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_GetStandingsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_GetStandingsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1156,7 +1156,7 @@ void UBeamTournamentsApi::CPP_GetAdminPlayer(const FUserSlot& UserSlot, UGetAdmi
 	Backend->GetRetryConfigForUserSlotAndRequestType(UGetAdminPlayerRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_GetAdminPlayerImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_GetAdminPlayerImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1171,7 +1171,7 @@ void UBeamTournamentsApi::CPP_PutAdminPlayer(const FUserSlot& UserSlot, UPutAdmi
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPutAdminPlayerRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_PutAdminPlayerImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_PutAdminPlayerImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1186,7 +1186,7 @@ void UBeamTournamentsApi::CPP_GetMe(const FUserSlot& UserSlot, UBasicTournaments
 	Backend->GetRetryConfigForUserSlotAndRequestType(UBasicTournamentsGetMeRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_GetMeImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_GetMeImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1201,7 +1201,7 @@ void UBeamTournamentsApi::CPP_GetChampions(const FUserSlot& UserSlot, UGetChampi
 	Backend->GetRetryConfigForUserSlotAndRequestType(UGetChampionsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_GetChampionsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_GetChampionsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1216,22 +1216,22 @@ void UBeamTournamentsApi::CPP_GetGroups(const FUserSlot& UserSlot, UBasicTournam
 	Backend->GetRetryConfigForUserSlotAndRequestType(UBasicTournamentsGetGroupsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_GetGroupsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_GetGroupsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
-void UBeamTournamentsApi::CPP_ObjectTournamentsGetTournaments(const FUserSlot& UserSlot, UObjectTournamentsGetTournamentsRequest* Request, const FOnObjectTournamentsGetTournamentsFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
+void UBeamTournamentsApi::CPP_ObjectTournamentsGetTournamentsByObjectId(const FUserSlot& UserSlot, UObjectTournamentsGetTournamentsByObjectIdRequest* Request, const FOnObjectTournamentsGetTournamentsByObjectIdFullResponse& Handler, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext) const
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UObjectTournamentsGetTournamentsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UObjectTournamentsGetTournamentsByObjectIdRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
     int64 OutRequestId;
-	CPP_ObjectTournamentsGetTournamentsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, Handler, OutRequestId, OpHandle, CallingContext);
+	CPP_ObjectTournamentsGetTournamentsByObjectIdImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, Handler, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1245,7 +1245,7 @@ void UBeamTournamentsApi::PostSearchGroups(UPostSearchGroupsRequest* Request, co
 	Backend->GetRetryConfigForRequestType(UPostSearchGroupsRequest::StaticClass()->GetName(), RetryConfig);	
 	
 	int64 OutRequestId = 0;
-	BP_PostSearchGroupsImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
+	BP_PostSearchGroupsImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
@@ -1257,7 +1257,7 @@ void UBeamTournamentsApi::BasicTournamentsGetTournaments(UBasicTournamentsGetTou
 	Backend->GetRetryConfigForRequestType(UBasicTournamentsGetTournamentsRequest::StaticClass()->GetName(), RetryConfig);	
 	
 	int64 OutRequestId = 0;
-	BP_BasicTournamentsGetTournamentsImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
+	BP_BasicTournamentsGetTournamentsImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
@@ -1269,7 +1269,7 @@ void UBeamTournamentsApi::PostScore(UPostScoreRequest* Request, const FOnPostSco
 	Backend->GetRetryConfigForRequestType(UPostScoreRequest::StaticClass()->GetName(), RetryConfig);	
 	
 	int64 OutRequestId = 0;
-	BP_PostScoreImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
+	BP_PostScoreImpl(GetDefault<UBeamCoreSettings>()->TargetRealm, RetryConfig, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, GetDefault<UBeamCoreSettings>()->TargetRealm, -1, FUserSlot(), AS_None};
 }
 
@@ -1285,7 +1285,7 @@ void UBeamTournamentsApi::PostTournaments(FUserSlot UserSlot, UPostTournamentsRe
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostTournamentsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PostTournamentsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	BP_PostTournamentsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1300,7 +1300,7 @@ void UBeamTournamentsApi::GetMeGroup(FUserSlot UserSlot, UGetMeGroupRequest* Req
 	Backend->GetRetryConfigForUserSlotAndRequestType(UGetMeGroupRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_GetMeGroupImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	BP_GetMeGroupImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1315,7 +1315,7 @@ void UBeamTournamentsApi::GetRewards(FUserSlot UserSlot, UGetRewardsRequest* Req
 	Backend->GetRetryConfigForUserSlotAndRequestType(UGetRewardsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_GetRewardsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	BP_GetRewardsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1330,7 +1330,7 @@ void UBeamTournamentsApi::PostRewards(FUserSlot UserSlot, UPostRewardsRequest* R
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPostRewardsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PostRewardsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	BP_PostRewardsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1345,7 +1345,7 @@ void UBeamTournamentsApi::GetGlobal(FUserSlot UserSlot, UGetGlobalRequest* Reque
 	Backend->GetRetryConfigForUserSlotAndRequestType(UGetGlobalRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_GetGlobalImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	BP_GetGlobalImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1360,7 +1360,7 @@ void UBeamTournamentsApi::GetStandingsGroup(FUserSlot UserSlot, UGetStandingsGro
 	Backend->GetRetryConfigForUserSlotAndRequestType(UGetStandingsGroupRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_GetStandingsGroupImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	BP_GetStandingsGroupImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1375,7 +1375,7 @@ void UBeamTournamentsApi::GetStandings(FUserSlot UserSlot, UGetStandingsRequest*
 	Backend->GetRetryConfigForUserSlotAndRequestType(UGetStandingsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_GetStandingsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	BP_GetStandingsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1390,7 +1390,7 @@ void UBeamTournamentsApi::GetAdminPlayer(FUserSlot UserSlot, UGetAdminPlayerRequ
 	Backend->GetRetryConfigForUserSlotAndRequestType(UGetAdminPlayerRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_GetAdminPlayerImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	BP_GetAdminPlayerImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1405,7 +1405,7 @@ void UBeamTournamentsApi::PutAdminPlayer(FUserSlot UserSlot, UPutAdminPlayerRequ
 	Backend->GetRetryConfigForUserSlotAndRequestType(UPutAdminPlayerRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_PutAdminPlayerImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	BP_PutAdminPlayerImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1420,7 +1420,7 @@ void UBeamTournamentsApi::GetMe(FUserSlot UserSlot, UBasicTournamentsGetMeReques
 	Backend->GetRetryConfigForUserSlotAndRequestType(UBasicTournamentsGetMeRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_GetMeImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	BP_GetMeImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1435,7 +1435,7 @@ void UBeamTournamentsApi::GetChampions(FUserSlot UserSlot, UGetChampionsRequest*
 	Backend->GetRetryConfigForUserSlotAndRequestType(UGetChampionsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_GetChampionsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	BP_GetChampionsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
@@ -1450,22 +1450,22 @@ void UBeamTournamentsApi::GetGroups(FUserSlot UserSlot, UBasicTournamentsGetGrou
 	Backend->GetRetryConfigForUserSlotAndRequestType(UBasicTournamentsGetGroupsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_GetGroupsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	BP_GetGroupsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 
 		
-void UBeamTournamentsApi::ObjectTournamentsGetTournaments(FUserSlot UserSlot, UObjectTournamentsGetTournamentsRequest* Request, const FOnObjectTournamentsGetTournamentsSuccess& OnSuccess, const FOnObjectTournamentsGetTournamentsError& OnError, const FOnObjectTournamentsGetTournamentsComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
+void UBeamTournamentsApi::ObjectTournamentsGetTournamentsByObjectId(FUserSlot UserSlot, UObjectTournamentsGetTournamentsByObjectIdRequest* Request, const FOnObjectTournamentsGetTournamentsByObjectIdSuccess& OnSuccess, const FOnObjectTournamentsGetTournamentsByObjectIdError& OnError, const FOnObjectTournamentsGetTournamentsByObjectIdComplete& OnComplete,  FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle, const UObject* CallingContext)
 {
 	// AUTO-GENERATED...
 	FBeamRealmUser AuthenticatedUser;
 	Backend->BeamUserSlots->GetUserDataAtSlot(UserSlot, AuthenticatedUser, CallingContext);
 
 	FBeamRetryConfig RetryConfig;
-	Backend->GetRetryConfigForUserSlotAndRequestType(UObjectTournamentsGetTournamentsRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
+	Backend->GetRetryConfigForUserSlotAndRequestType(UObjectTournamentsGetTournamentsByObjectIdRequest::StaticClass()->GetName(), UserSlot, RetryConfig);
 
 	int64 OutRequestId;
-	BP_ObjectTournamentsGetTournamentsImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Backend->CurrentConnectivityStatus, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
+	BP_ObjectTournamentsGetTournamentsByObjectIdImpl(AuthenticatedUser.RealmHandle, RetryConfig, AuthenticatedUser.AuthToken, Request, OnSuccess, OnError, OnComplete, OutRequestId, OpHandle, CallingContext);	
 	OutRequestContext = FBeamRequestContext{OutRequestId, RetryConfig, AuthenticatedUser.RealmHandle, -1, UserSlot, AS_None};
 }
 

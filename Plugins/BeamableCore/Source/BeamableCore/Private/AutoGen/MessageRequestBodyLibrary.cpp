@@ -22,25 +22,25 @@ FString UMessageRequestBodyLibrary::MessageRequestBodyToJsonString(const UMessag
 	return Result;
 }	
 
-UMessageRequestBody* UMessageRequestBodyLibrary::Make(FOptionalString Body, FOptionalString Cid, FOptionalString Pid, FOptionalBeamGamerTag PlayerId, FOptionalString Channel, UObject* Outer)
+UMessageRequestBody* UMessageRequestBodyLibrary::Make(FOptionalString Body, FOptionalBeamPid Pid, FOptionalBeamGamerTag PlayerId, FOptionalString Channel, FOptionalBeamPid RealmId, UObject* Outer)
 {
 	auto Serializable = NewObject<UMessageRequestBody>(Outer);
 	Serializable->Body = Body;
-	Serializable->Cid = Cid;
 	Serializable->Pid = Pid;
 	Serializable->PlayerId = PlayerId;
 	Serializable->Channel = Channel;
+	Serializable->RealmId = RealmId;
 	
 	return Serializable;
 }
 
-void UMessageRequestBodyLibrary::Break(const UMessageRequestBody* Serializable, FOptionalString& Body, FOptionalString& Cid, FOptionalString& Pid, FOptionalBeamGamerTag& PlayerId, FOptionalString& Channel)
+void UMessageRequestBodyLibrary::Break(const UMessageRequestBody* Serializable, FOptionalString& Body, FOptionalBeamPid& Pid, FOptionalBeamGamerTag& PlayerId, FOptionalString& Channel, FOptionalBeamPid& RealmId)
 {
 	Body = Serializable->Body;
-	Cid = Serializable->Cid;
 	Pid = Serializable->Pid;
 	PlayerId = Serializable->PlayerId;
 	Channel = Serializable->Channel;
+	RealmId = Serializable->RealmId;
 		
 }
 

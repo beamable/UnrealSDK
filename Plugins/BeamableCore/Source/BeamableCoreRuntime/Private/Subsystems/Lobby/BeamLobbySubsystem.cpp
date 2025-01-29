@@ -609,7 +609,8 @@ void UBeamLobbySubsystem::RefreshLobbyData(FUserSlot UserSlot, FGuid LobbyId, FB
 
 						// Register a notification handler and update the LobbyPlayerInfo data with this lobby.
 						const auto LobbyUpdateHandler = FOnLobbyUpdateNotificationCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, OnLobbyUpdatedHandler), UserSlot);
-						const auto Handle = LobbyNotification->CPP_SubscribeToLobbyUpdate(UserSlot, Runtime->DefaultNotificationChannel, FGuid(Resp.SuccessData->LobbyId.Val), LobbyUpdateHandler, this);
+						const auto Handle = LobbyNotification->
+							CPP_SubscribeToLobbyUpdate(UserSlot, Runtime->DefaultNotificationChannel, FGuid(Resp.SuccessData->LobbyId.Val), LobbyUpdateHandler, this);
 						UpdateLobbyPlayerInfo(Slot, Resp.SuccessData, Handle);
 					}
 				}
@@ -633,7 +634,7 @@ void UBeamLobbySubsystem::RefreshLobbyData(FUserSlot UserSlot, FGuid LobbyId, FB
 
 void UBeamLobbySubsystem::RefreshLobbiesData(FUserSlot UserSlot, FBeamContentId MatchTypeFilter, int32 PageStart, int32 PageSize, FBeamOperationHandle Op)
 {
-	const auto Handler = FOnGetLobbiesFullResponse::CreateLambda([this, UserSlot, Op](FGetLobbiesFullResponse Resp)
+	const auto Handler = FOnApiLobbyGetLobbiesFullResponse::CreateLambda([this, UserSlot, Op](FApiLobbyGetLobbiesFullResponse Resp)
 	{
 		// If we are invoking this before retrying, we just don't do anything 
 		if (Resp.State == RS_Retrying) return;
@@ -654,7 +655,7 @@ void UBeamLobbySubsystem::RefreshLobbiesData(FUserSlot UserSlot, FBeamContentId 
 				TArray<FString> PlayerIds;
 				for (ULobbyPlayer* LobbyPlayer : Lobby->Players.Val)
 					PlayerIds.Add(LobbyPlayer->PlayerId.Val.AsString);
-				
+
 				UE_LOG(LogBeamLobby, Verbose, TEXT("Refreshed Lobby Data. LOBBY_ID=%s,HOST_PLAYER_GAMERTAG=%s,GAME_TYPE=%s,PASSCODE=%s,PLAYER_GAMERTAGS=[%s]"),
 				       *Lobby->LobbyId.Val,
 				       *Lobby->Host.Val.AsString,
@@ -849,7 +850,7 @@ void UBeamLobbySubsystem::CommitLobbyUpdate(const FUserSlot& Slot, FBeamOperatio
 	const auto GlobalDataUpdates = UpdateCmd->GlobalDataUpdates;
 	const auto GlobalDataDeletes = UpdateCmd->GlobalDataDeletes;
 
-	const auto Handler = FOnApiLobbyPutMetadataFullResponse::CreateLambda([this, Slot, Op, LobbyId, GlobalDataUpdates, GlobalDataDeletes](FApiLobbyPutMetadataFullResponse Resp)
+	const auto Handler = FOnApiLobbyPutMetadataByIdFullResponse::CreateLambda([this, Slot, Op, LobbyId, GlobalDataUpdates, GlobalDataDeletes](FApiLobbyPutMetadataByIdFullResponse Resp)
 	{
 		// If we are invoking this before retrying, we just don't do anything 
 		if (Resp.State == RS_Retrying) return;
@@ -1039,7 +1040,7 @@ void UBeamLobbySubsystem::ProvisionGameServerForLobby(const FUserSlot& Slot, FOp
 		return;
 	}
 
-	auto Handler = FOnApiLobbyPostServerFullResponse::CreateLambda([this, Slot, Op, LobbyState](FApiLobbyPostServerFullResponse Resp)
+	auto Handler = FOnApiLobbyPostServerByIdFullResponse::CreateLambda([this, Slot, Op, LobbyState](FApiLobbyPostServerByIdFullResponse Resp)
 	{
 		// If we are invoking this before retrying, we just don't do anything 
 		if (Resp.State == RS_Retrying) return;
@@ -1101,9 +1102,9 @@ FBeamRequestContext UBeamLobbySubsystem::RequestGetLobby(const FUserSlot& UserSl
 }
 
 FBeamRequestContext UBeamLobbySubsystem::RequestGetLobbies(const FUserSlot& UserSlot, FBeamContentId MatchTypeFilter, int32 PageStart, int32 PageSize, FBeamOperationHandle Op,
-                                                           FOnGetLobbiesFullResponse Handler) const
+                                                           FOnApiLobbyGetLobbiesFullResponse Handler) const
 {
-	const auto Req = UGetLobbiesRequest::Make(
+	const auto Req = UApiLobbyGetLobbiesRequest::Make(
 		PageStart < 0 ? FOptionalInt32() : FOptionalInt32(PageStart),
 		PageSize < 0 ? FOptionalInt32() : FOptionalInt32(PageSize),
 		MatchTypeFilter.AsString.IsEmpty() ? FOptionalBeamContentId() : FOptionalBeamContentId(MatchTypeFilter),
@@ -1152,21 +1153,21 @@ FBeamRequestContext UBeamLobbySubsystem::RequestUpdateLobbyMetadata(const FUserS
                                                                     FOptionalLobbyRestriction Restriction,
                                                                     FOptionalBeamContentId MatchType, FOptionalBeamGamerTag NewHost, FOptionalInt32 MaxPlayers,
                                                                     FOptionalMapOfString GlobalDataUpdates, FOptionalArrayOfString GlobalDataDeletes, FBeamOperationHandle Op,
-                                                                    FOnApiLobbyPutMetadataFullResponse Handler) const
+                                                                    FOnApiLobbyPutMetadataByIdFullResponse Handler) const
 {
 	FOptionalUpdateData OptionalUpdateData = FOptionalUpdateData(NewObject<UUpdateData>());
 	OptionalUpdateData.Val->Updates = GlobalDataUpdates;
 	OptionalUpdateData.Val->Deletes = GlobalDataDeletes;
 
-	const auto Req = UApiLobbyPutMetadataRequest::Make(LobbyId,
-	                                                   LobbyName,
-	                                                   LobbyDescription,
-	                                                   Restriction,
-	                                                   MatchType,
-	                                                   MaxPlayers,
-	                                                   NewHost.IsSet ? FOptionalString(NewHost.Val.AsString) : FOptionalString(),
-	                                                   OptionalUpdateData,
-	                                                   GetTransientPackage(), {});
+	const auto Req = UApiLobbyPutMetadataByIdRequest::Make(LobbyId,
+	                                                       LobbyName,
+	                                                       LobbyDescription,
+	                                                       Restriction,
+	                                                       MatchType,
+	                                                       MaxPlayers,
+	                                                       NewHost.IsSet ? FOptionalString(NewHost.Val.AsString) : FOptionalString(),
+	                                                       OptionalUpdateData,
+	                                                       GetTransientPackage(), {});
 
 	// Make the request
 	FBeamRequestContext Ctx;
@@ -1209,12 +1210,12 @@ FBeamRequestContext UBeamLobbySubsystem::RequestDeletePlayerTags(const FUserSlot
 }
 
 FBeamRequestContext UBeamLobbySubsystem::RequestPostServer(const FUserSlot& UserSlot, FGuid LobbyId, FOptionalBeamContentId SelectedMatchType, FBeamOperationHandle Op,
-                                                           FOnApiLobbyPostServerFullResponse Handler) const
+                                                           FOnApiLobbyPostServerByIdFullResponse Handler) const
 {
-	const auto Req = UApiLobbyPostServerRequest::Make(LobbyId,
-	                                                  SelectedMatchType,
-	                                                  GetTransientPackage(),
-	                                                  {});
+	const auto Req = UApiLobbyPostServerByIdRequest::Make(LobbyId,
+	                                                      SelectedMatchType,
+	                                                      GetTransientPackage(),
+	                                                      {});
 
 	// Make the request
 	FBeamRequestContext Ctx;
@@ -1373,7 +1374,7 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 				}), LobbyId);
 			}
 		}
-	}	
+	}
 }
 
 // HELPER FUNCTIONS

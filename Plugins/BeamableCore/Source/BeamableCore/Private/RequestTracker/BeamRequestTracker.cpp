@@ -661,7 +661,7 @@ bool UBeamRequestTracker::TryGetOperationEvents(const FBeamOperationHandle& Op, 
 			}
 		}
 
-		return true;
+		return Events.Num() > 0;
 	}
 
 	return false;

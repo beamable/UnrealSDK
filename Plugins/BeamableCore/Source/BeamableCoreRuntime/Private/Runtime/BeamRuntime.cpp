@@ -9,6 +9,7 @@
 #include "AutoGen/SubSystems/BeamRealmsApi.h"
 #include "AutoGen/SubSystems/Realms/GetClientDefaultsRequest.h"
 #include "BeamNotifications/BeamNotifications.h"
+#include "GenericPlatform/GenericPlatformHttp.h"
 #include "Kismet/GameplayStatics.h"
 #include "Runtime/BeamRuntimeSubsystem.h"
 #include "Subsystems/Content/BeamContentSubsystem.h"
@@ -22,6 +23,100 @@
 
 #define LOCTEXT_NAMESPACE "BeamRuntime"
 
+
+void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op)
+{
+	FString _;
+	TScriptInterface<IBeamOperationEventData> __;
+	const auto IsDuringLogin = RequestTracker->TryGetOperationResult(Op, _, __) == OET_NONE;
+	if (Evt.EventType == Connected)
+	{
+		// This only runs during Authentication
+		if (IsDuringLogin)
+		{
+			// Set the current state as online.
+			CurrentState = CONN_Online;
+
+			UE_LOG(LogBeamNotifications, Display, TEXT("Connected to beamable notification service! SLOT=%s, EVT_TYPE=%s"), *UserSlot.Name,
+			       *StaticEnum<ENotificationMessageType>()->GetNameByValue(Evt.EventType).ToString())
+
+			Runtime->DefaultNotificationChannels.Add(UserSlot, Evt.ConnectedData.ConnectedHandle);
+
+			UserSlots->SaveSlot(UserSlot, this);
+			UserSlots->TriggerUserAuthenticatedIntoSlot(UserSlot, Op, this);
+		}
+		// This only runs during reconnection...
+		else
+		{
+			UE_LOG(LogBeamNotifications, Warning, TEXT("Connected on reconnect! SLOT=%s, EVT_TYPE=%s"), *UserSlot.Name,
+			       *StaticEnum<ENotificationMessageType>()->GetNameByValue(Evt.EventType).ToString())
+
+			if (CurrentState == CONN_Offline)
+			{
+				CurrentState = CONN_Fixup;				
+				const auto Handler = FTickerDelegate::CreateLambda([this](float)
+				{
+					const auto _ = FixupUpdate.ExecuteIfBound(this);
+					return CurrentState == CONN_Fixup;
+				});
+				FixupUpdateHandle = FTSTicker::GetCoreTicker().AddTicker(Handler);
+			}
+		}
+	}
+	else if (Evt.EventType == ConnectionFailed)
+	{
+		// This only runs during Authentication
+		if (IsDuringLogin)
+		{
+			UE_LOG(LogBeamNotifications, Error, TEXT("Failed to connect to beamable's notification service! SLOT=%s, EVT_TYPE=%s"), *UserSlot.Name,
+			       *StaticEnum<ENotificationMessageType>()->GetNameByValue(Evt.EventType).ToString())
+			UserSlots->ClearUserAtSlot(UserSlot, USCR_FailedAuthentication, true, this);
+			RequestTracker->TriggerOperationError(Op, Evt.ConnectionFailedData.Error);
+		}
+		// This only runs during reconnection...
+		else
+		{
+			UE_LOG(LogBeamNotifications, Warning, TEXT("Connection failed on reconnect! SLOT=%s, EVT_TYPE=%s, ERROR=%s"), *UserSlot.Name,
+			       *StaticEnum<ENotificationMessageType>()->GetNameByValue(Evt.EventType).ToString(),
+			       *Evt.ConnectionFailedData.Error)
+
+			// If we fail to reconnect more than once, we should go into offline mode.
+			if (Evt.ConnectionFailedData.RetryCount > 1)
+			{
+				this->CurrentState = CONN_Offline;				
+				const auto Handler = FTickerDelegate::CreateLambda([this](float)
+				{
+					const auto _ = ReconnectionUpdate.ExecuteIfBound(this);
+					return CurrentState == CONN_Offline;
+				});
+				ReconnectingUpdateHandle = FTSTicker::GetCoreTicker().AddTicker(Handler);
+			}
+		}
+	}
+	else if (Evt.EventType == Closed)
+	{
+		// This only runs during Authentication
+		if (IsDuringLogin)
+		{
+			UE_LOG(LogBeamNotifications, Error, TEXT("Connection closed during login flow's attempt to connect to beamable's notification service! SLOT=%s, EVT_TYPE=%s"), *UserSlot.Name,
+			       *StaticEnum<ENotificationMessageType>()->GetNameByValue(Evt.EventType).ToString())
+			UserSlots->ClearUserAtSlot(UserSlot, USCR_FailedAuthentication, true, this);
+			RequestTracker->TriggerOperationError(Op, Evt.ConnectionFailedData.Error);
+		}
+		else
+		{
+			UE_LOG(LogBeamNotifications, Warning, TEXT("Connection closed after login operation! SLOT=%s, EVT_TYPE=%s, CLEAN=%s, REASON=%s"), *UserSlot.Name,
+			       *StaticEnum<ENotificationMessageType>()->GetNameByValue(Evt.EventType).ToString(),
+			       Evt.ClosedData.bWasClean ? TEXT("true") : TEXT("false"),
+			       *Evt.ClosedData.Reason)
+
+			// Always try to reconnect on close...
+			Notifications->Reconnect(Runtime->DefaultNotificationChannels[UserSlot]);
+
+			// Store the latest Closed data in an "ConnectionLossReasonData"
+		}
+	}
+}
 
 void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -136,6 +231,21 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 
 		UE_LOG(LogBeamRuntime, Verbose, TEXT("Initializing UBeamRuntime Subsystem - FROM BUILD!"));
 	}
+
+	// Initialize user ConnectivityState for each slot
+	for (FString RuntimeUserSlot : GetDefault<UBeamCoreSettings>()->RuntimeUserSlots)
+	{
+		UBeamConnectivityManager* ConnectivityManager = NewObject<UBeamConnectivityManager>(this);
+		ConnectivityManager->Runtime = this;
+		ConnectivityManager->UserSlots = UserSlotSystem;
+		ConnectivityManager->RequestTracker = RequestTrackerSystem;
+		ConnectivityManager->Notifications = NotificationSystem;
+		ConnectivityManager->UserSlot = RuntimeUserSlot;
+		ConnectivityManager->CurrentState = CONN_Offline;
+		ConnectivityManager->CurrentConnectionLostTime = FDateTime::UtcNow();
+		ConnectivityManager->ConnectionLostCountInSession = 0;
+		ConnectivityState.Add(RuntimeUserSlot, ConnectivityManager);
+	}
 }
 
 void UBeamRuntime::UnregisterAllCallbacks()
@@ -231,7 +341,7 @@ void UBeamRuntime::Deinitialize()
 	CurrentSdkState = ESDKState::NotInitialized;
 }
 
-void UBeamRuntime::PIEExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity)
+void UBeamRuntime::PIEExecuteRequestImpl(int64 ActiveRequestId)
 {
 	UBeamBackend* BeamBackend = GEngine->GetEngineSubsystem<UBeamBackend>();
 
@@ -242,8 +352,8 @@ void UBeamRuntime::PIEExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivit
 	BeamBackend->InFlightPIERequests.Add(Req);
 
 	GetGameInstance()->IsDedicatedServerInstance()
-		? BeamBackend->DedicatedServerExecuteRequestImpl(ActiveRequestId, Connectivity)
-		: BeamBackend->DefaultExecuteRequestImpl(ActiveRequestId, Connectivity);
+		? BeamBackend->DedicatedServerExecuteRequestImpl(ActiveRequestId)
+		: BeamBackend->DefaultExecuteRequestImpl(ActiveRequestId);
 }
 
 // On Start Flow
@@ -252,19 +362,7 @@ void UBeamRuntime::TriggerInitializeWhenUnrealReady(bool ApplyFrictionlessLogin,
 {
 	const FBeamRealmHandle TargetRealm = GetDefault<UBeamCoreSettings>()->TargetRealm;
 	const FString TargetAPIUrl = GEngine->GetEngineSubsystem<UBeamEnvironment>()->GetAPIUrl();
-
-	// Initialize user ConnectivityState for each slot
-	for (FString RuntimeUserSlot : GetDefault<UBeamCoreSettings>()->RuntimeUserSlots)
-	{
-		URuntimeConnectivityManager* ConnectivityManager = NewObject<URuntimeConnectivityManager>();
-		ConnectivityManager->OwnerSlot = RuntimeUserSlot;
-		ConnectivityManager->CurrentState = CONN_Offline;
-		ConnectivityManager->CurrentConnectionLostTime = FDateTime::UtcNow();
-		ConnectivityManager->ConnectionLostCountInSession = 0;
-		ConnectivityManager->FixupOperationDAG = {};
-		ConnectivityState.Add(RuntimeUserSlot, ConnectivityManager);
-	}
-
+	
 	// Start-up flow
 	if (TargetRealm.Cid.AsLong == -1 || TargetRealm.Pid.AsString.IsEmpty())
 	{
@@ -537,9 +635,9 @@ void UBeamRuntime::TriggerOnUserSlotAuthenticated(const FUserSlot& UserSlot, con
 	if (!OnUserSignedInWaits.Contains(UserSlot))
 		OnUserSignedInWaits.Add(UserSlot, {});
 
-	auto& SignedInOps = *OnUserSignedInOps.Find(UserSlot);	
+	auto& SignedInOps = *OnUserSignedInOps.Find(UserSlot);
 	auto& SignedInOpsWait = *OnUserSignedInWaits.Find(UserSlot);
-	SignedInOps.Empty();	
+	SignedInOps.Empty();
 
 	if (const UWorld* World = GetWorld())
 	{
@@ -1247,7 +1345,7 @@ void UBeamRuntime::FrictionlessLoginIntoSlot(const FUserSlot& UserSlot)
 
 	// Try to load the user at a specific slot and if it fails... we login with a guest account.
 	FBeamOperationHandle AuthOp = RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetName(), {});
-	this->LoginFrictionless(UserSlot, AuthOp);	
+	this->LoginFrictionless(UserSlot, AuthOp);
 }
 
 void UBeamRuntime::LoginFrictionless(FUserSlot UserSlot, FBeamOperationHandle Op)
@@ -1515,6 +1613,8 @@ void UBeamRuntime::SignUpExternalIdentity(FUserSlot UserSlot, FString Microservi
 
 void UBeamRuntime::SignUpEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op)
 {
+	Email = FGenericPlatformHttp::UrlEncode(Email);
+
 	const auto CheckIdentityAvailableHandler = FOnGetAvailableFullResponse::CreateLambda([this,UserSlot, Op, Email, Password](FGetAvailableFullResponse Resp)
 	{
 		if (Resp.State == RS_Retrying) return;
@@ -1708,34 +1808,8 @@ void UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService(FGetCli
 
 	if (Resp.State == RS_Success)
 	{
-		FOnNotificationEvent ConnHandler = FOnNotificationEvent::CreateLambda([this, UserSlot, Op](const FNotificationEvent& Evt)
-		{
-			if (Evt.EventType == Connected)
-			{
-				UE_LOG(LogBeamNotifications, Display, TEXT("Connected to beamable notification service! SLOT=%s, EVT_TYPE=%s"), *UserSlot.Name,
-				       *StaticEnum<ENotificationMessageType>()->GetNameByValue(Evt.EventType).ToString())
-				DefaultNotificationChannels.Add(UserSlot, Evt.ConnectedData.ConnectedHandle);
-
-				UserSlotSystem->SaveSlot(UserSlot, this);
-				UserSlotSystem->TriggerUserAuthenticatedIntoSlot(UserSlot, Op, this);
-
-				if (const auto Connectivity = ConnectivityState.FindRef(UserSlot))
-				{
-					Connectivity->StartRecoveryFixup();
-				}
-			}
-			else if (Evt.EventType == ConnectionFailed)
-			{
-				UE_LOG(LogBeamNotifications, Error, TEXT("Failed to connect to beamable's notification service! SLOT=%s, EVT_TYPE=%s"), *UserSlot.Name,
-				       *StaticEnum<ENotificationMessageType>()->GetNameByValue(Evt.EventType).ToString())
-				UserSlotSystem->ClearUserAtSlot(UserSlot, USCR_FailedAuthentication, true, this);
-				RequestTrackerSystem->TriggerOperationError(Op, Evt.ConnectionFailedData.Error);
-			}
-			else if (Evt.EventType == Closed)
-			{
-				// TODO: Handle disconnect flow
-			}
-		});
+		const auto Connectivity = ConnectivityState.FindRef(UserSlot);
+		const auto ConnHandler = FOnNotificationEvent::CreateUObject(Connectivity, &UBeamConnectivityManager::ConnectionHandler, BeamRealmUser, Op);
 
 		const FString Uri = Resp.SuccessData->WebsocketConfig->Uri.Val / TEXT("connect");
 		UE_LOG(LogBeamRuntime, Verbose, TEXT("WebSocket URI=%s, Setting=%s"), *Resp.SuccessData->WebsocketConfig->Uri.Val, *Resp.SuccessData->WebsocketConfig->Provider)

@@ -10,7 +10,6 @@ BEGIN_DEFINE_SPEC(FBeamBackendSpec, "BeamableUnreal.BeamBackend",
 	FName RequestFuncName;
 
 	UBeamBackendTestCallbacks* Callbacks;
-
-	FBeamConnectivity StatusAtTestRunStart;
+	
 	TArray<FDelegateHandle> RegisteredDelegatesDuringConnectivityTests;
 END_DEFINE_SPEC(FBeamBackendSpec)

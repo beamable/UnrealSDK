@@ -93,6 +93,9 @@ struct BEAMABLECORE_API FNotificationConnectionFailed
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FString Error;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
+	int RetryCount;
 };
 
 /**
@@ -264,8 +267,8 @@ public:
 			if (const auto& UserSockets = OpenSockets.FindChecked(NamespacedSlot); UserSockets.Contains(SocketName))
 			{
 				static_assert(TIsDerivedFrom<TMessage, FBeamJsonSerializableUStruct>::Value || TIsDerivedFrom<typename TRemovePointer<TMessage>::Type, IBeamJsonSerializableUObject>::Value,
-					"TMessage must be a subclass of either UBeamJsonSerializableUObject* (subclass) OR FBeamJsonSerializableUStruct.");
-				
+				              "TMessage must be a subclass of either UBeamJsonSerializableUObject* (subclass) OR FBeamJsonSerializableUStruct.");
+
 				// Make sure the Message type is a FBeamJsonSerializable				
 				if constexpr (TIsDerivedFrom<TMessage, FBeamJsonSerializableUStruct>::Value)
 				{
@@ -285,11 +288,11 @@ public:
 					MessageEventHandlers.Add(FBeamWebSocketHandle(NamespacedSlot, SocketName, this), FNotificationMessageEventHandler{ContextKey, EventHandler});
 					return true;
 				}
-				
+
 				if constexpr (TIsDerivedFrom<typename TRemovePointer<TMessage>::Type, IBeamJsonSerializableUObject>::Value)
 				{
 					const FOnNotificationEvent EventHandler = FOnNotificationEvent::CreateLambda([Slot, SocketName, ContextKey, Handler](FNotificationEvent Evt)
-					{						
+					{
 						ensureAlways(Evt.EventType == Message);
 						ensureAlways(Evt.MessageData.Context.Equals(ContextKey));
 
@@ -382,4 +385,6 @@ public:
 		}
 		return false;
 	}
+
+	void Reconnect(FBeamWebSocketHandle Value);
 };

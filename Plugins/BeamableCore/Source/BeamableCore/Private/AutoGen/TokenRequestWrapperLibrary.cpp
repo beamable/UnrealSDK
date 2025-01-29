@@ -22,7 +22,7 @@ FString UTokenRequestWrapperLibrary::TokenRequestWrapperToJsonString(const UToke
 	return Result;
 }	
 
-UTokenRequestWrapper* UTokenRequestWrapperLibrary::Make(FString GrantType, FOptionalBool bCustomerScoped, FOptionalString DeviceId, FOptionalString ProviderService, FOptionalString Token, FOptionalString Code, FOptionalString ExternalToken, FOptionalChallengeSolution ChallengeSolution, FOptionalString ProviderNamespace, FOptionalString RedirectUri, FOptionalString ThirdParty, FOptionalContextInfo Context, FOptionalString RefreshToken, FOptionalString Username, FOptionalString ClientId, FOptionalString Password, FOptionalArrayOfString Scope, UObject* Outer)
+UTokenRequestWrapper* UTokenRequestWrapperLibrary::Make(FString GrantType, FOptionalBool bCustomerScoped, FOptionalString DeviceId, FOptionalString ProviderService, FOptionalString Token, FOptionalString Code, FOptionalString ExternalToken, FOptionalChallengeSolution ChallengeSolution, FOptionalString ProviderNamespace, FOptionalString RedirectUri, FOptionalString ThirdParty, FOptionalContextInfo Context, FOptionalString RefreshToken, FOptionalString Username, FOptionalString ClientId, FOptionalString Password, FOptionalArrayOfString Scope, FOptionalMapOfString InitProperties, UObject* Outer)
 {
 	auto Serializable = NewObject<UTokenRequestWrapper>(Outer);
 	Serializable->GrantType = GrantType;
@@ -42,11 +42,12 @@ UTokenRequestWrapper* UTokenRequestWrapperLibrary::Make(FString GrantType, FOpti
 	Serializable->ClientId = ClientId;
 	Serializable->Password = Password;
 	Serializable->Scope = Scope;
+	Serializable->InitProperties = InitProperties;
 	
 	return Serializable;
 }
 
-void UTokenRequestWrapperLibrary::Break(const UTokenRequestWrapper* Serializable, FString& GrantType, FOptionalBool& bCustomerScoped, FOptionalString& DeviceId, FOptionalString& ProviderService, FOptionalString& Token, FOptionalString& Code, FOptionalString& ExternalToken, FOptionalChallengeSolution& ChallengeSolution, FOptionalString& ProviderNamespace, FOptionalString& RedirectUri, FOptionalString& ThirdParty, FOptionalContextInfo& Context, FOptionalString& RefreshToken, FOptionalString& Username, FOptionalString& ClientId, FOptionalString& Password, FOptionalArrayOfString& Scope)
+void UTokenRequestWrapperLibrary::Break(const UTokenRequestWrapper* Serializable, FString& GrantType, FOptionalBool& bCustomerScoped, FOptionalString& DeviceId, FOptionalString& ProviderService, FOptionalString& Token, FOptionalString& Code, FOptionalString& ExternalToken, FOptionalChallengeSolution& ChallengeSolution, FOptionalString& ProviderNamespace, FOptionalString& RedirectUri, FOptionalString& ThirdParty, FOptionalContextInfo& Context, FOptionalString& RefreshToken, FOptionalString& Username, FOptionalString& ClientId, FOptionalString& Password, FOptionalArrayOfString& Scope, FOptionalMapOfString& InitProperties)
 {
 	GrantType = Serializable->GrantType;
 	bCustomerScoped = Serializable->bCustomerScoped;
@@ -65,6 +66,7 @@ void UTokenRequestWrapperLibrary::Break(const UTokenRequestWrapper* Serializable
 	ClientId = Serializable->ClientId;
 	Password = Serializable->Password;
 	Scope = Serializable->Scope;
+	InitProperties = Serializable->InitProperties;
 		
 }
 
