@@ -442,8 +442,7 @@ public:
 
 		// Keep track of this request and it's data. 
 		InFlightRequestContexts.Add(ReqId, RequestContext);
-		InFlightRequestData.Add(RequestContext,
-		                        TScriptInterface<IBeamBaseRequestInterface>(const_cast<TRequestData*>(RequestData)));
+		InFlightRequestData.Add(RequestContext, TScriptInterface<IBeamBaseRequestInterface>(const_cast<TRequestData*>(RequestData)));
 
 		// Store make sure we have a slot waiting for the response/error value to be added
 		InFlightResponseBodyData.Add(RequestContext, nullptr);

@@ -118,8 +118,9 @@ void FBeamBackendSpec::Define()
 				TestTrue("VERB is Set Correctly = 'POST'", Request->GetVerb() == TEXT("POST"));
 				TestTrue("Route was set up correctly", Request->GetURL().Contains(TEXT("/fake/url")));
 
-				const auto Content = FString(UTF8_TO_TCHAR(Request->GetContent().GetData()));
-				TestTrue("Body was set up correctly", Content == TEXT(R"({"fake_int":10})"));
+				const auto ContentUTF8 = reinterpret_cast<const UTF8CHAR*>(Request->GetContent().GetData());
+				const auto Content = FString(TStringConversion<FUTF8ToTCHAR_Convert>(ContentUTF8, Request->GetContent().Num()));				
+				TestEqual("Body was set up correctly", Content, TEXT(R"({"fake_int":10})"));
 
 				// Test discarding unset data associated with InFlight Requests.
 				BeamBackendSystem->CancelRequest(ReqId);
@@ -193,9 +194,10 @@ void FBeamBackendSpec::Define()
 				TestTrue("VERB is Set Correctly = 'POST'", Request->GetVerb() == TEXT("POST"));
 				TestTrue("Route was set up correctly", Request->GetURL().Contains(TEXT("/fake/url")));
 
-				const auto Content = FString(UTF8_TO_TCHAR(Request->GetContent().GetData()));
-				TestTrue("Body was set up correctly", Content == TEXT(R"({"fake_int":10})"));
-
+				const auto ContentUTF8 = reinterpret_cast<const UTF8CHAR*>(Request->GetContent().GetData());
+				const auto Content = FString(TStringConversion<FUTF8ToTCHAR_Convert>(ContentUTF8, Request->GetContent().Num()));				
+				TestEqual("Body was set up correctly", Content, TEXT(R"({"fake_int":10})"));
+				
 				// Test discarding unset data associated with InFlight Requests.
 				BeamBackendSystem->CancelRequest(ReqId);
 				TestTrue("ReqId no longer found in list of in flight requests", !BeamBackendSystem->InFlightRequests.Contains(ReqId));
@@ -1137,6 +1139,10 @@ void FBeamBackendSpec::Define()
 			BeamBackendSystem->InFlightFailureCount[ResponseCodeReqId] = 1;
 			BeamBackendSystem->InFlightFailureCount[ErrorCodeReqId] = 1;
 
+			// Pretend the requests went out
+			BeamBackendSystem->InFlightRequestContexts.Find(ResponseCodeReqId)->BeamStatus = AS_InFlight;
+			BeamBackendSystem->InFlightRequestContexts.Find(ErrorCodeReqId)->BeamStatus = AS_InFlight;
+			
 			// Bind a fake lambda just so we know that the request had process request called on it.				
 			ResponseCodeRequest->OnProcessRequestComplete()
 			                   .BindLambda([this, Done](TSharedPtr<IHttpRequest, ESPMode::ThreadSafe>, TSharedPtr<IHttpResponse, ESPMode::ThreadSafe> HttpResponse, bool sent)
@@ -1185,6 +1191,10 @@ void FBeamBackendSpec::Define()
 			BeamBackendSystem->InFlightFailureCount[ResponseCodeReqId] = 1;
 			BeamBackendSystem->InFlightFailureCount[ErrorCodeReqId] = 1;
 
+			// Pretend the requests went out
+			BeamBackendSystem->InFlightRequestContexts.Find(ResponseCodeReqId)->BeamStatus = AS_InFlight;
+			BeamBackendSystem->InFlightRequestContexts.Find(ErrorCodeReqId)->BeamStatus = AS_InFlight;
+			
 			// Bind a fake lambda just so we know that the request had process request called on it.				
 			ResponseCodeRequest->OnProcessRequestComplete()
 			                   .BindLambda([this, Done](TSharedPtr<IHttpRequest, ESPMode::ThreadSafe>, TSharedPtr<IHttpResponse, ESPMode::ThreadSafe> HttpResponse, bool sent)
@@ -1244,7 +1254,7 @@ void FBeamBackendSpec::Define()
 			BeamBackendSystem->ExtractUrlForSignature(CSharpUrl,SigCSharpUrl);
 
 			TestEqual("Scala URL extracted correctly", SigScalaUrl, TEXT("/object/stats/game.public.player.1595037680985091/"));
-			TestEqual("CSharp URL extracted correctly", SigCSharpUrl, TEXT("/lobbies/7c9f10d1-b16c-46d1-8af1-df76604b1e1b/"));
+			TestEqual("CSharp URL extracted correctly", SigCSharpUrl, TEXT("/api/lobbies/7c9f10d1-b16c-46d1-8af1-df76604b1e1b/"));
 			
 		});
 	});
