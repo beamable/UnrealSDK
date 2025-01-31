@@ -3,12 +3,16 @@
 
 #include "Subsystems/Content/BeamContentSubsystem.h"
 
+#include <memory>
+
 #include "HttpModule.h"
 #include "BeamBackend/BeamGenericApi.h"
 #include "BeamNotifications/SubSystems/BeamContentNotifications.h"
 #include "Interfaces/IHttpResponse.h"
 #include "Content/DownloadContentState.h"
 #include "Kismet/GameplayStatics.h"
+#include "Engine/AssetManager.h"
+#include "UObject/UObjectGlobals.h"
 
 #if WITH_EDITOR
 #include "BeamableCoreRuntimeEditor/Public/Subsystems/Content/BeamEditorContent.h"
@@ -543,7 +547,6 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 				TreePath.Reset();
 				UE_LOG(LogBeamContent, Verbose, TEXT("Done with Field - TYPE=%s, TYPE_ID=%s, PATH_TO_LINK_FIELD=%s"), *TypeName, *ContentTypeId, *PropIt->GetName());
 			}
-
 			// Store the path of properties I need to chase to get to the link property.
 			for (TArray<const FProperty*> FoundPathsToLink : FoundPathsToLinks)
 			{
@@ -552,7 +555,7 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 					PathToProp.Add(PathLink->GetName());
 
 				UE_LOG(LogBeamContent, Verbose, TEXT("Found Content Link in ContentType - TYPE=%s, TYPE_ID=%s, PATH_TO_LINK_FIELD=%s"), *TypeName, *ContentTypeId,
-				       *FString::Join(PathToProp, TEXT(".")));
+					   *FString::Join(PathToProp, TEXT(".")));
 			}
 			PathsToContentLinks.Add(ContentTypeClass, TArray{FoundPathsToLinks});
 
@@ -601,10 +604,10 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 
 						// Log out the found recursive type and the path for its property.
 						UE_LOG(LogBeamContent, Verbose,
-						       TEXT(
-							       "Found Content Link in RecursiveType inside ContentType. - TYPE=%s, TYPE_ID=%s, PATH_TO_RECURSIVE_PROP=%s, RECURSIVE_TYPE=%s, PATH_TO_LINK_FIELD_IN_RECURSIVE_TYPE=%s"
-						       ),
-						       *TypeName, *ContentTypeId, *PathToRecursivePropStr, *RecursiveType->GetName(), *PathToLink);
+							   TEXT(
+								   "Found Content Link in RecursiveType inside ContentType. - TYPE=%s, TYPE_ID=%s, PATH_TO_RECURSIVE_PROP=%s, RECURSIVE_TYPE=%s, PATH_TO_LINK_FIELD_IN_RECURSIVE_TYPE=%s"
+							   ),
+							   *TypeName, *ContentTypeId, *PathToRecursivePropStr, *RecursiveType->GetName(), *PathToLink);
 					}
 
 					// For each of the paths to content links that we found inside the recursive properties...
@@ -617,10 +620,10 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 
 						// Log out the found recursive type and the path for its property.
 						UE_LOG(LogBeamContent, Verbose,
-						       TEXT(
-							       "Found Recursive Prop in RecursiveType inside ContentType. - TYPE=%s, TYPE_ID=%s, PATH_TO_RECURSIVE_PROP=%s, RECURSIVE_TYPE=%s, PATH_TO_LINK_FIELD_IN_RECURSIVE_TYPE=%s"
-						       ),
-						       *TypeName, *ContentTypeId, *PathToRecursivePropStr, *RecursiveType->GetName(), *PathToLink);
+							   TEXT(
+								   "Found Recursive Prop in RecursiveType inside ContentType. - TYPE=%s, TYPE_ID=%s, PATH_TO_RECURSIVE_PROP=%s, RECURSIVE_TYPE=%s, PATH_TO_LINK_FIELD_IN_RECURSIVE_TYPE=%s"
+							   ),
+							   *TypeName, *ContentTypeId, *PathToRecursivePropStr, *RecursiveType->GetName(), *PathToLink);
 					}
 
 					// Store the path to this recursive property
@@ -643,27 +646,65 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 		BakedContentPaths.Add(BeamRuntimeContentCache.ToSoftObjectPath());
 
 	FBeamOperationHandle Op = GEngine->GetEngineSubsystem<UBeamRequestTracker>()->CPP_BeginOperation({}, GetName(), {});
-	const auto Handle = RuntimeSettings->ContentStreamingManager.RequestAsyncLoad(BakedContentPaths, FStreamableDelegate::CreateLambda([this, Op, BakedContentPaths, RuntimeSettings, CoreSettings]()
+
+	//Try to load the cached content first before the baked content
+	const FString CachedContentPath =  FPaths::ProjectSavedDir() + CoreSettings->CachedContentFolderName + "/" +
+					CoreSettings->GlobalCachedContentFileName;
+
+	bool bFoundDataInCacheFile = false;
+	if (FPlatformFileManager::Get().GetPlatformFile().FileExists(*CachedContentPath))
 	{
-		for (int i = 0; i < CoreSettings->BakedContentManifests.Num(); ++i)
+		// Load the file data into an array
+		TArray<uint8> FileData;
+		if (FFileHelper::LoadFileToArray(FileData, *CachedContentPath))
 		{
-			const auto LoadedObject = CoreSettings->BakedContentManifests[i];
-			checkf(LoadedObject, TEXT("Failed to find the content manifest at path %s. Cook content again so that we can correctly set up the baked content objects."),
-			       *BakedContentPaths[i].ToString())
+			UBeamContentCache* LoadedCacheContent =  NewObject<UBeamContentCache>();
+			
+			// Create a memory reader to read the binary data
+			FMemoryReader Reader(FileData, true);
 
-			const auto BakedContentManifest = LoadedObject.Get();
-			const auto ManifestId = BakedContentManifest->ManifestId;
-			BakedContent.Add(ManifestId, BakedContentManifest);
-			LiveContent.Add(ManifestId, DuplicateObject<UBeamContentCache>(BakedContentManifest, GetTransientPackage()));
+			LoadedCacheContent->SerializeToBinary(Reader,ContentTypeStringToContentClass,ContentClassToContentTypeString);
+
+			if (LoadedCacheContent != nullptr)
+			{
+				bFoundDataInCacheFile = true;
+				
+				BakedContent.Add(LoadedCacheContent->ManifestId, LoadedCacheContent);
+				LiveContent.Add(LoadedCacheContent->ManifestId, DuplicateObject<UBeamContentCache>(LoadedCacheContent, GetTransientPackage()));
+				
+				GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
+			}
 		}
+	}
 
-		GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
-	}));
+	
+	//IF we didn't find cached data use the baked data
+	if (!bFoundDataInCacheFile)
+	{
+		
+		const auto Handle = RuntimeSettings->ContentStreamingManager.RequestAsyncLoad(BakedContentPaths, FStreamableDelegate::CreateLambda([this, Op, BakedContentPaths, RuntimeSettings, CoreSettings]()
+		{
+			for (int i = 0; i < CoreSettings->BakedContentManifests.Num(); ++i)
+			{
+				const auto LoadedObject = CoreSettings->BakedContentManifests[i];
+				checkf(LoadedObject, TEXT("Failed to find the content manifest at path %s. Cook content again so that we can correctly set up the baked content objects."),
+					   *BakedContentPaths[i].ToString())
 
-	// If we don't have any baked content, this Operation is a no-op.
-	if (BakedContentPaths.Num() == 0)
-		GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
+				const auto BakedContentManifest = LoadedObject.Get();
+				const auto ManifestId = BakedContentManifest->ManifestId;
+				BakedContent.Add(ManifestId, BakedContentManifest);
+				LiveContent.Add(ManifestId, DuplicateObject<UBeamContentCache>(BakedContentManifest, GetTransientPackage()));
+			}
 
+			GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
+		}));
+	
+		// If we don't have any baked content, this Operation is a no-op.
+		if (BakedContentPaths.Num() == 0)
+			GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
+
+	}
+	
 	ResultOp = Op;
 }
 
@@ -800,12 +841,13 @@ void UBeamContentSubsystem::DownloadContentObjects(const FBeamContentManifestId 
 							ContentObject->FromBasicJson(ResponseJson);
 							ContentObject->Tags = Tags;
 
+							
 							// Cache the content object data in memory and update the hashes so that subsequent calls can figure out whether or not we need to redownload.
 							const auto LiveContentCache = LiveContent.FindChecked(ManifestId);
 							const auto PropertyHash = ContentObject->CreatePropertiesHash();
 							LiveContentCache->Cache.Add(Id, ContentObject);
-							LiveContentCache->Hashes.Add(Id, PropertyHash);
-
+							LiveContentCache->Hashes.Add(Id, ContentObject->Version);
+							
 							UE_LOG(LogBeamContent, Verbose, TEXT("Downloaded and parsed content. CONTENT_ID=%s, HASH=%s, CONTENT_MANIFEST_ID=%s"), *Id.AsString,
 							       *LiveContentCache->Hashes.FindChecked(Id),
 							       *ManifestId.AsString)
@@ -833,17 +875,38 @@ void UBeamContentSubsystem::DownloadContentObjects(const FBeamContentManifestId 
 	}
 
 	if (IndividualDownloadRequests.Num() > 0)
-	{
-		const auto WaitIndividualDownloadsHandler = FOnWaitCompleteCode::CreateLambda([this, Op](FBeamWaitCompleteEvent Evt)
+	{	
+		const auto WaitIndividualDownloadsHandler = FOnWaitCompleteCode::CreateLambda([this, Op,ManifestId](FBeamWaitCompleteEvent Evt)
 		{
 			if (this->Runtime)
 			{
 				if (this->Runtime->RequestTrackerSystem->IsWaitSuccessful(Evt))
 				{
+					auto CoreSettings = GetMutableDefault<UBeamCoreSettings>();
+					
+					const FString CachedContentPath =   FPaths::ProjectSavedDir() + CoreSettings->CachedContentFolderName + "/" +
+					CoreSettings->GlobalCachedContentFileName;
+					
+					UBeamContentCache* SavedContent = LiveContent[ManifestId];
+
+					TArray<uint8> SerializedData;
+					FMemoryWriter Writer(SerializedData, true);
+						
+					SavedContent->SerializeToBinary(Writer,ContentTypeStringToContentClass,ContentClassToContentTypeString);
+
+					if (FFileHelper::SaveArrayToFile(SerializedData, *CachedContentPath))
+					{
+						UE_LOG(LogBeamContent, Log, TEXT("Cached new content."));
+					}
+					else
+					{
+						UE_LOG(LogBeamContent, Error, TEXT("Error while caching new content."));
+
+					}
+					
 					this->Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, {});
 					return;
 				}
-
 				TArray<FString> Errs;
 				if (this->Runtime->RequestTrackerSystem->IsWaitFailed(Evt, Errs))
 				{

@@ -79,6 +79,14 @@ public:
 		UBeamJsonUtils::DeserializeArray(Bag->GetArrayField(TEXT("Values")), Values, this);
 		UBeamJsonUtils::DeserializeArray<UBeamStatComparisonRule*>(Bag->GetArrayField(TEXT("Rules")), Rules, this);
 	}
+
+	virtual void Serialize(FArchive& Ar) override
+	{	
+		Ar<<Constraint;
+		Ar<<Stat.Val;
+		Ar<<Stat.IsSet;
+		Ar<<Values;
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -191,7 +199,7 @@ struct BEAMABLECORE_API FOptionalBeamStatComparisonRule : public FBeamOptional
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Instanced)
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Instanced, SkipSerialization)
 	UBeamStatComparisonRule* Val;
 
 	FOptionalBeamStatComparisonRule();
@@ -238,10 +246,11 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FBeamMatchmakingTeamsRule> Teams;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FOptionalBeamStatComparisonRule EntryRules;
 
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FBeamMatchmakingNumericRule> NumericRules;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -261,6 +270,69 @@ public:
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Federated Game Server", meta=(ToolTip="If you have a C#MS implementing IFederatedGameServer, use the UniqueName of its associated IThirdPartyCloudIdentity so that Beamable knows which microservice to call to provision a GameServer for this type."))
 	FOptionalString FederatedGameServerNamespace;
+
+	virtual void SerializeUObjects(FArchive& Ar) override
+	{
+		if (Ar.IsSaving())
+		{
+			bool EntryRuleObjExists = false;
+			if (EntryRules.Val != nullptr && EntryRules.IsSet)
+			{
+				EntryRuleObjExists = true;
+			}
+			Ar << EntryRuleObjExists;
+
+			if (EntryRuleObjExists)
+			{
+				EntryRules.Val->Serialize(Ar);
+				SerializeComparisonRulesRecursively(Ar,EntryRules.Val);
+			}
+		}
+		else
+		{
+			bool EntryRuleObjExists = false;
+			Ar<<EntryRuleObjExists;
+
+			if (EntryRuleObjExists)
+			{
+				UBeamStatComparisonRule* ComparisonRuleObj = NewObject<UBeamStatComparisonRule>();
+						
+				ComparisonRuleObj->Serialize(Ar);
+				SerializeComparisonRulesRecursively(Ar,ComparisonRuleObj);
+				
+				EntryRules.Val = ComparisonRuleObj;
+			}
+			
+		}
+	}
+
+	void SerializeComparisonRulesRecursively(FArchive& Ar,UBeamStatComparisonRule* Head)
+	{
+		if (Ar.IsSaving())
+		{
+			int ChildrenNum =  Head->Rules.Num();
+			Ar <<ChildrenNum;
+
+			for (int i = 0;i<ChildrenNum;i++)
+			{
+				Head->Rules[i]->Serialize(Ar);
+				SerializeComparisonRulesRecursively(Ar,Head->Rules[i]);
+			}
+		}
+		else
+		{
+			int ChildrenNum =  Head->Rules.Num();
+			Ar <<ChildrenNum;
+
+			for (int i = 0;i<ChildrenNum;i++)
+			{
+				UBeamStatComparisonRule* ComparisonRuleObj = NewObject<UBeamStatComparisonRule>();
+				ComparisonRuleObj->Serialize(Ar);
+				Head->Rules.Add(ComparisonRuleObj);
+				SerializeComparisonRulesRecursively(Ar,ComparisonRuleObj);
+			}
+		}
+	}
 };
 
 DEFINE_CONTENT_TYPE_NAME(UBeamGameTypeContent, "game_types")

@@ -105,6 +105,9 @@ public:
 	 */
 	virtual void ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>& JsonProperties);
 
+	
+	virtual void SerializeUObjects(FArchive& Ar) {};
+	
 	/**
 	 * @brief Walks up the ContentObject class hierarchy and creates a '.'-separated string from the top-most type to the current one.
 	 * This is leveraged by the Beamable backend for various things (for legacy reasons). 
@@ -209,7 +212,7 @@ public:
 		UClass* ObjectClass;
 		EBeamContentObjectSupportLevel SupportLevel;
 		GetClassForTypeId(ContentTypeToContentClass, ContentTypeId, ObjectClass, SupportLevel);
-		OutObject = NewObject<UBeamContentObject>(GetTransientPackage(), ObjectClass);
+		OutObject = NewObject<UBeamContentObject>(GetTransientPackage(), ObjectClass,NAME_None,EObjectFlags::RF_Public | EObjectFlags::RF_Standalone);
 		OutObject->SupportLevel = SupportLevel;
 	}
 
