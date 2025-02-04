@@ -641,9 +641,6 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 	// Go through list of baked content manifests and load up the baked BeamRuntimeContentCache the baked		
 	auto CoreSettings = GetMutableDefault<UBeamCoreSettings>();
 	auto RuntimeSettings = GetMutableDefault<UBeamRuntimeSettings>();
-	TArray<FSoftObjectPath> BakedContentPaths;
-	for (const auto& BeamRuntimeContentCache : CoreSettings->BakedContentManifests)
-		BakedContentPaths.Add(BeamRuntimeContentCache.ToSoftObjectPath());
 
 	FBeamOperationHandle Op = GEngine->GetEngineSubsystem<UBeamRequestTracker>()->CPP_BeginOperation({}, GetName(), {});
 
@@ -665,43 +662,46 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 
 			LoadedCacheContent->SerializeToBinary(Reader,ContentTypeStringToContentClass,ContentClassToContentTypeString);
 
-			if (LoadedCacheContent != nullptr)
-			{
-				bFoundDataInCacheFile = true;
+			bFoundDataInCacheFile = true;
 				
-				BakedContent.Add(LoadedCacheContent->ManifestId, LoadedCacheContent);
-				LiveContent.Add(LoadedCacheContent->ManifestId, DuplicateObject<UBeamContentCache>(LoadedCacheContent, GetTransientPackage()));
+			BakedContent.Add(LoadedCacheContent->ManifestId, LoadedCacheContent);
+			LiveContent.Add(LoadedCacheContent->ManifestId, DuplicateObject<UBeamContentCache>(LoadedCacheContent, GetTransientPackage()));
 				
-				GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
-			}
+			GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
 		}
 	}
 
 	
-	//IF we didn't find cached data use the baked data
+	//if we didn't find cached data use the baked data
 	if (!bFoundDataInCacheFile)
 	{
+		const FString BakedContentPath =  FPaths::ProjectContentDir() + CoreSettings->BakedContentFolderName + "/" +
+					CoreSettings->GlobalBakedContentFileName;
 		
-		const auto Handle = RuntimeSettings->ContentStreamingManager.RequestAsyncLoad(BakedContentPaths, FStreamableDelegate::CreateLambda([this, Op, BakedContentPaths, RuntimeSettings, CoreSettings]()
+		if (FPlatformFileManager::Get().GetPlatformFile().FileExists(*BakedContentPath))
 		{
-			for (int i = 0; i < CoreSettings->BakedContentManifests.Num(); ++i)
+			// Load the file data into an array
+			TArray<uint8> FileData;
+			if (FFileHelper::LoadFileToArray(FileData, *BakedContentPath))
 			{
-				const auto LoadedObject = CoreSettings->BakedContentManifests[i];
-				checkf(LoadedObject, TEXT("Failed to find the content manifest at path %s. Cook content again so that we can correctly set up the baked content objects."),
-					   *BakedContentPaths[i].ToString())
+				UBeamContentCache* LoadedBakedContent =  NewObject<UBeamContentCache>();
+			
+				FMemoryReader Reader(FileData, true);
 
-				const auto BakedContentManifest = LoadedObject.Get();
-				const auto ManifestId = BakedContentManifest->ManifestId;
-				BakedContent.Add(ManifestId, BakedContentManifest);
-				LiveContent.Add(ManifestId, DuplicateObject<UBeamContentCache>(BakedContentManifest, GetTransientPackage()));
+				LoadedBakedContent->SerializeToBinary(Reader,ContentTypeStringToContentClass,ContentClassToContentTypeString);
+
+				BakedContent.Add(LoadedBakedContent->ManifestId, LoadedBakedContent);
+				LiveContent.Add(LoadedBakedContent->ManifestId, DuplicateObject<UBeamContentCache>(LoadedBakedContent, GetTransientPackage()));
+				
+				GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
+				
 			}
-
+		}
+		else
+		{
+			// If we don't have any baked content, this Operation is a no-op.
 			GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
-		}));
-	
-		// If we don't have any baked content, this Operation is a no-op.
-		if (BakedContentPaths.Num() == 0)
-			GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
+		}	
 
 	}
 	
@@ -891,7 +891,7 @@ void UBeamContentSubsystem::DownloadContentObjects(const FBeamContentManifestId 
 
 					TArray<uint8> SerializedData;
 					FMemoryWriter Writer(SerializedData, true);
-						
+						 
 					SavedContent->SerializeToBinary(Writer,ContentTypeStringToContentClass,ContentClassToContentTypeString);
 
 					if (FFileHelper::SaveArrayToFile(SerializedData, *CachedContentPath))
