@@ -666,7 +666,10 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 				
 			BakedContent.Add(LoadedCacheContent->ManifestId, LoadedCacheContent);
 			LiveContent.Add(LoadedCacheContent->ManifestId, DuplicateObject<UBeamContentCache>(LoadedCacheContent, GetTransientPackage()));
-				
+
+			
+			UE_LOG(LogBeamContent, Log, TEXT("Found content in the cached files"));
+			
 			GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
 		}
 	}
@@ -694,7 +697,14 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 				LiveContent.Add(LoadedBakedContent->ManifestId, DuplicateObject<UBeamContentCache>(LoadedBakedContent, GetTransientPackage()));
 				
 				GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
+
+				UE_LOG(LogBeamContent, Log, TEXT("Found content in the baked files"));
 				
+			}
+			else
+			{
+				GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op,TEXT("Error while reading the baked content file"));
+				GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
 			}
 		}
 		else

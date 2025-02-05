@@ -760,7 +760,8 @@ void UBeamEditorContent::BakeManifest(FBeamContentManifestId Manifest)
 	{
 		UE_LOG(LogBeamContent, Error, TEXT("Error while baking new content."));
 	}
-	
+
+	//Add the baked folder to the project settings so that it doesnt get packaged in the .PAK and gets coppied as it is with the packaged game
 	if (UProjectPackagingSettings* PackagingSettings = GetMutableDefault<UProjectPackagingSettings>())
 	{
 		bool PathAlreadyAdded = false;
@@ -775,7 +776,7 @@ void UBeamEditorContent::BakeManifest(FBeamContentManifestId Manifest)
 		{
 			PackagingSettings->DirectoriesToAlwaysStageAsNonUFS.Add(FDirectoryPath{ CoreSettings->BakedContentFolderName });
 
-			PackagingSettings->SaveConfig();
+			PackagingSettings->SaveConfig(CPF_Config, *PackagingSettings->GetDefaultConfigFilename());
 		}
 	}
 	else
