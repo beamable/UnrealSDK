@@ -132,11 +132,29 @@ public:
 	bool bErrorIfGameplayTagNotFound = false;
 
 	/**
-	 * @brief References to all baked content files. This is automatically filled up whenever you cook a build and can be ignored by the end user.
-	 */
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="Content")
-	TArray<TSoftObjectPtr<UBeamContentCache>> BakedContentManifests;
+	* @brief The name of the folder that is inside the saved folder that all the cached content will go into on runtime.
+	*/
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
+	FString CachedContentFolderName = "CachedContent";
 
+	/**
+	* @brief Cached content file name.
+	*/
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
+	FString GlobalCachedContentFileName = "CC_Global";
+	
+	/**
+	* @brief The name of the folder that is inside the saved folder that all the cached content will go into on runtime.
+	*/
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
+	FString BakedContentFolderName = "BakedContent";
+
+	/**
+	* @brief Cached content file name.
+	*/
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
+	FString GlobalBakedContentFileName = "BCC_Global";
+	
 	UFUNCTION(BlueprintCallable)
 	FUserSlot GetOwnerPlayerSlot() const { return FUserSlot{RuntimeUserSlots[0]}; }
 };

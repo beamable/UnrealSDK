@@ -78,7 +78,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TMap<FString, UClass*> ContentTypeStringToContentClass;
-
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	TMap<UClass*, FString> ContentClassToContentTypeString;
+	
 	/**
 	 * This is invoked whenever a content is saved. 
 	 */
@@ -144,7 +146,7 @@ public:
 	static FBeamContentManifestId GetManifestIdFromDataTable(const UDataTable* Table);
 
 	UFUNCTION(BlueprintCallable)
-	void BakeManifest(FBeamContentManifestId Manifest, UBeamContentCache* Cache);
+	void BakeManifest(FBeamContentManifestId Manifest);
 
 	/**
 	 * @brief Downloads the remote manifest and content objects to the local cache. This destroys all local changes. 

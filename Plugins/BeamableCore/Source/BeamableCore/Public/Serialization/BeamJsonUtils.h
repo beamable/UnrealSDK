@@ -120,9 +120,12 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 			static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, IBeamJsonSerializableUObject>::Value);
 			for (const auto& Value : Array)
 			{
-				Serializer->WriteObjectStart();
-				Value->BeamSerializeProperties(Serializer);
-				Serializer->WriteObjectEnd();
+				if (Value)
+				{
+					Serializer->WriteObjectStart();
+					Value->BeamSerializeProperties(Serializer);
+					Serializer->WriteObjectEnd();
+				}
 			}
 		}
 		else if constexpr (std::is_same_v<TDataType, TSoftObjectPtr<TSemanticTypeRepresentation>>)
