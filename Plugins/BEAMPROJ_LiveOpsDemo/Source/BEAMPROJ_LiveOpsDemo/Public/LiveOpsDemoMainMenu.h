@@ -38,6 +38,9 @@ public:
 	FDelegate_Simple OnLiveOpsDemoReady;
 
 	UPROPERTY(BlueprintAssignable)
+	FDelegate_Simple OnLiveOpsErrorConnecting;
+
+	UPROPERTY(BlueprintAssignable)
 	FDelegate_Simple OnSampleStatUpdated;
 
 	UPROPERTY(BlueprintAssignable)
@@ -88,11 +91,14 @@ protected:
 						OnLiveOpsDemoReady.Broadcast();
 						UE_LOG(LogTemp, Display, TEXT("Payer initial data was set successfully"));
 					}
+					if (Resp.State == EBeamFullResponseState::RS_Error)
+					{
+						OnLiveOpsErrorConnecting.Broadcast();
+						UE_LOG(LogTemp,Display,TEXT("Could not Connect to Microservice, Code: %lld"),Resp.ErrorData.status);
+					}
 				});
 			FBeamRequestContext Ctx;
 			LiveOpsMS->CPP_PrepareNewPlayer(UserSlot,Request,Handler,Ctx,{},this);
-
-			
 		}
 	}
 	UFUNCTION()

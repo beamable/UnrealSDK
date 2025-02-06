@@ -69,11 +69,13 @@ nav:
       - Runtime Systems:
           - User Slots: 'user-reference/runtime-systems/user-slots.md'
           - Operations & Waits: 'user-reference/runtime-systems/operations-and-waits.md'
+          - Connectivity Management: 'user-reference/runtime-systems/connectivity.md'
           - Lower Level SDK: 'user-reference/runtime-systems/lower-level.md'
       - Beamable Services:
           - Indentity: 'user-reference/beamable-services/identity.md'
           - Content: 'user-reference/beamable-services/content.md'
           - Stats: 'user-reference/beamable-services/stats.md'
+          - Announcements: 'user-reference/beamable-services/announcements.md'
           - Inventory: 'user-reference/beamable-services/inventory.md'
           - Stores: 'user-reference/beamable-services/stores.md'
           - Lobbies: 'user-reference/beamable-services/lobbies.md'
