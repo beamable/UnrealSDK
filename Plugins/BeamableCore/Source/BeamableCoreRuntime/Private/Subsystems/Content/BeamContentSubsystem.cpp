@@ -660,17 +660,18 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 			// Create a memory reader to read the binary data
 			FMemoryReader Reader(FileData, true);
 
-			LoadedCacheContent->SerializeToBinary(Reader,ContentTypeStringToContentClass,ContentClassToContentTypeString);
-
-			bFoundDataInCacheFile = true;
+			if (LoadedCacheContent->SerializeToBinary(Reader,ContentTypeStringToContentClass,ContentClassToContentTypeString))
+			{
+				bFoundDataInCacheFile = true;
 				
-			BakedContent.Add(LoadedCacheContent->ManifestId, LoadedCacheContent);
-			LiveContent.Add(LoadedCacheContent->ManifestId, DuplicateObject<UBeamContentCache>(LoadedCacheContent, GetTransientPackage()));
+				BakedContent.Add(LoadedCacheContent->ManifestId, LoadedCacheContent);
+				LiveContent.Add(LoadedCacheContent->ManifestId, DuplicateObject<UBeamContentCache>(LoadedCacheContent, GetTransientPackage()));
 
 			
-			UE_LOG(LogBeamContent, Log, TEXT("Found content in the cached files"));
+				UE_LOG(LogBeamContent, Log, TEXT("Found content in the cached files"));
 			
-			GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
+				GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
+			}
 		}
 	}
 
@@ -691,14 +692,21 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 			
 				FMemoryReader Reader(FileData, true);
 
-				LoadedBakedContent->SerializeToBinary(Reader,ContentTypeStringToContentClass,ContentClassToContentTypeString);
+				if (LoadedBakedContent->SerializeToBinary(Reader,ContentTypeStringToContentClass,ContentClassToContentTypeString))
+				{
+					BakedContent.Add(LoadedBakedContent->ManifestId, LoadedBakedContent);
+					LiveContent.Add(LoadedBakedContent->ManifestId, DuplicateObject<UBeamContentCache>(LoadedBakedContent, GetTransientPackage()));
+					
+					GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
 
-				BakedContent.Add(LoadedBakedContent->ManifestId, LoadedBakedContent);
-				LiveContent.Add(LoadedBakedContent->ManifestId, DuplicateObject<UBeamContentCache>(LoadedBakedContent, GetTransientPackage()));
-				
-				GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
-
-				UE_LOG(LogBeamContent, Log, TEXT("Found content in the baked files"));
+					UE_LOG(LogBeamContent, Log, TEXT("Found content in the baked files"));
+				}
+				else
+				{
+					GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op,TEXT("Data found in the baked file was corrupted or inconsistent with current version"));
+					GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, {});
+				}
+			
 				
 			}
 			else

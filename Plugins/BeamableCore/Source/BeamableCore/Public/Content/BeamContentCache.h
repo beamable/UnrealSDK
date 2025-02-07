@@ -29,7 +29,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TArray<FBeamRemoteContentManifestEntry> LatestRemoteManifest;
 
-	void SerializeToBinary(FArchive& Ar,const TMap<FString, UClass*>& ContentTypeStringToContentClass,const TMap<UClass*, FString>& ContentClassToContentTypeString)
+	bool SerializeToBinary(FArchive& Ar,const TMap<FString, UClass*>& ContentTypeStringToContentClass,const TMap<UClass*, FString>& ContentClassToContentTypeString)
 	{
 		if (Ar.IsSaving())
 		{
@@ -51,10 +51,26 @@ public:
 				
 				if (ContentObject)
 				{
+					
 					ContentObject->GetClass()->SerializeTaggedProperties(Ar,(uint8*) ContentObject,ContentObject->GetClass(),nullptr);
 
+					int64 PositionBeforeUObjectData = Ar.Tell();
+
+					//Write an empty int to overwrite it again later with the final position after writing the uobject
+					int64 UObjectsDataSize = 0;
+					Ar << UObjectsDataSize;
 					//SerializeTaggedProperties will not serialize UObjects so a custom function for serializing UObjects needs to be called.
 					ContentObject->SerializeUObjects(Ar);
+
+					int64 FinalPosition = Ar.Tell();
+
+					//Seek to the placae before the uobject serialization began
+					Ar.Seek(PositionBeforeUObjectData);
+
+					//Overwrite the integar we wrote before with the final position after writing the uobject
+					Ar<<FinalPosition;
+					
+					Ar.Seek(FinalPosition);
 				}
 			}
 
@@ -108,9 +124,28 @@ public:
 				{
 					ContentObject->GetClass()->SerializeTaggedProperties(Ar,(uint8*) ContentObject,ContentObject->GetClass(),nullptr);
 
+
+					int64 FinalPositionAfterReadingUObjectData;
+					//Get the position in which the uobject reading should be finished at
+					Ar<<FinalPositionAfterReadingUObjectData;
+					
 					//SerializeTaggedProperties will not serialize UObjects so a custom function for serializing UObjects needs to be called.
 					ContentObject->SerializeUObjects(Ar);
 
+					int64 CurrenArchivePos = Ar.Tell();
+					
+					if (CurrenArchivePos > FinalPositionAfterReadingUObjectData)
+					{
+						UE_LOG(LogTemp, Error, TEXT("While serializing a uboject more data was read than possible, ignoring the rest of serialization"));
+						return false;
+					}
+					else if (CurrenArchivePos < FinalPositionAfterReadingUObjectData)
+					{
+						Ar.Seek(FinalPositionAfterReadingUObjectData);
+						UE_LOG(LogTemp, Warning, TEXT("While serializing a Uboject less data was read than it should"));
+					}	
+
+					
 					Cache.Add(ContentId,ContentObject);
 				}
 				
@@ -148,5 +183,7 @@ public:
 			}
 			
 		}
+
+		return true;
 	}
 };
