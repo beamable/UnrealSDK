@@ -35,11 +35,11 @@ To set up an organization and realm to run this sample, follow the steps below.
             2. In the `Content` section, add a Gift that gives some amount of `coin` to the user. Optionally, you can also gift them an instance of the `sample_item` with a property called `level` set to `1`.
             3. You can leave the rest as the default.
 
-# Running the Sample in PIE
+# Running the Sample in Editor
 Now you're set up to run the sample.
 
 1. Open the Unreal editor.
-2. Go to the `Microservice` window.
+2. Go to the `Beamable -> Microservice` window.
       1. You should see the `LiveOpsDemoMS` service there. Select it.
       2. Click `Run` and wait until you see the `Service ready for traffic` log line (and the running icon in the Microservice's card to change).
       3. After you're done with the sample, don't forget to come here and stop the service.
