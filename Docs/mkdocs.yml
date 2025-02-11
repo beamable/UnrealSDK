@@ -97,10 +97,10 @@ nav:
 
   - Samples: 
     - Setup Sample Projects: 'samples/intro.md'
-    - Sample Projects:    
+    - Sample Projects:
+      - LiveOps: 'samples/live-ops-demo.md'
       - Discord: 'samples/discord-demo.md'
       - Steam: 'samples/steam-demo.md'      
-      - LiveOps: 'samples/live-ops-demo.md'
       - Hathora: 'samples/hathora-demo.md'
 
 copyright: |

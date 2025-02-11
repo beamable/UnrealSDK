@@ -1,9 +1,10 @@
 # LiveOps Sample
+
 This demo showcases how you can use the **Beamable Unreal SDK**'s in LiveOps game projects. Particularly it focus on the Player Stats, Announcements and Inventory Systems.
 
 ![liveops.png](../media/imgs/liveops.png)
 
-# Introduction
+## Introduction
 
 Aside from our `BeamableCore` Plugin, here's what the sample contains:
 
@@ -12,7 +13,7 @@ Aside from our `BeamableCore` Plugin, here's what the sample contains:
 
 To set up this sample you'll need a a Beamable Account and a Realm. To configure the repo for the sample run `dotnet beam unreal select-sample BEAMPROJ_LiveOpsDemo`.
 
-# Setting up the Project
+## Setting up the Project
 To set up an organization and realm to run this sample, follow the steps below.
 
 1. Go to the Beamable Portal and create a new Beamable realm called `liveops-demo`    
@@ -35,7 +36,7 @@ To set up an organization and realm to run this sample, follow the steps below.
             2. In the `Content` section, add a Gift that gives some amount of `coin` to the user. Optionally, you can also gift them an instance of the `sample_item` with a property called `level` set to `1`.
             3. You can leave the rest as the default.
 
-# Running the Sample in Editor
+## Running the Sample in Editor
 Now you're set up to run the sample.
 
 1. Open the Unreal editor.
@@ -51,7 +52,7 @@ Now you're set up to run the sample.
       2. If you can't see plugin content in your content browser, you can change the settings of the UE `Content Browser` to display it.
 5. Play the `LiveOpsDemo` in the Editor.
 
-# Tips and Tricks
+## Tips and Tricks
 At runtime, the sample works in the following way:
 
 1. Every time you run the demo, it will initialize the player inventory with 3 sample items that have the an item property called `level` set to `1`.    
@@ -64,7 +65,7 @@ At runtime, the sample works in the following way:
 4. In the Inventory page, You can see each of the `sample_item` instances the player has and their level at the right portion of the screen.
       1. You should be able to upgrade the item level using the upgrade button.
 
-# Can I use it as a Template?
+## Can I use it as a Template?
 
 This sample is not meant to be used as a template directly, however, its components are free for you to copy and use in your own project. Here's what these are:
 

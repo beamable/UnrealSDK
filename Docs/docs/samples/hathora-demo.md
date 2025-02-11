@@ -1,4 +1,8 @@
+# Hatora Integration Sample
+
 This demo, created from UE's FPS Template, show-cases how you can use the **Unreal SDK**, **OnlineSubsystemBeamable** and **Beamable Microservices** to integrate with Hathora (a game server orchestration provider).
+
+## Introduction
 
 Aside from our `BeamableCore` Plugin and assets from the FPS Template, here's what the sample contains:
 
@@ -97,8 +101,9 @@ There's a known issue that'll prevent you from actually getting PIE to connect t
 
 So there's still some value in looking into this sample in this version until this is fixed so we opted to release it anyway.
 
-#### What can you do with this sample?
-**This sample is NOT a template you can start your own repository from.** 
+## Can I use it as a Template?
+
+This sample is not meant to be used as a template directly, however, its components are free for you to copy and use in your own project. Here's what these are:
 
 However, its Beamable code components are free for you to copy and use in your own project. Here's what these are:
 
@@ -106,5 +111,5 @@ However, its Beamable code components are free for you to copy and use in your o
 - Beamable code inside `BEAMPROJ_HathoraDemo` except code inside a `ThirdParty` directory.
 - Content inside the `BEAMPROJ_HathoraDemo` except things inside a `ThirdParty` directory.
 
-!!! note "Why don't we provide a client build too?"
-	Because clients must be pointed at your organization's `hathora-demo` realm. As such, you'd need to generate the build yourself, which you can do by packaging it normally for any of our supported platforms.
+## Why don't we provide a client build?
+Because clients must be pointed at your organization's `hathora-demo` realm. As such, you'd need to generate the build yourself, which you can do by packaging it normally for any of our supported platforms.

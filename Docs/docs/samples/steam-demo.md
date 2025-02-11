@@ -1,11 +1,8 @@
-<style>
-img[src*='#center'] { 
-    display: block;
-    margin: auto;
-}
-</style>
+# Steam Integration Sample
 
 This demo showcases how you can use the **Unreal SDK** and **Beamable Microservices** to integrate with Steam.
+
+## Introduction
 
 Aside from our `BeamableCore` Plugin, here's what the sample contains:
 
@@ -19,10 +16,10 @@ To set up this sample you'll need a few things:
 
 To configure the sample, run `dotnet beam unreal select-sample BEAMPROJ_SteamDemo`.
 
-## Setting up Beamable & Steam Application
-
 !!! note "Assumptions"
-	Instructions below assume that you already have the Steam application created, if that is not the case create one first.
+      Instructions below assume that you already have the Steam application created, if that is not the case create one first.
+
+## Setting Steam Application
 
 Since this sample requires several resources, we do not host it ourselves. So, in order to access the sample we'll go set up a Steam account and setup the sample:
 
@@ -32,6 +29,8 @@ Since this sample requires several resources, we do not host it ourselves. So, i
 4. Make sure that game is added to user that you want to use to login. To do that:
 	1. Generate a Steam Key.
 	2. Add it to your Steam account so you can access the game.
+
+## Setting up Beamable Systems
 
 Now, you'll need to configure a Beamable realm so you can use it:
 
@@ -63,11 +62,10 @@ Now, you are ready to sign into a game using Steam.
 
 ## Playing the sample
 
-!!! warninig "Starting the sample"
-	Testing the Steam integration from the editor should be performed in `Standalone Game` mode. 
-	![](./images/steam-demo-PIE-mode.png#center)
-	Steam integration can encounter challenges when running in PIE mode. For this reason, 	Microservice needs to be deployed as local development of federation only works with PIE when not in Standalone Game mode.
+Testing the Steam integration from the editor should be performed in `Standalone Game` mode.
+![steam-demo-PIE-mode.png](../media/imgs/steam-demo-PIE-mode.png)
 
+Steam integration can encounter challenges when running in PIE mode. For this reason, 	Microservice needs to be deployed as local development of federation only works with PIE when not in Standalone Game mode.
 
 In order to test the sample:
 
@@ -75,16 +73,13 @@ In order to test the sample:
 - It should automatically try to login to that account.
 - You should see your "Steam" status change to playing.
 
-#### What can you do with this sample?
+## Can I use it as a Template?
 
-!!! warning 
-	This sample is NOT a template you can start your own repository from.
-
-However, its Beamable code components are free for you to copy and use in your own project. Here's what these are:
+This sample is NOT a template you can start your own repository from. However, its Beamable code components are free for you to copy and use in your own project. Here's what these are:
 
 - The `SteamDemo` Microservice.
 - Beamable code inside `BEAMPROJ_SteamDemo` except code inside a `ThirdParty` directory.
 - Content inside the `BEAMPROJ_SteamDemo` except things inside a `ThirdParty` directory.
 
-!!! note "Why don't we provide a client build?"
-	Because clients must be pointed at your `steam-demo` realm. As such, you'd need to generate the build yourself, which you can do by packaging it normally for any of our supported platforms.
+## Why don't we provide a client build?
+Because clients must be pointed at your `steam-demo` realm. As such, you'd need to generate the build yourself, which you can do by packaging it normally for any of our supported platforms.

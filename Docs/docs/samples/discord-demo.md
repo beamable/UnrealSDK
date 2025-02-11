@@ -1,4 +1,8 @@
+# Discord Login and Integration Sample
+
 This demo, showcases how you can use the **Unreal SDK** and **Beamable Microservices** to integrate with Discord for community management tools.
+
+## Introduction
 
 Aside from our `BeamableCore` Plugin, here's what the sample contains:
 
@@ -12,11 +16,10 @@ To set up this sample you'll need a few things:
 
 To configure the sample, run `dotnet beam unreal select-sample BEAMPROJ_DiscordDemo`.
 
-## Setting up Beamable & Discord Application
-
 !!! note "Assumptions"
-	Instructions below assume that you already have the Discord server that you want to use for integration. If that is not the case create one first. Make sure that you have the admin access to the Discord server of choice.
+      Instructions below assume that you already have the Discord server that you want to use for integration. If that is not the case create one first. Make sure that you have the admin access to the Discord server of choice.
 
+## Setting up Beamable & Discord Application
 Since this sample requires several resources, we do not host it ourselves. So, in order to access the sample we'll go set up a Discord account and setup the sample Discord bot:
 
 1. Log into your [Discord.dev](https://discord.com/developers/applications) account.
@@ -38,6 +41,8 @@ Since this sample requires several resources, we do not host it ourselves. So, i
       4. Create a `enabled-matchmaking` role.
       5. Right click on the role and select the option `Copy Role ID` and set it aside.
       6. Pick any text channel. Right click on the channel select the option `Copy Channel ID` and set it aside.
+
+## Setting up Beamable Realm
 
 Now, you'll need to configure a Beamable realm so you can use it.
 
@@ -68,7 +73,7 @@ Now, you'll need to configure a Beamable realm so you can use it.
 
 Now, you are ready to sign into a game using Discord.
 
-## Playing the sample through PIE
+## Playing the sample in Editor
 
 In order to test the sample:
 
@@ -82,15 +87,14 @@ In order to test the sample:
 ![discord_sample_notify.png](../media/imgs/discord_sample_notify.png)
 
 In order to actually gate matchmaking you'll need to set up a rule in your `GameType` content that excludes people from the queue that do not have the role. This is not shown on this demo.
-#### What can you do with this sample?
 
-**This sample is NOT a template you can start your own repository from.** 
+## Can I use it as a Template?
 
-However, its Beamable code components are free for you to copy and use in your own project. Here's what these are:
+This sample is not meant to be used as a template directly, however, its components are free for you to copy and use in your own project. Here's what these are:
 
 - The `DiscordDemo` Microservice.
 - Beamable code inside `BEAMPROJ_DiscordDemo` except code inside a `ThirdParty` directory.
 - Content inside the `BEAMPROJ_DiscordDemo` except things inside a `ThirdParty` directory.
 
-!!! note "Why don't we provide a client build?"
-	Because clients must be pointed at your `discord-demo` realm. As such, you'd need to generate the build yourself, which you can do by packaging it normally for any of our supported platforms.
+## Why don't we provide a client build?
+Because clients must be pointed at your `discord-demo` realm. As such, you'd need to generate the build yourself, which you can do by packaging it normally for any of our supported platforms.
