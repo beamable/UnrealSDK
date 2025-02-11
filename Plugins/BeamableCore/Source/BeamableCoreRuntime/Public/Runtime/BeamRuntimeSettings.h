@@ -75,4 +75,21 @@ public:
 
 
 	FStreamableManager& GetStreamableManager() { return ContentStreamingManager; }
+
+	/**
+	 * @brief Before marking a UserSlot as in CONN_Offline status, we'll attempt to reconnect this amount of times.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Connectivity")
+	int ConnectivityRetryCountBeforeOffline = 1;
+
+	/**
+	 * @brief CONN_Fixup is an intermediate state for when you reconnect. For complex reconnection flows, it can be necessary something more than just a "reconnected" callback.
+	 * However, in simple cases, a "reconnected" callback is sufficient.
+	 * For those cases, set this to true so that we leave the CONN_Fixup state and go back into CONN_Online immediately after running the callback.
+	 *
+	 * When this is false, you must call UBeamConnectivityManager::NotifyFixupComplete at some point in your own code.
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Connectivity")
+	bool AutomaticallyNotifyFixupComplete = true;
+
 };

@@ -53,13 +53,28 @@ void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, 
 
 			if (CurrentState == CONN_Offline)
 			{
-				CurrentState = CONN_Fixup;				
-				const auto Handler = FTickerDelegate::CreateLambda([this](float)
+				CurrentState = CONN_Fixup;
+
+				OnReconnectedCode.ExecuteIfBound(this);
+				OnReconnected.Broadcast(this);
+				
+				if (GetDefault<UBeamRuntimeSettings>()->AutomaticallyNotifyFixupComplete)
 				{
-					const auto _ = FixupUpdate.ExecuteIfBound(this);
-					return CurrentState == CONN_Fixup;
-				});
-				FixupUpdateHandle = FTSTicker::GetCoreTicker().AddTicker(Handler);
+					NotifyFixupComplete();
+				}
+				else
+				{
+					const auto Handler = FTickerDelegate::CreateLambda([this](float)
+					{
+						if (CurrentState == CONN_Fixup)
+						{
+							FixupTickCode.ExecuteIfBound(this);
+						   FixupTick.Broadcast(this);
+						}
+						return CurrentState == CONN_Fixup;
+					});
+					FixupUpdateHandle = FTSTicker::GetCoreTicker().AddTicker(Handler);
+				}
 			}
 		}
 	}
@@ -80,13 +95,30 @@ void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, 
 			       *StaticEnum<ENotificationMessageType>()->GetNameByValue(Evt.EventType).ToString(),
 			       *Evt.ConnectionFailedData.Error)
 
-			// If we fail to reconnect more than once, we should go into offline mode.
-			if (Evt.ConnectionFailedData.RetryCount > 1)
+			// If we're already offline and just failed to reconnect, we just bump this counter.
+			if (this->CurrentState == CONN_Offline)
 			{
-				this->CurrentState = CONN_Offline;				
+				this->CurrentReconnectionCount += 1;				
+			}
+			
+			// If we fail to reconnect more than once, we should go into offline mode.
+			if (this->CurrentState != CONN_Offline && Evt.ConnectionFailedData.RetryCount > GetDefault<UBeamRuntimeSettings>()->ConnectivityRetryCountBeforeOffline)
+			{
+				this->CurrentState = CONN_Offline;
+				this->ConnectionLostCountInSession += 1;
+				this->CurrentReconnectionCount = 0;
+				this->CurrentConnectionLostTime = FDateTime::UtcNow();
+
+				OnConnectionLostCode.ExecuteIfBound(this);
+				OnConnectionLost.Broadcast(this);
+
 				const auto Handler = FTickerDelegate::CreateLambda([this](float)
 				{
-					const auto _ = ReconnectionUpdate.ExecuteIfBound(this);
+					if (CurrentState == CONN_Offline)
+					{
+						const auto _ = ReconnectionTickCode.ExecuteIfBound(this);
+					   ReconnectionTick.Broadcast(this);
+					}
 					return CurrentState == CONN_Offline;
 				});
 				ReconnectingUpdateHandle = FTSTicker::GetCoreTicker().AddTicker(Handler);
@@ -235,16 +267,7 @@ void UBeamRuntime::Initialize(FSubsystemCollectionBase& Collection)
 	// Initialize user ConnectivityState for each slot
 	for (FString RuntimeUserSlot : GetDefault<UBeamCoreSettings>()->RuntimeUserSlots)
 	{
-		UBeamConnectivityManager* ConnectivityManager = NewObject<UBeamConnectivityManager>(this);
-		ConnectivityManager->Runtime = this;
-		ConnectivityManager->UserSlots = UserSlotSystem;
-		ConnectivityManager->RequestTracker = RequestTrackerSystem;
-		ConnectivityManager->Notifications = NotificationSystem;
-		ConnectivityManager->UserSlot = RuntimeUserSlot;
-		ConnectivityManager->CurrentState = CONN_Offline;
-		ConnectivityManager->CurrentConnectionLostTime = FDateTime::UtcNow();
-		ConnectivityManager->ConnectionLostCountInSession = 0;
-		ConnectivityState.Add(RuntimeUserSlot, ConnectivityManager);
+		EnsureConnectivityManagerForSlot({RuntimeUserSlot});
 	}
 }
 
@@ -362,7 +385,7 @@ void UBeamRuntime::TriggerInitializeWhenUnrealReady(bool ApplyFrictionlessLogin,
 {
 	const FBeamRealmHandle TargetRealm = GetDefault<UBeamCoreSettings>()->TargetRealm;
 	const FString TargetAPIUrl = GEngine->GetEngineSubsystem<UBeamEnvironment>()->GetAPIUrl();
-	
+
 	// Start-up flow
 	if (TargetRealm.Cid.AsLong == -1 || TargetRealm.Pid.AsString.IsEmpty())
 	{
@@ -760,6 +783,18 @@ void UBeamRuntime::TriggerOnUserSlotCleared(const EUserSlotClearedReason& Reason
 	// If we clear the slot during login or signup due to failure, we don't need to run the rest of the flow.
 	if (Reason == USCR_FailedAuthentication)
 		return;
+
+	// Reset some connectivity metrics
+	if (ConnectivityState.Contains(UserSlot))
+	{
+		UBeamConnectivityManager* ConnectivityManager = ConnectivityState.FindRef(UserSlot);
+		ConnectivityManager->CurrentState = CONN_Offline;
+		ConnectivityManager->CurrentConnectionLostTime = FDateTime::UtcNow();
+		ConnectivityManager->ConnectionLostCountInSession = 0;
+		ConnectivityManager->CurrentReconnectionCount = 0;
+	}
+
+	const auto Connectivity = ConnectivityState.FindRef(UserSlot);
 
 	// Let BeamRuntimeSubsystems run their callbacks
 	UBeamRequestTracker* RequestTracker = RequestTrackerSystem;
@@ -1808,6 +1843,8 @@ void UBeamRuntime::RunPostAuthenticationSetup_PrepareNotificationService(FGetCli
 
 	if (Resp.State == RS_Success)
 	{
+		EnsureConnectivityManagerForSlot(UserSlot);
+
 		const auto Connectivity = ConnectivityState.FindRef(UserSlot);
 		const auto ConnHandler = FOnNotificationEvent::CreateUObject(Connectivity, &UBeamConnectivityManager::ConnectionHandler, BeamRealmUser, Op);
 
@@ -1963,6 +2000,23 @@ void UBeamRuntime::FillDefaultSessionHeaders(TMap<FString, FString>& Headers)
 	Headers.Add(BEAM_SESSION_HEADER_SOURCE, TEXT(""));
 	Headers.Add(BEAM_SESSION_HEADER_LOCALE, Locale);
 	Headers.Add(BEAM_SESSION_HEADER_LANGUAGE, FString::Format(TEXT("{0},{1}"), {Locale, TEXT("ISO639")}));
+}
+
+void UBeamRuntime::EnsureConnectivityManagerForSlot(FUserSlot UserSlot)
+{
+	if (!ConnectivityState.Contains(UserSlot))
+	{
+		UBeamConnectivityManager* ConnectivityManager = NewObject<UBeamConnectivityManager>(this);
+		ConnectivityManager->Runtime = this;
+		ConnectivityManager->UserSlots = UserSlotSystem;
+		ConnectivityManager->RequestTracker = RequestTrackerSystem;
+		ConnectivityManager->Notifications = NotificationSystem;
+		ConnectivityManager->UserSlot = UserSlot;
+		ConnectivityManager->CurrentState = CONN_Offline;
+		ConnectivityManager->CurrentConnectionLostTime = FDateTime::UtcNow();
+		ConnectivityManager->ConnectionLostCountInSession = 0;
+		ConnectivityState.Add(UserSlot, ConnectivityManager);
+	}
 }
 
 void UBeamRuntime::SendAnalyticsEvent(const FString& EventOpCode, const FString& EventCategory, const FString& EventName, const TArray<TSharedRef<FJsonObject>>& EventParamsObj) const

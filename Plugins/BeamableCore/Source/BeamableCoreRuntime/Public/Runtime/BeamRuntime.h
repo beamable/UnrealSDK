@@ -23,6 +23,7 @@
 
 class UBeamRuntimeSubsystem;
 class UBeamNotifications;
+class UBeamConnectivityManager;
 
 /**
  * State of connectivity for a specific UserSlot.
@@ -39,15 +40,15 @@ enum EBeamRuntimeConnectivityState
 	CONN_Online,
 };
 
-class UBeamConnectivityManager;
-DECLARE_DELEGATE_OneParam(FOnBeamConnectivityUpdate, UBeamConnectivityManager*)
+DECLARE_DELEGATE_OneParam(FOnBeamConnectivityEventCode, UBeamConnectivityManager*);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamConnectivityEvent, UBeamConnectivityManager*, Manager);
 
 /**
  * Manager that tracks connectivity states and the DAG of FOfflineOperationData to run during the Fixup process.
  * Exposes an API to manage the DAG while in Offline modes.
  */
-UCLASS()
-class UBeamConnectivityManager : public UObject
+UCLASS(BlueprintType)
+class BEAMABLECORERUNTIME_API UBeamConnectivityManager : public UObject
 {
 	GENERATED_BODY()
 
@@ -72,68 +73,101 @@ public:
 	UPROPERTY()
 	UBeamNotifications* Notifications;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	FUserSlot UserSlot;
 
+	/**
+		* @brief Bind a function to this that defines the process of recovering from a connectivity loss event (CurrentState == CONN_Fixup).
+		*/
+	UPROPERTY(BlueprintAssignable)
+	FOnBeamConnectivityEvent FixupTick;
+	/** @copydoc FixupTick	 */
+	FOnBeamConnectivityEventCode FixupTickCode;
+
 
 	/**
-	 * Bind a function to this that defines the process of recovering from a connectivity loss event (CurrentState == CONN_Fixup).
+	* @brief Bind a function to this that will run ONCE when the connection is re-established but BEFORE we set up the FixupUpdate.  
 	 */
-	FOnBeamConnectivityUpdate FixupUpdate;
+	UPROPERTY(BlueprintAssignable)
+	FOnBeamConnectivityEvent OnReconnected;
+
+	/**	@copydoc OnReconnected	 */
+	FOnBeamConnectivityEventCode OnReconnectedCode;
 
 	/**
-	 * Bind a function to this that defines a tick function that runs every frame while this user's CurrentState == CONN_Offline.  
+	*  @brief Bind a function to this that defines a tick function that runs every frame while this user's CurrentState == CONN_Offline.
+	*/
+	UPROPERTY(BlueprintAssignable)
+	FOnBeamConnectivityEvent ReconnectionTick;
+	/** @copydoc ReconnectionTick	*/
+	FOnBeamConnectivityEventCode ReconnectionTickCode;
+
+	/**
+	* @brief Bind a function to this that will run ONCE when the reconnection process begins (when is detected BEFORE we set up the ReconnectionUpdate tick).  
 	 */
-	FOnBeamConnectivityUpdate ReconnectionUpdate;
+	UPROPERTY(BlueprintAssignable)
+	FOnBeamConnectivityEvent OnConnectionLost;
+
+	/**	@copydoc OnConnectionLost	 */
+	FOnBeamConnectivityEventCode OnConnectionLostCode;
 
 
 	/**
 	 * The number of times the connection was dropped this session.
 	 * TODO: Should reset when a user logs out from this user slot.
 	 */
+	UPROPERTY(BlueprintReadOnly)
 	int32 ConnectionLostCountInSession;
 
 
 	/**
 	 * Current number of reconnection attempts.
 	 */
+	UPROPERTY(BlueprintReadOnly)
 	int32 CurrentReconnectionCount;
 
 	/**
 	 * The last time in which we detected a connection loss.
 	 * Holds the session start time.  
 	 */
+	UPROPERTY(BlueprintReadOnly)
 	FDateTime CurrentConnectionLostTime;
 
 
 	/**
-	 * @return Whether or not the owner of this manager is authenticated.
+	 * @return Whether the owner of this manager is authenticated.
 	 */
+	UFUNCTION(BlueprintCallable)
 	bool IsAuthenticated() const { return GEngine->GetEngineSubsystem<UBeamUserSlots>()->IsUserSlotAuthenticated(UserSlot, this); }
 
 	/**
-	 * @return Whether or not the slot this manager is associated with is authenticated AND if we are offline. The common case being: frictionless auth is disabled.
+	 * @return Whether the slot this manager is associated with is authenticated AND if we are offline. The common case being: frictionless auth is disabled.
 	 */
+	UFUNCTION(BlueprintCallable)
 	bool IsUnauthenticatedOfflineUser() const { return !IsAuthenticated() && CurrentState == CONN_Offline; }
 
 	/**
 	 * @return If we are authenticated, but have failed to connect the websocket during the auth flow. 
 	 */
+	UFUNCTION(BlueprintCallable)
 	bool HasNeverConnectedThisSession() const { return IsAuthenticated() && CurrentState == CONN_Offline && !ConnectionLostCountInSession; }
 
 	/**
 	 * @return If we are authenticated and were connected at some point and the connection was lost. 
 	 */
+	UFUNCTION(BlueprintCallable)
 	bool IsDisconnected() const { return IsAuthenticated() && CurrentState == CONN_Offline && ConnectionLostCountInSession; }
 
 	/**
 	 * @return If we are authenticated, lost our websocket connection and then recovered it; we are now in Fixup. 
 	 */
+	UFUNCTION(BlueprintCallable)
 	bool IsInFixup() const { return IsAuthenticated() && CurrentState == CONN_Fixup; }
 
 	/**
 	 * Game-makers should call this from inside their FixupUpdate once their fix up is finished.
 	 */
+	UFUNCTION(BlueprintCallable)
 	void NotifyFixupComplete() { if (IsInFixup()) { CurrentState = CONN_Online; } }
 };
 
@@ -256,12 +290,6 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 * @brief This gets called to trigger the post user sign in for the manually initialized subsystems.
 	 */
 	void TriggerManuallySubsystemsPostUserSignIn(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsToInit, FBeamOperationHandle Op);
-
-	/**
-	 * Manages connectivity and recovery for every user slot.
-	 */
-	UPROPERTY()
-	TMap<FUserSlot, UBeamConnectivityManager*> ConnectivityState;
 
 
 	/**
@@ -410,6 +438,18 @@ public:
 
 	UPROPERTY()
 	UBeamNotifications* NotificationSystem;
+
+	/**
+	 * Manages connectivity and recovery for every user slot.
+	 */
+	UPROPERTY(BlueprintReadOnly)
+	TMap<FUserSlot, UBeamConnectivityManager*> ConnectivityState;
+
+	/**
+	 * Gets the UBeamConnectivityManager for the owner user slot.
+	 */
+	UFUNCTION(BlueprintCallable)
+	UBeamConnectivityManager* GetOwnerSlotConnectivity() { return ConnectivityState[GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot()]; }
 
 	/**
 	 * Returns true when the SDK was initialized.  
@@ -611,38 +651,6 @@ public:
 	void CPP_UnregisterOnSdkInitFailed(FDelegateHandle Handle)
 	{
 		OnStartedFailedCode.Remove(Handle);
-	}
-
-	/**
-	 * @brief In CPP, use this function to bind a tick function that will run while this user is offline. 
-	 */
-	void CPP_RegisterReconnectionUpdate(FUserSlot UserSlot, FOnBeamConnectivityUpdate ReconnectionUpdate)
-	{
-		ConnectivityState[UserSlot]->ReconnectionUpdate = ReconnectionUpdate;
-	}
-
-	/**
-	 * @brief In CPP, use this function to bind a tick function that will run while this user has reconnected. 
-	 */
-	void CPP_RegisterConnectionFixupUpdate(FUserSlot UserSlot, FOnBeamConnectivityUpdate ConnectionFixupUpdate)
-	{
-		ConnectivityState[UserSlot]->FixupUpdate = ConnectionFixupUpdate;
-	}
-
-	/**
-	 * @brief In CPP, use this function to unbind an tick function that will run while this user is offline. 
-	 */
-	void CPP_UnregisterReconnectUpdate(FUserSlot UserSlot)
-	{
-		ConnectivityState[UserSlot]->ReconnectionUpdate.Unbind();
-	}
-
-	/**
-	 * @brief In CPP, use this function to unbind an tick function that will run while this user has reconnected. 
-	 */
-	void CPP_UnregisterConnectionFixupUpdate(FUserSlot UserSlot)
-	{
-		ConnectivityState[UserSlot]->FixupUpdate.Unbind();
 	}
 
 private:
@@ -941,6 +949,11 @@ private:
 	 * Adds the default information session information tracked by the SDK into the given header dictionary. 
 	 */
 	virtual void FillDefaultSessionHeaders(TMap<FString, FString>& Headers);
+
+	/**
+	 * Ensures a UBeamConnectivityManager exists for the given slot.
+	 */
+	void EnsureConnectivityManagerForSlot(FUserSlot UserSlot);
 
 public:
 	/**

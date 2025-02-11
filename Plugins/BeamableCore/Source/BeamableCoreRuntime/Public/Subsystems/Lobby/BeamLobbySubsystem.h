@@ -30,19 +30,39 @@ class UBeamLobbyState : public UObject
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	FGuid LobbyId;
-
+	/**
+	 * User slot whose lobby state we are tracking. 
+	 */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	FUserSlot OwnerUserSlot;
 
+	/**
+	 * The handle for the UBeamLobbyNotifications::CPP_SubscribeToLobbyUpdate we attach to each lobby state.
+	 * This is never unsubscribed.
+	 */
+	FDelegateHandle NotificationSubscriptionHandle;
+
+	/**
+	 * Id for the current lobby the OwnerUserSlot is in.
+	 */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	FGuid LobbyId;
+
+	/**
+	 * GamerTag of the OwnerUserSlotPlayer.
+	 */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	FBeamGamerTag OwnerGamerTag;
 
+	/**
+	 * Whether the OwnerUserSlot player is the host/owner of this lobby.
+	 */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	bool bIsLobbyOwner;
 
-	FDelegateHandle NotificationSubscriptionHandle;
+	UPROPERTY(BlueprintAssignable)
+	FOnLobbyEvent OnLobbyJoined;
+	FOnLobbyEventCode OnLobbyJoinedCode;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLobbyEvent OnLobbyDisbanded;
@@ -487,7 +507,7 @@ private:
 
 	// Helper Functions
 	void InitializeLobbyInfoForSlot(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser);
-	void UpdateLobbyPlayerInfo(FUserSlot Slot, const ULobby* LobbyData, FDelegateHandle NewSubscriptionDelegate);
+	void UpdateLobbyPlayerInfo(FUserSlot Slot, const ULobby* LobbyData);
 	void ReplaceOrAddKnownLobbyData(ULobby* LobbyData);
 	void ClearLobbyForSlot(FUserSlot Slot);
 	bool GuardSlotIsInLobby(const FUserSlot& Slot, UBeamLobbyState*& LobbyState);

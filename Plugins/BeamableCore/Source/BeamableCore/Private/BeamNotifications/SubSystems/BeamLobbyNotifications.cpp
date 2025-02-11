@@ -7,119 +7,20 @@
 
 void FLobbyUpdateNotificationMessage::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("event"), UBeamJsonUtils::EnumToSerializationName<EBeamLobbyEvent>(Type));
-	switch (Type)
-	{
-	case EBeamLobbyEvent::BEAM_LobbyCreated:
-		{
-			break;
-		}
-	case EBeamLobbyEvent::BEAM_LobbyDisbanded:
-		{
-			break;
-		}
-	case EBeamLobbyEvent::BEAM_DataChanged:
-		{
-			break;
-		}
-	case EBeamLobbyEvent::BEAM_PlayerJoined:
-		{
-			Serializer->WriteValue(TEXT("playerId"), PlayerJoinedData.JoinedGamerTag.AsString);
-			break;
-		}
-	case EBeamLobbyEvent::BEAM_PlayerLeft:
-		{
-			Serializer->WriteValue(TEXT("playerId"), PlayerLeftData.LeftGamerTag.AsString);
-			break;
-		}
-	case EBeamLobbyEvent::BEAM_PlayerKicked:
-		{
-			Serializer->WriteValue(TEXT("playerId"), PlayerKickedData.KickedGamerTag.AsString);
-			break;
-		}
-	default:
-		{
-			break;
-		}
-	}
+	Serializer->WriteValue(TEXT("Event"), UBeamJsonUtils::EnumToSerializationName<EBeamLobbyEvent>(Type));
+	Serializer->WriteValue(TEXT("Id"), LobbyId.ToString(EGuidFormats::Digits));
 }
 
 void FLobbyUpdateNotificationMessage::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("event"), UBeamJsonUtils::EnumToSerializationName<EBeamLobbyEvent>(Type));
-	switch (Type)
-	{
-	case EBeamLobbyEvent::BEAM_LobbyCreated:
-		{
-			break;
-		}
-	case EBeamLobbyEvent::BEAM_LobbyDisbanded:
-		{
-			break;
-		}
-	case EBeamLobbyEvent::BEAM_DataChanged:
-		{
-			break;
-		}
-	case EBeamLobbyEvent::BEAM_PlayerJoined:
-		{
-			Serializer->WriteValue(TEXT("playerId"), PlayerJoinedData.JoinedGamerTag.AsString);
-			break;
-		}
-	case EBeamLobbyEvent::BEAM_PlayerLeft:
-		{
-			Serializer->WriteValue(TEXT("playerId"), PlayerLeftData.LeftGamerTag.AsString);
-			break;
-		}
-	case EBeamLobbyEvent::BEAM_PlayerKicked:
-		{
-			Serializer->WriteValue(TEXT("playerId"), PlayerKickedData.KickedGamerTag.AsString);
-			break;
-		}
-	default:
-		{
-			break;
-		}
-	}
+	Serializer->WriteValue(TEXT("Event"), UBeamJsonUtils::EnumToSerializationName<EBeamLobbyEvent>(Type));
+	Serializer->WriteValue(TEXT("Id"), LobbyId.ToString(EGuidFormats::Digits));
 }
 
 void FLobbyUpdateNotificationMessage::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("event")), Type, OuterOwner);
-	switch (Type)
-	{
-	case EBeamLobbyEvent::BEAM_LobbyCreated:
-		{
-			break;
-		}
-	case EBeamLobbyEvent::BEAM_LobbyDisbanded:
-		{
-			break;
-		}
-	case EBeamLobbyEvent::BEAM_DataChanged:
-		{
-			break;
-		}
-	case EBeamLobbyEvent::BEAM_PlayerJoined:
-		{
-			PlayerJoinedData.JoinedGamerTag = Bag->GetStringField(TEXT("playerId"));
-			break;
-		}
-	case EBeamLobbyEvent::BEAM_PlayerLeft:
-		{
-			PlayerLeftData.LeftGamerTag = Bag->GetStringField(TEXT("playerId"));
-			break;
-		}
-	case EBeamLobbyEvent::BEAM_PlayerKicked:
-		{
-			PlayerKickedData.KickedGamerTag = Bag->GetStringField(TEXT("playerId"));
-			break;
-		}
-	default:
-		{
-			break;
-		}
-	}
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Event")), Type, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Id")), LobbyId, OuterOwner);	
 }
 
 void UBeamLobbyNotifications::Initialize(FSubsystemCollectionBase& Collection)
@@ -128,10 +29,10 @@ void UBeamLobbyNotifications::Initialize(FSubsystemCollectionBase& Collection)
 	Notifications = Collection.InitializeDependency<UBeamNotifications>();
 }
 
-void UBeamLobbyNotifications::SubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, FGuid LobbyId, const FOnLobbyUpdateNotification& Handler, UObject* ContextObject) const
+void UBeamLobbyNotifications::SubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, const FOnLobbyUpdateNotification& Handler, UObject* ContextObject) const
 {
 	FDelegateHandle Handle;
-	const auto      Key = FString::Format(*CTX_KEY_Lobby_Update, {LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower)});
+	const auto      Key = CTX_KEY_Lobby_Update;
 	if (!Notifications->TrySubscribeForMessage<FOnLobbyUpdateNotification, FLobbyUpdateNotificationMessage>(Slot, SocketName, Key, Handler, Handle, ContextObject))
 	{
 		UE_LOG(LogBeamNotifications, Warning, TEXT("Trying to subscribe to a non-existent socket. SLOT=%s, ID=%s, KEY=%s"), *Slot.Name, *SocketName.ToString(), *Key);
@@ -142,10 +43,10 @@ void UBeamLobbyNotifications::SubscribeToLobbyUpdate(const FUserSlot& Slot, cons
 	}
 }
 
-FDelegateHandle UBeamLobbyNotifications::CPP_SubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, FGuid LobbyId, const FOnLobbyUpdateNotificationCode& Handler, UObject* ContextObject) const
+FDelegateHandle UBeamLobbyNotifications::CPP_SubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, const FOnLobbyUpdateNotificationCode& Handler, UObject* ContextObject) const
 {
 	FDelegateHandle Handle;
-	const auto      Key = FString::Format(*CTX_KEY_Lobby_Update, {LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower)});
+	const auto      Key = CTX_KEY_Lobby_Update;
 	if (!Notifications->TrySubscribeForMessage<FOnLobbyUpdateNotificationCode, FLobbyUpdateNotificationMessage>(Slot, SocketName, Key, Handler, Handle, ContextObject))
 	{
 		UE_LOG(LogBeamNotifications, Warning, TEXT("Trying to subscribe to a non-existent socket. SLOT=%s, ID=%s, KEY=%s"), *Slot.Name, *SocketName.ToString(), *Key);
@@ -157,9 +58,9 @@ FDelegateHandle UBeamLobbyNotifications::CPP_SubscribeToLobbyUpdate(const FUserS
 	return Handle;
 }
 
-FDelegateHandle UBeamLobbyNotifications::CPP_UnsubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, FGuid LobbyId, const FDelegateHandle& Handle, UObject* ContextObject) const
+FDelegateHandle UBeamLobbyNotifications::CPP_UnsubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, const FDelegateHandle& Handle, UObject* ContextObject) const
 {
-	const auto Key = FString::Format(*CTX_KEY_Lobby_Update, {LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower)});
+	const auto Key = CTX_KEY_Lobby_Update;
 	if (!Notifications->TryUnsubscribeFromMessage(Slot, SocketName, Key, Handle, ContextObject))
 	{
 		UE_LOG(LogBeamNotifications, Verbose, TEXT("Failed to find the given handle so there was no need to unsubscribe. SLOT=%s, ID=%s, KEY=%s"), *Slot.Name, *SocketName.ToString(), *Key);

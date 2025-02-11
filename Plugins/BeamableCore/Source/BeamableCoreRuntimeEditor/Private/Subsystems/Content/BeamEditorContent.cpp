@@ -229,6 +229,43 @@ bool UBeamEditorContent::DownloadManifest(FBeamContentManifestId ContentManifest
 	return Res;
 }
 
+bool UBeamEditorContent::DownloadContent(FBeamContentManifestId ContentManifestId, TArray<FBeamContentId> Ids, FString& Err)
+{
+	const auto EditorSlot = Editor->GetMainEditorSlot();
+
+	FSlowTask* SlowTask = new FSlowTask(1, FText::FromString(TEXT("Downloading Content...")));
+	SlowTask->Initialize();
+	SlowTask->MakeDialog();
+	
+	bool Res = false;
+	UBeamCliContentPullCommand* PullCommand = NewObject<UBeamCliContentPullCommand>();
+	PullCommand->OnStreamOutput = [this](const TArray<UBeamCliContentPullStreamData*>& Data, const TArray<int64>&,
+										 const FBeamOperationHandle&)
+	{
+		for (const auto& D : Data)
+			UpdateLocalManifestCache(D->Manifests);
+	};
+	PullCommand->OnCompleted = [this, &Res, &Err, SlowTask](const int& ResCode, const FBeamOperationHandle&)
+	{
+		Res = ResCode == 0;
+		Err = Res ? TEXT("") : TEXT("FAILED_DOWNLOAD");
+		SlowTask->Destroy();
+		delete SlowTask;
+	};
+	
+	// Get all the content Ids.
+	auto IdsStr = TArray<FString>{};
+	for (FBeamContentId Id : Ids) IdsStr.Add(Id.AsString);
+	auto IdsParam = Ids.Num() > 0 ? FString::Printf(TEXT("--content-ids %s"), *FString::Join(IdsStr, TEXT(" "))) : TEXT("");
+
+	const auto ManifestsParam = FString::Printf(TEXT("--manifest-ids %s"), *ContentManifestId.AsString);
+	
+	Cli->RunCommandSync(PullCommand, {ManifestsParam, IdsParam});
+	SlowTask->EnterProgressFrame();
+
+	return Res;
+}
+
 UClass** UBeamEditorContent::FindContentTypeByName(FString TypeName)
 {
 	return AllContentTypes.FindByPredicate([TypeName](const UClass* Class)
