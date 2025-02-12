@@ -229,6 +229,8 @@ class BEAMABLECORE_API UBeamNotifications : public UEngineSubsystem
 {
 	GENERATED_BODY()
 
+	int UserSignOutCloseCode = 9999;
+
 	TMap<FString, TMap<FName, TSharedPtr<IWebSocket>>> OpenSockets;
 
 	TArray<FBeamWebSocketHandle> PlayModeHandles;

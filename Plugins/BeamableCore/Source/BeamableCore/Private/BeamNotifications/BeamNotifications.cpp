@@ -143,6 +143,7 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 		}
 #endif
 
+
 		// Trigger the event 
 		FNotificationEvent Evt;
 		Evt.EventType = ENotificationMessageType::Closed;
@@ -154,6 +155,13 @@ void UBeamNotifications::Connect(const FUserSlot& Slot, const FBeamRealmUser& Us
 		const bool bDidRun = EvtHandler.ExecuteIfBound(Evt);
 		ensureAlwaysMsgf(bDidRun, TEXT("Notification connection handler was not bound correctly! SLOT=%s, ID=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString());
 
+		if (StatusCode == UserSignOutCloseCode)
+		{
+			ConnectionEventHandlers.Remove(OutHandle);
+			MessageEventHandlers.Remove(OutHandle);
+			PlayModeHandles.Remove(OutHandle);
+			RetryCount.Remove(OutHandle);
+		}
 		UE_LOG(LogBeamNotifications, Verbose, TEXT("Connection Closed. SLOT=%s, ID=%s"), *OutHandle.NamespacedSlot, *OutHandle.Id.ToString());
 	});
 
@@ -241,12 +249,7 @@ void UBeamNotifications::CloseSocketsForSlot(const FUserSlot& Slot, UObject* Con
 			Handle.NamespacedSlot = NamespacedSlot;
 			Handle.Id = WebSocket.Key;
 
-			WebSocket.Value->Close(1000, TEXT("User signed out"));
-
-			ConnectionEventHandlers.Remove(Handle);
-			MessageEventHandlers.Remove(Handle);
-			PlayModeHandles.Remove(Handle);
-			RetryCount.Remove(Handle);
+			WebSocket.Value->Close(UserSignOutCloseCode, TEXT("User signed out"));
 		}
 		Slots->Reset();
 	}

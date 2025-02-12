@@ -902,8 +902,7 @@ void UBeamContentSubsystem::DownloadContentObjects(const FBeamContentManifestId 
 				{
 					auto CoreSettings = GetMutableDefault<UBeamCoreSettings>();
 					
-					const FString CachedContentPath =   FPaths::ProjectSavedDir() + CoreSettings->CachedContentFolderName + "/" +
-					CoreSettings->GlobalCachedContentFileName;
+					const FString CachedContentPath =   FPaths::ProjectSavedDir() + CoreSettings->CachedContentFolderName + "/" + CoreSettings->GlobalCachedContentFileName;
 					
 					UBeamContentCache* SavedContent = LiveContent[ManifestId];
 

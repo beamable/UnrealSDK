@@ -26,6 +26,10 @@
 			"Enabled": true
 		},
 		{
+			"Name": "BeamableUnrealMicroserviceClients",
+			"Enabled": true
+		},
+		{
 			"Name": "DiscordSDK",
 			"Enabled": true
 		}
