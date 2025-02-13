@@ -1,4 +1,4 @@
-# Discord Login and Integration Sample
+# Discord Integration Sample
 
 This demo, showcases how you can use the **Unreal SDK** and **Beamable Microservices** to integrate with Discord for community management tools.
 
@@ -19,7 +19,7 @@ To configure the sample, run `dotnet beam unreal select-sample BEAMPROJ_DiscordD
 !!! note "Assumptions"
       Instructions below assume that you already have the Discord server that you want to use for integration. If that is not the case create one first. Make sure that you have the admin access to the Discord server of choice.
 
-## Setting up Beamable & Discord Application
+## Setting Discord Application
 Since this sample requires several resources, we do not host it ourselves. So, in order to access the sample we'll go set up a Discord account and setup the sample Discord bot:
 
 1. Log into your [Discord.dev](https://discord.com/developers/applications) account.
@@ -42,34 +42,31 @@ Since this sample requires several resources, we do not host it ourselves. So, i
       5. Right click on the role and select the option `Copy Role ID` and set it aside.
       6. Pick any text channel. Right click on the channel select the option `Copy Channel ID` and set it aside.
 
-## Setting up Beamable Realm
+## Setting up Beamable
 
 Now, you'll need to configure a Beamable realm so you can use it.
 
 1. Go to the Beamable Portal and create a new Beamable realm called `discord-demo`.
-2. Go to the Portal (`Account`) and set aside your Customer Id (CID).
-3. Go to the Portal and set aside your realm's PID and Realm Secret (`Games -> YourGame -> discord-demo`).
-4. On the Portal open the Realm Config page of the `discord-demo` realm (`Operate -> Config`).
-5. Hit the `Add Config` button.
-6. Set the following key-value pairs for the namespace `discord_integration`:
+2. On the Portal open the Realm Config page of the `discord-demo` realm (`Operate -> Config`).
+3. Hit the `Add Config` button.
+4. Set the following key-value pairs for the namespace `discord_integration`:
       1. `matchmaking_roles_whitelist -> Your copied Role Id, can be multiple separated by comma`
       2. `bot_token -> Your Bot Token`
       3. `guild_id -> Your Discord Server ID` 
       4. `notify_channel -> Optional- Discord channel ID that bot will notify about status changes` 
-7. Open the `Plugins/BEAMPROJ_DiscordDemo/Overrides/Config/DefaultGame.ini`. 
+5. Open the `Plugins/BEAMPROJ_DiscordDemo/Overrides/Config/DefaultGame.ini`. 
       1. Replace the `DiscordAppId` in it with `Your App Id`.
       2. Regenerate project files.
-8. Compile and open the `BeamableUnreal` editor (it'll be configured as the `BEAMPROJ_DiscordDemo`) project.
-9. Sign into your Beamable account and go to the `discord-demo` realm.
+6. Compile and open the `BeamableUnreal` editor (it'll be configured as the `BEAMPROJ_DiscordDemo`) project.
+7. Sign into your Beamable account and go to the `discord-demo` realm.
       1. Hit `Apply to Build`.
-10.  Open a bash terminal at the `BeamableUnreal` root directory.
-11. Run `dotnet beam project enable --with-group BEAMPROJ_DiscordDemo`
-12. Run `dotnet beam project disable --without-group BEAMPROJ_DiscordDemo`
-13. Run `dotnet beam deploy plan`. 
+8. Open a bash terminal at the `BeamableUnreal` root directory.
+9. Guarantee Docker is open and running
+10. Run `dotnet beam deploy plan`. 
       1. This tells you details about the services you would deploy given your project's local state.
-14. Run `dotnet beam deploy release --latest-plan`. 
+11. Run `dotnet beam deploy release --latest-plan`. 
       1. This deploys the services outlined by the generated plan in the previous command. 
-15. Go to the Portal (`Operate -> Microservices`) and verify that the microservices have initialized.
+12. Go to the Portal (`Operate -> Microservices`) and verify that the microservices have initialized.
 
 Now, you are ready to sign into a game using Discord.
 
