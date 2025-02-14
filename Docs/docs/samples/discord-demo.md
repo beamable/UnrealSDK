@@ -32,8 +32,9 @@ Since this sample requires several resources, we do not host it ourselves. So, i
       2. Set as true all **Privileged Gateway Intents**, especially the **Server Members Intent**.
       3. Press the `Reset Token` button and set it aside (it will be required later on).
 5. Go to App `Settings->Installation`.
-      1. In `Install Link` select `Discord Provided Link`, copy and paste it into browser. 
-      2. Install the App into your Discord server of choice.
+      1. In `Install Link` select `Discord Provided Link`, copy and paste it into browser.
+      2. In `Default Install Settings` add `bot` to the `Scopes` field and `Administrator` to the `Permissions` field
+      3. Install the App into your Discord server of choice.
 6. Now open the Discord application.
       1. Open `Settings->Advanced` and enable the `Developer Mode` so that we can copy various Ids by right-clicking things in the UI.
       2. Right click on the server icon and select the option `Copy server ID` and set it aside.
@@ -58,15 +59,6 @@ Now, you'll need to configure a Beamable realm so you can use it.
       1. Replace the `DiscordAppId` in it with `Your App Id`.
       2. Regenerate project files.
 6. Compile and open the `BeamableUnreal` editor (it'll be configured as the `BEAMPROJ_DiscordDemo`) project.
-7. Sign into your Beamable account and go to the `discord-demo` realm.
-      1. Hit `Apply to Build`.
-8. Open a bash terminal at the `BeamableUnreal` root directory.
-9. Guarantee Docker is open and running
-10. Run `dotnet beam deploy plan`. 
-      1. This tells you details about the services you would deploy given your project's local state.
-11. Run `dotnet beam deploy release --latest-plan`. 
-      1. This deploys the services outlined by the generated plan in the previous command. 
-12. Go to the Portal (`Operate -> Microservices`) and verify that the microservices have initialized.
 
 Now, you are ready to sign into a game using Discord.
 
@@ -74,12 +66,15 @@ Now, you are ready to sign into a game using Discord.
 
 In order to test the sample:
 
-- Start game.
-- Press the `Sign In with Discord` button following instructions (discord will ask for permission).
-- After logging in, you should see information about being able to participate in matchmaking.
-- Adding and/or removing the role to the signed in user on Discord Server.
-- Observe the text on the UI changing to reflect your ability to participate in matchmaking.
-- Also, if `notify_channel` was specified correctly in configuration bot should inform about status change:
+1. Open the `BeamableUnreal` in the Unreal Editor
+2. Sign into your Beamable account in the `Beamable Window` and go to the `discord-demo` realm.
+3. Go to the `Microservices` and run the `DiscordSampleMS` microservice.
+4. Start game.
+5. Press the `Sign In with Discord` button following instructions (discord will ask for permission).
+6. After logging in, you should see information about being able to participate in matchmaking.
+7. Adding and/or removing the role to the signed in user on Discord Server.
+8. Observe the text on the UI changing to reflect your ability to participate in matchmaking.
+9. Also, if `notify_channel` was specified correctly in configuration bot should inform about status change:
 
 ![discord_sample_notify.png](../media/imgs/discord_sample_notify.png)
 
