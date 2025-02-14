@@ -128,10 +128,10 @@ void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, 
 	else if (Evt.EventType == Closed)
 	{
 		// This only runs during Authentication
-		if (IsDuringLogin)
+		if (IsDuringLogin && Evt.ClosedData.StatusCode != Notifications->UserSignOutCloseCode)
 		{
 			UE_LOG(LogBeamNotifications, Error, TEXT("Connection closed during login flow's attempt to connect to beamable's notification service! SLOT=%s, EVT_TYPE=%s"), *UserSlot.Name,
-			       *StaticEnum<ENotificationMessageType>()->GetNameByValue(Evt.EventType).ToString())
+			       *StaticEnum<ENotificationMessageType>()->GetNameByValue(Evt.EventType).ToString())			
 			UserSlots->ClearUserAtSlot(UserSlot, USCR_FailedAuthentication, true, this);
 			RequestTracker->TriggerOperationError(Op, Evt.ConnectionFailedData.Error);
 		}

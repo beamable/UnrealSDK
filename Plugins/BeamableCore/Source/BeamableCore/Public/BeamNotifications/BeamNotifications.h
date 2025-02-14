@@ -229,7 +229,6 @@ class BEAMABLECORE_API UBeamNotifications : public UEngineSubsystem
 {
 	GENERATED_BODY()
 
-	int UserSignOutCloseCode = 9999;
 
 	TMap<FString, TMap<FName, TSharedPtr<IWebSocket>>> OpenSockets;
 
@@ -249,6 +248,8 @@ class BEAMABLECORE_API UBeamNotifications : public UEngineSubsystem
 	virtual void Deinitialize() override;
 
 public:
+	const int UserSignOutCloseCode = 9999;
+
 	bool TryConnect(const FUserSlot& Slot, const FName& SocketName, const FString& Uri, const TMap<FString, FString>& ExtraHeaders, const FOnNotificationEvent& ConnectionEventHandler,
 	                FBeamWebSocketHandle& OutHandle, UObject* ContextObject);
 

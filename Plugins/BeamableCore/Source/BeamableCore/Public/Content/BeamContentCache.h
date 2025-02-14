@@ -29,30 +29,32 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TArray<FBeamRemoteContentManifestEntry> LatestRemoteManifest;
 
-	bool SerializeToBinary(FArchive& Ar,const TMap<FString, UClass*>& ContentTypeStringToContentClass,const TMap<UClass*, FString>& ContentClassToContentTypeString)
+	bool SerializeToBinary(FArchive& Ar, const TMap<FString, UClass*>& ContentTypeStringToContentClass, const TMap<UClass*, FString>& ContentClassToContentTypeString)
 	{
 		if (Ar.IsSaving())
 		{
 			Ar << ManifestId.AsString;
 
 			int32 CashSize = Cache.Num();
-		
+
 			Ar << CashSize; // Serialize the number of items in the Cache map
 			for (const TPair<FBeamContentId, UBeamContentObject*>& ItemPairCache : Cache)
 			{
 				FString ContentId = ItemPairCache.Key.AsString;
-				UBeamContentObject* ContentObject = ItemPairCache.Value; 
+				UBeamContentObject* ContentObject = ItemPairCache.Value;
 
 				//Save the content id so that we read it while loading to construct the object again
 				Ar << ContentId;
 
-				FString ContentTypeString  = ContentClassToContentTypeString[ContentObject->GetClass()];
+
+				FString ContentTypeString = ContentClassToContentTypeString.Contains(ContentObject->GetClass())
+					                            ? ContentClassToContentTypeString[ContentObject->GetClass()]
+					                            : TEXT("BEAM_NON_EXISTING_CONTENT_TYPE");
 				Ar << ContentTypeString;
-				
+
 				if (ContentObject)
 				{
-					
-					ContentObject->GetClass()->SerializeTaggedProperties(Ar,(uint8*) ContentObject,ContentObject->GetClass(),nullptr);
+					ContentObject->GetClass()->SerializeTaggedProperties(Ar, (uint8*)ContentObject, ContentObject->GetClass(), nullptr);
 
 					int64 PositionBeforeUObjectData = Ar.Tell();
 
@@ -68,19 +70,19 @@ public:
 					Ar.Seek(PositionBeforeUObjectData);
 
 					//Overwrite the integar we wrote before with the final position after writing the uobject
-					Ar<<FinalPosition;
-					
+					Ar << FinalPosition;
+
 					Ar.Seek(FinalPosition);
 				}
 			}
 
 			// Serialize the number of  hash items
 			int32 HashSize = Hashes.Num();
-			Ar << HashSize; 
+			Ar << HashSize;
 			for (const TPair<FBeamContentId, FString>& ItemPairCache : Hashes)
 			{
-				FString ContentId = ItemPairCache.Key.AsString; 
-				FString ContentHash = ItemPairCache.Value; 
+				FString ContentId = ItemPairCache.Key.AsString;
+				FString ContentHash = ItemPairCache.Value;
 				//Serializing the data for the pair objects in the hash map
 				Ar << ContentId;
 				Ar << ContentHash;
@@ -88,52 +90,57 @@ public:
 
 			// Serialize the number of  items inside LatestRemoteManifest
 			int32 LatestManifestSize = LatestRemoteManifest.Num();
-			Ar << LatestManifestSize; 
+			Ar << LatestManifestSize;
 			for (const FBeamRemoteContentManifestEntry& Entry : LatestRemoteManifest)
 			{
 				FString Uri = Entry.Uri;
 				FString Version = Entry.Version;
 
 				//Serializing the data inside the manifest entries
-				Ar<<Uri;
-				Ar<<Version;
+				Ar << Uri;
+				Ar << Version;
 			}
 		}
 		else
 		{
-			
 			Ar << ManifestId.AsString;
 
 			//Read the number of contents in the serialized file.
-			int32 CashSize;
-			Ar << CashSize; 
-			for (int32 i = 0; i < CashSize; i++)
+			int32 CacheSize;
+			Ar << CacheSize;
+
+			TArray<FString> IdsStrings;
+			IdsStrings.Reserve(CacheSize);
+			bool bFoundAtLeastOneCorruptContent = false;
+			for (int32 i = 0; i < CacheSize; i++)
 			{
 				FString ContentId;
-				Ar<<ContentId;
+				Ar << ContentId;
 
 				//Read the content type string
 				FString ContentClassTypeString;
-				Ar<<ContentClassTypeString;
+				Ar << ContentClassTypeString;
 
-				//Construct the object using the ContentTypeID
-				UBeamContentObject* ContentObject ;
+				// If we tried to serialize an object for which we didn't have a matching UBeamContentObject implementation at the time of serialization
+				bFoundAtLeastOneCorruptContent |= ContentClassTypeString == TEXT("BEAM_NON_EXISTING_CONTENT_TYPE");
+
+				// Construct the object using the ContentTypeID
+				UBeamContentObject* ContentObject;
 				UBeamContentObject::NewFromTypeId(ContentTypeStringToContentClass, ContentClassTypeString, ContentObject);
-				
 				if (ContentObject)
 				{
-					ContentObject->GetClass()->SerializeTaggedProperties(Ar,(uint8*) ContentObject,ContentObject->GetClass(),nullptr);
+					ContentObject->GetClass()->SerializeTaggedProperties(Ar, (uint8*)ContentObject, ContentObject->GetClass(), nullptr);
 
 
 					int64 FinalPositionAfterReadingUObjectData;
 					//Get the position in which the uobject reading should be finished at
-					Ar<<FinalPositionAfterReadingUObjectData;
-					
+					Ar << FinalPositionAfterReadingUObjectData;
+
 					//SerializeTaggedProperties will not serialize UObjects so a custom function for serializing UObjects needs to be called.
 					ContentObject->SerializeUObjects(Ar);
 
 					int64 CurrenArchivePos = Ar.Tell();
-					
+
 					if (CurrenArchivePos > FinalPositionAfterReadingUObjectData)
 					{
 						UE_LOG(LogTemp, Error, TEXT("While serializing a uboject more data was read than possible, ignoring the rest of serialization"));
@@ -143,37 +150,48 @@ public:
 					{
 						Ar.Seek(FinalPositionAfterReadingUObjectData);
 						UE_LOG(LogTemp, Warning, TEXT("While serializing a Uboject less data was read than it should"));
-					}	
+					}
 
-					
-					Cache.Add(ContentId,ContentObject);
+					IdsStrings.Add(ContentId);
+					Cache.Add(ContentId, ContentObject);
 				}
-				
 			}
+
+			if (bFoundAtLeastOneCorruptContent)
+			{
+				TArray<FBeamContentId> Contents;
+				Cache.GetKeys(Contents);
+
+				UE_LOG(LogTemp, Warning,TEXT("At least one object in the cache was corrupted."
+					"The list below contains all content ids that were successfully deserialized."
+					"\nIf you see a missing content, that was the one that was corrupted. \n%s"),
+					*FString::Join(IdsStrings, TEXT("\n")));
+			}
+
 			// Read the number of  hash items
 			int32 HashSize;
-			Ar << HashSize; 
+			Ar << HashSize;
 			for (int32 i = 0; i < HashSize; i++)
 			{
-				FString ContentId ;
-				FString ContentHash ;
+				FString ContentId;
+				FString ContentHash;
 
 				Ar << ContentId;
 				Ar << ContentHash;
 
-				Hashes.Add(ContentId,ContentHash);
+				Hashes.Add(ContentId, ContentHash);
 			}
 
 			// Read the number of manifests
-			int32 LatestManifestSize ;
+			int32 LatestManifestSize;
 			Ar << LatestManifestSize;
-			
+
 			for (int32 i = 0; i < LatestManifestSize; i++)
 			{
-				FString Uri ;
-				FString Version ;
-				Ar<<Uri;
-				Ar<<Version;
+				FString Uri;
+				FString Version;
+				Ar << Uri;
+				Ar << Version;
 
 				FBeamRemoteContentManifestEntry LatestManifestEntry;
 				LatestManifestEntry.Uri = Uri;
@@ -181,7 +199,6 @@ public:
 
 				LatestRemoteManifest.Add(LatestManifestEntry);
 			}
-			
 		}
 
 		return true;
