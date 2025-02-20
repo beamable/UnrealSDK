@@ -85,9 +85,9 @@ nav:
           - Setting Up Microservices: 'user-reference/microservices/setting-microservices.md'
       - Federation:
           - Overview: 'user-reference/federation/federation.md'
-          - Federated Inventory: 'user-reference/federation/federated-inventory.md'
-          - Federated Game Server: 'user-reference/federation/federated-game-server.md'
           - Federated Login: 'user-reference/federation/federated-login.md'
+          - Federated Game Server: 'user-reference/federation/federated-game-server.md'
+          - Federated Inventory: 'user-reference/federation/federated-inventory.md'
       - Servers and Builds:
           - Dedicated Servers: 'user-reference/servers-and-builds/dedicated-servers.md'
           - Linux Builds: 'user-reference/servers-and-builds/linux-builds.md'

@@ -16,7 +16,7 @@ Here's a high-level diagram of what federations are:
 
 ![microservices-architecture-federation-general.png](../../media/imgs/microservices-architecture-federation-general.png)
 
-As such, each of the **Federations** we provide have their own semantics, usage guidelines, performance characteristics and constraints described [Here](federated-login.md).
+As such, each of the **Federations** we provide have their own semantics, usage guidelines, performance characteristics and constraints described in their individual pages.
 
 ## Federation Calls
 There are two types of **Federations Calls** our Backend makes:
@@ -39,10 +39,10 @@ Federations can be thought of delegates called by our server in particular point
 
 The combination of the **Federation Id** and the **Federation Type** is comparable to a function name/pointer used to assigned to an Unreal delegate; in the sense that it is used by the Beamable backend to know which implementation of a federation in your microservice it should talk to, if any.
 
-Examples are good so:
+Examples:
 
-- `IFederatedLogin` would have a different implementations for Steam and Epic auth integration, right?
-- `IFederatedLogin<SteamId>` and `IFederatedLogin<EpicId>` the two different interfaces you'll need to implement. 
+- `IFederatedLogin` would have a different implementations for Steam and Epic auth integration.
+- As such, `IFederatedLogin<SteamId>` and `IFederatedLogin<EpicId>` the two different interfaces you'll need to implement. 
 
 In other words, an id is just a unique `string` that you pass along in specific places depending on the federation to **choose between one or more federations if any should be used**.
 
@@ -85,14 +85,14 @@ After adding any federation, your IDE will likely complain that you are not impl
 ### Workflows for Developing Federations
 Most federations are inside complex application paths. As such, you need a way to iterate on them locally, much like how you do with `Callables` (see [Microservices](../microservices/microservices.md#common-developer-workflows)). This is the reason we differentiate between In-Band calls to Federations and Out-of-Band calls to federations.
 
-For **In-Band Calls** that reach a federated endpoint, the selected [Microservice Target](../microservices/microservices.md#microservice-routing-and-microservice-target) defines which running microservice instance will handle the federated call. In other words, you don't have to think about them.
+For **In-Band Calls** that reach a federated endpoint, the selected [Microservice Target](../microservices/microservices.md#microservice-routing-and-microservice-target) defines which running microservice instance will handle the federated call. In other words, you don't have to think about them. These get the same semantics as `Callables` routing.
 
 **Out-of-Band Calls** however do not originate in the client or gameplay server so we can't access PIE's selected [Microservice Target](../microservices/microservices.md#microservice-routing-and-microservice-target). In order to solve that problem, out-of-band calls use semantic filtering logic to "steal" traffic from the realm's service. 
 
 !!! warning "What about PROD?!"
-	By default, production realm disallows ***any and all routing to microservices that are not the realm ones***. In other words, if you run a local microservice while in a Prod realm it CANNOT steal any traffic from the service that is deployed; be it **in-band** or **out-of-band**.
+	By default, production realm disallows ***any and all routing to microservices that are not the deployed ones***. In other words, if you run a local microservice while in a Prod realm it CANNOT steal any traffic from the service that is deployed; be it **in-band** or **out-of-band**.
 
-In order to configure these filters, you can use the **Local - Federations** tab of your **[Microservice Inspector](../microservices/microservices.md#microservice-window)**. The filters, when out-of-band calls can be made to a particular federated endpoint, are described [here](federated-game-server.md).
+In order to configure these filters, you can use the **Local - Federations** tab of your **[Microservice Inspector](../microservices/microservices.md#microservice-window)**. The filters, when out-of-band calls can be made to a particular federated endpoint, are described in each federation's own pages (for an example, [see here](federated-game-server.md)).
 
 
 ![microservices-window-federation.png](../../media/imgs/microservices-window-federation.png)

@@ -16,14 +16,14 @@ We don't recommend writing your own unless you're confident you understand the t
 The lowest layer of systems are shared between the SDK's UE Editor integration and the SDK's Runtime integration:
 
 - `UBeamUserSlots`: As explained at the start of this document, tracks multiple local signed-in users (for local co-op cases).
-  - Take a look at [User Slots](user-slots.md) for more information about these.
+    - Take a look at [User Slots](user-slots.md) for more information about these.
    
 - `UBeamRequestTracker`: Provides BP-compatible async operations that emit various events as it goes along.
-  - You can think of these as "BP-Compatible Promises".
-  - These are integrated with our `UBeam____Api` subsystems.
-  - `BeginOperation` is effectively the same a creating a new promise.
-  - `TriggerOperationSuccess`, `TriggerOperationError` and `TriggerOperationCancelled` should be called when you want to complete the Operation.
-  - This is a somewhat complex subsystem so we recommend you read [Operations and Waits](operations-and-waits.md)
+    - You can think of these as "BP-Compatible Promises".
+    - These are integrated with our `UBeam____Api` subsystems.
+    - `BeginOperation` is effectively the same a creating a new promise.
+    - `TriggerOperationSuccess`, `TriggerOperationError` and `TriggerOperationCancelled` should be called when you want to complete the Operation.
+    - This is a somewhat complex subsystem so we recommend you read [Operations and Waits](operations-and-waits.md)
 
 - `UBeam_____Api`:  Code-Generated Subsystems from our Backend OpenAPI spec.
     - These are stateless `UEngineSubsystem` implementations.
@@ -35,13 +35,17 @@ The lowest layer of systems are shared between the SDK's UE Editor integration a
 
 ## `UBeamBackend`
 This is the most important `UEngineSubsystem` in the SDK. It leverages Unreal's `HTTP` module to make requests to the configured Beamable backend.
-It contains the implementations used by the `UBeam____Api` classes to make the actual requests. These implementations handle:
+It contains the implementations used by the `UBeam____Api` classes to make the actual requests. 
+
+These implementations handle:
+
 - Request/Response serialization and deserialization.
 - Configurable Retry Logic with per-request-type, per-user-slot and per-call-site granularity.
 - Request's response Cache-ing, though this is disabled by default as caching is a very context dependent endeavor.
 - Transparent and Automatic Re-Auth in case of expired `AccessToken` through a user's `RefreshToken`.
 
 We have a few different types of requests and 4 implementations to handle them:
+
 - **CPP and BP Authenticated Requests**: require an `FUserSlot` with a logged-in user whose access token we'll use to make the request. 
 - **CPP and BP Non-Authenticated Requests**: does not require an `FUserSlot` with a logged-in user.
 - **`UBeamBackend::CreateGenericBeamRequest`**: for making requests to non-Beamable servers by `UBeamGenericApi`.
@@ -51,9 +55,9 @@ You can configure these in `UBeamCoreSettings` (`Project Settings -> Beamable Co
 Retries happen automatically on timeouts and a few other known cases. By default, these are:
 
 - The `FBeamErrorResponse` structure received is a `408` status.
-  - The Unreal HTTP Request returning a `EHttpFailureReason::ConnectionError` or `EHttpFailureReason::TimedOut` are parsed into `FBeamErrorResponse` with a `408`.
+    - The Unreal HTTP Request returning a `EHttpFailureReason::ConnectionError` or `EHttpFailureReason::TimedOut` are parsed into `FBeamErrorResponse` with a `408`.
 - We got any errors defined in `UBeamBackend::AUTH_ERROR_CODE_RETRY_ALLOWED`.
-  - These errors trigger out seamless authentication token refreshing flow. It'll refresh the token and then retry the request.
+    - These errors trigger out seamless authentication token refreshing flow. It'll refresh the token and then retry the request.
 
 If you ever encounter issues with this system, `log LogBeamBackend Verbose` is a useful Unreal command that can be used as a diagnostic tool.
 It will print out the entire process of building the request, sending it out and receiving its response.
@@ -72,11 +76,13 @@ Which in turn means that, if you want to use any of our real-time services ([Mat
 this connection needs to be properly working. At runtime, `UBeamRuntime` and `UBeamConnectivityManager` handle per-`FUserSlot` [Connectivity](connectivity.md) statuses.
 
 Aside from defining [Connectivity](connectivity.md) semantics, this connection is also how the Beamable servers (or your own custom Microservices) send notifications to clients about certain events.
+
 For example:
+
 - Implementations of `UEngineSubsystem` called `UBeam_____Notifications` exist for each Beamable Services (that emit notifications).
-  - These expose two UE function versions, one BP-Compatible and the other Lambda-Compatible, that register a handler to process a specific type of notification.
+    - These expose two UE function versions, one BP-Compatible and the other Lambda-Compatible, that register a handler to process a specific type of notification.
 - These are used by that service's `UBeamRuntimeSubsystem` based on their semantic needs.
-  - For example, `UBeamMatchmakingNotifications` subscribes to notifications for the matchmaking ticket while a `FUserSlot` is on a given queue.
+    - For example, `UBeamMatchmakingNotifications` subscribes to notifications for the matchmaking ticket while a `FUserSlot` is on a given queue.
 - You can use Microservices to send out custom notifications --- those can be received in clients by creating your own subsystem modeled after these.
-  - Use `UBeamRuntime::SubscribeToCustomNotification` to subscribe to these easily at runtime. 
+    - Use `UBeamRuntime::SubscribeToCustomNotification` to subscribe to these easily at runtime. 
   

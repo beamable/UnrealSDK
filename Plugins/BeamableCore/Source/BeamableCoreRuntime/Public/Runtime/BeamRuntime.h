@@ -451,6 +451,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UBeamConnectivityManager* GetOwnerSlotConnectivity() { return ConnectivityState[GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot()]; }
 
+	UFUNCTION(BlueprintCallable)
+	UBeamConnectivityManager* GetSlotConnectivity(FUserSlot Slot) { return ConnectivityState[Slot]; }
+
 	/**
 	 * Returns true when the SDK was initialized.  
 	 */

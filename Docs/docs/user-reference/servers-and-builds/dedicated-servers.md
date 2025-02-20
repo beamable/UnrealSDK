@@ -1,10 +1,10 @@
 # Dedicated Servers
 
 ## Overview
-The Beamable Unreal SDK was made with support for a dedicated servers in mind from the start. We also develop and maintain a simple [Sample Project](../../samples/hathora-demo.md) containing a `Dockerfile` for a Linux server container builds and a microservice example of how to integrate with a Game Server Orchestrator.
+The Beamable Unreal SDK was made with support for a dedicated servers in mind from the start. We also develop and maintain a simple [Sample Project](../../samples/hathora-demo.md) containing a `Dockerfile` for a Linux server container builds and a microservice example of how to integrate with a third-party Game Server Orchestrator such as Hathora.
 
 ## SDK Dedicated Server Initialization
-By default, each dedicated server instance it is expected to run a single lobby. When the server starts up and you call `UBeamRuntime::InitSDK`, the server will look for some overrides and parameters coming in from Environment Variables OR Command-Line Arguments. **Command Line Arguments override Environment Variables when both are present**.
+By default, each dedicated server instance it is expected to run a single lobby. When the server starts up, you should call `UBeamRuntime::InitSDK`. The SDK will look for some overrides and parameters coming in from Environment Variables OR Command-Line Arguments. **Command Line Arguments override Environment Variables when both are present**.
 
 The table below describe these overrides and what they are for:
 
@@ -14,6 +14,7 @@ The table below describe these overrides and what they are for:
 | CID          | **CLArg**: `beamable-customer-override`<br>**EnvVar**: `BEAMABLE_CUSTOMER_OVERRIDE`<br><br>This is mostly here so you can point our Sample builds to your organization; has little bearing on your own games.                                                                                                                                   |
 | PID          | **CLArg**: `beamable-realm-override`<br>**EnvVar**: `BEAMABLE_REALM_OVERRIDE`<br><br>This defines with which of your realms the server will attempt to communicate. Make sure this matches the Realm Secret.                                                                                                                                    |
 | Lobby <br>ID | **CLArg**: `BeamableDedicatedServerInstanceLobbyId`<br>**EnvVar**:`BEAMABLE_DEDICATED_SERVER_INSTANCE_LOBBY_ID`<br><br>The [Lobby ID](../features/lobbies.md) for the match that'll happen in this server.                                                                                                                                      |
+
 !!! note "Multiple Lobbies per Server Instance"
     If no Lobby ID is provided via the CLArg, we assume you'll manage fetching lobby data yourself via `UBeamLobbySubsystem::CPP_RefreshLobbyDataOperation`. You can use this to manage multiple lobbies per-instance in ways more specific to your game.
 

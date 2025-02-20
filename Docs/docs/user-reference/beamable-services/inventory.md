@@ -15,7 +15,8 @@ Beamable's Inventory system is built on Beamable's Content Feature. This means t
 	- Ex. the player pays some currency to buy a new "Sword" inventory item.
 
 ## Data Concepts
-Inventory manages two types of data- items and virtual currencies. One thing that both have in common is that during creation of each of them it is up to game maker to decide how they can be added to player inventory by specifying `clientPermission` field:
+Inventory manages two types of data: items and virtual currencies. 
+One thing that both have in common is that during creation of each of them it is up to game maker to decide how they can be added to player inventory by specifying `clientPermission` field:
 
 - When toggled, the content becomes **Client-Authoritative**. The SDK allows game-clients to add/remove that item or currency to the player inventory directly. If your game does not include networked multiplayer and can tolerate cheating, allowing the client to read and write their own currencies is the simplest option.
 - If not toggled, the content becomes **Server-Authoritative**. Trying to add/remove that item or currency to the player inventory from a game-client directly results in an error. The item/currencies are still readable in the game-client. To add/remove items and currencies that are **Server-Authoritative**, do so via a Microservice and a `ClientCallable`. 
@@ -26,13 +27,16 @@ Inventory manages two types of data- items and virtual currencies. One thing tha
 ### Virtual Currencies
 Currencies are used to buy items with our [Store system](stores.md) (e.g., Gold). It can also be used to symbolize the player's progress through the game, such as experience points (XP).
 
-In Unreal SDK Currency is represented by `UBeamCurrencyContent` type. Each currency can specify a `startingAmount` that is used to pre-seed player accounts with that amount of currency.
+In the Unreal SDK, currencies are represented by the `UBeamCurrencyContent`. Each currency can specify a `startingAmount` that is used to pre-seed player accounts with that amount of currency.
 
 You can [subclass](content.md#defining-custom-content-types) this content type if you want to add more information to currency that is specific to your like, such as UI related `ObjectPaths` and other references to assets that might be relevant to your game. 
+
 ### Items
 The Items feature allows for the creation and management of various in-game objects, such as equipment, consumables, and resources.
 
-In the Unreal SDK, Items are represented by the `UBeamItemContent` type. You can [subclass](content.md#defining-custom-content-types) this content type to add game-specific information to item content which is then accessible via the `UBeamContentSubsystem` and in Microservices.
+In the Unreal SDK, items are represented by the `UBeamItemContent` type. 
+You can [subclass](content.md#defining-custom-content-types) this content type to add game-specific information to item content which is then accessible via the `UBeamContentSubsystem` and in Microservices.
+
 #### Item State
 Each item instance inside a player's inventory is represented by `FBeamItemState`. These instances have the following properties:
 
@@ -49,7 +53,7 @@ Rest of the fields:
 ## Getting Started
 To use the inventory system, you will need to first:
 
-1. Go to the Content Window.
+1. Go to the [Content Window](content.md).
 2. Select `item` as a type.
 3. Create an item content definition.
 4. Select `currency` as a type.

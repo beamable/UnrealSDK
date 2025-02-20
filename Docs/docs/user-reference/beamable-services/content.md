@@ -1,14 +1,19 @@
 # Content System
 
-Beamable Content System is a read-only (at runtime) arbitrary data store that allows you to define arbitrary JSON-serialized data for use
+Beamable Content System is a read-only (at runtime) arbitrary data store that allows you to define arbitrary JSON-serialized _content objects_ for use
 at runtime. Several of Beamable's own managed features also use content in some way or another.
 
-The system is manifest-based and has no server-side schema enforcing
-(which means you are solely responsible for maintaining backward compatibility for
-your custom content objects).
+## Overview
 
-Each individual content object in each manifest is identified by an ID with the format
-below:
+The system is manifest-based. This means:
+
+- That a **manifest** is an list of published content objects in a realm indexed by their content ids.
+- That publishing a **manifest** means first uploading all the individual content objects to Beamable and, after that, uploading a manifest that knows all where each content lives.
+- That downloading a **manifest** does not necessarily imply downloading the individual content object jsons (more information below).
+
+We don't provide server-side schema enforcing which means you are solely responsible for maintaining backward compatibility for your custom content objects.
+
+Each individual content object in each manifest is identified by an ID with the format below:
 
 > ContentTypeId.ContentName
 
@@ -23,6 +28,7 @@ The last part of the id is the only one you should edit through the **Content Wi
 The content window is the main tool to create, edit and publish new content to your project.
 
 ![content-window.png](../../media/imgs/content-window.png)
+
 The list of content objects displayed in the content window is very similar to a "Status" window in Git or some other version control systems. Beside show your local content it also present the differences between your local state and the state in your currently targeted `Realm`.
 
 These differences are represented by the `[+]`,`[-]` and `[M]` signs.
@@ -51,9 +57,9 @@ To create a new piece of content Locally:
 
 Deleting content can be done simply by pressing `Del` on your keyboard with a item selected or clicking the `Delete` button in the Item Details.
 
-Itens Created locally will have a `[+]` sign next to them informing that they are not in the realm yet and will be added in the next publish.
+Items created locally will have a `[+]` sign next to them informing that they are not in the realm yet and will be added in the next publish.
 
-Itens Deleted locally that have counterparts on the realm will have a `[-]` sign next to them informing that they will be removed from the realm in the next publish.
+Items deleted locally that have counterparts on the realm will have a `[-]` sign next to them informing that they will be removed from the realm in the next publish.
 
 ### Downloading and Publishing
 To sync your local content with the realm, you have to **Download** and **Publish**.
@@ -70,17 +76,12 @@ To sync your local content with the realm, you have to **Download** and **Publis
 
 	- Each developer has it own Realm (Example: Realm1, Realm2, Realm3)
 	- The `Dev` Branch (If using Git) of the project is the **Source of Truth** shared for all developers, and each developer is working on this branch
-	- Each Developer Test their chances on their own realm and when done commits those changes to the `Dev` Branch so the rest of team can have access to this.
+	- Each Developer tests their changes on their own realm and when done commits those changes to the `Dev` Branch so the rest of team can have access to this.
 	- After pulling the `Dev` Branch, each developer should publish the new version of the content to their realms,so here can keep working in sync with the Dev branch.
 
 
-## Defining Custom Content Types
-
-## `UBeamContentObject` and Sub-types
-In Unreal, you define content schemas as sub-classes of `UBeamContentObject` or any
-of its sub-types available in the SDK ( `UBeamItemContent` , `UBeamGameTypeContent` , etc...). Every
-content type must define a unique string id for that particular type and a function that
-returns it.
+## `UBeamContentObject` and Custom Content Types
+In Unreal, you define content schemas as sub-classes of `UBeamContentObject` or any of its sub-types available in the SDK ( `UBeamItemContent` , `UBeamGameTypeContent` , etc...). Every content type must define a unique string id for that particular type and a function that returns it.
 
 The following example of `UBeamCurrencyContent` shows how that can be done:
 
@@ -141,28 +142,47 @@ Take a look at `UMockBeamContentObject` to see the supported types.
 
 
 ## Runtime LifeCycle
-The SDK fetches the content manifest before the `OnBeamableStarted` callback is
-triggered. By default, it downloads the content manifest and each individual piece of content. You can enable and disable this behavior it can be configured to do so inside `Project Settings -> Beamable Runtime`.
+The SDK fetches the content manifest before the `OnBeamableStarted` callback is triggered. By default, it downloads the content manifest and each individual piece of content. You can enable and disable this behavior it can be configured to do so inside `Project Settings -> Beamable Runtime`.
 
 ![content-download-individual-on-start.png](../../media/imgs/content-download-individual-on-start.png)
 
-The SDK also supports automated content updates.
+The SDK also supports live content updates (if you publish content while the game client is running):
 
-While signed into Beamable, `UBeamContentSubsystem` listens for notifications that the realm's content manifest has been updated. If that happens, we will re-download the manifest. If the SDK is configured to download individual content pieces automatically, we do so for all changed content.
+- While signed in to Beamable, `UBeamContentSubsystem` listens for notifications that the realm's content manifest has been updated.
+- If that happens, we will re-download the manifest. 
+- If the SDK is configured to download individual content pieces automatically, we do so for all changed content.
+    - These updates are cached locally inside the `Saved` directory in binary form such that a user does not need to re-download content in subsequent runs of your game unless the published manifest changes.
+- If you disable this setting, you'll have to control fetching the actual content objects yourself.
+    - There are APIs you can use to manually download individual content pieces: `FetchIndividualContentBatchOperation` and `FetchIndividualContentOperation`.
+    - Caching will still occur when manually downloading content.
 
-If you disable this setting and want to control fetching the actual content objects yourself, there are APIs you can use to manually download individual content pieces: `FetchIndividualContentBatchOperation` and `FetchIndividualContentOperation`.
-
-## Baking Content
+### Baking Content
 In a couple of cases, you might want to bake content to distribute it with your build:
 
 - If you plan to release a new build every time you want to update your game.
-- If you want to trade-off some binary size for spending less time waiting for the individual content download at initialization time.
+- If you want to trade off some binary size for spending less time waiting for the individual content download at initialization time.
 
-To enable those cases, we provide an editor utility that will bake your local content into a `UBeamContentCache`; this is a special asset type that has the `UBeamContentObject` instances serialized using UE's serialization as opposed to JSON. **Keep in mind that this utility uses your local content; so make sure your content matches the realm's content before running it**.
+To enable those cases, we provide an editor utility that will bake your local content into a `UBeamContentCache`. 
+This is a special asset type that has the `UBeamContentObject` instances serialized using UE's binary serialization as opposed to JSON.
+**Keep in mind that this utility uses your local content; so make sure your content matches the realm's content before running it**.
 
-The utility is called `EBP_BakeContent` and can be found in Beamable Core's plugin folder under `/Editor/Utility/EBP_BakeContent.EBP_BakeContent`. Running this utility goes through your local content and bakes them into a `BCC_` assets ( `UBeamContentCache` ) stored in `/Game/Beamable/Content/Manifests/Cooked/` directory. This directory is configured, by default, to be included in packaged games.
+The utility is called `EBP_BakeContent` and can be found in Beamable Core's plugin folder under `/Editor/Utility/EBP_BakeContent.EBP_BakeContent`. 
+Running this utility goes through your local content and bakes them into a `BCC_` assets ( `UBeamContentCache` ) stored in `/Game/Beamable/Content/Manifests/Cooked/` directory.
+This directory is configured, by default, to be included in packaged games.
 
 At runtime, any `UBeamContentCache` is loaded automatically by the `UBeamContentSubsystem` if it exists and is configured correctly; so you don't have to do anything to have it work.
 
 !!! warning "I can't find the Beamable Core Content in the Content Browser"
 	UE's Content Browser does not show Plugin content folders by default. If you want to see these, you need to turn it on at `Content Browser -> Settings -> Show Plugin Content`.
+
+### Notes on Binary Serialization
+Unreal's Binary serialization of `UObject` types works _mostly_ out of the box without any need for you to write any code.
+However, in cases where you have inlined (`DefaultToInstanced, EditInlineNew`) `IBeamJsonSerializableUObject` types inside your `UBeamContentObject` subtype's schema, you'll need to write two things to support caching content of these types:
+
+- Override the `virtual void Serialize(FArchive& Ar) override` function of the inlined `IBeamJsonSerializableUObject` type.
+- Override the `virtual void SerializeUObjects(FArchive& Ar) override` function of the `UBeamContentObject` subtype that contains in its schema the inlined `IBeamJsonSerializableUObject`.
+
+In most cases, you should prefer using `FBeamJsonSerializableUStruct` subtypes `UBeamContentObject` as these will automatically support binary serialization.
+It is only in cases where you need a recursive type that we recommend the use of inlined `IBeamJsonSerializableUObject`.
+
+For examples of handling this edge case, you can look at the `UBeamGameTypeContent` and `UBeamStatComparisonRule` types shipped with the SDK.
