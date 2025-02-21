@@ -369,10 +369,6 @@ bool FOnlineSessionBeamable::StartMatchmaking(const TArray<FUniqueNetIdRef>& Loc
 			FGuid TicketId;
 			FGuid::Parse(Evt.EventCode, TicketId);
 
-			FOnMatchmakingTicketUpdatedCode SearchingHandler;
-			SearchingHandler.BindRaw(this, &FOnlineSessionBeamable::OnMatchmakingSearching);
-			MatchmakingSubsystem->OnMatchSearchingCode.Add(TicketId, SearchingHandler);
-
 			FOnMatchmakingTicketUpdatedCode CanceledHandler;
 			CanceledHandler.BindRaw(this, &FOnlineSessionBeamable::OnMatchmakingCanceled);
 			MatchmakingSubsystem->OnMatchCancelledCode.Add(TicketId, CanceledHandler);

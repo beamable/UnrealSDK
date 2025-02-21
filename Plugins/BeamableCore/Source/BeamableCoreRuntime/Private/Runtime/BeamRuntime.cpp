@@ -57,7 +57,7 @@ void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, 
 
 				OnReconnectedCode.ExecuteIfBound(this);
 				OnReconnected.Broadcast(this);
-				
+
 				if (GetDefault<UBeamRuntimeSettings>()->AutomaticallyNotifyFixupComplete)
 				{
 					NotifyFixupComplete();
@@ -69,7 +69,7 @@ void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, 
 						if (CurrentState == CONN_Fixup)
 						{
 							FixupTickCode.ExecuteIfBound(this);
-						   FixupTick.Broadcast(this);
+							FixupTick.Broadcast(this);
 						}
 						return CurrentState == CONN_Fixup;
 					});
@@ -98,9 +98,9 @@ void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, 
 			// If we're already offline and just failed to reconnect, we just bump this counter.
 			if (this->CurrentState == CONN_Offline)
 			{
-				this->CurrentReconnectionCount += 1;				
+				this->CurrentReconnectionCount += 1;
 			}
-			
+
 			// If we fail to reconnect more than once, we should go into offline mode.
 			if (this->CurrentState != CONN_Offline && Evt.ConnectionFailedData.RetryCount > GetDefault<UBeamRuntimeSettings>()->ConnectivityRetryCountBeforeOffline)
 			{
@@ -117,7 +117,7 @@ void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, 
 					if (CurrentState == CONN_Offline)
 					{
 						const auto _ = ReconnectionTickCode.ExecuteIfBound(this);
-					   ReconnectionTick.Broadcast(this);
+						ReconnectionTick.Broadcast(this);
 					}
 					return CurrentState == CONN_Offline;
 				});
@@ -131,7 +131,7 @@ void UBeamConnectivityManager::ConnectionHandler(const FNotificationEvent& Evt, 
 		if (IsDuringLogin && Evt.ClosedData.StatusCode != Notifications->UserSignOutCloseCode)
 		{
 			UE_LOG(LogBeamNotifications, Error, TEXT("Connection closed during login flow's attempt to connect to beamable's notification service! SLOT=%s, EVT_TYPE=%s"), *UserSlot.Name,
-			       *StaticEnum<ENotificationMessageType>()->GetNameByValue(Evt.EventType).ToString())			
+			       *StaticEnum<ENotificationMessageType>()->GetNameByValue(Evt.EventType).ToString())
 			UserSlots->ClearUserAtSlot(UserSlot, USCR_FailedAuthentication, true, this);
 			RequestTracker->TriggerOperationError(Op, Evt.ConnectionFailedData.Error);
 		}
@@ -616,7 +616,7 @@ void UBeamRuntime::TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent Ev
 	}
 	for (auto& Subsystem : AutomaticallyInitializedSubsystems)
 	{
-		Subsystem->CurrentState = ESubsystemState::InitializedNoUserData;
+		Subsystem->CurrentState = ESubsystemState::BeamInitialized;
 	}
 	// Everything is fine so let's continue initializing Beamable by firing off the OnStarted callback.
 	OnStartedCode.Broadcast();
@@ -650,6 +650,8 @@ void UBeamRuntime::TriggerOnUserSlotAuthenticated(const FUserSlot& UserSlot, con
 		//This can happen in multiplayer mode in which this function will be triggered more than once for every running instance
 		return;
 	}
+
+	UE_LOG(LogBeamRuntime, Verbose, TEXT("Running OnUserSignedIn for Slot. USER_SLOT=%s"), *UserSlot.Name);
 	const auto RequestTracker = RequestTrackerSystem;
 
 	if (!OnUserSignedInOps.Contains(UserSlot))
@@ -669,11 +671,17 @@ void UBeamRuntime::TriggerOnUserSlotAuthenticated(const FUserSlot& UserSlot, con
 			const TArray<UBeamRuntimeSubsystem*> Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
 			for (auto& Subsystem : Subsystems)
 			{
-				if (Subsystem->CurrentState == InitializedNoUserData)
+				if (Subsystem->CurrentState == BeamInitialized)
 				{
-					FBeamOperationHandle Handle;
-					Subsystem->OnUserSignedIn(UserSlot, BeamRealmUser, GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot().Equals(UserSlot), Handle);
-					SignedInOps.Add(Handle);
+					if (!Subsystem->CurrentUserState.Contains(UserSlot))
+						Subsystem->CurrentUserState.Add(UserSlot, BeamInitializedNoUserData);
+
+					if (Subsystem->CurrentUserState[UserSlot] == BeamInitializedNoUserData)
+					{
+						FBeamOperationHandle Handle;
+						Subsystem->OnUserSignedIn(UserSlot, BeamRealmUser, GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot().Equals(UserSlot), Handle);
+						SignedInOps.Add(Handle);
+					}
 				}
 			}
 			const auto SignedInOpsHandler = FOnWaitCompleteCode::CreateUObject(this, &UBeamRuntime::TriggerSubsystemPostUserSignIn, UserSlot, BeamRealmUser, AuthOpHandle);
@@ -705,6 +713,8 @@ void UBeamRuntime::TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent Evt, FU
 		return;
 	}
 
+	UE_LOG(LogBeamRuntime, Verbose, TEXT("Running OnPostUserSignedIn for Slot. USER_SLOT=%s"), *UserSlot.Name);
+
 	// Everything went well so let's continue with this user's initialization process
 	if (!OnPostUserSignedInOps.Contains(UserSlot))
 		OnPostUserSignedInOps.Add(UserSlot, {});
@@ -723,11 +733,17 @@ void UBeamRuntime::TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent Evt, FU
 			const TArray<UBeamRuntimeSubsystem*> Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
 			for (auto& Subsystem : Subsystems)
 			{
-				if (Subsystem->CurrentState == InitializedNoUserData)
+				if (Subsystem->CurrentState == BeamInitialized)
 				{
-					FBeamOperationHandle Handle;
-					Subsystem->OnPostUserSignedIn(UserSlot, BeamRealmUser, GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot().Equals(UserSlot), Handle);
-					SignedInOps.Add(Handle);
+					if (!Subsystem->CurrentUserState.Contains(UserSlot))
+						Subsystem->CurrentUserState.Add(UserSlot, BeamInitializedNoUserData);
+
+					if (Subsystem->CurrentUserState[UserSlot] == BeamInitializedNoUserData)
+					{
+						FBeamOperationHandle Handle;
+						Subsystem->OnPostUserSignedIn(UserSlot, BeamRealmUser, GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot().Equals(UserSlot), Handle);
+						SignedInOps.Add(Handle);
+					}
 				}
 			}
 
@@ -757,9 +773,9 @@ void UBeamRuntime::TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent Evt, FU
 
 				for (auto& Subsystem : Subsystems)
 				{
-					if (Subsystem->CurrentState == InitializedNoUserData)
+					if (Subsystem->CurrentUserState[UserSlot] == BeamInitializedNoUserData)
 					{
-						Subsystem->CurrentState = ESubsystemState::InitializedWithUserData;
+						Subsystem->CurrentUserState[UserSlot] = BeamInitializedWithUserData;
 					}
 				}
 
@@ -883,7 +899,7 @@ void UBeamRuntime::TriggerPostUserSignedOut(FBeamWaitCompleteEvent Evt, FUserSlo
 
 				for (auto& Subsystem : Subsystems)
 				{
-					Subsystem->CurrentState = InitializedNoUserData;
+					Subsystem->CurrentUserState[UserSlot] = BeamInitializedNoUserData;
 				}
 
 				OnUserClearedCode.Broadcast(UserSlot);
@@ -953,8 +969,7 @@ void UBeamRuntime::ManuallyInitializeSubsystem(TArray<TSubclassOf<UBeamRuntimeSu
 				{
 					UBeamRuntimeSubsystem* Subsystem = Cast<UBeamRuntimeSubsystem>(GameInstance->GetSubsystemBase(SubsystemsToInit[i]));
 
-					if (Subsystem->GetSubsystemState() == ESubsystemState::InitializedWithUserData
-						|| (Subsystem->GetSubsystemState() == ESubsystemState::InitializedNoUserData && !bInitializeUsers))
+					if (Subsystem->GetSubsystemState() == ESubsystemState::BeamInitialized || (Subsystem->GetSubsystemState() == ESubsystemState::BeamInitialized && !bInitializeUsers))
 					{
 						SubsystemsToInit.RemoveAt(i);
 						i--;
@@ -987,7 +1002,7 @@ void UBeamRuntime::ManuallyInitializeSubsystem(TArray<TSubclassOf<UBeamRuntimeSu
 							/*if the subsystem we are trying to initialize has dependency on another subsystem that is not going
 							to be initialized in this call and not initialized, print an error */
 
-							if (DependingSubsystem->CurrentState != ESubsystemState::InitializedWithUserData)
+							if (DependingSubsystem->CurrentState != ESubsystemState::BeamInitialized)
 							{
 								DependencyError = true;
 
@@ -1006,7 +1021,7 @@ void UBeamRuntime::ManuallyInitializeSubsystem(TArray<TSubclassOf<UBeamRuntimeSu
 				{
 					UBeamRuntimeSubsystem* Subsystem = Cast<UBeamRuntimeSubsystem>(GameInstance->GetSubsystemBase(SubsystemType));
 
-					if (Subsystem->CurrentState == ESubsystemState::UnInitialized)
+					if (Subsystem->CurrentState == ESubsystemState::BeamUninitialized)
 					{
 						FBeamOperationHandle Handle;
 						Subsystem->InitializeWhenUnrealReady(Handle);
@@ -1053,7 +1068,7 @@ void UBeamRuntime::TriggerManuallySetSubsystemStarted(FBeamWaitCompleteEvent Evt
 			{
 				UBeamRuntimeSubsystem* Subsystem = Cast<UBeamRuntimeSubsystem>(GameInstance->GetSubsystemBase(SubsystemType));
 
-				if (Subsystem->CurrentState == ESubsystemState::UnInitialized)
+				if (Subsystem->CurrentState == ESubsystemState::BeamUninitialized)
 				{
 					FBeamOperationHandle Handle;
 					Subsystem->OnBeamableStarting(Handle);
@@ -1094,7 +1109,7 @@ void UBeamRuntime::TriggerManuallySetSubsystemContentReady(FBeamWaitCompleteEven
 			{
 				UBeamRuntimeSubsystem* Subsystem = Cast<UBeamRuntimeSubsystem>(GameInstance->GetSubsystemBase(SubsystemType));
 
-				if (Subsystem->CurrentState == ESubsystemState::UnInitialized)
+				if (Subsystem->CurrentState == ESubsystemState::BeamUninitialized)
 				{
 					FBeamOperationHandle Handle;
 					Subsystem->OnBeamableContentReady(Handle);
@@ -1132,7 +1147,7 @@ void UBeamRuntime::TriggerManuallySetSubsystemsUserReady(FBeamWaitCompleteEvent 
 			{
 				UBeamRuntimeSubsystem* Subsystem = Cast<UBeamRuntimeSubsystem>(GameInstance->GetSubsystemBase(SubsystemType));
 
-				Subsystem->CurrentState = ESubsystemState::InitializedNoUserData;
+				Subsystem->CurrentState = ESubsystemState::BeamInitialized;
 			}
 		}
 	}
@@ -1154,7 +1169,7 @@ void UBeamRuntime::TriggerManuallySetSubsystemsUserReady(FBeamWaitCompleteEvent 
 			{
 				UBeamRuntimeSubsystem* Subsystem = Cast<UBeamRuntimeSubsystem>(GameInstance->GetSubsystemBase(SubsystemType));
 
-				for (auto UserSlot : GetDefault<UBeamCoreSettings>()->RuntimeUserSlots)
+				for (auto UserSlot : UserSlotSystem->GetKnownSlots())
 				{
 					FBeamRealmUser UserData;
 					if (UserSlotSystem->GetUserDataAtSlot(UserSlot, UserData, this))
@@ -1214,7 +1229,14 @@ void UBeamRuntime::TriggerManuallySubsystemsPostUserSignIn(FBeamWaitCompleteEven
 						for (auto& SubsystemType : SubsystemsToInit)
 						{
 							UBeamRuntimeSubsystem* Subsystem = Cast<UBeamRuntimeSubsystem>(GameInstance->GetSubsystemBase(SubsystemType));
-							Subsystem->CurrentState = ESubsystemState::InitializedWithUserData;
+							for (auto UserSlot : UserSlotSystem->GetKnownSlots())
+							{
+								FBeamRealmUser UserData;
+								if (UserSlotSystem->GetUserDataAtSlot(UserSlot, UserData, this))
+								{
+									Subsystem->CurrentUserState[UserSlot] = BeamInitializedWithUserData;
+								}
+							}
 						}
 					}
 				}

@@ -20,9 +20,15 @@ class UBeamContentSubsystem;
 UENUM()
 enum ESubsystemState
 {
-	UnInitialized,
-	InitializedNoUserData,
-	InitializedWithUserData
+	BeamUninitialized,
+	BeamInitialized,
+};
+
+UENUM()
+enum ESubsystemUserState
+{
+	BeamInitializedNoUserData,
+	BeamInitializedWithUserData
 };
 
 
@@ -61,6 +67,10 @@ protected:
 	/** @brief an enum that represents the state of the sdk if it is currently initialized and ready to be used or not */
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="Subsystem State", Category="Beam")
     TEnumAsByte<ESubsystemState> CurrentState;
+	
+	/** @brief an enum that represents the state of the sdk if it is currently initialized and ready to be used or not */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="Subsystem State", Category="Beam")
+	TMap<FUserSlot, TEnumAsByte<ESubsystemUserState>> CurrentUserState;
 public:
 	UPROPERTY()
 	UBeamRuntime* Runtime;

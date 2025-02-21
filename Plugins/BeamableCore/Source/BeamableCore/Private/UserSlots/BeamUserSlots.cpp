@@ -101,6 +101,20 @@ bool UBeamUserSlots::IsSameSlot(FUserSlot SlotA, FUserSlot SlotB, const UObject*
 	return SlotANamespacedId.Equals(SlotBNamespacedId);
 }
 
+TArray<FUserSlot> UBeamUserSlots::GetKnownSlots()
+{
+	TArray<FUserSlot> KnownSlots = {};	
+	for (const auto& UserMapping : AuthenticatedUserMapping)
+	{
+		const auto NamespacedSlotId = UserMapping.Key;
+		FUserSlot Slot;
+		GetSlotIdFromNamespacedSlotId(NamespacedSlotId, Slot);
+		if (!KnownSlots.Contains(Slot))
+			KnownSlots.Add(Slot);
+	}
+	return KnownSlots;
+}
+
 bool UBeamUserSlots::GetUserDataAtSlot(FUserSlot SlotId, FBeamRealmUser& OutUserData, const UObject* CallingContext) const
 {
 	if (const FString NamespacedSlotId = GetNamespacedSlotId(SlotId, CallingContext); AuthenticatedUserMapping.Contains(NamespacedSlotId))

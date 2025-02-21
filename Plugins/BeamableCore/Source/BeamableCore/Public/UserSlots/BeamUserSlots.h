@@ -149,7 +149,7 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 	/** Cleans up the system.  */
-	virtual void Deinitialize() override;
+	virtual void Deinitialize() override;	
 
 
 	static FString GetSavedSlotsDirectory();
@@ -177,6 +177,12 @@ public:
 	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf="SlotAContext, SlotBContext", ExpandBoolAsExecs="ReturnValue"))
 	static bool IsSameSlot(FUserSlot SlotA, FUserSlot SlotB, const UObject* SlotAContext, const UObject* SlotBContext);
 
+	/**
+	 * @brief Gets a list of all known user slots across all PIE instances. When iterating the returned list inside runtime code, remember to call GetUserDataAtSlot to ensure that particular PIE instance has the slot.
+	 */
+	UFUNCTION(BlueprintPure, Category="Beam", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	TArray<FUserSlot> GetKnownSlots();
+	
 	/**
 	 * @brief Tries to get the user currently  mapped to the given slot.	  
 	 * @return True, if there is a user mapped. False, if no user mapped was found. 
