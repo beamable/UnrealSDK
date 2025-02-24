@@ -4,7 +4,7 @@
       {
         "Name": "Team",
         "MinPlayers": 1,
-        "MaxPlayers": 5
+        "MaxPlayers": 1
       }
     ]
   },
