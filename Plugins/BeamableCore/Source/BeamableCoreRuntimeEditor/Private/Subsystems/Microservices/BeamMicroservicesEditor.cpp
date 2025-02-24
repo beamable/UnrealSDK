@@ -565,6 +565,7 @@ void UBeamMicroservicesEditor::RunHostMicroservices(const TArray<FString>& Beamo
 		const auto Ids = FString::Printf(TEXT("--ids %s"), *FString::Join(BeamoIds, TEXT(" ")));
 		Params.Add(Ids);
 	}
+	Params.Add(FString::Printf(TEXT("--require-process-id %d"), FPlatformProcess::GetCurrentProcessId()));
 
 	// Kick of command.
 	Cli->RunCommandServer(Cmd, Params, Op);

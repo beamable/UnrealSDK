@@ -118,11 +118,15 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 		{
 			static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, UObject>::Value);
 			static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, IBeamJsonSerializableUObject>::Value);
-			for (const auto& Value : Array)
+			for (auto i = 0; i < Array.Num(); i++)
 			{
-				Serializer->WriteObjectStart();
-				Value->BeamSerializeProperties(Serializer);
-				Serializer->WriteObjectEnd();
+				auto Value = Array[i];
+				if (Value)
+				{
+					Serializer->WriteObjectStart();
+					Value->BeamSerializeProperties(Serializer);
+					Serializer->WriteObjectEnd();
+				}
 			}
 		}
 		else if constexpr (std::is_same_v<TDataType, TSoftObjectPtr<TSemanticTypeRepresentation>>)
@@ -172,11 +176,15 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 		}
 		else if constexpr (TIsPointer<TDataType>::Value)
 		{
-			for (const auto& Value : Array)
+			for (auto i = 0; i < Array.Num(); i++)
 			{
-				Serializer->WriteObjectStart();
-				Value->BeamSerializeProperties(Serializer);
-				Serializer->WriteObjectEnd();
+				auto Value = Array[i];
+				if (Value)
+				{
+					Serializer->WriteObjectStart();
+					Value->BeamSerializeProperties(Serializer);
+					Serializer->WriteObjectEnd();
+				}
 			}
 		}
 		else
@@ -212,9 +220,12 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 			static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, IBeamJsonSerializableUObject>::Value);
 			for (const auto& Kvp : Map)
 			{
-				Serializer->WriteObjectStart(Kvp.Key);
-				Kvp.Value->BeamSerializeProperties(Serializer);
-				Serializer->WriteObjectEnd();
+				if (Kvp.Value)
+				{
+					Serializer->WriteObjectStart(Kvp.Key);
+					Kvp.Value->BeamSerializeProperties(Serializer);
+					Serializer->WriteObjectEnd();
+				}
 			}
 		}
 		// Compile-time branch for Map of Maps
@@ -263,9 +274,12 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 		{
 			for (const auto& Kvp : Map)
 			{
-				Serializer->WriteObjectStart(Kvp.Key);
-				Kvp.Value->BeamSerializeProperties(Serializer);
-				Serializer->WriteObjectEnd();
+				if (Kvp.Value)
+				{
+					Serializer->WriteObjectStart(Kvp.Key);
+					Kvp.Value->BeamSerializeProperties(Serializer);
+					Serializer->WriteObjectEnd();
+				}
 			}
 		}
 		else if constexpr (std::is_same_v<TDataType, TSoftObjectPtr<TSemanticTypeRepresentation>>)
@@ -526,7 +540,7 @@ public:
 		Bag.FromJson(Json);
 		Serializer->WriteRawJSONValue(Bag.ToJson(true));
 	}
-	
+
 	static void SerializeJsonObject(const FString Identifier, const TSharedPtr<FJsonObject>& Json, TUnrealJsonSerializer Serializer)
 	{
 		FJsonDataBag Bag;
@@ -1072,10 +1086,13 @@ public:
 				static_assert(TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, IBeamJsonSerializableUObject>::Value);
 				static_assert(!TIsDerivedFrom<typename TRemovePointer<TDataType>::Type, FBeamJsonSerializableUStruct>::Value); // UObjects must implement IBeamJsonSerializableUObject instead
 
-				TDataType Parsed = NewObject<typename TRemovePointer<TDataType>::Type>(OwnerOuter.GetEvenIfUnreachable());
-				Parsed->OuterOwner = OwnerOuter;
-				Parsed->BeamDeserializeProperties(JsonValue->AsObject());
-				Array.Add(Parsed);
+				if (!JsonValue->IsNull())
+				{
+					TDataType Parsed = NewObject<typename TRemovePointer<TDataType>::Type>(OwnerOuter.GetEvenIfUnreachable());
+					Parsed->OuterOwner = OwnerOuter;
+					Parsed->BeamDeserializeProperties(JsonValue->AsObject());
+					Array.Add(Parsed);
+				}
 			}
 			else if constexpr (TIsDerivedFrom<TDataType, FBeamJsonSerializableUStruct>::Value)
 			{
@@ -1184,10 +1201,13 @@ public:
 				static_assert(TIsDerivedFrom<typename TRemovePointer<TMapType>::Type, IBeamJsonSerializableUObject>::Value);
 				static_assert(!TIsDerivedFrom<typename TRemovePointer<TMapType>::Type, FBeamJsonSerializableUStruct>::Value); // UObjects must implement IBeamJsonSerializableUObject instead
 
-				TMapType Parsed = NewObject<typename TRemovePointer<TMapType>::Type>(OwnerOuter.GetEvenIfUnreachable());
-				Parsed->OuterOwner = OwnerOuter;
-				Parsed->BeamDeserializeProperties(JsonValue->AsObject());
-				Map.Add(Key, Parsed);
+				if (!JsonValue->IsNull())
+				{
+					TMapType Parsed = NewObject<typename TRemovePointer<TMapType>::Type>(OwnerOuter.GetEvenIfUnreachable());
+					Parsed->OuterOwner = OwnerOuter;
+					Parsed->BeamDeserializeProperties(JsonValue->AsObject());
+					Map.Add(Key, Parsed);
+				}
 			}
 			else if constexpr (TIsDerivedFrom<TMapType, FBeamJsonSerializableUStruct>::Value)
 			{
@@ -1277,6 +1297,10 @@ public:
 			FString Parsed = JsonField;
 			ToDeserialize = SerializationNameToEnum<TPrimitiveType>(Parsed);
 		}
+		else if constexpr (std::is_same_v<TPrimitiveType, FGuid>)
+		{
+			FGuid::Parse(JsonField, ToDeserialize);
+		}
 		else if constexpr (std::is_same_v<TPrimitiveType, int8>)
 		{
 			const FString Val = JsonField;
@@ -1331,6 +1355,6 @@ public:
 
 	static void DeserializeJsonObject(const FString Identifier, const TSharedPtr<FJsonObject>& Bag, TSharedPtr<FJsonObject>& Settings, TWeakObjectPtr<UObject> OuterOwner)
 	{
-		Settings = Bag->GetObjectField(Identifier);		
+		Settings = Bag->GetObjectField(Identifier);
 	}
 };

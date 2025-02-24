@@ -50,6 +50,20 @@ struct FBeamMatchmakingTicket
 	{
 		return !(Lhs == RHS);
 	}
+
+	FString ToString() const
+	{
+		const auto Ticket = TicketId.ToString(EGuidFormats::DigitsWithHyphensLower);
+		FString GameTypeId = FString(TEXT("None"));
+		if (GameType) GameTypeId = GameType->Id;
+		TArray<FString> GamerTags = {};
+		for (const auto InTicket : GamerTagsInTicket) GamerTags.Add(InTicket.AsString);
+
+		TArray<FString> Slots = {};
+		for (const auto InTicket : SlotsInTicket) Slots.Add(InTicket.Name);
+
+		return FString::Printf(TEXT("TICKET=%s, GAME_TYPE=%s, GAMERTAGS=[%s], USER_SLOTS=[%s]"), *Ticket, *GameTypeId, *FString::Join(GamerTags, TEXT(", ")), *FString::Join(Slots, TEXT(", ")));
+	}
 };
 
 
@@ -99,7 +113,7 @@ class BEAMABLECORERUNTIME_API UBeamMatchmakingSubsystem : public UBeamRuntimeSub
 public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
 	static UBeamMatchmakingSubsystem* GetSelf(const UObject* CallingContext) { return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamMatchmakingSubsystem>(); }
-	
+
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Beam")
 	TArray<FBeamMatchmakingTicket> LiveTickets;
 
@@ -107,35 +121,28 @@ public:
 	 * For easy binding from blueprints. You are responsible for unregistering these as your objects are destroyed or when the ticket is invalidated.
 	 */
 	UPROPERTY(BlueprintAssignable)
-	FOnMatchmakingTicketUpdated                       OnMatchRemoteSearchStarted;
-	TMultiMap<FGuid, FOnMatchmakingTicketUpdatedCode> OnMatchRemoteSearchStartedCode;
+	FOnMatchmakingTicketUpdated OnMatchSearchStarted;
+	FOnMatchmakingTicketUpdatedCode OnMatchSearchStartedCode;
 
 	/*
 	 * For easy binding from blueprints. You are responsible for unregistering these as your objects are destroyed or when the ticket is invalidated.
 	 */
 	UPROPERTY(BlueprintAssignable)
-	FOnMatchmakingTicketUpdated                       OnMatchSearching;
-	TMultiMap<FGuid, FOnMatchmakingTicketUpdatedCode> OnMatchSearchingCode;
-
-	/*
-	 * For easy binding from blueprints. You are responsible for unregistering these as your objects are destroyed or when the ticket is invalidated.
-	 */
-	UPROPERTY(BlueprintAssignable)
-	FOnMatchmakingTicketUpdated                       OnMatchReady;
+	FOnMatchmakingTicketUpdated OnMatchReady;
 	TMultiMap<FGuid, FOnMatchmakingTicketUpdatedCode> OnMatchReadyCode;
 
 	/*
      * For easy binding from blueprints. You are responsible for unregistering these as your objects are destroyed or when the ticket is invalidated.
      */
 	UPROPERTY(BlueprintAssignable)
-	FOnMatchmakingTicketUpdated                       OnMatchCancelled;
+	FOnMatchmakingTicketUpdated OnMatchCancelled;
 	TMultiMap<FGuid, FOnMatchmakingTicketUpdatedCode> OnMatchCancelledCode;
 
 	/*
 	 * For easy binding from blueprints. You are responsible for unregistering these as your objects are destroyed or when the ticket is invalidated.
 	 */
 	UPROPERTY(BlueprintAssignable)
-	FOnMatchmakingTicketUpdated                       OnMatchTimedOut;
+	FOnMatchmakingTicketUpdated OnMatchTimedOut;
 	TMultiMap<FGuid, FOnMatchmakingTicketUpdatedCode> OnMatchTimedOutCode;
 
 	/**
@@ -154,10 +161,10 @@ public:
 
 	virtual void OnPostUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp) override;
 	virtual void OnUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp) override;
-	
+
 	//Returns a list of subsystems that this system is depending on
 	virtual TArray<TSubclassOf<UBeamRuntimeSubsystem>> GetDependingOnSubsystems() override;
-	
+
 	// LOCAL STATE GETTERS
 
 	/**
@@ -215,8 +222,9 @@ public:
 	/**
 	 * @copydoc TryJoinQueueWithTagsOperation 
 	 */
-	FBeamOperationHandle CPP_TryJoinQueueWithTagsOperation(FUserSlot UserSlot, const FBeamContentId& GameTypeQueue, FOptionalString Team, TArray<FBeamTag> Tags, FBeamOperationEventHandlerCode OnOperationEvent);
-	
+	FBeamOperationHandle CPP_TryJoinQueueWithTagsOperation(FUserSlot UserSlot, const FBeamContentId& GameTypeQueue, FOptionalString Team, TArray<FBeamTag> Tags,
+	                                                       FBeamOperationEventHandlerCode OnOperationEvent);
+
 	/**
 	 * @brief Leaves the given queue. If the user is not in a queue, this fails.
 	 * The user in the given user slot is added to the queue. If that user is in a party:
@@ -239,7 +247,9 @@ private:
 	void TryJoinQueue(FUserSlot Slot, FBeamContentId GameTypeQueue, FOptionalString Team, FOptionalArrayOfBeamTag Tags, FBeamOperationHandle Op);
 	void TryLeaveQueue(FUserSlot Slot, FBeamOperationHandle Op);
 
+
 	// Notification Handlers
+	void OnMatchmakingRemoteUpdateReceived(FMatchmakingRemoteUpdateNotificationMessage Msg, FUserSlot UserSlot);
 	void OnMatchmakingUpdateReceived(FMatchmakingUpdateNotificationMessage Msg);
 	void OnMatchmakingTimeoutReceived(FMatchmakingTimeoutNotificationMessage Msg);
 

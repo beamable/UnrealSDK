@@ -40,6 +40,8 @@ public:
 	FOptionalInt32 Priority = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Party Id", Category="Beam")
 	FOptionalString PartyId = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Lobby Id", Category="Beam")
+	FOptionalString LobbyId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Players", Category="Beam")
 	FOptionalArrayOfBeamGamerTag Players = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")

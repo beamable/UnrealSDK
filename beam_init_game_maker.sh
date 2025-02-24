@@ -69,5 +69,19 @@ fi
 dotnet tool install Beamable.Tools --version "$CLI_VERSION" --allow-downgrade
 echo "Beamable Tools are installed. To call them use \"dotnet beam\" from any directory under your Unreal project root."
 
+# Guarantee no read-only files exist inside the Plugins/BeamableCore and Plugins/OnlineSubsystemBeamable folders
+# This requires per-OS commands. If you run into "access denied" issues when running this script in non-Windows OSs, 
+# please verify that there are no ReadOnly files inside the beamable plugin folders. 
+PLUGIN_PATH="Plugins/BeamableCore"
+if [ -d $PLUGIN_PATH ]; then
+	echo "Clearing any read-only flags on files inside Beamable's Plugin Folders"
+	case "$OSTYPE" in
+	    msys*)    attrib -r "$PLUGIN_PATH/*.*" //s ;;
+	    cygwin*)  attrib -r "$PLUGIN_PATH/*.*" //s ;;
+	    *)        echo "Should never see this!!" ;;
+	esac
+fi
+
+
 dotnet beam unreal init "$PATH_TO_UNREAL_SDK_REPO" "$UPROJECT_PATH" "$INSTALL_OSS"
 echo "Installed Beamable SDK successfully."

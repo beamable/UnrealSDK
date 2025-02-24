@@ -9,14 +9,12 @@ class UBeamNotifications;
 
 UENUM(BlueprintType, Category="Beam")
 enum class EBeamLobbyEvent : uint8
-{
+{  
 	BEAM_LobbyCreated,
 	BEAM_LobbyDisbanded,
 	BEAM_DataChanged,
-	BEAM_PlayerJoined,
-	// GamerTag
-	BEAM_PlayerLeft,
-	// GamerTag
+	BEAM_PlayerJoined,	
+	BEAM_PlayerLeft,	
 	BEAM_PlayerKicked,	 	
 };
 
@@ -100,15 +98,6 @@ struct BEAMABLECORE_API FLobbyUpdatePlayerKickedEvt
 };
 
 USTRUCT(BlueprintType)
-struct BEAMABLECORE_API FLobbyUpdateHostPlayerChangedEvt
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
-	FBeamGamerTag NewHostGamerTag;
-};
-
-USTRUCT(BlueprintType)
 struct BEAMABLECORE_API FLobbyUpdateNotificationMessage : public FBeamJsonSerializableUStruct
 {
 	GENERATED_BODY()
@@ -116,26 +105,8 @@ struct BEAMABLECORE_API FLobbyUpdateNotificationMessage : public FBeamJsonSerial
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	EBeamLobbyEvent Type = EBeamLobbyEvent::BEAM_LobbyCreated;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam", meta=(PinHiddenByDefault))
-	FLobbyUpdateCreatedEvt CreatedData;
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam", meta=(PinHiddenByDefault))
-	FLobbyUpdateDisbandedEvt DisbandedData;
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam", meta=(PinHiddenByDefault))
-	FLobbyUpdateDataChangedEvt LobbyDataChangedData;
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam", meta=(PinHiddenByDefault))
-	FLobbyUpdatePlayerJoinedEvt PlayerJoinedData;
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam", meta=(PinHiddenByDefault))
-	FLobbyUpdatePlayerLeftEvt PlayerLeftData;
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam", meta=(PinHiddenByDefault))
-	FLobbyUpdatePlayerKickedEvt PlayerKickedData;
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam", meta=(PinHiddenByDefault))
-	FLobbyUpdateHostPlayerChangedEvt HostPlayerChangedData;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
+	FGuid LobbyId;
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;
@@ -150,7 +121,7 @@ class BEAMABLECORE_API UBeamLobbyNotifications : public UEngineSubsystem
 {
 	GENERATED_BODY()
 
-	static const inline FString CTX_KEY_Lobby_Update = TEXT("lobbies.update.{0}");
+	static const inline FString CTX_KEY_Lobby_Update = TEXT("lobby.update");
 
 	UPROPERTY()
 	UBeamNotifications* Notifications;
@@ -159,9 +130,9 @@ class BEAMABLECORE_API UBeamLobbyNotifications : public UEngineSubsystem
 
 public:
 	UFUNCTION(BlueprintCallable, DisplayName="Subscribe - Lobby Update", Category="Beam", meta=(DefaultToSelf="ContextObject"))
-	void SubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, FGuid LobbyId, const FOnLobbyUpdateNotification& Handler, UObject* ContextObject) const;
+	void SubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, const FOnLobbyUpdateNotification& Handler, UObject* ContextObject) const;
 
-	FDelegateHandle CPP_SubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, FGuid LobbyId, const FOnLobbyUpdateNotificationCode& Handler, UObject* ContextObject) const;
+	FDelegateHandle CPP_SubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, const FOnLobbyUpdateNotificationCode& Handler, UObject* ContextObject) const;
 
-	FDelegateHandle CPP_UnsubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, FGuid LobbyId, const FDelegateHandle& Handle, UObject* ContextObject) const;
+	FDelegateHandle CPP_UnsubscribeToLobbyUpdate(const FUserSlot& Slot, const FName& SocketName, const FDelegateHandle& Handle, UObject* ContextObject) const;
 };

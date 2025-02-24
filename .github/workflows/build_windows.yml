@@ -106,15 +106,13 @@ jobs:
         working-directory: ./BeamableUnreal
         continue-on-error: true
         shell: bash
-        run: bash prepare_repo.sh skip_waiting
+        run: bash prepare_repo.sh true true
 
       # Sets the BEAMPROJ based on the input to this workflow.
-      - name: Set BeamProjOverride.txt
+      - name: Set BeamProj
         working-directory: ./BeamableUnreal
         shell: bash
-        run: |
-          echo ${{ inputs.beamProj }} > BeamProjOverride.txt |
-          cat BeamProjOverride.txt
+        run: dotnet beam unreal select-sample ${{ inputs.beamProj }}
         
       # Builds the image
       - name: Build image

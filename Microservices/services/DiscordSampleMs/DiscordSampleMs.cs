@@ -29,7 +29,7 @@ public partial class DiscordSampleMs : Microservice, IFederatedLogin<DiscordId>
     {
         public bool matchmaking_discord_whitelisted;
     }
-    
+
     [ConfigureServices]
     public static void Configure(IServiceBuilder builder)
     {
@@ -59,8 +59,7 @@ public partial class DiscordSampleMs : Microservice, IFederatedLogin<DiscordId>
             var beamableAccount = await Requests.GetBeamableAccountFromDiscordId(Requester, discordUserFromToken.id);
 
             // Find the gamer tag for this realm
-            var gamerTagAssociation =
-                beamableAccount.gamerTags.FirstOrDefault(association => association.projectId == Requester.Pid);
+            var gamerTagAssociation = beamableAccount.gamerTags.FirstOrDefault(association => association.projectId == Requester.Pid);
 
             // No gamer tag found for this user in this realm.
             if (gamerTagAssociation != null)
@@ -69,8 +68,7 @@ public partial class DiscordSampleMs : Microservice, IFederatedLogin<DiscordId>
             }
             else
             {
-                BeamableLogger.LogWarning($"This user has no GamerTag in this Realm, but has in another",
-                    Requester.Pid);
+                BeamableLogger.LogWarning($"This user has no GamerTag in this Realm, but has in another", Requester.Pid);
             }
         }
 
@@ -80,13 +78,9 @@ public partial class DiscordSampleMs : Microservice, IFederatedLogin<DiscordId>
         if (gamerTag != 0)
         {
             // Update the stat for the authenticating user
-            var discordGuildUser = await Requests.GetGuildUserById(discordRealmConfig.BotToken,
-                discordRealmConfig.GuildId, discordUserFromToken.id);
+            var discordGuildUser = await Requests.GetGuildUserById(discordRealmConfig.BotToken, discordRealmConfig.GuildId, discordUserFromToken.id);
             var isWhitelisted = IsDiscordUserWhitelistedForMatchmaking(discordGuildUser, discordRealmConfig);
-            Log.Warning("Attaching [Discord UserId = {UserId}] to [GamerTag = {BeamableId}].{Whitelist}",
-                discordUserFromToken.id,
-                gamerTag,
-                isWhitelisted ? $"User Whitelisted." : "User Not Whitelisted");
+            Log.Warning("Attaching [Discord UserId = {UserId}] to [GamerTag = {BeamableId}].{Whitelist}", discordUserFromToken.id, gamerTag, isWhitelisted ? $"User Whitelisted." : "User Not Whitelisted");
 
             using var requestingUser = AssumeNewUser(gamerTag);
             await requestingUser.Services.Stats.SetStats("game", "private", "player", gamerTag, new()
@@ -108,18 +102,14 @@ public partial class DiscordSampleMs : Microservice, IFederatedLogin<DiscordId>
         var gamerTag = Context.UserId;
 
         var beamableUser = await Services.Auth.GetUser(gamerTag);
-        var discordUserId = beamableUser.external.FirstOrDefault(identity => identity.providerNamespace == "discord")
-            ?.userId;
+        var discordUserId = beamableUser.external.FirstOrDefault(identity => identity.providerNamespace == "discord")?.userId;
 
         if (string.IsNullOrEmpty(discordUserId))
             return false;
 
-        var discordGuildUser =
-            await Requests.GetGuildUserById(discordRealmConfig.BotToken, discordRealmConfig.GuildId, discordUserId);
+        var discordGuildUser = await Requests.GetGuildUserById(discordRealmConfig.BotToken, discordRealmConfig.GuildId, discordUserId);
         var isWhitelisted = IsDiscordUserWhitelistedForMatchmaking(discordGuildUser, discordRealmConfig);
-        Log.Warning("Updating User Matchmaking Whitelist State [GamerTag = {BeamableId}].{Whitelist}",
-            gamerTag,
-            isWhitelisted ? $"User Whitelisted." : "User Not Whitelisted");
+        Log.Warning("Updating User Matchmaking Whitelist State [GamerTag = {BeamableId}].{Whitelist}", gamerTag, isWhitelisted ? $"User Whitelisted." : "User Not Whitelisted");
 
         await Services.Stats.SetStats("game", "private", "player", gamerTag, new()
         {
@@ -133,11 +123,10 @@ public partial class DiscordSampleMs : Microservice, IFederatedLogin<DiscordId>
     [ClientCallable, SwaggerCategory("discord")]
     public async Task<DiscordWhitelistedInfo> UpdateUserWhitelistedStatus()
     {
-        var whitelistedStat = await Services.Stats.GetProtectedPlayerStat(Context.UserId,"matchmaking_discord_whitelisted");
+        var whitelistedStat = await Services.Stats.GetProtectedPlayerStat(Context.UserId, "matchmaking_discord_whitelisted");
         Debug.Log($"{Context.UserId} whitelistedStat: {whitelistedStat}");
-        var isWhitelisted = !string.IsNullOrWhiteSpace(whitelistedStat) &&
-                            whitelistedStat.Equals("true", StringComparison.InvariantCultureIgnoreCase);
-        return new DiscordWhitelistedInfo(){matchmaking_discord_whitelisted = isWhitelisted};
+        var isWhitelisted = !string.IsNullOrWhiteSpace(whitelistedStat) && whitelistedStat.Equals("true", StringComparison.InvariantCultureIgnoreCase);
+        return new DiscordWhitelistedInfo() { matchmaking_discord_whitelisted = isWhitelisted };
     }
 
 
@@ -155,7 +144,6 @@ public class DiscordBot
     private readonly IMicroserviceStatsApi _beamableStatsService;
     private readonly IMicroserviceNotificationsApi _notificationsApi;
     private readonly DiscordSocketClient _discordClient;
-    private DiscordRealmConfig _discordRealmConfig;
 
     public DiscordBot(IBeamableRequester requester, IMicroserviceRealmConfigService realmConfigService,
         IMicroserviceStatsApi statsService, IMicroserviceNotificationsApi notificationsApi)
@@ -189,9 +177,9 @@ public class DiscordBot
     {
         if (_discordClient.ConnectionState == ConnectionState.Disconnected)
         {
-            _discordRealmConfig = await Requests.GetDiscordRealmConfig(_beamableConfigService);
-            var botToken = _discordRealmConfig.BotToken;
-            var rolesConfig = _discordRealmConfig.RoleIds;
+            var discordRealmConfig = await Requests.GetDiscordRealmConfig(_beamableConfigService);
+            var botToken = discordRealmConfig.BotToken;
+            var rolesConfig = discordRealmConfig.RoleIds;
             if (string.IsNullOrEmpty(botToken))
             {
                 BeamableLogger.LogWarning("Discord Bot Token not configured. Connection Aborted!");
@@ -224,8 +212,7 @@ public class DiscordBot
         return Task.CompletedTask;
     }
 
-    private async Task OnGuildMemberUpdated(Cacheable<SocketGuildUser, ulong> cachedUser,
-        SocketGuildUser postUpdateUser)
+    private async Task OnGuildMemberUpdated(Cacheable<SocketGuildUser, ulong> cachedUser, SocketGuildUser postUpdateUser)
     {
         BeamableLogger.Log("Role has changed!");
         if (cachedUser.HasValue)
@@ -237,9 +224,8 @@ public class DiscordBot
                 BeamableLogger.Log($"Role has changed for user: {postUpdateUser.Id}");
                 BeamableLogger.Log($"Roles: {string.Join(",", roles)}");
 
-                var hasAccess = postUpdateUser.Roles.Any(role =>
-                    _discordRealmConfig.RoleIds.Contains(role.Id.ToString())
-                );
+                var config = await Requests.GetDiscordRealmConfig(_beamableConfigService);
+                var hasAccess = postUpdateUser.Roles.Any(role => config.RoleIds.Contains(role.Id.ToString()));
 
                 await UpdateAccess(cachedUser.Value, hasAccess);
             }
@@ -252,9 +238,7 @@ public class DiscordBot
         try
         {
             var account = await Requests.GetBeamableAccountFromDiscordId(_beamableRequester, discordUserId);
-            var gamerTagAssociation = account.gamerTags.FirstOrDefault(association =>
-                association.projectId == _beamableRequester.Pid
-            );
+            var gamerTagAssociation = account.gamerTags.FirstOrDefault(association => association.projectId == _beamableRequester.Pid);
 
             // No gamer tag found for this user in this realm.
             if (gamerTagAssociation == null)
@@ -267,15 +251,16 @@ public class DiscordBot
                 }
             );
             await _notificationsApi.NotifyUser(gamerTagAssociation.gamerTag, hasAccess);
-            if (_discordRealmConfig.NotifyChannel == 0)
-            {
+            var discordRealmConfig = await Requests.GetDiscordRealmConfig(_beamableConfigService);
+            if (discordRealmConfig.NotifyChannel == 0)
                 return;
-            }
-            var channel = await _discordClient.GetChannelAsync(_discordRealmConfig.NotifyChannel);
+
+            var channel = await _discordClient.GetChannelAsync(discordRealmConfig.NotifyChannel);
             if (channel is IMessageChannel messageChannel)
             {
                 await messageChannel.SendMessageAsync($"{discordUser.Mention} Updated matchmaking status: {(hasAccess ? "access gained" : "access denied")}");
             }
+
             BeamableLogger.Log($"Updated Access for Beamable PlayerId '{gamerTagAssociation.gamerTag}', Discord UserId '{discordUserId}' to '{hasAccess}'."
             );
         }

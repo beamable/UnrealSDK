@@ -15,10 +15,18 @@ class ONLINESUBSYSTEMBEAMABLE_API UOnlineSubsystemBeamableSettings : public UDev
 
 public:
 	/**
-	 * Whether we should automatically try to sign up with persist the Auth data for Runtime User Slots when we are in PIE.
+	 * When logging in with a non-frictionless auth type, this defines whether we should automatically try to sign up (true) OR if we should just assume the account already exists and error if it doesn't (false).
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Identity")
 	bool bAutoSignUpWhenLogin = true;
+
+	/**
+	 * When trying to attach an identity to an existing account, we need to decide whether we should:
+	 * - Sign Out of the current account and into the one that has the attached identity. (true)
+	 * - Simply error out and let the game-code handle this case. (false)
+	 */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Identity")
+	bool bAutoLoginOnAttach = true;
 
 	/**
 	 * After we sign up, we get that Beamable User's Stats.

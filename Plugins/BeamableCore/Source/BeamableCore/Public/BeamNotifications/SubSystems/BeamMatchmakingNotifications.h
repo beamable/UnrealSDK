@@ -8,6 +8,25 @@ struct FBeamContentId;
 class UBeamNotifications;
 
 USTRUCT(BlueprintType)
+struct BEAMABLECORE_API FMatchmakingRemoteUpdateNotificationMessage : public FBeamJsonSerializableUStruct
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
+	FString TicketId;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
+	FString Event;
+
+	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override;
+	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override;
+	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override;
+};
+
+DECLARE_DELEGATE_OneParam(FOnMatchmakingRemoteUpdateNotificationCode, FMatchmakingRemoteUpdateNotificationMessage);
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnMatchmakingRemoteUpdateNotification, FMatchmakingRemoteUpdateNotificationMessage, Evt);
+
+USTRUCT(BlueprintType)
 struct BEAMABLECORE_API FMatchmakingUpdateNotificationMessage : public FBeamJsonSerializableUStruct
 {
 	GENERATED_BODY()
@@ -65,6 +84,7 @@ class BEAMABLECORE_API UBeamMatchmakingNotifications : public UEngineSubsystem
 {
 	GENERATED_BODY()
 
+	static const inline FString CTX_KEY_Matchmaking_RemoteUpdate = TEXT("matchmaking.update");
 	static const inline FString CTX_KEY_Matchmaking_Update = TEXT("matchmaking.update.{0}");
 	static const inline FString CTX_KEY_Matchmaking_Timeout = TEXT("matchmaking.timeout.{0}");
 
@@ -85,4 +105,9 @@ public:
 
 	FDelegateHandle CPP_SubscribeToMatchmakingTimeout(const FUserSlot& Slot, const FName& SocketName, FBeamContentId GameType, const FOnMatchmakingTimeoutNotificationCode& Handler,
 	                                                  UObject* ContextObject) const;
+
+	UFUNCTION(BlueprintCallable, DisplayName="Subscribe - Matchmaking Remote Search Started", Category="Beam", meta=(DefaultToSelf="ContextObject"))
+	void SubscribeToRemoteUpdate(const FUserSlot& Slot, const FName& SocketName, const FOnMatchmakingRemoteUpdateNotification& Handler, UObject* ContextObject);
+
+	FDelegateHandle CPP_SubscribeToRemoteUpdate(const FUserSlot& Slot, const FName& SocketName, const FOnMatchmakingRemoteUpdateNotificationCode& Handler, UObject* ContextObject) const;
 };

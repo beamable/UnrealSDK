@@ -38,11 +38,16 @@ FMockBeamContentObjectGameplayTags FMockBeamContentObjectGameplayTags::StaticIns
 void FBeamContentObjectSpec::Define()
 {
 	FString TestId = TEXT("mockcontentobject.content1");
+	FString TestLinkId = TEXT("mockcontentobject.content2");
 	FString TestVersion = TEXT("1");
 	FString TestBeamCid = TEXT("111111111");
 	FString TestValueA = TEXT("1");
 	FString TestValueB = TEXT("2");
 	FString TestSoftObjPath = TEXT("/BeamableCore/Editor/Icons/BeamLogo.BeamLogo");
+	FString TestVectorObj = TEXT("{ \"x\": 1.0, \"y\": 1.0, \"z\": 1.0 }");
+	FString TestIntVectorObj = TEXT("{ \"x\": 1, \"y\": 1, \"z\": 1 }");	
+	FString TestColorObj = TEXT("{ \"a\": 255, \"b\": 0, \"g\": 0, \"r\": 0 }");
+	FString TestLinearColorObj = TEXT("{ \"a\": 1, \"b\": 0, \"g\": 0, \"r\": 0 }");
 	int32 TestValueAInt = 1;
 	int32 TestValueBInt = 2;
 	FString TestGameplayTagA = TEXT("BeamableCore.Test.MockGameplayTag");
@@ -60,6 +65,66 @@ void FBeamContentObjectSpec::Define()
     },
     "BeamCid": {
       "data": "₢BeamCid₢"
+    },
+	"UnrealVector": {
+	  "data": ₢UnrealVector₢	
+	},
+	"VectorsArray": {
+      "data": [
+        ₢UnrealVector₢,
+		₢UnrealVector₢
+      ]
+    },
+	"VectorsMap": {
+      "data": {
+        "a": ₢UnrealVector₢,
+		"b": ₢UnrealVector₢
+      }
+    },
+	"UnrealIntVector": {
+	  "data": ₢UnrealIntVector₢	
+	},
+	"IntVectorsArray": {
+      "data": [
+        ₢UnrealIntVector₢,
+		₢UnrealIntVector₢
+      ]
+    },
+	"IntVectorsMap": {
+      "data": {
+        "a": ₢UnrealIntVector₢,
+		"b": ₢UnrealIntVector₢
+      }
+    },
+	"UnrealColor": {
+	  "data": ₢UnrealColor₢	
+	},
+	"ColorsArray": {
+      "data": [
+        ₢UnrealColor₢,
+		₢UnrealColor₢
+      ]
+    },
+	"ColorsMap": {
+      "data": {
+        "a": ₢UnrealColor₢,
+		"b": ₢UnrealColor₢
+      }
+    },
+	"UnrealLinearColor": {
+	  "data": ₢UnrealLinearColor₢	
+	},
+	"LinearColorsArray": {
+      "data": [
+        ₢UnrealLinearColor₢,
+		₢UnrealLinearColor₢
+      ]
+    },
+	"LinearColorsMap": {
+      "data": {
+        "a": ₢UnrealLinearColor₢,
+		"b": ₢UnrealLinearColor₢
+      }
     },
 	"UnrealGameplayTag": {
 	  "data": "₢UnrealGameplayTagA₢"	
@@ -188,7 +253,10 @@ void FBeamContentObjectSpec::Define()
         "a": "₢UnrealClassA₢",
         "b": "₢UnrealClassB₢"
       }
-    }
+    },
+	"TestLink":{
+	  "$link": "₢UnrealLinkId₢"	
+	}
   }
 })");
 
@@ -201,6 +269,66 @@ void FBeamContentObjectSpec::Define()
     },
     "BeamCid": {
       "data": "₢BeamCid₢"
+    },
+	"UnrealVector": {
+	  "data": ₢UnrealVector₢	
+	},
+	"VectorsArray": {
+      "data": [
+        ₢UnrealVector₢,
+		₢UnrealVector₢
+      ]
+    },
+	"VectorsMap": {
+      "data": {
+        "a": ₢UnrealVector₢,
+		"b": ₢UnrealVector₢
+      }
+    },
+	"UnrealIntVector": {
+	  "data": ₢UnrealIntVector₢	
+	},
+	"IntVectorsArray": {
+      "data": [
+        ₢UnrealIntVector₢,
+		₢UnrealIntVector₢
+      ]
+    },
+	"IntVectorsMap": {
+      "data": {
+        "a": ₢UnrealIntVector₢,
+		"b": ₢UnrealIntVector₢
+      }
+    },
+	"UnrealColor": {
+	  "data": ₢UnrealColor₢	
+	},
+	"ColorsArray": {
+      "data": [
+        ₢UnrealColor₢,
+		₢UnrealColor₢
+      ]
+    },
+	"ColorsMap": {
+      "data": {
+        "a": ₢UnrealColor₢,
+		"b": ₢UnrealColor₢
+      }
+    },
+	"UnrealLinearColor": {
+	  "data": ₢UnrealLinearColor₢	
+	},
+	"LinearColorsArray": {
+      "data": [
+        ₢UnrealLinearColor₢,
+		₢UnrealLinearColor₢
+      ]
+    },
+	"LinearColorsMap": {
+      "data": {
+        "a": ₢UnrealLinearColor₢,
+		"b": ₢UnrealLinearColor₢
+      }
     },
 	"UnrealGameplayTag": {
 	  "data": "₢UnrealGameplayTagA₢"	
@@ -307,7 +435,10 @@ void FBeamContentObjectSpec::Define()
         "a": "₢UnrealClassA₢",
         "b": "₢UnrealClassB₢"
       }
-    }
+    },
+	"TestLink":{
+	  "$link": "₢UnrealLinkId₢"	
+	}
   }
 })");
 
@@ -317,10 +448,15 @@ void FBeamContentObjectSpec::Define()
 	FullObject = FullObject.Replace(TEXT("₢ValueA₢"), *TestValueA);
 	FullObject = FullObject.Replace(TEXT("₢ValueB₢"), *TestValueB);
 	FullObject = FullObject.Replace(TEXT("₢SoftObjPath₢"), *TestSoftObjPath);
+	FullObject = FullObject.Replace(TEXT("₢UnrealVector₢"), *TestVectorObj);
+	FullObject = FullObject.Replace(TEXT("₢UnrealIntVector₢"), *TestIntVectorObj);
+	FullObject = FullObject.Replace(TEXT("₢UnrealColor₢"), *TestColorObj);
+	FullObject = FullObject.Replace(TEXT("₢UnrealLinearColor₢"), *TestLinearColorObj);
 	FullObject = FullObject.Replace(TEXT("₢UnrealGameplayTagA₢"), *TestGameplayTagA);
 	FullObject = FullObject.Replace(TEXT("₢UnrealGameplayTagB₢"), *TestGameplayTagB);
 	FullObject = FullObject.Replace(TEXT("₢UnrealClassA₢"), *TestUnrealClassA);
 	FullObject = FullObject.Replace(TEXT("₢UnrealClassB₢"), *TestUnrealClassB);
+	FullObject = FullObject.Replace(TEXT("₢UnrealLinkId₢"), *TestLinkId);
 
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢Id₢"), *TestId);
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢Version₢"), *TestVersion);
@@ -328,11 +464,15 @@ void FBeamContentObjectSpec::Define()
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢ValueA₢"), *TestValueA);
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢ValueB₢"), *TestValueB);
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢SoftObjPath₢"), *TestSoftObjPath);
+	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢UnrealVector₢"), *TestVectorObj);
+	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢UnrealIntVector₢"), *TestIntVectorObj);
+	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢UnrealColor₢"), *TestColorObj);
+	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢UnrealLinearColor₢"), *TestLinearColorObj);
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢UnrealGameplayTagA₢"), *TestGameplayTagA);
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢UnrealGameplayTagB₢"), *TestGameplayTagB);
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢UnrealClassA₢"), *TestUnrealClassA);
 	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢UnrealClassB₢"), *TestUnrealClassB);
-
+	WithoutOptionals = WithoutOptionals.Replace(TEXT("₢UnrealLinkId₢"), *TestLinkId);
 
 	Describe("Content Serialization", [=, this]()
 	{
@@ -348,6 +488,26 @@ void FBeamContentObjectSpec::Define()
 			ContentObject->GameplayTagsArray = {FGameplayTag::RequestGameplayTag(FName(TestGameplayTagA), false), FGameplayTag::RequestGameplayTag(FName(TestGameplayTagB), false)};
 			ContentObject->GameplayTagsMap.Add(TEXT("a"), FGameplayTag::RequestGameplayTag(FName(TestGameplayTagA), false));
 			ContentObject->GameplayTagsMap.Add(TEXT("b"), FGameplayTag::RequestGameplayTag(FName(TestGameplayTagB), false));
+
+			ContentObject->UnrealVector = FVector::One();
+			ContentObject->VectorsArray = {FVector::One(), FVector::One()};
+			ContentObject->VectorsMap.Add(TEXT("a"), FVector::One());
+			ContentObject->VectorsMap.Add(TEXT("b"), FVector::One());
+
+			ContentObject->UnrealIntVector = FIntVector(1,1,1);
+			ContentObject->IntVectorsArray = {FIntVector(1,1,1), FIntVector(1,1,1)};
+			ContentObject->IntVectorsMap.Add(TEXT("a"), FIntVector(1,1,1));
+			ContentObject->IntVectorsMap.Add(TEXT("b"), FIntVector(1,1,1));
+			
+			ContentObject->UnrealColor = FColor::Black;
+			ContentObject->ColorsArray = {FColor::Black, FColor::Black};
+			ContentObject->ColorsMap.Add(TEXT("a"), FColor::Black);
+			ContentObject->ColorsMap.Add(TEXT("b"), FColor::Black);
+
+			ContentObject->UnrealLinearColor = FLinearColor::Black;
+			ContentObject->LinearColorsArray = {FLinearColor::Black, FLinearColor::Black};
+			ContentObject->LinearColorsMap.Add(TEXT("a"), FLinearColor::Black);
+			ContentObject->LinearColorsMap.Add(TEXT("b"), FLinearColor::Black);
 
 			ContentObject->ArrayOfU8 = TArray{static_cast<uint8>(TestValueAInt), static_cast<uint8>(TestValueBInt)};
 			ContentObject->ArrayOfString = TArray{TestValueA, TestValueB};
@@ -433,6 +593,86 @@ void FBeamContentObjectSpec::Define()
 
 			TestEqual("GameplayTag serialized correctly", NewObj->GameplayTagsMap.FindRef(TEXT("a")).ToString(), TestGameplayTagA);
 			TestEqual("GameplayTag serialized correctly", NewObj->GameplayTagsMap.FindRef(TEXT("b")).ToString(), TestGameplayTagB);
+
+			NewObj = nullptr;
+		});
+
+		It("should serialize Vectors properly", [=, this]()
+		{
+			FString Json = FString{};
+			ContentObject->ToBasicJson(Json);
+
+			auto NewObj = NewObject<UMockBeamContentObject>();
+			NewObj->FromBasicJson(Json);
+
+			// If this errors out, make sure you have the expected GameplayTags created here your available ones.
+			TestEqual("FVector serialized correctly", NewObj->UnrealVector, FVector::One());
+
+			TestEqual("FVector serialized correctly", NewObj->VectorsArray[0], FVector::One());
+			TestEqual("FVector serialized correctly", NewObj->VectorsArray[1], FVector::One());
+
+			TestEqual("FVector serialized correctly", NewObj->VectorsMap.FindRef(TEXT("a")), FVector::One());
+			TestEqual("FVector serialized correctly", NewObj->VectorsMap.FindRef(TEXT("b")), FVector::One());
+
+			NewObj = nullptr;
+		});
+
+		It("should serialize IntVectors properly", [=, this]()
+		{
+			FString Json = FString{};
+			ContentObject->ToBasicJson(Json);
+
+			auto NewObj = NewObject<UMockBeamContentObject>();
+			NewObj->FromBasicJson(Json);
+
+			// If this errors out, make sure you have the expected GameplayTags created here your available ones.
+			TestEqual("FIntVector serialized correctly", NewObj->UnrealIntVector, FIntVector(1, 1, 1));
+
+			TestEqual("FIntVector serialized correctly", NewObj->IntVectorsArray[0], FIntVector(1, 1, 1));
+			TestEqual("FIntVector serialized correctly", NewObj->IntVectorsArray[1], FIntVector(1, 1, 1));
+
+			TestEqual("FIntVector serialized correctly", NewObj->IntVectorsMap.FindRef(TEXT("a")), FIntVector(1, 1, 1));
+			TestEqual("FIntVector serialized correctly", NewObj->IntVectorsMap.FindRef(TEXT("b")), FIntVector(1, 1, 1));
+
+			NewObj = nullptr;
+		});
+		
+		It("should serialize colors properly", [=, this]()
+		{
+			FString Json = FString{};
+			ContentObject->ToBasicJson(Json);
+
+			auto NewObj = NewObject<UMockBeamContentObject>();
+			NewObj->FromBasicJson(Json);
+
+			// If this errors out, make sure you have the expected GameplayTags created here your available ones.
+			TestEqual("Color serialized correctly", NewObj->UnrealColor, FColor::Black);
+
+			TestEqual("Color serialized correctly", NewObj->ColorsArray[0], FColor::Black);
+			TestEqual("Color serialized correctly", NewObj->ColorsArray[1], FColor::Black);
+
+			TestEqual("Color serialized correctly", NewObj->ColorsMap.FindRef(TEXT("a")), FColor::Black);
+			TestEqual("Color serialized correctly", NewObj->ColorsMap.FindRef(TEXT("b")), FColor::Black);
+
+			NewObj = nullptr;
+		});
+
+		It("should serialize linear colors properly", [=, this]()
+		{
+			FString Json = FString{};
+			ContentObject->ToBasicJson(Json);
+
+			auto NewObj = NewObject<UMockBeamContentObject>();
+			NewObj->FromBasicJson(Json);
+
+			// If this errors out, make sure you have the expected GameplayTags created here your available ones.
+			TestEqual("LinearColor serialized correctly", NewObj->UnrealLinearColor, FLinearColor::Black);
+
+			TestEqual("LinearColor serialized correctly", NewObj->LinearColorsArray[0],  FLinearColor::Black);
+			TestEqual("LinearColor serialized correctly", NewObj->LinearColorsArray[1],  FLinearColor::Black);
+
+			TestEqual("LinearColor serialized correctly", NewObj->LinearColorsMap.FindRef(TEXT("a")), FLinearColor::Black);
+			TestEqual("LinearColor serialized correctly", NewObj->LinearColorsMap.FindRef(TEXT("b")), FLinearColor::Black);
 
 			NewObj = nullptr;
 		});
@@ -610,6 +850,54 @@ void FBeamContentObjectSpec::Define()
 
 			TestEqual("GameplayTag deserialized correctly", ContentObject->GameplayTagsMap.FindRef(TEXT("a")).ToString(), TestGameplayTagA);
 			TestEqual("GameplayTag deserialized correctly", ContentObject->GameplayTagsMap.FindRef(TEXT("b")).ToString(), TestGameplayTagB);
+		});
+
+		It("should deserialize FVector types properly", [=, this]()
+		{
+			ContentObject->FromBasicJson(FullObject);
+			TestEqual("FVector deserialized correctly", ContentObject->UnrealVector, FVector::One());
+
+			TestEqual("FVector deserialized correctly", ContentObject->VectorsArray[0], FVector::One());
+			TestEqual("FVector deserialized correctly", ContentObject->VectorsArray[1], FVector::One());
+
+			TestEqual("FVector deserialized correctly", ContentObject->VectorsMap.FindRef(TEXT("a")), FVector::One());
+			TestEqual("FVector deserialized correctly", ContentObject->VectorsMap.FindRef(TEXT("b")), FVector::One());
+		});
+
+		It("should deserialize FIntVector types properly", [=, this]()
+		{
+			ContentObject->FromBasicJson(FullObject);
+			TestEqual("FIntVector deserialized correctly", ContentObject->UnrealIntVector, FIntVector(1, 1, 1));
+
+			TestEqual("FIntVector deserialized correctly", ContentObject->IntVectorsArray[0], FIntVector(1, 1, 1));
+			TestEqual("FIntVector deserialized correctly", ContentObject->IntVectorsArray[1], FIntVector(1, 1, 1));
+
+			TestEqual("FIntVector deserialized correctly", ContentObject->IntVectorsMap.FindRef(TEXT("a")), FIntVector(1, 1, 1));
+			TestEqual("FIntVector deserialized correctly", ContentObject->IntVectorsMap.FindRef(TEXT("b")), FIntVector(1, 1, 1));
+		});
+		
+		It("should deserialize color types properly", [=, this]()
+		{
+			ContentObject->FromBasicJson(FullObject);
+			TestEqual("Color deserialized correctly", ContentObject->UnrealColor, FColor::Black);
+
+			TestEqual("Color deserialized correctly", ContentObject->ColorsArray[0], FColor::Black);
+			TestEqual("Color deserialized correctly", ContentObject->ColorsArray[1], FColor::Black);
+
+			TestEqual("Color deserialized correctly", ContentObject->ColorsMap.FindRef(TEXT("a")), FColor::Black);
+			TestEqual("Color deserialized correctly", ContentObject->ColorsMap.FindRef(TEXT("b")), FColor::Black);
+		});
+
+		It("should deserialize linear color types properly", [=, this]()
+		{
+			ContentObject->FromBasicJson(FullObject);
+			TestEqual("Color deserialized correctly", ContentObject->UnrealLinearColor, FLinearColor::Black);
+
+			TestEqual("Color deserialized correctly", ContentObject->LinearColorsArray[0], FLinearColor::Black);
+			TestEqual("Color deserialized correctly", ContentObject->LinearColorsArray[1], FLinearColor::Black);
+
+			TestEqual("Color deserialized correctly", ContentObject->LinearColorsMap.FindRef(TEXT("a")), FLinearColor::Black);
+			TestEqual("Color deserialized correctly", ContentObject->LinearColorsMap.FindRef(TEXT("b")), FLinearColor::Black);
 		});
 
 		It("should deserialize UClass tags types properly", [=, this]()

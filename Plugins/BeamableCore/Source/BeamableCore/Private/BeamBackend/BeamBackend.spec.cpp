@@ -118,8 +118,9 @@ void FBeamBackendSpec::Define()
 				TestTrue("VERB is Set Correctly = 'POST'", Request->GetVerb() == TEXT("POST"));
 				TestTrue("Route was set up correctly", Request->GetURL().Contains(TEXT("/fake/url")));
 
-				const auto Content = FString(UTF8_TO_TCHAR(Request->GetContent().GetData()));
-				TestTrue("Body was set up correctly", Content == TEXT(R"({"fake_int":10})"));
+				const auto ContentUTF8 = reinterpret_cast<const UTF8CHAR*>(Request->GetContent().GetData());
+				const auto Content = FString(TStringConversion<FUTF8ToTCHAR_Convert>(ContentUTF8, Request->GetContent().Num()));				
+				TestEqual("Body was set up correctly", Content, TEXT(R"({"fake_int":10})"));
 
 				// Test discarding unset data associated with InFlight Requests.
 				BeamBackendSystem->CancelRequest(ReqId);
@@ -193,9 +194,10 @@ void FBeamBackendSpec::Define()
 				TestTrue("VERB is Set Correctly = 'POST'", Request->GetVerb() == TEXT("POST"));
 				TestTrue("Route was set up correctly", Request->GetURL().Contains(TEXT("/fake/url")));
 
-				const auto Content = FString(UTF8_TO_TCHAR(Request->GetContent().GetData()));
-				TestTrue("Body was set up correctly", Content == TEXT(R"({"fake_int":10})"));
-
+				const auto ContentUTF8 = reinterpret_cast<const UTF8CHAR*>(Request->GetContent().GetData());
+				const auto Content = FString(TStringConversion<FUTF8ToTCHAR_Convert>(ContentUTF8, Request->GetContent().Num()));				
+				TestEqual("Body was set up correctly", Content, TEXT(R"({"fake_int":10})"));
+				
 				// Test discarding unset data associated with InFlight Requests.
 				BeamBackendSystem->CancelRequest(ReqId);
 				TestTrue("ReqId no longer found in list of in flight requests", !BeamBackendSystem->InFlightRequests.Contains(ReqId));
@@ -233,8 +235,7 @@ void FBeamBackendSpec::Define()
 
 				// This should clean up the created request's data
 				BeamBackendSystem->ProcessBlueprintRequest<UBeamMockGetRequest, UBeamMockGetRequestResponse>
-					(200, ResponseBody, TUnrealRequestStatus::Succeeded, ReqId, FakeRequestData, ResponseHandler, ResponseHandlerError, ResponseHandlerComplete);
-				TestTrue("Is Connected", BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
+					(200, ResponseBody, TUnrealRequestStatus::Succeeded, ReqId, FakeRequestData, ResponseHandler, ResponseHandlerError, ResponseHandlerComplete);				
 				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == AS_Completed);
 			}
 
@@ -257,8 +258,7 @@ void FBeamBackendSpec::Define()
 
 				// This should clean up the created request's data
 				BeamBackendSystem->ProcessAuthenticatedBlueprintRequest<UBeamMockGetRequest, UBeamMockGetRequestResponse>
-					(200, ResponseBody, TUnrealRequestStatus::Succeeded, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequestData, ResponseHandler, ResponseHandlerError, ResponseHandlerComplete);
-				TestTrue("Is Connected", BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
+					(200, ResponseBody, TUnrealRequestStatus::Succeeded, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequestData, ResponseHandler, ResponseHandlerError, ResponseHandlerComplete);				
 				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == AS_Completed);
 			}
 
@@ -279,8 +279,7 @@ void FBeamBackendSpec::Define()
 				});
 
 				// This should clean up the created request's data
-				BeamBackendSystem->ProcessCodeRequest<UBeamMockGetRequest, UBeamMockGetRequestResponse>(200, ResponseBody, TUnrealRequestStatus::Succeeded, ReqId, FakeRequestData, ResponseHandler);
-				TestTrue("Is Connected", BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
+				BeamBackendSystem->ProcessCodeRequest<UBeamMockGetRequest, UBeamMockGetRequestResponse>(200, ResponseBody, TUnrealRequestStatus::Succeeded, ReqId, FakeRequestData, ResponseHandler);				
 				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == AS_Completed);
 			}
 
@@ -303,8 +302,7 @@ void FBeamBackendSpec::Define()
 				// This should clean up the created request's data
 				BeamBackendSystem->ProcessAuthenticatedCodeRequest
 					<UBeamMockGetRequest, UBeamMockGetRequestResponse>
-					(200, ResponseBody, TUnrealRequestStatus::Succeeded, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequestData, ResponseHandler);
-				TestTrue("Is Connected", BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
+					(200, ResponseBody, TUnrealRequestStatus::Succeeded, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequestData, ResponseHandler);				
 				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == AS_Completed);
 			}
 
@@ -697,9 +695,8 @@ void FBeamBackendSpec::Define()
 
 				// This should clean up the created request's data
 				BeamBackendSystem->ProcessBlueprintRequest<UBeamMockGetRequest, UBeamMockGetRequestResponse>
-					(500, ResponseBody, TUnrealRequestStatus::Failed_ConnectionError, ReqId, FakeRequest, ResponseHandler, ResponseHandlerError, ResponseHandlerComplete);
+					(500, ResponseBody, TUnrealRequestStatus::Failed, ReqId, FakeRequest, ResponseHandler, ResponseHandlerError, ResponseHandlerComplete);
 
-				TestTrue("Is No Longer Connected", !BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
 				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == AS_Completed);
 			}
 
@@ -726,9 +723,8 @@ void FBeamBackendSpec::Define()
 
 				// This should clean up the created request's data
 				BeamBackendSystem->ProcessAuthenticatedBlueprintRequest<UBeamMockGetRequest, UBeamMockGetRequestResponse>
-				(500, ResponseBody, TUnrealRequestStatus::Failed_ConnectionError, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequest, ResponseHandler, ResponseHandlerError,
-				 ResponseHandlerComplete);
-				TestTrue("Is No Longer Connected", !BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
+				(500, ResponseBody, TUnrealRequestStatus::Failed, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequest, ResponseHandler, ResponseHandlerError,
+				 ResponseHandlerComplete);				
 				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == AS_Completed);
 			}
 
@@ -752,8 +748,7 @@ void FBeamBackendSpec::Define()
 				});
 
 				// This should clean up the created request's data
-				BeamBackendSystem->ProcessCodeRequest(500, ResponseBody, TUnrealRequestStatus::Failed_ConnectionError, ReqId, FakeRequest, ResponseHandler);
-				TestTrue("Is No Longer Connected", !BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
+				BeamBackendSystem->ProcessCodeRequest(500, ResponseBody, TUnrealRequestStatus::Failed, ReqId, FakeRequest, ResponseHandler);				
 				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == AS_Completed);
 			}
 
@@ -777,9 +772,8 @@ void FBeamBackendSpec::Define()
 				});
 
 				// This should clean up the created request's data
-				BeamBackendSystem->ProcessAuthenticatedCodeRequest(500, ResponseBody, TUnrealRequestStatus::Failed_ConnectionError, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequest,
-				                                                   ResponseHandler);
-				TestTrue("Is No Longer Connected", !BeamBackendSystem->CurrentConnectivityStatus.IsConnected);
+				BeamBackendSystem->ProcessAuthenticatedCodeRequest(500, ResponseBody, TUnrealRequestStatus::Failed, ReqId, FakeRealmHandle, FakeAuthToken, FakeRequest,
+				                                                   ResponseHandler);				
 				TestTrue("Flagged Request as Completed", BeamBackendSystem->InFlightRequestContexts.FindRef(ReqId).BeamStatus == AS_Completed);
 			}
 
@@ -1145,6 +1139,10 @@ void FBeamBackendSpec::Define()
 			BeamBackendSystem->InFlightFailureCount[ResponseCodeReqId] = 1;
 			BeamBackendSystem->InFlightFailureCount[ErrorCodeReqId] = 1;
 
+			// Pretend the requests went out
+			BeamBackendSystem->InFlightRequestContexts.Find(ResponseCodeReqId)->BeamStatus = AS_InFlight;
+			BeamBackendSystem->InFlightRequestContexts.Find(ErrorCodeReqId)->BeamStatus = AS_InFlight;
+			
 			// Bind a fake lambda just so we know that the request had process request called on it.				
 			ResponseCodeRequest->OnProcessRequestComplete()
 			                   .BindLambda([this, Done](TSharedPtr<IHttpRequest, ESPMode::ThreadSafe>, TSharedPtr<IHttpResponse, ESPMode::ThreadSafe> HttpResponse, bool sent)
@@ -1193,6 +1191,10 @@ void FBeamBackendSpec::Define()
 			BeamBackendSystem->InFlightFailureCount[ResponseCodeReqId] = 1;
 			BeamBackendSystem->InFlightFailureCount[ErrorCodeReqId] = 1;
 
+			// Pretend the requests went out
+			BeamBackendSystem->InFlightRequestContexts.Find(ResponseCodeReqId)->BeamStatus = AS_InFlight;
+			BeamBackendSystem->InFlightRequestContexts.Find(ErrorCodeReqId)->BeamStatus = AS_InFlight;
+			
 			// Bind a fake lambda just so we know that the request had process request called on it.				
 			ResponseCodeRequest->OnProcessRequestComplete()
 			                   .BindLambda([this, Done](TSharedPtr<IHttpRequest, ESPMode::ThreadSafe>, TSharedPtr<IHttpResponse, ESPMode::ThreadSafe> HttpResponse, bool sent)
@@ -1224,124 +1226,7 @@ void FBeamBackendSpec::Define()
 			constexpr auto ExpectedAccumulatedTime = 0.75f;
 			BeamBackendSystem->TickRetryQueue(ExpectedAccumulatedTime);
 		});
-	});
-
-	Describe("Connectivity", [=, this]()
-	{
-		BeforeEach([this]()
-		{
-			BeamBackendSystem = GEngine->GetEngineSubsystem<UBeamBackend>();
-			StatusAtTestRunStart = BeamBackendSystem->CurrentConnectivityStatus;
-		});
-
-		AfterEach([this]()
-		{
-			BeamBackendSystem->CurrentConnectivityStatus = StatusAtTestRunStart;
-
-			// Clear all Delegates we set during the test.
-			for (const auto& RegisteredDelegatesDuringConnectivityTest : RegisteredDelegatesDuringConnectivityTests)
-				BeamBackendSystem->GlobalConnectivityChangedCodeHandler.Remove(RegisteredDelegatesDuringConnectivityTest);
-		});
-
-		It("should turn the connectivity off and call connection changed callback", [this]()
-		{
-			constexpr int64 ExpectedRequestId = 10;
-			const FString ExpectedRequestType = UBeamMockGetRequest::StaticClass()->GetName();
-
-
-			const auto Handler = BeamBackendSystem->GlobalConnectivityChangedCodeHandler.AddLambda(
-				[this, ExpectedRequestType](const FBeamRequestContext& RequestCtx, const FRequestType& RequestType, const bool bConnected)
-				{
-					TestTrue("RequestId was forwarded correctly", RequestCtx.RequestId == ExpectedRequestId);
-					TestTrue("RequestType was forwarded correctly", RequestType == FRequestType{ExpectedRequestType});
-					TestTrue("Connectivity properly updated", !bConnected);
-				});
-			RegisteredDelegatesDuringConnectivityTests.Add(Handler);
-
-			BeamBackendSystem->UpdateConnectivity(FBeamRequestContext{ExpectedRequestId}, EHttpRequestStatus::Failed_ConnectionError, FRequestType{ExpectedRequestType});
-		});
-
-		It("should turn the connectivity on when receiving a successful response and call connection changed callback", [this]()
-		{
-			constexpr int64 ExpectedRequestId = 10;
-			const FString ExpectedRequestType = UBeamMockGetRequest::StaticClass()->GetName();
-
-			// Turn connectivity off first
-			BeamBackendSystem->UpdateConnectivity(FBeamRequestContext{ExpectedRequestId}, EHttpRequestStatus::Failed_ConnectionError, FRequestType{ExpectedRequestType});
-
-			// Set callback to assert that it gets turned back on
-			const auto Handler = BeamBackendSystem->GlobalConnectivityChangedCodeHandler.AddLambda(
-				[this, ExpectedRequestType](const FBeamRequestContext& RequestCtx, const FRequestType& RequestType, const bool bConnected)
-				{
-					TestTrue("RequestId was forwarded correctly", RequestCtx.RequestId == ExpectedRequestId);
-					TestTrue("RequestType was forwarded correctly", RequestType == FRequestType{ExpectedRequestType});
-					TestTrue("Connectivity properly updated", bConnected);
-				});
-			RegisteredDelegatesDuringConnectivityTests.Add(Handler);
-
-			BeamBackendSystem->UpdateConnectivity(FBeamRequestContext{ExpectedRequestId}, EHttpRequestStatus::Succeeded, FRequestType{ExpectedRequestType});
-		});
-
-		It("should turn the connectivity on when receiving a failed (for non-connection issues) response and call connection changed callback", [this]()
-		{
-			constexpr int64 ExpectedRequestId = 10;
-			const FString ExpectedRequestType = UBeamMockGetRequest::StaticClass()->GetName();
-
-			// Turn connectivity off first
-			BeamBackendSystem->UpdateConnectivity(FBeamRequestContext{ExpectedRequestId}, EHttpRequestStatus::Failed_ConnectionError, FRequestType{ExpectedRequestType});
-
-			// Set callback to assert that it gets turned back on
-			const auto Handler = BeamBackendSystem->GlobalConnectivityChangedCodeHandler.AddLambda(
-				[this, ExpectedRequestType](const FBeamRequestContext& RequestCtx, const FRequestType& RequestType, const bool bConnected)
-				{
-					TestTrue("RequestId was forwarded correctly", RequestCtx.RequestId == ExpectedRequestId);
-					TestTrue("RequestType was forwarded correctly", RequestType == FRequestType{ExpectedRequestType});
-					TestTrue("Connectivity properly updated", bConnected);
-				});
-			RegisteredDelegatesDuringConnectivityTests.Add(Handler);
-
-			BeamBackendSystem->UpdateConnectivity(FBeamRequestContext{ExpectedRequestId}, EHttpRequestStatus::Failed, FRequestType{ExpectedRequestType});
-		});
-
-		It("should not call connection changed callback when getting repeated Successfull/Failed errors", [this]()
-		{
-			constexpr int64 ExpectedRequestId = 10;
-			const FString ExpectedRequestType = UBeamMockGetRequest::StaticClass()->GetName();
-
-			// Force turn the connection on so we can test that we are not calling the handler if we keep being successful (or failed for non-connection reasons) with requests.
-			BeamBackendSystem->UpdateConnectivity(FBeamRequestContext{ExpectedRequestId}, EHttpRequestStatus::Succeeded, FRequestType{ExpectedRequestType});
-
-			// Set callback to assert that it gets turned back on
-			const auto Handler = BeamBackendSystem->GlobalConnectivityChangedCodeHandler.AddLambda(
-				[this](const FBeamRequestContext& RequestCtx, const FRequestType& RequestType, const bool bConnected)
-				{
-					TestTrue("you should not be seeing this", false);
-				});
-			BeamBackendSystem->UpdateConnectivity(FBeamRequestContext{ExpectedRequestId}, EHttpRequestStatus::Succeeded, FRequestType{ExpectedRequestType});
-			BeamBackendSystem->UpdateConnectivity(FBeamRequestContext{ExpectedRequestId}, EHttpRequestStatus::Failed, FRequestType{ExpectedRequestType});
-
-			RegisteredDelegatesDuringConnectivityTests.Add(Handler);
-		});
-
-		It("should not call connection changed callback when getting repeated Failed Connection Errors", [this]()
-		{
-			constexpr int64 ExpectedRequestId = 10;
-			const FString ExpectedRequestType = UBeamMockGetRequest::StaticClass()->GetName();
-
-			// Turn off connectivity first
-			BeamBackendSystem->UpdateConnectivity(FBeamRequestContext{ExpectedRequestId}, EHttpRequestStatus::Failed_ConnectionError, FRequestType{ExpectedRequestType});
-			// Set callback to assert that if it remains off the callback won't be called
-			const auto Handler = BeamBackendSystem->GlobalConnectivityChangedCodeHandler.AddLambda(
-				[this](const FBeamRequestContext& RequestCtx, const FRequestType& RequestType, const bool bConnected)
-				{
-					TestTrue("you should not be seeing this", false);
-				});
-			// Turn it off again
-			BeamBackendSystem->UpdateConnectivity(FBeamRequestContext{ExpectedRequestId}, EHttpRequestStatus::Failed_ConnectionError, FRequestType{ExpectedRequestType});
-
-			RegisteredDelegatesDuringConnectivityTests.Add(Handler);
-		});
-	});
+	});	
 
 	Describe("Dedicated Servers", [=, this]()
 	{		
@@ -1369,7 +1254,7 @@ void FBeamBackendSpec::Define()
 			BeamBackendSystem->ExtractUrlForSignature(CSharpUrl,SigCSharpUrl);
 
 			TestEqual("Scala URL extracted correctly", SigScalaUrl, TEXT("/object/stats/game.public.player.1595037680985091/"));
-			TestEqual("CSharp URL extracted correctly", SigCSharpUrl, TEXT("/lobbies/7c9f10d1-b16c-46d1-8af1-df76604b1e1b/"));
+			TestEqual("CSharp URL extracted correctly", SigCSharpUrl, TEXT("/api/lobbies/7c9f10d1-b16c-46d1-8af1-df76604b1e1b/"));
 			
 		});
 	});

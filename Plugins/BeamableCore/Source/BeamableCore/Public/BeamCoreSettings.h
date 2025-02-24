@@ -73,15 +73,7 @@ public:
 	 */
 	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Request/Response")
 	FBeamRetryConfig FallbackRetryConfiguration{{408}, {}, 10, {.5f, 1, 2, 4, 8}, 5};
-
-	/**
-	 * @brief The configuration for retrying connecting via websockets (@see UBeamNotifications).
-	 * Setting the Max Attempt as -1 will make it an "infinite retry" though we don't recommend doing this from a design perspective.
-	 * Setting more retry attempts than falloff values will default to the last possible falloff value after the attempts exceed the array length.
-	 */
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Request/Response")
-	FBeamRetryConfig WebSocketRetryConfig{{}, {}, 10, {.5f, 1, 2, 4, 8}, 5};
-	
+		
 	/**
 	 * @brief The configuration for cache-ing all requests. Can be overriden via the API in @see UBeamResponseCache.
 	 *
@@ -140,11 +132,29 @@ public:
 	bool bErrorIfGameplayTagNotFound = false;
 
 	/**
-	 * @brief References to all baked content files. This is automatically filled up whenever you cook a build and can be ignored by the end user.
-	 */
-	UPROPERTY(Config, VisibleAnywhere, BlueprintReadOnly, Category="Content")
-	TArray<TSoftObjectPtr<UBeamContentCache>> BakedContentManifests;
+	* @brief The name of the folder that is inside the saved folder that all the cached content will go into on runtime.
+	*/
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
+	FString CachedContentFolderName = "CachedContent";
 
+	/**
+	* @brief Cached content file name.
+	*/
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
+	FString GlobalCachedContentFileName = "CC_Global";
+	
+	/**
+	* @brief The name of the folder that is inside the saved folder that all the cached content will go into on runtime.
+	*/
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
+	FString BakedContentFolderName = "BakedContent";
+
+	/**
+	* @brief Cached content file name.
+	*/
+	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category="Content")
+	FString GlobalBakedContentFileName = "BCC_Global";
+	
 	UFUNCTION(BlueprintCallable)
 	FUserSlot GetOwnerPlayerSlot() const { return FUserSlot{RuntimeUserSlots[0]}; }
 };

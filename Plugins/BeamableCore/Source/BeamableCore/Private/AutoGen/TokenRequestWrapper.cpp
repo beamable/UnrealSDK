@@ -24,6 +24,7 @@ void UTokenRequestWrapper::BeamSerializeProperties(TUnrealJsonSerializer& Serial
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("client_id"), &ClientId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("password"), &Password, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("scope"), &Scope, Serializer);
+	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("initProperties"), &InitProperties, Serializer);
 }
 
 void UTokenRequestWrapper::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
@@ -44,7 +45,8 @@ void UTokenRequestWrapper::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("username"), &Username, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("client_id"), &ClientId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("password"), &Password, Serializer);
-	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("scope"), &Scope, Serializer);		
+	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("scope"), &Scope, Serializer);
+	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("initProperties"), &InitProperties, Serializer);		
 }
 
 void UTokenRequestWrapper::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
@@ -66,6 +68,7 @@ void UTokenRequestWrapper::BeamDeserializeProperties(const TSharedPtr<FJsonObjec
 	UBeamJsonUtils::DeserializeOptional<FString>("client_id", Bag, ClientId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("password", Bag, Password, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("scope", Bag, Scope, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<TMap<FString, FString>, FString>("initProperties", Bag, InitProperties, OuterOwner);
 }
 
 

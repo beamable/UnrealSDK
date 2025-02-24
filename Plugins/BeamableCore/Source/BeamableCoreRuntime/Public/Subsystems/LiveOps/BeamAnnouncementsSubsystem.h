@@ -66,7 +66,7 @@ private:
 												FOptionalArrayOfString Announcements) const;
 	
 	FBeamRequestContext RequestClaimAnnouncement(const FUserSlot& UserSlot, FBeamOperationHandle Op,
-												 FOnObjectAnnouncementsPostClaimFullResponse Handler,
+												 FOnObjectAnnouncementsPostClaimByObjectIdFullResponse Handler,
 												 FOptionalString Announcement,
 												 FOptionalArrayOfString Announcements) const;
 public:

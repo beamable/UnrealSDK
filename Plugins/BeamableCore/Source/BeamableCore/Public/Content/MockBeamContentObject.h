@@ -100,6 +100,42 @@ public:
 	TMap<FString, FGameplayTag> GameplayTagsMap;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector UnrealVector;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FVector> VectorsArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FString, FVector> VectorsMap;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FIntVector UnrealIntVector;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FIntVector> IntVectorsArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FString, FIntVector> IntVectorsMap;	
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FColor UnrealColor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FColor> ColorsArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FString, FColor> ColorsMap;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FLinearColor UnrealLinearColor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FLinearColor> LinearColorsArray;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FString, FLinearColor> LinearColorsMap;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FBeamCid> ArrayOfBeamCid;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -164,30 +200,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FBeamContentLink TestLink;
-
-	UPROPERTY(EditAnywhere)
-	FContentLinkWrapperTestStruct TestLinkStructWrapper;
-
-	UPROPERTY(EditAnywhere)
-	UContentLinkWrapperTestClass* TestLinkClassWrapper;
-
-	UPROPERTY(EditAnywhere)
-	TArray<FBeamContentLink> TestArrayLink;
-
-	UPROPERTY(EditAnywhere)
-	TArray<FContentLinkWrapperTestStruct> TestArrayLinkStructWrapper;
-
-	UPROPERTY(EditAnywhere)
-	TArray<UContentLinkWrapperTestClass*> TestArrayLinkClassWrapper;
-
-	UPROPERTY(EditAnywhere)
-	TMap<FString, FBeamContentLink> TestMapLink;
-
-	UPROPERTY(EditAnywhere)
-	TMap<FString, FContentLinkWrapperTestStruct> TestMapLinkStructWrapper;
-
-	UPROPERTY(EditAnywhere)
-	TMap<FString, UContentLinkWrapperTestClass*> TestMapLinkClassWrapper;
 };
 
 DEFINE_CONTENT_TYPE_NAME(UMockBeamContentObject, "mock")

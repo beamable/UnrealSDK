@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include <AutoGen/SubSystems/Lobby/ApiLobbyPostServerRequest.h>
+#include <AutoGen/SubSystems/Lobby/ApiLobbyGetLobbiesRequest.h>
+#include <AutoGen/SubSystems/Lobby/ApiLobbyPostServerByIdRequest.h>
 
 #include "CoreMinimal.h"
-#include "AutoGen/SubSystems/Lobby/ApiLobbyPutMetadataRequest.h"
+#include "AutoGen/SubSystems/Lobby/ApiLobbyPutMetadataByIdRequest.h"
 #include "AutoGen/SubSystems/Lobby/DeleteLobbyRequest.h"
 #include "AutoGen/SubSystems/Lobby/DeleteTagsRequest.h"
-#include "AutoGen/SubSystems/Lobby/GetLobbiesRequest.h"
 #include "AutoGen/SubSystems/Lobby/GetLobbyRequest.h"
 #include "AutoGen/SubSystems/Lobby/PostLobbiesRequest.h"
 #include "AutoGen/SubSystems/Lobby/PutLobbyRequest.h"
@@ -30,19 +30,39 @@ class UBeamLobbyState : public UObject
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	FGuid LobbyId;
-
+	/**
+	 * User slot whose lobby state we are tracking. 
+	 */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	FUserSlot OwnerUserSlot;
 
+	/**
+	 * The handle for the UBeamLobbyNotifications::CPP_SubscribeToLobbyUpdate we attach to each lobby state.
+	 * This is never unsubscribed.
+	 */
+	FDelegateHandle NotificationSubscriptionHandle;
+
+	/**
+	 * Id for the current lobby the OwnerUserSlot is in.
+	 */
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	FGuid LobbyId;
+
+	/**
+	 * GamerTag of the OwnerUserSlotPlayer.
+	 */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	FBeamGamerTag OwnerGamerTag;
 
+	/**
+	 * Whether the OwnerUserSlot player is the host/owner of this lobby.
+	 */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	bool bIsLobbyOwner;
 
-	FDelegateHandle NotificationSubscriptionHandle;
+	UPROPERTY(BlueprintAssignable)
+	FOnLobbyEvent OnLobbyJoined;
+	FOnLobbyEventCode OnLobbyJoinedCode;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnLobbyEvent OnLobbyDisbanded;
@@ -466,18 +486,18 @@ private:
 	FBeamRequestContext RequestJoin(const FUserSlot& UserSlot, FGuid LobbyId, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op, FOnPutLobbyFullResponse Handler) const;
 	FBeamRequestContext RequestJoinByPassword(const FUserSlot& UserSlot, FString Passcode, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op, FOnPutPasscodeFullResponse Handler) const;
 	FBeamRequestContext RequestGetLobby(const FUserSlot& UserSlot, FGuid LobbyId, FBeamOperationHandle Op, FOnGetLobbyFullResponse Handler) const;
-	FBeamRequestContext RequestGetLobbies(const FUserSlot& UserSlot, FBeamContentId MatchTypeFilter, int32 PageStart, int32 PageSize, FBeamOperationHandle Op, FOnGetLobbiesFullResponse Handler) const;
+	FBeamRequestContext RequestGetLobbies(const FUserSlot& UserSlot, FBeamContentId MatchTypeFilter, int32 PageStart, int32 PageSize, FBeamOperationHandle Op, FOnApiLobbyGetLobbiesFullResponse Handler) const;
 	FBeamRequestContext RequestPostLobbies(const FUserSlot& UserSlot, FString LobbyName, FString LobbyDescription, ELobbyRestriction Restriction, FBeamContentId MatchType, int32 PasscodeLength,
 	                                       int32 MaxPlayers, TMap<FString, FString> LobbyData, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op, FOnPostLobbiesFullResponse Handler) const;
 	FBeamRequestContext RequestRemoveFromLobby(const FUserSlot& UserSlot, FGuid LobbyId, FBeamGamerTag GamerTag, FBeamOperationHandle Op, FOnDeleteLobbyFullResponse Handler) const;
 	FBeamRequestContext RequestUpdateLobbyMetadata(const FUserSlot& UserSlot, FGuid LobbyId, FOptionalString LobbyName, FOptionalString LobbyDescription, FOptionalLobbyRestriction Restriction,
 	                                               FOptionalBeamContentId MatchType, FOptionalBeamGamerTag NewHost, FOptionalInt32 MaxPlayers, FOptionalMapOfString GlobalDataUpdates,
-	                                               FOptionalArrayOfString GlobalDataDeletes, FBeamOperationHandle Op, FOnApiLobbyPutMetadataFullResponse Handler) const;
+	                                               FOptionalArrayOfString GlobalDataDeletes, FBeamOperationHandle Op, FOnApiLobbyPutMetadataByIdFullResponse Handler) const;
 	FBeamRequestContext RequestUpdatePlayerTag(const FUserSlot& UserSlot, FGuid LobbyId, FBeamGamerTag PlayerId, TArray<FBeamTag> PlayerTags, bool bShouldReplace, FBeamOperationHandle Op,
 	                                           FOnPutTagsFullResponse Handler) const;
 	FBeamRequestContext RequestDeletePlayerTags(const FUserSlot& UserSlot, FGuid LobbyId, FBeamGamerTag PlayerId, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op,
 	                                            FOnDeleteTagsFullResponse Handler) const;
-	FBeamRequestContext RequestPostServer(const FUserSlot& UserSlot, FGuid LobbyId, FOptionalBeamContentId SelectedMatchType, FBeamOperationHandle Op, FOnApiLobbyPostServerFullResponse Handler) const;
+	FBeamRequestContext RequestPostServer(const FUserSlot& UserSlot, FGuid LobbyId, FOptionalBeamContentId SelectedMatchType, FBeamOperationHandle Op, FOnApiLobbyPostServerByIdFullResponse Handler) const;
 
 
 	// Notification Hooks
@@ -487,7 +507,7 @@ private:
 
 	// Helper Functions
 	void InitializeLobbyInfoForSlot(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser);
-	void UpdateLobbyPlayerInfo(FUserSlot Slot, const ULobby* LobbyData, FDelegateHandle NewSubscriptionDelegate);
+	void UpdateLobbyPlayerInfo(FUserSlot Slot, const ULobby* LobbyData);
 	void ReplaceOrAddKnownLobbyData(ULobby* LobbyData);
 	void ClearLobbyForSlot(FUserSlot Slot);
 	bool GuardSlotIsInLobby(const FUserSlot& Slot, UBeamLobbyState*& LobbyState);

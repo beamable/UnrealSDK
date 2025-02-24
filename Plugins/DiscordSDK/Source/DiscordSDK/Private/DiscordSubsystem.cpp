@@ -24,6 +24,9 @@ bool UDiscordSubsystem::Tick(float)
 
 void UDiscordSubsystem::ManualInitialize()
 {
+	if (State == discord::Initialized)
+		return;
+	
 	UE_LOG(LogTemp, Display, TEXT("[Discord SDK] Initializing Discord SDK."));
 	auto Result = discord::Core::Create(DiscordAppId, DiscordCreateFlags_Default, &Core);
 	if (Result == discord::Result::Ok)
@@ -83,15 +86,19 @@ void UDiscordSubsystem::OnUserUpdated(discord::OAuth2Token Token)
 	
 	if (CurrentUser)
 	{
-		CurrentToken = Token;
-		State        = discord::Initialized;
+		// We only want to emit this once.
+		if (State != discord::Initialized)
+		{
+			CurrentToken = Token;
+			State        = discord::Initialized;
 
-		UserData.UserId = FString::Printf(TEXT("%lld"), CurrentUser->GetId());
-		UserData.Username = ANSI_TO_TCHAR(CurrentUser->GetUsername());
-		UserData.Discriminator = ANSI_TO_TCHAR(CurrentUser->GetDiscriminator());
-		UserData.Avatar = ANSI_TO_TCHAR(CurrentUser->GetAvatar());
-		UserData.OAuthToken = ANSI_TO_TCHAR(Token.GetAccessToken());
-		OnDiscordInitialized.ExecuteIfBound(true, UserData, "");
+			UserData.UserId = FString::Printf(TEXT("%lld"), CurrentUser->GetId());
+			UserData.Username = ANSI_TO_TCHAR(CurrentUser->GetUsername());
+			UserData.Discriminator = ANSI_TO_TCHAR(CurrentUser->GetDiscriminator());
+			UserData.Avatar = ANSI_TO_TCHAR(CurrentUser->GetAvatar());
+			UserData.OAuthToken = ANSI_TO_TCHAR(Token.GetAccessToken());
+			OnDiscordInitialized.ExecuteIfBound(true, UserData, "");
+		}
 	}
 	else
 	{

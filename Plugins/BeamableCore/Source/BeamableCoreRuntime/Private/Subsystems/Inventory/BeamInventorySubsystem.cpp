@@ -778,8 +778,8 @@ void UBeamInventorySubsystem::MergeInventoryViewIntoState(const UInventoryView* 
 
 	struct FReceivedItemInstanceData
 	{
-		const FString& Id;
-		const int64& InstanceId;
+		const FString Id;
+		const int64 InstanceId;
 		const UItem* ViewPtr;
 
 		bool operator==(const FReceivedItemInstanceData& RHS) const

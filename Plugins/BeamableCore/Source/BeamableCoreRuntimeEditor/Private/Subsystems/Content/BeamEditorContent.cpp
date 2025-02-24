@@ -8,6 +8,7 @@
 #include "Content/BeamContentCache.h"
 #include "Content/DownloadContentState.h"
 #include "Misc/FileHelper.h"
+#include "Settings/ProjectPackagingSettings.h"
 #include "Subsystems/BeamEditor.h"
 #include "Subsystems/CLI/BeamCli.h"
 #include "Subsystems/CLI/Autogen/BeamCliContentLocalManifestCommand.h"
@@ -37,32 +38,9 @@ void UBeamEditorContent::Initialize(FSubsystemCollectionBase& Collection)
 			AllContentTypes.Add(*It);
 			AllContentTypeNames.Add(MakeShared<FName>(TypeName));
 			ContentTypeStringToContentClass.Add(ContentTypeId, *It);
+			ContentClassToContentTypeString.Add(*It,ContentTypeId);
 		}
 	}
-
-
-	// Set up delegate to ensure only existing baked content will be configured in the RuntimeSettings configuration.
-	// The reason this doesn't stick is because the ModifyCookDelegate doesn't seem to run in the same process as the editor.
-	// This means that, even though the asset change will be visible by the editor process the RuntimeSettings ones won't until the editor is restarted. 
-	OnWillEnterPIE = FEditorDelegates::PreBeginPIE.AddLambda([this](bool Cond)
-	{
-		UBeamCoreSettings* EditorSettings = GetMutableDefault<UBeamCoreSettings>();
-		const auto NumBakedContent = EditorSettings->BakedContentManifests.Num();
-		for (int i = NumBakedContent - 1; i >= 0; --i)
-		{
-			const auto BeamRuntimeContentCache = EditorSettings->BakedContentManifests[i];
-			const auto CookedAssetPath = BeamRuntimeContentCache.ToSoftObjectPath().GetAssetPathString();
-			UE_LOG(LogBeamContent, Warning, TEXT("On Will Enter PIE: Cooked content manifest path = %s"),
-			       *CookedAssetPath)
-			if (!EditorAssetSubsystem->DoesAssetExist(CookedAssetPath))
-			{
-				EditorSettings->BakedContentManifests.RemoveAt(i);
-			}
-		}
-
-		if (NumBakedContent != EditorSettings->BakedContentManifests.Num())
-			EditorSettings->SaveConfig(CPF_Config, *EditorSettings->GetDefaultConfigFilename());
-	});
 }
 
 
@@ -246,6 +224,43 @@ bool UBeamEditorContent::DownloadManifest(FBeamContentManifestId ContentManifest
 	};
 
 	Cli->RunCommandSync(PullCommand, {FString::Printf(TEXT("--manifest-ids %s"), *ContentManifestId.AsString)});
+	SlowTask->EnterProgressFrame();
+
+	return Res;
+}
+
+bool UBeamEditorContent::DownloadContent(FBeamContentManifestId ContentManifestId, TArray<FBeamContentId> Ids, FString& Err)
+{
+	const auto EditorSlot = Editor->GetMainEditorSlot();
+
+	FSlowTask* SlowTask = new FSlowTask(1, FText::FromString(TEXT("Downloading Content...")));
+	SlowTask->Initialize();
+	SlowTask->MakeDialog();
+	
+	bool Res = false;
+	UBeamCliContentPullCommand* PullCommand = NewObject<UBeamCliContentPullCommand>();
+	PullCommand->OnStreamOutput = [this](const TArray<UBeamCliContentPullStreamData*>& Data, const TArray<int64>&,
+										 const FBeamOperationHandle&)
+	{
+		for (const auto& D : Data)
+			UpdateLocalManifestCache(D->Manifests);
+	};
+	PullCommand->OnCompleted = [this, &Res, &Err, SlowTask](const int& ResCode, const FBeamOperationHandle&)
+	{
+		Res = ResCode == 0;
+		Err = Res ? TEXT("") : TEXT("FAILED_DOWNLOAD");
+		SlowTask->Destroy();
+		delete SlowTask;
+	};
+	
+	// Get all the content Ids.
+	auto IdsStr = TArray<FString>{};
+	for (FBeamContentId Id : Ids) IdsStr.Add(Id.AsString);
+	auto IdsParam = Ids.Num() > 0 ? FString::Printf(TEXT("--content-ids %s"), *FString::Join(IdsStr, TEXT(" "))) : TEXT("");
+
+	const auto ManifestsParam = FString::Printf(TEXT("--manifest-ids %s"), *ContentManifestId.AsString);
+	
+	Cli->RunCommandSync(PullCommand, {ManifestsParam, IdsParam});
 	SlowTask->EnterProgressFrame();
 
 	return Res;
@@ -741,8 +756,10 @@ FBeamContentManifestId UBeamEditorContent::GetManifestIdFromDataTable(const UDat
 }
 
 
-void UBeamEditorContent::BakeManifest(FBeamContentManifestId Manifest, UBeamContentCache* Cache)
+void UBeamEditorContent::BakeManifest(FBeamContentManifestId Manifest)
 {
+	UBeamContentCache* Cache  = NewObject<UBeamContentCache>(this);
+	
 	Cache->ManifestId = Manifest;
 
 	for (const auto& Entry : LocalManifestCache[Manifest]->Entries)
@@ -761,13 +778,48 @@ void UBeamEditorContent::BakeManifest(FBeamContentManifestId Manifest, UBeamCont
 			Cache->Hashes.Add(Entry->FullId, Hash);
 		}
 	}
-	EditorAssetSubsystem->SaveLoadedAsset(Cache, false);
 
-	// Update the settings for it.
-	UBeamCoreSettings* EditorSettings = GetMutableDefault<UBeamCoreSettings>();
-	const auto CookedAssetPath = EditorAssetSubsystem->GetPathNameForLoadedAsset(Cache);
-	EditorSettings->BakedContentManifests.AddUnique(TSoftObjectPtr<UBeamContentCache>{CookedAssetPath});
-	EditorSettings->SaveConfig(CPF_Config, *EditorSettings->GetDefaultConfigFilename());
+	auto CoreSettings = GetMutableDefault<UBeamCoreSettings>();
+					
+	const FString BakedContentPath =  FPaths::ProjectContentDir() + CoreSettings->BakedContentFolderName + "/" +
+					CoreSettings->GlobalBakedContentFileName;
+
+	TArray<uint8> SerializedData;
+	FMemoryWriter Writer(SerializedData, true);
+						
+	Cache->SerializeToBinary(Writer,ContentTypeStringToContentClass,ContentClassToContentTypeString);
+
+	if (FFileHelper::SaveArrayToFile(SerializedData, *BakedContentPath))
+	{
+		UE_LOG(LogBeamContent, Log, TEXT("Saved new baked content."));
+	}
+	else
+	{
+		UE_LOG(LogBeamContent, Error, TEXT("Error while baking new content."));
+	}
+
+	//Add the baked folder to the project settings so that it doesnt get packaged in the .PAK and gets coppied as it is with the packaged game
+	if (UProjectPackagingSettings* PackagingSettings = GetMutableDefault<UProjectPackagingSettings>())
+	{
+		bool PathAlreadyAdded = false;
+		for (FDirectoryPath &DirectoryPath : PackagingSettings->DirectoriesToAlwaysStageAsNonUFS)
+		{
+			if (DirectoryPath.Path == CoreSettings->BakedContentFolderName)
+			{
+				PathAlreadyAdded = true;
+			}
+		}
+		if (!PathAlreadyAdded)
+		{
+			PackagingSettings->DirectoriesToAlwaysStageAsNonUFS.Add(FDirectoryPath{ CoreSettings->BakedContentFolderName });
+
+			PackagingSettings->SaveConfig(CPF_Config, *PackagingSettings->GetDefaultConfigFilename());
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to retrieve packaging settings."));
+	}
 }
 
 FBeamOperationHandle UBeamEditorContent::RefreshLocalManifestOperation(FBeamOperationEventHandler OnOperationEvent)

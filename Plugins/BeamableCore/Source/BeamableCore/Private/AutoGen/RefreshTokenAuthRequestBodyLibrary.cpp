@@ -22,21 +22,23 @@ FString URefreshTokenAuthRequestBodyLibrary::RefreshTokenAuthRequestBodyToJsonSt
 	return Result;
 }	
 
-URefreshTokenAuthRequestBody* URefreshTokenAuthRequestBodyLibrary::Make(FOptionalString RefreshToken, FOptionalBeamCid CustomerId, FOptionalBeamPid RealmId, UObject* Outer)
+URefreshTokenAuthRequestBody* URefreshTokenAuthRequestBodyLibrary::Make(FOptionalString RefreshToken, FOptionalBeamCid CustomerId, FOptionalBeamPid RealmId, FOptionalContextInfo Context, UObject* Outer)
 {
 	auto Serializable = NewObject<URefreshTokenAuthRequestBody>(Outer);
 	Serializable->RefreshToken = RefreshToken;
 	Serializable->CustomerId = CustomerId;
 	Serializable->RealmId = RealmId;
+	Serializable->Context = Context;
 	
 	return Serializable;
 }
 
-void URefreshTokenAuthRequestBodyLibrary::Break(const URefreshTokenAuthRequestBody* Serializable, FOptionalString& RefreshToken, FOptionalBeamCid& CustomerId, FOptionalBeamPid& RealmId)
+void URefreshTokenAuthRequestBodyLibrary::Break(const URefreshTokenAuthRequestBody* Serializable, FOptionalString& RefreshToken, FOptionalBeamCid& CustomerId, FOptionalBeamPid& RealmId, FOptionalContextInfo& Context)
 {
 	RefreshToken = Serializable->RefreshToken;
 	CustomerId = Serializable->CustomerId;
 	RealmId = Serializable->RealmId;
+	Context = Serializable->Context;
 		
 }
 

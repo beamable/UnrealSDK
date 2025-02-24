@@ -1,35 +1,41 @@
-<style>
-img[src*='#center'] { 
-    display: block;
-    margin: auto;
-}
-</style>
+# Setting Up The Sample Projects
 
-Unreal Beamable Samples are distributed as a configuration of the Unreal SDK repository. We call these `BeamProj`. The `BeamProjOverride.txt` file at the root of the Unreal SDK project defines which of the `BEAMPROJ_` plugins is the active sample.
+Beamable provides sample projects for Unreal as part of the Unreal SDK repository. Each sample is tied to a plugin named `BEAMPROJ_<PluginName>` of a shared `BeamableUnreal` project. The sample you see in the editor is determined by which `BEAMPROJ_` plugin is enabled in the BeamableUnreal.uproject file.
 
-To look at any given sample, you need to:
+## Preparing the Environment
+1. Install Dependencies
+      - NET 8.0
+      - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+2. Clone the UnrealSDK Repository
+      - Clone the [UnrealSDK](https://github.com/Beamable/UnrealSDK) repository if you didn't yet.
+      - Run the `prepare_repo.sh` Script. (We recommend using GitBash, but any similar shell should work)
 
-1. Have our dependencies installed ( [.NET](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) and [Docker](https://www.docker.com/products/docker-desktop/))
-2. Clone our [UnrealSDK](https://github.com/beamable/UnrealSDK) repository.
-3. Run the `prepare_repo.sh` script (we run it through GitBash but any similar shell *should* work).
-4. Change the contents of the `BeamProjOverride.txt` file to match the `BEAMPROJ_Plugin` of your choice. 
-	1. For example, `BEAMPROJ_HathoraDemo` sets the repository as the Hathora Demo sample.
-	2. You can find the correct `BEAMPROJ_` at the each sample's page.
-5. Generate Project Files.
-6. Open the project's `.sln` and do a clean build of the `Editor` target.
-7. Open the editor and `Project Settings -> Beamable Core -> Beamable Environment` and verify that it is set to `BeamProdEnv` before signing into a Beamable account.
+## Select the Sample to Run
 
-Further instructions for seeing each sample can be found in their respective sample docs.
+1. Use `dotnet beam unreal select-sample BEAMPROJ_<PluginName>` to switch to the plugin (and thus the sample) you want. During this process all of the content in their `Override` folder will be copied to the `BeamamableUnreal` project replacing any previous configuration. This allow us to replace the whole "Context" in which the project will be configured, thus allowing us to have multiple samples at the same project.
+2. For example, `dotnet beam unreal select-sample BEAMPROJ_HathoraDemo` switches the repo to the Hathora Demo sample
+3. If using Rider as IDE and already in the BeamableUnreal.sln project you can alternatively select and run the `SET BEAMPROJ - <PluginName>` in the Configuration Drop Down (Top Right Corner)
 
-!!! note "Why not a separate repository?"
-	Workflow is important to us. We want to maintain these sample projects over the long run as a means to dogfood our own tools. So... our samples are part of our repo to minimize developer friction which translates to up-to-date samples and better stability for our product; which hopefully translates for a better product for the people making amazing games with it.
+## Build and Run in Editor
 
-!!! warning "Clean Up"
-	If you are using your own organization (the one you'll use to ship your game) to test these samples out, don't forget to delete the realms once you're done exploring the samples!
+1. Open the generated `.sln` file in your IDE (e.g., Visual Studio, Rider...).
+2. Perform a Clean build of the Editor target.
+3. Run the `BeamableUnreal` Project and in the editor, go to Project Settings → Beamable Core → Beamable Environment and verify it’s set to `BeamProdEnv`.
+4. Sign in to your Beamable account in the Beamable Window.
+5. Follow Sample-Specific Instructions. Each sample has its own documentation for additional steps or guidance.
 
-#### More Information (Irrelevant for non-Beamable Devs)
-To make each plugin function as its own little UE project. We have to keep the `Config` and `.beamable` folders in sync. This is done by:
+!!! warning "Clean Up Sample Realms"
+      If you are using your own organization (the one you’ll use to ship your game) to test any of these samples, don’t forget to delete the test realms when you’re finished exploring!
 
-- Our custom `Target.cs` code that will make the `Config` and `.beamable` folders at the root level of the repo be exact copies of the folders inside the `Overrides` directory of each `BEAMPROJ_` folder.
-	- In other words, the contents of those folders at the root level is defined by the selected `BEAMPROJ`.
+
+## Why Using a Single Repository?
+We keep all Beamable samples within the main repository so we can:
+
+- Use as QA Tools: We continuously develop and test against our own samples.
+- Ensure Up-to-Date Samples: Whenever we update the SDK, the sample projects are updated too. Maintaining samples alongside core features makes it easier to keep everything stable and consistent.
+
+To make this work as should we keep the `Config` and `.beamable` folders in sync. This is done by:
+
+- Our custom `Target.cs` code that will make the `Config` and `.beamable` folders at the root level of the repo be exact copies of the folders inside the `Overrides` directory of each `BEAMPROJ_` folder. In other words, the contents of those folders at the root level is defined by the selected `BEAMPROJ`.
 - An editor subsystem called `BeamProjSync` that, while the editor is running, file-watches those directories and copies changes made over to the appropriate `BEAMPROJ_` `Overrides` folder.
+- Those implementations are only related to the especificity of this sample configuration and it's not related to the samples content themselves.

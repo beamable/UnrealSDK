@@ -7,6 +7,7 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalContextInfo.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalChallengeSolution.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 
 #include "TokenRequestWrapper.generated.h"
@@ -51,6 +52,8 @@ public:
 	FOptionalString Password = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scope", Category="Beam")
 	FOptionalArrayOfString Scope = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Init Properties", Category="Beam")
+	FOptionalMapOfString InitProperties = {};
 
 	
 

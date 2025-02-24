@@ -134,16 +134,6 @@ bool UBeamLobbySubsystem::TryGetCurrentLobby(FUserSlot Slot, ULobby*& Lobby)
 
 bool UBeamLobbySubsystem::TryGetCurrentLobbyState(FUserSlot Slot, UBeamLobbyState*& Lobby)
 {
-#if WITH_TESTS
-	if (Slot.Name.Contains("Test"))
-	{
-		FBeamRealmUser RealmUser;
-		if (UserSlots->GetUserDataAtSlot(Slot, RealmUser, this))
-		{
-			InitializeLobbyInfoForSlot(Slot, RealmUser);
-		}
-	}
-#endif
 	Lobby = LocalPlayerLobbyInfo.FindChecked(Slot);
 	if (Lobby->LobbyId.IsValid()) return true;
 	return false;
@@ -531,10 +521,7 @@ void UBeamLobbySubsystem::CreateOpenLobby(FUserSlot UserSlot, FString Name, FStr
 		}
 		else
 		{
-			const auto LobbyUpdateHandler = FOnLobbyUpdateNotificationCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, OnLobbyUpdatedHandler), UserSlot);
-			const auto Handle = LobbyNotification->CPP_SubscribeToLobbyUpdate(UserSlot, Runtime->DefaultNotificationChannel, FGuid(Resp.SuccessData->LobbyId.Val), LobbyUpdateHandler, this);
-
-			UpdateLobbyPlayerInfo(UserSlot, Resp.SuccessData, Handle);
+			UpdateLobbyPlayerInfo(UserSlot, Resp.SuccessData);
 			ReplaceOrAddKnownLobbyData(Resp.SuccessData);
 			RequestTracker->TriggerOperationSuccess(Op, Resp.SuccessData->LobbyId.Val);
 			UE_LOG(LogBeamLobby, Verbose, TEXT("Created Open Lobby. LOBBY_ID=%s,HOST_PLAYER_GAMERTAG=%s"), *Resp.SuccessData->LobbyId.Val, *Resp.SuccessData->Host.Val.AsString)
@@ -559,10 +546,7 @@ void UBeamLobbySubsystem::CreateClosedLobby(FUserSlot UserSlot, FString Name, FS
 		}
 		else
 		{
-			const auto LobbyUpdateHandler = FOnLobbyUpdateNotificationCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, OnLobbyUpdatedHandler), UserSlot);
-			const auto Handle = LobbyNotification->CPP_SubscribeToLobbyUpdate(UserSlot, Runtime->DefaultNotificationChannel, FGuid(Resp.SuccessData->LobbyId.Val), LobbyUpdateHandler, this);
-
-			UpdateLobbyPlayerInfo(UserSlot, Resp.SuccessData, Handle);
+			UpdateLobbyPlayerInfo(UserSlot, Resp.SuccessData);
 			ReplaceOrAddKnownLobbyData(Resp.SuccessData);
 			RequestTracker->TriggerOperationSuccess(Op, Resp.SuccessData->LobbyId.Val);
 			UE_LOG(LogBeamLobby, Verbose, TEXT("Created Closed Lobby. LOBBY_ID=%s,HOST_PLAYER_GAMERTAG=%s,PASSCODE=%s"),
@@ -607,13 +591,12 @@ void UBeamLobbySubsystem::RefreshLobbyData(FUserSlot UserSlot, FGuid LobbyId, FB
 						// Clear the slot
 						ClearLobbyForSlot(Slot);
 
-						// Register a notification handler and update the LobbyPlayerInfo data with this lobby.
-						const auto LobbyUpdateHandler = FOnLobbyUpdateNotificationCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, OnLobbyUpdatedHandler), UserSlot);
-						const auto Handle = LobbyNotification->CPP_SubscribeToLobbyUpdate(UserSlot, Runtime->DefaultNotificationChannel, FGuid(Resp.SuccessData->LobbyId.Val), LobbyUpdateHandler, this);
-						UpdateLobbyPlayerInfo(Slot, Resp.SuccessData, Handle);
+						// Update the LobbyPlayerInfo data with this lobby.
+						UpdateLobbyPlayerInfo(Slot, Resp.SuccessData);
 					}
 				}
 			}
+
 			TArray<FString> PlayerIds;
 			for (ULobbyPlayer* LobbyPlayer : Resp.SuccessData->Players.Val)
 				PlayerIds.Add(LobbyPlayer->PlayerId.Val.AsString);
@@ -633,7 +616,7 @@ void UBeamLobbySubsystem::RefreshLobbyData(FUserSlot UserSlot, FGuid LobbyId, FB
 
 void UBeamLobbySubsystem::RefreshLobbiesData(FUserSlot UserSlot, FBeamContentId MatchTypeFilter, int32 PageStart, int32 PageSize, FBeamOperationHandle Op)
 {
-	const auto Handler = FOnGetLobbiesFullResponse::CreateLambda([this, UserSlot, Op](FGetLobbiesFullResponse Resp)
+	const auto Handler = FOnApiLobbyGetLobbiesFullResponse::CreateLambda([this, UserSlot, Op](FApiLobbyGetLobbiesFullResponse Resp)
 	{
 		// If we are invoking this before retrying, we just don't do anything 
 		if (Resp.State == RS_Retrying) return;
@@ -654,7 +637,7 @@ void UBeamLobbySubsystem::RefreshLobbiesData(FUserSlot UserSlot, FBeamContentId 
 				TArray<FString> PlayerIds;
 				for (ULobbyPlayer* LobbyPlayer : Lobby->Players.Val)
 					PlayerIds.Add(LobbyPlayer->PlayerId.Val.AsString);
-				
+
 				UE_LOG(LogBeamLobby, Verbose, TEXT("Refreshed Lobby Data. LOBBY_ID=%s,HOST_PLAYER_GAMERTAG=%s,GAME_TYPE=%s,PASSCODE=%s,PLAYER_GAMERTAGS=[%s]"),
 				       *Lobby->LobbyId.Val,
 				       *Lobby->Host.Val.AsString,
@@ -683,10 +666,7 @@ void UBeamLobbySubsystem::JoinLobby(FUserSlot UserSlot, FGuid LobbyId, TArray<FB
 		}
 		else
 		{
-			const auto LobbyUpdateHandler = FOnLobbyUpdateNotificationCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, OnLobbyUpdatedHandler), UserSlot);
-			const auto Handle = LobbyNotification->CPP_SubscribeToLobbyUpdate(UserSlot, Runtime->DefaultNotificationChannel, FGuid(Resp.SuccessData->LobbyId.Val), LobbyUpdateHandler, this);
-
-			UpdateLobbyPlayerInfo(UserSlot, Resp.SuccessData, Handle);
+			UpdateLobbyPlayerInfo(UserSlot, Resp.SuccessData);
 			ReplaceOrAddKnownLobbyData(Resp.SuccessData);
 			RequestTracker->TriggerOperationSuccess(Op, Resp.SuccessData->LobbyId.Val);
 
@@ -713,10 +693,7 @@ void UBeamLobbySubsystem::JoinLobbyByPasscode(FUserSlot UserSlot, FString Passco
 		}
 		else
 		{
-			const auto LobbyUpdateHandler = FOnLobbyUpdateNotificationCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, OnLobbyUpdatedHandler), UserSlot);
-			const auto Handle = LobbyNotification->CPP_SubscribeToLobbyUpdate(UserSlot, Runtime->DefaultNotificationChannel, FGuid(Resp.SuccessData->LobbyId.Val), LobbyUpdateHandler, this);
-
-			UpdateLobbyPlayerInfo(UserSlot, Resp.SuccessData, Handle);
+			UpdateLobbyPlayerInfo(UserSlot, Resp.SuccessData);
 			ReplaceOrAddKnownLobbyData(Resp.SuccessData);
 			RequestTracker->TriggerOperationSuccess(Op, Resp.SuccessData->LobbyId.Val);
 
@@ -741,7 +718,7 @@ void UBeamLobbySubsystem::LeaveLobby(FUserSlot UserSlot, FBeamOperationHandle Op
 
 	const auto JoinedLobbyState = LocalPlayerLobbyInfo.FindChecked(UserSlot);
 	const auto LobbyData = GetCurrentLobby(UserSlot);
-	const auto Handler = FOnDeleteLobbyFullResponse::CreateLambda([this, Op, UserSlot, LobbyData](FDeleteLobbyFullResponse Resp)
+	const auto Handler = FOnDeleteLobbyFullResponse::CreateLambda([this, Op, LobbyData](FDeleteLobbyFullResponse Resp)
 	{
 		// If we are invoking this before retrying, we just don't do anything 
 		if (Resp.State == RS_Retrying) return;
@@ -752,8 +729,6 @@ void UBeamLobbySubsystem::LeaveLobby(FUserSlot UserSlot, FBeamOperationHandle Op
 		}
 		else
 		{
-			const auto LocalPlayerLobby = LocalPlayerLobbyInfo.FindChecked(UserSlot);
-			LobbyNotification->CPP_UnsubscribeToLobbyUpdate(UserSlot, Runtime->DefaultNotificationChannel, LocalPlayerLobby->LobbyId, LocalPlayerLobby->NotificationSubscriptionHandle, this);
 			RequestTracker->TriggerOperationSuccess(Op, "");
 			UE_LOG(LogBeamLobby, Verbose, TEXT("Left Lobby. LOBBY_ID=%s,HOST_PLAYER_GAMERTAG=%s,GAME_TYPE=%s, PASSCODE=%s"),
 			       *LobbyData->LobbyId.Val,
@@ -849,7 +824,7 @@ void UBeamLobbySubsystem::CommitLobbyUpdate(const FUserSlot& Slot, FBeamOperatio
 	const auto GlobalDataUpdates = UpdateCmd->GlobalDataUpdates;
 	const auto GlobalDataDeletes = UpdateCmd->GlobalDataDeletes;
 
-	const auto Handler = FOnApiLobbyPutMetadataFullResponse::CreateLambda([this, Slot, Op, LobbyId, GlobalDataUpdates, GlobalDataDeletes](FApiLobbyPutMetadataFullResponse Resp)
+	const auto Handler = FOnApiLobbyPutMetadataByIdFullResponse::CreateLambda([this, Slot, Op, LobbyId, GlobalDataUpdates, GlobalDataDeletes](FApiLobbyPutMetadataByIdFullResponse Resp)
 	{
 		// If we are invoking this before retrying, we just don't do anything 
 		if (Resp.State == RS_Retrying) return;
@@ -1039,7 +1014,7 @@ void UBeamLobbySubsystem::ProvisionGameServerForLobby(const FUserSlot& Slot, FOp
 		return;
 	}
 
-	auto Handler = FOnApiLobbyPostServerFullResponse::CreateLambda([this, Slot, Op, LobbyState](FApiLobbyPostServerFullResponse Resp)
+	auto Handler = FOnApiLobbyPostServerByIdFullResponse::CreateLambda([this, Slot, Op, LobbyState](FApiLobbyPostServerByIdFullResponse Resp)
 	{
 		// If we are invoking this before retrying, we just don't do anything 
 		if (Resp.State == RS_Retrying) return;
@@ -1101,9 +1076,9 @@ FBeamRequestContext UBeamLobbySubsystem::RequestGetLobby(const FUserSlot& UserSl
 }
 
 FBeamRequestContext UBeamLobbySubsystem::RequestGetLobbies(const FUserSlot& UserSlot, FBeamContentId MatchTypeFilter, int32 PageStart, int32 PageSize, FBeamOperationHandle Op,
-                                                           FOnGetLobbiesFullResponse Handler) const
+                                                           FOnApiLobbyGetLobbiesFullResponse Handler) const
 {
-	const auto Req = UGetLobbiesRequest::Make(
+	const auto Req = UApiLobbyGetLobbiesRequest::Make(
 		PageStart < 0 ? FOptionalInt32() : FOptionalInt32(PageStart),
 		PageSize < 0 ? FOptionalInt32() : FOptionalInt32(PageSize),
 		MatchTypeFilter.AsString.IsEmpty() ? FOptionalBeamContentId() : FOptionalBeamContentId(MatchTypeFilter),
@@ -1152,21 +1127,21 @@ FBeamRequestContext UBeamLobbySubsystem::RequestUpdateLobbyMetadata(const FUserS
                                                                     FOptionalLobbyRestriction Restriction,
                                                                     FOptionalBeamContentId MatchType, FOptionalBeamGamerTag NewHost, FOptionalInt32 MaxPlayers,
                                                                     FOptionalMapOfString GlobalDataUpdates, FOptionalArrayOfString GlobalDataDeletes, FBeamOperationHandle Op,
-                                                                    FOnApiLobbyPutMetadataFullResponse Handler) const
+                                                                    FOnApiLobbyPutMetadataByIdFullResponse Handler) const
 {
 	FOptionalUpdateData OptionalUpdateData = FOptionalUpdateData(NewObject<UUpdateData>());
 	OptionalUpdateData.Val->Updates = GlobalDataUpdates;
 	OptionalUpdateData.Val->Deletes = GlobalDataDeletes;
 
-	const auto Req = UApiLobbyPutMetadataRequest::Make(LobbyId,
-	                                                   LobbyName,
-	                                                   LobbyDescription,
-	                                                   Restriction,
-	                                                   MatchType,
-	                                                   MaxPlayers,
-	                                                   NewHost.IsSet ? FOptionalString(NewHost.Val.AsString) : FOptionalString(),
-	                                                   OptionalUpdateData,
-	                                                   GetTransientPackage(), {});
+	const auto Req = UApiLobbyPutMetadataByIdRequest::Make(LobbyId,
+	                                                       LobbyName,
+	                                                       LobbyDescription,
+	                                                       Restriction,
+	                                                       MatchType,
+	                                                       MaxPlayers,
+	                                                       NewHost.IsSet ? FOptionalString(NewHost.Val.AsString) : FOptionalString(),
+	                                                       OptionalUpdateData,
+	                                                       GetTransientPackage(), {});
 
 	// Make the request
 	FBeamRequestContext Ctx;
@@ -1209,12 +1184,12 @@ FBeamRequestContext UBeamLobbySubsystem::RequestDeletePlayerTags(const FUserSlot
 }
 
 FBeamRequestContext UBeamLobbySubsystem::RequestPostServer(const FUserSlot& UserSlot, FGuid LobbyId, FOptionalBeamContentId SelectedMatchType, FBeamOperationHandle Op,
-                                                           FOnApiLobbyPostServerFullResponse Handler) const
+                                                           FOnApiLobbyPostServerByIdFullResponse Handler) const
 {
-	const auto Req = UApiLobbyPostServerRequest::Make(LobbyId,
-	                                                  SelectedMatchType,
-	                                                  GetTransientPackage(),
-	                                                  {});
+	const auto Req = UApiLobbyPostServerByIdRequest::Make(LobbyId,
+	                                                      SelectedMatchType,
+	                                                      GetTransientPackage(),
+	                                                      {});
 
 	// Make the request
 	FBeamRequestContext Ctx;
@@ -1231,19 +1206,20 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 		if (UBeamLobbyState** Info = LocalPlayerLobbyInfo.Find(Slot))
 		{
 			UBeamLobbyState* Lobby = *Info;
-			const auto OldId = Lobby->LobbyId;
+			const auto LobbyId = Msg.LobbyId;
 
 			ULobby* LobbyData;
-			if (TryGetLobbyById(OldId, LobbyData))
+			if (TryGetLobbyById(LobbyId, LobbyData) && Lobby->LobbyId == LobbyId)
 			{
 				Lobby->OnLobbyDisbandedCode.Broadcast(Slot, LobbyData, Msg);
 				Lobby->OnLobbyDisbanded.Broadcast(Slot, LobbyData, Msg);
 				ClearLobbyForSlot(Slot);
-				UE_LOG(LogBeamLobby, Verbose, TEXT("Cleared lobby data due to lobby being disbanded. ID=%s"), *OldId.ToString());
+				UE_LOG(LogBeamLobby, Verbose, TEXT("Cleared lobby data due to lobby being disbanded. LOBBY_ID=%s, USER_SLOT=%s"), *LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower), *Slot.Name);
 			}
 			else
 			{
-				UE_LOG(LogBeamLobby, Verbose, TEXT("Local Lobby was already cleaned up when we got this notification, so we're not doing anything."));
+				UE_LOG(LogBeamLobby, Verbose, TEXT("Local Lobby was already cleaned up when we got this notification, so we're not doing anything. LOBBY_ID=%s, USER_SLOT=%s"),
+				       *LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower), *Slot.Name);
 			}
 		}
 	}
@@ -1253,23 +1229,39 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 		if (UBeamLobbyState** Info = LocalPlayerLobbyInfo.Find(Slot))
 		{
 			const auto Lobby = *Info;
-			const auto LobbyId = Lobby->LobbyId;
+			auto LobbyId = Msg.LobbyId;
+
+			// First we check if this local player was in the lobby.
+			const auto bWasNotInLobby = Lobby->LobbyId == FGuid();
 
 			// Refresh the lobby's data and notify the user that the lobby data has changed. 
-			CPP_RefreshLobbyDataOperation(Slot, FBeamOperationEventHandlerCode::CreateLambda([this, Slot, LobbyId, Lobby, Msg](FBeamOperationEvent Evt)
+			CPP_RefreshLobbyDataOperation(Slot, FBeamOperationEventHandlerCode::CreateLambda([this, bWasNotInLobby, Slot, LobbyId, Lobby, Msg](FBeamOperationEvent Evt)
 			{
 				if (Evt.EventType == OET_SUCCESS)
 				{
 					ULobby* LobbyData;
 					if (TryGetLobbyById(LobbyId, LobbyData))
 					{
-						Lobby->OnLobbyUpdatedCode.Broadcast(Slot, LobbyData, Msg);
-						Lobby->OnLobbyUpdated.Broadcast(Slot, LobbyData, Msg);
-						UE_LOG(LogBeamLobby, Verbose, TEXT("Lobby data refreshed due to %s."), *StaticEnum<EBeamLobbyEvent>()->GetNameStringByValue(static_cast<int64>(Msg.Type)));
+						// If this local player was the one who joined the lobby (was not in any lobby, but is in the refreshed lobby)
+						if (bWasNotInLobby && Lobby->LobbyId == Msg.LobbyId && Msg.Type == EBeamLobbyEvent::BEAM_PlayerJoined)
+						{
+							Lobby->OnLobbyJoinedCode.Broadcast(Slot, LobbyData, Msg);
+							Lobby->OnLobbyJoined.Broadcast(Slot, LobbyData, Msg);
+							UE_LOG(LogBeamLobby, Verbose, TEXT("Lobby joined due to %s. LOBBY_ID=%s, USER_SLOT=%s"), *StaticEnum<EBeamLobbyEvent>()->GetNameStringByValue(static_cast<int64>(Msg.Type)),
+							       *LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower), *Slot.Name);
+						}
+						else
+						{
+							Lobby->OnLobbyUpdatedCode.Broadcast(Slot, LobbyData, Msg);
+							Lobby->OnLobbyUpdated.Broadcast(Slot, LobbyData, Msg);
+							UE_LOG(LogBeamLobby, Verbose, TEXT("Lobby data refreshed due to %s.LOBBY_ID=%s, USER_SLOT=%s"),
+							       *StaticEnum<EBeamLobbyEvent>()->GetNameStringByValue(static_cast<int64>(Msg.Type)),
+							       *LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower), *Slot.Name);
+						}
 					}
 					else
 					{
-						UE_LOG(LogBeamLobby, Error, TEXT("You should not be seeing this. Left %s"), *LobbyId.ToString());
+						UE_LOG(LogBeamLobby, Error, TEXT("You should not be seeing this. LOBBY_ID=%s, USER_SLOT=%s"), *LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower), *Slot.Name);
 					}
 				}
 			}), LobbyId);
@@ -1282,45 +1274,40 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 		if (UBeamLobbyState** Info = LocalPlayerLobbyInfo.Find(Slot))
 		{
 			auto Lobby = *Info;
-			const auto LobbyId = Lobby->LobbyId;
+			const auto LobbyId = Msg.LobbyId;
 
-			// If you're the one kicked...
-			if (Lobby->OwnerGamerTag.AsLong == Msg.PlayerKickedData.KickedGamerTag.AsLong)
+			// Refresh the lobby's data and notify the user that the lobby data has changed. 
+			CPP_RefreshLobbyDataOperation(Slot, FBeamOperationEventHandlerCode::CreateLambda([this, Slot, LobbyId, Lobby, Msg](FBeamOperationEvent Evt)
 			{
-				ULobby* LobbyData;
-				if (TryGetLobbyById(LobbyId, LobbyData))
+				if (Evt.EventType == OET_SUCCESS)
 				{
-					Lobby->OnKickedFromLobbyCode.Broadcast(Slot, LobbyData, Msg);
-					Lobby->OnKickedFromLobby.Broadcast(Slot, LobbyData, Msg);
-					ClearLobbyForSlot(Slot);
-					UE_LOG(LogBeamLobby, Verbose, TEXT("Lobby cleared due to the local player at slot %s player being kicked from the lobby."), *Slot.Name);
-				}
-				else
-				{
-					UE_LOG(LogBeamLobby, Verbose, TEXT("Local Lobby was already cleaned up when we got this notification, so we're not doing anything."));
-				}
-			}
-			else
-			{
-				// Refresh the lobby's data and notify the user that the lobby data has changed. 
-				CPP_RefreshLobbyDataOperation(Slot, FBeamOperationEventHandlerCode::CreateLambda([this, Slot, LobbyId, Lobby, Msg](FBeamOperationEvent Evt)
-				{
-					if (Evt.EventType == OET_SUCCESS)
+					ULobby* LobbyData;
+					if (TryGetLobbyById(LobbyId, LobbyData))
 					{
-						ULobby* LobbyData;
-						if (TryGetLobbyById(LobbyId, LobbyData))
+						// If you're no longer in the lobby, it means you were the kicked player, so we trigger the kicked callbacks.
+						if (!LobbyData->Players.Val.FindByPredicate([Lobby](ULobbyPlayer*& P) { return P->PlayerId.Val.AsLong == Lobby->OwnerGamerTag; }))
+						{
+							Lobby->OnKickedFromLobbyCode.Broadcast(Slot, LobbyData, Msg);
+							Lobby->OnKickedFromLobby.Broadcast(Slot, LobbyData, Msg);
+							ClearLobbyForSlot(Slot);
+							UE_LOG(LogBeamLobby, Verbose, TEXT("Lobby cleared due to the local player player being kicked from the lobby. LOBBY_ID=%s, USER_SLOT=%s"),
+							       *LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower), *Slot.Name);
+						}
+						// If you're still in the lobby, we just trigger the updated callbacks.
+						else
 						{
 							Lobby->OnLobbyUpdatedCode.Broadcast(Slot, LobbyData, Msg);
 							Lobby->OnLobbyUpdated.Broadcast(Slot, LobbyData, Msg);
-							UE_LOG(LogBeamLobby, Verbose, TEXT("Lobby data refreshed due to a player being kicked the lobby remotely."));
-						}
-						else
-						{
-							UE_LOG(LogBeamLobby, Error, TEXT("You should not be seeing this. Left %s"), *LobbyId.ToString());
+							UE_LOG(LogBeamLobby, Verbose, TEXT("Lobby data refreshed due to a player being kicked the lobby remotely. LOBBY_ID=%s, USER_SLOT=%s"),
+							       *LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower), *Slot.Name);
 						}
 					}
-				}), LobbyId);
-			}
+					else
+					{
+						UE_LOG(LogBeamLobby, Error, TEXT("You should not be seeing this. LOBBY_ID=%s, USER_SLOT=%s"), *LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower), *Slot.Name);
+					}
+				}
+			}), LobbyId);
 		}
 	}
 
@@ -1329,70 +1316,69 @@ void UBeamLobbySubsystem::OnLobbyUpdatedHandler(FLobbyUpdateNotificationMessage 
 		if (UBeamLobbyState** Info = LocalPlayerLobbyInfo.Find(Slot))
 		{
 			auto Lobby = *Info;
-			const auto LobbyId = Lobby->LobbyId;
+			const auto LobbyId = Msg.LobbyId;
 
-			// If you're the player leaving, leave the lobby locally
-			if (Lobby->OwnerGamerTag == Msg.PlayerKickedData.KickedGamerTag)
+			// Refresh the lobby's data and notify the user that the lobby data has changed. 
+			CPP_RefreshLobbyDataOperation(Slot, FBeamOperationEventHandlerCode::CreateLambda([this, Slot, LobbyId, Lobby, Msg](FBeamOperationEvent Evt)
 			{
-				ULobby* LobbyData;
-				if (TryGetLobbyById(LobbyId, LobbyData))
+				if (Evt.EventType == OET_SUCCESS)
 				{
-					Lobby->OnLeftLobbyCode.Broadcast(Slot, LobbyData, Msg);
-					Lobby->OnLeftLobby.Broadcast(Slot, LobbyData, Msg);
-					ClearLobbyForSlot(Slot);
-					UE_LOG(LogBeamLobby, Verbose, TEXT("Lobby cleared due to the local player at slot %s player leaving the lobby manually."), *Slot.Name);
-				}
-				else
-				{
-					UE_LOG(LogBeamLobby, Verbose, TEXT("Local Lobby was already cleaned up when we got this notification, so we're not doing anything."));
-				}
-			}
-			else
-			{
-				// Refresh the lobby's data and notify the user that the lobby data has changed. 
-				CPP_RefreshLobbyDataOperation(Slot, FBeamOperationEventHandlerCode::CreateLambda([this, Slot, LobbyId, Lobby, Msg](FBeamOperationEvent Evt)
-				{
-					if (Evt.EventType == OET_SUCCESS)
+					ULobby* LobbyData;
+					if (TryGetLobbyById(LobbyId, LobbyData))
 					{
-						ULobby* LobbyData;
-						if (TryGetLobbyById(LobbyId, LobbyData))
+						// If you're no longer in the lobby, it means you were the player that left, so we trigger the left lobby callbacks.
+						if (!LobbyData->Players.Val.FindByPredicate([Lobby](ULobbyPlayer*& P) { return P->PlayerId.Val.AsLong == Lobby->OwnerGamerTag; }))
+						{
+							Lobby->OnLeftLobbyCode.Broadcast(Slot, LobbyData, Msg);
+							Lobby->OnLeftLobby.Broadcast(Slot, LobbyData, Msg);
+							ClearLobbyForSlot(Slot);
+							UE_LOG(LogBeamLobby, Verbose, TEXT("Lobby cleared due to the local player leaving the lobby manually. LOBBY_ID=%s, USER_SLOT=%s"),
+							       *LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower), *Slot.Name);
+						}
+						// Otherwise, you're still in the lobby and we trigger the Update callbacks.
+						else
 						{
 							Lobby->OnLobbyUpdatedCode.Broadcast(Slot, LobbyData, Msg);
 							Lobby->OnLobbyUpdated.Broadcast(Slot, LobbyData, Msg);
-							UE_LOG(LogBeamLobby, Verbose, TEXT("Lobby data refreshed due to a player leaving the lobby remotely."));
-						}
-						else
-						{
-							UE_LOG(LogBeamLobby, Error, TEXT("You should not be seeing this. This lobby should be here if the operation succeeded. %s"), *LobbyId.ToString());
+							UE_LOG(LogBeamLobby, Verbose, TEXT("Lobby data refreshed due to a player leaving the lobby remotely. LOBBY_ID=%s, USER_SLOT=%s"),
+							       *LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower), *Slot.Name);
 						}
 					}
 					else
 					{
-						UE_LOG(LogBeamLobby, Error, TEXT("Failed to refresh the lobby data. %s"), *Evt.EventCode);
+						UE_LOG(LogBeamLobby, Error, TEXT("You should not be seeing this. This lobby should be here if the operation succeeded. LOBBY_ID=%s, USER_SLOT=%s"),
+						       *LobbyId.ToString(EGuidFormats::DigitsWithHyphensLower),
+						       *Slot.Name);
 					}
-				}), LobbyId);
-			}
+				}
+				else
+				{
+					UE_LOG(LogBeamLobby, Error, TEXT("Failed to refresh the lobby data. %s"), *Evt.EventCode);
+				}
+			}), LobbyId);
 		}
-	}	
+	}
 }
 
 // HELPER FUNCTIONS
 void UBeamLobbySubsystem::InitializeLobbyInfoForSlot(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser)
 {
+	const auto LobbyUpdateHandler = FOnLobbyUpdateNotificationCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, OnLobbyUpdatedHandler), UserSlot);
+	const auto Handle = LobbyNotification->CPP_SubscribeToLobbyUpdate(UserSlot, Runtime->DefaultNotificationChannel, LobbyUpdateHandler, this);
+
 	LocalPlayerLobbyInfo.Add(UserSlot, NewObject<UBeamLobbyState>());
 	LocalPlayerLobbyInfo[UserSlot]->LobbyId = FGuid();
 	LocalPlayerLobbyInfo[UserSlot]->bIsLobbyOwner = false;
 	LocalPlayerLobbyInfo[UserSlot]->OwnerUserSlot = UserSlot;
 	LocalPlayerLobbyInfo[UserSlot]->OwnerGamerTag = BeamRealmUser.GamerTag;
+	LocalPlayerLobbyInfo[UserSlot]->NotificationSubscriptionHandle = Handle;
 }
 
-void UBeamLobbySubsystem::UpdateLobbyPlayerInfo(const FUserSlot Slot, const ULobby* LobbyData, FDelegateHandle NewSubscriptionDelegate = {})
+void UBeamLobbySubsystem::UpdateLobbyPlayerInfo(const FUserSlot Slot, const ULobby* LobbyData)
 {
 	UBeamLobbyState* LobbyInfo = LocalPlayerLobbyInfo.FindRef(Slot);
 	LobbyInfo->LobbyId = FGuid(LobbyData->LobbyId.Val);
 	LobbyInfo->bIsLobbyOwner = LobbyData->Host.Val == LobbyInfo->OwnerGamerTag;
-
-	if (NewSubscriptionDelegate.IsValid()) LobbyInfo->NotificationSubscriptionHandle = NewSubscriptionDelegate;
 }
 
 void UBeamLobbySubsystem::ReplaceOrAddKnownLobbyData(ULobby* LobbyData)
@@ -1406,7 +1392,6 @@ void UBeamLobbySubsystem::ReplaceOrAddKnownLobbyData(ULobby* LobbyData)
 void UBeamLobbySubsystem::ClearLobbyForSlot(FUserSlot Slot)
 {
 	const auto Lobby = LocalPlayerLobbyInfo[Slot];
-	LobbyNotification->CPP_UnsubscribeToLobbyUpdate(Slot, Runtime->DefaultNotificationChannel, Lobby->LobbyId, Lobby->NotificationSubscriptionHandle, this);
 	Lobby->LobbyId = FGuid();
 	Lobby->bIsLobbyOwner = false;
 

@@ -1,26 +1,26 @@
 
 #include "BeamableCore/Public/AutoGen/ContextInfo.h"
-
+#include "Serialization/BeamJsonUtils.h"
 
 
 
 
 void UContextInfo::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("platform"), Platform);
-	Serializer->WriteValue(TEXT("device"), Device);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("platform"), &Platform, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("device"), &Device, Serializer);
 }
 
 void UContextInfo::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("platform"), Platform);
-	Serializer->WriteValue(TEXT("device"), Device);		
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("platform"), &Platform, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("device"), &Device, Serializer);		
 }
 
 void UContextInfo::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Platform = Bag->GetStringField(TEXT("platform"));
-	Device = Bag->GetStringField(TEXT("device"));
+	UBeamJsonUtils::DeserializeOptional<FString>("platform", Bag, Platform, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FString>("device", Bag, Device, OuterOwner);
 }
 
 

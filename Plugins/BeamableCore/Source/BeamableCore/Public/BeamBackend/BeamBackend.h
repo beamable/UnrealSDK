@@ -23,27 +23,6 @@
 class IBeamBaseRequestInterface;
 
 /**
- * @brief Holds data regarding internet connectivity status for Beamable. 
- */
-USTRUCT(BlueprintType)
-struct FBeamConnectivity
-{
-	GENERATED_BODY()
-
-	/**
-	 * @brief Whether or not the last request was successful (true) or failed due to connectivity issues (false).
-	 */
-	UPROPERTY(BlueprintReadOnly)
-	bool IsConnected = true;
-
-	/**
-	 * @brief The time in ticks since the last successful request occurred.
-	 */
-	UPROPERTY(BlueprintReadOnly)
-	int64 LastTimeSinceSuccessfulRequest = 0;
-};
-
-/**
  * @brief Shorter name for Unreal's HttpRequest struct.
  */
 typedef TSharedRef<IHttpRequest, ESPMode::ThreadSafe> TUnrealRequest;
@@ -136,7 +115,7 @@ struct FProcessingRequestRetry
 };
 
 
-DECLARE_DELEGATE_TwoParams(FBeamMakeRequestDelegate, int64 /*ActiveRequestId*/, FBeamConnectivity& /*Connectivity*/);
+DECLARE_DELEGATE_OneParam(FBeamMakeRequestDelegate, int64 /*ActiveRequestId*/);
 
 DECLARE_DELEGATE_TwoParams(FGlobalRequestErrorCodeHandler, const FBeamRequestContext&, const FBeamErrorResponse&);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGlobalRequestErrorHandler, const FBeamRequestContext&, RequestContext,
@@ -419,7 +398,7 @@ public:
 	 *  
 	 */
 	UFUNCTION()
-	void DefaultExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity);
+	void DefaultExecuteRequestImpl(int64 ActiveRequestId);
 
 	/**
 	 * Takes in a fully formed URL from a TUnrealRequest (ie: https://dev.api.beamable.com/object/stats/game.public.player.1595037680985091/) and generates the correct form of it for the signature.
@@ -430,7 +409,7 @@ public:
 	 * @brief Used as delegate set in ExecuteRequestDelegate when running as a dedicated server. 
 	 */
 	UFUNCTION()
-	void DedicatedServerExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity);
+	void DedicatedServerExecuteRequestImpl(int64 ActiveRequestId);
 
 	/**
 	 * @brief Creates a request and prepares it to be sent out. This does not bind the lambda --- see any auto-generated API to understand how to manually make
@@ -463,8 +442,7 @@ public:
 
 		// Keep track of this request and it's data. 
 		InFlightRequestContexts.Add(ReqId, RequestContext);
-		InFlightRequestData.Add(RequestContext,
-		                        TScriptInterface<IBeamBaseRequestInterface>(const_cast<TRequestData*>(RequestData)));
+		InFlightRequestData.Add(RequestContext, TScriptInterface<IBeamBaseRequestInterface>(const_cast<TRequestData*>(RequestData)));
 
 		// Store make sure we have a slot waiting for the response/error value to be added
 		InFlightResponseBodyData.Add(RequestContext, nullptr);
@@ -1026,9 +1004,6 @@ public:
 		// Clean up from InFlightRequests, only if we are not meant to retry it.
 		if (bWasSuccess || !bWillRetry)
 		{
-			// Update Connectivity Status
-			UpdateConnectivity(Context, RequestStatus, FRequestType{TRequestData::StaticClass()->GetName()});
-
 			// Execute the handler if it's bound.
 			const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(Context, RequestData);
 			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
@@ -1301,9 +1276,6 @@ public:
 		// Clean up from InFlightRequests, only if we are not meant to retry it.
 		if (bWasSuccess || !bWillRetry)
 		{
-			// Update Connectivity Status
-			UpdateConnectivity(Context, RequestStatus, FRequestType{TRequestData::StaticClass()->GetName()});
-
 			// Execute the handler if it's bound.
 			const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(Context, RequestData);
 			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
@@ -1424,7 +1396,7 @@ public:
 		auto FullResponse = FBeamFullResponse<TRequestData*, TResponseData*>();
 
 		// Update and sets the request id for the request
-		auto Context = *InFlightRequestContexts.Find(RequestId);		
+		auto Context = *InFlightRequestContexts.Find(RequestId);
 		Context.ResponseCode = ResponseCode;
 		Context.UserSlot = FUserSlot("");
 		FullResponse.Context = Context;
@@ -1515,10 +1487,7 @@ public:
 		// Only run the clean up and callbacks after we are done retrying.
 		else
 		{
-			// Update Connectivity Status
 			const auto RequestType = RequestData->GetRequestType();
-			UpdateConnectivity(FullResponse.Context, RequestStatus, FRequestType{RequestType});
-
 			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 			{
 				// We only log the response for code if we are configured to always run it.
@@ -1780,10 +1749,7 @@ public:
 		// Only run the clean up after we are done retrying.
 		else
 		{
-			// Update Connectivity Status
 			const auto RequestType = RequestData->GetRequestType();
-			UpdateConnectivity(FullResponse.Context, RequestStatus, FRequestType{RequestType});
-
 			const auto bExecutedCallsiteHandler = ResponseHandler.ExecuteIfBound(FullResponse);
 			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 			{
@@ -2012,40 +1978,8 @@ public:
 
 private:
 	/**
-	* @brief Called whenever a request is completed in order to update our connectivity status in accordance with UE's output codes.
-	*/
-	void UpdateConnectivity(const FBeamRequestContext& RequestContext, const TUnrealRequestStatus RequestStatus, const FRequestType RequestType);
-
-
-	/**
 	 * This is called in each of the Make______RequestProcess lambda to ensure that, after we leave PIE, every inflight request's response is automatically ignored when it arrives.
 	 * Invoking the callbacks are likely to result in crashes since PIE is now closed and its memory is deallocated. 
 	 */
 	bool HandlePIESessionRequestGuard(TUnrealRequestPtr Request, int64 RequestId = -1);
-
-public:
-	/**
-	* @brief The current state of internet connection as detected by Beamable. This is updated automatically on every non-timeout request.
-	*/
-	UPROPERTY(BlueprintReadOnly, Category="Beam|Status")
-	FBeamConnectivity CurrentConnectivityStatus;
-
-	/**
-	 * @brief A global request handler delegate that'll be called ONCE when we fail a request due to connection problems. 
-	 */
-	UPROPERTY(BlueprintAssignable, Category="Beam|Status")
-	FGlobalConnectivityChangedHandler GlobalConnectivityChangedHandler;
-
-	/**
-	 * \copydoc GlobalRequestErrorHandler	
-	 * @brief Another global request handler --- this one can be used to bind lambdas from code. Use the other handler if you can.	 
-	 */
-	FGlobalConnectivityChangedCodeHandler GlobalConnectivityChangedCodeHandler;
-
-
-	/**	 
-	 * @return Whether or not the last request made from BeamBackend was able to connect to the server it was trying to reach.
-	 */
-	UFUNCTION(BlueprintGetter, Category="Beam|Status")
-	bool IsConnected() const;
 };

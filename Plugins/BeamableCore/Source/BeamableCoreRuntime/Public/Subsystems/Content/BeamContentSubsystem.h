@@ -57,6 +57,7 @@ class BEAMABLECORERUNTIME_API UBeamContentSubsystem : public UBeamRuntimeSubsyst
 
 	UPROPERTY()
 	TMap<FString, UClass*> ContentTypeStringToContentClass;
+	UPROPERTY()
 	TMap<UClass*, FString> ContentClassToContentTypeString;
 
 	TMap<UClass*, TArray<TArray<const FProperty*>>> PathsToContentLinks;

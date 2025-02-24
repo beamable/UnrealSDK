@@ -60,8 +60,7 @@ bool FUserOnlineAccountBeamable::SetUserAttribute(const FString& AttrName, const
 FOnlineIdentityBeamable::FOnlineIdentityBeamable(FOnlineSubsystemBeamable* InSubsystem)
 	: BeamableSubsystem(InSubsystem)
 {
-	// Read configuration variables for emulating other login systems
-	GConfig->GetBool(TEXT("OnlineSubsystemBeamable"), TEXT("bRequireLoginCredentials"), bRequireLoginCredentials, GEngineIni);
+	// Read configuration variables for emulating other login systems	
 	GConfig->GetBool(TEXT("OnlineSubsystemBeamable"), TEXT("bForceOfflineMode"), bForceOfflineMode, GEngineIni);
 }
 
@@ -79,6 +78,10 @@ bool FOnlineIdentityBeamable::Login(int32 LocalUserNum, const FOnlineAccountCred
 	checkf(CoreSettings->RuntimeUserSlots.Num() > LocalUserNum, TEXT("No UserSlot mapped to this local user num. Number of RuntimeUserSlots must match the maximum number of expected local players."));
 
 	const FUserSlot TargetSlot = CoreSettings->RuntimeUserSlots[LocalUserNum];
+	UGameInstance* GameInstance = BeamableSubsystem->GetGameInstance();
+	FString LoginType = AccountCredentials.Type;
+
+	const FBeamOperationEventHandlerCode LoginHandler = FBeamOperationEventHandlerCode::CreateRaw(this, &FOnlineIdentityBeamable::OnBeamableLoginOperationComplete, AccountCredentials);
 
 	// valid local player index
 	if (LocalUserNum < 0 || LocalUserNum >= MAX_LOCAL_PLAYERS)
@@ -88,57 +91,51 @@ bool FOnlineIdentityBeamable::Login(int32 LocalUserNum, const FOnlineAccountCred
 		TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdBeamable::EmptyId(), ErrorStr);
 		return false;
 	}
-	// If no id was given
-	if (AccountCredentials.Id.IsEmpty() && bRequireLoginCredentials)
-	{
-		ErrorStr = TEXT("Invalid account id, string empty");
-		UE_LOG_ONLINE_IDENTITY(Warning, TEXT("Login request failed. %s"), *ErrorStr);
-		TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdBeamable::EmptyId(), ErrorStr);
-		return false;
-	}
-	// If the user is already signed into UE's Subsystem stuff
+
+	// If the user is already signed into UE's Subsystem stuff, we check for the Attach OSS_IDENTITY_TYPES
 	if (const FUniqueNetIdPtr* UserId = UserIds.Find(LocalUserNum); UserId != nullptr)
 	{
-		UserAccountPtr = UserAccounts.FindChecked(UserId->ToSharedRef());
-		TriggerOnLoginCompleteDelegates(LocalUserNum, true, *UserAccountPtr->GetUserId(), "");
-		return true;
-	}
+		// If we are trying to attach an email...
+		if (LoginType.StartsWith(OSS_BEAMABLE_IDENTITY_TYPE_ATTACH_EMAIL()))
+		{
+			const FString Email = AccountCredentials.Id;
+			const FString Password = AccountCredentials.Token;
 
-	// If not, let's figure out what type of login we want and get it on.	
-	const FBeamOperationEventHandlerCode LoginHandler = FBeamOperationEventHandlerCode::CreateRaw(this, &FOnlineIdentityBeamable::OnBeamableLoginOperationComplete, AccountCredentials);
+			UBeamRuntime* BeamRuntime = GameInstance->GetSubsystem<UBeamRuntime>();
+			const auto OnAttachEmail = FBeamOperationEventHandlerCode::CreateLambda(
+				[this, LoginType, GameInstance, LocalUserNum, UserId, TargetSlot, LoginHandler, Email, Password, BeamOnlineSettings](FBeamOperationEvent Evt)
+				{
+					if (Evt.EventType == OET_SUCCESS)
+					{
+						UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Email] Successfully Attached!"), *Email);
+						TriggerOnLoginCompleteDelegates(LocalUserNum, true, *UserId->Get(), LoginType);
+						return;
+					}
 
-	UGameInstance* GameInstance = BeamableSubsystem->GetGameInstance();
-	FString LoginType = AccountCredentials.Type;
+					// Error Handling
+					if (Evt.EventCode.Contains("EMAIL_IN_USE") && BeamOnlineSettings->bAutoLoginOnAttach)
+					{
+						UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Email] %s - User already associated with beamable account. Logging in instead."), *Email);
+						GameInstance->GetSubsystem<UBeamRuntime>()->CPP_LoginEmailAndPasswordOperation(TargetSlot, Email, Password, LoginHandler);
+					}
+					else
+					{
+						UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Email] Failed To Attach. Reason=%s."), *Evt.EventCode);
+						TriggerOnLoginCompleteDelegates(LocalUserNum, false, *UserId->Get(), Evt.EventCode);
+					}
+				});
+			BeamRuntime->CPP_AttachEmailAndPasswordOperation(TargetSlot, Email, Password, OnAttachEmail);
+			return true;
+		}
 
-	// If we are signing up with email/password
-	if (LoginType.StartsWith(OSS_BEAMABLE_IDENTITY_TYPE_SIGNUP_EMAIL()))
-	{
-		const FString Email = AccountCredentials.Id;
-		const FString Password = AccountCredentials.Token;
-
-		UBeamRuntime* BeamRuntime = GameInstance->GetSubsystem<UBeamRuntime>();
-		BeamRuntime->CPP_SignUpEmailAndPasswordOperation(TargetSlot, Email, Password, LoginHandler);
-	}
-
-	// If we are logging in with email/password
-	if (LoginType.StartsWith(OSS_BEAMABLE_IDENTITY_TYPE_EMAIL()))
-	{
-		const FString Email = AccountCredentials.Id;
-		const FString Password = AccountCredentials.Token;
-
-		UBeamRuntime* BeamRuntime = GameInstance->GetSubsystem<UBeamRuntime>();
-		BeamRuntime->CPP_LoginEmailAndPasswordOperation(TargetSlot, Email, Password, LoginHandler);
-	}
-
-	// If we are logging in with some external auth token 
-	if (LoginType.StartsWith("extern_"))
-	{
-		// If we are doing some federated login
-		if (LoginType.Contains("/"))
+		// If we are attaching a federated identity...
+		// See OSS_BEAMABLE_IDENTITY_TYPE_ATTACH_FEDERATED
+		if (LoginType.StartsWith(TEXT("attach_extern_")))
 		{
 			FString FederationPath;
 			FString Discarded;
 			LoginType.Split("_", &Discarded, &FederationPath);
+			FederationPath.Split("_", &Discarded, &FederationPath);
 
 			FString ServiceName;
 			FString Namespace;
@@ -148,37 +145,170 @@ bool FOnlineIdentityBeamable::Login(int32 LocalUserNum, const FOnlineAccountCred
 			const FString ExternalUserId = AccountCredentials.Id;
 			const FString ExternalToken = AccountCredentials.Token;
 
+			const auto OnAttachWithExternalId = FBeamOperationEventHandlerCode::CreateLambda(
+				[this, GameInstance, LocalUserNum, LoginType, TargetSlot, LoginHandler, ServiceName, Namespace, ExternalToken, BeamOnlineSettings, UserId](FBeamOperationEvent Evt)
+				{
+					if (Evt.EventType == OET_SUCCESS)
+					{
+						UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Federated Identity] Successfully SignedUp using federated identity %s!"), *FString(ServiceName + "/" + Namespace));
+						TriggerOnLoginCompleteDelegates(LocalUserNum, true, *UserId->Get(), LoginType);
+						return;
+					}
+
+					// Error Handling
+					if (Evt.EventCode.Contains("EXTERNAL_IDENTITY_IN_USE") && BeamOnlineSettings->bAutoLoginOnAttach)
+					{
+						UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Federated Identity] %s User already associated with beamable account. Logging in instead."),
+						                       *FString(ServiceName + "/" + Namespace));
+						GameInstance->GetSubsystem<UBeamRuntime>()->CPP_LoginExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalToken, LoginHandler);
+					}
+					else
+					{
+						UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Federated Identity] Failed To Sign Up. Reason=%s."), *Evt.EventCode);
+						TriggerOnLoginCompleteDelegates(LocalUserNum, false, *UserId->Get(), Evt.EventCode);
+					}
+				});
+			BeamRuntime->CPP_AttachExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalUserId, ExternalToken, OnAttachWithExternalId);
+		}
+
+		UserAccountPtr = UserAccounts.FindChecked(UserId->ToSharedRef());
+		TriggerOnLoginCompleteDelegates(LocalUserNum, true, *UserId->Get(), LoginType);
+		return true;
+	}
+
+	// Check for all the SignUp Cases
+	{
+		// If we are signing up with email/password
+		if (LoginType.StartsWith(OSS_BEAMABLE_IDENTITY_TYPE_SIGNUP_EMAIL()))
+		{
+			const FString Email = AccountCredentials.Id;
+			const FString Password = AccountCredentials.Token;
+
+			UBeamRuntime* BeamRuntime = GameInstance->GetSubsystem<UBeamRuntime>();
+			BeamRuntime->CPP_SignUpEmailAndPasswordOperation(TargetSlot, Email, Password, LoginHandler);
+		}
+
+		// If we are signing up with a federated identity.
+		// See OSS_BEAMABLE_IDENTITY_TYPE_SIGNUP_FEDERATED
+		if (LoginType.StartsWith(TEXT("signup_extern_")))
+		{
+			FString FederationPath1;
+			FString FederationPath2;
+			FString Discarded;
+			LoginType.Split("_", &Discarded, &FederationPath1);
+			FederationPath1.Split("_", &Discarded, &FederationPath2);
+
+			FString ServiceName;
+			FString Namespace;
+			FederationPath2.Split("/", &ServiceName, &Namespace);
+
+			UBeamRuntime* BeamRuntime = GameInstance->GetSubsystem<UBeamRuntime>();
+			const FString ExternalUserId = AccountCredentials.Id;
+			const FString ExternalToken = AccountCredentials.Token;
+
+			BeamRuntime->CPP_SignUpExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalUserId, ExternalToken, LoginHandler);
+		}
+	}
+
+	// Check for all the Login Cases.
+	{
+		// If this is a frictionless login.
+		if (LoginType.StartsWith(OSS_BEAMABLE_IDENTITY_TYPE_FRICTIONLESS()))
+		{
+			UBeamRuntime* BeamRuntime = GameInstance->GetSubsystem<UBeamRuntime>();
+			BeamRuntime->CPP_LoginFrictionlessOperation(TargetSlot, LoginHandler);
+		}
+
+		// If we are logging in with email/password
+		if (LoginType.StartsWith(OSS_BEAMABLE_IDENTITY_TYPE_EMAIL()))
+		{
+			const FString Email = AccountCredentials.Id;
+			const FString Password = AccountCredentials.Token;
+			UBeamRuntime* BeamRuntime = GameInstance->GetSubsystem<UBeamRuntime>();
 
 			if (BeamOnlineSettings->bAutoSignUpWhenLogin)
 			{
-				const auto OnSignUpWithDiscord = FBeamOperationEventHandlerCode::CreateLambda(
-					[this, GameInstance, LocalUserNum, AccountCredentials, TargetSlot, LoginHandler, ServiceName, Namespace, ExternalToken](FBeamOperationEvent Evt)
+				const auto OnSignUpWithEmail = FBeamOperationEventHandlerCode::CreateLambda(
+					[this, GameInstance, LocalUserNum, AccountCredentials, TargetSlot, LoginHandler, Email, Password](FBeamOperationEvent Evt)
 					{
 						if (Evt.EventType == OET_SUCCESS)
 						{
-							UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Federated Identity] Successfully SignedUp using federated identity %s!"), *FString(ServiceName + "/" + Namespace));
+							UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Email] Successfully SignedUp using Email/Password!"), *Email);
 							OnBeamableLoginOperationComplete(Evt, AccountCredentials);
 							return;
 						}
 
 						// Error Handling
-						if (Evt.EventCode.Contains("EXTERNAL_IDENTITY_IN_USE"))
+						if (Evt.EventCode.Contains("EMAIL_IN_USE"))
 						{
-							UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Federated Identity] %s User already associated with beamable account. Logging in instead."),
-							                       *FString(ServiceName + "/" + Namespace));
-							GameInstance->GetSubsystem<UBeamRuntime>()->CPP_LoginExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalToken, LoginHandler);
+							UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Email] %s - User already associated with beamable account. Logging in instead."), *Email);
+							GameInstance->GetSubsystem<UBeamRuntime>()->CPP_LoginEmailAndPasswordOperation(TargetSlot, Email, Password, LoginHandler);
 						}
 						else
 						{
-							UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Federated Identity] Failed To Sign Up. Reason=%s."), *Evt.EventCode);
+							UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Email] Failed To Sign Up. Reason=%s."), *Evt.EventCode);
 							TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdBeamable::EmptyId(), Evt.EventCode);
 						}
 					});
-				BeamRuntime->CPP_SignUpExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalUserId, ExternalToken, OnSignUpWithDiscord);
+				BeamRuntime->CPP_SignUpEmailAndPasswordOperation(TargetSlot, Email, Password, OnSignUpWithEmail);
 			}
 			else
 			{
-				GameInstance->GetSubsystem<UBeamRuntime>()->CPP_LoginExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalToken, LoginHandler);
+				BeamRuntime->CPP_LoginEmailAndPasswordOperation(TargetSlot, Email, Password, LoginHandler);
+			}
+		}
+
+		// If we are logging in with some external auth token
+		// OSS_BEAMABLE_IDENTITY_TYPE_FEDERATED
+		if (LoginType.StartsWith("extern_"))
+		{
+			// If we are doing some federated login
+			if (LoginType.Contains("/"))
+			{
+				FString FederationPath;
+				FString Discarded;
+				LoginType.Split("_", &Discarded, &FederationPath);
+
+				FString ServiceName;
+				FString Namespace;
+				FederationPath.Split("/", &ServiceName, &Namespace);
+
+				UBeamRuntime* BeamRuntime = GameInstance->GetSubsystem<UBeamRuntime>();
+				const FString ExternalUserId = AccountCredentials.Id;
+				const FString ExternalToken = AccountCredentials.Token;
+
+
+				if (BeamOnlineSettings->bAutoSignUpWhenLogin)
+				{
+					const auto OnSignUpWithExternalId = FBeamOperationEventHandlerCode::CreateLambda(
+						[this, GameInstance, LocalUserNum, AccountCredentials, TargetSlot, LoginHandler, ServiceName, Namespace, ExternalToken](FBeamOperationEvent Evt)
+						{
+							if (Evt.EventType == OET_SUCCESS)
+							{
+								UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Federated Identity] Successfully SignedUp using federated identity %s!"), *FString(ServiceName + "/" + Namespace));
+								OnBeamableLoginOperationComplete(Evt, AccountCredentials);
+								return;
+							}
+
+							// Error Handling
+							if (Evt.EventCode.Contains("EXTERNAL_IDENTITY_IN_USE"))
+							{
+								UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Federated Identity] %s User already associated with beamable account. Logging in instead."),
+								                       *FString(ServiceName + "/" + Namespace));
+								GameInstance->GetSubsystem<UBeamRuntime>()->CPP_LoginExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalToken, LoginHandler);
+							}
+							else
+							{
+								UE_LOG_ONLINE_IDENTITY(Warning, TEXT("[Federated Identity] Failed To Sign Up. Reason=%s."), *Evt.EventCode);
+								TriggerOnLoginCompleteDelegates(LocalUserNum, false, *FUniqueNetIdBeamable::EmptyId(), Evt.EventCode);
+							}
+						});
+					BeamRuntime->CPP_SignUpExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalUserId, ExternalToken, OnSignUpWithExternalId);
+				}
+				else
+				{
+					GameInstance->GetSubsystem<UBeamRuntime>()->CPP_LoginExternalIdentityOperation(TargetSlot, ServiceName, Namespace, ExternalToken, LoginHandler);
+				}
 			}
 		}
 	}
@@ -442,9 +572,66 @@ void FOnlineIdentityBeamable::OnBeamableLoginOperationComplete(FBeamOperationEve
 		const FUniqueNetIdRepl IdRep(NewIdRef);
 		LocalPlayer->SetCachedUniqueNetId(IdRep);
 
-		//auto BeamRuntime = GameInstance->GetSubsystem<UBeamRuntime>();
-		OnBeamableUserReady(LoggedInSlot, UserAccountPtr);
-		//OnUserReadyCodeHandle = BeamRuntime->OnUserReadyCode.AddRaw(this, &FOnlineIdentityBeamable::OnBeamableUserReady, UserAccountPtr);
+		// Map the Stats
+		auto StatsSubsystem = GameInstance->GetSubsystem<UBeamStatsSubsystem>();
+		auto StatsType = UBeamStatsTypeLibrary::MakeStatsType(Client, Public, FBeamGamerTag(UserAccountPtr->GetUserId()->ToString()));
+		auto Settings = GetDefault<UOnlineSubsystemBeamableSettings>();
+
+		// If the user stats were pre-fetched as part of the signed in user's serialization
+		if (const auto UserStatsPtr = StatsSubsystem->PlayerStatCache.Find(StatsType))
+		{
+			const auto UserStats = *UserStatsPtr;
+			const auto StatsMapping = Settings->StatsToLocalUserAttributeMapping;
+
+			FBeamStatsUpdatedEvent Event;
+			Event.GamerTag = FBeamGamerTag(UserAccountPtr->GetUserId()->ToString());
+			for (const auto& Stat : UserStats->StringStats)
+			{
+				Event.NewValues.Add(Stat);
+			}
+
+			BeamableSubsystem->GetStatsInterfacePtr()->OnStatsUpdated(Event);
+
+			for (TTuple<FString, FString> Mapping : StatsMapping)
+			{
+				bool bFoundStat = false;
+				if (const auto StatPtr = UserStats->StringStats.Find(Mapping.Key))
+				{
+					UserAccountPtr->SetUserAttribute(Mapping.Value, *StatPtr);
+					bFoundStat = true;
+				}
+
+				if (!bFoundStat)
+				{
+					UE_LOG_ONLINE_IDENTITY(Warning, TEXT("Stat %s not found."), *Mapping.Key);
+				}
+			}
+		}
+		else
+		{
+			UE_LOG_ONLINE_IDENTITY(Verbose, TEXT("Skipping Stats to UserAttributes synchronization."));
+		}
+
+		// Trigger the hook.
+		const auto HookWaitHandler = TDelegate<void(FBeamWaitCompleteEvent)>::CreateLambda([this, GameInstance, UserAccountPtr, AccountCredentials](FBeamWaitCompleteEvent Evt)
+		{
+			TArray<FString> Errs;
+			if (BeamableSubsystem->GetRequestTracker()->IsWaitFailed(Evt, Errs))
+			{
+				FString Err;
+				for (const auto& Error : Errs) Err += FString::Printf(TEXT("%s\n"), *Error);
+				UE_LOG_ONLINE_IDENTITY(Error, TEXT("Failed in OnBeamableUserReadyHook. ERRORS=%s"), *Err);
+
+				// TODO Add support for Multiple Local User Here.
+				TriggerOnLoginCompleteDelegates(0, false, *UserAccountPtr->GetUserId(), Err);
+				return;
+			}
+
+			TriggerOnLoginCompleteDelegates(0, true, *UserAccountPtr->GetUserId(), AccountCredentials.Type);
+			GameInstance->GetSubsystem<UBeamRuntime>()->CPP_UnregisterOnUserReady(OnUserReadyCodeHandle);
+		});
+		FBeamWaitHandle WaitHandle;
+		BeamableSubsystem->GetRequestTracker()->InvokeAndWaitForHooks(WaitHandle, OnBeamableUserReadyHook, HookWaitHandler, LoggedInSlot, UserAccountPtr);
 	}
 }
 
@@ -469,7 +656,7 @@ void FOnlineIdentityBeamable::OnBeamableUserReady(const FUserSlot& Slot, TShared
 		{
 			Event.NewValues.Add(Stat);
 		}
-		
+
 		BeamableSubsystem->GetStatsInterfacePtr()->OnStatsUpdated(Event);
 
 		for (TTuple<FString, FString> Mapping : StatsMapping)
@@ -479,7 +666,7 @@ void FOnlineIdentityBeamable::OnBeamableUserReady(const FUserSlot& Slot, TShared
 			{
 				UserAccountPtr->SetUserAttribute(Mapping.Value, *StatPtr);
 				bFoundStat = true;
-			}			
+			}
 
 			if (!bFoundStat)
 			{
@@ -506,7 +693,7 @@ void FOnlineIdentityBeamable::OnBeamableUserReady(const FUserSlot& Slot, TShared
 			return;
 		}
 
-		TriggerOnLoginCompleteDelegates(0, true, *UserAccountPtr->GetUserId(), "");		
+		TriggerOnLoginCompleteDelegates(0, true, *UserAccountPtr->GetUserId(), "");
 		GameInstance->GetSubsystem<UBeamRuntime>()->CPP_UnregisterOnUserReady(OnUserReadyCodeHandle);
 	});
 

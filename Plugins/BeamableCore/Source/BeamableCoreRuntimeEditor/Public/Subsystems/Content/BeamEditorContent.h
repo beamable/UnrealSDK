@@ -78,7 +78,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TMap<FString, UClass*> ContentTypeStringToContentClass;
-
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	TMap<UClass*, FString> ContentClassToContentTypeString;
+	
 	/**
 	 * This is invoked whenever a content is saved. 
 	 */
@@ -144,7 +146,7 @@ public:
 	static FBeamContentManifestId GetManifestIdFromDataTable(const UDataTable* Table);
 
 	UFUNCTION(BlueprintCallable)
-	void BakeManifest(FBeamContentManifestId Manifest, UBeamContentCache* Cache);
+	void BakeManifest(FBeamContentManifestId Manifest);
 
 	/**
 	 * @brief Downloads the remote manifest and content objects to the local cache. This destroys all local changes. 
@@ -156,7 +158,6 @@ public:
 	 * @copydoc RefreshLocalManifestOperation
 	 */
 	FBeamOperationHandle CPP_RefreshLocalManifestOperation(FBeamOperationEventHandlerCode OnOperationEvent);
-
 
 	/**
 	 * @brief Downloads the remote manifest and content objects to the local cache. This destroys all local changes. 
@@ -170,6 +171,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Content", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
 	bool DownloadManifest(FBeamContentManifestId ContentManifestId, FString& Err);
 
+	/**
+	 * @brief Downloads the remote manifest and content objects to the local cache. This destroys all local changes. 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Content", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool DownloadContent(FBeamContentManifestId ContentManifestId, TArray<FBeamContentId> Ids, FString& Err);
+	
 	/**
 	 * @brief Fetches the local content manifest from the CLI synchronously. 
 	 */

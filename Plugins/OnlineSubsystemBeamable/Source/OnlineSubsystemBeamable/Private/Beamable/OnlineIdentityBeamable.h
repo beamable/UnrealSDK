@@ -132,12 +132,6 @@ private:
 	/** Ids mapped to locally registered users */
 	TUniqueNetIdMap<TSharedRef<FUserOnlineAccountBeamable>> UserAccounts;
 
-	/** True if it should login the first user at startup like single-user platforms, false to only login when requested */
-	bool bAutoLoginAtStartup = true;
-
-	/** True if login should require a user/pass to act like an external service, false to match most platforms and use the default */
-	bool bRequireLoginCredentials = false;
-
 	/** True if it should fail faked network queries and act like an offline system */
 	bool bForceOfflineMode = false;
 

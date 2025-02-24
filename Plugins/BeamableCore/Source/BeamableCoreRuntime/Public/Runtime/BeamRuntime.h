@@ -23,12 +23,13 @@
 
 class UBeamRuntimeSubsystem;
 class UBeamNotifications;
+class UBeamConnectivityManager;
 
 /**
  * State of connectivity for a specific UserSlot.
  *
- * - Offline: UserSlot is not authenticated. 
- * - Fixup: UserSlot is in the process of synchronizing all the supported OfflineOperations with the Beamable Backend (see FOfflineOperationData)
+ * - Offline: UserSlot is not authenticated OR the websocket connection for that slot was lost. 
+ * - Fixup: UserSlot's websocket connection has been reestablished but user-code has not yet called 
  * - Online: UserSlot is connected and has the local state synchronized with the Beamable Backend.
  */
 UENUM()
@@ -39,113 +40,135 @@ enum EBeamRuntimeConnectivityState
 	CONN_Online,
 };
 
-/**
- * While in the Offline state, BeamRuntimeSubsystems can record offline operations into a DAG of operations.
- * The DAG is played back during the Fixup process after connection has been established, each layer of the DAG being executed in parallel.
- * It is the BeamRuntimeSubsystem's responsibility to know whether it can run in parallel or not and call the correct API to register OfflineOperations into the DAG.
- *
- * The data required for an offline operation to be played-back during fixed is stored in serialized form in the memory archive here.
- * The BeamRuntimeSubsystem that makes the operation is responsible for the data format of this buffer. 
- */
-struct FOfflineOperationData
-{
-	FName OperationKey;
-	TArray<uint8> OperationRequestDataBackingArray;
-	FMemoryArchive OperationRequestData;
-};
+DECLARE_DELEGATE_OneParam(FOnBeamConnectivityEventCode, UBeamConnectivityManager*);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBeamConnectivityEvent, UBeamConnectivityManager*, Manager);
 
 /**
  * Manager that tracks connectivity states and the DAG of FOfflineOperationData to run during the Fixup process.
  * Exposes an API to manage the DAG while in Offline modes.
  */
-UCLASS()
-class URuntimeConnectivityManager : public UObject
+UCLASS(BlueprintType)
+class BEAMABLECORERUNTIME_API UBeamConnectivityManager : public UObject
 {
 	GENERATED_BODY()
 
-public:
-	FUserSlot OwnerSlot;
+	friend class UBeamRuntime;
+
 	EBeamRuntimeConnectivityState CurrentState;
+	FTSTicker::FDelegateHandle FixupUpdateHandle;
+	FTSTicker::FDelegateHandle ReconnectingUpdateHandle;
+
+	/**
+	 * Websocket notifications connection handler. 
+	 */
+	void ConnectionHandler(const FNotificationEvent& Evt, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op);
+
+public:
+	UPROPERTY()
+	UBeamRuntime* Runtime;
+	UPROPERTY()
+	UBeamUserSlots* UserSlots;
+	UPROPERTY()
+	UBeamRequestTracker* RequestTracker;
+	UPROPERTY()
+	UBeamNotifications* Notifications;
+
+	UPROPERTY(BlueprintReadOnly)
+	FUserSlot UserSlot;
+
+	/**
+		* @brief Bind a function to this that defines the process of recovering from a connectivity loss event (CurrentState == CONN_Fixup).
+		*/
+	UPROPERTY(BlueprintAssignable)
+	FOnBeamConnectivityEvent FixupTick;
+	/** @copydoc FixupTick	 */
+	FOnBeamConnectivityEventCode FixupTickCode;
+
+
+	/**
+	* @brief Bind a function to this that will run ONCE when the connection is re-established but BEFORE we set up the FixupUpdate.  
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FOnBeamConnectivityEvent OnReconnected;
+
+	/**	@copydoc OnReconnected	 */
+	FOnBeamConnectivityEventCode OnReconnectedCode;
+
+	/**
+	*  @brief Bind a function to this that defines a tick function that runs every frame while this user's CurrentState == CONN_Offline.
+	*/
+	UPROPERTY(BlueprintAssignable)
+	FOnBeamConnectivityEvent ReconnectionTick;
+	/** @copydoc ReconnectionTick	*/
+	FOnBeamConnectivityEventCode ReconnectionTickCode;
+
+	/**
+	* @brief Bind a function to this that will run ONCE when the reconnection process begins (when is detected BEFORE we set up the ReconnectionUpdate tick).  
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FOnBeamConnectivityEvent OnConnectionLost;
+
+	/**	@copydoc OnConnectionLost	 */
+	FOnBeamConnectivityEventCode OnConnectionLostCode;
 
 
 	/**
 	 * The number of times the connection was dropped this session.
 	 * TODO: Should reset when a user logs out from this user slot.
 	 */
+	UPROPERTY(BlueprintReadOnly)
 	int32 ConnectionLostCountInSession;
 
-	/**
-	 * TODO: API for systems to build layers of operations for playback during Fixup.
-	 */
-	TArray<TMap<TSubclassOf<UBeamRuntimeSubsystem>, TArray<FOfflineOperationData>>> FixupOperationDAG;
 
 	/**
-	 * Count of FOfflineOperationData across all layers.
+	 * Current number of reconnection attempts.
 	 */
-	int32 CurrentFixupOperationCount;
+	UPROPERTY(BlueprintReadOnly)
+	int32 CurrentReconnectionCount;
 
 	/**
 	 * The last time in which we detected a connection loss.
 	 * Holds the session start time.  
 	 */
+	UPROPERTY(BlueprintReadOnly)
 	FDateTime CurrentConnectionLostTime;
 
-	/**
-	 * During fixup can be a long running process with multiple operations and Waits, so we track which layer of the FixupOperationDAG we are currently resolving.
-	 * This is so we can correctly react to connection losses mid-fixup.
-	 */
-	int32 CurrentFixupLayer;
-	TArray<FBeamOperationHandle> CurrentFixupLayerOperations;
-	FBeamWaitHandle CurrentFixupLayerWaitHandle;
-
 
 	/**
-	 * @return Whether or not the owner of this manager is authenticated.
+	 * @return Whether the owner of this manager is authenticated.
 	 */
-	bool IsAuthenticated() const { return GEngine->GetEngineSubsystem<UBeamUserSlots>()->IsUserSlotAuthenticated(OwnerSlot, this); }
+	UFUNCTION(BlueprintCallable)
+	bool IsAuthenticated() const { return GEngine->GetEngineSubsystem<UBeamUserSlots>()->IsUserSlotAuthenticated(UserSlot, this); }
 
 	/**
-	 * @return Whether or not the slot this manager is associated with is authenticated AND if we are offline. The common case being: frictionless auth is disabled.
+	 * @return Whether the slot this manager is associated with is authenticated AND if we are offline. The common case being: frictionless auth is disabled.
 	 */
+	UFUNCTION(BlueprintCallable)
 	bool IsUnauthenticatedOfflineUser() const { return !IsAuthenticated() && CurrentState == CONN_Offline; }
 
 	/**
 	 * @return If we are authenticated, but have failed to connect the websocket during the auth flow. 
 	 */
+	UFUNCTION(BlueprintCallable)
 	bool HasNeverConnectedThisSession() const { return IsAuthenticated() && CurrentState == CONN_Offline && !ConnectionLostCountInSession; }
 
 	/**
 	 * @return If we are authenticated and were connected at some point and the connection was lost. 
 	 */
+	UFUNCTION(BlueprintCallable)
 	bool IsDisconnected() const { return IsAuthenticated() && CurrentState == CONN_Offline && ConnectionLostCountInSession; }
 
 	/**
-	 * TODO: After we've reconnected with the websocket, kick-off the fixup process.
+	 * @return If we are authenticated, lost our websocket connection and then recovered it; we are now in Fixup. 
 	 */
-	void StartRecoveryFixup()
-	{
-		if (!CurrentFixupOperationCount)
-		{
-			CurrentState = CONN_Online;
-			return;
-		}
-
-		CurrentState = CONN_Fixup;
-		// TODO: configure chain of operations for each DAG layer passing them along to UBeamRuntimeSubsystems then waiting on them to finish.
-	}
+	UFUNCTION(BlueprintCallable)
+	bool IsInFixup() const { return IsAuthenticated() && CurrentState == CONN_Fixup; }
 
 	/**
-	 * TODO: Kick off attempts to reconnect to the Default notification channel. Must do so with exponential backoff using default retry configs.
+	 * Game-makers should call this from inside their FixupUpdate once their fix up is finished.
 	 */
-	void StartRecoveryFromDisconnection()
-	{
-		// Just do nothing if we haven't lost connection or if we are not Offline.
-		if (!ConnectionLostCountInSession) return;
-		if (CurrentState != CONN_Offline) return;
-
-		// TODO: call try connect on Notification system again
-		// TODO: figure out a way to keep 
-	}
+	UFUNCTION(BlueprintCallable)
+	void NotifyFixupComplete() { if (IsInFixup()) { CurrentState = CONN_Online; } }
 };
 
 
@@ -206,8 +229,9 @@ enum ESDKState
 UCLASS(BlueprintType, meta=(Namespace="Beam"))
 class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 {
-	GENERATED_BODY()
+	friend class UBeamConnectivityManager;
 
+	GENERATED_BODY()
 
 	/** @brief Initializes the subsystem.  */
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
@@ -227,51 +251,45 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	/**
 	 * @brief This gets called after all runtime systems had the opportunity to make requests to Beamable that do not depend on content information.
 	 */
-	void TriggerOnBeamableStarting(FBeamWaitCompleteEvent, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems, bool ApplyFrictionlessLogin,
-	                               FBeamRuntimeHandler SDKReadyHandler, FRuntimeError SDKInitilizationErrorHandler);
+	void TriggerOnBeamableStarting(FBeamWaitCompleteEvent, bool ApplyFrictionlessLogin,
+	                               FBeamRuntimeHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler);
 
 	/**
 	 * @brief This gets called after all runtime systems had the opportunity to make initialization requests to Beamable that DO depend on content data.
 	 */
-	void TriggerOnContentReady(FBeamWaitCompleteEvent Evt, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems, bool ApplyFrictionlessLogin,
-	                           FBeamRuntimeHandler SDKReadyHandler, FRuntimeError SDKInitilizationErrorHandler);
+	void TriggerOnContentReady(FBeamWaitCompleteEvent Evt, bool ApplyFrictionlessLogin,
+	                           FBeamRuntimeHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler);
 
 	/**
 	 * @brief This gets called after all runtime subsystems have been initialized, but before the Owner Player's auth has been made.
 	 */
-	void TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems, bool ApplyFrictionlessLogin,
-	                                         FBeamRuntimeHandler SDKReadyHandler, FRuntimeError SDKInitilizationErrorHandler);
+	void TriggerOnStartedAndFrictionlessAuth(FBeamWaitCompleteEvent, bool ApplyFrictionlessLogin,
+	                                         FBeamRuntimeHandler SDKInitializedHandler, FRuntimeError SDKInitializationErrorHandler);
 
 	/**
 	 * @brief This function gets called to start the flow of initializing subsystems manually
 	 */
-	void ManuallyInitializeSubsystem(TArray<TSubclassOf<UBeamRuntimeSubsystem>>& SubsystemsTypesToInitialize, bool bInitializeUsers, FBeamOperationHandle OnOperationEvent);
+	void ManuallyInitializeSubsystem(TArray<TSubclassOf<UBeamRuntimeSubsystem>>& SubsystemsToInit, bool bInitializeUsers, FBeamOperationHandle Op);
 	/**
 	* @brief This gets called after the first initialize call to set manually subsystems as started but without initializing the content
 	 */
-	void TriggerManuallySetSubsystemStarted(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, bool bInitializeUsers,
-	                                        FBeamOperationHandle OnOperationEvent);
+	void TriggerManuallySetSubsystemStarted(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsToInit, bool bInitializeUsers,
+	                                        FBeamOperationHandle Op);
 	/**
 	 * @brief This gets called after all the manually initialized subsystems had the opportunity to make initialization requests to Beamable that DO depend on content data.
 	 */
-	void TriggerManuallySetSubsystemContentReady(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, bool bInitializeUsers,
-	                                             FBeamOperationHandle OnOperationEvent);
+	void TriggerManuallySetSubsystemContentReady(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsToInit, bool bInitializeUsers,
+	                                             FBeamOperationHandle Op);
 	/**
 	 * @brief This gets called to initialize the users for the manually initialized subsystems.
 	 */
-	void TriggerManuallySetSubsystemsUserReady(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, bool bInitializeUsers,
-	                                           FBeamOperationHandle OnOperationEvent);
+	void TriggerManuallySetSubsystemsUserReady(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsToInit, bool bInitializeUsers,
+	                                           FBeamOperationHandle Op);
 
 	/**
 	 * @brief This gets called to trigger the post user sign in for the manually initialized subsystems.
 	 */
-	void TriggerManuallySubsystemsPostUserSignIn(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsTypesToInitialize, FBeamOperationHandle OnOperationEvent);
-
-	/**
-	 * Manages connectivity and recovery for every user slot.
-	 */
-	UPROPERTY()
-	TMap<FUserSlot, URuntimeConnectivityManager*> ConnectivityState;
+	void TriggerManuallySubsystemsPostUserSignIn(FBeamWaitCompleteEvent Evt, TArray<TSubclassOf<UBeamRuntimeSubsystem>> SubsystemsToInit, FBeamOperationHandle Op);
 
 
 	/**
@@ -289,7 +307,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	/**
 	 * @brief 
 	 */
-	void TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems,
+	void TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser,
 	                                    FBeamOperationHandle AuthOpHandle);
 
 	/**
@@ -322,6 +340,10 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 */
 	FDelegateHandle UserSlotClearedEnqueuedHandle;
 
+	/**
+	 * Automatically initialized systems. This is computed during the process for initializing the SDK and then never updated. 
+	 */
+	TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems;
 
 	/**
 	 * @brief When we boot up the game instance (and it's subsystems), after all Initialize calls have finished, we allow BeamSubsystems to kick-off operations in parallel.
@@ -367,7 +389,7 @@ class BEAMABLECORERUNTIME_API UBeamRuntime : public UGameInstanceSubsystem
 	 * @brief So that actors and components can react to failures in the user authentication flow.
 	 * This runs after all of the BeamRuntimeSubsystems have run their OnFailedUserAuth callback. 
 	 */
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, meta=(DeprecatedProperty, DeprecationMessage = "Use OnUserReadyFailed instead for the same semantics."))
 	FBeamRuntimeEvent OnFailedUserAuth;
 
 	/**
@@ -402,7 +424,7 @@ public:
 	 * 
 	 */
 	UFUNCTION()
-	void PIEExecuteRequestImpl(int64 ActiveRequestId, FBeamConnectivity& Connectivity);
+	void PIEExecuteRequestImpl(int64 ActiveRequestId);
 
 	/** @brief an enum that represents the state of the sdk if it is currently initialized and ready to be used or not */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, DisplayName="SDK State")
@@ -416,6 +438,21 @@ public:
 
 	UPROPERTY()
 	UBeamNotifications* NotificationSystem;
+
+	/**
+	 * Manages connectivity and recovery for every user slot.
+	 */
+	UPROPERTY(BlueprintReadOnly)
+	TMap<FUserSlot, UBeamConnectivityManager*> ConnectivityState;
+
+	/**
+	 * Gets the UBeamConnectivityManager for the owner user slot.
+	 */
+	UFUNCTION(BlueprintCallable)
+	UBeamConnectivityManager* GetOwnerSlotConnectivity() { return ConnectivityState[GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot()]; }
+
+	UFUNCTION(BlueprintCallable)
+	UBeamConnectivityManager* GetSlotConnectivity(FUserSlot Slot) { return ConnectivityState[Slot]; }
 
 	/**
 	 * Returns true when the SDK was initialized.  
@@ -499,7 +536,7 @@ private:
 	 */
 	UPROPERTY()
 	FBeamRuntimeEvent OnStarted;
-	FBeamRuntimeEventCode OnStartedCode;	
+	FBeamRuntimeEventCode OnStartedCode;
 
 	/**
 	 * @brief This is called when the operations for starting the sdk fails.
@@ -628,14 +665,14 @@ private:
 	 */
 	UPROPERTY(BlueprintAssignable)
 	FUserStateChangedEvent OnUserReady;
-	FUserStateChangedEventCode OnUserReadyCode;	
+	FUserStateChangedEventCode OnUserReadyCode;
 
 	/**
 	 * @brief This is called when the initialization of the subsystems user slots fails.
 	 */
 	UPROPERTY()
 	FUserInitFailedEvent OnUserInitFailed;
-	FUserInitFailedEventCode OnUserInitFailedCode;	
+	FUserInitFailedEventCode OnUserInitFailedCode;
 
 	/**
 	 * @brief So that actors and components can react to user data being cleared for a specific user slot. 
@@ -645,7 +682,7 @@ private:
 	 */
 	UPROPERTY(BlueprintAssignable)
 	FUserStateChangedEvent OnUserCleared;
-	FUserStateChangedEventCode OnUserClearedCode;	
+	FUserStateChangedEventCode OnUserClearedCode;
 
 public:
 	/**
@@ -867,10 +904,10 @@ public:
 
 private:
 	// Hard-coded special case auth flow	
-	UFUNCTION(BlueprintCallable)
-	void FrictionlessLoginIntoSlot(const FUserSlot& UserSlot, TArray<UBeamRuntimeSubsystem*> AutomaticallyInitializedSubsystems);
+	UFUNCTION(BlueprintCallable, meta=(DeprecatedFunction, DeprecationMessage="This is no longer needed. Use the LoginFrictionlessOperation instead for the same behavior but more control."))
+	void FrictionlessLoginIntoSlot(const FUserSlot& UserSlot);
 
-	// BP/CPP Independent Operation Implementations
+	// BP/CPP Independent Operation Implementations	
 	void LoginFrictionless(FUserSlot UserSlot, FBeamOperationHandle Op);
 	void LoginExternalIdentity(FUserSlot UserSlot, FString ExternalService, FString ExternalNamespace, FString ExternalToken, FBeamOperationHandle Op);
 	void LoginEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op);
@@ -880,7 +917,6 @@ private:
 	void SignUpEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op);
 	void Logout(FUserSlot UserSlot, EUserSlotClearedReason Reason, bool bRemoveLocalData, FBeamOperationHandle Op);
 
-
 	// Reusable Operation Callbacks
 	void OnAuthenticated(FAuthenticateFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op, FDelayedOperation BeforeUserNotifyOperation);
 	void AuthenticateWithToken(FUserSlot UserSlot, const UTokenResponse* Token, FBeamOperationHandle Op, FDelayedOperation BeforeUserNotifyOperation);
@@ -888,7 +924,8 @@ private:
 	void RunPostAuthenticationSetup_OnGetMe(FBasicAccountsGetMeFullResponse Resp, FUserSlot UserSlot, FBeamOperationHandle Op);
 	void RunPostAuthenticationSetup_PrepareNotificationService(FGetClientDefaultsFullResponse Resp, FUserSlot UserSlot, FBeamRealmUser BeamRealmUser, FBeamOperationHandle Op);
 
-	// Reusable API Calls
+	// Reusable Helper Functions
+	void LoadCachedUserAtSlot(FUserSlot UserSlot, FBeamOperationHandle AuthOp, FSimpleDelegate RunIfNoUser);
 	FBeamRequestContext LoginGuest(FUserSlot UserSlot, FBeamOperationHandle Op, FDelayedOperation OnBeforePostAuthentication = {});
 	FBeamRequestContext CheckExternalIdentityAvailable(FString ExternalService, FString ExternalNamespace, FString ExternalUserId, FBeamOperationHandle Op,
 	                                                   FOnGetAvailableExternalIdentityFullResponse Handler) const;
@@ -916,6 +953,11 @@ private:
 	 */
 	virtual void FillDefaultSessionHeaders(TMap<FString, FString>& Headers);
 
+	/**
+	 * Ensures a UBeamConnectivityManager exists for the given slot.
+	 */
+	void EnsureConnectivityManagerForSlot(FUserSlot UserSlot);
+
 public:
 	/**
 	 * Sends analytics events to Beamable as the owner user. 
@@ -926,4 +968,45 @@ public:
 	 * Sends analytics events to Beamable. 
 	 */
 	void SendAnalyticsEvent(const FUserSlot& Slot, const FString& EventOpCode, const FString& EventCategory, const FString& EventName, const TArray<TSharedRef<FJsonObject>>& EventParamsObj) const;
+
+
+	/**
+	 * Utility that can be used to subscribe to custom Notifications in an easier way than with UBeamNotifications::TrySubscribeForMessage.
+	 * @tparam THandler Type of the Notification Handler. Its signature should be "void (TMessage)".
+	 * @tparam TMessage Type of the message. A subtype of either IBeamJsonSerializableUObject (UMyType*) or FBeamJsonSerializableUStruct (FMyType). 
+	 * @param UserSlot The user that will be listening for this notification.
+	 * @param Key The Notification "context" key.
+	 * @param Handler An instance of THandler.
+	 * @return The delegate handle that you can use with UBeamRuntime::UnsubscribeToCustomNotification.
+	 */
+	template <typename THandler, typename TMessage>
+	FDelegateHandle SubscribeToCustomNotification(const FUserSlot& UserSlot, FString Key, THandler Handler)
+	{
+		FDelegateHandle Handle;
+		FBeamWebSocketHandle DefaultHandle;
+		if (GetDefaultNotificationChannel(UserSlot, DefaultHandle))
+		{
+			if (NotificationSystem->TrySubscribeForMessage<THandler, TMessage>(UserSlot, DefaultHandle.Id, Key, Handler, Handle, this))
+			{
+				return Handle;
+			}
+		}
+
+		return {};
+	}
+
+	/**
+	 * Unsubscribes a specific handler for a specific notification.
+	 * @param UserSlot The user that is listening for this notification.
+	 * @param Key The Notification "context" key.
+	 * @param Handle The handle returned by SubscribeToCustomNotification.
+	 * @return Whether the subscribed handle was found and removed.
+	 */
+	bool UnsubscribeToCustomNotification(const FUserSlot& UserSlot, FString Key, FDelegateHandle Handle)
+	{
+		FBeamWebSocketHandle DefaultHandle;
+		if (GetDefaultNotificationChannel(UserSlot, DefaultHandle))
+			return NotificationSystem->TryUnsubscribeFromMessage(UserSlot, DefaultNotificationChannel, Key, Handle, this);
+		return false;
+	}
 };

@@ -31,7 +31,7 @@ void UBaseContentReference::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 
 void UBaseContentReference::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	const auto Type = Bag->GetStringField("type");
+	const auto Type = Bag->GetStringField(TEXT("type"));
 	if (Type.Equals(TEXT("content")))
 		UBeamJsonUtils::DeserializeUObject(TEXT(""), Bag, Content, OuterOwner);
 	if (Type.Equals(TEXT("text")))

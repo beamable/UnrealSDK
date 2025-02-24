@@ -5,6 +5,24 @@
 #include "BeamNotifications/BeamNotifications.h"
 #include "Serialization/BeamJsonUtils.h"
 
+void FMatchmakingRemoteUpdateNotificationMessage::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
+{
+	Serializer->WriteValue(TEXT("id"), TicketId);
+	Serializer->WriteValue(TEXT("event"), Event);
+}
+
+void FMatchmakingRemoteUpdateNotificationMessage::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
+{
+	Serializer->WriteValue(TEXT("id"), TicketId);
+	Serializer->WriteValue(TEXT("event"), Event);
+}
+
+void FMatchmakingRemoteUpdateNotificationMessage::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
+{
+	TicketId = Bag->GetStringField(TEXT("id"));
+	Event = Bag->GetStringField(TEXT("event"));
+}
+
 void FMatchmakingUpdateNotificationMessage::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("ticketId"), TicketId);
@@ -96,6 +114,28 @@ FDelegateHandle UBeamMatchmakingNotifications::CPP_SubscribeToMatchmakingTimeout
 	FDelegateHandle Handle;
 	const auto Key = FString::Format(*CTX_KEY_Matchmaking_Timeout, {GameType.AsString});
 	if (!Notifications->TrySubscribeForMessage<FOnMatchmakingTimeoutNotificationCode, FMatchmakingTimeoutNotificationMessage>(Slot, SocketName, Key, Handler, Handle, ContextObject))
+	{
+		UE_LOG(LogBeamNotifications, Warning, TEXT("Trying to subscribe to a non-existent socket. SLOT=%s, ID=%s"), *Slot.Name, *SocketName.ToString());
+	}
+	return Handle;
+}
+
+void UBeamMatchmakingNotifications::SubscribeToRemoteUpdate(const FUserSlot& Slot, const FName& SocketName, const FOnMatchmakingRemoteUpdateNotification& Handler, UObject* ContextObject)
+{
+	FDelegateHandle Handle;
+	const auto Key = CTX_KEY_Matchmaking_RemoteUpdate;
+	if (!Notifications->TrySubscribeForMessage<FOnMatchmakingRemoteUpdateNotification, FMatchmakingRemoteUpdateNotificationMessage>(Slot, SocketName, Key, Handler, Handle, ContextObject))
+	{
+		UE_LOG(LogBeamNotifications, Warning, TEXT("Trying to subscribe to a non-existent socket. SLOT=%s, ID=%s"), *Slot.Name, *SocketName.ToString());
+	}
+}
+
+FDelegateHandle UBeamMatchmakingNotifications::CPP_SubscribeToRemoteUpdate(const FUserSlot& Slot, const FName& SocketName, const FOnMatchmakingRemoteUpdateNotificationCode& Handler,
+                                                                                UObject* ContextObject) const
+{
+	FDelegateHandle Handle;
+	const auto Key = CTX_KEY_Matchmaking_RemoteUpdate;
+	if (!Notifications->TrySubscribeForMessage<FOnMatchmakingRemoteUpdateNotificationCode, FMatchmakingRemoteUpdateNotificationMessage>(Slot, SocketName, Key, Handler, Handle, ContextObject))
 	{
 		UE_LOG(LogBeamNotifications, Warning, TEXT("Trying to subscribe to a non-existent socket. SLOT=%s, ID=%s"), *Slot.Name, *SocketName.ToString());
 	}

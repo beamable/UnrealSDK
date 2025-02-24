@@ -63,7 +63,7 @@ void UBeamEditor::Initialize(FSubsystemCollectionBase& Collection)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Initializing BeamEditor Subsystem!"));
 
-	// Set us up to track whether or not we are running PIE
+	// Set us up to track whether we are running PIE
 	BeginPIEHandler = FEditorDelegates::BeginPIE.AddLambda([this](const bool)
 	{
 		bIsRunningPIE = true;
@@ -83,15 +83,15 @@ void UBeamEditor::Initialize(FSubsystemCollectionBase& Collection)
 	UserSlots = GEngine->GetEngineSubsystem<UBeamUserSlots>();
 	RequestTracker = GEngine->GetEngineSubsystem<UBeamRequestTracker>();
 
-	// Sets up handlers for us to keep track of whether or not we are authenticated into the editor	
+	// Sets up handlers for us to keep track of whether we are authenticated into the editor	
 	MainEditorSlotIdx = 0;
 
-	// Configure the bootstrapper to run so that the Init functions of BeamEditorSubsystems all get called after the editor environment is ready to go.
-	const auto EditorUtilitySubsystem = Collection.InitializeDependency<UEditorUtilitySubsystem>();
-	const auto DefaultBootstrapper = GetDefault<UBeamEditorBootstrapper>();
-	const auto SoftPathToDefaultBoostrapper = FSoftObjectPath{DefaultBootstrapper->GetPathName()};
-	if (!EditorUtilitySubsystem->StartupObjects.Contains(SoftPathToDefaultBoostrapper))
-		EditorUtilitySubsystem->StartupObjects.Add(SoftPathToDefaultBoostrapper);
+	// Set up a delayed call to initialize the Beamable Editor integration when the Unreal Editor is fully initialized. 
+	EditorInitializedHandle = FEditorDelegates::OnEditorInitialized.AddLambda([](double)
+	{
+		const auto Bootstrapper = GetMutableDefault<UBeamEditorBootstrapper>();
+		Bootstrapper->Run();
+	});
 
 	// Make sure we have a window message object...
 	ClearBeamableWindowMessage();
@@ -103,6 +103,7 @@ void UBeamEditor::Deinitialize()
 	UserSlots->GlobalUserSlotClearedCodeHandler.Remove(UserSlotClearedHandler);
 	FEditorDelegates::BeginPIE.Remove(BeginPIEHandler);
 	FEditorDelegates::EndPIE.Remove(EndPIEHandler);
+	FEditorDelegates::OnEditorInitialized.Remove(EditorInitializedHandle);
 }
 
 void UBeamEditorBootstrapper::Run()
@@ -116,7 +117,7 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 	const auto BeamEditor = GEditor->GetEditorSubsystem<UBeamEditor>();
 
 	// This needs to be enabled as it'll make UE add its configured certificates to its HTTP/Websocket clients (which Beamable depends on).
-	// This must be on, otherwise, the you are risking this error happening in rare cases: "SSL certificate problem: unable to get local issuer certificate"
+	// This must be on, otherwise, you are risking this error happening in rare cases: "SSL certificate problem: unable to get local issuer certificate"
 	// These rare cases happen due to the cert situation on the machine of whoever is running. Turning this on ensures that UE bundle along the necessary certificates
 	// (or any inside the "ProjectRoot/Certificates" directory) along with the build.
 	// More information here: https://forums.unrealengine.com/t/when-playing-in-the-editor-websocket-connection-successful-but-failed-when-playing-in-packaged-why/436199/18

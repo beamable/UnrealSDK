@@ -369,10 +369,6 @@ bool FOnlineSessionBeamable::StartMatchmaking(const TArray<FUniqueNetIdRef>& Loc
 			FGuid TicketId;
 			FGuid::Parse(Evt.EventCode, TicketId);
 
-			FOnMatchmakingTicketUpdatedCode SearchingHandler;
-			SearchingHandler.BindRaw(this, &FOnlineSessionBeamable::OnMatchmakingSearching);
-			MatchmakingSubsystem->OnMatchSearchingCode.Add(TicketId, SearchingHandler);
-
 			FOnMatchmakingTicketUpdatedCode CanceledHandler;
 			CanceledHandler.BindRaw(this, &FOnlineSessionBeamable::OnMatchmakingCanceled);
 			MatchmakingSubsystem->OnMatchCancelledCode.Add(TicketId, CanceledHandler);
@@ -1402,22 +1398,52 @@ void FOnlineSessionBeamable::OnLobbyUpdated(const FUserSlot& UserSlot, ULobby* L
 		return;
 	}
 
+	const auto OldLobby = NamedSession->Lobby;
+
 	switch (Evt.Type)
 	{
 	case EBeamLobbyEvent::BEAM_PlayerJoined:
 		{
-			UE_LOG_ONLINE_SESSION(Log, TEXT("FOnlineSessionBeamable::OnLobbyUpdated: Refreshing lobby... BEAM_PlayerJoined %s"), *Evt.PlayerJoinedData.JoinedGamerTag.AsString);
+			const auto OldPlayers = OldLobby->Players.Val;
+			const auto NewPlayers = Lobby->Players.Val;
+
+			auto Joined = TArray<ULobbyPlayer*>{};
+			for (ULobbyPlayer* NewPlayer : NewPlayers)
+			{
+				if (!OldPlayers.FindByPredicate([NewPlayer](ULobbyPlayer*& Lp) { return Lp->PlayerId.Val == NewPlayer->PlayerId.Val; }))
+				{
+					Joined.Add(NewPlayer);
+				}
+			}
+
 			NamedSession->SetLobby(Lobby);
-			TriggerOnSessionParticipantJoinedDelegates(SessionName, FUniqueNetIdBeamable::Create(Evt.PlayerJoinedData.JoinedGamerTag.AsString).Get());
+			for (ULobbyPlayer* JoinedPlayer : Joined)
+			{
+				UE_LOG_ONLINE_SESSION(Log, TEXT("FOnlineSessionBeamable::OnLobbyUpdated: Refreshing lobby... BEAM_PlayerJoined %s"), *JoinedPlayer->PlayerId.Val.AsString);
+				TriggerOnSessionParticipantJoinedDelegates(SessionName, FUniqueNetIdBeamable::Create(JoinedPlayer->PlayerId.Val.AsString).Get());
+			}
 			break;
 		}
 	case EBeamLobbyEvent::BEAM_PlayerLeft:
 		{
-			UE_LOG_ONLINE_SESSION(Log, TEXT("FOnlineSessionBeamable::OnLobbyUpdated: Refreshing lobby... BEAM_PlayerLeft"));
+			const auto OldPlayers = OldLobby->Players.Val;
+			const auto NewPlayers = Lobby->Players.Val;
 
-			auto Id = FUniqueNetIdBeamable::Create(Evt.PlayerLeftData.LeftGamerTag.AsString);
+			auto Left = TArray<ULobbyPlayer*>{};
+			for (ULobbyPlayer* OldPlayer : OldPlayers)
+			{
+				if (!NewPlayers.FindByPredicate([OldPlayer](ULobbyPlayer*& Lp) { return Lp->PlayerId.Val == OldPlayer->PlayerId.Val; }))
+				{
+					Left.Add(OldPlayer);
+				}
+			}
+
 			NamedSession->SetLobby(Lobby);
-			TriggerOnSessionParticipantLeftDelegates(SessionName, Id.Get(), EOnSessionParticipantLeftReason::Left);
+			for (ULobbyPlayer* LeftPlayer : Left)
+			{
+				UE_LOG_ONLINE_SESSION(Log, TEXT("FOnlineSessionBeamable::OnLobbyUpdated: Refreshing lobby... BEAM_PlayerLeft"));
+				TriggerOnSessionParticipantLeftDelegates(SessionName, FUniqueNetIdBeamable::Create(LeftPlayer->PlayerId.Val.AsString).Get(), EOnSessionParticipantLeftReason::Left);
+			}
 			break;
 		}
 	case EBeamLobbyEvent::BEAM_DataChanged:
@@ -1447,9 +1473,24 @@ void FOnlineSessionBeamable::OnLobbyUpdated(const FUserSlot& UserSlot, ULobby* L
 		}
 	case EBeamLobbyEvent::BEAM_PlayerKicked:
 		{
-			UE_LOG_ONLINE_SESSION(Log, TEXT("FOnlineSessionBeamable::OnLobbyUpdated: Refreshing lobby... BEAM_PlayerKicked"));
+			const auto OldPlayers = OldLobby->Players.Val;
+			const auto NewPlayers = Lobby->Players.Val;
+
+			auto Kicked = TArray<ULobbyPlayer*>{};
+			for (ULobbyPlayer* OldPlayer : OldPlayers)
+			{
+				if (!NewPlayers.FindByPredicate([OldPlayer](ULobbyPlayer*& Lp) { return Lp->PlayerId.Val == OldPlayer->PlayerId.Val; }))
+				{
+					Kicked.Add(OldPlayer);
+				}
+			}
+
 			NamedSession->SetLobby(Lobby);
-			TriggerOnSessionParticipantLeftDelegates(SessionName, FUniqueNetIdBeamable::Create(Evt.PlayerKickedData.KickedGamerTag.AsString).Get(), EOnSessionParticipantLeftReason::Kicked);
+			for (ULobbyPlayer* KickedPlayer : Kicked)
+			{
+				UE_LOG_ONLINE_SESSION(Log, TEXT("FOnlineSessionBeamable::OnLobbyUpdated: Refreshing lobby... BEAM_PlayerKicked"));
+				TriggerOnSessionParticipantLeftDelegates(SessionName, FUniqueNetIdBeamable::Create(KickedPlayer->PlayerId.Val.AsString).Get(), EOnSessionParticipantLeftReason::Kicked);
+			}
 			break;
 		}
 	default:

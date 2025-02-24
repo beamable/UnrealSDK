@@ -24,6 +24,10 @@
 		{
 			"Name": "BeamableCore",
 			"Enabled": true
+		},
+		{
+			"Name": "BeamableUnrealMicroserviceClients",
+			"Enabled": true
 		}
 	]
 }
