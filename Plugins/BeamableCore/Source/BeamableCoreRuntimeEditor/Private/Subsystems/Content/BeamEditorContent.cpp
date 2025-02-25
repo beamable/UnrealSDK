@@ -683,7 +683,7 @@ bool UBeamEditorContent::TryGetFilteredListOfContent(const FBeamContentManifestI
 
 	for (const auto Row : Rows)
 	{
-		const auto bPassNameFilter = NameFilter.IsEmpty() || Row->Name.StartsWith(NameFilter);
+		const auto bPassNameFilter = NameFilter.IsEmpty() || Row->Name.Contains(NameFilter);
 		const auto bPassTypeFilter = TypeFilter.IsEmpty() || Row->TypeName.Equals(TypeFilter);
 		const auto bPassStatusFilter = ContentStatusFilter == Beam_LocalContentAny || Row->CurrentStatus == static_cast<
 			int64>(ContentStatusFilter);
