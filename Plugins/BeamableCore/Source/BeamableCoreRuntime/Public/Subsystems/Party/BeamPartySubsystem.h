@@ -37,7 +37,7 @@ struct FBeamPartyState
 	
 	TMap<FBeamGamerTag, FBeamPartyPlayerState> PlayerStates;
 
-	
+	TArray<FBeamGamerTag> InvitedPlayers;
 };
 
 USTRUCT(BlueprintType)
@@ -50,31 +50,31 @@ struct FBeamPartyInviteState
 	FBeamGamerTag Sender;
 };
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnPlayerJoinedEventReceived, FGuid, PartyId);
-DECLARE_DELEGATE_OneParam(FOnPlayerJoinedEventReceivedCode, FGuid);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerJoinedEventReceived, FGuid, PartyId, FUserSlot, UserSlot);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPlayerJoinedEventReceivedCode, FGuid, FUserSlot);
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnPlayerLeftEventReceived, FGuid, PartyId);
-DECLARE_DELEGATE_OneParam(FOnPlayerLeftEventReceivedCode, FGuid);
-
-
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnPlayerInvitedEventReceived, FGuid, PartyId);
-DECLARE_DELEGATE_OneParam(FOnPlayerInvitedEventReceivedCode, FGuid);
-
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnPartyUpdatedEventReceived, FGuid, PartyId);
-DECLARE_DELEGATE_OneParam(FOnPartyUpdatedEventReceivedCode, FGuid);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerLeftEventReceived, FGuid, PartyId, FUserSlot, UserSlot);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPlayerLeftEventReceivedCode, FGuid, FUserSlot);
 
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnPlayerPromotedToLeaderEventReceived, FGuid, PartyId);
-DECLARE_DELEGATE_OneParam(FOnPlayerPromotedToLeaderEventReceivedCode, FGuid);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerInvitedEventReceived, FGuid, PartyId, FUserSlot, UserSlot);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPlayerInvitedEventReceivedCode, FGuid, FUserSlot);
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnPlayerKickedEventReceived, FGuid, PartyId);
-DECLARE_DELEGATE_OneParam(FOnPlayerKickedEventReceivedCode, FGuid);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPartyUpdatedEventReceived, FGuid, PartyId, FUserSlot, UserSlot);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPartyUpdatedEventReceivedCode, FGuid, FUserSlot);
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnPlayerInviteCanceledEventReceived, FGuid, PartyId);
-DECLARE_DELEGATE_OneParam(FOnPlayerInviteCanceledEventReceivedCode, FGuid);
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FOnPlayerInviteExpiredEventReceived, FGuid, PartyId);
-DECLARE_DELEGATE_OneParam(FOnPlayerInviteExpiredEventReceivedCode, FGuid);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerPromotedToLeaderEventReceived, FGuid, PartyId, FUserSlot, UserSlot);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPlayerPromotedToLeaderEventReceivedCode, FGuid, FUserSlot);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerKickedEventReceived, FGuid, PartyId, FUserSlot, UserSlot);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPlayerKickedEventReceivedCode, FGuid, FUserSlot);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerInviteCanceledEventReceived, FGuid, PartyId, FUserSlot, UserSlot);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPlayerInviteCanceledEventReceivedCode, FGuid, FUserSlot);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerInviteExpiredEventReceived, FGuid, PartyId, FUserSlot, UserSlot);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPlayerInviteExpiredEventReceivedCode, FGuid, FUserSlot);
 
 /**
  * 
@@ -95,7 +95,7 @@ class BEAMABLECORERUNTIME_API UBeamPartySubsystem : public UBeamRuntimeSubsystem
 
 	TMap<FGuid, FBeamPartyState> PartyStates;
 	
-	TArray<FBeamPartyInviteState> PartyInvites;
+	TMap<FUserSlot, TArray<FBeamPartyInviteState>> PartyInvitesState;
 
 	virtual void InitializeWhenUnrealReady_Implementation(FBeamOperationHandle& ResultOp) override;
 
@@ -107,6 +107,94 @@ public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
 	static UBeamPartySubsystem* GetSelf(const UObject* CallingContext) { return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>(); }
 
+	/**
+	 * This gets called when a party have any changes on this
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FOnPartyUpdatedEventReceived OnPartyUpdated;
+
+	/**
+	 * @copybrief OnPartyUpdated
+	 */
+	FOnPartyUpdatedEventReceivedCode OnPartyUpdatedCode;
+
+	/**
+	 * This gets called when the player received an invitation to join a party
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerInvitedEventReceived OnPlayerInvited;
+
+	/**
+	 * @copybrief OnPlayerInvited
+	 */
+	FOnPlayerInvitedEventReceivedCode OnPlayerInvitedCode;
+	
+	/**
+	 * This gets called when a new player join to the party
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerJoinedEventReceived OnPlayerJoined;
+
+	/**
+	 * @copybrief OnPlayerJoined
+	 */
+	FOnPlayerJoinedEventReceivedCode OnPlayerJoinedCode;
+	
+	/**
+	 * This gets called when a player is kicked from the party by the leader 
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerKickedEventReceived OnPlayerKicked;
+
+	/**
+	 * @copybrief OnPlayerKicked
+	 */
+	FOnPlayerKickedEventReceivedCode OnPlayerKickedCode;
+	
+	/**
+	 * This gets called when a player left the party 
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerLeftEventReceived OnPlayerLeft;
+
+	/**
+	 * @copybrief OnPlayerLeft
+	 */
+	FOnPlayerLeftEventReceivedCode OnPlayerLeftCode;
+
+	/**
+	 * This gets called when a invitation is canceled - It could be trigger by the leader or the even by the receiver of the invitation
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerInviteCanceledEventReceived OnPlayerInviteCanceled;
+
+	/**
+	 * @copybrief OnPlayerInviteCanceled
+	 */
+	FOnPlayerInviteCanceledEventReceivedCode OnPlayerInviteCanceledCode;
+	
+	/**
+	 * This gets called when an invite expires
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerInviteExpiredEventReceived OnPlayerInviteExpired;
+
+	/**
+	 * @copybrief OnPlayerInviteExpired
+	 */
+	FOnPlayerInviteExpiredEventReceivedCode OnPlayerInviteExpiredCode;
+	
+	/**
+	 * This gets called when another player is promoted to be leader - This could happen if the leader leaves the party or if the leader promote another player to be the new leader
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerPromotedToLeaderEventReceived OnPlayerPromotedToLeader;
+
+	/**
+	 * @copybrief OnPlayerPromotedToLeader
+	 */
+	FOnPlayerPromotedToLeaderEventReceivedCode OnPlayerPromotedToLeaderCode;
+	
 	/**
 	 * @brief Try to get Party State locally for a specific user slot.
 	 */
@@ -212,9 +300,10 @@ public:
 	 */
 	FBeamOperationHandle CPP_PromotePlayerToLeaderOperation(FUserSlot User, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandlerCode OperationEventHandler);
 private:
+
+	bool TryGetPlayerParty(FUserSlot User, FBeamPartyState& PartyState);
 	
-	
-	bool TryAcceptPartyInvite(FUserSlot User, FBeamOperationHandle Op);
+	bool TryGetAvailableInvites(FUserSlot User, TArray<FBeamPartyInviteState>& Invites);
 
 	void FetchPartyState(FUserSlot User, FGuid PartyId, FBeamOperationHandle Op);
 
@@ -238,20 +327,18 @@ private:
 
 	// Notification Hooks
 	UFUNCTION()
-	void OnPartyUpdatedHandler(FPartyRefreshNotificationMessage Msg, FUserSlot Slot);
+	void OnPartyUpdatedHandler(FPartyRefreshNotificationMessage Msg, FUserSlot User);
 
-	void OnPlayerJoinedEventReceived(FGuid PartyId);
-	void OnPlayerLeftEventReceived(FGuid PartyId);
-	void OnPlayerInvitedEventReceived(FGuid PartyId);
-	void OnPartyUpdatedEventReceived(FGuid PartyId);
-	void OnPlayerPromotedToLeaderEventReceived(FGuid PartyId);
-	void OnPlayerKickedEventReceived(FGuid PartyId);
-	void OnPlayerInviteCanceledEventReceived(FGuid PartyId);
-	void OnPlayerInviteExpiredEventReceived(FGuid PartyId);
+	void OnPlayerJoinedEventReceived(FGuid PartyId, FUserSlot User);
+	void OnPlayerLeftEventReceived(FGuid PartyId, FUserSlot User);
+	void OnPlayerInvitedEventReceived(FGuid PartyId, FUserSlot User);
+	void OnPartyUpdatedEventReceived(FGuid PartyId, FUserSlot User);
+	void OnPlayerPromotedToLeaderEventReceived(FGuid PartyId, FUserSlot User);
+	void OnPlayerKickedEventReceived(FGuid PartyId, FUserSlot User);
+	void OnPlayerInviteCanceledEventReceived(FGuid PartyId, FUserSlot User);
+	void OnPlayerInviteExpiredEventReceived(FGuid PartyId, FUserSlot User);
 	
 	// Utilities
-
-	bool TryGetPlayerParty(FUserSlot User, FGuid& PartyId);
 
 	FBeamPartyState MakePartyState(UParty* Party);
 
