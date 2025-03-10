@@ -1,4 +1,5 @@
-﻿using UnrealBuildTool;
+﻿using System;
+using UnrealBuildTool;
 
 public class BeamableCoreRuntime : ModuleRules
 {
@@ -33,8 +34,10 @@ public class BeamableCoreRuntime : ModuleRules
 		);
 
 		// Is UBT building for Editor ?
-		if (Target.Type == TargetType.Editor)
+		if (Target.bCompileAgainstEditor)
 		{
+			Console.WriteLine("BeamableCoreRuntime - Adding Necessary Editor Modules");
+			
 			PublicDependencyModuleNames.AddRange(
 				new string[]
 				{

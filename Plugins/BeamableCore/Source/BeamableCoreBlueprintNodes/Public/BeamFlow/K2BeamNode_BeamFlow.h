@@ -3,6 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamK2.h"
+#include "BlueprintActionDatabaseRegistrar.h"
+
 #include "K2BeamNode_BeamFlow.generated.h"
 
 #define LOCTEXT_NAMESPACE "BeamK2_BeamFlow"

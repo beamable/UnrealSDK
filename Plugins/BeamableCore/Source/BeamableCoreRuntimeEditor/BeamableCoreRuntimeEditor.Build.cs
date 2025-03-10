@@ -1,4 +1,5 @@
-﻿using UnrealBuildTool;
+﻿using System;
+using UnrealBuildTool;
 
 public class BeamableCoreRuntimeEditor : ModuleRules
 {
@@ -19,8 +20,9 @@ public class BeamableCoreRuntimeEditor : ModuleRules
 			}
 		);
 
-		if (Target.bBuildEditor)
+		if (Target.bCompileAgainstEditor)
 		{
+			Console.WriteLine("BeamableCoreRuntimeEditor - Adding Necessary Editor Modules");
 			PublicDependencyModuleNames.AddRange(
 				new string[]
 				{

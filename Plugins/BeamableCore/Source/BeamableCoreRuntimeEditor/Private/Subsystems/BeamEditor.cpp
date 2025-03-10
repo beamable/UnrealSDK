@@ -61,7 +61,7 @@ void UBeamEditor::OpenDocsPage(FDocsPageItem item)
 
 void UBeamEditor::Initialize(FSubsystemCollectionBase& Collection)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Initializing BeamEditor Subsystem!"));
+	UE_LOG(LogTemp, Log, TEXT("Initializing BeamEditor Subsystem!"));
 
 	// Set us up to track whether we are running PIE
 	BeginPIEHandler = FEditorDelegates::BeginPIE.AddLambda([this](const bool)

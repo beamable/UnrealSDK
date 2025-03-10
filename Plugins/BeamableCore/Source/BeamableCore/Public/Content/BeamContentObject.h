@@ -216,8 +216,11 @@ public:
 		UClass* ObjectClass;
 		EBeamContentObjectSupportLevel SupportLevel;
 		GetClassForTypeId(ContentTypeToContentClass, ContentTypeId, ObjectClass, SupportLevel);
-		OutObject = NewObject<UBeamContentObject>(GetTransientPackage(), ObjectClass,NAME_None,EObjectFlags::RF_Public | EObjectFlags::RF_Standalone);
-		OutObject->SupportLevel = SupportLevel;
+		if (ObjectClass)
+		{
+			OutObject = NewObject<UBeamContentObject>(GetTransientPackage(), ObjectClass, NAME_None, EObjectFlags::RF_Public | EObjectFlags::RF_Standalone);
+			OutObject->SupportLevel = SupportLevel;
+		}
 	}
 
 	/**

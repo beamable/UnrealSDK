@@ -8,6 +8,7 @@
 #include "Content/BeamContentCache.h"
 #include "Content/DownloadContentState.h"
 #include "Misc/FileHelper.h"
+#include "Serialization/ObjectWriter.h"
 #include "Settings/ProjectPackagingSettings.h"
 #include "Subsystems/BeamEditor.h"
 #include "Subsystems/CLI/BeamCli.h"
@@ -684,7 +685,7 @@ bool UBeamEditorContent::TryGetFilteredListOfContent(const FBeamContentManifestI
 	for (const auto Row : Rows)
 	{
 		const auto bPassNameFilter = NameFilter.IsEmpty() || Row->Name.Contains(NameFilter);
-		const auto bPassTypeFilter = TypeFilter.IsEmpty() || Row->TypeName.Equals(TypeFilter);
+		const auto bPassTypeFilter = TypeFilter.IsEmpty() || (ContentTypeStringToContentClass.Contains(Row->TypeName) && ContentTypeStringToContentClass[Row->TypeName]->GetName().Contains(TypeFilter));
 		const auto bPassStatusFilter = ContentStatusFilter == Beam_LocalContentAny || Row->CurrentStatus == static_cast<
 			int64>(ContentStatusFilter);
 
@@ -785,10 +786,11 @@ void UBeamEditorContent::BakeManifest(FBeamContentManifestId Manifest)
 					CoreSettings->GlobalBakedContentFileName;
 
 	TArray<uint8> SerializedData;
-	FMemoryWriter Writer(SerializedData, true);
-						
-	Cache->SerializeToBinary(Writer,ContentTypeStringToContentClass,ContentClassToContentTypeString);
-
+	FBeamMemoryWriter Writer(SerializedData, true);	
+	
+	
+	Cache->SerializeToBinary(Writer, ContentTypeStringToContentClass, ContentClassToContentTypeString);
+	
 	if (FFileHelper::SaveArrayToFile(SerializedData, *BakedContentPath))
 	{
 		UE_LOG(LogBeamContent, Log, TEXT("Saved new baked content."));

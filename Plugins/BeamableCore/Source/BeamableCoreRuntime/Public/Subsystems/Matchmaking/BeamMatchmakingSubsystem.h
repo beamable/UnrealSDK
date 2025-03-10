@@ -57,10 +57,10 @@ struct FBeamMatchmakingTicket
 		FString GameTypeId = FString(TEXT("None"));
 		if (GameType) GameTypeId = GameType->Id;
 		TArray<FString> GamerTags = {};
-		for (const auto InTicket : GamerTagsInTicket) GamerTags.Add(InTicket.AsString);
+		for (const auto& InTicket : GamerTagsInTicket) GamerTags.Add(InTicket.AsString);
 
 		TArray<FString> Slots = {};
-		for (const auto InTicket : SlotsInTicket) Slots.Add(InTicket.Name);
+		for (const auto& InTicket : SlotsInTicket) Slots.Add(InTicket.Name);
 
 		return FString::Printf(TEXT("TICKET=%s, GAME_TYPE=%s, GAMERTAGS=[%s], USER_SLOTS=[%s]"), *Ticket, *GameTypeId, *FString::Join(GamerTags, TEXT(", ")), *FString::Join(Slots, TEXT(", ")));
 	}
