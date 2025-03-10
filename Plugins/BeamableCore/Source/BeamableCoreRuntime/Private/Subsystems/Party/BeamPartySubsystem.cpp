@@ -9,6 +9,7 @@
 
 void UBeamPartySubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperationHandle& ResultOp)
 {
+	// Initializing the subsystems after unreal is ready
 	PartyApi = GEngine->GetEngineSubsystem<UBeamPartyApi>();
 	PlayerPartyApi = GEngine->GetEngineSubsystem<UBeamPlayerPartyApi>();
 	PartyNotifications = GEngine->GetEngineSubsystem<UBeamPartyNotifications>();
@@ -20,20 +21,29 @@ void UBeamPartySubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperatio
 void UBeamPartySubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser,
 	const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp)
 {
+	//Register notifications for party on user signed in
 	const auto PartyUpdateHandler = FOnPartyRefreshNotificationCode::CreateUFunction(this, GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, OnPartyUpdatedHandler), UserSlot);
 	PartyNotifications->CPP_SubscribeToPartyRefresh(UserSlot, Runtime->DefaultNotificationChannel, PartyUpdateHandler, this);
 
 	Super::OnUserSignedIn_Implementation(UserSlot, BeamRealmUser, bIsOwnerUserAuth, ResultOp);
 }
 
-void UBeamPartySubsystem::OnPostUserSignedIn_Implementation(const FUserSlot& UserSlot,
-	const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp)
+void UBeamPartySubsystem::OnPostUserSignedOut_Implementation(const FUserSlot& UserSlot,
+	const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp)
 {
-
-	Super::OnPostUserSignedIn_Implementation(UserSlot, BeamRealmUser, bIsOwnerUserAuth, ResultOp);
+	// Clean up party and invite states
+	PartyStates.Reset();
+	if (PartyInvitesState.Contains(UserSlot))
+	{
+		PartyInvitesState[UserSlot].Reset();
+		PartyInvitesState.Remove(UserSlot);
+	}
+	
+	Super::OnPostUserSignedOut_Implementation(UserSlot, Reason, BeamRealmUser, ResultOp);
 }
 
-bool UBeamPartySubsystem::TryGetUserPartyState(const FUserSlot& User, FBeamPartyState& PartyState)
+
+bool UBeamPartySubsystem::TryGetUserPartyState(FUserSlot User, FBeamPartyState& PartyState)
 {
 	return TryGetPlayerParty(User, PartyState);
 }
@@ -182,11 +192,27 @@ FBeamOperationHandle UBeamPartySubsystem::CPP_PromotePlayerToLeaderOperation(FUs
 	return Handle;
 }
 
+FBeamOperationHandle UBeamPartySubsystem::UpdatePartyOperation(FUserSlot User, FGuid PartyId,
+	EBeamPartyRestriction Restriction, FOptionalInt32 MaxPlayers, FBeamOperationEventHandler OperationEventHandler)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({User}, GetClass()->GetFName().ToString(), OperationEventHandler);
+	UpdateParty(User, PartyId, Restriction, MaxPlayers, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamPartySubsystem::CPP_UpdatePartyOperation(FUserSlot User, FGuid PartyId,
+	EBeamPartyRestriction Restriction, FOptionalInt32 MaxPlayers, FBeamOperationEventHandlerCode OperationEventHandler)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({User}, GetClass()->GetFName().ToString(), OperationEventHandler);
+	UpdateParty(User, PartyId, Restriction, MaxPlayers, Handle);
+	return Handle;
+}
+
 
 bool UBeamPartySubsystem::TryGetPlayerParty(FUserSlot User, FBeamPartyState& PartyState)
 {
 	FBeamRealmUser RealmUser;
-	
+
 	if (!Runtime->UserSlotSystem->GetUserDataAtSlot(User, RealmUser, this))
 	{
 		return false;
@@ -209,8 +235,10 @@ bool UBeamPartySubsystem::TryGetAvailableInvites(FUserSlot User, TArray<FBeamPar
 {
 	if (!PartyInvitesState.Contains(User)) return false;
 
+	// Clean up result list
 	Invites.Reset();
-	
+
+	// Add invites to the result list
 	for (const auto& InviteState : PartyInvitesState[User])
 	{
 		Invites.Add(InviteState);
@@ -227,6 +255,7 @@ void UBeamPartySubsystem::FetchPartyState(FUserSlot User, FGuid PartyId, FBeamOp
 
 		if (Resp.State == RS_Success)
 		{
+			// It's creating the PartyState using the UParty in the SuccessData.
 			FBeamPartyState PartyState = MakePartyState(Resp.SuccessData);
 			
 			if (PartyStates.Contains(PartyId))
@@ -268,6 +297,7 @@ void UBeamPartySubsystem::FetchPartyInvites(FUserSlot User, FBeamOperationHandle
 
 		if (Resp.State == RS_Success)
 		{
+			// Clean up the invites for the user
 			if (!PartyInvitesState.Contains(User))
 			{
 				PartyInvitesState.Add(User, {});
@@ -320,7 +350,9 @@ bool UBeamPartySubsystem::CreateParty(FUserSlot User, EBeamPartyRestriction Rest
 
 		if (Resp.State == RS_Success)
 		{
+			// It's creating the PartyState using the UParty in the SuccessData.
 			FBeamPartyState PartyState = MakePartyState(Resp.SuccessData);
+			
 			PartyStates.Add(PartyState.PartyId, PartyState);
 			
 			Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
@@ -365,12 +397,15 @@ void UBeamPartySubsystem::JoinParty(FUserSlot User, FGuid PartyId, FBeamOperatio
 		
 		if (Resp.State == RS_Success)
 		{
+			// It's creating the PartyState using the UParty in the SuccessData.
+			FBeamPartyState PartyState = MakePartyState(Resp.SuccessData);
+			
 			if (PartyStates.Contains(PartyId))
 			{
-				PartyStates[PartyId] = MakePartyState(Resp.SuccessData);
+				PartyStates[PartyId] = PartyState;
 			}else
 			{
-				PartyStates.Add(PartyId, MakePartyState(Resp.SuccessData));
+				PartyStates.Add(PartyId, PartyState);
 			}
 			Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
 			return;
@@ -499,6 +534,39 @@ void UBeamPartySubsystem::LeaveParty(FUserSlot User, FGuid PartyId, FBeamOperati
 	FBeamRequestContext Ctx;
 
 	PartyApi->CPP_DeleteMembers(User, Request, Handler, Ctx, Op, this);
+}
+
+void UBeamPartySubsystem::UpdateParty(FUserSlot User, FGuid PartyId, EBeamPartyRestriction Restriction,
+	FOptionalInt32 MaxPlayers, FBeamOperationHandle Op)
+{
+	FOnApiPartyPutMetadataByIdFullResponse Handler = FOnApiPartyPutMetadataByIdFullResponse::CreateLambda([this, Op](const FApiPartyPutMetadataByIdFullResponse Resp)
+	{
+		if (Resp.State == RS_Retrying) return;
+
+		if (Resp.State == RS_Success)
+		{
+			Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
+			return;
+		}
+
+		if (Resp.State == RS_Error)
+		{
+			Runtime->RequestTrackerSystem->TriggerOperationError(Op, Resp.ErrorData.message);
+			return;
+		}
+		
+		if (Resp.State == RS_Cancelled)
+		{
+			Runtime->RequestTrackerSystem->TriggerOperationCancelled(Op, Resp.ErrorData.message);
+			return;
+		}
+	});
+
+	UApiPartyPutMetadataByIdRequest* Request = UApiPartyPutMetadataByIdRequest::Make(PartyId, FOptionalString(GetRestrictionString(Restriction)), MaxPlayers, this, {});
+
+	FBeamRequestContext Ctx;
+
+	PartyApi->CPP_PutMetadata(User, Request, Handler, Ctx, Op, this);
 }
 
 void UBeamPartySubsystem::KickPlayer(FUserSlot User, FGuid PartyId, FBeamGamerTag Player, FBeamOperationHandle Op)
@@ -772,6 +840,8 @@ FBeamPartyState UBeamPartySubsystem::MakePartyState(UParty* Party)
 	PartyState.PartyId = FGuid(Party->Id.Val);
 	PartyState.MaxPlayers = Party->MaxSize.Val;
 	PartyState.Leader = Party->Leader.Val;
+	PartyState.Restriction = GetRestrictionType(Party->Restriction.Val);
+	
 	for (auto BeamGameTag : Party->Members.Val)
 	{
 		PartyState.PlayerStates.Add(BeamGameTag, FBeamPartyPlayerState(BeamGameTag));
@@ -795,4 +865,16 @@ FString UBeamPartySubsystem::GetRestrictionString(EBeamPartyRestriction Restrict
 			return "";
 	}
 }
+EBeamPartyRestriction UBeamPartySubsystem::GetRestrictionType(FString RestrictionName)
+{
+	if (RestrictionName == "Unrestricted")
+	{
+		return EBeamPartyRestriction::BEAM_Unrestricted;
+	}
+	if (RestrictionName == "InviteOnly")
+	{
+		return EBeamPartyRestriction::BEAM_InviteOnly;
+	}
 
+	return EBeamPartyRestriction::BEAM_Unrestricted;
+}

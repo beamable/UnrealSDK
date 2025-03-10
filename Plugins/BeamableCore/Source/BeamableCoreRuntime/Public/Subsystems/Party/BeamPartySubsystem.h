@@ -29,14 +29,22 @@ struct FBeamPartyState
 {
 	GENERATED_BODY()
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FGuid PartyId;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FBeamGamerTag Leader;
-	
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	EBeamPartyRestriction Restriction;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 MaxPlayers;
-	
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<FBeamGamerTag, FBeamPartyPlayerState> PlayerStates;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<FBeamGamerTag> InvitedPlayers;
 };
 
@@ -44,9 +52,11 @@ USTRUCT(BlueprintType)
 struct FBeamPartyInviteState
 {
 	GENERATED_BODY()
-
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FGuid PartyId;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FBeamGamerTag Sender;
 };
 
@@ -101,7 +111,7 @@ class BEAMABLECORERUNTIME_API UBeamPartySubsystem : public UBeamRuntimeSubsystem
 
 	virtual void OnUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp) override;
 
-	virtual void OnPostUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp) override;
+	virtual void OnPostUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp) override;
 
 public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
@@ -196,10 +206,10 @@ public:
 	FOnPlayerPromotedToLeaderEventReceivedCode OnPlayerPromotedToLeaderCode;
 	
 	/**
-	 * @brief Try to get Party State locally for a specific user slot.
+	 * @brief Attempts to retrieve the party state for a specific user slot. Returns false if the user is not in any party.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	bool TryGetUserPartyState(const FUserSlot& User, FBeamPartyState& PlayerState);
+	bool TryGetUserPartyState(FUserSlot User, FBeamPartyState& PartyState);
 
 	/**
 	 * @brief Operation to join a party using the PartyId. 
@@ -299,6 +309,18 @@ public:
 	 * @copydoc PromotePlayerToLeaderOperation
 	 */
 	FBeamOperationHandle CPP_PromotePlayerToLeaderOperation(FUserSlot User, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandlerCode OperationEventHandler);
+
+	/**
+	 * @brief The party leader can update the party meta-data (Restriction and MaxPlayers) for the party after create it.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle UpdatePartyOperation(FUserSlot User, FGuid PartyId, EBeamPartyRestriction Restriction, FOptionalInt32 MaxPlayers, FBeamOperationEventHandler OperationEventHandler);
+
+	/**
+	 * @copydoc UpdatePartyOperation
+	 */
+	FBeamOperationHandle CPP_UpdatePartyOperation(FUserSlot User, FGuid PartyId, EBeamPartyRestriction Restriction, FOptionalInt32 MaxPlayers, FBeamOperationEventHandlerCode OperationEventHandler);
+
 private:
 
 	bool TryGetPlayerParty(FUserSlot User, FBeamPartyState& PartyState);
@@ -310,7 +332,7 @@ private:
 	void FetchPartyInvites(FUserSlot User, FBeamOperationHandle Op);
 	
 	bool CreateParty(FUserSlot User, EBeamPartyRestriction Restriction, int32 maxPlayers, FBeamOperationHandle Op);
-
+	
 	void JoinParty(FUserSlot User, FGuid PartyId, FBeamOperationHandle Op);
 	
 	void InvitePlayerToParty(FUserSlot User, FGuid PartyId, FBeamGamerTag Player, FBeamOperationHandle Op);
@@ -321,6 +343,8 @@ private:
 	
 	// Leader - Only can be called by the leader of the party.
 
+	void UpdateParty(FUserSlot User, FGuid PartyId, EBeamPartyRestriction Restriction, FOptionalInt32 MaxPlayers, FBeamOperationHandle Op);
+	
 	void KickPlayer(FUserSlot User, FGuid PartyId, FBeamGamerTag Player, FBeamOperationHandle Op);
 
 	void PromotePlayerToLeader(FUserSlot User, FGuid PartyId, FBeamGamerTag Player, FBeamOperationHandle Op);
@@ -343,4 +367,5 @@ private:
 	FBeamPartyState MakePartyState(UParty* Party);
 
 	static FString GetRestrictionString(EBeamPartyRestriction RestrictionType);
+	EBeamPartyRestriction GetRestrictionType(FString RestrictionName);
 };
