@@ -34,7 +34,7 @@ void UBeamEditorContent::Initialize(FSubsystemCollectionBase& Collection)
 			FName TypeName = It->GetFName();
 			FString ContentTypeId = It->GetDefaultObject<UBeamContentObject>()->BuildContentTypeString();
 
-			UE_LOG(LogTemp, Display, TEXT("Initializing Beam Editor Content System - TYPE=%s, TYPE_ID=%s"),
+			UE_LOG(LogBeamEditor, Display, TEXT("Initializing Beam Editor Content System - TYPE=%s, TYPE_ID=%s"),
 			       *TypeName.ToString(), *ContentTypeId);
 			AllContentTypes.Add(*It);
 			AllContentTypeNames.Add(MakeShared<FName>(TypeName));
