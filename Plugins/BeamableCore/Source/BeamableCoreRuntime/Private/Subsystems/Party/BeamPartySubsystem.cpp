@@ -3,6 +3,7 @@
 
 #include "Subsystems/Party/BeamPartySubsystem.h"
 
+#include "AutoGen/Optionals/OptionalGamerTag.h"
 #include "AutoGen/SubSystems/Social/PostFriendsInviteRequest.h"
 #include "BeamNotifications/SubSystems/BeamInventoryNotifications.h"
 #include "Subsystems/Inventory/BeamInventorySubsystem.h"
@@ -135,19 +136,19 @@ FBeamOperationHandle UBeamPartySubsystem::CPP_InvitePlayerToPartyOperation(FUser
 	return Handle;
 }
 
-FBeamOperationHandle UBeamPartySubsystem::DeletePlayerPartyInviteOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
+FBeamOperationHandle UBeamPartySubsystem::DeclinePlayerPartyInviteOperation(FUserSlot UserSlot, FGuid PartyId,
 	FBeamOperationEventHandler OperationEventHandler)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OperationEventHandler);
-	DeletePlayerPartyInvite(UserSlot, PartyId, Player, Handle);
+	DeclinePlayerPartyInvite(UserSlot, PartyId, Handle);
 	return Handle;
 }
 
-FBeamOperationHandle UBeamPartySubsystem::CPP_DeletePlayerPartyInviteOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
+FBeamOperationHandle UBeamPartySubsystem::CPP_DeclinePlayerPartyInviteOperation(FUserSlot UserSlot, FGuid PartyId,
 	FBeamOperationEventHandlerCode OperationEventHandler)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OperationEventHandler);
-	DeletePlayerPartyInvite(UserSlot, PartyId, Player, Handle);
+	DeclinePlayerPartyInvite(UserSlot, PartyId, Handle);
 	return Handle;
 }
 
@@ -175,8 +176,24 @@ FBeamOperationHandle UBeamPartySubsystem::KickPlayerOperation(FUserSlot UserSlot
 	return Handle;
 }
 
-FBeamOperationHandle UBeamPartySubsystem::CPP_KickPlayerOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
+FBeamOperationHandle UBeamPartySubsystem::CancelPlayerPartyInviteOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
+	FBeamOperationEventHandler OperationEventHandler)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OperationEventHandler);
+	DeletePlayerPartyInvite(UserSlot, PartyId, Player, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamPartySubsystem::CPP_CancelPlayerPartyInviteOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
 	FBeamOperationEventHandlerCode OperationEventHandler)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OperationEventHandler);
+	DeletePlayerPartyInvite(UserSlot, PartyId, Player, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamPartySubsystem::CPP_KickPlayerOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
+                                                                  FBeamOperationEventHandlerCode OperationEventHandler)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OperationEventHandler);
 	KickPlayer(UserSlot, PartyId, Player, Handle);
@@ -496,42 +513,28 @@ void UBeamPartySubsystem::InvitePlayerToParty(FUserSlot UserSlot, FGuid PartyId,
 	
 }
 
-void UBeamPartySubsystem::DeletePlayerPartyInvite(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationHandle Op)
+void UBeamPartySubsystem::DeclinePlayerPartyInvite(FUserSlot UserSlot, FGuid PartyId, FBeamOperationHandle Op)
 {
-	FOnDeleteInviteFullResponse Handler = FOnDeleteInviteFullResponse::CreateLambda([this, UserSlot, PartyId, Player, Op](const FDeleteInviteFullResponse& Resp)
+	FOnDeleteInviteFullResponse Handler = FOnDeleteInviteFullResponse::CreateLambda([this, UserSlot, PartyId, Op](const FDeleteInviteFullResponse& Resp)
 	{
 		if (Resp.State == RS_Retrying) return;
 
 		if (Resp.State == RS_Success)
 		{
-			FBeamPartyState PartyState;
+			
+			TArray<FBeamPartyInviteState>& Invites = *PartyInvitesState.Find(UserSlot);
 	
-			if (TryGetUserPartyState(UserSlot, PartyState))
+			for (auto i = 0; i < Invites.Num(); i++)
 			{
-				PartyState.InvitedPlayers.Remove(Player);
-			}
-
-			TArray<FBeamPartyInviteState> Invites;
-			if (TryGetUserInvitesState(UserSlot, Invites))
-			{
-				for (auto i = 0; i < Invites.Num(); i++)
+				if (Invites[i].PartyId == PartyId)
 				{
-					if (Invites[i].PartyId == PartyId)
-					{
-						Invites.RemoveAt(i);
-						break;
-					}
+					Invites.RemoveAt(i);
+					break;
 				}
 			}
-
-			FBeamRealmUser RealmUser;
-			FUserSlot OtherUserSlot;
-			FString NamespacedSlotId;
-			if (Runtime->UserSlotSystem->GetUserDataWithGamerTag(Player, RealmUser, OtherUserSlot, NamespacedSlotId))
-			{
-				//Local Notification
-				InvokePartyEventUpdate(UserSlot, PartyId, EBeamPartyEvent::BEAM_PlayerInviteCanceled);
-			}
+			
+			//Local Notification
+			InvokePartyEventUpdate(UserSlot, PartyId, EBeamPartyEvent::BEAM_PlayerInviteCanceled);
 			
 			Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
 			return;
@@ -549,8 +552,12 @@ void UBeamPartySubsystem::DeletePlayerPartyInvite(FUserSlot UserSlot, FGuid Part
 			return;
 		}
 	});
+
+	FBeamRealmUser RealmUser;
+
+	ensureAlwaysMsgf(Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this), TEXT("Cannot get the RealUser for the UserSlot that call DeclinePlayerPartyInvite"));
 	
-	UDeleteInviteRequest* const Request = UDeleteInviteRequest::Make(PartyId, FOptionalBeamGamerTag(Player), this, {});
+	UDeleteInviteRequest* const Request = UDeleteInviteRequest::Make(PartyId, FOptionalBeamGamerTag(RealmUser.GamerTag), this, {});
 
 	FBeamRequestContext Ctx;
 
@@ -669,9 +676,12 @@ void UBeamPartySubsystem::KickPlayer(FUserSlot UserSlot, FGuid PartyId, FBeamGam
 			FBeamRealmUser RealmUser;
 			FUserSlot OtherUserSlot;
 			FString NamespacedSlotId;
-			Runtime->UserSlotSystem->GetUserDataWithGamerTag(Player, RealmUser, OtherUserSlot, NamespacedSlotId);
-			//Local Notification
-			InvokePartyEventUpdate(OtherUserSlot, PartyId, EBeamPartyEvent::BEAM_PlayerKicked);
+			
+			if (Runtime->UserSlotSystem->GetUserDataWithGamerTag(Player, RealmUser, OtherUserSlot, NamespacedSlotId))
+			{
+				//Local Notification
+				InvokePartyEventUpdate(OtherUserSlot, PartyId, EBeamPartyEvent::BEAM_PlayerKicked);
+			}
 			
 			Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
 			return;
@@ -739,6 +749,69 @@ void UBeamPartySubsystem::PromotePlayerToLeader(FUserSlot UserSlot, FGuid PartyI
 	FBeamRequestContext Ctx;
 
 	PartyApi->CPP_PutPromote(UserSlot, Request, Handler, Ctx, Op, this);
+}
+
+void UBeamPartySubsystem::DeletePlayerPartyInvite(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
+	FBeamOperationHandle Op)
+{
+	FOnDeleteInviteFullResponse Handler = FOnDeleteInviteFullResponse::CreateLambda([this, UserSlot, PartyId, Player, Op](const FDeleteInviteFullResponse& Resp)
+	{
+		if (Resp.State == RS_Retrying) return;
+
+		if (Resp.State == RS_Success)
+		{
+			FBeamPartyState PartyState;
+	
+			if (TryGetUserPartyState(UserSlot, PartyState))
+			{
+				PartyState.InvitedPlayers.Remove(Player);
+			}
+			
+			if (PartyInvitesState.Contains(UserSlot))
+			{
+				TArray<FBeamPartyInviteState>& Invites = *PartyInvitesState.Find(UserSlot);
+		
+				for (auto i = 0; i < Invites.Num(); i++)
+				{
+					if (Invites[i].PartyId == PartyId)
+					{
+						Invites.RemoveAt(i);
+						break;
+					}
+				}
+			}
+			
+			FBeamRealmUser RealmUser;
+			FUserSlot OtherUserSlot;
+			FString NamespacedSlotId;
+			if (Runtime->UserSlotSystem->GetUserDataWithGamerTag(Player, RealmUser, OtherUserSlot, NamespacedSlotId))
+			{
+				//Local Notification
+				InvokePartyEventUpdate(UserSlot, PartyId, EBeamPartyEvent::BEAM_PlayerInviteCanceled);
+			}
+			
+			Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
+			return;
+		}
+
+		if (Resp.State == RS_Error)
+		{
+			Runtime->RequestTrackerSystem->TriggerOperationError(Op, Resp.ErrorData.message);
+			return;
+		}
+
+		if (Resp.State == RS_Cancelled)
+		{
+			Runtime->RequestTrackerSystem->TriggerOperationCancelled(Op, Resp.ErrorData.message);
+			return;
+		}
+	});
+	
+	UDeleteInviteRequest* const Request = UDeleteInviteRequest::Make(PartyId, FOptionalBeamGamerTag(Player), this, {});
+
+	FBeamRequestContext Ctx;
+
+	PartyApi->CPP_DeleteInvite(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
 void UBeamPartySubsystem::PartyUpdatedMessageHandler(FPartyRefreshNotificationMessage RefreshNotificationMessage, FUserSlot UserSlot)

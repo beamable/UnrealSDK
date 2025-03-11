@@ -264,16 +264,16 @@ public:
 	FBeamOperationHandle CPP_InvitePlayerToPartyOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandlerCode OperationEventHandler);
 
 	/**
-	 * @brief Cancel the party invite sent to another player.
+	 * @brief Decline the invite received to a party.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle DeletePlayerPartyInviteOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandler OperationEventHandler);
+	FBeamOperationHandle DeclinePlayerPartyInviteOperation(FUserSlot UserSlot, FGuid PartyId, FBeamOperationEventHandler OperationEventHandler);
 
 	/**
-	 * @copydoc DeletePlayerPartyInviteOperation
+	 * @copydoc DeclinePlayerPartyInviteOperation
 	 */
-	FBeamOperationHandle CPP_DeletePlayerPartyInviteOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandlerCode OperationEventHandler);
-
+	FBeamOperationHandle CPP_DeclinePlayerPartyInviteOperation(FUserSlot UserSlot, FGuid PartyId, FBeamOperationEventHandlerCode OperationEventHandler);
+	
 	/**
 	* @brief Leave the current party the player are in.
 	*/
@@ -291,6 +291,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle KickPlayerOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandler OperationEventHandler);
 
+	/**
+	* @brief Cancel the invite sent to another player, only can be called by the leader of the party.
+	*/
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle CancelPlayerPartyInviteOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandler OperationEventHandler);
+
+	/**
+	 * @copydoc CancelPlayerPartyInviteOperation
+	 */
+	FBeamOperationHandle CPP_CancelPlayerPartyInviteOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandlerCode OperationEventHandler);
+	
 	/**
 	 * @copydoc KickPlayerOperation
 	 */
@@ -335,7 +346,7 @@ private:
 	
 	void InvitePlayerToParty(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationHandle Op);
 
-	void DeletePlayerPartyInvite(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationHandle Op);
+	void DeclinePlayerPartyInvite(FUserSlot UserSlot, FGuid PartyId, FBeamOperationHandle Op);
 	
 	void LeaveParty(FUserSlot UserSlot, FGuid PartyId, FBeamOperationHandle Op);
 	
@@ -346,6 +357,8 @@ private:
 	void KickPlayer(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationHandle Op);
 
 	void PromotePlayerToLeader(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationHandle Op);
+
+	void DeletePlayerPartyInvite(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationHandle Op);
 
 	// Notification Hooks
 	UFUNCTION()

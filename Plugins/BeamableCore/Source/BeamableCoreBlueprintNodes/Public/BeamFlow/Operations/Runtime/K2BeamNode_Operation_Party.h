@@ -80,18 +80,18 @@ class UK2BeamNode_Operation_InvitePlayer : public UK2BeamNode_Operation
 
 #undef LOCTEXT_NAMESPACE
 
-#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_DeletePlayerInvite"
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_DeclinePlayerInvite"
 
 UCLASS(meta=(BeamFlowNode))
-class UK2BeamNode_Operation_DeletePlayerInvite : public UK2BeamNode_Operation
+class UK2BeamNode_Operation_DeclinePlayerInvite : public UK2BeamNode_Operation
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Party - DeletePlayerInvite"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Party - DeclinePlayerInvite"); }
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, DeletePlayerPartyInviteOperation); }
+	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, DeclinePlayerPartyInviteOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }	
 };
@@ -182,6 +182,24 @@ class UK2BeamNode_Operation_PromotePlayerToLeader : public UK2BeamNode_Operation
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, PromotePlayerToLeaderOperation); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }	
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_CancelPlayerPartyInvite"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamNode_Operation_CancelPlayerPartyInvite : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Party - CancelPlayerPartyInvite"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf); }
+
+	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, CancelPlayerPartyInviteOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }	
 };
