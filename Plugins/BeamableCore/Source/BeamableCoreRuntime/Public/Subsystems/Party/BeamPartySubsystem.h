@@ -60,31 +60,11 @@ struct FBeamPartyInviteState
 	FBeamGamerTag Sender;
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerJoinedEventReceived, FGuid, PartyId, FUserSlot, UserSlot);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPlayerJoinedEventReceivedCode, FGuid, FUserSlot);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPartyEventReceived, FGuid, PartyId, FUserSlot, UserSlot);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPartyEventReceivedCode, FGuid, FUserSlot);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerLeftEventReceived, FGuid, PartyId, FUserSlot, UserSlot);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPlayerLeftEventReceivedCode, FGuid, FUserSlot);
-
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerInvitedEventReceived, FGuid, PartyId, FUserSlot, UserSlot);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPlayerInvitedEventReceivedCode, FGuid, FUserSlot);
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPartyUpdatedEventReceived, FGuid, PartyId, FUserSlot, UserSlot);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPartyUpdatedEventReceivedCode, FGuid, FUserSlot);
-
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerPromotedToLeaderEventReceived, FGuid, PartyId, FUserSlot, UserSlot);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPlayerPromotedToLeaderEventReceivedCode, FGuid, FUserSlot);
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerKickedEventReceived, FGuid, PartyId, FUserSlot, UserSlot);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPlayerKickedEventReceivedCode, FGuid, FUserSlot);
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerInviteCanceledEventReceived, FGuid, PartyId, FUserSlot, UserSlot);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPlayerInviteCanceledEventReceivedCode, FGuid, FUserSlot);
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerInviteExpiredEventReceived, FGuid, PartyId, FUserSlot, UserSlot);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPlayerInviteExpiredEventReceivedCode, FGuid, FUserSlot);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnPartyEventReceivedError, FGuid, PartyId, FUserSlot, UserSlot, EBeamPartyEvent, PartyEvent);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnPartyEventReceivedErrorCode, FGuid, FUserSlot, EBeamPartyEvent);
 
 /**
  * 
@@ -121,246 +101,261 @@ public:
 	 * This gets called when a party have any changes on this
 	 */
 	UPROPERTY(BlueprintAssignable)
-	FOnPartyUpdatedEventReceived OnPartyUpdated;
+	FOnPartyEventReceived OnPartyUpdated;
 
 	/**
 	 * @copybrief OnPartyUpdated
 	 */
-	FOnPartyUpdatedEventReceivedCode OnPartyUpdatedCode;
+	FOnPartyEventReceivedCode OnPartyUpdatedCode;
 
 	/**
 	 * This gets called when the player received an invitation to join a party
 	 */
 	UPROPERTY(BlueprintAssignable)
-	FOnPlayerInvitedEventReceived OnPlayerInvited;
+	FOnPartyEventReceived OnPlayerInvited;
 
 	/**
 	 * @copybrief OnPlayerInvited
 	 */
-	FOnPlayerInvitedEventReceivedCode OnPlayerInvitedCode;
+	FOnPartyEventReceivedCode OnPlayerInvitedCode;
 	
 	/**
 	 * This gets called when a new player join to the party
 	 */
 	UPROPERTY(BlueprintAssignable)
-	FOnPlayerJoinedEventReceived OnPlayerJoined;
+	FOnPartyEventReceived OnPlayerJoined;
 
 	/**
 	 * @copybrief OnPlayerJoined
 	 */
-	FOnPlayerJoinedEventReceivedCode OnPlayerJoinedCode;
+	FOnPartyEventReceivedCode OnPlayerJoinedCode;
 	
 	/**
 	 * This gets called when a player is kicked from the party by the leader 
 	 */
 	UPROPERTY(BlueprintAssignable)
-	FOnPlayerKickedEventReceived OnPlayerKicked;
+	FOnPartyEventReceived OnPlayerKicked;
 
 	/**
 	 * @copybrief OnPlayerKicked
 	 */
-	FOnPlayerKickedEventReceivedCode OnPlayerKickedCode;
+	FOnPartyEventReceivedCode OnPlayerKickedCode;
 	
 	/**
 	 * This gets called when a player left the party 
 	 */
 	UPROPERTY(BlueprintAssignable)
-	FOnPlayerLeftEventReceived OnPlayerLeft;
+	FOnPartyEventReceived OnPlayerLeft;
 
 	/**
 	 * @copybrief OnPlayerLeft
 	 */
-	FOnPlayerLeftEventReceivedCode OnPlayerLeftCode;
+	FOnPartyEventReceivedCode OnPlayerLeftCode;
 
 	/**
 	 * This gets called when a invitation is canceled - It could be trigger by the leader or the even by the receiver of the invitation
 	 */
 	UPROPERTY(BlueprintAssignable)
-	FOnPlayerInviteCanceledEventReceived OnPlayerInviteCanceled;
+	FOnPartyEventReceived OnPlayerInviteCanceled;
 
 	/**
 	 * @copybrief OnPlayerInviteCanceled
 	 */
-	FOnPlayerInviteCanceledEventReceivedCode OnPlayerInviteCanceledCode;
+	FOnPartyEventReceivedCode OnPlayerInviteCanceledCode;
 	
 	/**
 	 * This gets called when an invite expires
 	 */
 	UPROPERTY(BlueprintAssignable)
-	FOnPlayerInviteExpiredEventReceived OnPlayerInviteExpired;
+	FOnPartyEventReceived OnPlayerInviteExpired;
 
 	/**
 	 * @copybrief OnPlayerInviteExpired
 	 */
-	FOnPlayerInviteExpiredEventReceivedCode OnPlayerInviteExpiredCode;
+	FOnPartyEventReceivedCode OnPlayerInviteExpiredCode;
 	
 	/**
 	 * This gets called when another player is promoted to be leader - This could happen if the leader leaves the party or if the leader promote another player to be the new leader
 	 */
 	UPROPERTY(BlueprintAssignable)
-	FOnPlayerPromotedToLeaderEventReceived OnPlayerPromotedToLeader;
+	FOnPartyEventReceived OnPlayerPromotedToLeader;
 
 	/**
 	 * @copybrief OnPlayerPromotedToLeader
 	 */
-	FOnPlayerPromotedToLeaderEventReceivedCode OnPlayerPromotedToLeaderCode;
+	FOnPartyEventReceivedCode OnPlayerPromotedToLeaderCode;
+
+	/**
+	 * This gets called when there's an internal error during the process of received party event.
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FOnPartyEventReceivedError OnPartyEventReceivedError;
+
+	/**
+	 * @copybrief OnPartyEventReceivedError
+	 */
+	FOnPartyEventReceivedErrorCode OnPartyEventReceivedErrorCode;
 	
 	/**
 	 * @brief Attempts to retrieve the party state for a specific user slot. Returns false if the user is not in any party.
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	bool TryGetUserPartyState(FUserSlot User, FBeamPartyState& PartyState);
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetUserPartyState(FUserSlot UserSlot, FBeamPartyState& PartyState);
 
+	/**
+	 * @brief Attempts to retrieve the invites state for a specific user slot. Returns false if the user is not in any party.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetUserInvitesState(FUserSlot UserSlot, TArray<FBeamPartyInviteState>& Invites);
+	
 	/**
 	 * @brief Operation to join a party using the PartyId. 
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle JoinPartyOperation(FUserSlot User, FGuid PartyId, FBeamOperationEventHandler OperationEventHandler);
+	FBeamOperationHandle JoinPartyOperation(FUserSlot UserSlot, FGuid PartyId, FBeamOperationEventHandler OperationEventHandler);
 
 	/**
 	 * @copydoc JoinPartyOperation
 	 */
-	FBeamOperationHandle CPP_JoinPartyOperation(FUserSlot User, FGuid PartyId, FBeamOperationEventHandlerCode OperationEventHandler);
+	FBeamOperationHandle CPP_JoinPartyOperation(FUserSlot UserSlot, FGuid PartyId, FBeamOperationEventHandlerCode OperationEventHandler);
 
 	/**
 	* @brief Fetch party invites for a specific user
 	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle FetchPartyInvitesOperation(FUserSlot User, FBeamOperationEventHandler OperationEventHandler);
+	FBeamOperationHandle FetchPartyInvitesOperation(FUserSlot UserSlot, FBeamOperationEventHandler OperationEventHandler);
 	
 	/**
 	 * @copydoc FetchPartyInvitesOperation
 	 */
-	FBeamOperationHandle CPP_FetchPartyInvitesOperation(FUserSlot User, FBeamOperationEventHandlerCode OperationEventHandler);
+	FBeamOperationHandle CPP_FetchPartyInvitesOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OperationEventHandler);
 	
 	/**
 	 * @brief Get the party state data for a given party id
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle FetchPartyStateOperation(FUserSlot User, FGuid PartyId, FBeamOperationEventHandler OperationEventHandler);
+	FBeamOperationHandle FetchPartyStateOperation(FUserSlot UserSlot, FGuid PartyId, FBeamOperationEventHandler OperationEventHandler);
 
 	/**
 	 * @copydoc FetchPartyStateOperation
 	 */
-	FBeamOperationHandle CPP_FetchPartyStateOperation(FUserSlot User, FGuid PartyId, FBeamOperationEventHandlerCode OperationEventHandler);
+	FBeamOperationHandle CPP_FetchPartyStateOperation(FUserSlot UserSlot, FGuid PartyId, FBeamOperationEventHandlerCode OperationEventHandler);
 	
 	/**
 	* @brief Create the party with the user who calls it as leader.
 	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle CreatePartyOperation(FUserSlot User, EBeamPartyRestriction Restriction, int32 maxPlayers, FBeamOperationEventHandler OnOperationEvent);
+	FBeamOperationHandle CreatePartyOperation(FUserSlot UserSlot, EBeamPartyRestriction Restriction, int32 maxPlayers, FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc CreatePartyOperation
 	 */
-	FBeamOperationHandle CPP_CreatePartyOperation(FUserSlot User, EBeamPartyRestriction Restriction, int32 maxPlayers, FBeamOperationEventHandlerCode OnOperationEvent);
+	FBeamOperationHandle CPP_CreatePartyOperation(FUserSlot UserSlot, EBeamPartyRestriction Restriction, int32 maxPlayers, FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 *	@brief Invite another player to join the current party.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle InvitePlayerToPartyOperation(FUserSlot User, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandler OperationEventHandler);
+	FBeamOperationHandle InvitePlayerToPartyOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandler OperationEventHandler);
 
 	/**
 	 *	@copydoc InvitePlayerToPartyOperation
 	 */
-	FBeamOperationHandle CPP_InvitePlayerToPartyOperation(FUserSlot User, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandlerCode OperationEventHandler);
+	FBeamOperationHandle CPP_InvitePlayerToPartyOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandlerCode OperationEventHandler);
 
 	/**
 	 * @brief Cancel the party invite sent to another player.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle DeletePlayerPartyInviteOperation(FUserSlot User, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandler OperationEventHandler);
+	FBeamOperationHandle DeletePlayerPartyInviteOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandler OperationEventHandler);
 
 	/**
 	 * @copydoc DeletePlayerPartyInviteOperation
 	 */
-	FBeamOperationHandle CPP_DeletePlayerPartyInviteOperation(FUserSlot User, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandlerCode OperationEventHandler);
+	FBeamOperationHandle CPP_DeletePlayerPartyInviteOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandlerCode OperationEventHandler);
 
 	/**
 	* @brief Leave the current party the player are in.
 	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle LeavePartyOperation(FUserSlot User, FGuid PartyId, FBeamOperationEventHandler OperationEventHandler);
+	FBeamOperationHandle LeavePartyOperation(FUserSlot UserSlot, FGuid PartyId, FBeamOperationEventHandler OperationEventHandler);
 
 	/**
 	 * @copydoc LeavePartyOperation
 	 */
-	FBeamOperationHandle CPP_LeavePartyOperation(FUserSlot User, FGuid PartyId, FBeamOperationEventHandlerCode OperationEventHandler);
+	FBeamOperationHandle CPP_LeavePartyOperation(FUserSlot UserSlot, FGuid PartyId, FBeamOperationEventHandlerCode OperationEventHandler);
 
 	/**
 	* @brief The party leader can kick another player from the party.
 	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle KickPlayerOperation(FUserSlot User, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandler OperationEventHandler);
+	FBeamOperationHandle KickPlayerOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandler OperationEventHandler);
 
 	/**
 	 * @copydoc KickPlayerOperation
 	 */
-	FBeamOperationHandle CPP_KickPlayerOperation(FUserSlot User, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandlerCode OperationEventHandler);
+	FBeamOperationHandle CPP_KickPlayerOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandlerCode OperationEventHandler);
 
 	/**
 	* @brief The party leader can promote a player to be the new leader.
 	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle PromotePlayerToLeaderOperation(FUserSlot User, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandler OperationEventHandler);
+	FBeamOperationHandle PromotePlayerToLeaderOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandler OperationEventHandler);
 
 	/**
 	 * @copydoc PromotePlayerToLeaderOperation
 	 */
-	FBeamOperationHandle CPP_PromotePlayerToLeaderOperation(FUserSlot User, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandlerCode OperationEventHandler);
+	FBeamOperationHandle CPP_PromotePlayerToLeaderOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationEventHandlerCode OperationEventHandler);
 
 	/**
 	 * @brief The party leader can update the party meta-data (Restriction and MaxPlayers) for the party after create it.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle UpdatePartyOperation(FUserSlot User, FGuid PartyId, EBeamPartyRestriction Restriction, FOptionalInt32 MaxPlayers, FBeamOperationEventHandler OperationEventHandler);
+	FBeamOperationHandle UpdatePartyOperation(FUserSlot UserSlot, FGuid PartyId, EBeamPartyRestriction Restriction, FOptionalInt32 MaxPlayers, FBeamOperationEventHandler OperationEventHandler);
 
 	/**
 	 * @copydoc UpdatePartyOperation
 	 */
-	FBeamOperationHandle CPP_UpdatePartyOperation(FUserSlot User, FGuid PartyId, EBeamPartyRestriction Restriction, FOptionalInt32 MaxPlayers, FBeamOperationEventHandlerCode OperationEventHandler);
+	FBeamOperationHandle CPP_UpdatePartyOperation(FUserSlot UserSlot, FGuid PartyId, EBeamPartyRestriction Restriction, FOptionalInt32 MaxPlayers, FBeamOperationEventHandlerCode OperationEventHandler);
+
 
 private:
 
-	bool TryGetPlayerParty(FUserSlot User, FBeamPartyState& PartyState);
+	bool TryGetPlayerParty(FUserSlot UserSlot, FBeamPartyState& PartyState);
 	
-	bool TryGetAvailableInvites(FUserSlot User, TArray<FBeamPartyInviteState>& Invites);
+	bool TryGetAvailableInvites(FUserSlot UserSlot, TArray<FBeamPartyInviteState>& Invites);
 
-	void FetchPartyState(FUserSlot User, FGuid PartyId, FBeamOperationHandle Op);
+	void FetchPartyState(FUserSlot UserSlot, FGuid PartyId, FBeamOperationHandle Op);
 
-	void FetchPartyInvites(FUserSlot User, FBeamOperationHandle Op);
+	void FetchPartyInvites(FUserSlot UserSlot, FBeamOperationHandle Op);
 	
-	bool CreateParty(FUserSlot User, EBeamPartyRestriction Restriction, int32 maxPlayers, FBeamOperationHandle Op);
+	bool CreateParty(FUserSlot UserSlot, EBeamPartyRestriction Restriction, int32 maxPlayers, FBeamOperationHandle Op);
 	
-	void JoinParty(FUserSlot User, FGuid PartyId, FBeamOperationHandle Op);
+	void JoinParty(FUserSlot UserSlot, FGuid PartyId, FBeamOperationHandle Op);
 	
-	void InvitePlayerToParty(FUserSlot User, FGuid PartyId, FBeamGamerTag Player, FBeamOperationHandle Op);
+	void InvitePlayerToParty(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationHandle Op);
 
-	void DeletePlayerPartyInvite(FUserSlot User, FGuid PartyId, FBeamGamerTag Player, FBeamOperationHandle Op);
+	void DeletePlayerPartyInvite(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationHandle Op);
 	
-	void LeaveParty(FUserSlot User, FGuid PartyId, FBeamOperationHandle Op);
+	void LeaveParty(FUserSlot UserSlot, FGuid PartyId, FBeamOperationHandle Op);
 	
 	// Leader - Only can be called by the leader of the party.
 
-	void UpdateParty(FUserSlot User, FGuid PartyId, EBeamPartyRestriction Restriction, FOptionalInt32 MaxPlayers, FBeamOperationHandle Op);
+	void UpdateParty(FUserSlot UserSlot, FGuid PartyId, EBeamPartyRestriction Restriction, FOptionalInt32 MaxPlayers, FBeamOperationHandle Op);
 	
-	void KickPlayer(FUserSlot User, FGuid PartyId, FBeamGamerTag Player, FBeamOperationHandle Op);
+	void KickPlayer(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationHandle Op);
 
-	void PromotePlayerToLeader(FUserSlot User, FGuid PartyId, FBeamGamerTag Player, FBeamOperationHandle Op);
+	void PromotePlayerToLeader(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationHandle Op);
 
 	// Notification Hooks
 	UFUNCTION()
-	void OnPartyUpdatedHandler(FPartyRefreshNotificationMessage Msg, FUserSlot User);
+	void PartyUpdatedMessageHandler(FPartyRefreshNotificationMessage RefreshNotificationMessage, FUserSlot UserSlot);
 
-	void OnPlayerJoinedEventReceived(FGuid PartyId, FUserSlot User);
-	void OnPlayerLeftEventReceived(FGuid PartyId, FUserSlot User);
-	void OnPlayerInvitedEventReceived(FGuid PartyId, FUserSlot User);
-	void OnPartyUpdatedEventReceived(FGuid PartyId, FUserSlot User);
-	void OnPlayerPromotedToLeaderEventReceived(FGuid PartyId, FUserSlot User);
-	void OnPlayerKickedEventReceived(FGuid PartyId, FUserSlot User);
-	void OnPlayerInviteCanceledEventReceived(FGuid PartyId, FUserSlot User);
-	void OnPlayerInviteExpiredEventReceived(FGuid PartyId, FUserSlot User);
+	void HandlePartyEventReceivedUpdatePartyState(FGuid PartyId, FUserSlot UserSlot, EBeamPartyEvent PartyEvent);
+
+	void HandlePartyEventReceivedUpdateInvitesState(FGuid PartyId, FUserSlot UserSlot, EBeamPartyEvent PartyEvent);
+
+	void InvokePartyEventUpdate(FUserSlot UserSlot, FGuid PartyId, EBeamPartyEvent PartyEvent);
 	
 	// Utilities
 
