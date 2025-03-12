@@ -20,11 +20,11 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	FString symbol;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	uint8 decimals;
+	int32 decimals;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	FString image;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	FString description;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	uint8 initialSupply;
+	int64 initialSupply;
 };
