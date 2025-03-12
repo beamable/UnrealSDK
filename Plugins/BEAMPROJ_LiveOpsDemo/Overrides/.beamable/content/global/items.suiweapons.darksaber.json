@@ -11,6 +11,12 @@
   "customProperties": {
     "data": {}
   },
+  "external": {
+    "data": {
+      "service": "SuiFederation",
+      "namespace": "SuiIdentity"
+    }
+  },
   "clientPermission": {
     "data": {
       "write_self": true

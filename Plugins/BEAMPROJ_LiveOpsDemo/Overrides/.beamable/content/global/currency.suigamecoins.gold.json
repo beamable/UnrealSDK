@@ -23,6 +23,12 @@
   "initialSupply": {
     "data": 100
   },
+  "external": {
+    "data": {
+      "service": "SuiFederation",
+      "namespace": "SuiIdentity"
+    }
+  },
   "allowTransfers": {
     "data": ""
   },

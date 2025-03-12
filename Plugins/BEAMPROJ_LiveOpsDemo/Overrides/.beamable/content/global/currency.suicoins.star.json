@@ -17,9 +17,15 @@
   "initialSupply": {
     "data": 0
   },
+  "external": {
+    "data": {
+      "service": "SuiFederation",
+      "namespace": "SuiIdentity"
+    }
+  },
   "clientPermission": {
     "data": {
-      "write_self": false
+      "write_self": true
     }
   },
   "decimals": {

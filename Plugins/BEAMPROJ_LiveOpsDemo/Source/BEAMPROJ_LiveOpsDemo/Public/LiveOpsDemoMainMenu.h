@@ -58,6 +58,17 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	FString SuiWalletId;
 
+	UPROPERTY(BlueprintReadOnly)
+	FBeamContentId BeamSuiCoinsId;
+	UPROPERTY(BlueprintReadOnly)
+	FBeamContentId StarSuiCoinsId;
+	UPROPERTY(BlueprintReadOnly)
+	FBeamContentId GoldSuiGameCoinsId;
+	UPROPERTY(BlueprintReadOnly)
+	FBeamContentId DarksaberSuiWeaponId;
+	UPROPERTY(BlueprintReadOnly)
+	FBeamContentId ShisuiSuiWeaponId;
+
 	FUserSlot OwnerUserSlot;
 	int64 CurrentSampleStatValue = 1;
 
@@ -88,6 +99,7 @@ protected:
 		Runtime->InitSDK(OnSdkInitHandler, OnSdkInitErrorHandler);
 	}
 
+
 	UFUNCTION()
 	void OnBeamableReady()
 	{
@@ -103,6 +115,13 @@ protected:
 
 		// Bind a callback to the Inventory Subsystem so that 
 		Inventory->OnInventoryRefreshedCode.AddUObject(this, &ULiveOpsDemoMainMenu::OnInventoryRefreshed);
+
+		// Prepare some Ids that are relevant for this demo
+		BeamSuiCoinsId = FBeamContentId{FString("currency.suicoins.beam")};
+		StarSuiCoinsId = FBeamContentId{FString("currency.suicoins.star")};
+		GoldSuiGameCoinsId = FBeamContentId{FString("currency.suigamecoins.gold")};
+		DarksaberSuiWeaponId = FBeamContentId{FString("items.suiweapons.darksaber")};
+		ShisuiSuiWeaponId = FBeamContentId{FString("items.suiweapons.shisui")};
 	}
 
 	UFUNCTION(BlueprintCallable)
@@ -167,8 +186,20 @@ protected:
 									}
 								}
 
-								// Then, we can proceed with the sample flow
-								OnLiveOpsDemoReady.Broadcast();
+								// Then, we grant a bit of currency of each type for new users
+								// These are client authoritative --- if these items were server authoritative, you could use a PlayerInit federation to grant these from microservice code.
+								FBeamInventoryUpdateCommand Cmds;
+								Inventory->BeginInventoryUpdate(OwnerUserSlot, Cmds, true);
+								Inventory->PrepareAddCurrency(OwnerUserSlot, GoldSuiGameCoinsId, 1);
+								Inventory->PrepareAddCurrency(OwnerUserSlot,StarSuiCoinsId, 2);
+								Inventory->PrepareAddCurrency(OwnerUserSlot,BeamSuiCoinsId, 3);
+								Inventory->PrepareCreateItem(OwnerUserSlot, DarksaberSuiWeaponId, {{"$itemLevel", "1"}});
+								Inventory->PrepareCreateItem(OwnerUserSlot,ShisuiSuiWeaponId, {{"$itemLevel", "1"}});
+								Inventory->CPP_CommitInventoryUpdateOperation(OwnerUserSlot, FBeamOperationEventHandlerCode::CreateLambda([this](FBeamOperationEvent Evt)
+								{
+									// Then, we can proceed with the sample flow
+									OnLiveOpsDemoReady.Broadcast();	
+								}));								
 							}
 							else
 							{
@@ -203,7 +234,7 @@ protected:
 			{
 				// Then, we can proceed with the sample flow
 				OnLiveOpsDemoReady.Broadcast();
-			}			
+			}
 		}
 	}
 
@@ -213,25 +244,25 @@ protected:
 		OnInventoryItemsUpdated.Broadcast();
 	}
 
+
 	UFUNCTION(BlueprintCallable)
-	void GetInventoryData(int64& GemsCount, int64& CoinsCount, TArray<FBeamItemState>& SampleItems)
+	void GetInventoryData(int64& BeamSuiCoins, int64& StarSuiCoins, int64& GoldSuiGameCoins, TArray<FBeamItemState>& SampleItems)
 	{
 		const auto UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
 		FBeamRealmUser UserData;
 		if (Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, UserData, this))
 		{
-			FString GemsID = "currency.gems";
-			FString CoinsID = "currency.coins";
-
-			Inventory->TryGetCurrencyAmountByGamerTag(UserData.GamerTag, GemsID, GemsCount);
-			Inventory->TryGetCurrencyAmountByGamerTag(UserData.GamerTag, CoinsID, CoinsCount);
+			Inventory->TryGetCurrencyAmountByGamerTag(UserData.GamerTag, BeamSuiCoinsId, BeamSuiCoins);
+			Inventory->TryGetCurrencyAmountByGamerTag(UserData.GamerTag, StarSuiCoinsId, StarSuiCoins);
+			Inventory->TryGetCurrencyAmountByGamerTag(UserData.GamerTag, GoldSuiGameCoinsId, GoldSuiGameCoins);
 
 			TArray<FBeamItemState> AllItems;
 			Inventory->TryGetAllItemsByGamerTag(UserData.GamerTag, AllItems);
 
+			const auto RelevantItemIds = TArray{DarksaberSuiWeaponId, ShisuiSuiWeaponId};
 			for (auto ItemState : AllItems)
 			{
-				if (ItemState.ContentId.AsString == "items.sample_item")
+				if (RelevantItemIds.ContainsByPredicate([ItemState](const FBeamContentId& RelevantItemId) { return ItemState.ContentId == RelevantItemId; }))
 				{
 					SampleItems.Add(ItemState);
 				}
@@ -240,44 +271,10 @@ protected:
 	}
 
 	UFUNCTION(BlueprintCallable)
-	void IncrementSampleStat()
-	{
-		const auto UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
-
-		FBeamRealmUser UserData;
-		if (Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, UserData, this))
-		{
-			TMap<FString, FString> Empty;
-			ULiveOpsDemoMSIncrementStatRequest* Request =
-				ULiveOpsDemoMSIncrementStatRequest::Make(UserData.GamerTag.AsLong, this, Empty);
-
-			const auto Handler = FOnLiveOpsDemoMSIncrementStatFullResponse::CreateLambda(
-				[this,UserData](FBeamFullResponse<ULiveOpsDemoMSIncrementStatRequest*, ULiveOpsDemoMSIncrementStatResponse*> Resp)
-				{
-					if (Resp.SuccessData)
-					{
-						CurrentSampleStatValue++;
-						OnSampleStatUpdated.Broadcast();
-					}
-				});
-			FBeamRequestContext Ctx;
-			LiveOpsMS->CPP_IncrementStat(UserSlot, Request, Handler, Ctx, {}, this);
-		}
-	}
-
-	UFUNCTION(BlueprintCallable)
-	int64 GetSampleStat()
-	{
-		return CurrentSampleStatValue;
-	}
-
-	UFUNCTION(BlueprintCallable)
 	void UpgradeItem(int64 ItemInstanceID)
 	{
-		const auto UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
-
 		FBeamRealmUser UserData;
-		if (Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, UserData, this))
+		if (Runtime->UserSlotSystem->GetUserDataAtSlot(OwnerUserSlot, UserData, this))
 		{
 			TMap<FString, FString> Empty;
 			ULiveOpsDemoMSUpgradeItemRequest* Request =
@@ -292,7 +289,7 @@ protected:
 					}
 				});
 			FBeamRequestContext Ctx;
-			LiveOpsMS->CPP_UpgradeItem(UserSlot, Request, Handler, Ctx, {}, this);
+			LiveOpsMS->CPP_UpgradeItem(OwnerUserSlot, Request, Handler, Ctx, {}, this);
 		}
 	}
 };

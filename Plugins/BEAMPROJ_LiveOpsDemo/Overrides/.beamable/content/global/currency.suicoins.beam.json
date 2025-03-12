@@ -17,6 +17,12 @@
   "initialSupply": {
     "data": 1000
   },
+  "external": {
+    "data": {
+      "service": "SuiFederation",
+      "namespace": "SuiIdentity"
+    }
+  },
   "clientPermission": {
     "data": {
       "write_self": true
