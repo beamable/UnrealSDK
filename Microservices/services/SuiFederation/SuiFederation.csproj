@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup Label="Beamable Settings">
+    <!-- All Microservices must have the value, "service" -->
+    <BeamProjectType>service</BeamProjectType>
+    <GenerateClientCode>true</GenerateClientCode>
+    <Nullable>enable</Nullable>
+    <BeamEnabled>false</BeamEnabled>
+  </PropertyGroup>
+  <!-- These are special Beamable parameters that we use to keep the beamable packages in-sync to the CLI version your project is using. -->
+  <!-- This makes it so your microservices are auto-updated whenever you update the CLI installed in your project. -->
+  <PropertyGroup Label="Beamable Version" Condition="$(DOTNET_RUNNING_IN_CONTAINER)!=true">
+    <DotNetConfigPath Condition="'$(DotNetConfigPath)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove("$(MSBuildProjectDirectory)/..", ".config/dotnet-tools.json"))</DotNetConfigPath>
+    <DotNetConfig Condition="'$(DotNetConfig)' == ''">$([System.IO.File]::ReadAllText("$(DotNetConfigPath)/.config/dotnet-tools.json"))</DotNetConfig>
+    <!-- Extracts the version number from the first tool defined in 'dotnet-tools.json' that starts with "beamable". -->
+    <BeamableVersion Condition="'$(BeamableVersion)' == ''">$([System.Text.RegularExpressions.Regex]::Match("$(DotNetConfig)", "beamable.*?\"([0-9]+\.[0-9]+\.[0-9]+.*?)\",", RegexOptions.Singleline | RegexOptions.IgnorePatternWhitespace).Groups[1].Value)</BeamableVersion>
+    <!-- When running from inside docker, this gets injected via the Dockerfile at build-time. -->
+  </PropertyGroup>
+  <PropertyGroup Label="Dotnet Settings">
+    <!-- net8.0 is the LTS version until 2026. To update your net version, update the <TargetFramework> when Beamable announces support. -->
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup Label="Nuget References">
+    <PackageReference Include="Beamable.Microservice.Runtime" Version="$(BeamableVersion)" />
+    <PackageReference Include="Beamable.Microservice.SourceGen" Version="$(BeamableVersion)" OutputItemType="Analyzer" />
+    <PackageReference Include="Handlebars.Net" Version="2.1.6" />
+    <PackageReference Include="LazyCache" Version="2.4.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SuiFederationCommon\SuiFederationCommon.csproj" />
+    <ProjectReference Include="..\SuiFederationStorage\SuiFederationStorage.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="js\**\*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Features\Contract\Templates\**\*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Features\SuiApi\sui_config\**\*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Features\SuiApi\sui_config\move_setup.sh">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="SuiTools\" />
+    <None Include="SuiTools\**\*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Target Name="PreBuild" BeforeTargets="Build">
+    <ItemGroup>
+      <NodeModulesFolder Include="node_modules" />
+    </ItemGroup>
+    <Exec Condition="!Exists('@(NodeModulesFolder)')" Command="npm install" />
+    <Exec Command="npm run build" />
+    <Copy SourceFiles="js\bridge.js" DestinationFolder="$(OutputPath)\js" />
+    <Copy SourceFiles="js\models.js" DestinationFolder="$(OutputPath)\js" />
+  </Target>
+</Project>
