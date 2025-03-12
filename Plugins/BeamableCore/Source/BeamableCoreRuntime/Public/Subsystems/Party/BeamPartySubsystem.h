@@ -21,6 +21,7 @@ struct FBeamPartyPlayerState
 {
 	GENERATED_BODY()
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FBeamGamerTag GameTag;
 };
 
@@ -195,6 +196,12 @@ public:
 	 * @copybrief OnPartyEventReceivedError
 	 */
 	FOnPartyEventReceivedErrorCode OnPartyEventReceivedErrorCode;
+
+	/**
+	 * @brief Check if the user slot is currently on a party
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool IsInAParty(FUserSlot UserSlot);
 	
 	/**
 	 * @brief Attempts to retrieve the party state for a specific user slot. Returns false if the user is not in any party.
@@ -328,7 +335,6 @@ public:
 	 * @copydoc UpdatePartyOperation
 	 */
 	FBeamOperationHandle CPP_UpdatePartyOperation(FUserSlot UserSlot, FGuid PartyId, EBeamPartyRestriction Restriction, FOptionalInt32 MaxPlayers, FBeamOperationEventHandlerCode OperationEventHandler);
-
 
 private:
 

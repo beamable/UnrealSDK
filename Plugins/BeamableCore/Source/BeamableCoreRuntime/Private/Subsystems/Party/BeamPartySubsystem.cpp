@@ -46,6 +46,12 @@ void UBeamPartySubsystem::OnPostUserSignedOut_Implementation(const FUserSlot& Us
 }
 
 
+bool UBeamPartySubsystem::IsInAParty(FUserSlot UserSlot)
+{
+	FBeamPartyState PartyState;
+	return TryGetUserPartyState(UserSlot, PartyState);
+}
+
 bool UBeamPartySubsystem::TryGetUserPartyState(FUserSlot UserSlot, FBeamPartyState& PartyState)
 {
 	return TryGetPlayerParty(UserSlot, PartyState);
@@ -434,6 +440,21 @@ void UBeamPartySubsystem::JoinParty(FUserSlot UserSlot, FGuid PartyId, FBeamOper
 				PartyStates.Add(PartyId, PartyState);
 			}
 
+			if (PartyInvitesState.Contains(UserSlot))
+			{
+				TArray<FBeamPartyInviteState>& Invites = *PartyInvitesState.Find(UserSlot);
+				for (auto i = 0; i < Invites.Num(); i++)
+				{
+					if (Invites[i].PartyId == PartyId)
+					{
+						Invites.RemoveAt(i);
+						//As the party invitation has been accepted the invite it's will trigger as an expired event to locally to handle that change
+						InvokePartyEventUpdate(UserSlot, PartyId, EBeamPartyEvent::BEAM_PlayerInviteExpired);
+						break;
+					}
+				}
+			}
+
 			//Local Notification
 			InvokePartyEventUpdate(UserSlot, PartyId, EBeamPartyEvent::BEAM_PlayerJoined);
 			
@@ -521,15 +542,17 @@ void UBeamPartySubsystem::DeclinePlayerPartyInvite(FUserSlot UserSlot, FGuid Par
 
 		if (Resp.State == RS_Success)
 		{
-			
-			TArray<FBeamPartyInviteState>& Invites = *PartyInvitesState.Find(UserSlot);
-	
-			for (auto i = 0; i < Invites.Num(); i++)
+			if (PartyInvitesState.Contains(UserSlot))
 			{
-				if (Invites[i].PartyId == PartyId)
+				TArray<FBeamPartyInviteState>& Invites = *PartyInvitesState.Find(UserSlot);
+	
+				for (auto i = 0; i < Invites.Num(); i++)
 				{
-					Invites.RemoveAt(i);
-					break;
+					if (Invites[i].PartyId == PartyId)
+					{
+						Invites.RemoveAt(i);
+						break;
+					}
 				}
 			}
 			

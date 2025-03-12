@@ -14,11 +14,15 @@
 #include "Kismet/GameplayStatics.h"
 #include "Online/OnlineSessionNames.h"
 #include "OnlineSubsystemUtils.h"
+#include "HAL/PlatformApplicationMisc.h"
 #include "AutoGen/SubSystems/BeamHathoraDemoApi.h"
+
 
 #include "Runtime/BeamLevelSubsystem.h"
 #include "Runtime/BeamRuntime.h"
 #include "Runtime/CoreOnline/Private/Online/CoreOnlinePrivate.h"
+#include "Subsystems/Party/BeamPartySubsystem.h"
+
 
 #include "HathoraDemoMainMenu.generated.h"
 
@@ -39,6 +43,8 @@ class BEAMPROJ_HATHORADEMO_API UHathoraDemoMainMenu : public UBeamLevelSubsystem
 	IOnlineIdentityPtr IdentityInterface;
 	IOnlineSessionPtr SessionInterface;
 	IOnlineStatsPtr StatsInterface;
+
+	UBeamPartySubsystem* PartySubsystem;
 
 	FDelegateHandle OnBeamableStarted;
 
@@ -69,6 +75,9 @@ public:
 	FDelegate_LoginComplete OnLoginCompleteDelegate;
 
 	UPROPERTY(BlueprintAssignable)
+	FDelegate_Simple OnEnterInTheMatchMaking;
+
+	UPROPERTY(BlueprintAssignable)
 	FDelegate_Simple OnMatchmakingCompleteDelegate;
 
 	UPROPERTY(BlueprintAssignable)
@@ -79,6 +88,27 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FDelegate_Simple OnTravelStartedDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnPartyEventReceived OnReceivedPartyInviteEventDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnPartyEventReceived OnReceivedPartyInviteExpiredEventDelegate;
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnPartyEventReceived OnReceivedPartyInviteCancelEventDelegate;
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnPartyEventReceived OnReceivedPartyJoinEventDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnPartyEventReceived OnReceivedPartyKickEventDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnPartyEventReceived OnReceivedPartyPromoteEventDelegate;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnPartyEventReceived OnReceivedPartyLeftEventDelegate;
 
 protected:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override
@@ -110,6 +140,9 @@ protected:
 			SessionInterface = OnlineSubsystem->GetSessionInterface();
 			StatsInterface = OnlineSubsystem->GetStatsInterface();
 
+			InitializePartySubsystem();
+			
+
 			// Notify UI that we are ready for logging in.
 			if (OnInitialized.IsBound())
 				OnInitialized.Broadcast();
@@ -122,7 +155,70 @@ protected:
 		Runtime->InitSDK(RuntimeChangedHandler,SDKInitializationErrorHandler);
 	}
 
+	void InitializePartySubsystem()
+	{
+		PartySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
+
+		
+		PartySubsystem->OnPlayerInvitedCode.AddLambda([this](FGuid PartyId, FUserSlot UserSlot)
+		{
+			// Forwarding message to blueprint under the Hathora demo subsystem
+			OnReceivedPartyInviteEventDelegate.Broadcast(PartyId, UserSlot);
+		});
+			
+		PartySubsystem->OnPlayerInviteCanceledCode.AddLambda([this](FGuid PartyId, FUserSlot UserSlot)
+		{
+			// Forwarding message to blueprint under the Hathora demo subsystem
+			OnReceivedPartyInviteCancelEventDelegate.Broadcast(PartyId, UserSlot);
+		});
+
+		PartySubsystem->OnPlayerInviteExpiredCode.AddLambda([this](FGuid PartyId, FUserSlot UserSlot)
+		{
+			// Forwarding message to blueprint under the Hathora demo subsystem
+			OnReceivedPartyInviteExpiredEventDelegate.Broadcast(PartyId, UserSlot);
+		});
+
+		PartySubsystem->OnPlayerJoinedCode.AddLambda([this](FGuid PartyId, FUserSlot UserSlot)
+		{
+			// Forwarding message to blueprint under the Hathora demo subsystem
+			OnReceivedPartyJoinEventDelegate.Broadcast(PartyId, UserSlot);
+		});
+
+		PartySubsystem->OnPlayerKickedCode.AddLambda([this](FGuid PartyId, FUserSlot UserSlot)
+		{
+			// Forwarding message to blueprint under the Hathora demo subsystem
+			OnReceivedPartyKickEventDelegate.Broadcast(PartyId, UserSlot);
+		});
+
+		PartySubsystem->OnPlayerLeftCode.AddLambda([this](FGuid PartyId, FUserSlot UserSlot)
+		{
+			// Forwarding message to blueprint under the Hathora demo subsystem
+			OnReceivedPartyLeftEventDelegate.Broadcast(PartyId, UserSlot);
+		});
+
+		PartySubsystem->OnPlayerPromotedToLeaderCode.AddLambda([this](FGuid PartyId, FUserSlot UserSlot)
+		{
+			// Forwarding message to blueprint under the Hathora demo subsystem
+			OnReceivedPartyPromoteEventDelegate.Broadcast(PartyId, UserSlot);
+		});
+	}
+
 public:
+
+	UFUNCTION(BlueprintCallable)
+	void CopyText(FString Text)
+	{
+		FPlatformApplicationMisc::ClipboardCopy(*Text);
+	}
+
+	UFUNCTION(BlueprintCallable)
+	FString PastText()
+	{
+		FString Text;
+		FPlatformApplicationMisc::ClipboardPaste(Text);
+		return Text;
+	}
+	
 	UFUNCTION(BlueprintCallable)
 	void LogIn(const FString& Username, const FString& Password)
 	{
@@ -149,7 +245,96 @@ public:
 	{
 		DoEnterMatchmaking(QueueId, 120);
 	}
+	
+	/**
+	 * Invites player to a party if the player isn't in any party create it before invite
+	 */
+	UFUNCTION(BlueprintCallable)
+	void InvitePlayerToParty(FBeamGamerTag Player)
+	{
+		DoInvitePlayerToParty(Player);
+	}
 
+	/**
+	* Accept Party Invite
+	*/
+	UFUNCTION(BlueprintCallable)
+	void AcceptPartyInvite(FGuid PartyId)
+	{
+		DoAcceptPartyInvite(PartyId);
+	}
+	
+	/**
+	* Decline Party Invite
+	*/
+	UFUNCTION(BlueprintCallable)
+	void DeclinePartyInvite(FGuid PartyId)
+	{
+		DoDeclinePartyInvite(PartyId);
+	}
+
+	/**
+	* Leave the player party using the PartyId
+	*/
+	UFUNCTION(BlueprintCallable)
+	void LeaveParty(FGuid PartyId)
+	{
+		DoLeaveParty(PartyId);
+	}
+
+	/**
+	* Kick player from party
+	*/
+	UFUNCTION(BlueprintCallable)
+	void KickPlayerFromParty(FBeamGamerTag Player)
+	{
+		DoKickPlayerFromParty(Player);
+	}
+
+	/**
+	* Promote player to be party leader
+	*/
+	UFUNCTION(BlueprintCallable)
+	void PromotePlayerToPartyLeader(FBeamGamerTag Player)
+	{
+		DoPromotePlayerToPartyLeader(Player);
+	}
+
+	
+	/**
+	 * Get all the invites for the local user slot
+	 */
+	UFUNCTION(BlueprintCallable)
+	TArray<FBeamPartyInviteState> GetInvitesState()
+	{
+		return DoGetInvitesState();
+	}
+
+	/**
+	 * Get the current party for the local user slot
+	 */
+	UFUNCTION(BlueprintCallable)
+	FBeamPartyState GetPartyState()
+	{
+		return DoGetPartyState();
+	}
+
+	/**
+	 * Get local user beam gamer tag
+	 */
+	UFUNCTION(BlueprintCallable)
+	FBeamGamerTag GetLocalGamerTag()
+	{
+		FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+		const UBeamRuntimeSubsystem* RuntimeSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamRuntimeSubsystem>();
+		FBeamRealmUser RealmUser;
+		if (RuntimeSubsystem->Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
+		{
+			return RealmUser.GamerTag;
+		}
+		return FBeamGamerTag();
+	}
+	
 	UFUNCTION(BlueprintCallable)
 	void GetOwnerUserProfileData(FString& Id, FString& Email, FString& Alias, FString& DisplayName)
 	{
@@ -175,6 +360,7 @@ public:
 	}
 
 protected:
+
 	void DoLogIn(const FString& Username, const FString& Password, const FString& Type)
 	{
 		if (IsLoggedIn())
@@ -221,8 +407,119 @@ protected:
 			                                          }
 		                                          }), Ctx, {}, this);
 	}
+	TArray<FBeamPartyInviteState> DoGetInvitesState()
+	{
+		UBeamPartySubsystem* BeamPartySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
+		FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
 
+		TArray<FBeamPartyInviteState> Invites;
+		if (BeamPartySubsystem->TryGetUserInvitesState(UserSlot, Invites))
+		{
+			return Invites;
+		}
+		return TArray<FBeamPartyInviteState>();
+	}
+	FBeamPartyState DoGetPartyState()
+	{
+		UBeamPartySubsystem* BeamPartySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
+		FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
 
+		FBeamPartyState PartyState;
+		if (BeamPartySubsystem->TryGetUserPartyState(UserSlot, PartyState))
+		{
+			return PartyState;
+		}
+		
+		return FBeamPartyState();
+	}
+	void DoAcceptPartyInvite(FGuid PartyId)
+	{
+		UBeamPartySubsystem* BeamPartySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
+		FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+
+		BeamPartySubsystem->CPP_JoinPartyOperation(UserSlot, PartyId, FBeamOperationEventHandlerCode::CreateLambda([](FBeamOperationEvent Evt)
+		{
+			
+		}));
+	}
+	
+	void DoDeclinePartyInvite(FGuid PartyId)
+	{
+		UBeamPartySubsystem* BeamPartySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
+		FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+
+		BeamPartySubsystem->CPP_DeclinePlayerPartyInviteOperation(UserSlot, PartyId, FBeamOperationEventHandlerCode::CreateLambda([](FBeamOperationEvent Evt)
+		{
+			
+		}));
+	}
+	
+	void DoInvitePlayerToParty(FBeamGamerTag Player)
+	{
+		UBeamPartySubsystem* BeamPartySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
+		FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+
+		if (!BeamPartySubsystem->IsInAParty(UserSlot))
+		{
+			BeamPartySubsystem->CPP_CreatePartyOperation(UserSlot, EBeamPartyRestriction::BEAM_Unrestricted, 10, FBeamOperationEventHandlerCode::CreateLambda([BeamPartySubsystem, UserSlot, Player](FBeamOperationEvent Evt)
+			{
+				if (Evt.EventType == OET_SUCCESS)
+				{
+					FBeamPartyState PartyState;
+					if (BeamPartySubsystem->TryGetUserPartyState(UserSlot, PartyState))
+					{
+						BeamPartySubsystem->CPP_InvitePlayerToPartyOperation(UserSlot, PartyState.PartyId, Player, FBeamOperationEventHandlerCode::CreateLambda([](FBeamOperationEvent Evt){}));
+					}
+				}
+			}));
+		}else
+		{
+			FBeamPartyState PartyState;
+			if (BeamPartySubsystem->TryGetUserPartyState(UserSlot, PartyState))
+			{
+				BeamPartySubsystem->CPP_InvitePlayerToPartyOperation(UserSlot, PartyState.PartyId, Player, FBeamOperationEventHandlerCode::CreateLambda([](FBeamOperationEvent Evt){}));
+			}
+		}
+	}
+
+	void DoLeaveParty(FGuid PartyId)
+	{
+		UBeamPartySubsystem* BeamPartySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
+		FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+
+		BeamPartySubsystem->CPP_LeavePartyOperation(UserSlot, PartyId, FBeamOperationEventHandlerCode::CreateLambda([](FBeamOperationEvent Evt)
+		{
+			
+		}));
+	}
+
+	void DoKickPlayerFromParty(FBeamGamerTag Player)
+	{
+		UBeamPartySubsystem* BeamPartySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
+		FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+		FBeamPartyState PartyState;
+		
+		if (BeamPartySubsystem->TryGetUserPartyState(UserSlot, PartyState))
+		{
+			BeamPartySubsystem->CPP_KickPlayerOperation(UserSlot, PartyState.PartyId, Player, FBeamOperationEventHandlerCode::CreateLambda([](FBeamOperationEvent Evt)
+			{
+						
+			}));
+		}
+	}
+	void DoPromotePlayerToPartyLeader(FBeamGamerTag Player)
+	{
+		UBeamPartySubsystem* BeamPartySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
+		FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+		FBeamPartyState PartyState;
+		if (BeamPartySubsystem->TryGetUserPartyState(UserSlot, PartyState))
+		{
+			BeamPartySubsystem->CPP_PromotePlayerToLeaderOperation(UserSlot, PartyState.PartyId, Player, FBeamOperationEventHandlerCode::CreateLambda([](FBeamOperationEvent Evt)
+			{
+						
+			}));
+		}
+	}
 	void DoEnterMatchmaking(FString QueueName, float Timeout)
 	{
 		TSharedPtr<const FUniqueNetId> UniqueId = IdentityInterface->GetUniquePlayerId(0);
