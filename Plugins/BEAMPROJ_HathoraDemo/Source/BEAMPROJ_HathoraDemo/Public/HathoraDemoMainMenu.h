@@ -94,10 +94,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnPartyEventReceived OnReceivedPartyInviteExpiredEventDelegate;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnPartyEventReceived OnReceivedPartyInviteCancelEventDelegate;
-	
+
 	UPROPERTY(BlueprintAssignable)
 	FOnPartyEventReceived OnReceivedPartyJoinEventDelegate;
 
@@ -124,7 +124,9 @@ protected:
 
 		const auto GI = GetWorld()->GetGameInstance();
 		if (GI->IsDedicatedServerInstance())
+		{
 			return;
+		}
 
 		UE_LOG(LogTemp, Warning, TEXT("Setting OnBeamStarted"));
 		UBeamRuntime* Runtime = GI->GetSubsystem<UBeamRuntime>();
@@ -134,6 +136,8 @@ protected:
 
 			// Initialize Beamable's OnlineSubsystem
 			OnlineSubsystem = Online::GetSubsystem(GetWorld(), "BEAMABLE");
+
+
 			BeamOSS::InitializeOnlineSubsystemBeamable(OnlineSubsystem, GI);
 
 			IdentityInterface = OnlineSubsystem->GetIdentityInterface();
@@ -141,31 +145,33 @@ protected:
 			StatsInterface = OnlineSubsystem->GetStatsInterface();
 
 			InitializePartySubsystem();
-			
+
 
 			// Notify UI that we are ready for logging in.
 			if (OnInitialized.IsBound())
+			{
 				OnInitialized.Broadcast();
+			}
 
 			// Unregister this after execution so that when we reload this scene we don't have multiple callbacks bound to this.
 			Runtime->CPP_UnregisterOnStarted(OnBeamableStarted);
 		}));
 		FBeamRuntimeHandler RuntimeChangedHandler;
-		FRuntimeError SDKInitializationErrorHandler;        
-		Runtime->InitSDK(RuntimeChangedHandler,SDKInitializationErrorHandler);
+		FRuntimeError SDKInitializationErrorHandler;
+		Runtime->InitSDK(RuntimeChangedHandler, SDKInitializationErrorHandler);
 	}
 
 	void InitializePartySubsystem()
 	{
 		PartySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
 
-		
+
 		PartySubsystem->OnPlayerInvitedCode.AddLambda([this](FGuid PartyId, FUserSlot UserSlot)
 		{
 			// Forwarding message to blueprint under the Hathora demo subsystem
 			OnReceivedPartyInviteEventDelegate.Broadcast(PartyId, UserSlot);
 		});
-			
+
 		PartySubsystem->OnPlayerInviteCanceledCode.AddLambda([this](FGuid PartyId, FUserSlot UserSlot)
 		{
 			// Forwarding message to blueprint under the Hathora demo subsystem
@@ -204,7 +210,6 @@ protected:
 	}
 
 public:
-
 	UFUNCTION(BlueprintCallable)
 	void CopyText(FString Text)
 	{
@@ -218,7 +223,7 @@ public:
 		FPlatformApplicationMisc::ClipboardPaste(Text);
 		return Text;
 	}
-	
+
 	UFUNCTION(BlueprintCallable)
 	void LogIn(const FString& Username, const FString& Password)
 	{
@@ -234,7 +239,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsLoggedIn()
 	{
-		if (!IdentityInterface) return false;
+		if (!IdentityInterface)
+		{
+			return false;
+		}
 
 		const ELoginStatus::Type LoginStatus = IdentityInterface->GetLoginStatus(0);
 		return LoginStatus == ELoginStatus::Type::LoggedIn;
@@ -245,7 +253,7 @@ public:
 	{
 		DoEnterMatchmaking(QueueId, 120);
 	}
-	
+
 	/**
 	 * Invites player to a party if the player isn't in any party create it before invite
 	 */
@@ -263,7 +271,7 @@ public:
 	{
 		DoAcceptPartyInvite(PartyId);
 	}
-	
+
 	/**
 	* Decline Party Invite
 	*/
@@ -300,7 +308,7 @@ public:
 		DoPromotePlayerToPartyLeader(Player);
 	}
 
-	
+
 	/**
 	 * Get all the invites for the local user slot
 	 */
@@ -326,7 +334,8 @@ public:
 	FBeamGamerTag GetLocalGamerTag()
 	{
 		FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
-		const UBeamRuntimeSubsystem* RuntimeSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamRuntimeSubsystem>();
+		const UBeamRuntimeSubsystem* RuntimeSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<
+			UBeamRuntimeSubsystem>();
 		FBeamRealmUser RealmUser;
 		if (RuntimeSubsystem->Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
 		{
@@ -334,12 +343,14 @@ public:
 		}
 		return FBeamGamerTag();
 	}
-	
+
 	UFUNCTION(BlueprintCallable)
 	void GetOwnerUserProfileData(FString& Id, FString& Email, FString& Alias, FString& DisplayName)
 	{
 		if (!OnlineSubsystem)
+		{
 			return;
+		}
 
 		const auto LoggedInUser = IdentityInterface->GetUniquePlayerId(0);
 		if (LoggedInUser)
@@ -348,19 +359,36 @@ public:
 			const auto Stats = StatsInterface->GetStats(Ref);
 			Id = LoggedInUser->ToString();
 
-			if (const auto EmailStat = Stats->Stats.Find(USER_ATTR_EMAIL)) EmailStat->GetValue(Email);
-			else Email = TEXT("");
+			if (const auto EmailStat = Stats->Stats.Find(USER_ATTR_EMAIL))
+			{
+				EmailStat->GetValue(Email);
+			}
+			else
+			{
+				Email = TEXT("");
+			}
 
-			if (const auto AliasStat = Stats->Stats.Find(USER_ATTR_ALIAS)) AliasStat->GetValue(Alias);
-			else Alias = TEXT("");
+			if (const auto AliasStat = Stats->Stats.Find(USER_ATTR_ALIAS))
+			{
+				AliasStat->GetValue(Alias);
+			}
+			else
+			{
+				Alias = TEXT("");
+			}
 
-			if (const auto DisplayNameStat = Stats->Stats.Find(USER_ATTR_DISPLAYNAME)) DisplayNameStat->GetValue(DisplayName);
-			else DisplayName = TEXT("");
+			if (const auto DisplayNameStat = Stats->Stats.Find(USER_ATTR_DISPLAYNAME))
+			{
+				DisplayNameStat->GetValue(DisplayName);
+			}
+			else
+			{
+				DisplayName = TEXT("");
+			}
 		}
 	}
 
 protected:
-
 	void DoLogIn(const FString& Username, const FString& Password, const FString& Type)
 	{
 		if (IsLoggedIn())
@@ -383,7 +411,8 @@ protected:
 	}
 
 
-	void HandleUserLoginCompleted(int32 PlatformUserIndex, bool bWasSuccessful, const FUniqueNetId& NetId, const FString& ErrorString)
+	void HandleUserLoginCompleted(int32 PlatformUserIndex, bool bWasSuccessful, const FUniqueNetId& NetId,
+	                              const FString& ErrorString)
 	{
 		if (!bWasSuccessful)
 		{
@@ -395,18 +424,24 @@ protected:
 		const auto Req = UHathoraDemoInitializePlayerRequest::Make(GetTransientPackage(), {});
 		FBeamRequestContext Ctx;
 		HathoraMicroservice->CPP_InitializePlayer(GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot(), Req,
-		                                          FOnHathoraDemoInitializePlayerFullResponse::CreateLambda([this, bWasSuccessful, ErrorString](FHathoraDemoInitializePlayerFullResponse Resp)
-		                                          {
-			                                          UE_LOG(LogTemp, Display, TEXT("Ran Initialize Player %s"), *StaticEnum<EBeamFullResponseState>()->GetValueAsString(Resp.State));
-			                                          if (Resp.State == RS_Success)
+		                                          FOnHathoraDemoInitializePlayerFullResponse::CreateLambda(
+			                                          [this, bWasSuccessful, ErrorString](
+			                                          FHathoraDemoInitializePlayerFullResponse Resp)
 			                                          {
-				                                          if (OnLoginCompleteDelegate.IsBound())
+				                                          UE_LOG(LogTemp, Display, TEXT("Ran Initialize Player %s"),
+				                                                 *StaticEnum<EBeamFullResponseState>()->GetValueAsString
+				                                                 (Resp.State));
+				                                          if (Resp.State == RS_Success)
 				                                          {
-					                                          OnLoginCompleteDelegate.Broadcast(bWasSuccessful, ErrorString);
+					                                          if (OnLoginCompleteDelegate.IsBound())
+					                                          {
+						                                          OnLoginCompleteDelegate.Broadcast(
+							                                          bWasSuccessful, ErrorString);
+					                                          }
 				                                          }
-			                                          }
-		                                          }), Ctx, {}, this);
+			                                          }), Ctx, {}, this);
 	}
+
 	TArray<FBeamPartyInviteState> DoGetInvitesState()
 	{
 		UBeamPartySubsystem* BeamPartySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
@@ -419,6 +454,7 @@ protected:
 		}
 		return TArray<FBeamPartyInviteState>();
 	}
+
 	FBeamPartyState DoGetPartyState()
 	{
 		UBeamPartySubsystem* BeamPartySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
@@ -429,31 +465,33 @@ protected:
 		{
 			return PartyState;
 		}
-		
+
 		return FBeamPartyState();
 	}
+
 	void DoAcceptPartyInvite(FGuid PartyId)
 	{
 		UBeamPartySubsystem* BeamPartySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
 		FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
 
-		BeamPartySubsystem->CPP_JoinPartyOperation(UserSlot, PartyId, FBeamOperationEventHandlerCode::CreateLambda([](FBeamOperationEvent Evt)
-		{
-			
-		}));
+		BeamPartySubsystem->CPP_JoinPartyOperation(UserSlot, PartyId, FBeamOperationEventHandlerCode::CreateLambda(
+			                                           [](FBeamOperationEvent Evt)
+			                                           {
+			                                           }));
 	}
-	
+
 	void DoDeclinePartyInvite(FGuid PartyId)
 	{
 		UBeamPartySubsystem* BeamPartySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
 		FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
 
-		BeamPartySubsystem->CPP_DeclinePlayerPartyInviteOperation(UserSlot, PartyId, FBeamOperationEventHandlerCode::CreateLambda([](FBeamOperationEvent Evt)
-		{
-			
-		}));
+		BeamPartySubsystem->CPP_DeclinePlayerPartyInviteOperation(UserSlot, PartyId,
+		                                                          FBeamOperationEventHandlerCode::CreateLambda(
+			                                                          [](FBeamOperationEvent Evt)
+			                                                          {
+			                                                          }));
 	}
-	
+
 	void DoInvitePlayerToParty(FBeamGamerTag Player)
 	{
 		UBeamPartySubsystem* BeamPartySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
@@ -461,23 +499,38 @@ protected:
 
 		if (!BeamPartySubsystem->IsInAParty(UserSlot))
 		{
-			BeamPartySubsystem->CPP_CreatePartyOperation(UserSlot, EBeamPartyRestriction::BEAM_Unrestricted, 10, FBeamOperationEventHandlerCode::CreateLambda([BeamPartySubsystem, UserSlot, Player](FBeamOperationEvent Evt)
-			{
-				if (Evt.EventType == OET_SUCCESS)
-				{
-					FBeamPartyState PartyState;
-					if (BeamPartySubsystem->TryGetUserPartyState(UserSlot, PartyState))
-					{
-						BeamPartySubsystem->CPP_InvitePlayerToPartyOperation(UserSlot, PartyState.PartyId, Player, FBeamOperationEventHandlerCode::CreateLambda([](FBeamOperationEvent Evt){}));
-					}
-				}
-			}));
-		}else
+			BeamPartySubsystem->CPP_CreatePartyOperation(UserSlot, EBeamPartyRestriction::BEAM_Unrestricted, 10,
+			                                             FBeamOperationEventHandlerCode::CreateLambda(
+				                                             [BeamPartySubsystem, UserSlot, Player](
+				                                             FBeamOperationEvent Evt)
+				                                             {
+					                                             if (Evt.EventType == OET_SUCCESS)
+					                                             {
+						                                             FBeamPartyState PartyState;
+						                                             if (BeamPartySubsystem->TryGetUserPartyState(
+							                                             UserSlot, PartyState))
+						                                             {
+							                                             BeamPartySubsystem->
+								                                             CPP_InvitePlayerToPartyOperation(
+									                                             UserSlot, PartyState.PartyId, Player,
+									                                             FBeamOperationEventHandlerCode::CreateLambda(
+										                                             [](FBeamOperationEvent Evt)
+										                                             {
+										                                             }));
+						                                             }
+					                                             }
+				                                             }));
+		}
+		else
 		{
 			FBeamPartyState PartyState;
 			if (BeamPartySubsystem->TryGetUserPartyState(UserSlot, PartyState))
 			{
-				BeamPartySubsystem->CPP_InvitePlayerToPartyOperation(UserSlot, PartyState.PartyId, Player, FBeamOperationEventHandlerCode::CreateLambda([](FBeamOperationEvent Evt){}));
+				BeamPartySubsystem->CPP_InvitePlayerToPartyOperation(UserSlot, PartyState.PartyId, Player,
+				                                                     FBeamOperationEventHandlerCode::CreateLambda(
+					                                                     [](FBeamOperationEvent Evt)
+					                                                     {
+					                                                     }));
 			}
 		}
 	}
@@ -487,10 +540,10 @@ protected:
 		UBeamPartySubsystem* BeamPartySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
 		FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
 
-		BeamPartySubsystem->CPP_LeavePartyOperation(UserSlot, PartyId, FBeamOperationEventHandlerCode::CreateLambda([](FBeamOperationEvent Evt)
-		{
-			
-		}));
+		BeamPartySubsystem->CPP_LeavePartyOperation(UserSlot, PartyId, FBeamOperationEventHandlerCode::CreateLambda(
+			                                            [](FBeamOperationEvent Evt)
+			                                            {
+			                                            }));
 	}
 
 	void DoKickPlayerFromParty(FBeamGamerTag Player)
@@ -498,15 +551,17 @@ protected:
 		UBeamPartySubsystem* BeamPartySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
 		FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
 		FBeamPartyState PartyState;
-		
+
 		if (BeamPartySubsystem->TryGetUserPartyState(UserSlot, PartyState))
 		{
-			BeamPartySubsystem->CPP_KickPlayerOperation(UserSlot, PartyState.PartyId, Player, FBeamOperationEventHandlerCode::CreateLambda([](FBeamOperationEvent Evt)
-			{
-						
-			}));
+			BeamPartySubsystem->CPP_KickPlayerOperation(UserSlot, PartyState.PartyId, Player,
+			                                            FBeamOperationEventHandlerCode::CreateLambda(
+				                                            [](FBeamOperationEvent Evt)
+				                                            {
+				                                            }));
 		}
 	}
+
 	void DoPromotePlayerToPartyLeader(FBeamGamerTag Player)
 	{
 		UBeamPartySubsystem* BeamPartySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
@@ -514,12 +569,14 @@ protected:
 		FBeamPartyState PartyState;
 		if (BeamPartySubsystem->TryGetUserPartyState(UserSlot, PartyState))
 		{
-			BeamPartySubsystem->CPP_PromotePlayerToLeaderOperation(UserSlot, PartyState.PartyId, Player, FBeamOperationEventHandlerCode::CreateLambda([](FBeamOperationEvent Evt)
-			{
-						
-			}));
+			BeamPartySubsystem->CPP_PromotePlayerToLeaderOperation(UserSlot, PartyState.PartyId, Player,
+			                                                       FBeamOperationEventHandlerCode::CreateLambda(
+				                                                       [](FBeamOperationEvent Evt)
+				                                                       {
+				                                                       }));
 		}
 	}
+
 	void DoEnterMatchmaking(FString QueueName, float Timeout)
 	{
 		TSharedPtr<const FUniqueNetId> UniqueId = IdentityInterface->GetUniquePlayerId(0);
@@ -596,10 +653,8 @@ protected:
 				OnMatchmakingFailureDelegate.Broadcast();
 				return;
 			}
-			else
-			{
-				UE_LOG(LogTemp, Display, TEXT("OnMatchmakingComplete -- SearchResults: %s"), *CurrentSearch->SearchResults[0].GetSessionIdStr());
-			}
+			UE_LOG(LogTemp, Display, TEXT("OnMatchmakingComplete -- SearchResults: %s"),
+			       *CurrentSearch->SearchResults[0].GetSessionIdStr());
 
 			FString URL = "";
 			if (!SessionInterface->GetResolvedConnectString(CurrentSearch->SearchResults[0], NAME_GamePort, URL))
@@ -629,16 +684,19 @@ protected:
 	void StartTravelToGameServer(const FString& ServerAddress)
 	{
 		FTimerHandle TravelDelayHandle;
-		GetWorld()->GetTimerManager().SetTimer(TravelDelayHandle, FTimerDelegate::CreateWeakLambda(this, [this, ServerAddress]
-		{
-			TravelToGameServer(ServerAddress);
-		}), DelayToGameStart, false);
+		GetWorld()->GetTimerManager().SetTimer(TravelDelayHandle, FTimerDelegate::CreateWeakLambda(
+			                                       this, [this, ServerAddress]
+			                                       {
+				                                       TravelToGameServer(ServerAddress);
+			                                       }), DelayToGameStart, false);
 	}
 
 	void TravelToGameServer(const FString& ServerAddress)
 	{
 		if (bStartedTravel)
+		{
 			return;
+		}
 
 		OnTravelStartedDelegate.Broadcast();
 		bStartedTravel = true;
