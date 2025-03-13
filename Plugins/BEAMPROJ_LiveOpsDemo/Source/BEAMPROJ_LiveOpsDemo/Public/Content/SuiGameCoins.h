@@ -16,7 +16,7 @@ class BEAMPROJ_LIVEOPSDEMO_API USuiGameCoins : public UBeamCurrencyContent
 	
 public:
 	UFUNCTION()
-	void GetContentType_USuiGameCoins(FString& Result){ Result = TEXT("suigamecoins"); }
+	void GetContentType_USuiGameCoins(FString& Result){ Result = TEXT("game_coin"); }
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	FName name;

@@ -16,7 +16,7 @@ class BEAMPROJ_LIVEOPSDEMO_API USuiWeaponItems : public UBeamItemContent
 	
 public:
 	UFUNCTION()
-	void GetContentType_USuiWeaponItems(FString& Result){ Result = TEXT("suiweapons"); }
+	void GetContentType_USuiWeaponItems(FString& Result){ Result = TEXT("weapon"); }
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	FName name;
