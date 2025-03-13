@@ -519,7 +519,6 @@ async function burnGameCoin(callback: Callback<string>, request: string, realmKe
         for (const tokenItem of burnRequests) {
             const objects: SuiObject[] = [];
 
-
             const coinType = `0x2::token::Token<${tokenItem.PackageId}::${tokenItem.Module.toLowerCase()}::${tokenItem.Module.toUpperCase()}>`;
             const inputParams: GetOwnedObjectsParams = {
                 owner: playerWallet,
@@ -569,51 +568,89 @@ async function burnGameCoin(callback: Callback<string>, request: string, realmKe
 
             const sortedCoins = coinTokens.sort((a, b) => a.Balance - b.Balance);
 
+            // Select coins whose total balance matches the amount to burn
+            let totalBalance = 0;
+            const selectedCoins = [];
+            for (const coin of sortedCoins) {
+                if (totalBalance >= tokenItem.Amount) break;
+                selectedCoins.push(coin);
+                totalBalance += Number(coin.Balance);
+            }
+
+            let remainingAmount = tokenItem.Amount;
+            for (const coin of selectedCoins) {
+                const coinBalance = Number(coin.Balance);
+                if (coinBalance <= remainingAmount) {
+                    // Use the entire coin
+                    const coinTarget: `${string}::${string}::${string}` = `${tokenItem.PackageId}::${tokenItem.Module}::${tokenItem.Function}`;
+                    txb.moveCall({
+                        target: coinTarget,
+                        arguments: [
+                            txb.object(coin.Id),
+                            txb.object(tokenItem.Store),
+                        ],
+                    });
+                    remainingAmount -= coinBalance;
+                } else {
+                    // Split the coin to get the exact amount needed
+                    const coinTarget: `${string}::${string}::${string}` = `${tokenItem.PackageId}::${tokenItem.Module}::splitBurn`;
+                    txb.moveCall({
+                        target: coinTarget,
+                        arguments: [
+                            txb.object(coin.Id),
+                            txb.object(tokenItem.Store),
+                            txb.pure.u64(remainingAmount)
+                        ],
+                    });
+                    remainingAmount = 0;
+                }
+                if (remainingAmount === 0) break;
+            }
         }
 
-        // let payment: SuiObjectRef[] = [];
-        // const coins = await suiClient.getCoins({ owner: gameWallet, limit: 1 });
-        // if (coins.data.length > 0) {
-        //     payment = coins.data.map((coin) => ({
-        //         objectId: coin.coinObjectId,
-        //         version: coin.version,
-        //         digest: coin.digest,
-        //     }));
-        // } else {
-        //     throw new Error(`Can't find gas coins from sponsor ${gameWallet}.`);
-        // }
-        //
-        // const kindBytes = await txb.build({ onlyTransactionKind: true, client: suiClient });
-        // const sponsoredTxb = Transaction.fromKind(kindBytes);
-        // sponsoredTxb.setSender(playerWallet);
-        // sponsoredTxb.setGasOwner(gameWallet);
-        // sponsoredTxb.setGasPayment(payment);
-        // const sponsoredBytes = await sponsoredTxb.build({ client: suiClient });
-        // const developerSignature = await gameKeypair!.signTransaction(sponsoredBytes);
-        // const playerSignature = await playerKeypair!.signTransaction(sponsoredBytes);
-        //
-        // const response = await suiClient.executeTransactionBlock({
-        //     transactionBlock: sponsoredBytes,
-        //     signature: [developerSignature.signature, playerSignature.signature],
-        //     options: {
-        //         showEffects: true,
-        //         showEvents: true,
-        //         showObjectChanges: true,
-        //     },
-        // });
-        //
-        // if (response.effects != null) {
-        //     result.status = response.effects.status.status;
-        //     result.gasUsed = calculateTotalCost(response.effects.gasUsed);
-        //     result.digest = response.effects.transactionDigest;
-        //     result.objectIds = response.effects.created?.map(o => o.reference.objectId);
-        //     result.error = response.effects.status.error;
-        // }
+        let payment: SuiObjectRef[] = [];
+        const coins = await suiClient.getCoins({ owner: gameWallet, limit: 1 });
+        if (coins.data.length > 0) {
+            payment = coins.data.map((coin) => ({
+                objectId: coin.coinObjectId,
+                version: coin.version,
+                digest: coin.digest,
+            }));
+        } else {
+            throw new Error(`Can't find gas coins from sponsor ${gameWallet}.`);
+        }
+
+        const kindBytes = await txb.build({ onlyTransactionKind: true, client: suiClient });
+        const sponsoredTxb = Transaction.fromKind(kindBytes);
+        sponsoredTxb.setSender(playerWallet);
+        sponsoredTxb.setGasOwner(gameWallet);
+        sponsoredTxb.setGasPayment(payment);
+        const sponsoredBytes = await sponsoredTxb.build({ client: suiClient });
+        const developerSignature = await gameKeypair!.signTransaction(sponsoredBytes);
+        const playerSignature = await playerKeypair!.signTransaction(sponsoredBytes);
+
+        const response = await suiClient.executeTransactionBlock({
+            transactionBlock: sponsoredBytes,
+            signature: [developerSignature.signature, playerSignature.signature],
+            options: {
+                showEffects: true,
+                showEvents: true,
+                showObjectChanges: true,
+            },
+        });
+
+        if (response.effects != null) {
+            result.status = response.effects.status.status;
+            result.gasUsed = calculateTotalCost(response.effects.gasUsed);
+            result.digest = response.effects.transactionDigest;
+            result.objectIds = response.effects.created?.map(o => o.reference.objectId);
+            result.error = response.effects.status.error;
+        }
 
     } catch (ex) {
         error = ex;
     }
-    callback(error, JSON.stringify(coinTokens));
+    callback(error, JSON.stringify(result));
 }
 async function updateNft(callback: Callback<string>, request: string, realmKey: string, environment: Environment) {
     let error = null;

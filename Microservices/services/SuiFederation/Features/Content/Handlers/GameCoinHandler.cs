@@ -62,7 +62,7 @@ public class GameCoinHandler(
         var transactionManager = transactionManagerFactory.Create(transaction);
         var contract = await contractService.GetByContentId<GameCoinContract>(inventoryRequest.ContentId);
         var playerAccount = await accountsService.GetAccountByAddress(wallet);
-        var balance = await suiApiService.GetCoinBalance(wallet, new CoinBalanceRequest(contract.PackageId, contract.Module));
+        var balance = await suiApiService.GetGameCoinBalance(wallet, new GameCoinBalanceRequest(contract.PackageId, contract.Module));
         if (balance.Total >= Math.Abs(inventoryRequest.Amount))
             return new GameCoinBurnMessage(
                 inventoryRequest.ContentId,
