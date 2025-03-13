@@ -95,7 +95,7 @@ struct BEAMABLECORE_API FNotificationConnectionFailed
 	FString Error;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
-	int RetryCount;
+	int RetryCount = 0;
 };
 
 /**

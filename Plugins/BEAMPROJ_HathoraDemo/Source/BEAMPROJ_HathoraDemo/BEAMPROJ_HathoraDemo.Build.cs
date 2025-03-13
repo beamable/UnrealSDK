@@ -12,6 +12,7 @@ public class BEAMPROJ_HathoraDemo : ModuleRules
 			new string[]
 			{
 				"Core",
+				"ApplicationCore",
 				"CoreOnline",
 				"OnlineSubsystem",
 				"OnlineSubsystemUtils",
