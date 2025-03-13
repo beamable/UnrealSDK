@@ -117,11 +117,11 @@ protected:
 		Inventory->OnInventoryRefreshedCode.AddUObject(this, &ULiveOpsDemoMainMenu::OnInventoryRefreshed);
 
 		// Prepare some Ids that are relevant for this demo
-		BeamSuiCoinsId = FBeamContentId{FString("currency.suicoins.beam")};
-		StarSuiCoinsId = FBeamContentId{FString("currency.suicoins.star")};
-		GoldSuiGameCoinsId = FBeamContentId{FString("currency.suigamecoins.gold")};
-		DarksaberSuiWeaponId = FBeamContentId{FString("items.suiweapons.darksaber")};
-		ShisuiSuiWeaponId = FBeamContentId{FString("items.suiweapons.shisui")};
+		BeamSuiCoinsId = FBeamContentId{FString("currency.coin.beam")};
+		StarSuiCoinsId = FBeamContentId{FString("currency.coin.star")};
+		GoldSuiGameCoinsId = FBeamContentId{FString("currency.game_coin.gold")};
+		DarksaberSuiWeaponId = FBeamContentId{FString("items.weapon.darksaber")};
+		ShisuiSuiWeaponId = FBeamContentId{FString("items.weapon.shisui")};
 	}
 
 	UFUNCTION(BlueprintCallable)
@@ -191,15 +191,15 @@ protected:
 								FBeamInventoryUpdateCommand Cmds;
 								Inventory->BeginInventoryUpdate(OwnerUserSlot, Cmds, true);
 								Inventory->PrepareAddCurrency(OwnerUserSlot, GoldSuiGameCoinsId, 1);
-								Inventory->PrepareAddCurrency(OwnerUserSlot,StarSuiCoinsId, 2);
-								Inventory->PrepareAddCurrency(OwnerUserSlot,BeamSuiCoinsId, 3);
+								Inventory->PrepareAddCurrency(OwnerUserSlot, StarSuiCoinsId, 2);
+								Inventory->PrepareAddCurrency(OwnerUserSlot, BeamSuiCoinsId, 3);
 								Inventory->PrepareCreateItem(OwnerUserSlot, DarksaberSuiWeaponId, {{"$itemLevel", "1"}});
-								Inventory->PrepareCreateItem(OwnerUserSlot,ShisuiSuiWeaponId, {{"$itemLevel", "1"}});
+								Inventory->PrepareCreateItem(OwnerUserSlot, ShisuiSuiWeaponId, {{"$itemLevel", "1"}});
 								Inventory->CPP_CommitInventoryUpdateOperation(OwnerUserSlot, FBeamOperationEventHandlerCode::CreateLambda([this](FBeamOperationEvent Evt)
 								{
 									// Then, we can proceed with the sample flow
-									OnLiveOpsDemoReady.Broadcast();	
-								}));								
+									OnLiveOpsDemoReady.Broadcast();
+								}));
 							}
 							else
 							{
@@ -273,23 +273,32 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void UpgradeItem(int64 ItemInstanceID)
 	{
-		FBeamRealmUser UserData;
-		if (Runtime->UserSlotSystem->GetUserDataAtSlot(OwnerUserSlot, UserData, this))
+		TArray<FBeamItemState> AllItems;
+		if (Inventory->TryGetAllItems(OwnerUserSlot, AllItems))
 		{
-			TMap<FString, FString> Empty;
-			ULiveOpsDemoMSUpgradeItemRequest* Request =
-				ULiveOpsDemoMSUpgradeItemRequest::Make(UserData.GamerTag.AsLong, ItemInstanceID, this, Empty);
+			// Find the item with the given id.
+			const auto ItemIdx = AllItems.Find(FBeamItemState{{}, ItemInstanceID});
+			if (ItemIdx != INDEX_NONE)
+			{
+				FBeamItemState Item = AllItems[ItemIdx];
 
-			const auto Handler = FOnLiveOpsDemoMSUpgradeItemFullResponse::CreateLambda(
-				[this,UserData](FBeamFullResponse<ULiveOpsDemoMSUpgradeItemRequest*, ULiveOpsDemoMSUpgradeItemResponse*> Resp)
-				{
-					if (Resp.SuccessData)
-					{
-						OnInventoryItemsUpdated.Broadcast();
-					}
-				});
-			FBeamRequestContext Ctx;
-			LiveOpsMS->CPP_UpgradeItem(OwnerUserSlot, Request, Handler, Ctx, {}, this);
+				// Increment the current item level
+				const auto CurrLevelStr = Item.Properties[TEXT("$itemLevel")];
+				int64 NewLevel;
+				FDefaultValueHelper::ParseInt64(CurrLevelStr, NewLevel);
+				NewLevel += 1;
+				Item.Properties[TEXT("$itemLevel")] = FString::Printf(TEXT("%lld"), NewLevel); 
+
+				// Modify the item
+				FBeamInventoryUpdateCommand Cmds;
+				Inventory->BeginInventoryUpdate(OwnerUserSlot, Cmds, true);
+				Inventory->PrepareModifyItem(OwnerUserSlot, Item);				
+				Inventory->CPP_CommitInventoryUpdateOperation(OwnerUserSlot, FBeamOperationEventHandlerCode::CreateLambda([this](FBeamOperationEvent Evt)
+				{					
+					// Once the modification is done, update the UI.
+					OnInventoryItemsUpdated.Broadcast();
+				}));
+			}
 		}
 	}
 };

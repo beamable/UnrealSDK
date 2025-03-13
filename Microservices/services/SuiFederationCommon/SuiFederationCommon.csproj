@@ -7,6 +7,7 @@
     <PropertyGroup Label="Beamable Settings">
         <!-- When "true", this will copy the built project and associated dependencies to linked Unity projects -->
         <CopyToLinkedProjects>true</CopyToLinkedProjects>
+        <BeamServiceGroup>BEAMPROJ_LiveOpsDemo</BeamServiceGroup>
     </PropertyGroup>
 
     <!-- These are special Beamable parameters that we use to keep the beamable packages in-sync to the CLI version your project is using. -->

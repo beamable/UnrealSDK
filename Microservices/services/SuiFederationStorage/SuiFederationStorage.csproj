@@ -7,7 +7,8 @@
             -->
     <SuiFederationStorageDockerDataVolume>beamable_storage_SuiFederationStorage_data</SuiFederationStorageDockerDataVolume>
     <SuiFederationStorageDockerFilesVolume>beamable_storage_SuiFederationStorage_files</SuiFederationStorageDockerFilesVolume>
-    <BeamEnabled>false</BeamEnabled>
+    <BeamEnabled>true</BeamEnabled>
+    <BeamServiceGroup>BEAMPROJ_LiveOpsDemo</BeamServiceGroup>
   </PropertyGroup>
   <PropertyGroup Label="Dotnet Settings">
     <TargetFramework>net8.0</TargetFramework>
