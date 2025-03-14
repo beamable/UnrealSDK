@@ -58,4 +58,7 @@ public static class NftContentItemExtensions
         return result;
 
     }
+
+    public static HashSet<string> FixedProperties()
+        => ["name", "image", "description", "type"];
 }

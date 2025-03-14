@@ -69,19 +69,15 @@ public class NftHandler(
         var mintMessages = messages.OfType<NftMintMessage>().ToList();
         var updateMessages = messages.OfType<NftUpdateMessage>().ToList();
 
-        var tasks = new List<Task>();
-
         if (mintMessages.Count > 0)
         {
-            tasks.Add(SendMintMessages(transaction, mintMessages));
+            await SendMintMessages(transaction, mintMessages);
         }
 
         if (updateMessages.Count > 0)
         {
-            tasks.Add(SendUpdateMessages(transaction, updateMessages));
+            await SendUpdateMessages(transaction, updateMessages);
         }
-
-        await Task.WhenAll(tasks);
     }
 
     private async Task SendUpdateMessages(string transaction, List<NftUpdateMessage> messages)

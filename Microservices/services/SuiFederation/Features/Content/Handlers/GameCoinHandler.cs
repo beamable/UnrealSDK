@@ -93,19 +93,15 @@ public class GameCoinHandler(
         var mintMessages = messages.OfType<GameCoinMintMessage>().ToList();
         var burnMessages = messages.OfType<GameCoinBurnMessage>().ToList();
 
-        var tasks = new List<Task>();
-
         if (mintMessages.Count > 0)
         {
-            tasks.Add(SendPositiveAmountMessage(transaction, mintMessages));
+            await SendPositiveAmountMessage(transaction, mintMessages);
         }
 
         if (burnMessages.Count > 0)
         {
-            tasks.Add(SendNegativeMessage(transaction, burnMessages));
+            await SendNegativeMessage(transaction, burnMessages);
         }
-
-        await Task.WhenAll(tasks);
     }
 
     private async Task SendPositiveAmountMessage(string transaction, List<GameCoinMintMessage> messages)

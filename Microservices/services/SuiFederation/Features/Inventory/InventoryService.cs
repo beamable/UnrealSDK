@@ -16,7 +16,7 @@ public class InventoryService(
 {
     public async Task NewItems(string transaction, string id, IEnumerable<InventoryRequest> mintRequests)
     {
-        var messageRequests = await mintRequests.ParallelGroupByAsync(
+        var messageRequests = await mintRequests.GroupByAsync(
             async request =>
             {
                 var contentObject = await contentService.GetContent(request.ContentId);
@@ -35,7 +35,7 @@ public class InventoryService(
 
     public async Task UpdateItems(string transaction, string id, IEnumerable<InventoryRequestUpdate> updateItemsRequest)
     {
-        var messageRequests = await updateItemsRequest.ParallelGroupByAsync(
+        var messageRequests = await updateItemsRequest.GroupByAsync(
             async request =>
             {
                 var contentObject = await contentService.GetContent(request.ContentId);

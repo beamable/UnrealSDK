@@ -3,7 +3,7 @@ using System.Linq;
 using Beamable.Common;
 using Beamable.Common.Api.Inventory;
 using Beamable.Server;
-using Beamable.SuiFederation.Features.Accounts;
+using Beamable.SuiFederation.Features.Content.Models;
 using Beamable.SuiFederation.Features.Inventory;
 using Beamable.SuiFederation.Features.Inventory.Models;
 using Beamable.SuiFederation.Features.Notifications.Models;
@@ -29,7 +29,11 @@ public class StartInventoryTransactionEndpoint(
             await inventoryService.NewItems(transactionId.ToString(), id, currencyRequest.Union(itemsRequest));
 
             // UPDATE ITEMS
-            var updateItemsRequest = updateItems.Select(i => new InventoryRequestUpdate(requestContext.UserId, i.contentId, i.proxyId, i.properties));
+            var updateItemsRequest = updateItems.Select(i => new InventoryRequestUpdate(requestContext.UserId,
+                i.contentId, i.proxyId,
+                i.properties
+                    .Where(kvp => !NftContentItemExtensions.FixedProperties().Contains(kvp.Key))
+                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value)));
             await inventoryService.UpdateItems(transactionId.ToString(), id, updateItemsRequest);
 
             await updatePlayerStateService.Update(new InventoryTransactionNotification
