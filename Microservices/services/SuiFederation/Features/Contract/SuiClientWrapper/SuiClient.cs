@@ -25,11 +25,10 @@ public class SuiClient : IService
     private const int FaucetWaitTimeSec = 20;
     private const int ProcessTimeoutMs = 60000;
 
-    public SuiClient(Configuration configuration, AccountsService accountsService, bool initialized)
+    public SuiClient(Configuration configuration, AccountsService accountsService)
     {
         _configuration = configuration;
         _accountsService = accountsService;
-        _initialized = initialized;
     }
 
     public async Task Initialize()

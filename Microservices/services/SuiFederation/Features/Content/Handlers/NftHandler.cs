@@ -57,6 +57,11 @@ public class NftHandler : IService, IContentHandler
     {
         var contract = await _contractService.GetByContentId<NftContract>(inventoryRequest.ToNftType());
         var playerAccount = await _accountsService.GetAccountByAddress(wallet);
+        if (playerAccount is null)
+        {
+            BeamableLogger.LogWarning($"Wallet {wallet} does not exist.");
+            return null;
+        }
         return new NftUpdateMessage(
             inventoryRequest.ContentId,
             contract.PackageId,
