@@ -11,14 +11,12 @@ public static class GlobalCache
     private static CachingService Instance { get; } = new ();
 
     private static readonly TimeSpan DefaultExpiration = TimeSpan.FromSeconds(5);
-    public static async Task<T> GetOrCreateAsync<T>(string key, Func<ICacheEntry, Task<T>> factory, TimeSpan? expiration = null)
+    public static async Task<T> GetOrAddAsync<T>(string key, Func<ICacheEntry, Task<T>> factory, TimeSpan? expiration = null)
     {
         return await Instance.GetOrAdd(key, entry =>
         {
             try
             {
-                var entryExpiration = expiration ?? DefaultExpiration;
-                entry.SetAbsoluteExpiration(entryExpiration);
                 return factory(entry);
             }
             catch (Exception ex)
@@ -26,6 +24,10 @@ public static class GlobalCache
                 BeamableLogger.LogWarning($"Resolving cache entry for {key} threw an exception: {ex.Message}");
                 throw;
             }
+        }, new LazyCacheEntryOptions
+        {
+            SlidingExpiration = expiration ?? DefaultExpiration,
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
         });
     }
 }

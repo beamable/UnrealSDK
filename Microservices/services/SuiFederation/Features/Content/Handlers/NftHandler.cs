@@ -21,16 +21,26 @@ using SuiFederationCommon.Models;
 
 namespace Beamable.SuiFederation.Features.Content.Handlers;
 
-public class NftHandler(
-    ContractService contractService,
-    SuiApiService suiApiService,
-    TransactionManagerFactory transactionManagerFactory,
-    MintCollection mintCollection,
-    AccountsService accountsService) : IService, IContentHandler
+public class NftHandler : IService, IContentHandler
 {
+    private readonly ContractService _contractService;
+    private readonly SuiApiService _suiApiService;
+    private readonly TransactionManagerFactory _transactionManagerFactory;
+    private readonly MintCollection _mintCollection;
+    private readonly AccountsService _accountsService;
+
+    public NftHandler(ContractService contractService, SuiApiService suiApiService, TransactionManagerFactory transactionManagerFactory, MintCollection mintCollection, AccountsService accountsService)
+    {
+        _contractService = contractService;
+        _suiApiService = suiApiService;
+        _transactionManagerFactory = transactionManagerFactory;
+        _mintCollection = mintCollection;
+        _accountsService = accountsService;
+    }
+
     public async Task<BaseMessage?> ConstructMessage(string transaction, string wallet, InventoryRequest inventoryRequest, IContentObject contentObject)
     {
-        var contract = await contractService.GetByContentId<NftContract>(inventoryRequest.ToNftType());
+        var contract = await _contractService.GetByContentId<NftContract>(inventoryRequest.ToNftType());
         var nftItem = NftContentItemExtensions.Create(inventoryRequest, (contentObject as INftBase)!);
         return new NftMintMessage(
             inventoryRequest.ContentId,
@@ -45,8 +55,8 @@ public class NftHandler(
     public async Task<BaseMessage?> ConstructMessage(string transaction, string wallet, InventoryRequestUpdate inventoryRequest,
         IContentObject contentObject)
     {
-        var contract = await contractService.GetByContentId<NftContract>(inventoryRequest.ToNftType());
-        var playerAccount = await accountsService.GetAccountByAddress(wallet);
+        var contract = await _contractService.GetByContentId<NftContract>(inventoryRequest.ToNftType());
+        var playerAccount = await _accountsService.GetAccountByAddress(wallet);
         return new NftUpdateMessage(
             inventoryRequest.ContentId,
             contract.PackageId,
@@ -82,10 +92,10 @@ public class NftHandler(
 
     private async Task SendUpdateMessages(string transaction, List<NftUpdateMessage> messages)
     {
-        var transactionManager = transactionManagerFactory.Create(transaction);
+        var transactionManager = _transactionManagerFactory.Create(transaction);
         try
         {
-            var result = await suiApiService.UpdateNft(messages);
+            var result = await _suiApiService.UpdateNft(messages);
             await transactionManager.AddChainTransaction(new ChainTransaction
             {
                 Digest = result.digest,
@@ -113,10 +123,10 @@ public class NftHandler(
 
     public async Task SendMintMessages(string transaction, List<NftMintMessage> messages)
     {
-        var transactionManager = transactionManagerFactory.Create(transaction);
+        var transactionManager = _transactionManagerFactory.Create(transaction);
         try
         {
-            var result = await suiApiService.MintNfts(messages);
+            var result = await _suiApiService.MintNfts(messages);
             await transactionManager.AddChainTransaction(new ChainTransaction
             {
                 Digest = result.digest,
@@ -134,7 +144,7 @@ public class NftHandler(
             }
             else
             {
-                await mintCollection.InsertMints(
+                await _mintCollection.InsertMints(
                     messages.Select(m => new Mint
                     {
                         PackageId = m.PackageId,
@@ -158,8 +168,8 @@ public class NftHandler(
     public async Task<IFederatedState> GetState(string wallet, string contentId)
     {
         var contentTypePart = contentId.ToContentType();
-        var contract = await contractService.GetByContentId<NftContract>(contentTypePart);
-        var ownedObjects = await suiApiService.GetOwnedObjects(wallet, new GetOwnedObjectsRequest(contract.PackageId));
+        var contract = await _contractService.GetByContentId<NftContract>(contentTypePart);
+        var ownedObjects = await _suiApiService.GetOwnedObjects(wallet, new GetOwnedObjectsRequest(contract.PackageId));
         return new ItemsState
         {
             Items = ownedObjects.ToInventoryState()

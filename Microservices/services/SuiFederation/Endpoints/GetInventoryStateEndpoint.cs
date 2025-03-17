@@ -9,11 +9,19 @@ using Beamable.SuiFederation.Features.Inventory.Storage.Models;
 
 namespace Beamable.SuiFederation.Endpoints;
 
-public class GetInventoryStateEndpoint(
-    InventoryStateCollection inventoryStateCollection,
-    ContractService contractService,
-    ContentHandlerFactory contentHandlerFactory) : IEndpoint
+public class GetInventoryStateEndpoint : IEndpoint
 {
+    private readonly InventoryStateCollection _inventoryStateCollection;
+    private readonly ContractService _contractService;
+    private readonly ContentHandlerFactory _contentHandlerFactory;
+
+    public GetInventoryStateEndpoint(InventoryStateCollection inventoryStateCollection, ContractService contractService, ContentHandlerFactory contentHandlerFactory)
+    {
+        _inventoryStateCollection = inventoryStateCollection;
+        _contractService = contractService;
+        _contentHandlerFactory = contentHandlerFactory;
+    }
+
     public async Promise<FederatedInventoryProxyState> GetInventoryState(string id)
     {
         var resultState = new FederatedInventoryProxyState
@@ -22,9 +30,9 @@ public class GetInventoryStateEndpoint(
             items = new Dictionary<string, List<FederatedItemProxy>>(),
         };
 
-        await foreach (var contentObject in contractService.FetchFederationContent())
+        await foreach (var contentObject in _contractService.FetchFederationContent())
         {
-            var handler = contentHandlerFactory.GetHandler(contentObject);
+            var handler = _contentHandlerFactory.GetHandler(contentObject);
             var state = await handler.GetState(id, contentObject.Id);
             switch (state)
             {
@@ -51,7 +59,7 @@ public class GetInventoryStateEndpoint(
             }
         }
 
-        await inventoryStateCollection.Save(new InventoryState
+        await _inventoryStateCollection.Save(new InventoryState
         {
             Id = id.ToLower(),
             Inventory = resultState

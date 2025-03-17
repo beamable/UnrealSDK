@@ -16,19 +16,27 @@ using SuiFederationCommon.FederationContent;
 
 namespace Beamable.SuiFederation.Features.Contract.Handlers;
 
-public class GameCurrencyHandler(
-    ContractService contractService,
-    SuiClient suiClient,
-    SuiApiService suiApiService) : IService, IContentContractHandler
+public class GameCurrencyHandler : IService, IContentContractHandler
 {
+    private readonly ContractService _contractService;
+    private readonly SuiClient _suiClient;
+    private readonly SuiApiService _suiApiService;
+
+    public GameCurrencyHandler(ContractService contractService, SuiClient suiClient, SuiApiService suiApiService)
+    {
+        _contractService = contractService;
+        _suiClient = suiClient;
+        _suiApiService = suiApiService;
+    }
+
     public async Task HandleContract(IContentObject clientContentInfo)
     {
         try
         {
-            var contract = await contractService.GetByContent<GameCoinContract>(clientContentInfo.Id);
+            var contract = await _contractService.GetByContent<GameCoinContract>(clientContentInfo.Id);
             if (contract != null)
             {
-                var objectExists = await suiApiService.ObjectExists(contract.PackageId);
+                var objectExists = await _suiApiService.ObjectExists(contract.PackageId);
                 if (objectExists)
                     return;
             }
@@ -42,9 +50,9 @@ public class GameCurrencyHandler(
             var contractPath = $"{SuiFederationConfig.ContractSourcePath}{coinCurrency.ToModuleName()}.move";
             await ContractWriter.WriteContract(contractPath, itemResult);
 
-            var deployOutput = await suiClient.CompileAndPublish(coinCurrency.ToModuleName());
+            var deployOutput = await _suiClient.CompileAndPublish(coinCurrency.ToModuleName());
 
-            await contractService.UpsertContract(new GameCoinContract
+            await _contractService.UpsertContract(new GameCoinContract
             {
                 PackageId = deployOutput.GetPackageId(),
                 Module = coinCurrency.ToModuleName(),

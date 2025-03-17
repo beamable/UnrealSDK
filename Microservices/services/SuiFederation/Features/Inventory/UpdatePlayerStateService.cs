@@ -12,27 +12,36 @@ using Beamable.SuiFederation.Features.Transactions.Storage;
 
 namespace Beamable.SuiFederation.Features.Inventory;
 
-public class UpdatePlayerStateService(
-    AccountsService accountsService,
-    IBeamableRequester beamableRequester,
-    GetInventoryStateEndpoint inventoryStateEndpoint,
-    TransactionLogCollection transactionLogCollection,
-    PlayerNotificationService playerNotificationService) : IService
+public class UpdatePlayerStateService : IService
 {
+    private readonly AccountsService _accountsService;
+    private readonly IBeamableRequester _beamableRequester;
+    private readonly GetInventoryStateEndpoint _inventoryStateEndpoint;
+    private readonly TransactionLogCollection _transactionLogCollection;
+    private readonly PlayerNotificationService _playerNotificationService;
+
+    public UpdatePlayerStateService(AccountsService accountsService, IBeamableRequester beamableRequester, GetInventoryStateEndpoint inventoryStateEndpoint, TransactionLogCollection transactionLogCollection, PlayerNotificationService playerNotificationService)
+    {
+        _accountsService = accountsService;
+        _beamableRequester = beamableRequester;
+        _inventoryStateEndpoint = inventoryStateEndpoint;
+        _transactionLogCollection = transactionLogCollection;
+        _playerNotificationService = playerNotificationService;
+    }
 
     public async Task Update(IPlayerNotification notification)
     {
         try
         {
-            var transactionLog = await transactionLogCollection.GetByInventoryTransaction(notification.InventoryTransactionId);
+            var transactionLog = await _transactionLogCollection.GetByInventoryTransaction(notification.InventoryTransactionId);
             if (transactionLog is not null && transactionLog.EndTimestamp is null)
             {
-                await transactionLogCollection.SetDone(transactionLog.Id);
+                await _transactionLogCollection.SetDone(transactionLog.Id);
                 var gamerTag = await GetGamerTag(transactionLog.Wallet);
                 if (gamerTag == 0)
                     gamerTag = transactionLog.RequesterUserId;
                 await SynchronizeState(gamerTag, transactionLog.Wallet);
-                await playerNotificationService.SendPlayerNotification(gamerTag, notification);
+                await _playerNotificationService.SendPlayerNotification(gamerTag, notification);
             }
         }
         catch (Exception e)
@@ -45,9 +54,9 @@ public class UpdatePlayerStateService(
     {
         try
         {
-            var newState = await inventoryStateEndpoint.GetInventoryState(walletAddress);
+            var newState = await _inventoryStateEndpoint.GetInventoryState(walletAddress);
             BeamableLogger.Log("Reporting back state for user {gamerTag}", gamerTag);
-            await beamableRequester.Request<CommonResponse>(Method.PUT, $"/object/inventory/{gamerTag}/proxy/state", newState, includeAuthHeader: false);
+            await _beamableRequester.Request<CommonResponse>(Method.PUT, $"/object/inventory/{gamerTag}/proxy/state", newState, includeAuthHeader: false);
         }
         catch (Exception e)
         {
@@ -58,7 +67,7 @@ public class UpdatePlayerStateService(
 
     private async Task<long> GetGamerTag(string walletAddress)
     {
-        var account = await accountsService.SearchAccount(walletAddress);
+        var account = await _accountsService.SearchAccount(walletAddress);
         if (account is null)
         {
             BeamableLogger.LogError("Account not found for wallet {address}", walletAddress);
@@ -66,13 +75,13 @@ public class UpdatePlayerStateService(
         }
 
         var gamerTag = account.gamerTags
-            .Where(x => x.projectId == beamableRequester.Pid)
+            .Where(x => x.projectId == _beamableRequester.Pid)
             .Select(x => x.gamerTag)
             .FirstOrDefault();
 
         if (gamerTag == 0)
         {
-            BeamableLogger.LogError("Can't find a gamerTag on project {pid} for account {aid}", beamableRequester.Pid, account.id);
+            BeamableLogger.LogError("Can't find a gamerTag on project {pid} for account {aid}", _beamableRequester.Pid, account.id);
         }
 
         return gamerTag;

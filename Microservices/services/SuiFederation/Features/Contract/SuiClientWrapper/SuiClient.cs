@@ -14,15 +14,23 @@ using Beamable.SuiFederation.Features.Contract.SuiClientWrapper.Models;
 
 namespace Beamable.SuiFederation.Features.Contract.SuiClientWrapper;
 
-public class SuiClient(
-    Configuration configuration,
-    AccountsService accountsService) : IService
+public class SuiClient : IService
 {
+    private readonly Configuration _configuration;
+    private readonly AccountsService _accountsService;
+
     private bool _initialized;
     private const string WorkingDirectory = "/beamApp";
     private const string SuiExecutable = "sui";
     private const int FaucetWaitTimeSec = 20;
     private const int ProcessTimeoutMs = 60000;
+
+    public SuiClient(Configuration configuration, AccountsService accountsService, bool initialized)
+    {
+        _configuration = configuration;
+        _accountsService = accountsService;
+        _initialized = initialized;
+    }
 
     public async Task Initialize()
     {
@@ -30,10 +38,10 @@ public class SuiClient(
         {
             try
             {
-                var realmAccount = await accountsService.GetOrCreateRealmAccount();
+                var realmAccount = await _accountsService.GetOrCreateRealmAccount();
                 await ExecuteShell("mkdir -p /root/.sui");
                 await ExecuteShell($"cp -r {SuiFederationConfig.SuiClientConfigPath} /root/.sui");
-                var suiEnvironment = await configuration.SuiEnvironment;
+                var suiEnvironment = await _configuration.SuiEnvironment;
                 BeamableLogger.Log("Importing account.");
                 await Execute(SuiExecutable, $"client switch --env {suiEnvironment}");
                 var convertedKey = await Execute(SuiExecutable, $"keytool convert --json {realmAccount.PrivateKey}");
@@ -73,7 +81,7 @@ public class SuiClient(
             await ExecuteShell($"rm -r move/{moduleName}_package/tests");
             await ExecuteShell($"rm move/{moduleName}_package/sources/{moduleName}_package.move");
             await ExecuteShell($"cp move/sources/{moduleName}.move move/{moduleName}_package/sources");
-            await ExecuteShell($"sed -i 's/rev = \"framework\\/[^\"]*\"/rev = \"framework\\/{await configuration.SuiEnvironment}\"/' move/{moduleName}_package/Move.toml");
+            await ExecuteShell($"sed -i 's/rev = \"framework\\/[^\"]*\"/rev = \"framework\\/{await _configuration.SuiEnvironment}\"/' move/{moduleName}_package/Move.toml");
             await Execute(SuiExecutable, $"move build -p move/{moduleName}_package --silence-warnings", ignoreOutput: true);
             BeamableLogger.Log($"Deploying smart contract for {moduleName}...");
             var deployOutputData = await Execute(SuiExecutable,

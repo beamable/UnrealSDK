@@ -19,22 +19,31 @@ using SuiFederationCommon.Extensions;
 
 namespace Beamable.SuiFederation.Features.Contract.Handlers;
 
-public class NftContractHandler(
-    ContractService contractService,
-    SuiClient suiClient,
-    SuiApiService suiApiService,
-    AccountsService accountsService) : IService, IContentContractHandler
+public class NftContractHandler : IService, IContentContractHandler
 {
+    private readonly ContractService _contractService;
+    private readonly SuiClient _suiClient;
+    private readonly SuiApiService _suiApiService;
+    private readonly AccountsService _accountsService;
+
+    public NftContractHandler(ContractService contractService, SuiClient suiClient, SuiApiService suiApiService, AccountsService accountsService)
+    {
+        _contractService = contractService;
+        _suiClient = suiClient;
+        _suiApiService = suiApiService;
+        _accountsService = accountsService;
+    }
+
     public async Task HandleContract(IContentObject clientContentInfo)
     {
         try
         {
             var itemContent = clientContentInfo as ItemContent;
             var moduleName = FederationContentExtensions.SanitizeModuleName(itemContent!.ToModuleName());
-            var contract = await contractService.GetByContent<NftContract>(itemContent!.ContentType);
+            var contract = await _contractService.GetByContent<NftContract>(itemContent!.ContentType);
             if (contract != null)
             {
-                var objectExists = await suiApiService.ObjectExists(contract.PackageId);
+                var objectExists = await _suiApiService.ObjectExists(contract.PackageId);
                 if (objectExists)
                     return;
             }
@@ -45,11 +54,11 @@ public class NftContractHandler(
             var contractPath = $"{SuiFederationConfig.ContractSourcePath}{moduleName}.move";
             await ContractWriter.WriteContract(contractPath, itemResult);
 
-            var deployOutput = await suiClient.CompileAndPublish(moduleName);
+            var deployOutput = await _suiClient.CompileAndPublish(moduleName);
 
             var ownerObjectId = await CreateContractOwnerObject(deployOutput.GetPackageId(), moduleName, GetAdminCap(deployOutput, moduleName));
 
-            await contractService.UpsertContract(new NftContract
+            await _contractService.UpsertContract(new NftContract
             {
                 PackageId = deployOutput.GetPackageId(),
                 Module = moduleName,
@@ -70,8 +79,8 @@ public class NftContractHandler(
     {
         try
         {
-            var realmAccount = await accountsService.GetOrCreateRealmAccount();
-            var result = await suiApiService.SetNftContractOwner(new SetOwnerMessage(packageId, moduleName, "set_owner", realmAccount.Address, adminCap));
+            var realmAccount = await _accountsService.GetOrCreateRealmAccount();
+            var result = await _suiApiService.SetNftContractOwner(new SetOwnerMessage(packageId, moduleName, "set_owner", realmAccount.Address, adminCap));
             return result.objectIds[0];
         }
         catch (Exception e)

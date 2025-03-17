@@ -19,13 +19,23 @@ using Beamable.SuiFederation.Features.Transactions.Storage.Models;
 
 namespace Beamable.SuiFederation.Features.Content.Handlers;
 
-public class GameCoinHandler(
-    ContractService contractService,
-    SuiApiService suiApiService,
-    AccountsService accountsService,
-    TransactionManagerFactory transactionManagerFactory,
-    MintCollection mintCollection) : IService, IContentHandler
+public class GameCoinHandler : IService, IContentHandler
 {
+    private readonly ContractService _contractService;
+    private readonly SuiApiService _suiApiService;
+    private readonly TransactionManagerFactory _transactionManagerFactory;
+    private readonly MintCollection _mintCollection;
+    private readonly AccountsService _accountsService;
+
+    public GameCoinHandler(ContractService contractService, SuiApiService suiApiService, TransactionManagerFactory transactionManagerFactory, MintCollection mintCollection, AccountsService accountsService)
+    {
+        _contractService = contractService;
+        _suiApiService = suiApiService;
+        _transactionManagerFactory = transactionManagerFactory;
+        _mintCollection = mintCollection;
+        _accountsService = accountsService;
+    }
+
     public async Task<BaseMessage?> ConstructMessage(string transaction, string wallet, InventoryRequest inventoryRequest,
         IContentObject contentObject) =>
         inventoryRequest.Amount switch
@@ -43,7 +53,7 @@ public class GameCoinHandler(
 
     private async Task<GameCoinMintMessage> PositiveAmountMessage(string transaction, string wallet, string function, InventoryRequest inventoryRequest)
     {
-        var contract = await contractService.GetByContentId<GameCoinContract>(inventoryRequest.ContentId);
+        var contract = await _contractService.GetByContentId<GameCoinContract>(inventoryRequest.ContentId);
         return new GameCoinMintMessage(
             inventoryRequest.ContentId,
             contract.PackageId,
@@ -59,10 +69,10 @@ public class GameCoinHandler(
 
     private async Task<GameCoinBurnMessage?> NegativeAmountMessage(string transaction, string wallet, string function, InventoryRequest inventoryRequest)
     {
-        var transactionManager = transactionManagerFactory.Create(transaction);
-        var contract = await contractService.GetByContentId<GameCoinContract>(inventoryRequest.ContentId);
-        var playerAccount = await accountsService.GetAccountByAddress(wallet);
-        var balance = await suiApiService.GetGameCoinBalance(wallet, new GameCoinBalanceRequest(contract.PackageId, contract.Module));
+        var transactionManager = _transactionManagerFactory.Create(transaction);
+        var contract = await _contractService.GetByContentId<GameCoinContract>(inventoryRequest.ContentId);
+        var playerAccount = await _accountsService.GetAccountByAddress(wallet);
+        var balance = await _suiApiService.GetGameCoinBalance(wallet, new GameCoinBalanceRequest(contract.PackageId, contract.Module));
         if (balance.Total >= Math.Abs(inventoryRequest.Amount))
             return new GameCoinBurnMessage(
                 inventoryRequest.ContentId,
@@ -106,10 +116,10 @@ public class GameCoinHandler(
 
     private async Task SendPositiveAmountMessage(string transaction, List<GameCoinMintMessage> messages)
     {
-        var transactionManager = transactionManagerFactory.Create(transaction);
+        var transactionManager = _transactionManagerFactory.Create(transaction);
         try
         {
-            var result = await suiApiService.MintGameCurrency(messages);
+            var result = await _suiApiService.MintGameCurrency(messages);
             await transactionManager.AddChainTransaction(new ChainTransaction
             {
                 Digest = result.digest,
@@ -127,7 +137,7 @@ public class GameCoinHandler(
             }
             else
             {
-                await mintCollection.InsertMints(
+                await _mintCollection.InsertMints(
                     messages.Select(m => new Mint
                     {
                         PackageId = m.PackageId,
@@ -150,10 +160,10 @@ public class GameCoinHandler(
 
     private async Task SendNegativeMessage(string transaction, List<GameCoinBurnMessage> messages)
     {
-        var transactionManager = transactionManagerFactory.Create(transaction);
+        var transactionManager = _transactionManagerFactory.Create(transaction);
         try
         {
-            var result = await suiApiService.BurnGameCurrency(messages);
+            var result = await _suiApiService.BurnGameCurrency(messages);
             await transactionManager.AddChainTransaction(new ChainTransaction
             {
                 Digest = result.digest,
@@ -181,8 +191,8 @@ public class GameCoinHandler(
 
     public async Task<IFederatedState> GetState(string wallet, string contentId)
     {
-        var contract = await contractService.GetByContentId<GameCoinContract>(contentId);
-        var balance = await suiApiService.GetGameCoinBalance(wallet, new GameCoinBalanceRequest(contract.PackageId, contract.Module));
+        var contract = await _contractService.GetByContentId<GameCoinContract>(contentId);
+        var balance = await _suiApiService.GetGameCoinBalance(wallet, new GameCoinBalanceRequest(contract.PackageId, contract.Module));
         return new CurrenciesState
         {
             Currencies = new Dictionary<string, long>

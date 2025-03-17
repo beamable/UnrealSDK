@@ -18,13 +18,14 @@ public class AccountsService : IService
     private Account? _cachedRealmAccount;
     private readonly Configuration _configuration;
     private readonly AccountsApi _accountsApi;
-    private static CachingService AccountCache { get; } = new();
+    private readonly CachingService _accountCache;
 
     public AccountsService(VaultCollection vaultCollection, Configuration configuration, AccountsApi accountsApi)
     {
         _vaultCollection = vaultCollection;
         _configuration = configuration;
         _accountsApi = accountsApi;
+        _accountCache = new CachingService();
     }
 
     public async Task<Account> GetOrCreateAccount(string accountName)
@@ -123,17 +124,19 @@ public class AccountsService : IService
 
     private async Task<Account?> GetAccount(string accountName)
     {
-        return await AccountCache.GetOrAdd(accountName, async cacheEntry =>
+        return await _accountCache.GetOrAddAsync(accountName, async cacheEntry =>
         {
             var vault = await _vaultCollection.GetVaultByName(accountName);
             if (vault is null)
             {
-                cacheEntry.Dispose();
                 return null;
             }
-            cacheEntry.SlidingExpiration = TimeSpan.FromMinutes(5);
             var privateKey = EncryptionService.Decrypt(vault.PrivateKey, _configuration.RealmSecret);
             return new Account(vault.Name, vault.Address, privateKey);
+        }, new LazyCacheEntryOptions
+        {
+            SlidingExpiration = TimeSpan.FromMinutes(5),
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1)
         });
     }
 
