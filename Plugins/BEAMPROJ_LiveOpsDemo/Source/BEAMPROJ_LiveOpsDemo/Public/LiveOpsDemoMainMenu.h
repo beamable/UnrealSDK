@@ -283,11 +283,14 @@ protected:
 				FBeamItemState Item = AllItems[ItemIdx];
 
 				// Increment the current item level
-				const auto CurrLevelStr = Item.Properties[TEXT("$itemLevel")];
-				int64 NewLevel;
-				FDefaultValueHelper::ParseInt64(CurrLevelStr, NewLevel);
-				NewLevel += 1;
-				Item.Properties[TEXT("$itemLevel")] = FString::Printf(TEXT("%lld"), NewLevel); 
+				const auto CurrLevelStr = Item.Properties.Find(TEXT("itemLevel"));
+				if (CurrLevelStr)
+				{
+					int64 NewLevel;
+					FDefaultValueHelper::ParseInt64(*CurrLevelStr, NewLevel);
+					NewLevel += 1;
+					Item.Properties[TEXT("itemLevel")] = FString::Printf(TEXT("%lld"), NewLevel);
+				}
 
 				// Modify the item
 				FBeamInventoryUpdateCommand Cmds;
