@@ -10,7 +10,7 @@
 #include "BeamEnvironment.generated.h"
 
 USTRUCT(BlueprintType)
-struct FBeamPackageVersion
+struct BEAMABLECORE_API FBeamPackageVersion
 {
 	GENERATED_BODY()
 
@@ -38,8 +38,8 @@ struct FBeamPackageVersion
 	UPROPERTY(EditAnywhere)
 	bool bIsPreview = false;
 
-	FORCEINLINE bool IsReleaseCandidate() const { return RC > UNASSIGNED_VALUE; }
-	FORCEINLINE bool IsNightly() const { return NightlyTime > UNASSIGNED_VALUE; }
+	bool IsReleaseCandidate() const { return RC > UNASSIGNED_VALUE; }
+	bool IsNightly() const { return NightlyTime > UNASSIGNED_VALUE; }
 
 	FBeamPackageVersion();
 
@@ -47,23 +47,44 @@ struct FBeamPackageVersion
 
 	explicit FBeamPackageVersion(const FString& VersionString);
 
-	FORCEINLINE bool Equals(const FBeamPackageVersion Other) const;
+	bool Equals(const FBeamPackageVersion Other) const;
 
-	FORCEINLINE bool operator<(const FBeamPackageVersion& BeamPackageVersion) const;
+	bool operator<(const FBeamPackageVersion& BeamPackageVersion) const;
 
-	FORCEINLINE bool operator>(const FBeamPackageVersion& BeamPackageVersion) const;
+	bool operator>(const FBeamPackageVersion& BeamPackageVersion) const;
 
-	FORCEINLINE bool operator==(const FBeamPackageVersion& BeamPackageVersion) const;
+	bool operator==(const FBeamPackageVersion& BeamPackageVersion) const;
 
-	FORCEINLINE bool operator !=(const FBeamPackageVersion& BeamPackageVersion) const;
+	bool operator !=(const FBeamPackageVersion& BeamPackageVersion) const;
 
-	FORCEINLINE bool operator <=(const FBeamPackageVersion& BeamPackageVersion) const;
+	bool operator <=(const FBeamPackageVersion& BeamPackageVersion) const;
 
-	FORCEINLINE bool operator >=(const FBeamPackageVersion& BeamPackageVersion) const;
+	bool operator >=(const FBeamPackageVersion& BeamPackageVersion) const;
 
 	FString ToString() const;
 
 	static FBeamPackageVersion FromString(FString SemanticVersion);
+
+	friend FArchive& operator<<(FArchive& Ar, FBeamPackageVersion& D)
+	{
+		Ar.SerializeBits(&D.Major, sizeof(D.Major) * 8);
+		Ar.SerializeBits(&D.Minor, sizeof(D.Minor) * 8);
+		Ar.SerializeBits(&D.Patch, sizeof(D.Patch) * 8);
+		Ar.SerializeBits(&D.RC, sizeof(D.RC) * 8);
+		Ar.SerializeBits(&D.NightlyTime, sizeof(D.NightlyTime) * 8);
+		if (Ar.IsSaving())
+		{
+			uint32 Preview = D.bIsPreview ? 1 : 0;
+			Ar.SerializeInt(Preview, 1);
+		}
+		else
+		{
+			uint32 Preview;
+			Ar.SerializeInt(Preview, 1);
+			D.bIsPreview = Preview == 1;
+		}
+		return Ar;
+	}
 };
 
 
@@ -73,10 +94,9 @@ class BEAMABLECORE_API UBeamEnvironmentData : public UDataAsset, public FJsonSer
 	GENERATED_BODY()
 
 public:
-	
 	using UDataAsset::Serialize; // Bring Serialize from UDataAsset into scope
 	using FJsonSerializable::Serialize; // Bring Serialize from FJsonSerializable into scope
-	
+
 	UPROPERTY(EditAnywhere)
 	FString Environment;
 	UPROPERTY(EditAnywhere)

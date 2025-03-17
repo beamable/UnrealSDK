@@ -28,7 +28,7 @@ const TArray<FString> UBeamBackend::AUTH_ERROR_CODE_RETRY_ALLOWED = TArray<FStri
 
 void UBeamBackend::Initialize(FSubsystemCollectionBase& Collection)
 {
-	UE_LOG(LogBeamBackend, Warning, TEXT("Initializing UBeamBackend Subsystem!"));
+	UE_LOG(LogBeamBackend, Log, TEXT("Initializing UBeamBackend Subsystem!"));
 
 	// Initializing InFlightRequestID to -1 since we increment, then use it.
 	InFlightRequestId = -1;

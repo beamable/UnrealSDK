@@ -1,1 +1,10 @@
-{"clientPermission":{"data":{"write_self":false}},"startingAmount":{"data":250}}
+{
+  "startingAmount": {
+    "data": 2
+  },
+  "clientPermission": {
+    "data": {
+      "write_self": false
+    }
+  }
+}

@@ -1512,13 +1512,36 @@ void UBeamRuntime::AttachExternalIdentity(FUserSlot UserSlot, FString Microservi
 				if (bIsAvailable)
 				{
 					const auto AttachIdentityHandler = FOnPostExternalIdentityFullResponse::CreateLambda(
-						[this, Op](FBeamFullResponse<UPostExternalIdentityRequest*, UAttachExternalIdentityApiResponse*> Resp)
+						[this, UserSlot, MicroserviceName, IdentityNamespace, IdentityUserId, Op](FBeamFullResponse<UPostExternalIdentityRequest*, UAttachExternalIdentityApiResponse*> Resp)
 						{
 							if (Resp.State == RS_Retrying) return;
 
 							if (Resp.State == RS_Success)
 							{
 								UE_LOG(LogTemp, Warning, TEXT("Successfully Attached Id! Result = %s"), *Resp.SuccessData->Result);
+
+								// Update the local list of external ids if the IdentityUserId was provided
+								// There are cases of external identities where the Ids are created automatically for the user (Web3 Wallets, for example).
+								// In those cases, the IdentityUserId is null and we cannot automatically update the local state here.
+								// For those cases, the user should call make an UBeamAccountsApi::CPP_GetMe request, find the newly added identity in the response of that API call and
+								// add it to the local state manually like the code below does. 
+								if (!IdentityUserId.IsEmpty())
+								{
+									FBeamRealmUser User;
+									if (UserSlotSystem->GetUserDataAtSlot(UserSlot, User, this))
+									{
+										FBeamExternalIdentity AddedIdentity;
+										AddedIdentity.ProviderService = MicroserviceName;
+										AddedIdentity.ProviderNamespace = IdentityNamespace;
+										AddedIdentity.UserId = IdentityUserId;
+
+										User.ExternalIdentities.AddUnique(AddedIdentity);
+										UserSlotSystem->SetExternalIdsAtSlot(UserSlot, User.ExternalIdentities, this);
+										UserSlotSystem->SaveSlot(UserSlot, this);
+									}
+								}
+
+								// Trigger the operation as successful
 								GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationSuccess(Op, TEXT(""));
 							}
 

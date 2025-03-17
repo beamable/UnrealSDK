@@ -1,12 +1,69 @@
 ﻿#pragma once
 
 #include "BeamContentObject.h"
+#include "BeamCoreSettings.h"
 #include "BeamBackend/ReplacementTypes/BeamRemoteContentManifestEntry.h"
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
 #include "BeamBackend/SemanticTypes/BeamContentManifestId.h"
 #include "Engine/DataTable.h"
 
 #include "BeamContentCache.generated.h"
+
+// TODO: Document and Add a way for people to give me the archive they want to use (Wrap calls with an GetArchiveForContentCache delegate which defaults to these)
+// TODO: Add a serialized SDK version to the start of the file --- if SDK versions change we should return false when reading a content cache and discard the cache. 
+class BEAMABLECORE_API FBeamMemoryWriter : public FMemoryWriter
+{
+public:
+	FBeamMemoryWriter(TArray<uint8, TSizedDefaultAllocator<32>>& InBytes, bool bIsPersistent = false, bool bSetOffset = false, const FName InArchiveName = NAME_None)
+		: FMemoryWriter(InBytes, bIsPersistent, bSetOffset, InArchiveName)
+	{
+	}
+
+private:
+	virtual FArchive& operator<<(struct FSoftObjectPtr& Value)
+	{		
+		// Serialize the FName as a string
+		if (IsLoading())
+		{
+			FString Path;
+			*this << Path;
+			Value = FSoftObjectPath{Path};
+		}
+		else
+		{
+			FString Path = Value.ToSoftObjectPath().GetAssetPathString();			
+			*this << Path;
+		}
+		return *this;
+	}
+};
+
+class BEAMABLECORE_API FBeamMemoryReader : public FMemoryReader
+{
+public:
+	FBeamMemoryReader(const TArray<uint8>& InBytes, bool bIsPersistent = false)
+		: FMemoryReader(InBytes, bIsPersistent)
+	{
+	}
+
+private:
+	virtual FArchive& operator<<(struct FSoftObjectPtr& Value)
+	{		
+		// Serialize the FName as a string
+		if (IsLoading())
+		{
+			FString Path;
+			*this << Path;
+			Value = FSoftObjectPath{Path};
+		}
+		else
+		{
+			FString Path = Value.ToSoftObjectPath().GetAssetPathString();			
+			*this << Path;
+		}
+		return *this;
+	}
+};
 
 
 UCLASS(BlueprintType)
@@ -33,6 +90,7 @@ public:
 	{
 		if (Ar.IsSaving())
 		{
+			Ar << GetDefault<UBeamCoreSettings>()->BeamableEnvironment->Version;			
 			Ar << ManifestId.AsString;
 
 			int32 CashSize = Cache.Num();
@@ -54,7 +112,7 @@ public:
 
 				if (ContentObject)
 				{
-					ContentObject->GetClass()->SerializeTaggedProperties(Ar, (uint8*)ContentObject, ContentObject->GetClass(), nullptr);
+					ContentObject->GetClass()->SerializeTaggedProperties(Ar, (uint8*)ContentObject, nullptr, nullptr);
 
 					int64 PositionBeforeUObjectData = Ar.Tell();
 
@@ -103,6 +161,15 @@ public:
 		}
 		else
 		{
+			FBeamPackageVersion SdkVersion;
+			FBeamPackageVersion CurrSdkVersion = GetDefault<UBeamCoreSettings>()->BeamableEnvironment->Version;
+			Ar << SdkVersion;
+			if (!CurrSdkVersion.Equals(SdkVersion))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("This cache was created with a different SDK version. It cannot be used with this version. So, we are invalidating it. CACHE_VERSION=%s, CURR_VERSION=%s"), *SdkVersion.ToString(), *CurrSdkVersion.ToString());
+				return false;
+			}
+			
 			Ar << ManifestId.AsString;
 
 			//Read the number of contents in the serialized file.
@@ -129,7 +196,7 @@ public:
 				UBeamContentObject::NewFromTypeId(ContentTypeStringToContentClass, ContentClassTypeString, ContentObject);
 				if (ContentObject)
 				{
-					ContentObject->GetClass()->SerializeTaggedProperties(Ar, (uint8*)ContentObject, ContentObject->GetClass(), nullptr);
+					ContentObject->GetClass()->SerializeTaggedProperties(Ar, (uint8*)ContentObject, nullptr, nullptr);
 
 
 					int64 FinalPositionAfterReadingUObjectData;

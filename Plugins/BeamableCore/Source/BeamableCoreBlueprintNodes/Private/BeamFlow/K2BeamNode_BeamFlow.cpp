@@ -3,8 +3,7 @@
 
 #include "BeamFlow/K2BeamNode_BeamFlow.h"
 
-#include "BeamK2.h"
-#include "BlueprintActionDatabaseRegistrar.h"
+
 #include "BlueprintNodeSpawner.h"
 #include "ScopedTransaction.h"
 #include "ToolMenu.h"

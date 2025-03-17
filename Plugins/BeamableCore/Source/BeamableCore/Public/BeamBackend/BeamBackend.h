@@ -903,7 +903,7 @@ public:
 			const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(Context, RequestData);
 			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 			{
-				UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, NUM_FAILURES=%d"),
+				UE_LOG(LogBeamBackend, Warning, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, NUM_FAILURES=%d"),
 				       RequestId, InFlightFailureCount.FindRef(RequestId));
 			}
 
@@ -941,7 +941,7 @@ public:
 			if (AlwaysLogSuccessResponses || !ExecutedCallsiteHandler)
 			{
 				const auto RequestType = RequestData->GetRequestType();
-				UE_LOG(LogBeamBackend, Display,
+				UE_LOG(LogBeamBackend, Verbose,
 				       TEXT(
 					       "Beamable Request Successfull | REQUEST_ID=%lld, REQUEST_TYPE=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s"
 				       ), RequestId, *RequestType.Name, ResponseCode, CurrFailedCount,
@@ -1008,7 +1008,7 @@ public:
 			const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(Context, RequestData);
 			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 			{
-				UE_LOG(LogBeamBackend, Display, TEXT( "Beamable Request Completed | REQUEST_ID=%lld, RESPONSE_CODE=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d" ),
+				UE_LOG(LogBeamBackend, Verbose, TEXT( "Beamable Request Completed | REQUEST_ID=%lld, RESPONSE_CODE=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d" ),
 				       RequestId, ResponseCode, bWasSuccess ? TEXT("true") : TEXT("false"), CurrFailedCount);
 			}
 
@@ -1164,7 +1164,7 @@ public:
 			const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(Context, RequestData);
 			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 			{
-				UE_LOG(LogBeamBackend, Display,
+				UE_LOG(LogBeamBackend, Warning,
 				       TEXT("Beamable Request Canceled | REQUEST_ID=%lld, USER_SLOT=%s, NUM_FAILURES=%d"),
 				       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : *FString(TEXT("Made Without UserSlot")),
 				       InFlightFailureCount.FindRef(RequestId));
@@ -1205,7 +1205,7 @@ public:
 			if (AlwaysLogSuccessResponses || !ExecutedCallsiteHandler)
 			{
 				const auto RequestType = RequestData->GetRequestType();
-				UE_LOG(LogBeamBackend, Display, TEXT( "Beamable Request Successfull | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s" ),
+				UE_LOG(LogBeamBackend, Verbose, TEXT( "Beamable Request Successfull | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s" ),
 				       RequestId, *RequestType.Name, bWasMadeWithUserSlot ? *UserSlot.Name : TEXT("Made Without UserSlot"), ResponseCode, CurrFailedCount, *ContentAsString);
 			}
 		}
@@ -1280,7 +1280,7 @@ public:
 			const auto bExecutedCallsiteHandler = OnComplete.ExecuteIfBound(Context, RequestData);
 			if (AlwaysLogCompleteResponses || !bExecutedCallsiteHandler)
 			{
-				UE_LOG(LogBeamBackend, Display, TEXT( "Beamable Request Completed | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d" ),
+				UE_LOG(LogBeamBackend, Verbose, TEXT( "Beamable Request Completed | REQUEST_ID=%lld, USER_SLOT=%s, RESPONSE_CODE=%d, WAS_SUCCESS=%s, NUM_FAILURES=%d" ),
 				       RequestId, bWasMadeWithUserSlot ? *UserSlot.Name : TEXT("Made Without UserSlot"), ResponseCode, bWasSuccess ? TEXT("true") : TEXT("false"), CurrFailedCount);
 			}
 
@@ -1493,7 +1493,7 @@ public:
 				// We only log the response for code if we are configured to always run it.
 				if (AlwaysLogSuccessResponses && FullResponse.State == RS_Success)
 				{
-					UE_LOG(LogBeamBackend, Display, TEXT( "Beamable Request Successfull | REQUEST_ID=%lld, REQUEST_TYPE=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s" ),
+					UE_LOG(LogBeamBackend, Verbose, TEXT( "Beamable Request Successfull | REQUEST_ID=%lld, REQUEST_TYPE=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s" ),
 					       RequestId, *RequestType.Name, ResponseCode, CurrFailedCount, *ContentAsString);
 				}
 
@@ -1507,12 +1507,12 @@ public:
 				const auto bWasSuccess = FullResponse.State == RS_Success;
 				if (FullResponse.State == RS_Cancelled)
 				{
-					UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, REQUEST_TYPE=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
+					UE_LOG(LogBeamBackend, Warning, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, REQUEST_TYPE=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
 					       RequestId, *RequestType.Name, bWasSuccess ? TEXT("true") : TEXT("false"), InFlightFailureCount.FindRef(RequestId));
 				}
 				else
 				{
-					UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Completed | REQUEST_ID=%lld, REQUEST_TYPE=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
+					UE_LOG(LogBeamBackend, Verbose, TEXT("Beamable Request Completed | REQUEST_ID=%lld, REQUEST_TYPE=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d"),
 					       RequestId, *RequestType.Name, bWasSuccess ? TEXT("true") : TEXT("false"), InFlightFailureCount.FindRef(RequestId));
 				}
 			}
@@ -1756,7 +1756,7 @@ public:
 				// We only log the response for code if we are configured to always run it.
 				if (AlwaysLogSuccessResponses && FullResponse.State == RS_Success)
 				{
-					UE_LOG(LogBeamBackend, Display, TEXT( "Beamable Request Successfull | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s" ),
+					UE_LOG(LogBeamBackend, Verbose, TEXT( "Beamable Request Successfull | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, RESPONSE_CODE=%d, NUM_FAILURES=%d, RESPONSE_BODY=%s" ),
 					       RequestId, *RequestType.Name, *UserSlotLog, ResponseCode, CurrFailedCount, *ContentAsString);
 				}
 
@@ -1771,12 +1771,12 @@ public:
 				const auto bWasSuccess = FullResponse.State == RS_Success;
 				if (FullResponse.State == RS_Cancelled)
 				{
-					UE_LOG(LogBeamBackend, Display, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d" ),
+					UE_LOG(LogBeamBackend, Warning, TEXT("Beamable Request Canceled | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d" ),
 					       RequestId, *RequestType.Name, *UserSlotLog, bWasSuccess ? TEXT("true") : TEXT("false"), InFlightFailureCount.FindRef(RequestId));
 				}
 				else
 				{
-					UE_LOG(LogBeamBackend, Display, TEXT( "Beamable Request Completed | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d" ),
+					UE_LOG(LogBeamBackend, Verbose, TEXT( "Beamable Request Completed | REQUEST_ID=%lld, REQUEST_TYPE=%s, USER_SLOT=%s, WAS_SUCCESS=%s, NUM_FAILURES=%d" ),
 					       RequestId, *RequestType.Name, *UserSlotLog, bWasSuccess ? TEXT("true") : TEXT("false"), InFlightFailureCount.FindRef(RequestId));
 				}
 			}

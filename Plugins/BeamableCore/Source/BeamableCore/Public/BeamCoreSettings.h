@@ -8,7 +8,6 @@
 #include "BeamBackend/BeamRealmHandle.h"
 #include "BeamBackend/BeamRetryConfig.h"
 #include "BeamBackend/ResponseCache/BeamCacheConfig.h"
-#include "Content/BeamContentCache.h"
 #include "BeamCoreSettings.generated.h"
 
 /**
