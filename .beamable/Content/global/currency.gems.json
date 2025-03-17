@@ -4,7 +4,7 @@
   },
   "clientPermission": {
     "data": {
-      "write_self": false
+      "write_self": true
     }
   }
 }
