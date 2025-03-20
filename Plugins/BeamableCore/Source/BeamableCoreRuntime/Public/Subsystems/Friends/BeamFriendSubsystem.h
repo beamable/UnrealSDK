@@ -29,13 +29,13 @@ struct BEAMABLECORERUNTIME_API FBeamFriendPresenceStatus
 	FBeamGamerTag PlayerId;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool Online;
+	bool Online = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FDateTime LastOnline;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EBeamPresenceStatus Status;
+	EBeamPresenceStatus Status = EBeamPresenceStatus::Invisible;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Description;

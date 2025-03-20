@@ -37,10 +37,10 @@ struct BEAMABLECORERUNTIME_API FBeamPartyState
 	FBeamGamerTag Leader;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	EBeamPartyRestriction Restriction;
+	EBeamPartyRestriction Restriction = EBeamPartyRestriction::BEAM_Unrestricted;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int32 MaxPlayers;
+	int32 MaxPlayers = 10;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<FBeamGamerTag, FBeamPartyPlayerState> PlayerStates;
