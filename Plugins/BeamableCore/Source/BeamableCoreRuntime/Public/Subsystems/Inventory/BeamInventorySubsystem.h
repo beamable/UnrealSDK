@@ -15,7 +15,7 @@ class UBeamInventoryApi;
 class UBeamInventoryNotifications;
 
 USTRUCT(BlueprintType)
-struct FBeamPlayerCurrency
+struct BEAMABLECORERUNTIME_API FBeamPlayerCurrency
 {
 	GENERATED_BODY()
 
@@ -33,7 +33,7 @@ struct FBeamPlayerCurrency
 };
 
 USTRUCT(BlueprintType)
-struct FBeamItemState
+struct BEAMABLECORERUNTIME_API FBeamItemState
 {
 	GENERATED_BODY()
 
@@ -68,7 +68,7 @@ struct FBeamItemState
 
 
 USTRUCT(BlueprintType)
-struct FBeamInventoryState
+struct BEAMABLECORERUNTIME_API FBeamInventoryState
 {
 	GENERATED_BODY()
 
@@ -93,7 +93,7 @@ struct FBeamInventoryState
 };
 
 USTRUCT(BlueprintType)
-struct FBeamInventoryUpdateCommand
+struct BEAMABLECORERUNTIME_API FBeamInventoryUpdateCommand
 {
 	GENERATED_BODY()
 

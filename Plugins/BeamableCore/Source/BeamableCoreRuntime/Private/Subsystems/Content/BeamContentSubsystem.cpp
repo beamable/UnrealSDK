@@ -3,7 +3,7 @@
 
 #include "Subsystems/Content/BeamContentSubsystem.h"
 
-#include <memory>
+
 
 #include "HttpModule.h"
 #include "BeamBackend/BeamGenericApi.h"
@@ -236,7 +236,7 @@ void ChaseContentLinkProperty(void* RootObj, TArray<const FProperty*> PathToLink
 			StructProp->GetValue_InContainer(RootObj, &FoundLink);
 			OutLinksToFetch.AddUnique(FBeamContentId{FoundLink.AsString});
 
-			UE_LOG(LogBeamContent, Warning, TEXT("Found Content Link with Id. CONTENT_LINK_ID=%s"), *FoundLink.AsString);
+			UE_LOG(LogBeamContent, Verbose, TEXT("Found Content Link with Id. CONTENT_LINK_ID=%s"), *FoundLink.AsString);
 			return;
 		}
 
@@ -657,8 +657,8 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 		{
 			UBeamContentCache* LoadedCacheContent =  NewObject<UBeamContentCache>();
 			
-			// Create a memory reader to read the binary data
-			FMemoryReader Reader(FileData, true);
+			// Create a memory reader to read the binary data			
+			FBeamMemoryReader Reader(FileData, true);
 
 			if (LoadedCacheContent->SerializeToBinary(Reader,ContentTypeStringToContentClass,ContentClassToContentTypeString))
 			{
@@ -690,7 +690,7 @@ void UBeamContentSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperat
 			{
 				UBeamContentCache* LoadedBakedContent =  NewObject<UBeamContentCache>();
 			
-				FMemoryReader Reader(FileData, true);
+				FBeamMemoryReader Reader(FileData, true);
 
 				if (LoadedBakedContent->SerializeToBinary(Reader,ContentTypeStringToContentClass,ContentClassToContentTypeString))
 				{
@@ -763,10 +763,10 @@ void UBeamContentSubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserS
 			// TODO: Only fetch the updated content items (scopes)
 			const FBeamOperationHandle DelayedFetchAllOp = GEngine->GetEngineSubsystem<UBeamRequestTracker>()->CPP_BeginOperation({}, GetName(), DelayedFetchAllOpHandler);
 			FetchContentManifest(ContentRefreshNotificationMessage.Manifest.Id, true, false, DelayedFetchAllOp);
-			UE_LOG(LogBeamContent, Warning, TEXT("Delay for ContentRefresh is over. Fetching the updated content manifest."));
+			UE_LOG(LogBeamContent, Display, TEXT("Delay for ContentRefresh is over. Fetching the updated content manifest."));
 		}), DelayCount, false, DelayCount);
 
-		UE_LOG(LogBeamContent, Warning, TEXT("Received ContentRefresh notification. Fetching content in %d seconds."), DelayCount);
+		UE_LOG(LogBeamContent, Display, TEXT("Received ContentRefresh notification. Fetching content in %d seconds."), DelayCount);
 	});
 	GEngine->GetEngineSubsystem<UBeamContentNotifications>()->CPP_SubscribeToContentRefresh(UserSlot, Runtime->DefaultNotificationChannel, NotificationHandler, this);
 }
@@ -907,7 +907,7 @@ void UBeamContentSubsystem::DownloadContentObjects(const FBeamContentManifestId 
 					UBeamContentCache* SavedContent = LiveContent[ManifestId];
 
 					TArray<uint8> SerializedData;
-					FMemoryWriter Writer(SerializedData, true);
+					FBeamMemoryWriter Writer(SerializedData, true);
 						 
 					SavedContent->SerializeToBinary(Writer,ContentTypeStringToContentClass,ContentClassToContentTypeString);
 
