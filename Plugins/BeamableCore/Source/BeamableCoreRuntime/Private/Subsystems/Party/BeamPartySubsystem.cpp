@@ -30,20 +30,12 @@ void UBeamPartySubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserSlo
 	PartyNotifications->CPP_SubscribeToPartyRefresh(UserSlot, Runtime->DefaultNotificationChannel, PartyUpdateHandler,
 	                                                this);
 
-	// Fetch party state for the logged player
-	FBeamOperationHandle FetchPartyStateHandle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
-		{UserSlot}, GetName(), {});
-
 	// Fetch the PartyInvites 
 	FBeamOperationHandle FetchPartyInvitesHandle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
 		{UserSlot}, GetName(), FBeamOperationEventHandlerCode::CreateLambda(
-			[this, UserSlot, FetchPartyStateHandle](const FBeamOperationEvent& Evt)
+			[this](const FBeamOperationEvent& Evt)
 			{
-				if (Evt.EventType == OET_SUCCESS)
-				{
-					FetchPlayerPartyState(UserSlot, FetchPartyStateHandle);
-				}
-				else
+				if (Evt.EventType != OET_SUCCESS)
 				{
 					UE_LOG(LogBeamParty, Error, TEXT("Error on %hs: Failed to fetch the party invites state"),
 					       __FUNCTION__);
@@ -51,7 +43,7 @@ void UBeamPartySubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserSlo
 			}));
 	FetchPartyInvites(UserSlot, FetchPartyInvitesHandle);
 
-	ResultOp = FetchPartyStateHandle;
+	ResultOp = FetchPartyInvitesHandle;
 }
 
 void UBeamPartySubsystem::OnPostUserSignedOut_Implementation(const FUserSlot& UserSlot,
