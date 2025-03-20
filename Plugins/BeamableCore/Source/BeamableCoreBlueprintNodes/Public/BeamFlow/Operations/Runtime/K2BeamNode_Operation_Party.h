@@ -170,6 +170,33 @@ class UK2BeamNode_Operation_FetchPartyState : public UK2BeamNode_Operation
 
 #undef LOCTEXT_NAMESPACE
 
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_FetchPlayerPartyState"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamNode_Operation_FetchPlayerPartyState : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
+	{
+		return LOCTEXT("Title", "Operation - Party - FetchPlayerPartyState");
+	}
+
+	virtual FName GetSubsystemSelfFunctionName() const override
+	{
+		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
+	}
+
+	virtual FName GetOperationFunctionName() const override
+	{
+		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, FetchPlayerPartyStateOperation);
+	}
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
 #define LOCTEXT_NAMESPACE "K2BeamNode_Operation_FetchPartyInvites"
 
 UCLASS(meta=(BeamFlowNode))
