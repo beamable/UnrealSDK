@@ -37,10 +37,10 @@ struct BEAMABLECORERUNTIME_API FBeamPartyState
 	FBeamGamerTag Leader;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	EBeamPartyRestriction Restriction;
+	EBeamPartyRestriction Restriction = EBeamPartyRestriction::BEAM_Unrestricted;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	int32 MaxPlayers;
+	int32 MaxPlayers = 10;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TMap<FBeamGamerTag, FBeamPartyPlayerState> PlayerStates;
@@ -329,6 +329,25 @@ public:
 	                                                  FBeamOperationEventHandlerCode OperationEventHandler);
 
 	/**
+	* @brief Fetch party state for a given UserSlot and update the local state.
+	*
+	* Update the local state of: @link PartyStates @endlink 
+	*
+	* @param UserSlot: The UserSlot used for validation to get the Party State.
+	* @param OperationEventHandler: The callback event that handles the result.
+	*/
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle FetchPlayerPartyStateOperation(FUserSlot UserSlot,
+	                                                    FBeamOperationEventHandler OperationEventHandler);
+
+	/**
+	 * @copydoc FetchPlayerPartyStateOperation
+	 */
+	FBeamOperationHandle CPP_FetchPlayerPartyStateOperation(FUserSlot UserSlot,
+	                                                        FBeamOperationEventHandlerCode OperationEventHandler);
+
+	/**
 	* @brief Creates the Party using the UserSlot who calls it as leader.
 	*
 	* If the user already in a party and create another it will be removed from the current party and creates the new one normally.
@@ -531,6 +550,8 @@ private:
 	bool TryGetAvailableInvites(FUserSlot UserSlot, TArray<FBeamPartyInviteState>& Invites);
 
 	void FetchPartyState(FUserSlot UserSlot, FGuid PartyId, FBeamOperationHandle Op);
+
+	void FetchPlayerPartyState(FUserSlot UserSlot, FBeamOperationHandle Op);
 
 	void FetchPartyInvites(FUserSlot UserSlot, FBeamOperationHandle Op);
 

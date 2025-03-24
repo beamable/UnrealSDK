@@ -9,7 +9,7 @@
 
 UENUM(BlueprintType, Category="Beam")
 enum class EBeamPartyEvent : uint8
-{  
+{
 	BEAM_PlayerJoined,
 	BEAM_PlayerLeft,
 	BEAM_PlayerInvited,
@@ -24,7 +24,7 @@ USTRUCT(BlueprintType, Category="Beam")
 struct BEAMABLECORE_API FPartyRefreshNotificationMessage : public FBeamJsonSerializableUStruct
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Beam")
 	FGuid PartyId;
 
@@ -55,8 +55,12 @@ class BEAMABLECORE_API UBeamPartyNotifications : public UEngineSubsystem
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 public:
-	UFUNCTION(BlueprintCallable, DisplayName="Subscribe - Party Refresh", Category="Beam", meta=(DefaultToSelf="ContextObject"))
-	void SubscribeToPartyRefresh(const FUserSlot& Slot, const FName& SocketName, const FOnPartyRefreshNotification& Handler, UObject* ContextObject) const;
+	UFUNCTION(BlueprintCallable, DisplayName="Subscribe - Party Refresh", Category="Beam",
+		meta=(DefaultToSelf="ContextObject"))
+	void SubscribeToPartyRefresh(const FUserSlot& Slot, const FName& SocketName,
+	                             const FOnPartyRefreshNotification& Handler, UObject* ContextObject) const;
 
-	FDelegateHandle CPP_SubscribeToPartyRefresh(const FUserSlot& Slot, const FName& SocketName, const FOnPartyRefreshNotificationCode& Handler, UObject* ContextObject) const;
+	FDelegateHandle CPP_SubscribeToPartyRefresh(const FUserSlot& Slot, const FName& SocketName,
+	                                            const FOnPartyRefreshNotificationCode& Handler,
+	                                            UObject* ContextObject) const;
 };

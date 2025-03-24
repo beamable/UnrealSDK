@@ -30,7 +30,20 @@ void UBeamPartySubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserSlo
 	PartyNotifications->CPP_SubscribeToPartyRefresh(UserSlot, Runtime->DefaultNotificationChannel, PartyUpdateHandler,
 	                                                this);
 
-	Super::OnUserSignedIn_Implementation(UserSlot, BeamRealmUser, bIsOwnerUserAuth, ResultOp);
+	// Fetch the PartyInvites 
+	FBeamOperationHandle FetchPartyInvitesHandle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
+		{UserSlot}, GetName(), FBeamOperationEventHandlerCode::CreateLambda(
+			[this](const FBeamOperationEvent& Evt)
+			{
+				if (Evt.EventType != OET_SUCCESS)
+				{
+					UE_LOG(LogBeamParty, Error, TEXT("Error on %hs: Failed to fetch the party invites state"),
+					       __FUNCTION__);
+				}
+			}));
+	FetchPartyInvites(UserSlot, FetchPartyInvitesHandle);
+
+	ResultOp = FetchPartyInvitesHandle;
 }
 
 void UBeamPartySubsystem::OnPostUserSignedOut_Implementation(const FUserSlot& UserSlot,
@@ -119,6 +132,27 @@ FBeamOperationHandle UBeamPartySubsystem::CPP_FetchPartyStateOperation(FUserSlot
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
 		{UserSlot}, GetClass()->GetFName().ToString(), OperationEventHandler);
 	FetchPartyState(UserSlot, PartyId, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamPartySubsystem::FetchPlayerPartyStateOperation(FUserSlot UserSlot,
+                                                                         FBeamOperationEventHandler
+                                                                         OperationEventHandler)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
+	                                                                  OperationEventHandler);
+	FetchPlayerPartyState(UserSlot, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamPartySubsystem::CPP_FetchPlayerPartyStateOperation(FUserSlot UserSlot,
+                                                                             FBeamOperationEventHandlerCode
+                                                                             OperationEventHandler)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
+		{UserSlot}, GetClass()->GetFName().ToString(), OperationEventHandler);
+
+	FetchPlayerPartyState(UserSlot, Handle);
 	return Handle;
 }
 
@@ -368,6 +402,65 @@ void UBeamPartySubsystem::FetchPartyState(FUserSlot UserSlot, FGuid PartyId, FBe
 	FBeamRequestContext Ctx;
 
 	PartyApi->CPP_GetParty(UserSlot, Request, Handler, Ctx, Op, this);
+}
+
+void UBeamPartySubsystem::FetchPlayerPartyState(FUserSlot UserSlot, FBeamOperationHandle Op)
+{
+	FOnGetPartiesFullResponse Handler = FOnGetPartiesFullResponse::CreateLambda(
+		[this, Op](const FGetPartiesFullResponse& Resp)
+		{
+			if (Resp.State == RS_Retrying)
+			{
+				return;
+			}
+
+			if (Resp.State == RS_Success)
+			{
+				// Check if the Id is set, if not the player isn't in any party.
+				if (Resp.SuccessData->Id.IsSet)
+				{
+					// It's creating the PartyState using the UParty in the SuccessData.
+					FBeamPartyState PartyState = MakePartyState(Resp.SuccessData);
+
+					if (PartyStates.Contains(PartyState.PartyId))
+					{
+						PartyStates[PartyState.PartyId] = PartyState;
+					}
+					else
+					{
+						PartyStates.Add(PartyState.PartyId, PartyState);
+					}
+				}
+				Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
+				return;
+			}
+
+			if (Resp.State == RS_Error)
+			{
+				Runtime->RequestTrackerSystem->TriggerOperationError(Op, Resp.ErrorData.message);
+				return;
+			}
+
+			if (Resp.State == RS_Cancelled)
+			{
+				Runtime->RequestTrackerSystem->TriggerOperationCancelled(Op, Resp.ErrorData.message);
+			}
+		});
+
+	FBeamRealmUser RealUser;
+
+	if (!Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealUser, this))
+	{
+		UE_LOG(LogBeamParty, Error, TEXT("Error on %hs: Wasn't able to find the Real User for the UserSlot %s"),
+		       __FUNCTION__, *UserSlot.Name)
+		return;
+	}
+
+	UGetPartiesRequest* const Request = UGetPartiesRequest::Make(RealUser.GamerTag.AsString, this, {});
+
+	FBeamRequestContext Ctx;
+
+	PlayerPartyApi->CPP_GetParties(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
 void UBeamPartySubsystem::FetchPartyInvites(FUserSlot UserSlot, FBeamOperationHandle Op)

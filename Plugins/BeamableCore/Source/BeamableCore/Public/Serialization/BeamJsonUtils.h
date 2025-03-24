@@ -1350,6 +1350,9 @@ public:
 			const FString Val = JsonField;
 			const bool Parsed = Val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
 			ToDeserialize = Parsed;
+		}else if constexpr (std::is_same_v<TPrimitiveType, FDateTime>)
+		{
+			FDateTime::ParseIso8601(*JsonField, ToDeserialize);
 		}
 	}
 
