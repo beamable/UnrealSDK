@@ -1277,8 +1277,14 @@ public:
 		}
 		else if constexpr (std::is_same_v<TPrimitiveType, FString>)
 		{
-			// We do this as the primitive content that is returned is a string enclosed with quotes.
-			ToDeserialize = JsonField.RightChop(1).LeftChop(1);
+			if (JsonField.StartsWith("\""))
+			{
+				// We do this as the primitive content that is returned is a string enclosed with quotes.
+				ToDeserialize = JsonField.RightChop(1).LeftChop(1);
+			}else
+			{
+				ToDeserialize = JsonField;
+			}
 		}
 		else if constexpr (TIsDerivedFrom<TPrimitiveType, FBeamMap>::Value)
 		{

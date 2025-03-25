@@ -55,14 +55,16 @@ void FSocialPresenceRefreshNotificationMessage::BeamSerializeProperties(TUnrealP
 void FSocialPresenceRefreshNotificationMessage::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	int64 PlayerIdLong;
-
+	FString OnlineStatus;
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("lastOnline")), LastOnline, OuterOwner);
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("friendId")), PlayerIdLong, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("onlineStatus")), Online, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("onlineStatus")), OnlineStatus, OuterOwner);
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("eventType")), Status, OuterOwner);
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("description")), Description, OuterOwner);
 
 	PlayerId = FBeamGamerTag(PlayerIdLong);
+
+	Online = OnlineStatus == TEXT("online");
 }
 
 

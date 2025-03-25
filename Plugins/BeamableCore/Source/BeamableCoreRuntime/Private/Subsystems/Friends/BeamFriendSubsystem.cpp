@@ -101,30 +101,30 @@ bool UBeamFriendSubsystem::TryGetFriendPresenceState(FBeamGamerTag PlayerId, FBe
 
 FBeamOperationHandle UBeamFriendSubsystem::FetchPlayerFriendStateOperation(FUserSlot UserSlot,
                                                                            FBeamOperationEventHandler
-                                                                           OperationEventHandler)
+                                                                           OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
-	                                                                  OperationEventHandler);
+	                                                                  OnOperationEvent);
 	FetchPlayerFriendState(UserSlot, Handle);
 	return Handle;
 }
 
 FBeamOperationHandle UBeamFriendSubsystem::CPP_FetchPlayerFriendStateOperation(FUserSlot UserSlot,
                                                                                FBeamOperationEventHandlerCode
-                                                                               OperationEventHandler)
+                                                                               OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
-	                                                                      OperationEventHandler);
+	                                                                      OnOperationEvent);
 	FetchPlayerFriendState(UserSlot, Handle);
 	return Handle;
 }
 
 FBeamOperationHandle UBeamFriendSubsystem::FetchFriendsStateOperation(FUserSlot UserSlot,
                                                                       TArray<FBeamGamerTag> PlayerIds,
-                                                                      FBeamOperationEventHandler OperationEventHandler)
+                                                                      FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
-	                                                                  OperationEventHandler);
+	                                                                  OnOperationEvent);
 	FetchFriendsState(UserSlot, PlayerIds, Handle);
 	return Handle;
 }
@@ -132,10 +132,10 @@ FBeamOperationHandle UBeamFriendSubsystem::FetchFriendsStateOperation(FUserSlot 
 FBeamOperationHandle UBeamFriendSubsystem::CPP_FetchFriendsStateOperation(FUserSlot UserSlot,
                                                                           TArray<FBeamGamerTag> PlayerIds,
                                                                           FBeamOperationEventHandlerCode
-                                                                          OperationEventHandler)
+                                                                          OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
-	                                                                      OperationEventHandler);
+	                                                                      OnOperationEvent);
 	FetchFriendsState(UserSlot, PlayerIds, Handle);
 	return Handle;
 }
@@ -143,28 +143,28 @@ FBeamOperationHandle UBeamFriendSubsystem::CPP_FetchFriendsStateOperation(FUserS
 FBeamOperationHandle UBeamFriendSubsystem::FetchFriendPresenceStatusOperation(FUserSlot UserSlot,
                                                                               TArray<FBeamGamerTag> PlayerIds,
                                                                               FBeamOperationEventHandler
-                                                                              OperationEventHandler)
+                                                                              OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
-	                                                                  OperationEventHandler);
+	                                                                  OnOperationEvent);
 	FetchFriendPresenceStatus(UserSlot, PlayerIds, Handle);
 	return Handle;
 }
 
 FBeamOperationHandle UBeamFriendSubsystem::CPP_FetchFriendPresenceStatusOperation(FUserSlot UserSlot,
-	TArray<FBeamGamerTag> PlayerIds, FBeamOperationEventHandlerCode OperationEventHandler)
+	TArray<FBeamGamerTag> PlayerIds, FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
-	                                                                      OperationEventHandler);
+	                                                                      OnOperationEvent);
 	FetchFriendPresenceStatus(UserSlot, PlayerIds, Handle);
 	return Handle;
 }
 
 FBeamOperationHandle UBeamFriendSubsystem::SendFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
-                                                                     FBeamOperationEventHandler OperationEventHandler)
+                                                                     FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
-	                                                                  OperationEventHandler);
+	                                                                  OnOperationEvent);
 	SendFriendInvite(UserSlot, FriendId, Handle);
 
 	return Handle;
@@ -172,20 +172,20 @@ FBeamOperationHandle UBeamFriendSubsystem::SendFriendInviteOperation(FUserSlot U
 
 FBeamOperationHandle UBeamFriendSubsystem::CPP_SendFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
                                                                          FBeamOperationEventHandlerCode
-                                                                         OperationEventHandler)
+                                                                         OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
-	                                                                      OperationEventHandler);
+	                                                                      OnOperationEvent);
 	SendFriendInvite(UserSlot, FriendId, Handle);
 
 	return Handle;
 }
 
 FBeamOperationHandle UBeamFriendSubsystem::AcceptFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
-                                                                       FBeamOperationEventHandler OperationEventHandler)
+                                                                       FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
-	                                                                  OperationEventHandler);
+	                                                                  OnOperationEvent);
 	AcceptFriendInvite(UserSlot, FriendId, Handle);
 
 	return Handle;
@@ -193,10 +193,10 @@ FBeamOperationHandle UBeamFriendSubsystem::AcceptFriendInviteOperation(FUserSlot
 
 FBeamOperationHandle UBeamFriendSubsystem::CPP_AcceptFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
                                                                            FBeamOperationEventHandlerCode
-                                                                           OperationEventHandler)
+                                                                           OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
-	                                                                      OperationEventHandler);
+	                                                                      OnOperationEvent);
 	AcceptFriendInvite(UserSlot, FriendId, Handle);
 
 	return Handle;
@@ -204,10 +204,10 @@ FBeamOperationHandle UBeamFriendSubsystem::CPP_AcceptFriendInviteOperation(FUser
 
 FBeamOperationHandle UBeamFriendSubsystem::DeclineFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
                                                                         FBeamOperationEventHandler
-                                                                        OperationEventHandler)
+                                                                        OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
-	                                                                  OperationEventHandler);
+	                                                                  OnOperationEvent);
 	DeclineFriendInvite(UserSlot, FriendId, Handle);
 
 	return Handle;
@@ -215,20 +215,20 @@ FBeamOperationHandle UBeamFriendSubsystem::DeclineFriendInviteOperation(FUserSlo
 
 FBeamOperationHandle UBeamFriendSubsystem::CPP_DeclineFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
                                                                             FBeamOperationEventHandlerCode
-                                                                            OperationEventHandler)
+                                                                            OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
-	                                                                      OperationEventHandler);
+	                                                                      OnOperationEvent);
 	DeclineFriendInvite(UserSlot, FriendId, Handle);
 
 	return Handle;
 }
 
 FBeamOperationHandle UBeamFriendSubsystem::BlockPlayerOperation(FUserSlot UserSlot, FBeamGamerTag PlayerId,
-                                                                FBeamOperationEventHandler OperationEventHandler)
+                                                                FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
-	                                                                  OperationEventHandler);
+	                                                                  OnOperationEvent);
 	BlockPlayer(UserSlot, PlayerId, Handle);
 
 	return Handle;
@@ -236,20 +236,20 @@ FBeamOperationHandle UBeamFriendSubsystem::BlockPlayerOperation(FUserSlot UserSl
 
 FBeamOperationHandle UBeamFriendSubsystem::CPP_BlockPlayerOperation(FUserSlot UserSlot, FBeamGamerTag PlayerId,
                                                                     FBeamOperationEventHandlerCode
-                                                                    OperationEventHandler)
+                                                                    OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
-	                                                                      OperationEventHandler);
+	                                                                      OnOperationEvent);
 	BlockPlayer(UserSlot, PlayerId, Handle);
 
 	return Handle;
 }
 
 FBeamOperationHandle UBeamFriendSubsystem::UnblockPlayerOperation(FUserSlot UserSlot, FBeamGamerTag PlayerId,
-                                                                  FBeamOperationEventHandler OperationEventHandler)
+                                                                  FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
-	                                                                  OperationEventHandler);
+	                                                                  OnOperationEvent);
 	UnblockPlayer(UserSlot, PlayerId, Handle);
 
 	return Handle;
@@ -257,20 +257,20 @@ FBeamOperationHandle UBeamFriendSubsystem::UnblockPlayerOperation(FUserSlot User
 
 FBeamOperationHandle UBeamFriendSubsystem::CPP_UnblockPlayerOperation(FUserSlot UserSlot, FBeamGamerTag PlayerId,
                                                                       FBeamOperationEventHandlerCode
-                                                                      OperationEventHandler)
+                                                                      OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
-	                                                                      OperationEventHandler);
+	                                                                      OnOperationEvent);
 	UnblockPlayer(UserSlot, PlayerId, Handle);
 
 	return Handle;
 }
 
 FBeamOperationHandle UBeamFriendSubsystem::RemoveFriendOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
-                                                                 FBeamOperationEventHandler OperationEventHandler)
+                                                                 FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
-	                                                                  OperationEventHandler);
+	                                                                  OnOperationEvent);
 	RemoveFriend(UserSlot, FriendId, Handle);
 
 	return Handle;
@@ -278,10 +278,10 @@ FBeamOperationHandle UBeamFriendSubsystem::RemoveFriendOperation(FUserSlot UserS
 
 FBeamOperationHandle UBeamFriendSubsystem::CPP_RemoveFriendOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
                                                                      FBeamOperationEventHandlerCode
-                                                                     OperationEventHandler)
+                                                                     OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
-	                                                                      OperationEventHandler);
+	                                                                      OnOperationEvent);
 	RemoveFriend(UserSlot, FriendId, Handle);
 
 	return Handle;
@@ -782,11 +782,24 @@ void UBeamFriendSubsystem::RemoveFriend(FUserSlot UserSlot, FBeamGamerTag Friend
 						FriendStates.Add(SenderId, FBeamFriendState(SenderId, {}, {}, {}, {}));
 					}
 
-					FriendStates[SenderId].Friends.Remove(FBeamFriendInfo(FriendId));
+					bool ShouldTriggerEvent = false;
+
+					FBeamFriendInfo FriendInfo(FriendId);
+
+					if (FriendStates[SenderId].Friends.Contains(FriendInfo))
+					{
+						FriendStates[SenderId].Friends.Remove(FriendInfo);
+						ShouldTriggerEvent = true;
+					}
+					// Only triggers the event if actually something has been removed
+					if (ShouldTriggerEvent)
+					{
+						//Triggers the friend removed for the local player
+						OnFriendRemoved.Broadcast(FriendId, UserSlot);
+						OnFriendRemovedCode.Broadcast(FriendId, UserSlot);
+					}
 				}
-				//Triggers the friend removed for the local player
-				OnFriendRemoved.Broadcast(FriendId, UserSlot);
-				OnFriendRemovedCode.Broadcast(FriendId, UserSlot);
+
 
 				Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
 				return;
@@ -1073,23 +1086,19 @@ void UBeamFriendSubsystem::MailRefreshNotificationHandler(FMailRefreshNotificati
 					//Compare the old invites with the new one and trigger the OnFriendInviteReceived with all the PlayerIds of the received invites.
 					if (FriendStates.Contains(PlayerId))
 					{
-						TArray<FBeamGamerTag> PlayerIds;
 						for (auto FriendInvite : FriendStates[PlayerId].ReceivedInvites)
 						{
 							if (!ReceivedInvites.Contains(FriendInvite))
 							{
-								PlayerIds.Add(FriendInvite.FriendId);
+								OnInviteReceived.Broadcast(FriendInvite.FriendId, UserSlot);
+								OnInviteReceivedCode.Broadcast(FriendInvite.FriendId, UserSlot);
 							}
-						}
-						if (PlayerIds.Num() > 0)
-						{
-							OnInviteReceived.Broadcast(PlayerIds, UserSlot);
-							OnInviteReceivedCode.Broadcast(PlayerIds, UserSlot);
 						}
 					}
 				}
 				else
 				{
+					UE_LOG(LogBeamFriend, Error, TEXT("Failed to fetch the state of the friends in the %hs"), __func__);
 				}
 			});
 		CPP_FetchPlayerFriendStateOperation(UserSlot, Handler);

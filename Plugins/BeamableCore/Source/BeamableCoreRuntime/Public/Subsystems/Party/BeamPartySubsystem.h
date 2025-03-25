@@ -231,7 +231,30 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
-	bool IsInAParty(FUserSlot UserSlot);
+	bool IsPlayerInAParty(FUserSlot UserSlot);
+
+	/**
+	 * @brief Check if the user slot is currently on a party.
+	 *
+	 * This will check in the PartyStates if the UserSlot is currently in any party on the list of states.
+	 *
+	 * @param PlayerId: The PlayerId used to search in the party state.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool IsInAParty(FBeamGamerTag PlayerId);
+
+
+	/**
+	 * @brief Check if the user slot is the leader of the party.
+	 *
+	 * This will check in the @link PartyStates @endlink if the UserSlot is the leader of any party in the state.
+	 *
+	 * @param UserSlot: The UserSlot used to search in the party state.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool IsThePartyLeader(FUserSlot UserSlot);
 
 	/**
 	 * @brief Attempts to retrieve the party state for a specific user slot.
@@ -246,6 +269,20 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetUserPartyState(FUserSlot UserSlot, FBeamPartyState& PartyState);
+
+	/**
+	 * @brief Attempts to retrieve the party state for a specific player id.
+	 *
+	 * This gets the PartyState from the local state.
+	 *
+	 * @param PlayerId: The player id that you try to get the party.
+	 * @param PartyState: The reference for the out result of the player party state.
+	 *
+	 * @return Returns False if the user is not in any party.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetPlayerPartyState(FBeamGamerTag PlayerId, FBeamPartyState& PartyState);
 
 	/**
 	* @brief Attempts to retrieve the invites state for a specific user slot.
@@ -273,18 +310,43 @@ public:
 	*
 	* @param UserSlot: The UserSlot that is calling the join party.
 	* @param PartyId: The PartyId that the Player would like to join.
-	* @param OperationEventHandler: The call back event that handles the result
+	* @param OnOperationEvent: The call back event that handles the result
 	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle JoinPartyOperation(FUserSlot UserSlot, FGuid PartyId,
-	                                        FBeamOperationEventHandler OperationEventHandler);
+	                                        FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc JoinPartyOperation
 	 */
 	FBeamOperationHandle CPP_JoinPartyOperation(FUserSlot UserSlot, FGuid PartyId,
-	                                            FBeamOperationEventHandlerCode OperationEventHandler);
+	                                            FBeamOperationEventHandlerCode OnOperationEvent);
+
+	/**
+	* @brief The Operation is called for join a party using the Player Id.
+	*
+	* If the player already is in a party and join another party it will be removed from the other party and join to new one.
+	* If you try to join a party that has the restriction InviteOnly without being invited this will return an error.
+	*
+	* Updates the local state of: @link PartyStates @endlink 
+	* 
+	* Triggers the delegate locally : @link OnPlayerJoined @endlink 
+	*
+	* @param UserSlot: The UserSlot that is calling the join party.
+	* @param PlayerId: The Player Id that invited the Player to join.
+	* @param OnOperationEvent: The call back event that handles the result
+	*/
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle JoinPlayerPartyOperation(FUserSlot UserSlot, FBeamGamerTag PlayerId,
+	                                              FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc JoinPlayerPartyOperation
+	 */
+	FBeamOperationHandle CPP_JoinPlayerPartyOperation(FUserSlot UserSlot, FBeamGamerTag PlayerId,
+	                                                  FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	* @brief Fetch party invites for a UserSlot and update the local state.
@@ -292,18 +354,18 @@ public:
 	* It's uses the UserSlot as the target to get all the invites for this specific User and then updates the local state for Invites.
 	*
 	* @param UserSlot: The target UserSlot that will be used to fetch the invites.
-	* @param OperationEventHandler: The callback event that handles the result.
+	* @param OnOperationEvent: The callback event that handles the result.
 	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle FetchPartyInvitesOperation(FUserSlot UserSlot,
-	                                                FBeamOperationEventHandler OperationEventHandler);
+	                                                FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc FetchPartyInvitesOperation
 	 */
 	FBeamOperationHandle CPP_FetchPartyInvitesOperation(FUserSlot UserSlot,
-	                                                    FBeamOperationEventHandlerCode OperationEventHandler);
+	                                                    FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	* @brief Fetch party state and update the local state.
@@ -315,18 +377,18 @@ public:
 	*
 	* @param UserSlot: The UserSlot used for validation to get the Party State.
 	* @param PartyId: The PartyId used to get the Party State.
-	* @param OperationEventHandler: The callback event that handles the result.
+	* @param OnOperationEvent: The callback event that handles the result.
 	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle FetchPartyStateOperation(FUserSlot UserSlot, FGuid PartyId,
-	                                              FBeamOperationEventHandler OperationEventHandler);
+	                                              FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc FetchPartyStateOperation
 	 */
 	FBeamOperationHandle CPP_FetchPartyStateOperation(FUserSlot UserSlot, FGuid PartyId,
-	                                                  FBeamOperationEventHandlerCode OperationEventHandler);
+	                                                  FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	* @brief Fetch party state for a given UserSlot and update the local state.
@@ -334,18 +396,18 @@ public:
 	* Update the local state of: @link PartyStates @endlink 
 	*
 	* @param UserSlot: The UserSlot used for validation to get the Party State.
-	* @param OperationEventHandler: The callback event that handles the result.
+	* @param OnOperationEvent: The callback event that handles the result.
 	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle FetchPlayerPartyStateOperation(FUserSlot UserSlot,
-	                                                    FBeamOperationEventHandler OperationEventHandler);
+	                                                    FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc FetchPlayerPartyStateOperation
 	 */
 	FBeamOperationHandle CPP_FetchPlayerPartyStateOperation(FUserSlot UserSlot,
-	                                                        FBeamOperationEventHandlerCode OperationEventHandler);
+	                                                        FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	* @brief Creates the Party using the UserSlot who calls it as leader.
@@ -358,19 +420,19 @@ public:
 	* 
 	* @param UserSlot: The UserSlot that will create the party and be the leader.
 	* @param Restriction: The type of restriction for this party (	BEAM_Unrestricted, BEAM_InviteOnly ).
-	* @param OperationEventHandler: The callback event that handles the result.
+	* @param OnOperationEvent: The callback event that handles the result.
 	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle CreatePartyOperation(FUserSlot UserSlot, EBeamPartyRestriction Restriction, int32 MaxPlayers,
-	                                          FBeamOperationEventHandler OperationEventHandler);
+	                                          FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc CreatePartyOperation
 	 */
 	FBeamOperationHandle CPP_CreatePartyOperation(FUserSlot UserSlot, EBeamPartyRestriction Restriction,
 	                                              int32 maxPlayers,
-	                                              FBeamOperationEventHandlerCode OperationEventHandler);
+	                                              FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 *	@brief Send a party invite to a player.
@@ -384,18 +446,18 @@ public:
 	 *	@param UserSlot: The leader user slot that will be sending the invite.
 	 *	@param PartyId: The PartyId that the player will be invited.
 	 *	@param Player: The BeamGamerTag of the target player to be invited.
-	 * @param OperationEventHandler: The callback event that handles the result.
+	 * @param OnOperationEvent: The callback event that handles the result.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle InvitePlayerToPartyOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
-	                                                  FBeamOperationEventHandler OperationEventHandler);
+	                                                  FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 *	@copydoc InvitePlayerToPartyOperation
 	 */
 	FBeamOperationHandle CPP_InvitePlayerToPartyOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
-	                                                      FBeamOperationEventHandlerCode OperationEventHandler);
+	                                                      FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * @brief Decline the invite received to a party.
@@ -408,18 +470,42 @@ public:
 	 *
 	 * @param UserSlot: The UserSlot that has been invited and will decline.
 	 * @param PartyId: The PartyId that the player has been invited.
-	 * @param OperationEventHandler: The callback event that handles the result.
+	 * @param OnOperationEvent: The callback event that handles the result.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle DeclinePlayerPartyInviteOperation(FUserSlot UserSlot, FGuid PartyId,
-	                                                       FBeamOperationEventHandler OperationEventHandler);
+	FBeamOperationHandle DeclinePartyInviteOperation(FUserSlot UserSlot, FGuid PartyId,
+	                                                 FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc DeclinePartyInviteOperation
+	 */
+	FBeamOperationHandle CPP_DeclinePartyInviteOperation(FUserSlot UserSlot, FGuid PartyId,
+	                                                     FBeamOperationEventHandlerCode OnOperationEvent);
+
+	/**
+	 * @brief Decline the invite received to a party.
+	 *
+	 * The player that has been invited to the party can decline it using this Operation.
+	 *
+	 * Updates locally the state of: @link PartyInvitesState @endlink .
+	 *
+	 * Triggers the delegate: @link OnPlayerInviteCanceled @endlink 
+	 *
+	 * @param UserSlot: The UserSlot that has been invited and will decline.
+	 * @param PlayerId: The player Id that sent the invite.
+	 * @param OnOperationEvent: The callback event that handles the result.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle DeclinePlayerPartyInviteOperation(FUserSlot UserSlot, FBeamGamerTag PlayerId,
+	                                                       FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc DeclinePlayerPartyInviteOperation
 	 */
-	FBeamOperationHandle CPP_DeclinePlayerPartyInviteOperation(FUserSlot UserSlot, FGuid PartyId,
-	                                                           FBeamOperationEventHandlerCode OperationEventHandler);
+	FBeamOperationHandle CPP_DeclinePlayerPartyInviteOperation(FUserSlot UserSlot, FBeamGamerTag PlayerId,
+	                                                           FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	* @brief Leave the party that the UserSlot are in.
@@ -432,18 +518,18 @@ public:
 	*
 	* @param UserSlot: The target UserSlot that is leaving the party.
 	* @param PartyId: The PartyId that the UserSlot is leaving.
-	* @param OperationEventHandler: The callback event that handles the result.
+	* @param OnOperationEvent: The callback event that handles the result.
 	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle LeavePartyOperation(FUserSlot UserSlot, FGuid PartyId,
-	                                         FBeamOperationEventHandler OperationEventHandler);
+	                                         FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc LeavePartyOperation
 	 */
 	FBeamOperationHandle CPP_LeavePartyOperation(FUserSlot UserSlot, FGuid PartyId,
-	                                             FBeamOperationEventHandlerCode OperationEventHandler);
+	                                             FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	* @brief The party leader can kick another player from the party.
@@ -457,17 +543,17 @@ public:
 	* @param UserSlot: The UserSlot that is the leader.
 	* @param PartyId: The PartyId to kick the player.
 	* @param Player: The target player BeamGaemTag who will be kicked from the party.
-	* @param OperationEventHandler: The callback event that handles the result.
+	* @param OnOperationEvent: The callback event that handles the result.
 	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle KickPlayerOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
-	                                         FBeamOperationEventHandler OperationEventHandler);
+	                                         FBeamOperationEventHandler OnOperationEvent);
 	/**
 	 * @copydoc KickPlayerOperation
 	 */
 	FBeamOperationHandle CPP_KickPlayerOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
-	                                             FBeamOperationEventHandlerCode OperationEventHandler);
+	                                             FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	* @brief Cancel the invite sent to another player.
@@ -481,18 +567,18 @@ public:
 	* @param UserSlot: The leader UserSlot that is canceling the invite.
 	* @param PartyId: The PartyId that the player has been invited.
 	* @param Player: The target player to cancel the invite.
-	* @param OperationEventHandler: The callback event that handles the result.
+	* @param OnOperationEvent: The callback event that handles the result.
 	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle CancelPlayerPartyInviteOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
-	                                                      FBeamOperationEventHandler OperationEventHandler);
+	                                                      FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc CancelPlayerPartyInviteOperation
 	 */
 	FBeamOperationHandle CPP_CancelPlayerPartyInviteOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
-	                                                          FBeamOperationEventHandlerCode OperationEventHandler);
+	                                                          FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	* @brief The party leader can promote a player to be the new leader.
@@ -506,18 +592,18 @@ public:
 	* @param UserSlot: The leader UserSlot that will be used to validate the operation.
 	* @param PartyId: The PartyId that will happen the promotion.
 	* @param Player: The target player that will be promoted to leader of the party.
-	* @param OperationEventHandler: The callback event that handles the result.
+	* @param OnOperationEvent: The callback event that handles the result.
 	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle PromotePlayerToLeaderOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
-	                                                    FBeamOperationEventHandler OperationEventHandler);
+	                                                    FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc PromotePlayerToLeaderOperation
 	 */
 	FBeamOperationHandle CPP_PromotePlayerToLeaderOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
-	                                                        FBeamOperationEventHandlerCode OperationEventHandler);
+	                                                        FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * @brief The party leader can update the party meta-data (Restriction and MaxPlayers) for the party after create it
@@ -535,17 +621,19 @@ public:
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle UpdatePartyOperation(FUserSlot UserSlot, FGuid PartyId, EBeamPartyRestriction Restriction,
 	                                          FOptionalInt32 MaxPlayers,
-	                                          FBeamOperationEventHandler OperationEventHandler);
+	                                          FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc UpdatePartyOperation
 	 */
 	FBeamOperationHandle CPP_UpdatePartyOperation(FUserSlot UserSlot, FGuid PartyId, EBeamPartyRestriction Restriction,
 	                                              FOptionalInt32 MaxPlayers,
-	                                              FBeamOperationEventHandlerCode OperationEventHandler);
+	                                              FBeamOperationEventHandlerCode OnOperationEvent);
 
 private:
-	bool TryGetPlayerParty(FUserSlot UserSlot, FBeamPartyState& PartyState);
+	bool TryGetPlayerParty(FBeamGamerTag PlayerId, FBeamPartyState& PartyState);
+
+	bool TryGetUserParty(FUserSlot UserSlot, FBeamPartyState& PartyState);
 
 	bool TryGetAvailableInvites(FUserSlot UserSlot, TArray<FBeamPartyInviteState>& Invites);
 
@@ -559,9 +647,13 @@ private:
 
 	void JoinParty(FUserSlot UserSlot, FGuid PartyId, FBeamOperationHandle Op);
 
+	void JoinPlayerParty(FUserSlot UserSlot, FBeamGamerTag PlayerId, FBeamOperationHandle Op);
+
 	void InvitePlayerToParty(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationHandle Op);
 
-	void DeclinePlayerPartyInvite(FUserSlot UserSlot, FGuid PartyId, FBeamOperationHandle Op);
+	void DeclinePartyInvite(FUserSlot UserSlot, FGuid PartyId, FBeamOperationHandle Op);
+
+	void DeclinePlayerPartyInvite(FUserSlot UserSlot, FBeamGamerTag PlayerId, FBeamOperationHandle Op);
 
 	void LeaveParty(FUserSlot UserSlot, FGuid PartyId, FBeamOperationHandle Op);
 
