@@ -17,58 +17,65 @@ void UBeamFriendSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperati
 void UBeamFriendSubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser,
                                                          const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp)
 {
-	//Start to listening on the callbacks for the mail changes, this is responsible for receive the callbacks related to friend invites
-	const auto MailNotificationHandler = FOnMailRefreshNotificationCode::CreateUFunction(
-		this, GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, MailRefreshNotificationHandler), UserSlot);
+	if (!IsRunningDedicatedServer())
+	{
+		//Start to listening on the callbacks for the mail changes, this is responsible for receive the callbacks related to friend invites
+		const auto MailNotificationHandler = FOnMailRefreshNotificationCode::CreateUFunction(
+			this, GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, MailRefreshNotificationHandler), UserSlot);
 
-	MailNotifications->CPP_SubscribeToMailRefresh(UserSlot, Runtime->DefaultNotificationChannel,
-	                                              MailNotificationHandler, this);
+		MailNotifications->CPP_SubscribeToMailRefresh(UserSlot, Runtime->DefaultNotificationChannel,
+		                                              MailNotificationHandler, this);
 
-	//Start to listening on the callbacks for the friends presence changes
-	const auto SocialPresenceNotificationHandler = FOnSocialPresenceRefreshNotificationCode::CreateUFunction(
-		this, GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, SocialPresenceRefreshNotificationHandler), UserSlot);
+		//Start to listening on the callbacks for the friends presence changes
+		const auto SocialPresenceNotificationHandler = FOnSocialPresenceRefreshNotificationCode::CreateUFunction(
+			this, GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, SocialPresenceRefreshNotificationHandler), UserSlot);
 
-	SocialNotifications->CPP_SubscribeToSocialPresenceRefresh(UserSlot, Runtime->DefaultNotificationChannel,
-	                                                          SocialPresenceNotificationHandler, this);
+		SocialNotifications->CPP_SubscribeToSocialPresenceRefresh(UserSlot, Runtime->DefaultNotificationChannel,
+		                                                          SocialPresenceNotificationHandler, this);
 
-	//Start to listening on the callbacks for the friends changes
-	const auto SocialNotificationHandler = FOnSocialRefreshNotificationCode::CreateUFunction(
-		this, GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, SocialRefreshNotificationHandler), UserSlot);
+		//Start to listening on the callbacks for the friends changes
+		const auto SocialNotificationHandler = FOnSocialRefreshNotificationCode::CreateUFunction(
+			this, GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, SocialRefreshNotificationHandler), UserSlot);
 
-	SocialNotifications->CPP_SubscribeToSocialRefresh(UserSlot, Runtime->DefaultNotificationChannel,
-	                                                  SocialNotificationHandler, this);
+		SocialNotifications->CPP_SubscribeToSocialRefresh(UserSlot, Runtime->DefaultNotificationChannel,
+		                                                  SocialNotificationHandler, this);
 
-	// Fetch the friend presence state for the SignedIn player. 
-	const auto FetchPlayerFriendPresenceStateHandle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
-		{UserSlot}, GetName(), {});
+		// Fetch the friend presence state for the SignedIn player. 
+		const auto FetchPlayerFriendPresenceStateHandle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
+			{UserSlot}, GetName(), {});
 
-	// Fetch the friend state for the SignedIn player. 
-	const auto FetchPlayerFriendStateHandle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
-		{UserSlot}, GetName(), FBeamOperationEventHandlerCode::CreateLambda(
-			[this, UserSlot, BeamRealmUser, FetchPlayerFriendPresenceStateHandle](const FBeamOperationEvent& Evt)
-			{
-				if (Evt.EventType == OET_SUCCESS)
+		// Fetch the friend state for the SignedIn player. 
+		const auto FetchPlayerFriendStateHandle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
+			{UserSlot}, GetName(), FBeamOperationEventHandlerCode::CreateLambda(
+				[this, UserSlot, BeamRealmUser, FetchPlayerFriendPresenceStateHandle](const FBeamOperationEvent& Evt)
 				{
-					FBeamFriendState FriendState;
-					if (TryGetFriendState(BeamRealmUser.GamerTag, FriendState))
+					if (Evt.EventType == OET_SUCCESS)
 					{
-						TArray<FBeamGamerTag> FriendIds;
-						for (auto Friend : FriendState.Friends)
+						FBeamFriendState FriendState;
+						if (TryGetPlayerFriendState(BeamRealmUser.GamerTag, FriendState))
 						{
-							FriendIds.Add(Friend.FriendId);
+							TArray<FBeamGamerTag> FriendIds;
+							for (auto Friend : FriendState.Friends)
+							{
+								FriendIds.Add(Friend.FriendGamerTag);
+							}
+							FetchFriendPresenceStatus(UserSlot, FriendIds, FetchPlayerFriendPresenceStateHandle);
 						}
-						FetchFriendPresenceStatus(UserSlot, FriendIds, FetchPlayerFriendPresenceStateHandle);
 					}
-				}
-				else
-				{
-					UE_LOG(LogBeamFriend, Error, TEXT("%hs() failed. Operation failed!"), __FUNCTION__);
-				}
-			}));
+					else
+					{
+						UE_LOG(LogBeamFriend, Error, TEXT("%hs() failed. Operation failed!"), __FUNCTION__);
+					}
+				}));
 
-	FetchPlayerFriendState(UserSlot, FetchPlayerFriendStateHandle);
+		FetchPlayerFriendState(UserSlot, FetchPlayerFriendStateHandle);
 
-	ResultOp = FetchPlayerFriendPresenceStateHandle;
+		ResultOp = FetchPlayerFriendPresenceStateHandle;
+	}
+	else
+	{
+		ResultOp = Runtime->RequestTrackerSystem->CPP_BeginSuccessfulOperation({}, GetName(), {}, {});
+	}
 }
 
 void UBeamFriendSubsystem::OnUserSignedOut_Implementation(const FUserSlot& UserSlot,
@@ -86,17 +93,37 @@ void UBeamFriendSubsystem::OnUserSignedOut_Implementation(const FUserSlot& UserS
 
 bool UBeamFriendSubsystem::TryGetUserFriendState(FUserSlot UserSlot, FBeamFriendState& FriendState)
 {
-	return TryGetPlayerFriendState(UserSlot, FriendState);
+	FBeamRealmUser RealmUser;
+	if (!Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
+	{
+		return false;
+	}
+	return TryGetPlayerFriendState(RealmUser.GamerTag, FriendState);
 }
 
-bool UBeamFriendSubsystem::TryGetPlayerFriendState(FBeamGamerTag PlayerId, FBeamFriendState& FriendState)
+bool UBeamFriendSubsystem::TryGetPlayerFriendState(FBeamGamerTag PlayerGamerTag, FBeamFriendState& FriendState)
 {
-	return TryGetFriendState(PlayerId, FriendState);
+	if (!FriendStates.Contains(PlayerGamerTag))
+	{
+		return false;
+	}
+
+	FriendState = FriendStates[PlayerGamerTag];
+
+	return true;
 }
 
-bool UBeamFriendSubsystem::TryGetFriendPresenceState(FBeamGamerTag PlayerId, FBeamFriendPresenceStatus& StatusState)
+bool UBeamFriendSubsystem::TryGetFriendPresenceState(FBeamGamerTag PlayerGamerTag,
+                                                     FBeamFriendPresenceStatus& StatusState)
 {
-	return TryGetFriendPresenceStatus(PlayerId, StatusState);
+	if (!FriendStates.Contains(PlayerGamerTag))
+	{
+		return false;
+	}
+
+	StatusState = FriendStates[PlayerGamerTag].Status;
+
+	return true;
 }
 
 FBeamOperationHandle UBeamFriendSubsystem::FetchPlayerFriendStateOperation(FUserSlot UserSlot,
@@ -160,170 +187,140 @@ FBeamOperationHandle UBeamFriendSubsystem::CPP_FetchFriendPresenceStatusOperatio
 	return Handle;
 }
 
-FBeamOperationHandle UBeamFriendSubsystem::SendFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
+FBeamOperationHandle UBeamFriendSubsystem::SendFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag,
                                                                      FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                  OnOperationEvent);
-	SendFriendInvite(UserSlot, FriendId, Handle);
+	SendFriendInvite(UserSlot, FriendGamerTag, Handle);
 
 	return Handle;
 }
 
-FBeamOperationHandle UBeamFriendSubsystem::CPP_SendFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
-                                                                         FBeamOperationEventHandlerCode
-                                                                         OnOperationEvent)
+FBeamOperationHandle UBeamFriendSubsystem::CPP_SendFriendInviteOperation(
+	FUserSlot UserSlot, FBeamGamerTag FriendGamerTag,
+	FBeamOperationEventHandlerCode
+	OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                      OnOperationEvent);
-	SendFriendInvite(UserSlot, FriendId, Handle);
+	SendFriendInvite(UserSlot, FriendGamerTag, Handle);
 
 	return Handle;
 }
 
-FBeamOperationHandle UBeamFriendSubsystem::AcceptFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
+FBeamOperationHandle UBeamFriendSubsystem::AcceptFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag,
                                                                        FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                  OnOperationEvent);
-	AcceptFriendInvite(UserSlot, FriendId, Handle);
+	AcceptFriendInvite(UserSlot, FriendGamerTag, Handle);
 
 	return Handle;
 }
 
-FBeamOperationHandle UBeamFriendSubsystem::CPP_AcceptFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
-                                                                           FBeamOperationEventHandlerCode
-                                                                           OnOperationEvent)
+FBeamOperationHandle UBeamFriendSubsystem::CPP_AcceptFriendInviteOperation(
+	FUserSlot UserSlot, FBeamGamerTag FriendGamerTag,
+	FBeamOperationEventHandlerCode
+	OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                      OnOperationEvent);
-	AcceptFriendInvite(UserSlot, FriendId, Handle);
+	AcceptFriendInvite(UserSlot, FriendGamerTag, Handle);
 
 	return Handle;
 }
 
-FBeamOperationHandle UBeamFriendSubsystem::DeclineFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
-                                                                        FBeamOperationEventHandler
-                                                                        OnOperationEvent)
+FBeamOperationHandle UBeamFriendSubsystem::DeclineFriendInviteOperation(
+	FUserSlot UserSlot, FBeamGamerTag FriendGamerTag,
+	FBeamOperationEventHandler
+	OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                  OnOperationEvent);
-	DeclineFriendInvite(UserSlot, FriendId, Handle);
+	DeclineFriendInvite(UserSlot, FriendGamerTag, Handle);
 
 	return Handle;
 }
 
-FBeamOperationHandle UBeamFriendSubsystem::CPP_DeclineFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
-                                                                            FBeamOperationEventHandlerCode
-                                                                            OnOperationEvent)
+FBeamOperationHandle UBeamFriendSubsystem::CPP_DeclineFriendInviteOperation(
+	FUserSlot UserSlot, FBeamGamerTag FriendGamerTag,
+	FBeamOperationEventHandlerCode
+	OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                      OnOperationEvent);
-	DeclineFriendInvite(UserSlot, FriendId, Handle);
+	DeclineFriendInvite(UserSlot, FriendGamerTag, Handle);
 
 	return Handle;
 }
 
-FBeamOperationHandle UBeamFriendSubsystem::BlockPlayerOperation(FUserSlot UserSlot, FBeamGamerTag PlayerId,
+FBeamOperationHandle UBeamFriendSubsystem::BlockPlayerOperation(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
                                                                 FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                  OnOperationEvent);
-	BlockPlayer(UserSlot, PlayerId, Handle);
+	BlockPlayer(UserSlot, PlayerGamerTag, Handle);
 
 	return Handle;
 }
 
-FBeamOperationHandle UBeamFriendSubsystem::CPP_BlockPlayerOperation(FUserSlot UserSlot, FBeamGamerTag PlayerId,
+FBeamOperationHandle UBeamFriendSubsystem::CPP_BlockPlayerOperation(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
                                                                     FBeamOperationEventHandlerCode
                                                                     OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                      OnOperationEvent);
-	BlockPlayer(UserSlot, PlayerId, Handle);
+	BlockPlayer(UserSlot, PlayerGamerTag, Handle);
 
 	return Handle;
 }
 
-FBeamOperationHandle UBeamFriendSubsystem::UnblockPlayerOperation(FUserSlot UserSlot, FBeamGamerTag PlayerId,
+FBeamOperationHandle UBeamFriendSubsystem::UnblockPlayerOperation(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
                                                                   FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                  OnOperationEvent);
-	UnblockPlayer(UserSlot, PlayerId, Handle);
+	UnblockPlayer(UserSlot, PlayerGamerTag, Handle);
 
 	return Handle;
 }
 
-FBeamOperationHandle UBeamFriendSubsystem::CPP_UnblockPlayerOperation(FUserSlot UserSlot, FBeamGamerTag PlayerId,
+FBeamOperationHandle UBeamFriendSubsystem::CPP_UnblockPlayerOperation(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
                                                                       FBeamOperationEventHandlerCode
                                                                       OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                      OnOperationEvent);
-	UnblockPlayer(UserSlot, PlayerId, Handle);
+	UnblockPlayer(UserSlot, PlayerGamerTag, Handle);
 
 	return Handle;
 }
 
-FBeamOperationHandle UBeamFriendSubsystem::RemoveFriendOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
+FBeamOperationHandle UBeamFriendSubsystem::RemoveFriendOperation(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag,
                                                                  FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                  OnOperationEvent);
-	RemoveFriend(UserSlot, FriendId, Handle);
+	RemoveFriend(UserSlot, FriendGamerTag, Handle);
 
 	return Handle;
 }
 
-FBeamOperationHandle UBeamFriendSubsystem::CPP_RemoveFriendOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
+FBeamOperationHandle UBeamFriendSubsystem::CPP_RemoveFriendOperation(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag,
                                                                      FBeamOperationEventHandlerCode
                                                                      OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                      OnOperationEvent);
-	RemoveFriend(UserSlot, FriendId, Handle);
+	RemoveFriend(UserSlot, FriendGamerTag, Handle);
 
 	return Handle;
 }
 
-bool UBeamFriendSubsystem::TryGetPlayerFriendState(FUserSlot UserSlot, FBeamFriendState& FriendState)
-{
-	FBeamRealmUser RealmUser;
-	if (!Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
-	{
-		return false;
-	}
-	return TryGetFriendState(RealmUser.GamerTag, FriendState);
-}
-
-bool UBeamFriendSubsystem::TryGetFriendState(FBeamGamerTag PlayerId, FBeamFriendState& FriendState)
-{
-	if (!FriendStates.Contains(PlayerId))
-	{
-		return false;
-	}
-
-	FriendState = FriendStates[PlayerId];
-
-	return true;
-}
-
-bool UBeamFriendSubsystem::TryGetFriendPresenceStatus(FBeamGamerTag PlayerId, FBeamFriendPresenceStatus& StatusState)
-{
-	if (!FriendPresenceStatusState.Contains(PlayerId))
-	{
-		return false;
-	}
-
-	StatusState = FriendPresenceStatusState[PlayerId];
-
-	return true;
-}
-
 void UBeamFriendSubsystem::FetchPlayerFriendState(FUserSlot UserSlot, FBeamOperationHandle Op)
 {
-	const auto Handler = FOnGetMyFullResponse::CreateLambda([this, UserSlot, Op](const FGetMyFullResponse& Resp)
+	const auto Handler = FOnGetMyFullResponse::CreateLambda([this, Op](const FGetMyFullResponse& Resp)
 	{
 		if (Resp.State == RS_Retrying) return;
 
@@ -331,14 +328,16 @@ void UBeamFriendSubsystem::FetchPlayerFriendState(FUserSlot UserSlot, FBeamOpera
 		{
 			FBeamFriendState FriendState = MakeFriendState(Resp.SuccessData);
 
-			// Refreshing the state of the PlayerId in the FriendStates
-			if (FriendStates.Contains(FriendState.PlayerId))
+			// Refreshing the state of the PlayerGamerTag in the FriendStates
+			if (FriendStates.Contains(FriendState.PlayerGamerTag))
 			{
-				FriendStates[FriendState.PlayerId] = FriendState;
+				auto CachedStatus = FriendStates[FriendState.PlayerGamerTag].Status;
+				FriendStates[FriendState.PlayerGamerTag] = FriendState;
+				FriendStates[FriendState.PlayerGamerTag].Status = CachedStatus;
 			}
 			else
 			{
-				FriendStates.Add(FriendState.PlayerId, FriendState);
+				FriendStates.Add(FriendState.PlayerGamerTag, FriendState);
 			}
 			Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
 			return;
@@ -378,14 +377,16 @@ void UBeamFriendSubsystem::FetchFriendsState(FUserSlot UserSlot, TArray<FBeamGam
 			{
 				FBeamFriendState FriendState = MakeFriendState(FriendResponse);
 
-				// Refreshing the state of the PlayerId in the FriendStates
-				if (FriendStates.Contains(FriendState.PlayerId))
+				// Refreshing the state of the PlayerGamerTag in the FriendStates
+				if (FriendStates.Contains(FriendState.PlayerGamerTag))
 				{
-					FriendStates[FriendState.PlayerId] = FriendState;
+					auto CachedStatus = FriendStates[FriendState.PlayerGamerTag].Status;
+					FriendStates[FriendState.PlayerGamerTag] = FriendState;
+					FriendStates[FriendState.PlayerGamerTag].Status = CachedStatus;
 				}
 				else
 				{
-					FriendStates.Add(FriendState.PlayerId, FriendState);
+					FriendStates.Add(FriendState.PlayerGamerTag, FriendState);
 				}
 			}
 
@@ -408,9 +409,9 @@ void UBeamFriendSubsystem::FetchFriendsState(FUserSlot UserSlot, TArray<FBeamGam
 
 	TArray<FString> PlayerIdArray;
 
-	for (auto PlayerId : PlayerIds)
+	for (auto PlayerGamerTag : PlayerIds)
 	{
-		PlayerIdArray.Add(PlayerId.AsString);
+		PlayerIdArray.Add(PlayerGamerTag.AsString);
 	}
 
 	UGetSocialRequest* const Request = UGetSocialRequest::Make(PlayerIdArray, this, {});
@@ -437,14 +438,16 @@ void UBeamFriendSubsystem::FetchFriendPresenceStatus(FUserSlot UserSlot, TArray<
 						auto PresenceRefreshMessage = FSocialPresenceRefreshNotificationMessage(PlayerStatus);
 						auto FriendPresenceStatus = MakeFriendPresenceStatus(PresenceRefreshMessage);
 
-						// Updates the local state for the Message PlayerId 
-						if (FriendPresenceStatusState.Contains(FriendPresenceStatus.PlayerId))
+						// Updates the local state for the Message PlayerGamerTag 
+						if (FriendStates.Contains(PresenceRefreshMessage.PlayerGamerTag))
 						{
-							FriendPresenceStatusState[FriendPresenceStatus.PlayerId] = FriendPresenceStatus;
+							FriendStates.Find(PresenceRefreshMessage.PlayerGamerTag)->Status = FriendPresenceStatus;
 						}
 						else
 						{
-							FriendPresenceStatusState.Add(FriendPresenceStatus.PlayerId, FriendPresenceStatus);
+							FriendStates.Add(PresenceRefreshMessage.PlayerGamerTag,
+							                 FBeamFriendState(PresenceRefreshMessage.PlayerGamerTag,
+							                                  FriendPresenceStatus));
 						}
 					}
 				}
@@ -466,9 +469,9 @@ void UBeamFriendSubsystem::FetchFriendPresenceStatus(FUserSlot UserSlot, TArray<
 			}
 		});
 	TArray<FString> PlayerIdArray;
-	for (auto PlayerId : PlayerIds)
+	for (auto PlayerGamerTag : PlayerIds)
 	{
-		PlayerIdArray.Add(PlayerId.AsString);
+		PlayerIdArray.Add(PlayerGamerTag.AsString);
 	}
 	UPostQueryRequest* const Request = UPostQueryRequest::Make(FOptionalArrayOfString(PlayerIdArray), this, {});
 
@@ -477,10 +480,14 @@ void UBeamFriendSubsystem::FetchFriendPresenceStatus(FUserSlot UserSlot, TArray<
 	BeamPresenceApi->CPP_PostQuery(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
-void UBeamFriendSubsystem::SendFriendInvite(FUserSlot UserSlot, FBeamGamerTag FriendId, FBeamOperationHandle Op)
+void UBeamFriendSubsystem::SendFriendInvite(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag, FBeamOperationHandle Op)
 {
+	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	{
+		return;
+	}
 	const auto Handler = FOnPostFriendsInviteFullResponse::CreateLambda(
-		[this, UserSlot, FriendId, Op](const FPostFriendsInviteFullResponse& Resp)
+		[this, UserSlot, FriendGamerTag, Op](const FPostFriendsInviteFullResponse& Resp)
 		{
 			if (Resp.State == RS_Retrying) return;
 
@@ -494,9 +501,9 @@ void UBeamFriendSubsystem::SendFriendInvite(FUserSlot UserSlot, FBeamGamerTag Fr
 					// If there's no data for this player friend list we are adding a dummy at some point it will be updated by the subsystem.
 					if (!FriendStates.Contains(SenderId))
 					{
-						FriendStates.Add(SenderId, FBeamFriendState(SenderId, {}, {}, {}, {}));
+						FriendStates.Add(SenderId, FBeamFriendState(SenderId));
 					}
-					FriendStates[SenderId].SentInvites.Add(FBeamFriendInvite(FriendId));
+					FriendStates[SenderId].SentInvites.Add(FBeamFriendInvite(FriendGamerTag));
 				}
 
 				Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
@@ -516,54 +523,61 @@ void UBeamFriendSubsystem::SendFriendInvite(FUserSlot UserSlot, FBeamGamerTag Fr
 			}
 		});
 
-	UPostFriendsInviteRequest* const Request = UPostFriendsInviteRequest::Make(FriendId, this, {});
+	UPostFriendsInviteRequest* const Request = UPostFriendsInviteRequest::Make(FriendGamerTag, this, {});
 
 	FBeamRequestContext Ctx;
 
 	BeamSocialApi->CPP_PostFriendsInvite(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
-void UBeamFriendSubsystem::AcceptFriendInvite(FUserSlot UserSlot, FBeamGamerTag FriendId, FBeamOperationHandle Op)
+void UBeamFriendSubsystem::AcceptFriendInvite(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag, FBeamOperationHandle Op)
 {
+	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	{
+		return;
+	}
 	const auto Handler = FOnPostFriendsMakeFullResponse::CreateLambda(
-		[this, UserSlot, FriendId, Op](const FPostFriendsMakeFullResponse& Resp)
+		[this, UserSlot, FriendGamerTag, Op](const FPostFriendsMakeFullResponse& Resp)
 		{
 			if (Resp.State == RS_Retrying) return;
 
 			if (Resp.State == RS_Success)
 			{
-				FBeamGamerTag PlayerId;
+				FBeamGamerTag PlayerGamerTag;
 
-				// Update the local state for the UserSlot, removing the invite from the invites received list and adding the FriendId in the list of the friends.
-				if (TryGetBeamGameTagFromUserSlot(UserSlot, PlayerId))
+				// Update the local state for the UserSlot, removing the invite from the invites received list and adding the FriendGamerTag in the list of the friends.
+				if (TryGetBeamGameTagFromUserSlot(UserSlot, PlayerGamerTag))
 				{
 					// If there's no data for this player friend list we are adding a dummy at some point it will be updated by the subsystem.
-					if (!FriendStates.Contains(PlayerId))
+					if (!FriendStates.Contains(PlayerGamerTag))
 					{
-						FriendStates.Add(PlayerId, FBeamFriendState(PlayerId, {}, {}, {}, {}));
+						FriendStates.Add(PlayerGamerTag, FBeamFriendState(PlayerGamerTag));
 					}
 
 					bool ShouldTriggerEvent = false;
 
-					FBeamFriendInvite Invite(FriendId);
-					if (FriendStates[PlayerId].ReceivedInvites.Contains(Invite))
+					FBeamFriendInvite Invite(FriendGamerTag);
+					if (FriendStates[PlayerGamerTag].ReceivedInvites.Contains(Invite))
 					{
-						FriendStates[PlayerId].ReceivedInvites.Remove(Invite);
+						FriendStates[PlayerGamerTag].ReceivedInvites.Remove(Invite);
 						ShouldTriggerEvent = true;
 					}
 
-					FBeamFriendInfo FriendInfo(FriendId);
-					if (!FriendStates[PlayerId].Friends.Contains(FriendInfo))
+					FBeamFriendInfo FriendInfo(FriendGamerTag);
+					if (!FriendStates[PlayerGamerTag].Friends.Contains(FriendInfo))
 					{
-						FriendStates[PlayerId].Friends.Add(FriendInfo);
+						FriendStates[PlayerGamerTag].Friends.Add(FriendInfo);
 					}
 
 					//Sometimes the notification could arrive early then the response so we only trigger the event if something actually change in the state
 					if (ShouldTriggerEvent)
 					{
 						//Call when the player accept the another player invite, the notification from the backend will be ignored because of the local already will be called here.
-						OnInviteAccepted.Broadcast(FriendId, UserSlot);
-						OnInviteAcceptedCode.Broadcast(FriendId, UserSlot);
+						OnInviteAccepted.Broadcast(FriendGamerTag, UserSlot);
+						OnInviteAcceptedCode.Broadcast(FriendGamerTag, UserSlot);
+
+						// Fetching and refreshing the presence status to trigger the presence update
+						RefreshPresenceAndTriggerEvent(FriendGamerTag, UserSlot);
 					}
 				}
 				Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
@@ -583,37 +597,42 @@ void UBeamFriendSubsystem::AcceptFriendInvite(FUserSlot UserSlot, FBeamGamerTag 
 			}
 		});
 
-	UPostFriendsMakeRequest* const Request = UPostFriendsMakeRequest::Make(FriendId, this, {});
+	UPostFriendsMakeRequest* const Request = UPostFriendsMakeRequest::Make(FriendGamerTag, this, {});
 
 	FBeamRequestContext Ctx;
 
 	BeamSocialApi->CPP_PostFriendsMake(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
-void UBeamFriendSubsystem::DeclineFriendInvite(FUserSlot UserSlot, FBeamGamerTag FriendId, FBeamOperationHandle Op)
+void UBeamFriendSubsystem::DeclineFriendInvite(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag,
+                                               FBeamOperationHandle Op)
 {
+	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	{
+		return;
+	}
 	const auto Handler = FOnDeleteFriendsInviteFullResponse::CreateLambda(
-		[this, UserSlot, FriendId, Op](const FDeleteFriendsInviteFullResponse& Resp)
+		[this, UserSlot, FriendGamerTag, Op](const FDeleteFriendsInviteFullResponse& Resp)
 		{
 			if (Resp.State == RS_Retrying) return;
 
 			if (Resp.State == RS_Success)
 			{
-				FBeamGamerTag PlayerId;
+				FBeamGamerTag PlayerGamerTag;
 
-				// Update the local state for the UserSlot, removing the FriendId in the list of the friends.
-				if (TryGetBeamGameTagFromUserSlot(UserSlot, PlayerId))
+				// Update the local state for the UserSlot, removing the FriendGamerTag in the list of the friends.
+				if (TryGetBeamGameTagFromUserSlot(UserSlot, PlayerGamerTag))
 				{
 					// If there's no data for this player friend list we are adding a dummy at some point it will be updated by the subsystem.
-					if (!FriendStates.Contains(PlayerId))
+					if (!FriendStates.Contains(PlayerGamerTag))
 					{
-						FriendStates.Add(PlayerId, FBeamFriendState(PlayerId, {}, {}, {}, {}));
+						FriendStates.Add(PlayerGamerTag, FBeamFriendState(PlayerGamerTag));
 					}
 
-					FriendStates[PlayerId].ReceivedInvites.Remove(FBeamFriendInvite(FriendId));
+					FriendStates[PlayerGamerTag].ReceivedInvites.Remove(FBeamFriendInvite(FriendGamerTag));
 					//Call the on declined event OBS: It's only for the local player that call the event, the sender player will not receive this event as a callback 
-					OnInviteDeclined.Broadcast(FriendId, UserSlot);
-					OnInviteDeclinedCode.Broadcast(FriendId, UserSlot);
+					OnInviteDeclined.Broadcast(FriendGamerTag, UserSlot);
+					OnInviteDeclinedCode.Broadcast(FriendGamerTag, UserSlot);
 				}
 				Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
 				return;
@@ -632,17 +651,21 @@ void UBeamFriendSubsystem::DeclineFriendInvite(FUserSlot UserSlot, FBeamGamerTag
 			}
 		});
 
-	UDeleteFriendsInviteRequest* const Request = UDeleteFriendsInviteRequest::Make(FriendId, this, {});
+	UDeleteFriendsInviteRequest* const Request = UDeleteFriendsInviteRequest::Make(FriendGamerTag, this, {});
 
 	FBeamRequestContext Ctx;
 
 	BeamSocialApi->CPP_DeleteFriendsInvite(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
-void UBeamFriendSubsystem::BlockPlayer(FUserSlot UserSlot, FBeamGamerTag PlayerId, FBeamOperationHandle Op)
+void UBeamFriendSubsystem::BlockPlayer(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, FBeamOperationHandle Op)
 {
+	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	{
+		return;
+	}
 	const auto Handler = FOnPostBlockedFullResponse::CreateLambda(
-		[this, UserSlot, PlayerId, Op](const FPostBlockedFullResponse& Resp)
+		[this, UserSlot, PlayerGamerTag, Op](const FPostBlockedFullResponse& Resp)
 		{
 			if (Resp.State == RS_Retrying) return;
 
@@ -650,25 +673,25 @@ void UBeamFriendSubsystem::BlockPlayer(FUserSlot UserSlot, FBeamGamerTag PlayerI
 			{
 				FBeamGamerTag SenderId;
 
-				// Update the local state for the UserSlot, removing the PlayerId in the list of the friends, and adding to the blocked list
+				// Update the local state for the UserSlot, removing the PlayerGamerTag in the list of the friends, and adding to the blocked list
 				if (TryGetBeamGameTagFromUserSlot(UserSlot, SenderId))
 				{
 					// If there's no data for this player friend list we are adding a dummy at some point it will be updated by the subsystem.
 					if (!FriendStates.Contains(SenderId))
 					{
-						FriendStates.Add(SenderId, FBeamFriendState(SenderId, {}, {}, {}, {}));
+						FriendStates.Add(SenderId, FBeamFriendState(SenderId));
 					}
 
 					bool ShouldTriggerEvent = false;
 
-					FBeamFriendInfo FriendInfo(PlayerId);
+					FBeamFriendInfo FriendInfo(PlayerGamerTag);
 
 					if (FriendStates[SenderId].Friends.Contains(FriendInfo))
 					{
 						FriendStates[SenderId].Friends.Remove(FriendInfo);
 					}
 
-					FBeamPlayerBlocked BlockedPlayer(PlayerId);
+					FBeamPlayerBlocked BlockedPlayer(PlayerGamerTag);
 					if (!FriendStates[SenderId].BlockedPlayers.Contains(BlockedPlayer))
 					{
 						FriendStates[SenderId].BlockedPlayers.Add(BlockedPlayer);
@@ -680,8 +703,8 @@ void UBeamFriendSubsystem::BlockPlayer(FUserSlot UserSlot, FBeamGamerTag PlayerI
 					// Sometimes the changed notifications arrive early then the response, so we need to use that flag to prevent trigger the event twice.
 					if (ShouldTriggerEvent)
 					{
-						OnPlayerBlocked.Broadcast(PlayerId, UserSlot);
-						OnPlayerBlockedCode.Broadcast(PlayerId, UserSlot);
+						OnPlayerBlocked.Broadcast(PlayerGamerTag, UserSlot);
+						OnPlayerBlockedCode.Broadcast(PlayerGamerTag, UserSlot);
 					}
 				}
 				Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
@@ -701,17 +724,21 @@ void UBeamFriendSubsystem::BlockPlayer(FUserSlot UserSlot, FBeamGamerTag PlayerI
 			}
 		});
 
-	UPostBlockedRequest* const Request = UPostBlockedRequest::Make(PlayerId, this, {});
+	UPostBlockedRequest* const Request = UPostBlockedRequest::Make(PlayerGamerTag, this, {});
 
 	FBeamRequestContext Ctx;
 
 	BeamSocialApi->CPP_PostBlocked(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
-void UBeamFriendSubsystem::UnblockPlayer(FUserSlot UserSlot, FBeamGamerTag PlayerId, FBeamOperationHandle Op)
+void UBeamFriendSubsystem::UnblockPlayer(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, FBeamOperationHandle Op)
 {
+	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	{
+		return;
+	}
 	const auto Handler = FOnDeleteBlockedFullResponse::CreateLambda(
-		[this, UserSlot, PlayerId, Op](const FDeleteBlockedFullResponse& Resp)
+		[this, UserSlot, PlayerGamerTag, Op](const FDeleteBlockedFullResponse& Resp)
 		{
 			if (Resp.State == RS_Retrying) return;
 
@@ -719,15 +746,15 @@ void UBeamFriendSubsystem::UnblockPlayer(FUserSlot UserSlot, FBeamGamerTag Playe
 			{
 				FBeamGamerTag SenderId;
 
-				// Update the local state for the UserSlot, removing the PlayerId from the blocked list
+				// Update the local state for the UserSlot, removing the PlayerGamerTag from the blocked list
 				if (TryGetBeamGameTagFromUserSlot(UserSlot, SenderId))
 				{
 					// If there's no data for this player friend list we are adding a dummy at some point it will be updated by the subsystem.
 					if (!FriendStates.Contains(SenderId))
 					{
-						FriendStates.Add(SenderId, FBeamFriendState(SenderId, {}, {}, {}, {}));
+						FriendStates.Add(SenderId, FBeamFriendState(SenderId));
 					}
-					FBeamPlayerBlocked UnblockedPlayer(PlayerId);
+					FBeamPlayerBlocked UnblockedPlayer(PlayerGamerTag);
 
 					if (FriendStates[SenderId].BlockedPlayers.Contains(UnblockedPlayer))
 					{
@@ -735,8 +762,8 @@ void UBeamFriendSubsystem::UnblockPlayer(FUserSlot UserSlot, FBeamGamerTag Playe
 					}
 
 					//Triggers the player unblocked event for the local player
-					OnPlayerUnblocked.Broadcast(PlayerId, UserSlot);
-					OnPlayerUnblockedCode.Broadcast(PlayerId, UserSlot);
+					OnPlayerUnblocked.Broadcast(PlayerGamerTag, UserSlot);
+					OnPlayerUnblockedCode.Broadcast(PlayerGamerTag, UserSlot);
 				}
 				Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
 				return;
@@ -755,17 +782,21 @@ void UBeamFriendSubsystem::UnblockPlayer(FUserSlot UserSlot, FBeamGamerTag Playe
 			}
 		});
 
-	UDeleteBlockedRequest* const Request = UDeleteBlockedRequest::Make(PlayerId, this, {});
+	UDeleteBlockedRequest* const Request = UDeleteBlockedRequest::Make(PlayerGamerTag, this, {});
 
 	FBeamRequestContext Ctx;
 
 	BeamSocialApi->CPP_DeleteBlocked(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
-void UBeamFriendSubsystem::RemoveFriend(FUserSlot UserSlot, FBeamGamerTag FriendId, FBeamOperationHandle Op)
+void UBeamFriendSubsystem::RemoveFriend(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag, FBeamOperationHandle Op)
 {
+	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	{
+		return;
+	}
 	const auto Handler = FOnDeleteFriendsFullResponse::CreateLambda(
-		[this, UserSlot, FriendId, Op](const FDeleteFriendsFullResponse& Resp)
+		[this, UserSlot, FriendGamerTag, Op](const FDeleteFriendsFullResponse& Resp)
 		{
 			if (Resp.State == RS_Retrying) return;
 
@@ -773,18 +804,18 @@ void UBeamFriendSubsystem::RemoveFriend(FUserSlot UserSlot, FBeamGamerTag Friend
 			{
 				FBeamGamerTag SenderId;
 
-				// Update the local state for the UserSlot, removing the PlayerId in the list of the friends
+				// Update the local state for the UserSlot, removing the PlayerGamerTag in the list of the friends
 				if (TryGetBeamGameTagFromUserSlot(UserSlot, SenderId))
 				{
 					// If there's no data for this player friend list we are adding a dummy at some point it will be updated by the subsystem.
 					if (!FriendStates.Contains(SenderId))
 					{
-						FriendStates.Add(SenderId, FBeamFriendState(SenderId, {}, {}, {}, {}));
+						FriendStates.Add(SenderId, FBeamFriendState(SenderId));
 					}
 
 					bool ShouldTriggerEvent = false;
 
-					FBeamFriendInfo FriendInfo(FriendId);
+					FBeamFriendInfo FriendInfo(FriendGamerTag);
 
 					if (FriendStates[SenderId].Friends.Contains(FriendInfo))
 					{
@@ -795,8 +826,8 @@ void UBeamFriendSubsystem::RemoveFriend(FUserSlot UserSlot, FBeamGamerTag Friend
 					if (ShouldTriggerEvent)
 					{
 						//Triggers the friend removed for the local player
-						OnFriendRemoved.Broadcast(FriendId, UserSlot);
-						OnFriendRemovedCode.Broadcast(FriendId, UserSlot);
+						OnFriendRemoved.Broadcast(FriendGamerTag, UserSlot);
+						OnFriendRemovedCode.Broadcast(FriendGamerTag, UserSlot);
 					}
 				}
 
@@ -818,298 +849,26 @@ void UBeamFriendSubsystem::RemoveFriend(FUserSlot UserSlot, FBeamGamerTag Friend
 			}
 		});
 
-	UDeleteFriendsRequest* const Request = UDeleteFriendsRequest::Make(FriendId, this, {});
+	UDeleteFriendsRequest* const Request = UDeleteFriendsRequest::Make(FriendGamerTag, this, {});
 
 	FBeamRequestContext Ctx;
 
 	BeamSocialApi->CPP_DeleteFriends(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
-EBeamPresenceStatus UBeamFriendSubsystem::GetStatus(FString StatusStr)
-{
-	if (StatusStr == "Visible")
-	{
-		return EBeamPresenceStatus::Visible;
-	}
-	if (StatusStr == "Invisible")
-	{
-		return EBeamPresenceStatus::Invisible;
-	}
-	if (StatusStr == "Away")
-	{
-		return EBeamPresenceStatus::Away;
-	}
-	if (StatusStr == "Dnd")
-	{
-		return EBeamPresenceStatus::Dnd;
-	}
-
-	return EBeamPresenceStatus::Visible;
-}
-
-
-void UBeamFriendSubsystem::SocialRefreshNotificationHandler(FSocialRefreshNotificationMessage Message,
-                                                            FUserSlot UserSlot)
-{
-	UE_LOG(LogBeamFriend, Display,
-	       TEXT(
-		       "Received notification from the FriendNotification for the UserSlot: %s with the Friend Id: %lld | Player Id: %lld"
-	       ),
-	       *UserSlot.Name,
-	       Message.FriendId.AsLong,
-	       Message.PlayerId.AsLong);
-
-	FBeamRealmUser RealmUser;
-	if (!Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
-	{
-		UE_LOG(LogBeamFriend, Error,
-		       TEXT(
-			       "Received notification from the FriendNotification for the UserSlot: %s, but wasn't possible to retrieve the RealUser for this UserSlot."
-		       ),
-		       *UserSlot.Name);
-		//Call the internal error for the friends refresh state.
-		return;
-	}
-
-	if (RealmUser.GamerTag == Message.PlayerId)
-	{
-		// If there's no data for this player friend list we are adding a dummy at some point it will be updated by the subsystem.
-		// It's only create for the player id because we assume that the friend already been updated once it is who made the request.
-		if (!FriendStates.Contains(RealmUser.GamerTag))
-		{
-			FriendStates.Add(RealmUser.GamerTag, FBeamFriendState(RealmUser.GamerTag, {}, {}, {}, {}));
-		}
-	}
-
-	switch (Message.EventType)
-	{
-	case EBeamFriendEventType::BEAM_friend:
-		//Check if the Message Player Id is the current UserSlot that received the message
-		//This will allow to refresh the state of this player after received the event
-		if (RealmUser.GamerTag == Message.PlayerId)
-		{
-			// Adding the friend to the player that sent the invite
-			auto FriendState = FBeamFriendInfo(Message.FriendId);
-
-			if (!FriendStates[RealmUser.GamerTag].Friends.Contains(FriendState))
-			{
-				FriendStates[RealmUser.GamerTag].Friends.Add(FriendState);
-			}
-			// Removing the invite after the other player accept it.
-			auto FriendInviteState = FBeamFriendInvite(Message.FriendId);
-			if (FriendStates[RealmUser.GamerTag].SentInvites.Contains(FriendInviteState))
-			{
-				FriendStates[RealmUser.GamerTag].SentInvites.Remove(FriendInviteState);
-			}
-
-			OnInviteAccepted.Broadcast(Message.FriendId, UserSlot);
-			OnInviteAcceptedCode.Broadcast(Message.FriendId, UserSlot);
-		}
-		else if (RealmUser.GamerTag == Message.FriendId)
-		{
-			bool ShouldTriggerEvent = false;
-
-			// Adding the friend to the player that sent the invite
-			auto FriendState = FBeamFriendInfo(Message.PlayerId);
-
-			if (!FriendStates[RealmUser.GamerTag].Friends.Contains(FriendState))
-			{
-				FriendStates[RealmUser.GamerTag].Friends.Add(FriendState);
-				ShouldTriggerEvent = true;
-			}
-
-			// Removing the invite after accept it.
-			auto FriendInviteState = FBeamFriendInvite(Message.PlayerId);
-			if (FriendStates[RealmUser.GamerTag].ReceivedInvites.Contains(FriendInviteState))
-			{
-				FriendStates[RealmUser.GamerTag].ReceivedInvites.Remove(FriendInviteState);
-			}
-			//This flag guarantee if the player still don't exist in the local state this means the local state wasn't updated before received the notification
-			//Without verify it we probably call it twice once in the AcceptFriendInvite and another here
-			//This is only true for the player that made the action of accept the invite (the friend)
-			if (ShouldTriggerEvent)
-			{
-				OnInviteAccepted.Broadcast(Message.PlayerId, UserSlot);
-				OnInviteAcceptedCode.Broadcast(Message.PlayerId, UserSlot);
-			}
-		}
-		break;
-	case EBeamFriendEventType::BEAM_unfriend:
-		//The Message.PlayerId is the GamerTag of the player who did the action of remove the friend
-		if (RealmUser.GamerTag == Message.PlayerId)
-		{
-			bool ShouldTriggerEvent = false;
-
-			// Removing the friend to the player that was removed from other player friend list.
-			auto FriendState = FBeamFriendInfo(Message.FriendId);
-			if (FriendStates[RealmUser.GamerTag].Friends.Contains(FriendState))
-			{
-				FriendStates[RealmUser.GamerTag].Friends.Remove(FriendState);
-				ShouldTriggerEvent = true;
-			}
-			// This only should called if the Friend has been removed from the local state
-			if (ShouldTriggerEvent)
-			{
-				OnFriendRemoved.Broadcast(Message.FriendId, UserSlot);
-				OnFriendRemovedCode.Broadcast(Message.FriendId, UserSlot);
-			}
-		}
-		else if (RealmUser.GamerTag == Message.FriendId)
-		{
-			bool ShouldTriggerEvent = false;
-
-			// Removing the friend to the player that was removed from other player friend list.
-			auto FriendState = FBeamFriendInfo(Message.PlayerId);
-			if (FriendStates[RealmUser.GamerTag].Friends.Contains(FriendState))
-			{
-				FriendStates[RealmUser.GamerTag].Friends.Remove(FriendState);
-				ShouldTriggerEvent = true;
-			}
-
-			if (ShouldTriggerEvent)
-			{
-				OnFriendRemoved.Broadcast(Message.PlayerId, UserSlot);
-				OnFriendRemovedCode.Broadcast(Message.PlayerId, UserSlot);
-			}
-		}
-		break;
-	case EBeamFriendEventType::BEAM_block:
-		if (RealmUser.GamerTag == Message.PlayerId)
-		{
-			bool ShouldTriggerEvent = false;
-
-			// Adding the blocked friend to the list of the blocked players.
-			auto BlockedPlayer = FBeamPlayerBlocked(Message.FriendId);
-			if (!FriendStates[RealmUser.GamerTag].BlockedPlayers.Contains(BlockedPlayer))
-			{
-				FriendStates[RealmUser.GamerTag].BlockedPlayers.Add(BlockedPlayer);
-				ShouldTriggerEvent = true;
-			}
-			// Removing the friend from the friend list as it has been blocked by the player
-			auto FriendState = FBeamFriendInfo(Message.FriendId);
-			if (FriendStates[RealmUser.GamerTag].Friends.Contains(FriendState))
-			{
-				FriendStates[RealmUser.GamerTag].Friends.Remove(FriendState);
-			}
-			// Only triggers the event if actually something change in the blocked list
-			if (ShouldTriggerEvent)
-			{
-				OnPlayerBlocked.Broadcast(Message.FriendId, UserSlot);
-				OnPlayerBlockedCode.Broadcast(Message.FriendId, UserSlot);
-			}
-		}
-		else if (RealmUser.GamerTag == Message.FriendId)
-		{
-			// Warning the player about being blocked by another player
-			OnPlayerBeenBlocked.Broadcast(Message.PlayerId, UserSlot);
-			OnPlayerBeenBlockedCode.Broadcast(Message.PlayerId, UserSlot);
-		}
-		break;
-	case EBeamFriendEventType::BEAM_unblock:
-		if (RealmUser.GamerTag == Message.PlayerId)
-		{
-			bool ShouldTriggerEvent = false;
-			// Removing the blocked player from the local state.
-			auto BlockedPlayer = FBeamPlayerBlocked(Message.FriendId);
-			if (FriendStates[RealmUser.GamerTag].BlockedPlayers.Contains(BlockedPlayer))
-			{
-				FriendStates[RealmUser.GamerTag].BlockedPlayers.Remove(BlockedPlayer);
-				ShouldTriggerEvent = true;
-			}
-			// Only will trigger the event if something actually happen in the blocked players states
-			if (ShouldTriggerEvent)
-			{
-				OnPlayerUnblocked.Broadcast(Message.FriendId, UserSlot);
-				OnPlayerUnblockedCode.Broadcast(Message.FriendId, UserSlot);
-			}
-		}
-		else if (RealmUser.GamerTag == Message.FriendId)
-		{
-			// Warning the player about being unblocked by another player
-			OnPlayerBeenUnblocked.Broadcast(Message.PlayerId, UserSlot);
-			OnPlayerBeenUnblockedCode.Broadcast(Message.PlayerId, UserSlot);
-		}
-		break;
-	default:
-
-		break;
-	}
-}
-
-void UBeamFriendSubsystem::SocialPresenceRefreshNotificationHandler(FSocialPresenceRefreshNotificationMessage Message,
-                                                                    FUserSlot UserSlot)
-{
-	auto FriendPresenceStatus = MakeFriendPresenceStatus(Message);
-	// Updates the local state for the Message PlayerId 
-	if (FriendPresenceStatusState.Contains(Message.PlayerId))
-	{
-		FriendPresenceStatusState[Message.PlayerId] = FriendPresenceStatus;
-	}
-	else
-	{
-		FriendPresenceStatusState.Add(Message.PlayerId, FriendPresenceStatus);
-	}
-
-	UE_LOG(LogBeamFriend, Display,
-	       TEXT(
-		       "Received notification from the FriendPresenceNotification for the UserSlot: %s with the Friend Id: %lld"
-	       ),
-	       *UserSlot.Name,
-	       Message.PlayerId.AsLong);
-
-	// Triggers the event of the Friend Presence Changed.
-	OnFriendPresenceStatusUpdate.Broadcast(Message.PlayerId, UserSlot);
-	OnFriendPresenceStatusUpdateCode.Broadcast(Message.PlayerId, UserSlot);
-}
-
-void UBeamFriendSubsystem::MailRefreshNotificationHandler(FMailRefreshNotificationMessage Message,
-                                                          FUserSlot UserSlot)
+bool UBeamFriendSubsystem::TryGetBeamGameTagFromUserSlot(FUserSlot UserSlot, FBeamGamerTag& PlayerGamerTag)
 {
 	FBeamRealmUser RealmUser;
-
-	if (Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
-	{
-		// Get the state before fetch the data to compare the state with the new data and get the player that sent the invite.
-		TArray<FBeamFriendInvite> ReceivedInvites;
-		FBeamGamerTag PlayerId = RealmUser.GamerTag;
-		if (FriendStates.Contains(PlayerId))
-		{
-			ReceivedInvites = FriendStates[PlayerId].ReceivedInvites;
-		}
-
-		// Fetch the state for the FriendStates, when it is called the state is already updated.
-		const FBeamOperationEventHandlerCode Handler = FBeamOperationEventHandlerCode::CreateLambda(
-			[this, PlayerId, ReceivedInvites, UserSlot](const FBeamOperationEvent Evt)
-			{
-				if (Evt.EventType == OET_SUCCESS)
-				{
-					//Compare the old invites with the new one and trigger the OnFriendInviteReceived with all the PlayerIds of the received invites.
-					if (FriendStates.Contains(PlayerId))
-					{
-						for (auto FriendInvite : FriendStates[PlayerId].ReceivedInvites)
-						{
-							if (!ReceivedInvites.Contains(FriendInvite))
-							{
-								OnInviteReceived.Broadcast(FriendInvite.FriendId, UserSlot);
-								OnInviteReceivedCode.Broadcast(FriendInvite.FriendId, UserSlot);
-							}
-						}
-					}
-				}
-				else
-				{
-					UE_LOG(LogBeamFriend, Error, TEXT("Failed to fetch the state of the friends in the %hs"), __func__);
-				}
-			});
-		CPP_FetchPlayerFriendStateOperation(UserSlot, Handler);
-	}
+	bool success = Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this);
+	PlayerGamerTag = RealmUser.GamerTag;
+	return success;
 }
 
 FBeamFriendState UBeamFriendSubsystem::MakeFriendState(USocial* Social)
 {
 	FBeamFriendState FriendState;
 
-	FriendState.PlayerId = Social->PlayerId;
+	FriendState.PlayerGamerTag = Social->PlayerId;
 
 	for (auto Friend : Social->Friends)
 	{
@@ -1139,10 +898,310 @@ FBeamFriendState UBeamFriendSubsystem::MakeFriendState(USocial* Social)
 FBeamFriendPresenceStatus UBeamFriendSubsystem::MakeFriendPresenceStatus(
 	FSocialPresenceRefreshNotificationMessage PresenceStatusMessage)
 {
-	auto FriendPresenceStatus = FBeamFriendPresenceStatus(PresenceStatusMessage.PlayerId, PresenceStatusMessage.Online,
+	auto FriendPresenceStatus = FBeamFriendPresenceStatus(PresenceStatusMessage.Online,
 	                                                      PresenceStatusMessage.LastOnline,
-	                                                      GetStatus(
-		                                                      PresenceStatusMessage.Status),
+	                                                      PresenceStatusMessage.Status,
 	                                                      PresenceStatusMessage.Description);
 	return FriendPresenceStatus;
+}
+
+void UBeamFriendSubsystem::RefreshPresenceAndTriggerEvent(FBeamGamerTag FriendGamerTag, FUserSlot UserSlot)
+{
+	auto Handle = FBeamOperationEventHandlerCode::CreateLambda(
+		[this, FriendGamerTag, UserSlot](const FBeamOperationEvent& Evt)
+		{
+			if (Evt.EventType == OET_SUCCESS)
+			{
+				OnFriendPresenceStatusUpdate.Broadcast(FriendGamerTag, UserSlot);
+				OnFriendPresenceStatusUpdateCode.Broadcast(FriendGamerTag, UserSlot);
+			}
+			else
+			{
+				OnFriendPresenceStatusUpdateError.Broadcast(FriendGamerTag, UserSlot);
+				OnFriendPresenceStatusUpdateErrorCode.Broadcast(FriendGamerTag, UserSlot);
+			}
+		});
+	CPP_FetchFriendPresenceStatusOperation(UserSlot, {FriendGamerTag}, Handle);
+}
+
+bool UBeamFriendSubsystem::IsUserSlotAuthenticated(FUserSlot UserSlot, FString FunctionName,
+                                                   FBeamOperationHandle OperationHandle)
+{
+	FBeamRealmUser RealmUser;
+	if (!Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
+	{
+		FString ErrorMessage = "The function: " + FunctionName + " requires a authenticated user slot";
+		Runtime->RequestTrackerSystem->TriggerOperationError(OperationHandle, *ErrorMessage);
+		return false;
+	}
+	return true;
+}
+
+void UBeamFriendSubsystem::SocialRefreshNotificationHandler(FSocialRefreshNotificationMessage Message,
+                                                            FUserSlot UserSlot)
+{
+	UE_LOG(LogBeamFriend, Display,
+	       TEXT(
+		       "Received notification from the FriendNotification for the UserSlot: %s with the Friend Id: %lld | Player Id: %lld"
+	       ),
+	       *UserSlot.Name,
+	       Message.FriendGamerTag.AsLong,
+	       Message.PlayerGamerTag.AsLong);
+
+	FBeamRealmUser RealmUser;
+	if (!Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
+	{
+		UE_LOG(LogBeamFriend, Error,
+		       TEXT(
+			       "Received notification from the FriendNotification for the UserSlot: %s, but wasn't possible to retrieve the RealUser for this UserSlot."
+		       ),
+		       *UserSlot.Name);
+		//Call the internal error for the friends refresh state.
+		return;
+	}
+
+	if (RealmUser.GamerTag == Message.PlayerGamerTag)
+	{
+		// If there's no data for this player friend list we are adding a dummy at some point it will be updated by the subsystem.
+		// It's only create for the player id because we assume that the friend already been updated once it is who made the request.
+		if (!FriendStates.Contains(RealmUser.GamerTag))
+		{
+			FriendStates.Add(RealmUser.GamerTag, FBeamFriendState(RealmUser.GamerTag));
+		}
+	}
+
+	switch (Message.EventType)
+	{
+	case EBeamFriendEventType::BEAM_friend:
+		//Check if the Message Player Id is the current UserSlot that received the message
+		//This will allow to refresh the state of this player after received the event
+		if (RealmUser.GamerTag == Message.PlayerGamerTag)
+		{
+			// Adding the friend to the player that sent the invite
+			auto FriendState = FBeamFriendInfo(Message.FriendGamerTag);
+
+			bool ShouldTriggerEvent = false;
+
+			if (!FriendStates[RealmUser.GamerTag].Friends.Contains(FriendState))
+			{
+				FriendStates[RealmUser.GamerTag].Friends.Add(FriendState);
+				ShouldTriggerEvent = true;
+			}
+			// Removing the invite after the other player accept it.
+			auto FriendInviteState = FBeamFriendInvite(Message.FriendGamerTag);
+			if (FriendStates[RealmUser.GamerTag].SentInvites.Contains(FriendInviteState))
+			{
+				FriendStates[RealmUser.GamerTag].SentInvites.Remove(FriendInviteState);
+			}
+			if (ShouldTriggerEvent)
+			{
+				OnInviteAccepted.Broadcast(Message.FriendGamerTag, UserSlot);
+				OnInviteAcceptedCode.Broadcast(Message.FriendGamerTag, UserSlot);
+
+				// Fetching and refreshing the presence status to trigger the presence update
+				RefreshPresenceAndTriggerEvent(Message.FriendGamerTag, UserSlot);
+			}
+		}
+		else if (RealmUser.GamerTag == Message.FriendGamerTag)
+		{
+			bool ShouldTriggerEvent = false;
+
+			// Adding the friend to the player that sent the invite
+			auto FriendState = FBeamFriendInfo(Message.PlayerGamerTag);
+
+			if (!FriendStates[RealmUser.GamerTag].Friends.Contains(FriendState))
+			{
+				FriendStates[RealmUser.GamerTag].Friends.Add(FriendState);
+				ShouldTriggerEvent = true;
+			}
+
+			// Removing the invite after accept it.
+			auto FriendInviteState = FBeamFriendInvite(Message.PlayerGamerTag);
+			if (FriendStates[RealmUser.GamerTag].ReceivedInvites.Contains(FriendInviteState))
+			{
+				FriendStates[RealmUser.GamerTag].ReceivedInvites.Remove(FriendInviteState);
+			}
+			//This flag guarantee if the player still don't exist in the local state this means the local state wasn't updated before received the notification
+			//Without verify it we probably call it twice once in the AcceptFriendInvite and another here
+			//This is only true for the player that made the action of accept the invite (the friend)
+			if (ShouldTriggerEvent)
+			{
+				OnInviteAccepted.Broadcast(Message.PlayerGamerTag, UserSlot);
+				OnInviteAcceptedCode.Broadcast(Message.PlayerGamerTag, UserSlot);
+
+				// Fetching and refreshing the presence status to trigger the presence update
+				RefreshPresenceAndTriggerEvent(Message.PlayerGamerTag, UserSlot);
+			}
+		}
+		break;
+	case EBeamFriendEventType::BEAM_unfriend:
+		//The Message.PlayerGamerTag is the GamerTag of the player who did the action of remove the friend
+		if (RealmUser.GamerTag == Message.PlayerGamerTag)
+		{
+			bool ShouldTriggerEvent = false;
+
+			// Removing the friend to the player that was removed from other player friend list.
+			auto FriendState = FBeamFriendInfo(Message.FriendGamerTag);
+			if (FriendStates[RealmUser.GamerTag].Friends.Contains(FriendState))
+			{
+				FriendStates[RealmUser.GamerTag].Friends.Remove(FriendState);
+				ShouldTriggerEvent = true;
+			}
+			// This only should called if the Friend has been removed from the local state
+			if (ShouldTriggerEvent)
+			{
+				OnFriendRemoved.Broadcast(Message.FriendGamerTag, UserSlot);
+				OnFriendRemovedCode.Broadcast(Message.FriendGamerTag, UserSlot);
+			}
+		}
+		else if (RealmUser.GamerTag == Message.FriendGamerTag)
+		{
+			bool ShouldTriggerEvent = false;
+
+			// Removing the friend to the player that was removed from other player friend list.
+			auto FriendState = FBeamFriendInfo(Message.PlayerGamerTag);
+			if (FriendStates[RealmUser.GamerTag].Friends.Contains(FriendState))
+			{
+				FriendStates[RealmUser.GamerTag].Friends.Remove(FriendState);
+				ShouldTriggerEvent = true;
+			}
+
+			if (ShouldTriggerEvent)
+			{
+				OnFriendRemoved.Broadcast(Message.PlayerGamerTag, UserSlot);
+				OnFriendRemovedCode.Broadcast(Message.PlayerGamerTag, UserSlot);
+			}
+		}
+		break;
+	case EBeamFriendEventType::BEAM_block:
+		if (RealmUser.GamerTag == Message.PlayerGamerTag)
+		{
+			bool ShouldTriggerEvent = false;
+
+			// Adding the blocked friend to the list of the blocked players.
+			auto BlockedPlayer = FBeamPlayerBlocked(Message.FriendGamerTag);
+			if (!FriendStates[RealmUser.GamerTag].BlockedPlayers.Contains(BlockedPlayer))
+			{
+				FriendStates[RealmUser.GamerTag].BlockedPlayers.Add(BlockedPlayer);
+				ShouldTriggerEvent = true;
+			}
+			// Removing the friend from the friend list as it has been blocked by the player
+			auto FriendState = FBeamFriendInfo(Message.FriendGamerTag);
+			if (FriendStates[RealmUser.GamerTag].Friends.Contains(FriendState))
+			{
+				FriendStates[RealmUser.GamerTag].Friends.Remove(FriendState);
+			}
+			// Only triggers the event if actually something change in the blocked list
+			if (ShouldTriggerEvent)
+			{
+				OnPlayerBlocked.Broadcast(Message.FriendGamerTag, UserSlot);
+				OnPlayerBlockedCode.Broadcast(Message.FriendGamerTag, UserSlot);
+			}
+		}
+		else if (RealmUser.GamerTag == Message.FriendGamerTag)
+		{
+			// Warning the player about being blocked by another player
+			OnPlayerBeenBlocked.Broadcast(Message.PlayerGamerTag, UserSlot);
+			OnPlayerBeenBlockedCode.Broadcast(Message.PlayerGamerTag, UserSlot);
+		}
+		break;
+	case EBeamFriendEventType::BEAM_unblock:
+		if (RealmUser.GamerTag == Message.PlayerGamerTag)
+		{
+			bool ShouldTriggerEvent = false;
+			// Removing the blocked player from the local state.
+			auto BlockedPlayer = FBeamPlayerBlocked(Message.FriendGamerTag);
+			if (FriendStates[RealmUser.GamerTag].BlockedPlayers.Contains(BlockedPlayer))
+			{
+				FriendStates[RealmUser.GamerTag].BlockedPlayers.Remove(BlockedPlayer);
+				ShouldTriggerEvent = true;
+			}
+			// Only will trigger the event if something actually happen in the blocked players states
+			if (ShouldTriggerEvent)
+			{
+				OnPlayerUnblocked.Broadcast(Message.FriendGamerTag, UserSlot);
+				OnPlayerUnblockedCode.Broadcast(Message.FriendGamerTag, UserSlot);
+			}
+		}
+		else if (RealmUser.GamerTag == Message.FriendGamerTag)
+		{
+			// Warning the player about being unblocked by another player
+			OnPlayerBeenUnblocked.Broadcast(Message.PlayerGamerTag, UserSlot);
+			OnPlayerBeenUnblockedCode.Broadcast(Message.PlayerGamerTag, UserSlot);
+		}
+		break;
+	default:
+
+		break;
+	}
+}
+
+void UBeamFriendSubsystem::SocialPresenceRefreshNotificationHandler(FSocialPresenceRefreshNotificationMessage Message,
+                                                                    FUserSlot UserSlot)
+{
+	auto FriendPresenceStatus = MakeFriendPresenceStatus(Message);
+	// Updates the local state for the Message PlayerGamerTag 
+	if (FriendStates.Contains(Message.PlayerGamerTag))
+	{
+		FriendStates.Find(Message.PlayerGamerTag)->Status = FriendPresenceStatus;
+	}
+	else
+	{
+		FriendStates.Add(Message.PlayerGamerTag, FBeamFriendState(Message.PlayerGamerTag, FriendPresenceStatus));
+	}
+
+	UE_LOG(LogBeamFriend, Display,
+	       TEXT(
+		       "Received notification from the FriendPresenceNotification for the UserSlot: %s with the Friend Id: %lld"
+	       ),
+	       *UserSlot.Name,
+	       Message.PlayerGamerTag.AsLong);
+
+	// Triggers the event of the Friend Presence Changed.
+	OnFriendPresenceStatusUpdate.Broadcast(Message.PlayerGamerTag, UserSlot);
+	OnFriendPresenceStatusUpdateCode.Broadcast(Message.PlayerGamerTag, UserSlot);
+}
+
+void UBeamFriendSubsystem::MailRefreshNotificationHandler(FMailRefreshNotificationMessage Message,
+                                                          FUserSlot UserSlot)
+{
+	FBeamRealmUser RealmUser;
+
+	if (Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
+	{
+		// Get the state before fetch the data to compare the state with the new data and get the player that sent the invite.
+		TArray<FBeamFriendInvite> ReceivedInvites;
+		FBeamGamerTag PlayerGamerTag = RealmUser.GamerTag;
+		if (FriendStates.Contains(PlayerGamerTag))
+		{
+			ReceivedInvites = FriendStates[PlayerGamerTag].ReceivedInvites;
+		}
+
+		// Fetch the state for the FriendStates, when it is called the state is already updated.
+		const FBeamOperationEventHandlerCode Handler = FBeamOperationEventHandlerCode::CreateLambda(
+			[this, PlayerGamerTag, ReceivedInvites, UserSlot](const FBeamOperationEvent Evt)
+			{
+				if (Evt.EventType == OET_SUCCESS)
+				{
+					//Compare the old invites with the new one and trigger the OnFriendInviteReceived with all the PlayerIds of the received invites.
+					if (FriendStates.Contains(PlayerGamerTag))
+					{
+						for (auto FriendInvite : FriendStates[PlayerGamerTag].ReceivedInvites)
+						{
+							if (!ReceivedInvites.Contains(FriendInvite))
+							{
+								OnInviteReceived.Broadcast(FriendInvite.FriendGamerTag, UserSlot);
+								OnInviteReceivedCode.Broadcast(FriendInvite.FriendGamerTag, UserSlot);
+							}
+						}
+					}
+				}
+				else
+				{
+					UE_LOG(LogBeamFriend, Error, TEXT("Failed to fetch the state of the friends in the %hs"),
+					       __FUNCTION__);
+				}
+			});
+		CPP_FetchPlayerFriendStateOperation(UserSlot, Handler);
+	}
 }

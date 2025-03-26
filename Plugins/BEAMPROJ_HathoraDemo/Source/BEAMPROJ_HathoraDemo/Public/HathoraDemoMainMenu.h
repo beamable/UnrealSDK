@@ -477,12 +477,18 @@ protected:
 	{
 		UBeamFriendSubsystem* BeamFriendSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamFriendSubsystem>();
 		FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+		const UBeamRuntimeSubsystem* RuntimeSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<
+			UBeamRuntimeSubsystem>();
 
-		BeamFriendSubsystem->CPP_SendFriendInviteOperation(UserSlot, FriendId,
-		                                                   FBeamOperationEventHandlerCode::CreateLambda(
-			                                                   [](FBeamOperationEvent Evt)
-			                                                   {
-			                                                   }));
+		// FBeamRealmUser RealmUser;
+		// ensureAlways(RuntimeSubsystem->Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this));
+		//
+		// if (RealmUser.GamerTag == FriendId)
+		// {
+		// 	return;
+		// }
+
+		BeamFriendSubsystem->CPP_SendFriendInviteOperation(UserSlot, FriendId, {});
 	}
 
 	bool DoIsFriendInvitedToParty(FUserSlot UserSlot, FBeamGamerTag FriendId)
@@ -547,10 +553,9 @@ protected:
 		UBeamPartySubsystem* BeamPartySubsystem = GameInstance->GetSubsystem<UBeamPartySubsystem>();
 		FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
 		auto* BeamRuntime = GameInstance->GetSubsystem<UBeamRuntimeSubsystem>();
-		FBeamRealmUser RealmUser;
-		ensureAlways(BeamRuntime->Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this));
 
-		if (!BeamPartySubsystem->IsPlayerInAParty(UserSlot) && RealmUser.GamerTag != Player)
+
+		if (!BeamPartySubsystem->IsPlayerInAParty(UserSlot))
 		{
 			BeamPartySubsystem->CPP_CreatePartyOperation(UserSlot, EBeamPartyRestriction::BEAM_Unrestricted, 10,
 			                                             FBeamOperationEventHandlerCode::CreateLambda(
