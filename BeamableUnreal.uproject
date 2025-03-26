@@ -73,6 +73,10 @@
       "Enabled":false
     },
     {
+      "Name":"BEAMPROJ_Beamball",
+      "Enabled":false
+    },
+    {
       "Name":"OpenImageDenoise",
       "Enabled":false
     },
