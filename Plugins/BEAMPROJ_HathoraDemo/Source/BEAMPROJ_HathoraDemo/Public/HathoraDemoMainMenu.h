@@ -21,6 +21,7 @@
 #include "Runtime/BeamLevelSubsystem.h"
 #include "Runtime/BeamRuntime.h"
 #include "Runtime/CoreOnline/Private/Online/CoreOnlinePrivate.h"
+#include "Subsystems/Friends/BeamFriendSubsystem.h"
 #include "Subsystems/Party/BeamPartySubsystem.h"
 
 
@@ -145,7 +146,6 @@ protected:
 			StatsInterface = OnlineSubsystem->GetStatsInterface();
 
 			InitializePartySubsystem();
-
 
 			// Notify UI that we are ready for logging in.
 			if (OnInitialized.IsBound())
@@ -344,6 +344,24 @@ public:
 		return FBeamGamerTag();
 	}
 
+	/**
+	 * Get local user beam gamer tag
+	 */
+	UFUNCTION(BlueprintCallable)
+	void SendFriendInvite(FBeamGamerTag FriendId)
+	{
+		return DoSendFriendInvite(FriendId);
+	}
+
+	/**
+	 * Check if the friend invited the user slot to a party
+	 */
+	UFUNCTION(BlueprintCallable)
+	bool IsFriendInvitedToParty(FUserSlot UserSlot, FBeamGamerTag FriendId)
+	{
+		return DoIsFriendInvitedToParty(UserSlot, FriendId);
+	}
+
 	UFUNCTION(BlueprintCallable)
 	void GetOwnerUserProfileData(FString& Id, FString& Email, FString& Alias, FString& DisplayName)
 	{
@@ -455,6 +473,43 @@ protected:
 		return TArray<FBeamPartyInviteState>();
 	}
 
+	void DoSendFriendInvite(FBeamGamerTag FriendId)
+	{
+		UBeamFriendSubsystem* BeamFriendSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamFriendSubsystem>();
+		FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+		const UBeamRuntimeSubsystem* RuntimeSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<
+			UBeamRuntimeSubsystem>();
+
+		// FBeamRealmUser RealmUser;
+		// ensureAlways(RuntimeSubsystem->Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this));
+		//
+		// if (RealmUser.GamerTag == FriendId)
+		// {
+		// 	return;
+		// }
+
+		BeamFriendSubsystem->CPP_SendFriendInviteOperation(UserSlot, FriendId, {});
+	}
+
+	bool DoIsFriendInvitedToParty(FUserSlot UserSlot, FBeamGamerTag FriendId)
+	{
+		TArray<FBeamPartyInviteState> Invites;
+		if (!PartySubsystem->TryGetUserInvitesState(UserSlot, Invites))
+		{
+			return false;
+		}
+
+		for (FBeamPartyInviteState Invite : Invites)
+		{
+			if (Invite.Sender == FriendId)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+
 	FBeamPartyState DoGetPartyState()
 	{
 		UBeamPartySubsystem* BeamPartySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
@@ -485,19 +540,22 @@ protected:
 		UBeamPartySubsystem* BeamPartySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
 		FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
 
-		BeamPartySubsystem->CPP_DeclinePlayerPartyInviteOperation(UserSlot, PartyId,
-		                                                          FBeamOperationEventHandlerCode::CreateLambda(
-			                                                          [](FBeamOperationEvent Evt)
-			                                                          {
-			                                                          }));
+		BeamPartySubsystem->CPP_DeclinePartyInviteOperation(UserSlot, PartyId,
+		                                                    FBeamOperationEventHandlerCode::CreateLambda(
+			                                                    [](FBeamOperationEvent Evt)
+			                                                    {
+			                                                    }));
 	}
 
 	void DoInvitePlayerToParty(FBeamGamerTag Player)
 	{
-		UBeamPartySubsystem* BeamPartySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
+		auto* GameInstance = GetWorld()->GetGameInstance();
+		UBeamPartySubsystem* BeamPartySubsystem = GameInstance->GetSubsystem<UBeamPartySubsystem>();
 		FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
+		auto* BeamRuntime = GameInstance->GetSubsystem<UBeamRuntimeSubsystem>();
 
-		if (!BeamPartySubsystem->IsInAParty(UserSlot))
+
+		if (!BeamPartySubsystem->IsPlayerInAParty(UserSlot))
 		{
 			BeamPartySubsystem->CPP_CreatePartyOperation(UserSlot, EBeamPartyRestriction::BEAM_Unrestricted, 10,
 			                                             FBeamOperationEventHandlerCode::CreateLambda(

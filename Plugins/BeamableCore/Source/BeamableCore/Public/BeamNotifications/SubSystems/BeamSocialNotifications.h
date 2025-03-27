@@ -27,10 +27,10 @@ struct BEAMABLECORE_API FSocialRefreshNotificationMessage : public FBeamJsonSeri
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category="Beam")
-	FBeamGamerTag PlayerId;
+	FBeamGamerTag PlayerGamerTag;
 
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category="Beam")
-	FBeamGamerTag FriendId;
+	FBeamGamerTag FriendGamerTag;
 
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category="Beam")
 	EBeamFriendEventType EventType = EBeamFriendEventType::BEAM_friend;
@@ -46,7 +46,7 @@ struct BEAMABLECORE_API FSocialPresenceRefreshNotificationMessage : public FBeam
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category="Beam")
-	FBeamGamerTag PlayerId;
+	FBeamGamerTag PlayerGamerTag;
 
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category="Beam")
 	bool Online;
@@ -55,7 +55,7 @@ struct BEAMABLECORE_API FSocialPresenceRefreshNotificationMessage : public FBeam
 	FDateTime LastOnline;
 
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category="Beam")
-	FString Status;
+	EPresenceStatus Status;
 
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category="Beam")
 	FString Description;

@@ -9,15 +9,15 @@
 
 void FSocialRefreshNotificationMessage::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("player"), PlayerId.AsLong);
-	Serializer->WriteValue(TEXT("friend"), FriendId.AsLong);
+	Serializer->WriteValue(TEXT("player"), PlayerGamerTag.AsLong);
+	Serializer->WriteValue(TEXT("friend"), FriendGamerTag.AsLong);
 	Serializer->WriteValue(("etype"), UBeamJsonUtils::EnumToSerializationName<EBeamFriendEventType>(EventType));
 }
 
 void FSocialRefreshNotificationMessage::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("player"), PlayerId.AsLong);
-	Serializer->WriteValue(TEXT("friend"), FriendId.AsLong);
+	Serializer->WriteValue(TEXT("player"), PlayerGamerTag.AsLong);
+	Serializer->WriteValue(TEXT("friend"), FriendGamerTag.AsLong);
 	Serializer->WriteValue(TEXT("etype"), UBeamJsonUtils::EnumToSerializationName<EBeamFriendEventType>(EventType));
 }
 
@@ -29,40 +29,43 @@ void FSocialRefreshNotificationMessage::BeamDeserializeProperties(const TSharedP
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("friend")), FriendIdLong, OuterOwner);
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("etype")), EventType, OuterOwner);
 
-	PlayerId = FBeamGamerTag(PlayerIdLong);
-	FriendId = FBeamGamerTag(FriendIdLong);
+	PlayerGamerTag = FBeamGamerTag(PlayerIdLong);
+	FriendGamerTag = FBeamGamerTag(FriendIdLong);
 }
 
 
 void FSocialPresenceRefreshNotificationMessage::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("friendId"), PlayerId.AsString);
+	Serializer->WriteValue(TEXT("friendId"), PlayerGamerTag.AsString);
 	Serializer->WriteValue(TEXT("lastOnline"), LastOnline.ToString());
 	Serializer->WriteValue(TEXT("online"), Online);
-	Serializer->WriteValue(TEXT("status"), Status);
+	Serializer->WriteValue(TEXT("eventType"), UBeamJsonUtils::EnumToSerializationName(Status));
 	Serializer->WriteValue(TEXT("description"), Description);
 }
 
 void FSocialPresenceRefreshNotificationMessage::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("friendId"), PlayerId.AsString);
+	Serializer->WriteValue(TEXT("friendId"), PlayerGamerTag.AsString);
 	Serializer->WriteValue(TEXT("lastOnline"), LastOnline.ToString());
 	Serializer->WriteValue(TEXT("onlineStatus"), Online);
-	Serializer->WriteValue(TEXT("eventType"), Status);
+	Serializer->WriteValue(TEXT("eventType"), UBeamJsonUtils::EnumToSerializationName(Status));
 	Serializer->WriteValue(TEXT("description"), Description);
 }
 
 void FSocialPresenceRefreshNotificationMessage::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	int64 PlayerIdLong;
+	FString OnlineStatus;
 
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("lastOnline")), LastOnline, OuterOwner);
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("friendId")), PlayerIdLong, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("onlineStatus")), Online, OuterOwner);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("onlineStatus")), OnlineStatus, OuterOwner);
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("eventType")), Status, OuterOwner);
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("description")), Description, OuterOwner);
 
-	PlayerId = FBeamGamerTag(PlayerIdLong);
+	PlayerGamerTag = FBeamGamerTag(PlayerIdLong);
+
+	Online = OnlineStatus == TEXT("online");
 }
 
 
@@ -72,24 +75,8 @@ FSocialPresenceRefreshNotificationMessage::FSocialPresenceRefreshNotificationMes
 
 FSocialPresenceRefreshNotificationMessage::FSocialPresenceRefreshNotificationMessage(UOnlineStatus* OnlineStatus)
 {
-	switch (OnlineStatus->Status.Val)
-	{
-	case EPresenceStatus::BEAM_Visible:
-		Status = "Visible";
-		break;
-	case EPresenceStatus::BEAM_Away:
-		Status = "Away";
-		break;
-	case EPresenceStatus::BEAM_Dnd:
-		Status = "Dnd";
-		break;
-	case EPresenceStatus::BEAM_Invisible:
-		Status = "Invisible";
-		break;
-	default:
-		break;
-	}
-	PlayerId = OnlineStatus->PlayerId.Val;
+	Status = OnlineStatus->Status.Val;
+	PlayerGamerTag = OnlineStatus->PlayerId.Val;
 	Description = OnlineStatus->Description.Val;
 	FDateTime::Parse(*OnlineStatus->LastOnline.Val, LastOnline);
 	Online = OnlineStatus->bOnline.Val;

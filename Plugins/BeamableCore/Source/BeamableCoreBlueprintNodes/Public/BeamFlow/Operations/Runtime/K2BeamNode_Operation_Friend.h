@@ -17,7 +17,7 @@ class UK2BeamNode_Operation_FetchPlayerFriendState : public UK2BeamNode_Operatio
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Operation - Party - FetchPlayerFriendState");
+		return LOCTEXT("Title", "Operation - Friend - FetchPlayerFriendState");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -45,7 +45,7 @@ class UK2BeamNode_Operation_FetchFriendsState : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Operation - Party - FetchFriendsState");
+		return LOCTEXT("Title", "Operation - Friend - FetchFriendsState");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -72,7 +72,7 @@ class UK2BeamNode_Operation_FetchFriendPresenceStatus : public UK2BeamNode_Opera
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Operation - Party - FetchFriendPresenceStatus");
+		return LOCTEXT("Title", "Operation - Friend - FetchFriendPresenceStatus");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -99,7 +99,7 @@ class UK2BeamNode_Operation_SendFriendInvite : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Operation - Party - SendFriendInvite");
+		return LOCTEXT("Title", "Operation - Friend - SendFriendInvite");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -126,7 +126,7 @@ class UK2BeamNode_Operation_AcceptFriendInvite : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Operation - Party - AcceptFriendInvite");
+		return LOCTEXT("Title", "Operation - Friend - AcceptFriendInvite");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -154,7 +154,7 @@ class UK2BeamNode_Operation_DeclineFriendInvite : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Operation - Party - DeclineFriendInvite");
+		return LOCTEXT("Title", "Operation - Friend - DeclineFriendInvite");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -182,7 +182,7 @@ class UK2BeamNode_Operation_BlockPlayer : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Operation - Party - BlockPlayer");
+		return LOCTEXT("Title", "Operation - Friend - BlockPlayer");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -209,7 +209,7 @@ class UK2BeamNode_Operation_UnblockPlayer : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Operation - Party - UnblockPlayer");
+		return LOCTEXT("Title", "Operation - Friend - UnblockPlayer");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -238,7 +238,7 @@ class UK2BeamNode_Operation_RemoveFriend : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Operation - Party - RemoveFriend");
+		return LOCTEXT("Title", "Operation - Friend - RemoveFriend");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override

@@ -62,6 +62,35 @@ class UK2BeamNode_Operation_JoinParty : public UK2BeamNode_Operation
 
 #undef LOCTEXT_NAMESPACE
 
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_JoinPlayerParty"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamNode_Operation_JoinPlayerParty : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
+	{
+		return LOCTEXT("Title", "Operation - Party - JoinPlayerParty");
+	}
+
+	virtual FName GetSubsystemSelfFunctionName() const override
+	{
+		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
+	}
+
+	virtual FName GetOperationFunctionName() const override
+	{
+		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, JoinPlayerPartyOperation);
+	}
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+
 #define LOCTEXT_NAMESPACE "K2BeamNode_Operation_LeaveParty"
 
 UCLASS(meta=(BeamFlowNode))
@@ -136,6 +165,34 @@ class UK2BeamNode_Operation_DeclinePlayerInvite : public UK2BeamNode_Operation
 	virtual FName GetOperationFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, DeclinePlayerPartyInviteOperation);
+	}
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_DeclinePartyInvite"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamNode_Operation_DeclinePartyInvite : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
+	{
+		return LOCTEXT("Title", "Operation - Party - DeclinePartyInvite");
+	}
+
+	virtual FName GetSubsystemSelfFunctionName() const override
+	{
+		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
+	}
+
+	virtual FName GetOperationFunctionName() const override
+	{
+		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, DeclinePartyInviteOperation);
 	}
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }

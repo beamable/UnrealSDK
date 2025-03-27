@@ -11,22 +11,11 @@
 #include "Runtime/BeamRuntimeSubsystem.h"
 #include "BeamFriendSubsystem.generated.h"
 
-UENUM(BlueprintType)
-enum class EBeamPresenceStatus : uint8
-{
-	Visible,
-	Invisible,
-	Dnd,
-	Away,
-};
 
 USTRUCT(BlueprintType)
 struct BEAMABLECORERUNTIME_API FBeamFriendPresenceStatus
 {
 	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FBeamGamerTag PlayerId;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool Online = false;
@@ -35,7 +24,7 @@ struct BEAMABLECORERUNTIME_API FBeamFriendPresenceStatus
 	FDateTime LastOnline;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EBeamPresenceStatus Status = EBeamPresenceStatus::Invisible;
+	EPresenceStatus Status = EPresenceStatus::BEAM_Invisible;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Description;
@@ -47,10 +36,7 @@ struct BEAMABLECORERUNTIME_API FBeamFriendInfo
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FBeamGamerTag FriendId;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FBeamFriendPresenceStatus FriendStatus;
+	FBeamGamerTag FriendGamerTag;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FGuid PartyId;
@@ -60,7 +46,7 @@ struct BEAMABLECORERUNTIME_API FBeamFriendInfo
 
 	bool operator==(const FBeamFriendInfo& Other) const
 	{
-		return Other.FriendId == FriendId;
+		return Other.FriendGamerTag == FriendGamerTag;
 	}
 };
 
@@ -70,11 +56,11 @@ struct BEAMABLECORERUNTIME_API FBeamPlayerBlocked
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FBeamGamerTag PlayerId;
+	FBeamGamerTag PlayerGamerTag;
 
 	bool operator==(const FBeamPlayerBlocked& Other) const
 	{
-		return Other.PlayerId == PlayerId;
+		return Other.PlayerGamerTag == PlayerGamerTag;
 	}
 };
 
@@ -84,11 +70,11 @@ struct BEAMABLECORERUNTIME_API FBeamFriendInvite
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FBeamGamerTag FriendId;
+	FBeamGamerTag FriendGamerTag;
 
 	bool operator==(const FBeamFriendInvite& Other) const
 	{
-		return Other.FriendId == FriendId;
+		return Other.FriendGamerTag == FriendGamerTag;
 	}
 };
 
@@ -98,7 +84,10 @@ struct BEAMABLECORERUNTIME_API FBeamFriendState
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FBeamGamerTag PlayerId;
+	FBeamGamerTag PlayerGamerTag;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FBeamFriendPresenceStatus Status;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<FBeamFriendInfo> Friends;
@@ -113,16 +102,11 @@ struct BEAMABLECORERUNTIME_API FBeamFriendState
 	TArray<FBeamPlayerBlocked> BlockedPlayers;
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpdateMultipleFriends, TArray<FBeamGamerTag>, FriendId, FUserSlot,
-                                             UserSlot);
-
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnUpdateMultipleFriendsCode, TArray<FBeamGamerTag>, FUserSlot);
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpdateFriend, FBeamGamerTag, FriendId, FUserSlot, UserSlot);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpdateFriend, FBeamGamerTag, FriendGamerTag, FUserSlot, UserSlot);
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnUpdateFriendCode, FBeamGamerTag, FUserSlot);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerBlockedStatusChanged, FBeamGamerTag, PlayerId, FUserSlot,
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPlayerBlockedStatusChanged, FBeamGamerTag, PlayerGamerTag, FUserSlot,
                                              UserSlot);
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPlayerBlockedStatusChangedCode, FBeamGamerTag, FUserSlot);
@@ -135,19 +119,22 @@ class BEAMABLECORERUNTIME_API UBeamFriendSubsystem : public UBeamRuntimeSubsyste
 {
 	GENERATED_BODY()
 
+	UPROPERTY()
 	UBeamSocialApi* BeamSocialApi;
 
+	UPROPERTY()
 	UBeamMailApi* BeamMailApi;
 
+	UPROPERTY()
 	UBeamPresenceApi* BeamPresenceApi;
 
+	UPROPERTY()
 	UBeamSocialNotifications* SocialNotifications;
 
+	UPROPERTY()
 	UBeamMailNotifications* MailNotifications;
 
 	TMap<FBeamGamerTag, FBeamFriendState> FriendStates;
-
-	TMap<FBeamGamerTag, FBeamFriendPresenceStatus> FriendPresenceStatusState;
 
 	virtual void InitializeWhenUnrealReady_Implementation(FBeamOperationHandle& ResultOp) override;
 
@@ -173,12 +160,12 @@ public:
 	 * When it's called the local state is already updated.
 	 */
 	UPROPERTY(BlueprintAssignable)
-	FOnUpdateMultipleFriends OnInviteReceived;
+	FOnUpdateFriend OnInviteReceived;
 
 	/**
 	 * @copydoc OnInviteReceived
 	 */
-	FOnUpdateMultipleFriendsCode OnInviteReceivedCode;
+	FOnUpdateFriendCode OnInviteReceivedCode;
 
 	/**
 	 * Triggers when a Player accept the invite from another Player.
@@ -230,7 +217,7 @@ public:
 	FOnUpdateFriendCode OnFriendRemovedCode;
 
 	/**
-	 * Triggers when a Player blocked another Player.
+	 * Triggers when the current Player blocks another Player.
 	 *
 	 * This uses the @link UBeamSocialNotifications @endlink triggers the fetch for changes in the @link FriendStates @endlink .
 	 *
@@ -309,6 +296,18 @@ public:
 	 */
 	FOnUpdateFriendCode OnFriendPresenceStatusUpdateCode;
 
+	/**
+	 * Triggers when some error happens fetching the presence status 
+	 *
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FOnUpdateFriend OnFriendPresenceStatusUpdateError;
+
+	/**
+	 * @copydoc OnFriendPresenceStatusUpdateError
+	 */
+	FOnUpdateFriendCode OnFriendPresenceStatusUpdateErrorCode;
+
 
 	/**
 	 * @brief Attempts to retrieve the friend state for a specific user slot.
@@ -329,28 +328,28 @@ public:
 	 *
 	 * This gets the FriendState from the local state.
 	 *
-	 * @param PlayerId: The PlayerId that you try to get the friend state.
+	 * @param PlayerGamerTag: The PlayerGamerTag that you try to get the friend state.
 	 * @param FriendState: The reference for the out result of the player friend state.
 	 *
 	 * @return Returns False if the user don't have the friend state initialized or if it's not possible to retrieve the data.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetPlayerFriendState(FBeamGamerTag PlayerId, FBeamFriendState& FriendState);
+	bool TryGetPlayerFriendState(FBeamGamerTag PlayerGamerTag, FBeamFriendState& FriendState);
 
 	/**
 	 * @brief Attempts to retrieve the friend presence status for a specific player using the FBeamGamerTag.
 	 *
 	 * This gets the FriendState from the local state.
 	 *
-	 * @param PlayerId: The PlayerId that you try to get the friend state.
+	 * @param PlayerGamerTag: The PlayerGamerTag that you try to get the friend state.
 	 * @param StatusState: The reference for the out result of the player presence status.
 	 *
 	 * @return Returns False if the user don't have the friend state initialized or if it's not possible to retrieve the data.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetFriendPresenceState(FBeamGamerTag PlayerId, FBeamFriendPresenceStatus& StatusState);
+	bool TryGetFriendPresenceState(FBeamGamerTag PlayerGamerTag, FBeamFriendPresenceStatus& StatusState);
 
 	/**
 	 * @brief Fetch the state for a given UserSlot.
@@ -360,18 +359,18 @@ public:
 	 * Updates the local state of: @link FriendStates @endlink 
 	 *
 	 * @param UserSlot: The target UserSlot to fetch the state.
-	 * @param OperationEventHandler: The callback event that handles the result.
+	 * @param OnOperationEvent: The callback event that handles the result.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Friends",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle FetchPlayerFriendStateOperation(FUserSlot UserSlot,
-	                                                     FBeamOperationEventHandler OperationEventHandler);
+	                                                     FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc FetchPlayerFriendStateOperation
 	 */
 	FBeamOperationHandle CPP_FetchPlayerFriendStateOperation(FUserSlot UserSlot,
-	                                                         FBeamOperationEventHandlerCode OperationEventHandler);
+	                                                         FBeamOperationEventHandlerCode OnOperationEvent);
 	/**
 	 * @brief Fetch the friend state for multiple players ids.
 	 *
@@ -381,18 +380,18 @@ public:
 	 *
 	 * @param UserSlot: The target UserSlot to fetch the state.
 	 * @param PlayerIds: The Ids for the players that will be fetched to local state.
-	 * @param OperationEventHandler: The callback event that handles the result.
+	 * @param OnOperationEvent: The callback event that handles the result.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Friends",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle FetchFriendsStateOperation(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerIds,
-	                                                FBeamOperationEventHandler OperationEventHandler);
+	                                                FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc FetchFriendsStateOperation
 	 */
 	FBeamOperationHandle CPP_FetchFriendsStateOperation(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerIds,
-	                                                    FBeamOperationEventHandlerCode OperationEventHandler);
+	                                                    FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * @brief Fetch the friend STATUS state for multiple players ids.
@@ -403,18 +402,18 @@ public:
 	 *
 	 * @param UserSlot: The target UserSlot to fetch the state.
 	 * @param PlayerIds: The Ids for the players that will be fetched to local state.
-	 * @param OperationEventHandler: The callback event that handles the result.
+	 * @param OnOperationEvent: The callback event that handles the result.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Friends",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle FetchFriendPresenceStatusOperation(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerIds,
-	                                                        FBeamOperationEventHandler OperationEventHandler);
+	                                                        FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc FetchFriendPresenceStatusOperation
 	 */
 	FBeamOperationHandle CPP_FetchFriendPresenceStatusOperation(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerIds,
-	                                                            FBeamOperationEventHandlerCode OperationEventHandler);
+	                                                            FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * @brief Invite a player to be friend.
@@ -426,18 +425,18 @@ public:
 	 * Updates the local state of: @link FriendStates @endlink
 	 *
 	 * @param UserSlot: The sender UserSlot that will be used for validate the invite.
-	 * @param FriendId: The target PlayerId that will receive the invite.
-	 * @param OperationEventHandler: The callback event that handles the result.
+	 * @param FriendGamerTag: The target PlayerGamerTag that will receive the invite.
+	 * @param OnOperationEvent: The callback event that handles the result.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Friends",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle SendFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
-	                                               FBeamOperationEventHandler OperationEventHandler);
+	FBeamOperationHandle SendFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag,
+	                                               FBeamOperationEventHandler OnOperationEvent);
 	/**
 	 * @copydoc SendFriendInviteOperation
 	 */
-	FBeamOperationHandle CPP_SendFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
-	                                                   FBeamOperationEventHandlerCode OperationEventHandler);
+	FBeamOperationHandle CPP_SendFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag,
+	                                                   FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * @brief Accept an invitation sent to a given UserSlot.
@@ -445,19 +444,19 @@ public:
 	 * Update the local state of: @link FriendStates @endlink
 	 *
 	 * @param UserSlot: The UserSlot that will accept the invitation
-	 * @param FriendId: The sender PlayerId that sent the friend invitation.
-	 * @param OperationEventHandler: The callback event that handles the result.
+	 * @param FriendGamerTag: The sender PlayerGamerTag that sent the friend invitation.
+	 * @param OnOperationEvent: The callback event that handles the result.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Friends",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle AcceptFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
-	                                                 FBeamOperationEventHandler OperationEventHandler);
+	FBeamOperationHandle AcceptFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag,
+	                                                 FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc AcceptFriendInviteOperation
 	 */
-	FBeamOperationHandle CPP_AcceptFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
-	                                                     FBeamOperationEventHandlerCode OperationEventHandler);
+	FBeamOperationHandle CPP_AcceptFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag,
+	                                                     FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * @brief Delete the friend invitation received or sent.
@@ -467,18 +466,18 @@ public:
 	 * Updates the local state of: @link FriendStates @endlink
 	 *
 	 * @param UserSlot: The UserSlot that would like to delete the invitation
-	 * @param FriendId: The target PlayerId that the invitation has been sent or received.
-	 * @param OperationEventHandler: The callback event that handles the result.
+	 * @param FriendGamerTag: The target PlayerGamerTag that the invitation has been sent or received.
+	 * @param OnOperationEvent: The callback event that handles the result.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Friends",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle DeclineFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
-	                                                  FBeamOperationEventHandler OperationEventHandler);
+	FBeamOperationHandle DeclineFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag,
+	                                                  FBeamOperationEventHandler OnOperationEvent);
 	/**
 	 * @copydoc DeclineFriendInviteOperation
 	 */
-	FBeamOperationHandle CPP_DeclineFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
-	                                                      FBeamOperationEventHandlerCode OperationEventHandler);
+	FBeamOperationHandle CPP_DeclineFriendInviteOperation(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag,
+	                                                      FBeamOperationEventHandlerCode OnOperationEvent);
 	/**
 	 * @brief Block a player from being friends.
 	 *
@@ -486,18 +485,18 @@ public:
 	 * If you block a friend, that will be removed from your friend list and you will be removed from his friend list.
 	 *
 	 * @param UserSlot: The UserSlot that would like to block another Player.
-	 * @param PlayerId: The target PlayerId that will be blocked.
-	 * @param OperationEventHandler: The callback event that handles the result.
+	 * @param PlayerGamerTag: The target PlayerGamerTag that will be blocked.
+	 * @param OnOperationEvent: The callback event that handles the result.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Friends",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle BlockPlayerOperation(FUserSlot UserSlot, FBeamGamerTag PlayerId,
-	                                          FBeamOperationEventHandler OperationEventHandler);
+	FBeamOperationHandle BlockPlayerOperation(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
+	                                          FBeamOperationEventHandler OnOperationEvent);
 	/**
 	 * @copydoc BlockPlayerOperation
 	 */
-	FBeamOperationHandle CPP_BlockPlayerOperation(FUserSlot UserSlot, FBeamGamerTag PlayerId,
-	                                              FBeamOperationEventHandlerCode OperationEventHandler);
+	FBeamOperationHandle CPP_BlockPlayerOperation(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
+	                                              FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * @brief Unblock a player.
@@ -506,65 +505,73 @@ public:
 	 * Just unblock the player won't will make you both friends again, it's required to send an invitation again.
 	 *
 	 * @param UserSlot: The UserSlot that blocked the player and would like to unlbock.
-	 * @param PlayerId: The target PlayerId of the player to be Unblocked.
-	 * @param OperationEventHandler: The callback event that handles the result.
+	 * @param PlayerGamerTag: The target PlayerGamerTag of the player to be Unblocked.
+	 * @param OnOperationEvent: The callback event that handles the result.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Friends",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle UnblockPlayerOperation(FUserSlot UserSlot, FBeamGamerTag PlayerId,
-	                                            FBeamOperationEventHandler OperationEventHandler);
+	FBeamOperationHandle UnblockPlayerOperation(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
+	                                            FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc UnblockPlayerOperation
 	 */
-	FBeamOperationHandle CPP_UnblockPlayerOperation(FUserSlot UserSlot, FBeamGamerTag PlayerId,
-	                                                FBeamOperationEventHandlerCode OperationEventHandler);
+	FBeamOperationHandle CPP_UnblockPlayerOperation(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
+	                                                FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
 	 * Remove a friend from the friend list.
 	 *
 	 * @param UserSlot: The UserSlot that would like to remove a friend from the friend list.
-	 * @param FriendId: The target FriendId that will be removed from the friend list.
-	 * @param OperationEventHandler: The callback event that handles the result.
+	 * @param FriendGamerTag: The target FriendGamerTag that will be removed from the friend list.
+	 * @param OnOperationEvent: The callback event that handles the result.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Friends",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle RemoveFriendOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
-	                                           FBeamOperationEventHandler OperationEventHandler);
+	FBeamOperationHandle RemoveFriendOperation(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag,
+	                                           FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc RemoveFriendOperation
 	 */
-	FBeamOperationHandle CPP_RemoveFriendOperation(FUserSlot UserSlot, FBeamGamerTag FriendId,
-	                                               FBeamOperationEventHandlerCode OperationEventHandler);
+	FBeamOperationHandle CPP_RemoveFriendOperation(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag,
+	                                               FBeamOperationEventHandlerCode OnOperationEvent);
 
 protected:
-	bool TryGetPlayerFriendState(FUserSlot UserSlot, FBeamFriendState& FriendState);
-
-	bool TryGetFriendState(FBeamGamerTag PlayerId, FBeamFriendState& FriendState);
-
-	bool TryGetFriendPresenceStatus(FBeamGamerTag PlayerId, FBeamFriendPresenceStatus& StatusState);
-
+	// Operation Functions
 	void FetchPlayerFriendState(FUserSlot UserSlot, FBeamOperationHandle Op);
 
 	void FetchFriendsState(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerIds, FBeamOperationHandle Op);
 
 	void FetchFriendPresenceStatus(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerIds, FBeamOperationHandle Op);
 
-	void SendFriendInvite(FUserSlot UserSlot, FBeamGamerTag FriendId, FBeamOperationHandle Op);
+	void SendFriendInvite(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag, FBeamOperationHandle Op);
 
-	void AcceptFriendInvite(FUserSlot UserSlot, FBeamGamerTag FriendId, FBeamOperationHandle Op);
+	void AcceptFriendInvite(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag, FBeamOperationHandle Op);
 
-	void DeclineFriendInvite(FUserSlot UserSlot, FBeamGamerTag FriendId, FBeamOperationHandle Op);
+	void DeclineFriendInvite(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag, FBeamOperationHandle Op);
 
-	void BlockPlayer(FUserSlot UserSlot, FBeamGamerTag PlayerId, FBeamOperationHandle Op);
+	void BlockPlayer(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, FBeamOperationHandle Op);
 
-	void UnblockPlayer(FUserSlot UserSlot, FBeamGamerTag PlayerId, FBeamOperationHandle Op);
+	void UnblockPlayer(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, FBeamOperationHandle Op);
 
-	void RemoveFriend(FUserSlot UserSlot, FBeamGamerTag FriendId, FBeamOperationHandle Op);
+	void RemoveFriend(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag, FBeamOperationHandle Op);
 
 	// Utility
-	EBeamPresenceStatus GetStatus(FString StatusStr);
+
+	bool TryGetBeamGameTagFromUserSlot(FUserSlot UserSlot, FBeamGamerTag& PlayerGamerTag);
+
+	FBeamFriendState MakeFriendState(USocial* Social);
+
+	FBeamFriendPresenceStatus MakeFriendPresenceStatus(FSocialPresenceRefreshNotificationMessage PresenceStatusMessage);
+
+	/*
+	 * As the presence status and the friend info comes from different apis it will triggers to update the presence status of the player in case of adding a new player
+	 */
+	void RefreshPresenceAndTriggerEvent(FBeamGamerTag FriendGamerTag, FUserSlot UserSlot);
+
+	//TODO: We could move it to be reused by the others subsystems
+	bool IsUserSlotAuthenticated(FUserSlot UserSlot, FString FunctionName, FBeamOperationHandle OperationHandle);
 
 	//Notifications - Handle update and callbacks from the backend
 	UFUNCTION()
@@ -576,18 +583,4 @@ protected:
 
 	UFUNCTION()
 	void MailRefreshNotificationHandler(FMailRefreshNotificationMessage Message, FUserSlot UserSlot);
-
-	FBeamFriendState MakeFriendState(USocial* Social);
-
-	FBeamFriendPresenceStatus MakeFriendPresenceStatus(FSocialPresenceRefreshNotificationMessage PresenceStatusMessage);
-
-	bool TryGetBeamGameTagFromUserSlot(FUserSlot UserSlot, FBeamGamerTag& PlayerId);
 };
-
-inline bool UBeamFriendSubsystem::TryGetBeamGameTagFromUserSlot(FUserSlot UserSlot, FBeamGamerTag& PlayerId)
-{
-	FBeamRealmUser RealmUser;
-	bool success = Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this);
-	PlayerId = RealmUser.GamerTag;
-	return success;
-}
