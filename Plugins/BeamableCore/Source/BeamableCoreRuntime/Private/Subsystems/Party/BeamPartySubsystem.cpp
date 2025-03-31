@@ -261,22 +261,44 @@ FBeamOperationHandle UBeamPartySubsystem::CPP_CreatePartyOperation(FUserSlot Use
 }
 
 FBeamOperationHandle UBeamPartySubsystem::InvitePlayerToPartyOperation(FUserSlot UserSlot, FGuid PartyId,
-                                                                       FBeamGamerTag Player,
+                                                                       FBeamGamerTag PlayerGamerTag,
                                                                        FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                  OnOperationEvent);
-	InvitePlayerToParty(UserSlot, PartyId, Player, Handle);
+	InvitePlayerToParty(UserSlot, PartyId, PlayerGamerTag, Handle);
 	return Handle;
 }
 
 FBeamOperationHandle UBeamPartySubsystem::CPP_InvitePlayerToPartyOperation(
-	FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
+	FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag PlayerGamerTag,
 	FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
 		{UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	InvitePlayerToParty(UserSlot, PartyId, Player, Handle);
+	InvitePlayerToParty(UserSlot, PartyId, PlayerGamerTag, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamPartySubsystem::InvitePlayerToMyPartyOperation(
+	FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
+	FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
+	                                                                  OnOperationEvent);
+	InvitePlayerToMyParty(UserSlot, PlayerGamerTag, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamPartySubsystem::CPP_InvitePlayerToMyPartyOperation(
+	FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
+	FBeamOperationEventHandlerCode
+	OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
+		{UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+
+	InvitePlayerToMyParty(UserSlot, PlayerGamerTag, Handle);
 	return Handle;
 }
 
@@ -307,7 +329,7 @@ FBeamOperationHandle UBeamPartySubsystem::DeclinePlayerPartyInviteOperation(
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                  OnOperationEvent);
-	DeclinePlayerPartyInvite(UserSlot, PlayerGamerTag, Handle);
+	DeclinePlayerInvite(UserSlot, PlayerGamerTag, Handle);
 	return Handle;
 }
 
@@ -316,106 +338,192 @@ FBeamOperationHandle UBeamPartySubsystem::CPP_DeclinePlayerPartyInviteOperation(
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
 		{UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	DeclinePlayerPartyInvite(UserSlot, PlayerGamerTag, Handle);
+	DeclinePlayerInvite(UserSlot, PlayerGamerTag, Handle);
 	return Handle;
 }
 
-FBeamOperationHandle UBeamPartySubsystem::LeavePartyOperation(FUserSlot UserSlot, FGuid PartyId,
+FBeamOperationHandle UBeamPartySubsystem::LeavePartyOperation(FUserSlot UserSlot,
                                                               FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                  OnOperationEvent);
-	LeaveParty(UserSlot, PartyId, Handle);
+	LeaveParty(UserSlot, Handle);
 	return Handle;
 }
 
-FBeamOperationHandle UBeamPartySubsystem::CPP_LeavePartyOperation(FUserSlot UserSlot, FGuid PartyId,
+FBeamOperationHandle UBeamPartySubsystem::CPP_LeavePartyOperation(FUserSlot UserSlot,
                                                                   FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
 		{UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	LeaveParty(UserSlot, PartyId, Handle);
+	LeaveParty(UserSlot, Handle);
 	return Handle;
 }
 
-FBeamOperationHandle UBeamPartySubsystem::KickPlayerOperation(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
-                                                              FBeamOperationEventHandler OnOperationEvent)
-{
-	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
-	                                                                  OnOperationEvent);
-	KickPlayer(UserSlot, PartyId, Player, Handle);
-	return Handle;
-}
 
-FBeamOperationHandle UBeamPartySubsystem::CancelPlayerPartyInviteOperation(
-	FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
+FBeamOperationHandle UBeamPartySubsystem::CancelSentPartyInviteOperation(
+	FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag PlayerGamerTag,
 	FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                  OnOperationEvent);
-	CancelPlayerPartyInvite(UserSlot, PartyId, Player, Handle);
+	CancelSentPartyInvite(UserSlot, PartyId, PlayerGamerTag, Handle);
 	return Handle;
 }
 
-FBeamOperationHandle UBeamPartySubsystem::CPP_CancelPlayerPartyInviteOperation(
-	FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
+FBeamOperationHandle UBeamPartySubsystem::CPP_CancelSentPartyInviteOperation(
+	FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag PlayerGamerTag,
 	FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
 		{UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	CancelPlayerPartyInvite(UserSlot, PartyId, Player, Handle);
+	CancelSentPartyInvite(UserSlot, PartyId, PlayerGamerTag, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamPartySubsystem::CancelPlayerPartyInviteOperation(FUserSlot UserSlot,
+                                                                           FBeamGamerTag PlayerGamerTag,
+                                                                           FBeamOperationEventHandler
+                                                                           OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
+	                                                                  OnOperationEvent);
+	CancelPlayerPartyInvite(UserSlot, PlayerGamerTag, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamPartySubsystem::CPP_CancelPlayerPartyInviteOperation(FUserSlot UserSlot,
+                                                                               FBeamGamerTag PlayerGamerTag,
+                                                                               FBeamOperationEventHandlerCode
+                                                                               OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
+		{UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	CancelPlayerPartyInvite(UserSlot, PlayerGamerTag, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamPartySubsystem::KickPlayerOperation(FUserSlot UserSlot, FGuid PartyId,
+                                                              FBeamGamerTag PlayerGamerTag,
+                                                              FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
+	                                                                  OnOperationEvent);
+	KickPlayer(UserSlot, PartyId, PlayerGamerTag, Handle);
 	return Handle;
 }
 
 FBeamOperationHandle UBeamPartySubsystem::CPP_KickPlayerOperation(FUserSlot UserSlot, FGuid PartyId,
-                                                                  FBeamGamerTag Player,
+                                                                  FBeamGamerTag PlayerGamerTag,
                                                                   FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
 		{UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	KickPlayer(UserSlot, PartyId, Player, Handle);
+	KickPlayer(UserSlot, PartyId, PlayerGamerTag, Handle);
 	return Handle;
 }
 
-FBeamOperationHandle UBeamPartySubsystem::PromotePlayerToLeaderOperation(
-	FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
+FBeamOperationHandle UBeamPartySubsystem::KickPlayerFromMyPartyOperation(
+	FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
 	FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                  OnOperationEvent);
-	PromotePlayerToLeader(UserSlot, PartyId, Player, Handle);
+	KickPlayerFromMyParty(UserSlot, PlayerGamerTag, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamPartySubsystem::CPP_KickPlayerFromMyPartyOperation(
+	FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
+	FBeamOperationEventHandlerCode
+	OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
+		{UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	KickPlayerFromMyParty(UserSlot, PlayerGamerTag, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamPartySubsystem::PromotePlayerToLeaderOperation(
+	FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag PlayerGamerTag,
+	FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
+	                                                                  OnOperationEvent);
+	PromotePlayerToLeader(UserSlot, PartyId, PlayerGamerTag, Handle);
 	return Handle;
 }
 
 FBeamOperationHandle UBeamPartySubsystem::CPP_PromotePlayerToLeaderOperation(
-	FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
+	FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag PlayerGamerTag,
 	FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
 		{UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	PromotePlayerToLeader(UserSlot, PartyId, Player, Handle);
+	PromotePlayerToLeader(UserSlot, PartyId, PlayerGamerTag, Handle);
 	return Handle;
 }
 
-FBeamOperationHandle UBeamPartySubsystem::UpdatePartyOperation(FUserSlot UserSlot, FGuid PartyId,
-                                                               EBeamPartyRestriction Restriction,
-                                                               FOptionalInt32 MaxPlayers,
-                                                               FBeamOperationEventHandler OnOperationEvent)
+FBeamOperationHandle UBeamPartySubsystem::PromotePlayerToMyPartyLeaderOperation(FUserSlot UserSlot,
+	FBeamGamerTag PlayerGamerTag, FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                  OnOperationEvent);
-	UpdateParty(UserSlot, PartyId, Restriction, MaxPlayers, Handle);
+	PromotePlayerAsMyPartyLeader(UserSlot, PlayerGamerTag, Handle);
 	return Handle;
 }
 
-FBeamOperationHandle UBeamPartySubsystem::CPP_UpdatePartyOperation(FUserSlot UserSlot, FGuid PartyId,
-                                                                   EBeamPartyRestriction Restriction,
-                                                                   FOptionalInt32 MaxPlayers,
-                                                                   FBeamOperationEventHandlerCode OnOperationEvent)
+FBeamOperationHandle UBeamPartySubsystem::CPP_PromotePlayerToMyPartyLeaderOperation(FUserSlot UserSlot,
+	FBeamGamerTag PlayerGamerTag, FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
 		{UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	UpdateParty(UserSlot, PartyId, Restriction, MaxPlayers, Handle);
+	PromotePlayerAsMyPartyLeader(UserSlot, PlayerGamerTag, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamPartySubsystem::UpdatePartyMetaOperation(FUserSlot UserSlot, FGuid PartyId,
+                                                                   EBeamPartyRestriction Restriction,
+                                                                   FOptionalInt32 MaxPlayers,
+                                                                   FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
+	                                                                  OnOperationEvent);
+	UpdatePartyMeta(UserSlot, PartyId, Restriction, MaxPlayers, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamPartySubsystem::CPP_UpdatePartyMetaOperation(FUserSlot UserSlot, FGuid PartyId,
+                                                                       EBeamPartyRestriction Restriction,
+                                                                       FOptionalInt32 MaxPlayers,
+                                                                       FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
+		{UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	UpdatePartyMeta(UserSlot, PartyId, Restriction, MaxPlayers, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamPartySubsystem::UpdateMyPartyMetaOperation(FUserSlot UserSlot,
+                                                                     EBeamPartyRestriction Restriction,
+                                                                     FOptionalInt32 MaxPlayers,
+                                                                     FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
+	                                                                  OnOperationEvent);
+	UpdateMyPartyMeta(UserSlot, Restriction, MaxPlayers, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamPartySubsystem::CPP_UpdateMyPartyMetaOperation(FUserSlot UserSlot,
+                                                                         EBeamPartyRestriction Restriction,
+                                                                         FOptionalInt32 MaxPlayers,
+                                                                         FBeamOperationEventHandlerCode
+                                                                         OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
+		{UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	UpdateMyPartyMeta(UserSlot, Restriction, MaxPlayers, Handle);
 	return Handle;
 }
 
@@ -834,7 +942,7 @@ void UBeamPartySubsystem::JoinPlayerParty(FUserSlot UserSlot, FBeamGamerTag Play
 	PartyApi->CPP_PutParty(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
-void UBeamPartySubsystem::InvitePlayerToParty(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
+void UBeamPartySubsystem::InvitePlayerToParty(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag PlayerGamerTag,
                                               FBeamOperationHandle Op)
 {
 	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
@@ -842,7 +950,7 @@ void UBeamPartySubsystem::InvitePlayerToParty(FUserSlot UserSlot, FGuid PartyId,
 		return;
 	}
 	FOnApiPartyPostInviteByIdFullResponse Handler = FOnApiPartyPostInviteByIdFullResponse::CreateLambda(
-		[this, UserSlot, Player, PartyId, Op](const FApiPartyPostInviteByIdFullResponse& Resp)
+		[this, UserSlot, PlayerGamerTag, PartyId, Op](const FApiPartyPostInviteByIdFullResponse& Resp)
 		{
 			if (Resp.State == RS_Retrying)
 			{
@@ -860,14 +968,14 @@ void UBeamPartySubsystem::InvitePlayerToParty(FUserSlot UserSlot, FGuid PartyId,
 					return;
 				}
 
-				PartyState.InvitedPlayers.Add(Player);
+				PartyState.InvitedPlayers.Add(PlayerGamerTag);
 
 				//Local Notification
 				FBeamRealmUser RealmUser;
 				FUserSlot OtherUserSlot;
 				FString NamespacedSlotId;
 				if (Runtime->UserSlotSystem->
-				             GetUserDataWithGamerTag(Player, RealmUser, OtherUserSlot, NamespacedSlotId))
+				             GetUserDataWithGamerTag(PlayerGamerTag, RealmUser, OtherUserSlot, NamespacedSlotId))
 				{
 					InvokePartyEventUpdate(UserSlot, PartyId, EBeamPartyEvent::BEAM_PlayerInvited);
 				}
@@ -889,11 +997,37 @@ void UBeamPartySubsystem::InvitePlayerToParty(FUserSlot UserSlot, FGuid PartyId,
 		});
 
 	UApiPartyPostInviteByIdRequest* const Request = UApiPartyPostInviteByIdRequest::Make(
-		PartyId, FOptionalBeamGamerTag(Player), this, {});
+		PartyId, FOptionalBeamGamerTag(PlayerGamerTag), this, {});
 
 	FBeamRequestContext Ctx;
 
 	PartyApi->CPP_PostInvite(UserSlot, Request, Handler, Ctx, Op, this);
+}
+
+void UBeamPartySubsystem::InvitePlayerToMyParty(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
+                                                FBeamOperationHandle Op)
+{
+	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	{
+		return;
+	}
+	FBeamRealmUser RealmUser;
+	ensureAlwaysMsgf(!Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this),
+	                 TEXT(
+		                 "It's not possible to user don't have a realm if we validated it is authenticated before this call."
+	                 ));
+
+	FBeamPartyState PartyState;
+
+	if (!TryGetUserPartyState(UserSlot, PartyState))
+	{
+		Runtime->RequestTrackerSystem->TriggerOperationError(
+			Op, TEXT(
+				"Player isn't in any party, please make sure that the player is in a party before call this operation"));
+		return;
+	}
+
+	InvitePlayerToParty(UserSlot, PartyState.PartyId, PlayerGamerTag, Op);
 }
 
 void UBeamPartySubsystem::DeclinePartyInvite(FUserSlot UserSlot, FGuid PartyId, FBeamOperationHandle Op)
@@ -958,8 +1092,8 @@ void UBeamPartySubsystem::DeclinePartyInvite(FUserSlot UserSlot, FGuid PartyId, 
 	PartyApi->CPP_DeleteInvite(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
-void UBeamPartySubsystem::DeclinePlayerPartyInvite(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
-                                                   FBeamOperationHandle Op)
+void UBeamPartySubsystem::DeclinePlayerInvite(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
+                                              FBeamOperationHandle Op)
 {
 	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
 	{
@@ -969,6 +1103,7 @@ void UBeamPartySubsystem::DeclinePlayerPartyInvite(FUserSlot UserSlot, FBeamGame
 	// Validate if there's any invite in the local state that the PlayerGamerTag sent to the current user
 	if (!TryGetUserInvitesState(UserSlot, Invites))
 	{
+		Runtime->RequestTrackerSystem->TriggerOperationError(Op, TEXT("There's no invites for the player to decline!"));
 		return;
 	}
 
@@ -988,69 +1123,27 @@ void UBeamPartySubsystem::DeclinePlayerPartyInvite(FUserSlot UserSlot, FBeamGame
 		return;
 	}
 
-	FOnDeleteInviteFullResponse Handler = FOnDeleteInviteFullResponse::CreateLambda(
-		[this, UserSlot, PartyId, Op](const FDeleteInviteFullResponse& Resp)
-		{
-			if (Resp.State == RS_Retrying)
-			{
-				return;
-			}
-
-			if (Resp.State == RS_Success)
-			{
-				if (PartyInvitesState.Contains(UserSlot))
-				{
-					TArray<FBeamPartyInviteState>& Invites = *PartyInvitesState.Find(UserSlot);
-
-					for (auto i = 0; i < Invites.Num(); i++)
-					{
-						if (Invites[i].PartyId == PartyId)
-						{
-							Invites.RemoveAt(i);
-							break;
-						}
-					}
-				}
-
-				//Local Notification
-				InvokePartyEventUpdate(UserSlot, PartyId, EBeamPartyEvent::BEAM_PlayerInviteCanceled);
-
-				Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
-				return;
-			}
-
-			if (Resp.State == RS_Error)
-			{
-				Runtime->RequestTrackerSystem->TriggerOperationError(Op, Resp.ErrorData.message);
-				return;
-			}
-
-			if (Resp.State == RS_Cancelled)
-			{
-				Runtime->RequestTrackerSystem->TriggerOperationCancelled(Op, Resp.ErrorData.message);
-			}
-		});
-
-	FBeamRealmUser RealmUser;
-
-	ensureAlwaysMsgf(Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this),
-	                 TEXT("Cannot get the RealUser for the UserSlot that call DeclinePlayerPartyInvite"));
-
-	UDeleteInviteRequest* const Request = UDeleteInviteRequest::Make(PartyId, FOptionalBeamGamerTag(RealmUser.GamerTag),
-	                                                                 this, {});
-
-	FBeamRequestContext Ctx;
-
-	PartyApi->CPP_DeleteInvite(UserSlot, Request, Handler, Ctx, Op, this);
+	DeclinePartyInvite(UserSlot, PartyId, Op);
 }
 
 
-void UBeamPartySubsystem::LeaveParty(FUserSlot UserSlot, FGuid PartyId, FBeamOperationHandle Op)
+void UBeamPartySubsystem::LeaveParty(FUserSlot UserSlot, FBeamOperationHandle Op)
 {
 	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
 	{
 		return;
 	}
+
+	FBeamPartyState PartyState;
+	if (!TryGetUserPartyState(UserSlot, PartyState))
+	{
+		Runtime->RequestTrackerSystem->TriggerOperationError(
+			Op, TEXT("There's no party to leave for the given user slot."));
+		return;
+	}
+
+	FGuid PartyId = PartyState.PartyId;
+
 	FOnDeleteMembersFullResponse Handler = FOnDeleteMembersFullResponse::CreateLambda(
 		[this, PartyId, Op, UserSlot](const FDeleteMembersFullResponse& Resp)
 		{
@@ -1100,8 +1193,8 @@ void UBeamPartySubsystem::LeaveParty(FUserSlot UserSlot, FGuid PartyId, FBeamOpe
 	PartyApi->CPP_DeleteMembers(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
-void UBeamPartySubsystem::UpdateParty(FUserSlot UserSlot, FGuid PartyId, EBeamPartyRestriction Restriction,
-                                      FOptionalInt32 MaxPlayers, FBeamOperationHandle Op)
+void UBeamPartySubsystem::UpdatePartyMeta(FUserSlot UserSlot, FGuid PartyId, EBeamPartyRestriction Restriction,
+                                          FOptionalInt32 MaxPlayers, FBeamOperationHandle Op)
 {
 	FOnApiPartyPutMetadataByIdFullResponse Handler = FOnApiPartyPutMetadataByIdFullResponse::CreateLambda(
 		[this, UserSlot, PartyId, Op](const FApiPartyPutMetadataByIdFullResponse Resp)
@@ -1152,10 +1245,29 @@ void UBeamPartySubsystem::UpdateParty(FUserSlot UserSlot, FGuid PartyId, EBeamPa
 	PartyApi->CPP_PutMetadata(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
-void UBeamPartySubsystem::KickPlayer(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player, FBeamOperationHandle Op)
+void UBeamPartySubsystem::UpdateMyPartyMeta(FUserSlot UserSlot, EBeamPartyRestriction Restriction,
+                                            FOptionalInt32 MaxPlayers, FBeamOperationHandle Op)
+{
+	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	{
+		return;
+	}
+	FBeamPartyState PartyState;
+	if (!TryGetUserPartyState(UserSlot, PartyState))
+	{
+		Runtime->RequestTrackerSystem->TriggerOperationError(
+			Op, TEXT("The give user slot isn't in any party."));
+		return;
+	}
+
+	UpdatePartyMeta(UserSlot, PartyState.PartyId, Restriction, MaxPlayers, Op);
+}
+
+void UBeamPartySubsystem::KickPlayer(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag PlayerGamerTag,
+                                     FBeamOperationHandle Op)
 {
 	FOnDeleteMembersFullResponse Handler = FOnDeleteMembersFullResponse::CreateLambda(
-		[this, UserSlot, Op, PartyId, Player](const FDeleteMembersFullResponse& Resp)
+		[this, UserSlot, Op, PartyId, PlayerGamerTag](const FDeleteMembersFullResponse& Resp)
 		{
 			if (Resp.State == RS_Retrying)
 			{
@@ -1167,7 +1279,7 @@ void UBeamPartySubsystem::KickPlayer(FUserSlot UserSlot, FGuid PartyId, FBeamGam
 				FBeamPartyState PartyState;
 				if (TryGetUserPartyState(UserSlot, PartyState))
 				{
-					PartyStates[PartyId].PlayerStates.Remove(Player);
+					PartyStates[PartyId].PlayerStates.Remove(PlayerGamerTag);
 				}
 
 				FBeamRealmUser RealmUser;
@@ -1175,7 +1287,7 @@ void UBeamPartySubsystem::KickPlayer(FUserSlot UserSlot, FGuid PartyId, FBeamGam
 				FString NamespacedSlotId;
 
 				if (Runtime->UserSlotSystem->
-				             GetUserDataWithGamerTag(Player, RealmUser, OtherUserSlot, NamespacedSlotId))
+				             GetUserDataWithGamerTag(PlayerGamerTag, RealmUser, OtherUserSlot, NamespacedSlotId))
 				{
 					//Local Notification
 					InvokePartyEventUpdate(OtherUserSlot, PartyId, EBeamPartyEvent::BEAM_PlayerKicked);
@@ -1198,14 +1310,31 @@ void UBeamPartySubsystem::KickPlayer(FUserSlot UserSlot, FGuid PartyId, FBeamGam
 		});
 
 	UDeleteMembersRequest* const Request =
-		UDeleteMembersRequest::Make(PartyId, FOptionalBeamGamerTag(Player), this, {});
+		UDeleteMembersRequest::Make(PartyId, FOptionalBeamGamerTag(PlayerGamerTag), this, {});
 
 	FBeamRequestContext Ctx;
 
 	PartyApi->CPP_DeleteMembers(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
-void UBeamPartySubsystem::PromotePlayerToLeader(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
+void UBeamPartySubsystem::KickPlayerFromMyParty(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
+                                                FBeamOperationHandle Op)
+{
+	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	{
+		return;
+	}
+	FBeamPartyState PartyState;
+	if (!TryGetUserPartyState(UserSlot, PartyState))
+	{
+		Runtime->RequestTrackerSystem->TriggerOperationError(
+			Op, TEXT("The give user slot isn't in any party."));
+		return;
+	}
+	KickPlayer(UserSlot, PartyState.PartyId, PlayerGamerTag, Op);
+}
+
+void UBeamPartySubsystem::PromotePlayerToLeader(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag PlayerGamerTag,
                                                 FBeamOperationHandle Op)
 {
 	FOnPutPromoteFullResponse Handler = FOnPutPromoteFullResponse::CreateLambda(
@@ -1247,18 +1376,36 @@ void UBeamPartySubsystem::PromotePlayerToLeader(FUserSlot UserSlot, FGuid PartyI
 		});
 
 
-	UPutPromoteRequest* const Request = UPutPromoteRequest::Make(PartyId, FOptionalBeamGamerTag(Player), this, {});
+	UPutPromoteRequest* const Request = UPutPromoteRequest::Make(PartyId, FOptionalBeamGamerTag(PlayerGamerTag), this,
+	                                                             {});
 
 	FBeamRequestContext Ctx;
 
 	PartyApi->CPP_PutPromote(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
-void UBeamPartySubsystem::CancelPlayerPartyInvite(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag Player,
-                                                  FBeamOperationHandle Op)
+void UBeamPartySubsystem::PromotePlayerAsMyPartyLeader(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
+                                                       FBeamOperationHandle Op)
+{
+	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	{
+		return;
+	}
+	FBeamPartyState PartyState;
+	if (!TryGetUserPartyState(UserSlot, PartyState))
+	{
+		Runtime->RequestTrackerSystem->TriggerOperationError(
+			Op, TEXT("The give user slot isn't in any party."));
+		return;
+	}
+	PromotePlayerToLeader(UserSlot, PartyState.PartyId, PlayerGamerTag, Op);
+}
+
+void UBeamPartySubsystem::CancelSentPartyInvite(FUserSlot UserSlot, FGuid PartyId, FBeamGamerTag PlayerGamerTag,
+                                                FBeamOperationHandle Op)
 {
 	FOnDeleteInviteFullResponse Handler = FOnDeleteInviteFullResponse::CreateLambda(
-		[this, UserSlot, PartyId, Player, Op](const FDeleteInviteFullResponse& Resp)
+		[this, UserSlot, PartyId, PlayerGamerTag, Op](const FDeleteInviteFullResponse& Resp)
 		{
 			if (Resp.State == RS_Retrying)
 			{
@@ -1271,7 +1418,7 @@ void UBeamPartySubsystem::CancelPlayerPartyInvite(FUserSlot UserSlot, FGuid Part
 
 				if (TryGetUserPartyState(UserSlot, PartyState))
 				{
-					PartyState.InvitedPlayers.Remove(Player);
+					PartyState.InvitedPlayers.Remove(PlayerGamerTag);
 				}
 
 				if (PartyInvitesState.Contains(UserSlot))
@@ -1292,7 +1439,7 @@ void UBeamPartySubsystem::CancelPlayerPartyInvite(FUserSlot UserSlot, FGuid Part
 				FUserSlot OtherUserSlot;
 				FString NamespacedSlotId;
 				if (Runtime->UserSlotSystem->
-				             GetUserDataWithGamerTag(Player, RealmUser, OtherUserSlot, NamespacedSlotId))
+				             GetUserDataWithGamerTag(PlayerGamerTag, RealmUser, OtherUserSlot, NamespacedSlotId))
 				{
 					//Local Notification
 					InvokePartyEventUpdate(UserSlot, PartyId, EBeamPartyEvent::BEAM_PlayerInviteCanceled);
@@ -1314,11 +1461,30 @@ void UBeamPartySubsystem::CancelPlayerPartyInvite(FUserSlot UserSlot, FGuid Part
 			}
 		});
 
-	UDeleteInviteRequest* const Request = UDeleteInviteRequest::Make(PartyId, FOptionalBeamGamerTag(Player), this, {});
+	UDeleteInviteRequest* const Request = UDeleteInviteRequest::Make(PartyId, FOptionalBeamGamerTag(PlayerGamerTag),
+	                                                                 this, {});
 
 	FBeamRequestContext Ctx;
 
 	PartyApi->CPP_DeleteInvite(UserSlot, Request, Handler, Ctx, Op, this);
+}
+
+void UBeamPartySubsystem::CancelPlayerPartyInvite(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
+                                                  FBeamOperationHandle Op)
+{
+	if (!IsUserSlotAuthenticated(UserSlot, __FUNCTION__, Op))
+	{
+		return;
+	}
+	FBeamPartyState PartyState;
+	if (!TryGetUserPartyState(UserSlot, PartyState))
+	{
+		Runtime->RequestTrackerSystem->TriggerOperationError(
+			Op, TEXT("The give user slot isn't in any party."));
+		return;
+	}
+
+	CancelSentPartyInvite(UserSlot, PartyState.PartyId, PlayerGamerTag, Op);
 }
 
 void UBeamPartySubsystem::PartyUpdatedMessageHandler(FPartyRefreshNotificationMessage RefreshNotificationMessage,

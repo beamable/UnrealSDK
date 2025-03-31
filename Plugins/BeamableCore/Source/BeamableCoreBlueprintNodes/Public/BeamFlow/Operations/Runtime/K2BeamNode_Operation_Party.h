@@ -145,6 +145,34 @@ class UK2BeamNode_Operation_InvitePlayer : public UK2BeamNode_Operation
 
 #undef LOCTEXT_NAMESPACE
 
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_InvitePlayerToMyParty"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamNode_Operation_InvitePlayerToMyParty : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
+	{
+		return LOCTEXT("Title", "Operation - Party - InvitePlayerToMyParty");
+	}
+
+	virtual FName GetSubsystemSelfFunctionName() const override
+	{
+		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
+	}
+
+	virtual FName GetOperationFunctionName() const override
+	{
+		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, InvitePlayerToMyPartyOperation);
+	}
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
 #define LOCTEXT_NAMESPACE "K2BeamNode_Operation_DeclinePlayerInvite"
 
 UCLASS(meta=(BeamFlowNode))
@@ -281,10 +309,37 @@ class UK2BeamNode_Operation_FetchPartyInvites : public UK2BeamNode_Operation
 
 #undef LOCTEXT_NAMESPACE
 
-#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_UpdateParty"
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_UpdatePartyMeta"
 
 UCLASS(meta=(BeamFlowNode))
 class UK2BeamNode_Operation_UpdateParty : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
+	{
+		return LOCTEXT("Title", "Operation - Party - Update Party Meta");
+	}
+
+	virtual FName GetSubsystemSelfFunctionName() const override
+	{
+		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
+	}
+
+	virtual FName GetOperationFunctionName() const override
+	{
+		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, UpdatePartyMetaOperation);
+	}
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_UpdateMyPartyMeta"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamNode_Operation_UpdateMyPartyMeta : public UK2BeamNode_Operation
 {
 	GENERATED_BODY()
 
@@ -300,7 +355,7 @@ class UK2BeamNode_Operation_UpdateParty : public UK2BeamNode_Operation
 
 	virtual FName GetOperationFunctionName() const override
 	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, UpdatePartyOperation);
+		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, UpdateMyPartyMetaOperation);
 	}
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }
@@ -335,6 +390,33 @@ class UK2BeamNode_Operation_PartyKickPlayer : public UK2BeamNode_Operation
 
 #undef LOCTEXT_NAMESPACE
 
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_KickPlayerFromMyParty"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamNode_Operation_KickPlayerFromMyParty : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
+	{
+		return LOCTEXT("Title", "Operation - Party - Kick Player From My Party");
+	}
+
+	virtual FName GetSubsystemSelfFunctionName() const override
+	{
+		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
+	}
+
+	virtual FName GetOperationFunctionName() const override
+	{
+		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, KickPlayerFromMyPartyOperation);
+	}
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
 #define LOCTEXT_NAMESPACE "K2BeamNode_Operation_PromotePlayerToLeader"
 
 UCLASS(meta=(BeamFlowNode))
@@ -355,6 +437,60 @@ class UK2BeamNode_Operation_PromotePlayerToLeader : public UK2BeamNode_Operation
 	virtual FName GetOperationFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, PromotePlayerToLeaderOperation);
+	}
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_PromotePlayerAsMyPartyLeader"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamNode_Operation_PromotePlayerAsMyPartyLeader : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
+	{
+		return LOCTEXT("Title", "Operation - Party - Promote Player As My Party Leader");
+	}
+
+	virtual FName GetSubsystemSelfFunctionName() const override
+	{
+		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
+	}
+
+	virtual FName GetOperationFunctionName() const override
+	{
+		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, PromotePlayerToMyPartyLeaderOperation);
+	}
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_CancelSentPartyInvite"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamNode_Operation_CancelSentPartyInvite : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
+	{
+		return LOCTEXT("Title", "Operation - Party - CancelSentPartyInvite");
+	}
+
+	virtual FName GetSubsystemSelfFunctionName() const override
+	{
+		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
+	}
+
+	virtual FName GetOperationFunctionName() const override
+	{
+		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, CancelSentPartyInviteOperation);
 	}
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }

@@ -285,9 +285,9 @@ public:
 	* Leave the player party using the PartyId
 	*/
 	UFUNCTION(BlueprintCallable)
-	void LeaveParty(FGuid PartyId)
+	void LeaveParty()
 	{
-		DoLeaveParty(PartyId);
+		DoLeaveParty();
 	}
 
 	/**
@@ -593,12 +593,12 @@ protected:
 		}
 	}
 
-	void DoLeaveParty(FGuid PartyId)
+	void DoLeaveParty()
 	{
 		UBeamPartySubsystem* BeamPartySubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamPartySubsystem>();
 		FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
 
-		BeamPartySubsystem->CPP_LeavePartyOperation(UserSlot, PartyId, FBeamOperationEventHandlerCode::CreateLambda(
+		BeamPartySubsystem->CPP_LeavePartyOperation(UserSlot, FBeamOperationEventHandlerCode::CreateLambda(
 			                                            [](FBeamOperationEvent Evt)
 			                                            {
 			                                            }));

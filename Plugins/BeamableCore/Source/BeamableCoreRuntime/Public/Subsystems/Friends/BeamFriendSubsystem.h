@@ -379,18 +379,18 @@ public:
 	 * Updates the local state of: @link FriendStates @endlink 
 	 *
 	 * @param UserSlot: The target UserSlot to fetch the state.
-	 * @param PlayerIds: The Ids for the players that will be fetched to local state.
+	 * @param PlayerGamerTags: The Ids for the players that will be fetched to local state.
 	 * @param OnOperationEvent: The callback event that handles the result.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Friends",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle FetchFriendsStateOperation(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerIds,
+	FBeamOperationHandle FetchFriendsStateOperation(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerGamerTags,
 	                                                FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc FetchFriendsStateOperation
 	 */
-	FBeamOperationHandle CPP_FetchFriendsStateOperation(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerIds,
+	FBeamOperationHandle CPP_FetchFriendsStateOperation(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerGamerTags,
 	                                                    FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
@@ -401,18 +401,19 @@ public:
 	 * Updates the local state of: @link FriendPresenceStatusState @endlink 
 	 *
 	 * @param UserSlot: The target UserSlot to fetch the state.
-	 * @param PlayerIds: The Ids for the players that will be fetched to local state.
+	 * @param PlayerGamerTags: The Ids for the players that will be fetched to local state.
 	 * @param OnOperationEvent: The callback event that handles the result.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Friends",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle FetchFriendPresenceStatusOperation(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerIds,
+	FBeamOperationHandle FetchFriendPresenceStatusOperation(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerGamerTags,
 	                                                        FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc FetchFriendPresenceStatusOperation
 	 */
-	FBeamOperationHandle CPP_FetchFriendPresenceStatusOperation(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerIds,
+	FBeamOperationHandle CPP_FetchFriendPresenceStatusOperation(FUserSlot UserSlot,
+	                                                            TArray<FBeamGamerTag> PlayerGamerTags,
 	                                                            FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
@@ -541,9 +542,9 @@ protected:
 	// Operation Functions
 	void FetchPlayerFriendState(FUserSlot UserSlot, FBeamOperationHandle Op);
 
-	void FetchFriendsState(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerIds, FBeamOperationHandle Op);
+	void FetchFriendsState(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerGamerTags, FBeamOperationHandle Op);
 
-	void FetchFriendPresenceStatus(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerIds, FBeamOperationHandle Op);
+	void FetchFriendPresenceStatus(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerGamerTags, FBeamOperationHandle Op);
 
 	void SendFriendInvite(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag, FBeamOperationHandle Op);
 

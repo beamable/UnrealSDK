@@ -147,43 +147,43 @@ FBeamOperationHandle UBeamFriendSubsystem::CPP_FetchPlayerFriendStateOperation(F
 }
 
 FBeamOperationHandle UBeamFriendSubsystem::FetchFriendsStateOperation(FUserSlot UserSlot,
-                                                                      TArray<FBeamGamerTag> PlayerIds,
+                                                                      TArray<FBeamGamerTag> PlayerGamerTags,
                                                                       FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                  OnOperationEvent);
-	FetchFriendsState(UserSlot, PlayerIds, Handle);
+	FetchFriendsState(UserSlot, PlayerGamerTags, Handle);
 	return Handle;
 }
 
 FBeamOperationHandle UBeamFriendSubsystem::CPP_FetchFriendsStateOperation(FUserSlot UserSlot,
-                                                                          TArray<FBeamGamerTag> PlayerIds,
+                                                                          TArray<FBeamGamerTag> PlayerGamerTags,
                                                                           FBeamOperationEventHandlerCode
                                                                           OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                      OnOperationEvent);
-	FetchFriendsState(UserSlot, PlayerIds, Handle);
+	FetchFriendsState(UserSlot, PlayerGamerTags, Handle);
 	return Handle;
 }
 
 FBeamOperationHandle UBeamFriendSubsystem::FetchFriendPresenceStatusOperation(FUserSlot UserSlot,
-                                                                              TArray<FBeamGamerTag> PlayerIds,
+                                                                              TArray<FBeamGamerTag> PlayerGamerTags,
                                                                               FBeamOperationEventHandler
                                                                               OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                  OnOperationEvent);
-	FetchFriendPresenceStatus(UserSlot, PlayerIds, Handle);
+	FetchFriendPresenceStatus(UserSlot, PlayerGamerTags, Handle);
 	return Handle;
 }
 
 FBeamOperationHandle UBeamFriendSubsystem::CPP_FetchFriendPresenceStatusOperation(FUserSlot UserSlot,
-	TArray<FBeamGamerTag> PlayerIds, FBeamOperationEventHandlerCode OnOperationEvent)
+	TArray<FBeamGamerTag> PlayerGamerTags, FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                      OnOperationEvent);
-	FetchFriendPresenceStatus(UserSlot, PlayerIds, Handle);
+	FetchFriendPresenceStatus(UserSlot, PlayerGamerTags, Handle);
 	return Handle;
 }
 
@@ -363,7 +363,7 @@ void UBeamFriendSubsystem::FetchPlayerFriendState(FUserSlot UserSlot, FBeamOpera
 	BeamSocialApi->CPP_GetMy(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
-void UBeamFriendSubsystem::FetchFriendsState(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerIds,
+void UBeamFriendSubsystem::FetchFriendsState(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerGamerTags,
                                              FBeamOperationHandle Op)
 {
 	const auto Handler = FOnGetSocialFullResponse::CreateLambda([this, UserSlot, Op](const FGetSocialFullResponse& Resp)
@@ -409,7 +409,7 @@ void UBeamFriendSubsystem::FetchFriendsState(FUserSlot UserSlot, TArray<FBeamGam
 
 	TArray<FString> PlayerIdArray;
 
-	for (auto PlayerGamerTag : PlayerIds)
+	for (auto PlayerGamerTag : PlayerGamerTags)
 	{
 		PlayerIdArray.Add(PlayerGamerTag.AsString);
 	}
@@ -421,7 +421,7 @@ void UBeamFriendSubsystem::FetchFriendsState(FUserSlot UserSlot, TArray<FBeamGam
 	BeamSocialApi->CPP_GetSocial(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
-void UBeamFriendSubsystem::FetchFriendPresenceStatus(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerIds,
+void UBeamFriendSubsystem::FetchFriendPresenceStatus(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerGamerTags,
                                                      FBeamOperationHandle Op)
 {
 	const auto Handler = FOnPostQueryFullResponse::CreateLambda(
@@ -469,7 +469,7 @@ void UBeamFriendSubsystem::FetchFriendPresenceStatus(FUserSlot UserSlot, TArray<
 			}
 		});
 	TArray<FString> PlayerIdArray;
-	for (auto PlayerGamerTag : PlayerIds)
+	for (auto PlayerGamerTag : PlayerGamerTags)
 	{
 		PlayerIdArray.Add(PlayerGamerTag.AsString);
 	}
@@ -1183,7 +1183,7 @@ void UBeamFriendSubsystem::MailRefreshNotificationHandler(FMailRefreshNotificati
 			{
 				if (Evt.EventType == OET_SUCCESS)
 				{
-					//Compare the old invites with the new one and trigger the OnFriendInviteReceived with all the PlayerIds of the received invites.
+					//Compare the old invites with the new one and trigger the OnFriendInviteReceived with all the PlayerGamerTags of the received invites.
 					if (FriendStates.Contains(PlayerGamerTag))
 					{
 						for (auto FriendInvite : FriendStates[PlayerGamerTag].ReceivedInvites)
