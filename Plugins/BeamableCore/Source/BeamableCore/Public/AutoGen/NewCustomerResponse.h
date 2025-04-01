@@ -16,6 +16,8 @@ class BEAMABLECORE_API UNewCustomerResponse : public UObject, public IBeamJsonSe
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Activation Pending", Category="Beam")
+	bool bActivationPending = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
 	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Project Name", Category="Beam")

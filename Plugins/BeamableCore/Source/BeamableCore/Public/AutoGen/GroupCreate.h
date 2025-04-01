@@ -5,9 +5,8 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfGroupScoreBinding.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
-#include "BeamableCore/Public/AutoGen/Enums/GroupType.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
+#include "BeamableCore/Public/AutoGen/Enums/GroupType.h"
 
 #include "GroupCreate.generated.h"
 
@@ -32,7 +31,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Client Data", Category="Beam")
 	FOptionalString ClientData = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Time", Category="Beam")
-	FOptionalInt32 Time = {};
+	FOptionalInt64 Time = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Group", Category="Beam")
 	FOptionalInt64 Group = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Scores", Category="Beam")

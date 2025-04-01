@@ -17,8 +17,8 @@ public:
 	static FString GroupCreateToJsonString(const UGroupCreate* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GroupCreate", meta=(DefaultToSelf="Outer", AdvancedDisplay="Tag, ClientData, Time, Group, Scores, Outer", NativeMakeFunc))
-	static UGroupCreate* Make(FString Name, FString EnrollmentType, int64 Requirement, EGroupType Type, int32 MaxSize, FOptionalString Tag, FOptionalString ClientData, FOptionalInt32 Time, FOptionalInt64 Group, FOptionalArrayOfGroupScoreBinding Scores, UObject* Outer);
+	static UGroupCreate* Make(FString Name, FString EnrollmentType, int64 Requirement, EGroupType Type, int32 MaxSize, FOptionalString Tag, FOptionalString ClientData, FOptionalInt64 Time, FOptionalInt64 Group, FOptionalArrayOfGroupScoreBinding Scores, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GroupCreate", meta=(NativeBreakFunc))
-	static void Break(const UGroupCreate* Serializable, FString& Name, FString& EnrollmentType, int64& Requirement, EGroupType& Type, int32& MaxSize, FOptionalString& Tag, FOptionalString& ClientData, FOptionalInt32& Time, FOptionalInt64& Group, FOptionalArrayOfGroupScoreBinding& Scores);
+	static void Break(const UGroupCreate* Serializable, FString& Name, FString& EnrollmentType, int64& Requirement, EGroupType& Type, int32& MaxSize, FOptionalString& Tag, FOptionalString& ClientData, FOptionalInt64& Time, FOptionalInt64& Group, FOptionalArrayOfGroupScoreBinding& Scores);
 };

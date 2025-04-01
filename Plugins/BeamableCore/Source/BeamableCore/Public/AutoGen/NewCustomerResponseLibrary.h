@@ -17,8 +17,8 @@ public:
 	static FString NewCustomerResponseToJsonString(const UNewCustomerResponse* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make NewCustomerResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Alias, Outer", NativeMakeFunc))
-	static UNewCustomerResponse* Make(FString Name, FString ProjectName, FBeamCid Cid, FBeamPid Pid, UTokenResponse* Token, FOptionalString Alias, UObject* Outer);
+	static UNewCustomerResponse* Make(bool bActivationPending, FString Name, FString ProjectName, FBeamCid Cid, FBeamPid Pid, UTokenResponse* Token, FOptionalString Alias, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break NewCustomerResponse", meta=(NativeBreakFunc))
-	static void Break(const UNewCustomerResponse* Serializable, FString& Name, FString& ProjectName, FBeamCid& Cid, FBeamPid& Pid, UTokenResponse*& Token, FOptionalString& Alias);
+	static void Break(const UNewCustomerResponse* Serializable, bool& bActivationPending, FString& Name, FString& ProjectName, FBeamCid& Cid, FBeamPid& Pid, UTokenResponse*& Token, FOptionalString& Alias);
 };

@@ -11,6 +11,7 @@ void UCustomer::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);
 	UBeamJsonUtils::SerializeArray<UProject*>(TEXT("projects"), Projects, Serializer);
 	UBeamJsonUtils::SerializeArray<URealmsBasicAccount*>(TEXT("accounts"), Accounts, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("activationStatus"), &ActivationStatus, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("paymentStatus"), &PaymentStatus, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("image"), &Image, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("contact"), &Contact, Serializer);
@@ -26,6 +27,7 @@ void UCustomer::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer)
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);
 	UBeamJsonUtils::SerializeArray<UProject*>(TEXT("projects"), Projects, Serializer);
 	UBeamJsonUtils::SerializeArray<URealmsBasicAccount*>(TEXT("accounts"), Accounts, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("activationStatus"), &ActivationStatus, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("paymentStatus"), &PaymentStatus, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("image"), &Image, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("contact"), &Contact, Serializer);
@@ -41,6 +43,7 @@ void UCustomer::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("cid")), Cid, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UProject*>(Bag->GetArrayField(TEXT("projects")), Projects, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<URealmsBasicAccount*>(Bag->GetArrayField(TEXT("accounts")), Accounts, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FString>("activationStatus", Bag, ActivationStatus, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("paymentStatus", Bag, PaymentStatus, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("image", Bag, Image, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("contact", Bag, Contact, OuterOwner);

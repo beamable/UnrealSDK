@@ -7,9 +7,6 @@
 
 void UInventoryUpdateRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("empty"), bEmpty);
-	UBeamJsonUtils::SerializeArray<FString>(TEXT("currencyContentIds"), CurrencyContentIds, Serializer);
-	UBeamJsonUtils::SerializeArray<FString>(TEXT("itemContentIds"), ItemContentIds, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("applyVipBonus"), &bApplyVipBonus, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("transaction"), &Transaction, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UItemUpdateRequestBody*>, UItemUpdateRequestBody*>(TEXT("updateItems"), &UpdateItems, Serializer);
@@ -21,9 +18,6 @@ void UInventoryUpdateRequestBody::BeamSerializeProperties(TUnrealJsonSerializer&
 
 void UInventoryUpdateRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("empty"), bEmpty);
-	UBeamJsonUtils::SerializeArray<FString>(TEXT("currencyContentIds"), CurrencyContentIds, Serializer);
-	UBeamJsonUtils::SerializeArray<FString>(TEXT("itemContentIds"), ItemContentIds, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("applyVipBonus"), &bApplyVipBonus, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("transaction"), &Transaction, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UItemUpdateRequestBody*>, UItemUpdateRequestBody*>(TEXT("updateItems"), &UpdateItems, Serializer);
@@ -35,9 +29,6 @@ void UInventoryUpdateRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeria
 
 void UInventoryUpdateRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bEmpty = Bag->GetBoolField(TEXT("empty"));
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("currencyContentIds")), CurrencyContentIds, OuterOwner);
-	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("itemContentIds")), ItemContentIds, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("applyVipBonus", Bag, bApplyVipBonus, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("transaction", Bag, Transaction, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UItemUpdateRequestBody*>, UItemUpdateRequestBody*>("updateItems", Bag, UpdateItems, OuterOwner);

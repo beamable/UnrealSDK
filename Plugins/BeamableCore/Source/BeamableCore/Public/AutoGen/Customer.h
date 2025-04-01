@@ -25,6 +25,8 @@ public:
 	TArray<UProject*> Projects = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Accounts", Category="Beam")
 	TArray<URealmsBasicAccount*> Accounts = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Activation Status", Category="Beam")
+	FOptionalString ActivationStatus = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Payment Status", Category="Beam")
 	FOptionalString PaymentStatus = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Image", Category="Beam")
