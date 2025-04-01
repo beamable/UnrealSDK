@@ -285,6 +285,20 @@ public:
 	bool TryGetPlayerPartyState(FBeamGamerTag PlayerGamerTag, FBeamPartyState& PartyState);
 
 	/**
+	 * @brief Attempts to retrieve the party state for a specific party id.
+	 *
+	 * This gets the PartyState from the local state.
+	 *
+	 * @param PartyId: The party id to get the state.
+	 * @param PartyState: The reference for the out result of the player party state.
+	 *
+	 * @return Returns False if the party don't exists.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetPartyState(FGuid PartyId, FBeamPartyState& PartyState);
+
+	/**
 	* @brief Attempts to retrieve the invites state for a specific user slot.
 	*
 	* This gets the Invites for the UserSlot from the local state.

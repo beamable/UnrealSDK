@@ -125,6 +125,17 @@ bool UBeamPartySubsystem::TryGetPlayerPartyState(FBeamGamerTag PlayerGamerTag, F
 	return false;
 }
 
+bool UBeamPartySubsystem::TryGetPartyState(FGuid PartyId, FBeamPartyState& PartyState)
+{
+	if (!PartyStates.Contains(PartyId))
+	{
+		return false;
+	}
+
+	PartyState = PartyStates[PartyId];
+	return true;
+}
+
 bool UBeamPartySubsystem::TryGetUserInvitesState(FUserSlot UserSlot, TArray<FBeamPartyInviteState>& Invites)
 {
 	if (!PartyInvitesState.Contains(UserSlot))
