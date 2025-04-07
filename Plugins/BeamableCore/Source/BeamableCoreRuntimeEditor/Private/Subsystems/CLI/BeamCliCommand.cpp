@@ -64,10 +64,15 @@ void UBeamCliCommand::Run(const TArray<FString>& CommandParams, const FBeamOpera
 	Editor = GEditor->GetEditorSubsystem<UBeamEditor>();
 	Cli = GEditor->GetEditorSubsystem<UBeamCli>();
 
-	checkf(Cli->IsInstalled(), TEXT("The Beamable CLI must be installed for any CLI commands to be run."))
-
-	PrepareCommandProcess(CommandParams, Op);
-	CmdProcess->Launch();
+	if (Cli->IsInstalled())
+	{
+		PrepareCommandProcess(CommandParams, Op);
+		CmdProcess->Launch();
+	}
+	else
+	{
+		UE_LOG(LogBeamCli, Error, TEXT("The Beamable CLI must be installed for any CLI commands to be run. CMD=%s"), *GetCommand());		
+	}
 }
 
 void UBeamCliCommand::RunSync(const TArray<FString>& CommandParams, const FBeamOperationHandle& Op)
@@ -86,8 +91,11 @@ void UBeamCliCommand::RunServer(const FString Uri, const TArray<FString>& Comman
 	Editor = GEditor->GetEditorSubsystem<UBeamEditor>();
 	Cli = GEditor->GetEditorSubsystem<UBeamCli>();
 
-
-	checkf(Cli->IsInstalled(), TEXT("The Beamable CLI must be installed for any CLI commands to be run."))
+	if (!Cli->IsInstalled())
+	{
+		UE_LOG(LogBeamCli, Error, TEXT("The Beamable CLI must be installed for any CLI commands to be run. CMD=%s"), *GetCommand());
+		return;
+	}
 
 	FString CommandLineToExecute = GetCommand();
 	for (const auto& CommandParam : CommandParams)
@@ -246,7 +254,11 @@ void UBeamCliCommand::PrepareCommandProcess(const TArray<FString>& CommandParams
 	Editor = GEditor->GetEditorSubsystem<UBeamEditor>();
 	Cli = GEditor->GetEditorSubsystem<UBeamCli>();
 
-	checkf(Cli->IsInstalled(), TEXT("The Beamable CLI must be installed for any CLI commands to be run."))
+	if (!Cli->IsInstalled())
+	{
+		UE_LOG(LogBeamCli, Error, TEXT("The Beamable CLI must be installed for any CLI commands to be run. CMD=%s"), *GetCommand());
+		return;
+	}
 
 	FString Params = TEXT("beam ") + GetCommand();
 	for (const auto& CommandParam : CommandParams)

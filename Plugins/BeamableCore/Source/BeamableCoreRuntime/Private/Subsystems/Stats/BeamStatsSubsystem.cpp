@@ -3,7 +3,7 @@
 
 #include "Subsystems/Stats/BeamStatsSubsystem.h"
 
-void UBeamStatUpdateCommand::Init(UBeamStatsSubsystem* Subsystem, FUserSlot Slot, FBeamStatsType Type, TMap<FString, FString> StartingStats)
+void UBeamStatUpdateCommand::Init(UBeamStatsSubsystem* Subsystem, FUserSlot Slot, FBeamStatsType Type, TMap<FString, FString> StartingStats, TMap<FString, double> StartingNumericStats)
 {
 	StatsSubsystem = Subsystem;
 	UserSlot = Slot;
@@ -16,33 +16,60 @@ void UBeamStatUpdateCommand::Init(UBeamStatsSubsystem* Subsystem, FUserSlot Slot
 		StatNames.Add(StartingStat.Key);
 		StatValues.Add(StartingStat.Value);
 	}
+
+	NumericStatNames.Reserve(StartingNumericStats.Num());
+	NumericStatValues.Reserve(StartingNumericStats.Num());
+	for (auto StartingStat : StartingNumericStats)
+	{
+		NumericStatNames.Add(StartingStat.Key);
+		NumericStatValues.Add(StartingStat.Value);
+	}
 }
 
 void UBeamStatUpdateCommand::AddStat(FString Key, FString Value)
 {
-	StatsSubsystem->AddStatToUpdateCommand(UserSlot, Key, Value);
+	StatsSubsystem->AddStatToUpdateCommand(StatType, Key, Value);
+}
+
+void UBeamStatUpdateCommand::AddNumericStat(FString Key, double Value)
+{
+	StatsSubsystem->AddNumericStatToUpdateCommand(StatType, Key, Value);
 }
 
 void UBeamStatUpdateCommand::AddStats(TArray<FString> Key, TArray<FString> Value)
 {
 	ensureAlwaysMsgf(Key.Num() == Value.Num(), TEXT("Key and Value arrays must be parallel. KEY_NUM=%d, VALUE_NUM=%d"), Key.Num(), Value.Num());
 
-	for (int i = 0; i < Key.Num(); ++i) StatsSubsystem->AddStatToUpdateCommand(UserSlot, Key[i], Value[i]);
+	for (int i = 0; i < Key.Num(); ++i) StatsSubsystem->AddStatToUpdateCommand(StatType, Key[i], Value[i]);
 }
+
+void UBeamStatUpdateCommand::AddNumericStats(TArray<FString> Key, TArray<double> Value)
+{
+	ensureAlwaysMsgf(Key.Num() == Value.Num(), TEXT("Key and Value arrays must be parallel. KEY_NUM=%d, VALUE_NUM=%d"), Key.Num(), Value.Num());
+
+	for (int i = 0; i < Key.Num(); ++i) StatsSubsystem->AddNumericStatToUpdateCommand(StatType, Key[i], Value[i]);
+}
+
 
 void UBeamStatUpdateCommand::AddStatsMap(TMap<FString, FString> Stats)
 {
-	for (const auto& Stat : Stats) StatsSubsystem->AddStatToUpdateCommand(UserSlot, Stat.Key, Stat.Value);
+	for (const auto& Stat : Stats) StatsSubsystem->AddStatToUpdateCommand(StatType, Stat.Key, Stat.Value);
 }
+
+void UBeamStatUpdateCommand::AddNumericStatsMap(TMap<FString, double> Stats)
+{
+	for (const auto& Stat : Stats) StatsSubsystem->AddNumericStatToUpdateCommand(StatType, Stat.Key, Stat.Value);
+}
+
 
 void UBeamStatUpdateCommand::RemoveStat(FString Key)
 {
-	StatsSubsystem->RemoveStatFromUpdateCommand(UserSlot, Key);
+	StatsSubsystem->RemoveStatFromUpdateCommand(StatType, Key);
 }
 
 void UBeamStatUpdateCommand::Discard()
 {
-	StatsSubsystem->ResetUpdateCommand(UserSlot);
+	StatsSubsystem->ResetUpdateCommand(StatType);
 }
 
 TMap<FString, FString> UBeamStatUpdateCommand::AsMap()
@@ -54,6 +81,22 @@ TMap<FString, FString> UBeamStatUpdateCommand::AsMap()
 	{
 		const FString Key = StatNames[i];
 		const FString Val = StatValues[i];
+
+		Map.Add(Key, Val);
+	}
+
+	return Map;
+}
+
+TMap<FString, double> UBeamStatUpdateCommand::AsNumericMap()
+{
+	TMap<FString, double> Map;
+	check(NumericStatNames.Num() == NumericStatValues.Num())
+
+	for (int i = 0; i < NumericStatNames.Num(); ++i)
+	{
+		const FString Key = NumericStatNames[i];
+		const double Val = NumericStatValues[i];
 
 		Map.Add(Key, Val);
 	}
@@ -123,38 +166,71 @@ void UBeamStatsSubsystem::OnUserSignedOut_Implementation(const FUserSlot& UserSl
 
 /* * STATS SUBSYSTEM - Update Command * */
 
-bool UBeamStatsSubsystem::TryCreateUpdateCommand(FUserSlot Slot, const TMap<FString, FString>& Stats, UBeamStatUpdateCommand*& Command)
+bool UBeamStatsSubsystem::TryCreateUpdateCommand(FUserSlot Slot, const FBeamStatsType& StatType, const TMap<FString, FString>& Stats, const TMap<FString, double> NumericStats, UBeamStatUpdateCommand*& Command)
 {
 	// Ensure we have a user at the given slot.
 	FBeamRealmUser RealmUser;
 	if (!UserSlots->GetUserDataAtSlot(Slot, RealmUser, this))
 	{
-		Command = nullptr;
-		return false;
+		if (!IsRunningDedicatedServer())
+		{
+			Command = nullptr;
+			return false;
+		}
 	}
 
-	// If we already have
-	if (UpdateCommands.Contains(Slot))
+	// Let's build the correct stat type...
+	auto Type = StatType;
+	if (UBeamStatsTypeLibrary::GetGamerTag(StatType).AsString.IsEmpty())
 	{
-		UE_LOG(LogBeamStats, Warning, TEXT("Trying to start a new update command while one is building."))
+		if (!IsRunningDedicatedServer())
+		{
+			Type = UBeamStatsTypeLibrary::CopyStatsTypeWithGamerTag(Type, RealmUser.GamerTag);
+		}
+		else
+		{
+			UE_LOG(LogBeamStats, Error, TEXT("No GamerTag provided so we can't create the UpdateCommand."))
+			return false;
+		}
+	}
+
+	// Let's do some validation with regards to write permissions:
+	// - Client|Public, writable by owner user and server.
+	// - Client|Private, writable by owner user and server.
+	// - Game|Public, writable by server.
+	// - Game|Private, writable by server.
+	TEnumAsByte Domain = EBeamStatsDomain::Client;
+	TEnumAsByte Visibility = EBeamStatsVisibility::Private;
+	FBeamGamerTag GamerTag;
+	UBeamStatsTypeLibrary::BreakStatsType(StatType, Domain, Visibility, GamerTag);
+	if (!IsRunningDedicatedServer())
+	{
+		if (!ensureAlwaysMsgf(Domain == Client, TEXT("Cannot write to Game stats from non-dedicated server environments.")))
+			return false;
+
+		if (!ensureAlwaysMsgf(GamerTag == RealmUser.GamerTag, TEXT("Cannot write to stats other than the authenticated user's from non-dedicated server environments.")))
+			return false;
+	}
+
+	// If we already have a command for this stat type, error.
+	if (UpdateCommands.Contains(Type))
+	{
+		UE_LOG(LogBeamStats, Error, TEXT("Trying to start a new update command while one is building."))
 		Command = nullptr;
 		return false;
 	}
-
-	// Get the stat key for this user
-	auto Stat = UBeamStatsTypeLibrary::MakeStatsType(Client, Public, RealmUser.GamerTag);
 
 	// Create a new update command buffer from it.
 	Command = NewObject<UBeamStatUpdateCommand>(GetTransientPackage());
-	Command->Init(this, Slot, Stat, Stats);
+	Command->Init(this, Slot, Type, Stats, NumericStats);
 
-	UpdateCommands.Add(Slot, Command);
+	UpdateCommands.Add(Type, Command);
 	return true;
 }
 
-void UBeamStatsSubsystem::AddStatToUpdateCommand(FUserSlot Slot, FString Key, FString Value)
+void UBeamStatsSubsystem::AddStatToUpdateCommand(FBeamStatsType StatType, FString Key, FString Value)
 {
-	UBeamStatUpdateCommand* CommandBuffer = UpdateCommands.FindChecked(Slot);
+	UBeamStatUpdateCommand* CommandBuffer = UpdateCommands.FindChecked(StatType);
 	const int32 Idx = CommandBuffer->StatNames.AddUnique(Key);
 
 	if (const bool bWasNewStat = Idx == CommandBuffer->StatValues.Num())
@@ -163,17 +239,38 @@ void UBeamStatsSubsystem::AddStatToUpdateCommand(FUserSlot Slot, FString Key, FS
 	CommandBuffer->StatValues[Idx] = Value;
 }
 
-void UBeamStatsSubsystem::RemoveStatFromUpdateCommand(FUserSlot Slot, FString Key)
+void UBeamStatsSubsystem::AddNumericStatToUpdateCommand(FBeamStatsType StatType, FString Key, double Value)
 {
-	UBeamStatUpdateCommand* CommandBuffer = UpdateCommands.FindChecked(Slot);
-	const int32 Idx = CommandBuffer->StatNames.Find(Key);
-	CommandBuffer->StatNames.RemoveAt(Idx);
-	CommandBuffer->StatValues.RemoveAt(Idx);
+	UBeamStatUpdateCommand* CommandBuffer = UpdateCommands.FindChecked(StatType);
+	const int32 Idx = CommandBuffer->NumericStatNames.AddUnique(Key);
+
+	if (const bool bWasNewStat = Idx == CommandBuffer->NumericStatValues.Num())
+		CommandBuffer->NumericStatValues.AddUninitialized();
+
+	CommandBuffer->NumericStatValues[Idx] = Value;
 }
 
-void UBeamStatsSubsystem::ResetUpdateCommand(FUserSlot Slot)
+void UBeamStatsSubsystem::RemoveStatFromUpdateCommand(FBeamStatsType StatType, FString Key)
 {
-	UpdateCommands.Remove(Slot);
+	UBeamStatUpdateCommand* CommandBuffer = UpdateCommands.FindChecked(StatType);
+	auto Idx = CommandBuffer->StatNames.Find(Key);
+	if (Idx != INDEX_NONE)
+	{
+		CommandBuffer->StatNames.RemoveAt(Idx);
+		CommandBuffer->StatValues.RemoveAt(Idx);
+	}
+
+	Idx = CommandBuffer->NumericStatNames.Find(Key);
+	if (Idx != INDEX_NONE)
+	{
+		CommandBuffer->NumericStatNames.RemoveAt(Idx);
+		CommandBuffer->NumericStatValues.RemoveAt(Idx);
+	}
+}
+
+void UBeamStatsSubsystem::ResetUpdateCommand(FBeamStatsType StatType)
+{
+	UpdateCommands.Remove(StatType);
 }
 
 /* * STATS SUBSYSTEM - Read Local State * */
@@ -303,27 +400,315 @@ FBeamOperationHandle UBeamStatsSubsystem::CPP_IncrementStatsOperation(FUserSlot 
 
 /* * STATS SUBSYSTEM - Operation Implementations * */
 
-void UBeamStatsSubsystem::RefreshStats(FUserSlot UserSlot, FBeamStatsType Type, FBeamOperationHandle Op)
+void UBeamStatsSubsystem::RefreshAllStats(FUserSlot UserSlot, FBeamGamerTag GamerTag, FBeamOperationHandle Op)
 {
-	// Ensure we have a user at the given slot.
+	// Ensure we have a user at the given slot for the non-dedicated server case.
 	FBeamRealmUser RealmUser;
-	if (!IsRunningDedicatedServer())
+	if (!UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
 	{
-		if (!UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
+		if (!IsRunningDedicatedServer())
 		{
 			RequestTracker->TriggerOperationError(Op, TEXT("NO_AUTHENTICATED_USER_AT_SLOT"));
 			return;
 		}
 	}
 
-	// Get the stat key for this user, if none is provided
+	// Handle the case where no GamerTag was provided.
+	if (GamerTag.AsString.IsEmpty())
+	{
+		if (!IsRunningDedicatedServer())
+		{
+			GamerTag = RealmUser.GamerTag;
+		}
+		else
+		{
+			RequestTracker->TriggerOperationError(Op, TEXT("NO_GAMER_TAG_PROVIDED"));
+			return;
+		}
+	}
+
+	const auto bIsFetchingForAuthenticatedUser = RealmUser.GamerTag == GamerTag;
+
+	const auto bShouldFetchClientPublic = true;
+	const auto bShouldFetchClientPrivate = bIsFetchingForAuthenticatedUser || IsRunningDedicatedServer();
+	const auto bShouldFetchGamePublic = IsRunningDedicatedServer();
+	const auto bShouldFetchGamePrivate = IsRunningDedicatedServer();
+
+	TArray<FBeamRequestContext> Requests;
+	if (bShouldFetchClientPublic)
+	{
+		auto StatType = UBeamStatsTypeLibrary::MakeStatsType(Client, Public, GamerTag);
+		auto Handler = FOnGetClientFullResponse::CreateLambda([this, Op, UserSlot, GamerTag, StatType](FGetClientFullResponse Resp)
+		{
+			// If we are invoking this before retrying, we just don't do anything 
+			if (Resp.State == RS_Retrying) return;
+
+			if (Resp.State == RS_Success)
+			{
+				UBeamStatsState* UserStatsState = PlayerStatCache.FindOrAdd(StatType, NewObject<UBeamStatsState>());
+				UserStatsState->OwnerType = StatType;
+
+				// Prepare the stats updated event.
+				FBeamStatsUpdatedEvent Evt;
+				Evt.GamerTag = UBeamStatsTypeLibrary::GetGamerTag(StatType);
+				Evt.LocalSlot = UserSlot;
+				Evt.StatType = StatType;
+
+				for (const auto& Stat : Resp.SuccessData->Stats)
+				{
+					const FString StatKey = Stat.Key;
+					const FString NewStatValue = Stat.Value;
+
+					FString OldValue;
+					if (UserStatsState->StringStats.Contains(StatKey))
+					{
+						OldValue = UserStatsState->StringStats[StatKey];
+						UserStatsState->StringStats[StatKey] = NewStatValue;
+					}
+					else
+					{
+						OldValue = FString("");
+						UserStatsState->StringStats.Add(StatKey, NewStatValue);
+					}
+
+					Evt.OldValues.Add(StatKey, OldValue);
+					Evt.NewValues.Add(StatKey, NewStatValue);
+					UE_LOG(LogBeamStats, Verbose, TEXT("Updated Stats. STAT_KEY=%s, OLD=%s, NEW=%s"), *StatKey, *OldValue, *NewStatValue)
+				}
+
+				OnStatsUpdatedCode.Broadcast(Evt);
+				OnStatsUpdated.Broadcast(Evt);
+				UE_LOG(LogBeamStats, Display, TEXT("Refreshed Client|Public Stats for User. GAMER_TAG=%s"), *GamerTag.AsString)
+			}
+		});
+
+		auto Ctx = RequestGetStats(UserSlot, StatType, Op, Handler);
+		Requests.Add(Ctx);
+	}
+
+	// Make the request to fetch Client|Private stats if we should
+	if (bShouldFetchClientPrivate)
+	{
+		auto StatType = UBeamStatsTypeLibrary::MakeStatsType(Client, Private, GamerTag);
+		auto Handler = FOnGetClientFullResponse::CreateLambda([this, Op, UserSlot, GamerTag, StatType](FGetClientFullResponse Resp)
+		{
+			// If we are invoking this before retrying, we just don't do anything 
+			if (Resp.State == RS_Retrying) return;
+
+			if (Resp.State == RS_Success)
+			{
+				UBeamStatsState* UserStatsState = PlayerStatCache.FindOrAdd(StatType, NewObject<UBeamStatsState>());
+				UserStatsState->OwnerType = StatType;
+
+				// Prepare the stats updated event.
+				FBeamStatsUpdatedEvent Evt;
+				Evt.GamerTag = UBeamStatsTypeLibrary::GetGamerTag(StatType);
+				Evt.LocalSlot = UserSlot;
+				Evt.StatType = StatType;
+
+				for (const auto& Stat : Resp.SuccessData->Stats)
+				{
+					const FString StatKey = Stat.Key;
+					const FString NewStatValue = Stat.Value;
+
+					FString OldValue;
+					if (UserStatsState->StringStats.Contains(StatKey))
+					{
+						OldValue = UserStatsState->StringStats[StatKey];
+						UserStatsState->StringStats[StatKey] = NewStatValue;
+					}
+					else
+					{
+						OldValue = FString("");
+						UserStatsState->StringStats.Add(StatKey, NewStatValue);
+					}
+
+					Evt.OldValues.Add(StatKey, OldValue);
+					Evt.NewValues.Add(StatKey, NewStatValue);
+					UE_LOG(LogBeamStats, Verbose, TEXT("Updated Stats. STAT_KEY=%s, OLD=%s, NEW=%s"), *StatKey, *OldValue, *NewStatValue)
+				}
+
+				OnStatsUpdatedCode.Broadcast(Evt);
+				OnStatsUpdated.Broadcast(Evt);
+				UE_LOG(LogBeamStats, Display, TEXT("Refreshed Client|Private Stats for User. GAMER_TAG=%s"), *GamerTag.AsString)
+			}
+		});
+
+		auto Ctx = RequestGetStats(UserSlot, StatType, Op, Handler);
+		Requests.Add(Ctx);
+	}
+
+	// Make the request to fetch Game Public stats, if we should
+	if (bShouldFetchGamePublic)
+	{
+		checkf(IsRunningDedicatedServer(), TEXT("This should only ever run when inside dedicated servers!"))
+		auto StatType = UBeamStatsTypeLibrary::MakeStatsType(Game, Public, GamerTag);
+		auto Handler = FOnGetClientFullResponse::CreateLambda([this, Op, UserSlot, GamerTag, StatType](FGetClientFullResponse Resp)
+		{
+			// If we are invoking this before retrying, we just don't do anything 
+			if (Resp.State == RS_Retrying) return;
+
+			if (Resp.State == RS_Success)
+			{
+				UBeamStatsState* UserStatsState = PlayerStatCache.FindOrAdd(StatType, NewObject<UBeamStatsState>());
+				UserStatsState->OwnerType = StatType;
+
+				// Prepare the stats updated event.
+				FBeamStatsUpdatedEvent Evt;
+				Evt.GamerTag = UBeamStatsTypeLibrary::GetGamerTag(StatType);
+				Evt.LocalSlot = UserSlot;
+				Evt.StatType = StatType;
+
+				for (const auto& Stat : Resp.SuccessData->Stats)
+				{
+					const FString StatKey = Stat.Key;
+					const FString NewStatValue = Stat.Value;
+
+					FString OldValue;
+					if (UserStatsState->StringStats.Contains(StatKey))
+					{
+						OldValue = UserStatsState->StringStats[StatKey];
+						UserStatsState->StringStats[StatKey] = NewStatValue;
+					}
+					else
+					{
+						OldValue = FString("");
+						UserStatsState->StringStats.Add(StatKey, NewStatValue);
+					}
+
+					Evt.OldValues.Add(StatKey, OldValue);
+					Evt.NewValues.Add(StatKey, NewStatValue);
+					UE_LOG(LogBeamStats, Verbose, TEXT("Updated Stats. STAT_KEY=%s, OLD=%s, NEW=%s"), *StatKey, *OldValue, *NewStatValue)
+				}
+
+				OnStatsUpdatedCode.Broadcast(Evt);
+				OnStatsUpdated.Broadcast(Evt);
+				UE_LOG(LogBeamStats, Display, TEXT("Refreshed Game|Public Stats for User. GAMER_TAG=%s"), *GamerTag.AsString)
+			}
+		});
+
+		auto Ctx = RequestGetStats(UserSlot, StatType, Op, Handler);
+		Requests.Add(Ctx);
+	}
+
+	// Make the request to fetch Game Private stats, if we should
+	if (bShouldFetchGamePrivate)
+	{
+		checkf(IsRunningDedicatedServer(), TEXT("This should only ever run when inside dedicated servers!"))
+		auto StatType = UBeamStatsTypeLibrary::MakeStatsType(Game, Private, GamerTag);
+		auto Handler = FOnGetClientFullResponse::CreateLambda([this, Op, UserSlot, GamerTag, StatType](FGetClientFullResponse Resp)
+		{
+			// If we are invoking this before retrying, we just don't do anything 
+			if (Resp.State == RS_Retrying) return;
+
+			if (Resp.State == RS_Success)
+			{
+				UBeamStatsState* UserStatsState = PlayerStatCache.FindOrAdd(StatType, NewObject<UBeamStatsState>());
+				UserStatsState->OwnerType = StatType;
+
+				// Prepare the stats updated event.
+				FBeamStatsUpdatedEvent Evt;
+				Evt.GamerTag = UBeamStatsTypeLibrary::GetGamerTag(StatType);
+				Evt.LocalSlot = UserSlot;
+				Evt.StatType = StatType;
+
+				for (const auto& Stat : Resp.SuccessData->Stats)
+				{
+					const FString StatKey = Stat.Key;
+					const FString NewStatValue = Stat.Value;
+
+					FString OldValue;
+					if (UserStatsState->StringStats.Contains(StatKey))
+					{
+						OldValue = UserStatsState->StringStats[StatKey];
+						UserStatsState->StringStats[StatKey] = NewStatValue;
+					}
+					else
+					{
+						OldValue = FString("");
+						UserStatsState->StringStats.Add(StatKey, NewStatValue);
+					}
+
+					Evt.OldValues.Add(StatKey, OldValue);
+					Evt.NewValues.Add(StatKey, NewStatValue);
+					UE_LOG(LogBeamStats, Verbose, TEXT("Updated Stats. STAT_KEY=%s, OLD=%s, NEW=%s"), *StatKey, *OldValue, *NewStatValue)
+				}
+
+				OnStatsUpdatedCode.Broadcast(Evt);
+				OnStatsUpdated.Broadcast(Evt);
+				UE_LOG(LogBeamStats, Display, TEXT("Refreshed Game|Private Stats for User. GAMER_TAG=%s"), *GamerTag.AsString)
+			}
+		});
+
+		auto Ctx = RequestGetStats(UserSlot, StatType, Op, Handler);
+		Requests.Add(Ctx);
+	}
+
+	// Wait for all the requests to complete and trigger the operation as a success/error.
+	RequestTracker->CPP_WaitAll(Requests, {}, {}, FOnWaitCompleteCode::CreateLambda([this, UserSlot, GamerTag, Op](FBeamWaitCompleteEvent Evt)
+	{
+		TArray<FString> Errs;
+		if (RequestTracker->IsWaitFailed(Evt, Errs))
+		{
+			UE_LOG(LogBeamStats, Error, TEXT("Failed Stat Refresh. ERRORS=%s"), *FString::Join(Errs, TEXT(", ")))
+			RequestTracker->TriggerOperationError(Op, TEXT("FAILED_STAT_REFRESH"));
+			return;
+		}
+
+		RequestTracker->TriggerOperationSuccess(Op, {});
+	}));
+}
+
+void UBeamStatsSubsystem::RefreshStats(FUserSlot UserSlot, FBeamStatsType Type, FBeamOperationHandle Op)
+{
+	// Ensure we have a user at the given slot for the non-dedicated server case.
+	FBeamRealmUser RealmUser;
+	if (!UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
+	{
+		if (!IsRunningDedicatedServer())
+		{
+			RequestTracker->TriggerOperationError(Op, TEXT("NO_AUTHENTICATED_USER_AT_SLOT"));
+			return;
+		}
+	}
+
+	// Handle the case where no GamerTag was provided.
 	auto StatType = Type;
 	if (UBeamStatsTypeLibrary::GetGamerTag(Type).AsString.IsEmpty())
 	{
-		StatType = UBeamStatsTypeLibrary::CopyStatsTypeWithGamerTag(Type, RealmUser.GamerTag);
+		if (!IsRunningDedicatedServer())
+		{
+			StatType = UBeamStatsTypeLibrary::CopyStatsTypeWithGamerTag(Type, RealmUser.GamerTag);
+		}
+		else
+		{
+			RequestTracker->TriggerOperationError(Op, TEXT("NO_GAMER_TAG_PROVIDED"));
+			return;
+		}
 	}
 
-	auto Handler = FOnGetClientFullResponse::CreateLambda([this, Op, UserSlot, StatType](FGetClientFullResponse Resp)
+	// Let's do some validation:
+	// - if we are not in a dedicated server environment, we are not allowed to read 'Game' stats.
+	// - if we are not in a dedicated server environment, we are not allowed to read Client Private stats for clients that are NOT the authenticated user.
+	TEnumAsByte Domain = EBeamStatsDomain::Client;
+	TEnumAsByte Visibility = EBeamStatsVisibility::Private;
+	FBeamGamerTag GamerTag;
+	UBeamStatsTypeLibrary::BreakStatsType(StatType, Domain, Visibility, GamerTag);
+	if (!IsRunningDedicatedServer())
+	{
+		if (Domain == Game)
+		{
+			RequestTracker->TriggerOperationError(Op, TEXT("NO_READ_PERMISSION"));
+			return;
+		}
+		if (Visibility == Private && RealmUser.GamerTag != GamerTag)
+		{
+			RequestTracker->TriggerOperationError(Op, TEXT("NO_READ_PERMISSION"));
+			return;
+		}
+	}
+
+	auto Handler = FOnGetClientFullResponse::CreateLambda([this, Op, UserSlot, StatType, Domain, Visibility, GamerTag](FGetClientFullResponse Resp)
 	{
 		// If we are invoking this before retrying, we just don't do anything 
 		if (Resp.State == RS_Retrying) return;
@@ -366,7 +751,12 @@ void UBeamStatsSubsystem::RefreshStats(FUserSlot UserSlot, FBeamStatsType Type, 
 
 			OnStatsUpdatedCode.Broadcast(Evt);
 			OnStatsUpdated.Broadcast(Evt);
-			UE_LOG(LogBeamStats, Display, TEXT("Updated Stats!"))
+
+			UE_LOG(LogBeamStats, Display, TEXT("Refreshed %s|%s Stats for User. GAMER_TAG=%s"),
+			       *StaticEnum<EBeamStatsDomain>()->GetNameStringByValue(Domain),
+			       *StaticEnum<EBeamStatsVisibility>()->GetNameStringByValue(Visibility),
+			       *GamerTag.AsString)
+
 			RequestTracker->TriggerOperationSuccess(Op, {});
 		}
 	});
@@ -376,25 +766,54 @@ void UBeamStatsSubsystem::RefreshStats(FUserSlot UserSlot, FBeamStatsType Type, 
 
 void UBeamStatsSubsystem::RefreshSingleStat(FUserSlot UserSlot, FBeamStatsType Type, FString StatKey, FBeamOperationHandle Op)
 {
-	// Ensure we have a user at the given slot when running in clients.
+	// Ensure we have a user at the given slot for the non-dedicated server case.
 	FBeamRealmUser RealmUser;
-	if (!IsRunningDedicatedServer())
+	if (!UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
 	{
-		if (!UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
+		if (!IsRunningDedicatedServer())
 		{
 			RequestTracker->TriggerOperationError(Op, TEXT("NO_AUTHENTICATED_USER_AT_SLOT"));
 			return;
 		}
 	}
 
-	// Get the stat key for this user, if none is provided
+	// Handle the case where no GamerTag was provided.
 	auto StatType = Type;
 	if (UBeamStatsTypeLibrary::GetGamerTag(Type).AsString.IsEmpty())
 	{
-		StatType = UBeamStatsTypeLibrary::CopyStatsTypeWithGamerTag(Type, RealmUser.GamerTag);
+		if (!IsRunningDedicatedServer())
+		{
+			StatType = UBeamStatsTypeLibrary::CopyStatsTypeWithGamerTag(Type, RealmUser.GamerTag);
+		}
+		else
+		{
+			RequestTracker->TriggerOperationError(Op, TEXT("NO_GAMER_TAG_PROVIDED"));
+			return;
+		}
 	}
 
-	auto Handler = FOnGetClientFullResponse::CreateLambda([this, Op, UserSlot, StatType](FGetClientFullResponse Resp)
+	// Let's do some validation:
+	// - if we are not in a dedicated server environment, we are not allowed to read 'Game' stats.
+	// - if we are not in a dedicated server environment, we are not allowed to read Client Private stats for clients that are NOT the authenticated user.
+	TEnumAsByte Domain = EBeamStatsDomain::Client;
+	TEnumAsByte Visibility = EBeamStatsVisibility::Private;
+	FBeamGamerTag GamerTag;
+	UBeamStatsTypeLibrary::BreakStatsType(StatType, Domain, Visibility, GamerTag);
+	if (!IsRunningDedicatedServer())
+	{
+		if (Domain == Game)
+		{
+			RequestTracker->TriggerOperationError(Op, TEXT("NO_READ_PERMISSION"));
+			return;
+		}
+		if (Visibility == Private && RealmUser.GamerTag != GamerTag)
+		{
+			RequestTracker->TriggerOperationError(Op, TEXT("NO_READ_PERMISSION"));
+			return;
+		}
+	}
+
+	auto Handler = FOnGetClientFullResponse::CreateLambda([this, Op, UserSlot, StatType, Domain, Visibility, GamerTag](FGetClientFullResponse Resp)
 	{
 		// If we are invoking this before retrying, we just don't do anything 
 		if (Resp.State == RS_Retrying) return;
@@ -412,6 +831,7 @@ void UBeamStatsSubsystem::RefreshSingleStat(FUserSlot UserSlot, FBeamStatsType T
 			FBeamStatsUpdatedEvent Evt;
 			Evt.GamerTag = UBeamStatsTypeLibrary::GetGamerTag(StatType);
 			Evt.LocalSlot = UserSlot;
+			Evt.StatType = StatType;
 
 			for (const auto& Stat : Resp.SuccessData->Stats)
 			{
@@ -437,7 +857,10 @@ void UBeamStatsSubsystem::RefreshSingleStat(FUserSlot UserSlot, FBeamStatsType T
 
 			OnStatsUpdatedCode.Broadcast(Evt);
 			OnStatsUpdated.Broadcast(Evt);
-			UE_LOG(LogBeamStats, Display, TEXT("Updated Stats!"))
+			UE_LOG(LogBeamStats, Display, TEXT("Refreshed %s|%s Stats for User. GAMER_TAG=%s"),
+			       *StaticEnum<EBeamStatsDomain>()->GetNameStringByValue(Domain),
+			       *StaticEnum<EBeamStatsVisibility>()->GetNameStringByValue(Visibility),
+			       *GamerTag.AsString)
 			RequestTracker->TriggerOperationSuccess(Op, {});
 		}
 	});
@@ -445,26 +868,63 @@ void UBeamStatsSubsystem::RefreshSingleStat(FUserSlot UserSlot, FBeamStatsType T
 	auto Ctx = RequestGetSingleStat(UserSlot, Type, StatKey, Op, Handler);
 }
 
-void UBeamStatsSubsystem::CommitStats(FUserSlot UserSlot, FBeamOperationHandle Op)
+void UBeamStatsSubsystem::CommitStats(UBeamStatUpdateCommand* UpdateCommand, FBeamOperationHandle Op)
 {
-	// Ensure we have a user at the given slot.
+	const auto UserSlot= UpdateCommand->UserSlot;
+	auto StatType = UpdateCommand->StatType;
+	
+	// Ensure we have a user at the given slot for the non-dedicated server case.
 	FBeamRealmUser RealmUser;
 	if (!UserSlots->GetUserDataAtSlot(UserSlot, RealmUser, this))
 	{
-		RequestTracker->TriggerOperationError(Op, TEXT("NO_AUTHENTICATED_USER_AT_SLOT"));
-		return;
+		if (!IsRunningDedicatedServer())
+		{
+			RequestTracker->TriggerOperationError(Op, TEXT("NO_AUTHENTICATED_USER_AT_SLOT"));
+			return;
+		}
 	}
 
-	// Get the command buffer that is being build.
-	UBeamStatUpdateCommand* CommandBuffer = UpdateCommands.FindChecked(UserSlot);
-
+	// Handle the case where no GamerTag was provided.	
+	if (UBeamStatsTypeLibrary::GetGamerTag(StatType).AsString.IsEmpty())
+	{
+		if (!IsRunningDedicatedServer())
+		{
+			StatType = UBeamStatsTypeLibrary::CopyStatsTypeWithGamerTag(StatType, RealmUser.GamerTag);
+		}
+		else
+		{
+			RequestTracker->TriggerOperationError(Op, TEXT("NO_GAMER_TAG_PROVIDED"));
+			return;
+		}
+	}
+	
+	// Let's do some validation:
+	// - if we are not in a dedicated server environment, we are not allowed to read 'Game' stats.
+	// - if we are not in a dedicated server environment, we are not allowed to read Client Private stats for clients that are NOT the authenticated user.
+	TEnumAsByte Domain = EBeamStatsDomain::Client;
+	TEnumAsByte Visibility = EBeamStatsVisibility::Private;
+	FBeamGamerTag GamerTag;
+	UBeamStatsTypeLibrary::BreakStatsType(StatType, Domain, Visibility, GamerTag);
+	if (!IsRunningDedicatedServer())
+	{
+		if (Domain == Game)
+		{
+			RequestTracker->TriggerOperationError(Op, TEXT("NO_READ_PERMISSION"));
+			return;
+		}
+		if (Visibility == Private && RealmUser.GamerTag != GamerTag)
+		{
+			RequestTracker->TriggerOperationError(Op, TEXT("NO_READ_PERMISSION"));
+			return;
+		}
+	}
+	
 	// Get the stat key for this user
-	auto Stat = CommandBuffer->StatType;
-	checkf(UBeamStatsTypeLibrary::MakeStatsType(Client, Public, RealmUser.GamerTag) == Stat, TEXT("Make sure to call this with the same user slot."))
+	auto Stat = UpdateCommand->StatType;	
 
 	// Make the request and update the local cache if successful
-	const auto StatNames = TArray<FString>(CommandBuffer->StatNames);
-	const auto StatValues = TArray<FString>(CommandBuffer->StatValues);
+	const auto StatNames = TArray<FString>(UpdateCommand->StatNames);
+	const auto StatValues = TArray<FString>(UpdateCommand->StatValues);
 	const auto SetStatHandler = FOnPostClientFullResponse::CreateLambda([this, Op, UserSlot, Stat, StatNames, StatValues](FPostClientFullResponse Resp)
 	{
 		// If we are invoking this before retrying, we just don't do anything 
@@ -516,8 +976,8 @@ void UBeamStatsSubsystem::CommitStats(FUserSlot UserSlot, FBeamOperationHandle O
 		}
 	});
 
-	FBeamRequestContext Ctx = RequestSetStats(CommandBuffer->UserSlot, CommandBuffer->AsMap(), Op, SetStatHandler);
-	ResetUpdateCommand(UserSlot);
+	FBeamRequestContext Ctx = RequestSetStats(UpdateCommand->UserSlot, UpdateCommand->AsMap(), Op, SetStatHandler);
+	ResetUpdateCommand(StatType);
 }
 
 void UBeamStatsSubsystem::SetStat(FUserSlot Slot, FString StatKey, FString StatValue, FBeamOperationHandle Op)

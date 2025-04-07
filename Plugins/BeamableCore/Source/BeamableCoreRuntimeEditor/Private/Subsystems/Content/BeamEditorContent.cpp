@@ -86,8 +86,11 @@ FBeamOperationHandle UBeamEditorContent::InitializeWhenEditorReady()
 FBeamOperationHandle UBeamEditorContent::OnRealmInitialized(FBeamRealmHandle NewRealm)
 {
 	// Ensure the CLI is installed
-	checkf(Cli->IsInstalled(), TEXT("Editor Subsystem %s - Content depends on the CLI. It was not found locally."),
-	       *GetName());
+	if (!Cli->IsInstalled())
+	{
+		UE_LOG(LogBeamCli, Error, TEXT("Editor Subsystem %s - Content depends on the CLI. It was not found locally. This system is not guaranteed to work because of this."), *GetName());
+		return RequestTracker->CPP_BeginSuccessfulOperation({}, GetName(), {}, {});
+	}	
 
 	// For now, we just fetch all the manifests that exist.	
 	return CPP_RefreshLocalManifestOperation({});
@@ -103,8 +106,7 @@ void UBeamEditorContent::GetLocalManifestIds(TArray<FString>& Keys) const
 	}
 }
 
-bool UBeamEditorContent::TryGetLocalManifestById(const FBeamContentManifestId& Id,
-                                                 ULocalContentManifestStreamData*& Manifest)
+bool UBeamEditorContent::TryGetLocalManifestById(const FBeamContentManifestId& Id, ULocalContentManifestStreamData*& Manifest)
 {
 	if (LocalManifestCache.Contains(Id))
 	{
@@ -124,10 +126,6 @@ FBeamOperationHandle UBeamEditorContent::RefreshLocalManifests(FBeamOperationHan
 	if (!Cli->IsInstalled())
 		return RequestTracker->CPP_BeginSuccessfulOperation({}, GetName(), TEXT(""), {});
 		
-	// Ensure the CLI is installed
-	checkf(Cli->IsInstalled(), TEXT("Editor Subsystem %s - Content depends on the CLI. It was not found locally."),
-	       *GetName());
-
 	const auto GetLocalManifestsCommand = NewObject<UBeamCliContentLocalManifestCommand>();
 	GetLocalManifestsCommand->OnStreamOutput = [this](const TArray<UBeamCliContentLocalManifestStreamData*>& Data,
 	                                                  const TArray<int64>&, const FBeamOperationHandle&)

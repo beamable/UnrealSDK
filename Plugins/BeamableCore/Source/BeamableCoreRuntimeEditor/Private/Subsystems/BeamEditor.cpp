@@ -16,6 +16,8 @@
 
 #include "Subsystems/BeamEditorSubsystem.h"
 #include "Misc/MessageDialog.h"
+#include "Subsystems/CLI/BeamCli.h"
+#include "Subsystems/CLI/Autogen/BeamCliConfigCommand.h"
 
 const FBeamRealmHandle UBeamEditor::Signed_Out_Realm_Handle = FBeamRealmHandle{FString(""), FString("")};
 
@@ -128,7 +130,7 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 		EngineNetworkSettings->bVerifyPeer = true;
 		EngineNetworkSettings->SaveConfig(CPF_Config, *EngineNetworkSettings->GetDefaultConfigFilename());
 	}
-	
+
 	/* INFO - Make sure our core settings and environment settings are correctly set up for our users.
 	 * When this plugin gets added to the project, there are some default settings that we can pre-set for our users so that they don't have to do it.
 	 * This is where we do that.
@@ -509,11 +511,15 @@ void UBeamEditor::SelectRealm(const FBeamRealmHandle& NewRealmHandle, const FBea
 	auto Message = NewObject<UBeamableWindowMessage>();
 	Message->MessageType = EMessageType::VE_Info;
 	Message->MessageValue = TEXT("Preparing to change Realms...");
-	SetBeamableWindowMessage(Message);	
+	SetBeamableWindowMessage(Message);
 
 	// Clear all PIE user slots
 	UserSlots->DeleteUserSlotCacheForPIE();
-	
+
+	// Stops all running commands
+	const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
+	Cli->StopCli();
+
 	auto Settings = GetMutableDefault<UBeamCoreSettings>();
 	const auto LeavingRealm = Settings->TargetRealm;
 
@@ -525,7 +531,7 @@ void UBeamEditor::SelectRealm(const FBeamRealmHandle& NewRealmHandle, const FBea
 		PrepareForRealmChangeOps.Add(Handle);
 	}
 	const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamEditor::SelectRealm_OnReadyForChange, NewRealmHandle, Op);
-	OnReadyForRealmChangeWait = RequestTracker->CPP_WaitAll({}, PrepareForRealmChangeOps, {}, OnCompleteCode);	
+	OnReadyForRealmChangeWait = RequestTracker->CPP_WaitAll({}, PrepareForRealmChangeOps, {}, OnCompleteCode);
 }
 
 void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op)
@@ -534,27 +540,22 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 	Message->MessageType = EMessageType::VE_Info;
 	Message->MessageValue = TEXT("Changing Realms...");
 	SetBeamableWindowMessage(Message);
-	
-	// TODO: Expose error handling for BeamErrorResponses that happen in the PrepareRealmChange operations
-	SetActiveTargetRealmUnsafe(NewRealmHandle);	
-	
-	// Get the Main Editor Slot and make it point at the new realm
-	FBeamRealmUser UserData;
-	const auto MainEditorSlot = GetMainEditorSlot(UserData);
-	UserSlots->SetPIDAtSlot(MainEditorSlot, NewRealmHandle.Pid, this);
 
-	const auto GetConfigReq = UGetConfigRequest::Make(GetTransientPackage(), {});
-	const auto GetConfigReqHandle = FOnGetConfigFullResponse::CreateLambda([this, Op, MainEditorSlot, NewRealmHandle](FGetConfigFullResponse GetResp)
+	const auto ConfigSetCmd = NewObject<UBeamCliConfigCommand>();
+	ConfigSetCmd->OnCompleted = [this, NewRealmHandle](const int& ResCode, const FBeamOperationHandle& CmdOp)
 	{
-		if (GetResp.State == RS_Success)
+		if (ResCode == 0)
 		{
-			// We ensure that the realm is correctly configured to use Beamable's notification system (as opposed to our legacy PubNub-based system that UE doesn't support)
-			TMap<FString, FString> CurrConfig = TMap<FString, FString>(GetResp.SuccessData->Config);
-			if (CurrConfig.Contains(TEXT("notification|publisher"))) CurrConfig[TEXT("notification|publisher")] = TEXT("beamable");
-			else CurrConfig.Add(TEXT("notification|publisher"), TEXT("beamable"));
-			const auto Req = UPutConfigRequest::Make(CurrConfig, GetTransientPackage(), {});
-			const auto Handler = FOnPutConfigFullResponse::CreateLambda([this, Op, NewRealmHandle](FPutConfigFullResponse PutResp)
-			{				
+			// Make the Main Editor Slot and the editor itself point at the new realm	
+			FBeamRealmUser UserData;
+			const auto MainEditorSlot = GetMainEditorSlot(UserData);
+			UserSlots->SetPIDAtSlot(MainEditorSlot, NewRealmHandle.Pid, this);
+			SetActiveTargetRealmUnsafe(NewRealmHandle);
+
+			// Using the new Post endpoint that allows for Upsert to ensure that all Unreal games are using our custom notification pipeline instead of our legacy PubNub stuff.
+			const auto UpdateConfigReq = UPostConfigRequest::Make(FOptionalArrayOfString{}, FOptionalMapOfString{{{TEXT("notification|publisher"), TEXT("beamable")}}}, GetTransientPackage(), {});
+			const auto Handler = FOnPostConfigFullResponse::CreateLambda([this, CmdOp, NewRealmHandle](FPostConfigFullResponse PutResp)
+			{
 				if (PutResp.State == RS_Success)
 				{
 					const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
@@ -564,7 +565,7 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 						const auto Handle = Subsystem->InitializeRealm(NewRealmHandle);
 						InitalizeFromRealmOps.Add(Handle);
 					}
-					const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamEditor::SelectRealm_OnRealmInitialized, NewRealmHandle, Op);
+					const auto OnCompleteCode = FOnWaitCompleteCode::CreateUObject(this, &UBeamEditor::SelectRealm_OnRealmInitialized, NewRealmHandle, CmdOp);
 					InitializeFromRealmsWait = RequestTracker->CPP_WaitAll({}, InitalizeFromRealmOps, {}, OnCompleteCode);
 					return;
 				}
@@ -572,31 +573,30 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 				if (PutResp.State == RS_Retrying)
 					return;
 
-				RequestTracker->TriggerOperationError(Op, PutResp.ErrorData.message);
+				RequestTracker->TriggerOperationError(CmdOp, PutResp.ErrorData.message);
 			});
-
 			FBeamRequestContext Ctx;
-			GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_PutConfig(MainEditorSlot, Req, Handler, Ctx, Op, this);
-			return;
+			GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_PostConfig(MainEditorSlot, UpdateConfigReq, Handler, Ctx, CmdOp, this);
 		}
+		else
+		{
+			RequestTracker->TriggerOperationError(CmdOp, FString::Printf(TEXT("CLI_ERROR. CODE=%d"), ResCode));
+		}
+	};
 
-		if (GetResp.State == RS_Retrying)
-			return;
-
-		RequestTracker->TriggerOperationError(Op, GetResp.ErrorData.message);
-	});
-
-	FBeamRequestContext Ctx;
-	GEngine->GetEngineSubsystem<UBeamRealmsApi>()->CPP_GetConfig(MainEditorSlot, GetConfigReq, GetConfigReqHandle, Ctx, Op, this);
+	// Invoke the "Set Local Config Override" command in the CLI with the new realm --- once its set, set the TargetRealm and the PID for the MainEditorUserSlot and only then continue making the get config request.
+	const auto Cli = GEditor->GetEditorSubsystem<UBeamCli>();
+	const auto Params = TArray<FString>{TEXT("--cid"), NewRealmHandle.Cid.AsString, TEXT("--pid"), NewRealmHandle.Pid.AsString, TEXT("--set")};
+	Cli->RunCommandServer(ConfigSetCmd, Params, Op);
 }
 
 void UBeamEditor::SelectRealm_OnRealmInitialized(FBeamWaitCompleteEvent, FBeamRealmHandle NewRealmHandle, FBeamOperationHandle Op)
-{	
+{
 	auto Message = NewObject<UBeamableWindowMessage>();
 	Message->MessageType = EMessageType::VE_Info;
 	Message->MessageValue = TEXT("Updating new Realm Local Data...");
 	SetBeamableWindowMessage(Message);
-	
+
 	// We update the UserSlot info with the new PID.
 	FBeamRealmUser UserData;
 	const auto MainEditorSlot = GetMainEditorSlot(UserData);
@@ -622,12 +622,12 @@ void UBeamEditor::SelectRealm_OnSystemsReady(FBeamWaitCompleteEvent, FBeamRealmH
 	Message->MessageType = EMessageType::VE_Info;
 	Message->MessageValue = TEXT("Realm Changed!");
 	SetBeamableWindowMessage(Message);
-	
+
 	const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
 	for (auto& Subsystem : Subsystems)
 	{
 		Subsystem->OnReady();
-	}	
+	}
 
 	RequestTracker->TriggerOperationSuccess(Op, TEXT(""));
 }
@@ -660,7 +660,7 @@ void UBeamEditor::OpenPortal(EPortalPage PortalPage)
 			Page = FString("dashboard");
 			break;
 		case EPortalPage::VE_Microservices:
-			Page = FString("microservices");			
+			Page = FString("microservices");
 			break;
 		case EPortalPage::VE_PlayerSearch:
 			Page = FString("players");
@@ -678,13 +678,13 @@ void UBeamEditor::OpenPortal(EPortalPage PortalPage)
 
 		const auto URL = FString::Format(TEXT("{0}/{1}/games/{2}/realms/{3}/{4}?refresh_token={5}{6}"),
 		                                 {
-		                                 	PortalUrl,
-		                                 	Cid,
-		                                 	ProductionPid,
-		                                 	CurrentPid,
-		                                 	Page,
-		                                 	RefreshToken,
-		                                 	FString::Join(AdditionalQueryArgs, TEXT(""))
+			                                 PortalUrl,
+			                                 Cid,
+			                                 ProductionPid,
+			                                 CurrentPid,
+			                                 Page,
+			                                 RefreshToken,
+			                                 FString::Join(AdditionalQueryArgs, TEXT(""))
 		                                 });
 
 		FPlatformProcess::LaunchURL(*URL, nullptr, nullptr);
