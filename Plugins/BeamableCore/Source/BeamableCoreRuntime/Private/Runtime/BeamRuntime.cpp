@@ -773,6 +773,9 @@ void UBeamRuntime::TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent Evt, FU
 
 				for (auto& Subsystem : Subsystems)
 				{
+					if (!Subsystem->CurrentUserState.Contains(UserSlot))
+						Subsystem->CurrentUserState.Add(UserSlot, BeamInitializedNoUserData);
+					
 					if (Subsystem->CurrentUserState[UserSlot] == BeamInitializedNoUserData)
 					{
 						Subsystem->CurrentUserState[UserSlot] = BeamInitializedWithUserData;
@@ -1361,17 +1364,17 @@ FBeamOperationHandle UBeamRuntime::CPP_SignUpExternalIdentityOperation(FUserSlot
 	return Handle;
 }
 
-FBeamOperationHandle UBeamRuntime::SignUpEmailAndPasswordOperation(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationEventHandler OnOperationEvent)
+FBeamOperationHandle UBeamRuntime::SignUpEmailAndPasswordOperation(FUserSlot UserSlot, FString Email, FString Password, bool bAutoLogin, FBeamOperationEventHandler OnOperationEvent)
 {
 	const FBeamOperationHandle Handle = RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	SignUpEmailAndPassword(UserSlot, Email, Password, Handle);
+	SignUpEmailAndPassword(UserSlot, Email, Password, bAutoLogin, Handle);
 	return Handle;
 }
 
-FBeamOperationHandle UBeamRuntime::CPP_SignUpEmailAndPasswordOperation(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationEventHandlerCode OnOperationEvent)
+FBeamOperationHandle UBeamRuntime::CPP_SignUpEmailAndPasswordOperation(FUserSlot UserSlot, FString Email, FString Password, bool bAutoLogin, FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const FBeamOperationHandle Handle = RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	SignUpEmailAndPassword(UserSlot, Email, Password, Handle);
+	SignUpEmailAndPassword(UserSlot, Email, Password, bAutoLogin, Handle);
 	return Handle;
 }
 
@@ -1691,11 +1694,11 @@ void UBeamRuntime::SignUpExternalIdentity(FUserSlot UserSlot, FString Microservi
 	const auto _ = CheckExternalIdentityAvailable(MicroserviceName, IdentityNamespace, IdentityUserId, Op, CheckIdentityAvailableHandler);
 }
 
-void UBeamRuntime::SignUpEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op)
+void UBeamRuntime::SignUpEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, bool bAutoLoginOnUnavailable, FBeamOperationHandle Op)
 {
-	Email = FGenericPlatformHttp::UrlEncode(Email);
+	const auto EncodedEmail = FGenericPlatformHttp::UrlEncode(Email);
 
-	const auto CheckIdentityAvailableHandler = FOnGetAvailableFullResponse::CreateLambda([this,UserSlot, Op, Email, Password](FGetAvailableFullResponse Resp)
+	const auto CheckIdentityAvailableHandler = FOnGetAvailableFullResponse::CreateLambda([this,UserSlot, Op, Email, Password, bAutoLoginOnUnavailable](FGetAvailableFullResponse Resp)
 	{
 		if (Resp.State == RS_Retrying) return;
 
@@ -1738,8 +1741,9 @@ void UBeamRuntime::SignUpEmailAndPassword(FUserSlot UserSlot, FString Email, FSt
 			// If it has been assigned in this realm (a user exists in this realm for this external identity id), we log in with that user account into the requesting slot.			 
 			else
 			{
-				// If this email is already in use we error out.
-				GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, TEXT("EMAIL_IN_USE"));
+				// If this email is already in use we try to log in if asked to do so. Otherwise, we error out.				
+				if (bAutoLoginOnUnavailable) LoginEmailAndPassword(UserSlot, Email, Password, Op);
+				else GEngine->GetEngineSubsystem<UBeamRequestTracker>()->TriggerOperationError(Op, TEXT("EMAIL_IN_USE"));				
 			}
 			return;
 		}
@@ -1754,7 +1758,7 @@ void UBeamRuntime::SignUpEmailAndPassword(FUserSlot UserSlot, FString Email, FSt
 	}
 
 	// Kick off the process for sign up 
-	const auto _ = CheckEmailAvailable(Email, Op, CheckIdentityAvailableHandler);
+	const auto _ = CheckEmailAvailable(EncodedEmail, Op, CheckIdentityAvailableHandler);
 }
 
 void UBeamRuntime::Logout(FUserSlot UserSlot, EUserSlotClearedReason Reason, bool bRemoveLocalData, FBeamOperationHandle Op)

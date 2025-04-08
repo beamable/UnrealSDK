@@ -60,7 +60,7 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 	bool bIsMultiUser;
 
 
-	UPROPERTY(EditAnywhere, Category="Beam Flow|Operations")
+	UPROPERTY(EditAnywhere, Category="Beam|Operations")
 	TEnumAsByte<EOperationNodeModes> CurrentExpandedMode{OnCompleted};
 
 	UPROPERTY()

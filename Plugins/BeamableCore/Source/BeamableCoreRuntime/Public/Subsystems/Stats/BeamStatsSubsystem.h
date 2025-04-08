@@ -153,6 +153,20 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ResetUpdateCommand(FUserSlot Slot);
 
+	// Read Local State
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetAllStats(FUserSlot Slot, EBeamStatsDomain StatDomain, EBeamStatsVisibility StatVisibility, TArray<FString>& Keys, TArray<FString>& Values);
+
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetAllStatsByGamerTag(FUserSlot Slot, EBeamStatsDomain StatDomain, EBeamStatsVisibility StatVisibility, FBeamGamerTag StatOwner, TArray<FString>& Keys, TArray<FString>& Values);
+	
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetStat(FUserSlot Slot, EBeamStatsDomain StatDomain, EBeamStatsVisibility StatVisibility, FString StatKey, FString& Value);
+
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetStatByGamerTag(FUserSlot Slot, EBeamStatsDomain StatDomain, EBeamStatsVisibility StatVisibility, FBeamGamerTag StatOwner, FString StatKey, FString& Value);	
+	
+	
 	// Operations
 	/**
 	 * @brief Refreshes the stats the user at the given user slot. 
@@ -233,4 +247,8 @@ private:
 	FBeamRequestContext RequestSetStats(const FUserSlot& UserSlot, TMap<FString, FString> Stats, const FBeamOperationHandle Op, const FOnPostClientFullResponse Handler) const;
 	FBeamRequestContext RequestIncrementStats(const FUserSlot& UserSlot, TMap<FString, int32> StatsToAdd, const FBeamOperationHandle Op, const FOnPostClientFullResponse Handler) const;
 	FBeamRequestContext RequestDeleteStats(const FUserSlot& UserSlot, FString StatName, FBeamOperationHandle Op, FOnDeleteStatsFullResponse Handler) const;
+
+	// Local Helper Functions
+	bool _TryGetAllStats(FBeamStatsType Type, TArray<FString>& Keys, TArray<FString>& Values);
+	bool _TryGetStat(FBeamStatsType Type, FString StatKey, FString& Value);
 };
