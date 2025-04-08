@@ -24,8 +24,8 @@ void UAvailabilityResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 
 void UAvailabilityResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bName = Bag->GetBoolField(TEXT("name"));
-	bTag = Bag->GetBoolField(TEXT("tag"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), bName);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tag")), bTag);
 }
 
 

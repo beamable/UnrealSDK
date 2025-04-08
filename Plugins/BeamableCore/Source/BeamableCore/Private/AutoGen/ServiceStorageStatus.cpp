@@ -23,10 +23,10 @@ void UServiceStorageStatus::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 
 void UServiceStorageStatus::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bIsCurrent = Bag->GetBoolField(TEXT("isCurrent"));
-	bIsRunning = Bag->GetBoolField(TEXT("isRunning"));
-	Id = Bag->GetStringField(TEXT("id"));
-	StorageType = Bag->GetStringField(TEXT("storageType"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isCurrent")), bIsCurrent);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isRunning")), bIsRunning);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("storageType")), StorageType);
 }
 
 

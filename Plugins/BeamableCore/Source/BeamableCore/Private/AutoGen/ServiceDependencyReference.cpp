@@ -19,8 +19,8 @@ void UServiceDependencyReference::BeamSerializeProperties(TUnrealPrettyJsonSeria
 
 void UServiceDependencyReference::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Id = Bag->GetStringField(TEXT("id"));
-	StorageType = Bag->GetStringField(TEXT("storageType"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("storageType")), StorageType);
 }
 
 

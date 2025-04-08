@@ -7,10 +7,10 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamCid.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamPid.h"
-
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/ListTokenResponse.h"
 
 #include "GetTokenListRequest.generated.h"
@@ -47,7 +47,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", DisplayName="Beam - Make GetTokenList",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Cid,_Pid,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Auth|Backend", DisplayName="Make GetTokenList",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Cid,_Pid,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UGetTokenListRequest* Make(int32 _PageSize, int32 _Page, FOptionalBeamCid _Cid, FOptionalBeamPid _Pid, int64 _GamerTagOrAccountId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

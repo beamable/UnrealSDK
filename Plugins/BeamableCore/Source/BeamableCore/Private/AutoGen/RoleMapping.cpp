@@ -19,8 +19,8 @@ void URoleMapping::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 
 void URoleMapping::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	ProjectId = Bag->GetStringField(TEXT("projectId"));
-	Role = Bag->GetStringField(TEXT("role"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("projectId")), ProjectId);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("role")), Role);
 }
 
 

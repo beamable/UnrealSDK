@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetSignedUrlResponseLibrary : public UBlueprintFunctionL
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - GetSignedUrlResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GetSignedUrlResponse To JSON String")
 	static FString GetSignedUrlResponseToJsonString(const UGetSignedUrlResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GetSignedUrlResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GetSignedUrlResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UGetSignedUrlResponse* Make(FString Url, FString Body, FString Method, TArray<UGetLogsUrlHeader*> Headers, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GetSignedUrlResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GetSignedUrlResponse", meta=(NativeBreakFunc))
 	static void Break(const UGetSignedUrlResponse* Serializable, FString& Url, FString& Body, FString& Method, TArray<UGetLogsUrlHeader*>& Headers);
 };

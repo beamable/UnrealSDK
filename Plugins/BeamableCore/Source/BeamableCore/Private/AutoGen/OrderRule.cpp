@@ -19,8 +19,8 @@ void UOrderRule::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer
 
 void UOrderRule::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	V = Bag->GetStringField(TEXT("v"));
-	O = Bag->GetIntegerField(TEXT("o"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("v")), V);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("o")), O);
 }
 
 

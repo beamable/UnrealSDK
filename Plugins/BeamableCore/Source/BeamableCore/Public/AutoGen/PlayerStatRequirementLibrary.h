@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPlayerStatRequirementLibrary : public UBlueprintFunction
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - PlayerStatRequirement To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="PlayerStatRequirement To JSON String")
 	static FString PlayerStatRequirementToJsonString(const UPlayerStatRequirement* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make PlayerStatRequirement", meta=(DefaultToSelf="Outer", AdvancedDisplay="Domain, Access, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make PlayerStatRequirement", meta=(DefaultToSelf="Outer", AdvancedDisplay="Domain, Access, Outer", NativeMakeFunc))
 	static UPlayerStatRequirement* Make(FString Stat, FString Constraint, FString Value, FOptionalString Domain, FOptionalString Access, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break PlayerStatRequirement", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break PlayerStatRequirement", meta=(NativeBreakFunc))
 	static void Break(const UPlayerStatRequirement* Serializable, FString& Stat, FString& Constraint, FString& Value, FOptionalString& Domain, FOptionalString& Access);
 };

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UMatchMakingMatchesPvpResponseLibrary : public UBlueprint
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - MatchMakingMatchesPvpResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="MatchMakingMatchesPvpResponse To JSON String")
 	static FString MatchMakingMatchesPvpResponseToJsonString(const UMatchMakingMatchesPvpResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make MatchMakingMatchesPvpResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make MatchMakingMatchesPvpResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UMatchMakingMatchesPvpResponse* Make(FString Result, int32 TotalEntries, UMatchMakingRanking* PlayerRank, TArray<UMatchMakingWindowResp*> Windows, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break MatchMakingMatchesPvpResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break MatchMakingMatchesPvpResponse", meta=(NativeBreakFunc))
 	static void Break(const UMatchMakingMatchesPvpResponse* Serializable, FString& Result, int32& TotalEntries, UMatchMakingRanking*& PlayerRank, TArray<UMatchMakingWindowResp*>& Windows);
 };

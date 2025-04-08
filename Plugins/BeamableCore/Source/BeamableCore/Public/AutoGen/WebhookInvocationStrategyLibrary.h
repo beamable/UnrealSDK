@@ -13,12 +13,12 @@ class BEAMABLECORE_API UWebhookInvocationStrategyLibrary : public UBlueprintFunc
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - WebhookInvocationStrategy To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="WebhookInvocationStrategy To JSON String")
 	static FString WebhookInvocationStrategyToJsonString(const UWebhookInvocationStrategy* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make WebhookInvocationStrategy", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make WebhookInvocationStrategy", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UWebhookInvocationStrategy* Make(EWebhookInvocationType InvocationType, EWebhookRetryType RetryType, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break WebhookInvocationStrategy", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break WebhookInvocationStrategy", meta=(NativeBreakFunc))
 	static void Break(const UWebhookInvocationStrategy* Serializable, EWebhookInvocationType& InvocationType, EWebhookRetryType& RetryType);
 };

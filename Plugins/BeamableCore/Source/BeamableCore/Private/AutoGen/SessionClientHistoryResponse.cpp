@@ -29,7 +29,7 @@ void USessionClientHistoryResponse::BeamSerializeProperties(TUnrealPrettyJsonSer
 void USessionClientHistoryResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeUObject<ULocalDate*>("date", Bag, Date, OuterOwner);
-	DaysPlayed = Bag->GetIntegerField(TEXT("daysPlayed"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("daysPlayed")), DaysPlayed);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("sessions")), Sessions, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("installDate", Bag, InstallDate, OuterOwner);
 }

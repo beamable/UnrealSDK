@@ -34,9 +34,9 @@ void UNewCustomerResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 
 void UNewCustomerResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bActivationPending = Bag->GetBoolField(TEXT("activationPending"));
-	Name = Bag->GetStringField(TEXT("name"));
-	ProjectName = Bag->GetStringField(TEXT("projectName"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("activationPending")), bActivationPending);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("projectName")), ProjectName);
 	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("cid")), Cid, OuterOwner);
 	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("pid")), Pid, OuterOwner);
 	UBeamJsonUtils::DeserializeUObject<UTokenResponse*>("token", Bag, Token, OuterOwner);

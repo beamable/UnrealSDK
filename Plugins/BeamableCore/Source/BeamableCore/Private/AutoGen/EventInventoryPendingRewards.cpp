@@ -21,7 +21,7 @@ void UEventInventoryPendingRewards::BeamSerializeProperties(TUnrealPrettyJsonSer
 
 void UEventInventoryPendingRewards::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bEmpty = Bag->GetBoolField(TEXT("empty"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("empty")), bEmpty);
 	UBeamJsonUtils::DeserializeOptional<TArray<UItemCreateRequestBody*>, UItemCreateRequestBody*>("items", Bag, Items, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TMap<FString, FString>, FString>("currencies", Bag, Currencies, OuterOwner);
 }

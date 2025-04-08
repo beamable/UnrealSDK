@@ -28,9 +28,9 @@ void ULeaderboardPartitionInfo::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 
 void ULeaderboardPartitionInfo::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bIsEmpty = Bag->GetBoolField(TEXT("isEmpty"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("playerId")), PlayerId);
-	LeaderboardId = Bag->GetStringField(TEXT("leaderboardId"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isEmpty")), bIsEmpty);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("playerId")), PlayerId);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("leaderboardId")), LeaderboardId);
 	UBeamJsonUtils::DeserializeOptional<int32>("partition", Bag, Partition, OuterOwner);
 }
 

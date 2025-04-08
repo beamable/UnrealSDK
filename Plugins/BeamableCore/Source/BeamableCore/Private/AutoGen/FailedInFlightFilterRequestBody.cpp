@@ -19,7 +19,7 @@ void UFailedInFlightFilterRequestBody::BeamSerializeProperties(TUnrealPrettyJson
 
 void UFailedInFlightFilterRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	ServiceName = Bag->GetStringField(TEXT("serviceName"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceName")), ServiceName);
 	UBeamJsonUtils::DeserializeOptional<FString>("serviceObjectId", Bag, ServiceObjectId, OuterOwner);
 }
 

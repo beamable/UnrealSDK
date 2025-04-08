@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPaymentHistoryEntryViewModelLibrary : public UBlueprintF
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - PaymentHistoryEntryViewModel To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="PaymentHistoryEntryViewModel To JSON String")
 	static FString PaymentHistoryEntryViewModelToJsonString(const UPaymentHistoryEntryViewModel* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make PaymentHistoryEntryViewModel", meta=(DefaultToSelf="Outer", AdvancedDisplay="Data, Timestamp, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make PaymentHistoryEntryViewModel", meta=(DefaultToSelf="Outer", AdvancedDisplay="Data, Timestamp, Outer", NativeMakeFunc))
 	static UPaymentHistoryEntryViewModel* Make(FString Change, FOptionalString Data, FOptionalString Timestamp, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break PaymentHistoryEntryViewModel", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break PaymentHistoryEntryViewModel", meta=(NativeBreakFunc))
 	static void Break(const UPaymentHistoryEntryViewModel* Serializable, FString& Change, FOptionalString& Data, FOptionalString& Timestamp);
 };

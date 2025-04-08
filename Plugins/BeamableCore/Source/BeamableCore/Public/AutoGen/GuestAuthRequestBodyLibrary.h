@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGuestAuthRequestBodyLibrary : public UBlueprintFunctionL
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - GuestAuthRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GuestAuthRequestBody To JSON String")
 	static FString GuestAuthRequestBodyToJsonString(const UGuestAuthRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GuestAuthRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Scope, CustomerId, RealmId, Context, InitProperties, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GuestAuthRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Scope, CustomerId, RealmId, Context, InitProperties, Outer", NativeMakeFunc))
 	static UGuestAuthRequestBody* Make(FOptionalString Scope, FOptionalBeamCid CustomerId, FOptionalBeamPid RealmId, FOptionalContextInfo Context, FOptionalMapOfString InitProperties, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GuestAuthRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GuestAuthRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UGuestAuthRequestBody* Serializable, FOptionalString& Scope, FOptionalBeamCid& CustomerId, FOptionalBeamPid& RealmId, FOptionalContextInfo& Context, FOptionalMapOfString& InitProperties);
 };

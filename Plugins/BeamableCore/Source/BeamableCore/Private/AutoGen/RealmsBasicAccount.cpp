@@ -23,8 +23,8 @@ void URealmsBasicAccount::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 
 void URealmsBasicAccount::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	User = Bag->GetStringField(TEXT("user"));
-	Password = Bag->GetStringField(TEXT("password"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("user")), User);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("password")), Password);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("projects")), Projects, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("created", Bag, Created, OuterOwner);
 }

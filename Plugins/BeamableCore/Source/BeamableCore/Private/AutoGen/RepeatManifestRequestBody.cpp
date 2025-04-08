@@ -17,7 +17,7 @@ void URepeatManifestRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void URepeatManifestRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Uid = Bag->GetStringField(TEXT("uid"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("uid")), Uid);
 }
 
 

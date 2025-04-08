@@ -26,8 +26,8 @@ void UAliasAvailableResponse::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 
 void UAliasAvailableResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Alias = Bag->GetStringField(TEXT("alias"));
-	bAvailable = Bag->GetBoolField(TEXT("available"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("alias")), Alias);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("available")), bAvailable);
 	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("cid")), Cid, OuterOwner);
 }
 

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UVipBonusLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - VipBonus To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="VipBonus To JSON String")
 	static FString VipBonusToJsonString(const UVipBonus* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make VipBonus", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make VipBonus", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UVipBonus* Make(FString Currency, double Multiplier, int32 RoundToNearest, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break VipBonus", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break VipBonus", meta=(NativeBreakFunc))
 	static void Break(const UVipBonus* Serializable, FString& Currency, double& Multiplier, int32& RoundToNearest);
 };

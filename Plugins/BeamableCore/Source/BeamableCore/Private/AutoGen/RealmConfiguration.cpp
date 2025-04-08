@@ -33,11 +33,11 @@ void URealmConfiguration::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 void URealmConfiguration::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeUObject<UWebSocketConfiguration*>("websocketConfig", Bag, WebsocketConfig, OuterOwner);
-	MicroserviceURI = Bag->GetStringField(TEXT("microserviceURI"));
-	PortalURI = Bag->GetStringField(TEXT("portalURI"));
-	MicroserviceEcrURI = Bag->GetStringField(TEXT("microserviceEcrURI"));
-	StorageBrowserURI = Bag->GetStringField(TEXT("storageBrowserURI"));
-	Environment = Bag->GetStringField(TEXT("environment"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("microserviceURI")), MicroserviceURI);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("portalURI")), PortalURI);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("microserviceEcrURI")), MicroserviceEcrURI);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("storageBrowserURI")), StorageBrowserURI);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("environment")), Environment);
 }
 
 

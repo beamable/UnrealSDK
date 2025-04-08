@@ -13,12 +13,12 @@ class BEAMABLECORE_API UStatsSearchRequestBodyLibrary : public UBlueprintFunctio
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - StatsSearchRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="StatsSearchRequestBody To JSON String")
 	static FString StatsSearchRequestBodyToJsonString(const UStatsSearchRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make StatsSearchRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make StatsSearchRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UStatsSearchRequestBody* Make(FString Domain, FString Access, FString ObjectType, TArray<UStatsSearchCriteria*> Criteria, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break StatsSearchRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break StatsSearchRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UStatsSearchRequestBody* Serializable, FString& Domain, FString& Access, FString& ObjectType, TArray<UStatsSearchCriteria*>& Criteria);
 };

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UContentBasicGetManifestRequestBodyLibrary : public UBlue
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - ContentBasicGetManifestRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ContentBasicGetManifestRequestBody To JSON String")
 	static FString ContentBasicGetManifestRequestBodyToJsonString(const UContentBasicGetManifestRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ContentBasicGetManifestRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Id, Outer", NativeMakeFunc))
-	static UContentBasicGetManifestRequestBody* Make(FOptionalBeamContentManifestId Id, UObject* Outer);
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ContentBasicGetManifestRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Id, Uid, Outer", NativeMakeFunc))
+	static UContentBasicGetManifestRequestBody* Make(FOptionalBeamContentManifestId Id, FOptionalString Uid, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break ContentBasicGetManifestRequestBody", meta=(NativeBreakFunc))
-	static void Break(const UContentBasicGetManifestRequestBody* Serializable, FOptionalBeamContentManifestId& Id);
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ContentBasicGetManifestRequestBody", meta=(NativeBreakFunc))
+	static void Break(const UContentBasicGetManifestRequestBody* Serializable, FOptionalBeamContentManifestId& Id, FOptionalString& Uid);
 };

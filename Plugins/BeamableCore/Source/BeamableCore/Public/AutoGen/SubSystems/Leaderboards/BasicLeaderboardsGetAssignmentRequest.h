@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 #include "BeamableCore/Public/AutoGen/LeaderboardAssignmentInfo.h"
 
@@ -39,7 +39,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make BasicLeaderboardsGetAssignment",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bJoinBoard,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Leaderboards|Backend", DisplayName="Make BasicLeaderboardsGetAssignment",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bJoinBoard,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UBasicLeaderboardsGetAssignmentRequest* Make(FString _BoardId, FOptionalBool _bJoinBoard, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

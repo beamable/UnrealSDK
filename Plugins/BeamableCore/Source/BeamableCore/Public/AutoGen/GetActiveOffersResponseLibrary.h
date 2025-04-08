@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetActiveOffersResponseLibrary : public UBlueprintFuncti
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - GetActiveOffersResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GetActiveOffersResponse To JSON String")
 	static FString GetActiveOffersResponseToJsonString(const UGetActiveOffersResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GetActiveOffersResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GetActiveOffersResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UGetActiveOffersResponse* Make(TArray<UPlayerStoreView*> Stores, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GetActiveOffersResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GetActiveOffersResponse", meta=(NativeBreakFunc))
 	static void Break(const UGetActiveOffersResponse* Serializable, TArray<UPlayerStoreView*>& Stores);
 };

@@ -39,13 +39,13 @@ void UEventPlayerStateView::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 
 void UEventPlayerStateView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bRunning = Bag->GetBoolField(TEXT("running"));
-	Name = Bag->GetStringField(TEXT("name"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("rank")), Rank);
-	Score = Bag->GetNumberField(TEXT("score"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("secondsRemaining")), SecondsRemaining);
-	Id = Bag->GetStringField(TEXT("id"));
-	LeaderboardId = Bag->GetStringField(TEXT("leaderboardId"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("running")), bRunning);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("rank")), Rank);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("score")), Score);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("secondsRemaining")), SecondsRemaining);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("leaderboardId")), LeaderboardId);
 	UBeamJsonUtils::DeserializeArray<UEventPlayerPhaseView*>(Bag->GetArrayField(TEXT("allPhases")), AllPhases, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UEventRewardState*>(Bag->GetArrayField(TEXT("rankRewards")), RankRewards, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UEventRewardState*>(Bag->GetArrayField(TEXT("scoreRewards")), ScoreRewards, OuterOwner);

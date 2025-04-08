@@ -41,7 +41,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Beamo", DisplayName="Beam - Make BasicBeamoGetManifests",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Offset,_Limit,_bArchived,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Beamo|Backend", DisplayName="Make BasicBeamoGetManifests",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Offset,_Limit,_bArchived,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UBasicBeamoGetManifestsRequest* Make(FOptionalInt32 _Offset, FOptionalInt32 _Limit, FOptionalBool _bArchived, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

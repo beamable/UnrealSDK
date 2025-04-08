@@ -27,11 +27,11 @@ void UServiceStorageReference::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UServiceStorageReference::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bArchived = Bag->GetBoolField(TEXT("archived"));
-	bEnabled = Bag->GetBoolField(TEXT("enabled"));
-	StorageType = Bag->GetStringField(TEXT("storageType"));
-	Id = Bag->GetStringField(TEXT("id"));
-	Checksum = Bag->GetStringField(TEXT("checksum"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("archived")), bArchived);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("enabled")), bEnabled);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("storageType")), StorageType);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("checksum")), Checksum);
 	UBeamJsonUtils::DeserializeOptional<FString>("templateId", Bag, TemplateId, OuterOwner);
 }
 

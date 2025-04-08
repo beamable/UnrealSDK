@@ -34,7 +34,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|DiscordSampleMs", DisplayName="Beam - Make DiscordSampleMsUpdateUserWhitelistedStatus",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|DiscordSampleMs", DisplayName="Make DiscordSampleMsUpdateUserWhitelistedStatus",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UDiscordSampleMsUpdateUserWhitelistedStatusRequest* Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

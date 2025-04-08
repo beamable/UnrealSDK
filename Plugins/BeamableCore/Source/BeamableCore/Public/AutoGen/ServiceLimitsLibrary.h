@@ -13,12 +13,12 @@ class BEAMABLECORE_API UServiceLimitsLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - ServiceLimits To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ServiceLimits To JSON String")
 	static FString ServiceLimitsToJsonString(const UServiceLimits* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ServiceLimits", meta=(DefaultToSelf="Outer", AdvancedDisplay="Beamo, Content, Gateway, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ServiceLimits", meta=(DefaultToSelf="Outer", AdvancedDisplay="Beamo, Content, Gateway, Outer", NativeMakeFunc))
 	static UServiceLimits* Make(FOptionalBeamoLimits Beamo, FOptionalContentLimits Content, FOptionalGatewayLimits Gateway, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break ServiceLimits", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ServiceLimits", meta=(NativeBreakFunc))
 	static void Break(const UServiceLimits* Serializable, FOptionalBeamoLimits& Beamo, FOptionalContentLimits& Content, FOptionalGatewayLimits& Gateway);
 };

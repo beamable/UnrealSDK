@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/IsoChronology.h"
 #include "BeamableCore/Public/AutoGen/Era.h"
 

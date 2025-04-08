@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/BulkUpdateMailObjectRequestBody.h"
 #include "BeamableCore/Public/AutoGen/MailSuccessResponse.h"
 
@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Mail", DisplayName="Beam - Make PutBulk",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Mail|Backend", DisplayName="Make PutBulk",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPutBulkRequest* Make(int64 _ObjectId, TArray<UMyMailUpdate*> _UpdateMailRequests, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

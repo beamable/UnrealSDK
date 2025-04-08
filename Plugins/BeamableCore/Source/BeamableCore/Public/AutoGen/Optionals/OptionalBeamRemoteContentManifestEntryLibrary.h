@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalBeamRemoteContentManifestEntry struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Make Optional BeamRemoteContentManifestEntry", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Make Optional BeamRemoteContentManifestEntry", NativeMakeFunc))
 	static FOptionalBeamRemoteContentManifestEntry MakeOptional(FBeamRemoteContentManifestEntry Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The FBeamRemoteContentManifestEntry to convert.
 	 * @return An optional with the BeamRemoteContentManifestEntry set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta = (DisplayName = "Beam - BeamRemoteContentManifestEntry To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta = (DisplayName = "BeamRemoteContentManifestEntry To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalBeamRemoteContentManifestEntry Conv_OptionalFromValue(FBeamRemoteContentManifestEntry Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Optionals", meta=(DisplayName="Beam - Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Shared|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalBeamRemoteContentManifestEntry& Optional, FBeamRemoteContentManifestEntry& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Get Optional's BeamRemoteContentManifestEntry Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Get Optional's BeamRemoteContentManifestEntry Value"))
 	static FBeamRemoteContentManifestEntry GetOptionalValue(const FOptionalBeamRemoteContentManifestEntry& Optional, FBeamRemoteContentManifestEntry DefaultValue, bool& WasSet);
 
 	

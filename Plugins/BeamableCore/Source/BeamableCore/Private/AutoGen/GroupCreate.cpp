@@ -35,11 +35,11 @@ void UGroupCreate::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 
 void UGroupCreate::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Name = Bag->GetStringField(TEXT("name"));
-	EnrollmentType = Bag->GetStringField(TEXT("enrollmentType"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("requirement")), Requirement);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("enrollmentType")), EnrollmentType);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("requirement")), Requirement);
 	Type = UGroupTypeLibrary::SerializationNameToGroupType(Bag->GetStringField(TEXT("type")));
-	MaxSize = Bag->GetIntegerField(TEXT("maxSize"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("maxSize")), MaxSize);
 	UBeamJsonUtils::DeserializeOptional<FString>("tag", Bag, Tag, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("clientData", Bag, ClientData, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("time", Bag, Time, OuterOwner);

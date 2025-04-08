@@ -13,12 +13,12 @@ class BEAMABLECORE_API UCloudsavingBasicReferenceLibrary : public UBlueprintFunc
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - CloudsavingBasicReference To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="CloudsavingBasicReference To JSON String")
 	static FString CloudsavingBasicReferenceToJsonString(const UCloudsavingBasicReference* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make CloudsavingBasicReference", meta=(DefaultToSelf="Outer", AdvancedDisplay="ETag, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make CloudsavingBasicReference", meta=(DefaultToSelf="Outer", AdvancedDisplay="ETag, Outer", NativeMakeFunc))
 	static UCloudsavingBasicReference* Make(int64 Size, int64 LastModified, FString Key, FString BucketName, FOptionalString ETag, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break CloudsavingBasicReference", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break CloudsavingBasicReference", meta=(NativeBreakFunc))
 	static void Break(const UCloudsavingBasicReference* Serializable, int64& Size, int64& LastModified, FString& Key, FString& BucketName, FOptionalString& ETag);
 };

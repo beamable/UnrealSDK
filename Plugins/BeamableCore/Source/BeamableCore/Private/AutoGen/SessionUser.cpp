@@ -37,14 +37,14 @@ void USessionUser::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 
 void USessionUser::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Name = Bag->GetStringField(TEXT("name"));
-	Email = Bag->GetStringField(TEXT("email"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("gamerTag")), GamerTag);
-	Username = Bag->GetStringField(TEXT("username"));
-	LastName = Bag->GetStringField(TEXT("lastName"));
-	FirstName = Bag->GetStringField(TEXT("firstName"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("id")), Id);
-	Lang = Bag->GetStringField(TEXT("lang"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("email")), Email);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("gamerTag")), GamerTag);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("username")), Username);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("lastName")), LastName);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("firstName")), FirstName);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("lang")), Lang);
 	UBeamJsonUtils::DeserializeOptional<FString>("cid", Bag, Cid, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("heartbeat", Bag, Heartbeat, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("password", Bag, Password, OuterOwner);

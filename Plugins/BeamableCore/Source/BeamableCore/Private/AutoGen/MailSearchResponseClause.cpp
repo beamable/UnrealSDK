@@ -21,8 +21,8 @@ void UMailSearchResponseClause::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 
 void UMailSearchResponseClause::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Name = Bag->GetStringField(TEXT("name"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("count")), Count);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("count")), Count);
 	UBeamJsonUtils::DeserializeOptional<TArray<UMessage*>, UMessage*>("content", Bag, Content, OuterOwner);
 }
 

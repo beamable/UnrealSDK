@@ -17,7 +17,7 @@ void UPullBeamoManifestRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSer
 
 void UPullBeamoManifestRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	SourceRealmPid = Bag->GetStringField(TEXT("sourceRealmPid"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("sourceRealmPid")), SourceRealmPid);
 }
 
 

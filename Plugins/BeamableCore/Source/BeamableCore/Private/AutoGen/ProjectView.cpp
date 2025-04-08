@@ -36,7 +36,7 @@ void UProjectView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 
 void UProjectView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	ProjectName = Bag->GetStringField(TEXT("projectName"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("projectName")), ProjectName);
 	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("pid")), Pid, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("archived", Bag, bArchived, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("sharded", Bag, bSharded, OuterOwner);

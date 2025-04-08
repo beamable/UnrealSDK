@@ -19,7 +19,7 @@ void UPaymentTotal::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 
 void UPaymentTotal::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("totalRevenue")), TotalRevenue);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("totalRevenue")), TotalRevenue);
 	UBeamJsonUtils::DeserializeOptional<FString>("currencyCode", Bag, CurrencyCode, OuterOwner);
 }
 

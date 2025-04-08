@@ -13,12 +13,12 @@ class BEAMABLECORE_API URoleMappingLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - RoleMapping To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="RoleMapping To JSON String")
 	static FString RoleMappingToJsonString(const URoleMapping* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make RoleMapping", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make RoleMapping", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static URoleMapping* Make(FString ProjectId, FString Role, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break RoleMapping", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break RoleMapping", meta=(NativeBreakFunc))
 	static void Break(const URoleMapping* Serializable, FString& ProjectId, FString& Role);
 };

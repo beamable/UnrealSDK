@@ -13,12 +13,12 @@ class BEAMABLECORE_API UUpdateDataLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - UpdateData To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="UpdateData To JSON String")
 	static FString UpdateDataToJsonString(const UUpdateData* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make UpdateData", meta=(DefaultToSelf="Outer", AdvancedDisplay="Deletes, Updates, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make UpdateData", meta=(DefaultToSelf="Outer", AdvancedDisplay="Deletes, Updates, Outer", NativeMakeFunc))
 	static UUpdateData* Make(FOptionalArrayOfString Deletes, FOptionalMapOfString Updates, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break UpdateData", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break UpdateData", meta=(NativeBreakFunc))
 	static void Break(const UUpdateData* Serializable, FOptionalArrayOfString& Deletes, FOptionalMapOfString& Updates);
 };

@@ -27,8 +27,8 @@ void UMember::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) c
 
 void UMember::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Role = Bag->GetStringField(TEXT("role"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("gamerTag")), GamerTag);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("role")), Role);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("gamerTag")), GamerTag);
 	UBeamJsonUtils::DeserializeOptional<bool>("canDemote", Bag, bCanDemote, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("canKick", Bag, bCanKick, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("canPromote", Bag, bCanPromote, OuterOwner);

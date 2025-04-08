@@ -13,12 +13,12 @@ class BEAMABLECORE_API UItemUpdateRequestBodyLibrary : public UBlueprintFunction
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - ItemUpdateRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ItemUpdateRequestBody To JSON String")
 	static FString ItemUpdateRequestBodyToJsonString(const UItemUpdateRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ItemUpdateRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ItemUpdateRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UItemUpdateRequestBody* Make(FString ContentId, int64 Id, TArray<UItemProperty*> Properties, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break ItemUpdateRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ItemUpdateRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UItemUpdateRequestBody* Serializable, FString& ContentId, int64& Id, TArray<UItemProperty*>& Properties);
 };

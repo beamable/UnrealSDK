@@ -27,9 +27,9 @@ void UNewCustomerRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 
 void UNewCustomerRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	ProjectName = Bag->GetStringField(TEXT("projectName"));
-	Email = Bag->GetStringField(TEXT("email"));
-	Password = Bag->GetStringField(TEXT("password"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("projectName")), ProjectName);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("email")), Email);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("password")), Password);
 	UBeamJsonUtils::DeserializeOptional<bool>("hierarchy", Bag, bHierarchy, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("customerName", Bag, CustomerName, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("alias", Bag, Alias, OuterOwner);

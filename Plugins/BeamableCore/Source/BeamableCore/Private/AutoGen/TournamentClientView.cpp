@@ -32,12 +32,12 @@ void UTournamentClientView::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 
 void UTournamentClientView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	TournamentId = Bag->GetStringField(TEXT("tournamentId"));
-	StartTimeUtc = Bag->GetStringField(TEXT("startTimeUtc"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("secondsRemaining")), SecondsRemaining);
-	Cycle = Bag->GetIntegerField(TEXT("cycle"));
-	EndTimeUtc = Bag->GetStringField(TEXT("endTimeUtc"));
-	ContentId = Bag->GetStringField(TEXT("contentId"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tournamentId")), TournamentId);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("startTimeUtc")), StartTimeUtc);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("secondsRemaining")), SecondsRemaining);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("cycle")), Cycle);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("endTimeUtc")), EndTimeUtc);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("contentId")), ContentId);
 }
 
 

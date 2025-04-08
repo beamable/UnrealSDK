@@ -13,12 +13,12 @@ class BEAMABLECORE_API UBinaryDefinitionLibrary : public UBlueprintFunctionLibra
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - BinaryDefinition To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="BinaryDefinition To JSON String")
 	static FString BinaryDefinitionToJsonString(const UBinaryDefinition* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make BinaryDefinition", meta=(DefaultToSelf="Outer", AdvancedDisplay="Tags, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make BinaryDefinition", meta=(DefaultToSelf="Outer", AdvancedDisplay="Tags, Outer", NativeMakeFunc))
 	static UBinaryDefinition* Make(FBeamContentId Id, FString Checksum, FString UploadContentType, FOptionalArrayOfString Tags, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break BinaryDefinition", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break BinaryDefinition", meta=(NativeBreakFunc))
 	static void Break(const UBinaryDefinition* Serializable, FBeamContentId& Id, FString& Checksum, FString& UploadContentType, FOptionalArrayOfString& Tags);
 };

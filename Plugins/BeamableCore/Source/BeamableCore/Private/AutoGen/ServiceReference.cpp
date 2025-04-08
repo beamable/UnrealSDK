@@ -39,13 +39,13 @@ void UServiceReference::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 
 void UServiceReference::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bArchived = Bag->GetBoolField(TEXT("archived"));
-	bArm = Bag->GetBoolField(TEXT("arm"));
-	bEnabled = Bag->GetBoolField(TEXT("enabled"));
-	ServiceName = Bag->GetStringField(TEXT("serviceName"));
-	Checksum = Bag->GetStringField(TEXT("checksum"));
-	TemplateId = Bag->GetStringField(TEXT("templateId"));
-	ImageId = Bag->GetStringField(TEXT("imageId"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("archived")), bArchived);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("arm")), bArm);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("enabled")), bEnabled);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceName")), ServiceName);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("checksum")), Checksum);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("templateId")), TemplateId);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("imageId")), ImageId);
 	UBeamJsonUtils::DeserializeOptional<int64>("containerHealthCheckPort", Bag, ContainerHealthCheckPort, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("imageCpuArch", Bag, ImageCpuArch, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("comments", Bag, Comments, OuterOwner);

@@ -21,9 +21,9 @@ void USubscriptionVerificationRequestBody::BeamSerializeProperties(TUnrealPretty
 
 void USubscriptionVerificationRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	HubMode = Bag->GetStringField(TEXT("hubMode"));
-	HubChallenge = Bag->GetStringField(TEXT("hubChallenge"));
-	HubVerifyToken = Bag->GetStringField(TEXT("hubVerifyToken"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("hubMode")), HubMode);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("hubChallenge")), HubChallenge);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("hubVerifyToken")), HubVerifyToken);
 }
 
 

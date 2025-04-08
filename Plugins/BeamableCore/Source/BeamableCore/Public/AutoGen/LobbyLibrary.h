@@ -13,12 +13,12 @@ class BEAMABLECORE_API ULobbyLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - Lobby To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="Lobby To JSON String")
 	static FString LobbyToJsonString(const ULobby* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make Lobby", meta=(DefaultToSelf="Outer", AdvancedDisplay="LobbyId, MatchType, Created, Name, Description, Host, Passcode, Restriction, MaxPlayers, Players, Data, Outer", NativeMakeFunc))
-	static ULobby* Make(FOptionalString LobbyId, FOptionalMatchType MatchType, FOptionalString Created, FOptionalString Name, FOptionalString Description, FOptionalBeamGamerTag Host, FOptionalString Passcode, FOptionalLobbyRestriction Restriction, FOptionalInt32 MaxPlayers, FOptionalArrayOfLobbyPlayer Players, FOptionalMapOfString Data, UObject* Outer);
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make Lobby", meta=(DefaultToSelf="Outer", AdvancedDisplay="LobbyId, MatchType, Created, Name, Description, Host, Passcode, Restriction, MaxPlayers, Players, Data, Outer", NativeMakeFunc))
+	static ULobby* Make(FOptionalString LobbyId, FOptionalMatchType MatchType, FOptionalDateTime Created, FOptionalString Name, FOptionalString Description, FOptionalBeamGamerTag Host, FOptionalString Passcode, FOptionalLobbyRestriction Restriction, FOptionalInt32 MaxPlayers, FOptionalArrayOfLobbyPlayer Players, FOptionalMapOfString Data, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break Lobby", meta=(NativeBreakFunc))
-	static void Break(const ULobby* Serializable, FOptionalString& LobbyId, FOptionalMatchType& MatchType, FOptionalString& Created, FOptionalString& Name, FOptionalString& Description, FOptionalBeamGamerTag& Host, FOptionalString& Passcode, FOptionalLobbyRestriction& Restriction, FOptionalInt32& MaxPlayers, FOptionalArrayOfLobbyPlayer& Players, FOptionalMapOfString& Data);
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break Lobby", meta=(NativeBreakFunc))
+	static void Break(const ULobby* Serializable, FOptionalString& LobbyId, FOptionalMatchType& MatchType, FOptionalDateTime& Created, FOptionalString& Name, FOptionalString& Description, FOptionalBeamGamerTag& Host, FOptionalString& Passcode, FOptionalLobbyRestriction& Restriction, FOptionalInt32& MaxPlayers, FOptionalArrayOfLobbyPlayer& Players, FOptionalMapOfString& Data);
 };

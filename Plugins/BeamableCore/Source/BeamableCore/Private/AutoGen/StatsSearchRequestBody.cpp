@@ -23,9 +23,9 @@ void UStatsSearchRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 
 void UStatsSearchRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Domain = Bag->GetStringField(TEXT("domain"));
-	Access = Bag->GetStringField(TEXT("access"));
-	ObjectType = Bag->GetStringField(TEXT("objectType"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("domain")), Domain);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("access")), Access);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("objectType")), ObjectType);
 	UBeamJsonUtils::DeserializeArray<UStatsSearchCriteria*>(Bag->GetArrayField(TEXT("criteria")), Criteria, OuterOwner);
 }
 

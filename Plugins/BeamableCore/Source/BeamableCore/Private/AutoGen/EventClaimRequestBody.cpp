@@ -17,7 +17,7 @@ void UEventClaimRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 
 void UEventClaimRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	EventId = Bag->GetStringField(TEXT("eventId"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("eventId")), EventId);
 }
 
 

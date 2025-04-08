@@ -39,11 +39,11 @@ void UAnnouncementContent::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 
 void UAnnouncementContent::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Body = Bag->GetStringField(TEXT("body"));
-	Channel = Bag->GetStringField(TEXT("channel"));
-	Symbol = Bag->GetStringField(TEXT("symbol"));
-	Title = Bag->GetStringField(TEXT("title"));
-	Summary = Bag->GetStringField(TEXT("summary"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("body")), Body);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("channel")), Channel);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("title")), Title);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("summary")), Summary);
 	UBeamJsonUtils::DeserializeOptional<FString>("start_date", Bag, StartDate, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UPlayerReward*>("gift", Bag, Gift, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("end_date", Bag, EndDate, OuterOwner);

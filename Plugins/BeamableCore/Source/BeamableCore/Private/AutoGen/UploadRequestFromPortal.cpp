@@ -23,8 +23,8 @@ void UUploadRequestFromPortal::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UUploadRequestFromPortal::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	ObjectKey = Bag->GetStringField(TEXT("objectKey"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("sizeInBytes")), SizeInBytes);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("objectKey")), ObjectKey);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("sizeInBytes")), SizeInBytes);
 	UBeamJsonUtils::DeserializeOptional<int64>("lastModified", Bag, LastModified, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UMetadataPair*>, UMetadataPair*>("metadata", Bag, Metadata, OuterOwner);
 }

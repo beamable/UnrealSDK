@@ -13,12 +13,12 @@ class BEAMABLECORE_API UDatabasePerformanceRequestBodyLibrary : public UBlueprin
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - DatabasePerformanceRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="DatabasePerformanceRequestBody To JSON String")
 	static FString DatabasePerformanceRequestBodyToJsonString(const UDatabasePerformanceRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make DatabasePerformanceRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="EndDate, StartDate, Period, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make DatabasePerformanceRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="EndDate, StartDate, Period, Outer", NativeMakeFunc))
 	static UDatabasePerformanceRequestBody* Make(FString StorageObjectName, FString Granularity, FOptionalString EndDate, FOptionalString StartDate, FOptionalString Period, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break DatabasePerformanceRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break DatabasePerformanceRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UDatabasePerformanceRequestBody* Serializable, FString& StorageObjectName, FString& Granularity, FOptionalString& EndDate, FOptionalString& StartDate, FOptionalString& Period);
 };

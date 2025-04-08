@@ -33,7 +33,7 @@ void UOfferDefinition::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 
 void UOfferDefinition::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Symbol = Bag->GetStringField(TEXT("symbol"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("titles")), Titles, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("images")), Images, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("descriptions")), Descriptions, OuterOwner);

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UOnlineStatusRequestBodyLibrary : public UBlueprintFuncti
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - OnlineStatusRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="OnlineStatusRequestBody To JSON String")
 	static FString OnlineStatusRequestBodyToJsonString(const UOnlineStatusRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make OnlineStatusRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make OnlineStatusRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UOnlineStatusRequestBody* Make(FString PlayerIds, int64 IntervalSecs, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break OnlineStatusRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break OnlineStatusRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UOnlineStatusRequestBody* Serializable, FString& PlayerIds, int64& IntervalSecs);
 };

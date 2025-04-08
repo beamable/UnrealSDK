@@ -21,7 +21,7 @@ void UBeginPurchaseRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 
 void UBeginPurchaseRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	PurchaseId = Bag->GetStringField(TEXT("purchaseId"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("purchaseId")), PurchaseId);
 	UBeamJsonUtils::DeserializeOptional<FString>("language", Bag, Language, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("time", Bag, Time, OuterOwner);
 }

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UUpdateLobbyLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - UpdateLobby To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="UpdateLobby To JSON String")
 	static FString UpdateLobbyToJsonString(const UUpdateLobby* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make UpdateLobby", meta=(DefaultToSelf="Outer", AdvancedDisplay="Name, Description, Restriction, MatchType, MaxPlayers, NewHost, Data, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make UpdateLobby", meta=(DefaultToSelf="Outer", AdvancedDisplay="Name, Description, Restriction, MatchType, MaxPlayers, NewHost, Data, Outer", NativeMakeFunc))
 	static UUpdateLobby* Make(FOptionalString Name, FOptionalString Description, FOptionalLobbyRestriction Restriction, FOptionalBeamContentId MatchType, FOptionalInt32 MaxPlayers, FOptionalString NewHost, FOptionalUpdateData Data, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break UpdateLobby", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break UpdateLobby", meta=(NativeBreakFunc))
 	static void Break(const UUpdateLobby* Serializable, FOptionalString& Name, FOptionalString& Description, FOptionalLobbyRestriction& Restriction, FOptionalBeamContentId& MatchType, FOptionalInt32& MaxPlayers, FOptionalString& NewHost, FOptionalUpdateData& Data);
 };

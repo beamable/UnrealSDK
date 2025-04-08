@@ -54,11 +54,11 @@ void UEventObjectData::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 
 void UEventObjectData::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bDone = Bag->GetBoolField(TEXT("done"));
-	bRunning = Bag->GetBoolField(TEXT("running"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("done")), bDone);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("running")), bRunning);
 	State = UEventStateLibrary::SerializationNameToEventState(Bag->GetStringField(TEXT("state")));
-	LeaderboardId = Bag->GetStringField(TEXT("leaderboardId"));
-	Id = Bag->GetStringField(TEXT("id"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("leaderboardId")), LeaderboardId);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
 	UBeamJsonUtils::DeserializeUObject<UEvent*>("content", Bag, Content, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("lastChildEventId", Bag, LastChildEventId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("startTime", Bag, StartTime, OuterOwner);

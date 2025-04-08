@@ -21,8 +21,8 @@ void UStatsSearchCriteria::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 
 void UStatsSearchCriteria::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Stat = Bag->GetStringField(TEXT("stat"));
-	Rel = Bag->GetStringField(TEXT("rel"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("stat")), Stat);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("rel")), Rel);
 	UBeamJsonUtils::DeserializeOptional<FString>("value", Bag, Value, OuterOwner);
 }
 

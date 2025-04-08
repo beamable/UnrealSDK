@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPartyLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - Party To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="Party To JSON String")
 	static FString PartyToJsonString(const UParty* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make Party", meta=(DefaultToSelf="Outer", AdvancedDisplay="Id, Restriction, Leader, MaxSize, Members, PendingInvites, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make Party", meta=(DefaultToSelf="Outer", AdvancedDisplay="Id, Restriction, Leader, MaxSize, Members, PendingInvites, Outer", NativeMakeFunc))
 	static UParty* Make(FOptionalString Id, FOptionalString Restriction, FOptionalBeamGamerTag Leader, FOptionalInt32 MaxSize, FOptionalArrayOfBeamGamerTag Members, FOptionalArrayOfString PendingInvites, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break Party", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break Party", meta=(NativeBreakFunc))
 	static void Break(const UParty* Serializable, FOptionalString& Id, FOptionalString& Restriction, FOptionalBeamGamerTag& Leader, FOptionalInt32& MaxSize, FOptionalArrayOfBeamGamerTag& Members, FOptionalArrayOfString& PendingInvites);
 };

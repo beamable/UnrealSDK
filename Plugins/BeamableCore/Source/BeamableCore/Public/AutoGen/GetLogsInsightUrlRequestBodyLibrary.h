@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetLogsInsightUrlRequestBodyLibrary : public UBlueprintF
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - GetLogsInsightUrlRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GetLogsInsightUrlRequestBody To JSON String")
 	static FString GetLogsInsightUrlRequestBodyToJsonString(const UGetLogsInsightUrlRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GetLogsInsightUrlRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="StartTime, Filter, EndTime, Order, Limit, Filters, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GetLogsInsightUrlRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="StartTime, Filter, EndTime, Order, Limit, Filters, Outer", NativeMakeFunc))
 	static UGetLogsInsightUrlRequestBody* Make(FString ServiceName, FOptionalInt64 StartTime, FOptionalString Filter, FOptionalInt64 EndTime, FOptionalString Order, FOptionalInt32 Limit, FOptionalArrayOfString Filters, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GetLogsInsightUrlRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GetLogsInsightUrlRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UGetLogsInsightUrlRequestBody* Serializable, FString& ServiceName, FOptionalInt64& StartTime, FOptionalString& Filter, FOptionalInt64& EndTime, FOptionalString& Order, FOptionalInt32& Limit, FOptionalArrayOfString& Filters);
 };

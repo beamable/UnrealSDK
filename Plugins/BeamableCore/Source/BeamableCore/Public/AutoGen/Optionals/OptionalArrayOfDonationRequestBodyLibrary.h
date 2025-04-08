@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalArrayOfDonationRequestBody struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Make Optional TArray<UDonationRequestBody*>", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Make Optional TArray<UDonationRequestBody*>", NativeMakeFunc))
 	static FOptionalArrayOfDonationRequestBody MakeOptional(TArray<UDonationRequestBody*> Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The TArray<UDonationRequestBody*> to convert.
 	 * @return An optional with the TArray<UDonationRequestBody*> set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta = (DisplayName = "Beam - TArray<UDonationRequestBody*> To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta = (DisplayName = "TArray<UDonationRequestBody*> To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalArrayOfDonationRequestBody Conv_OptionalFromValue(TArray<UDonationRequestBody*> Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Optionals", meta=(DisplayName="Beam - Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Shared|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalArrayOfDonationRequestBody& Optional, TArray<UDonationRequestBody*>& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Get Optional's TArray<UDonationRequestBody*> Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Get Optional's TArray<UDonationRequestBody*> Value"))
 	static TArray<UDonationRequestBody*> GetOptionalValue(const FOptionalArrayOfDonationRequestBody& Optional, TArray<UDonationRequestBody*> DefaultValue, bool& WasSet);
 
 	

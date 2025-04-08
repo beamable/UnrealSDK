@@ -13,12 +13,12 @@ class BEAMABLECORE_API UBeginPurchaseResponseLibrary : public UBlueprintFunction
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - BeginPurchaseResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="BeginPurchaseResponse To JSON String")
 	static FString BeginPurchaseResponseToJsonString(const UBeginPurchaseResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make BeginPurchaseResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="AccessToken, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make BeginPurchaseResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="AccessToken, Outer", NativeMakeFunc))
 	static UBeginPurchaseResponse* Make(int64 Txid, FOptionalString AccessToken, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break BeginPurchaseResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break BeginPurchaseResponse", meta=(NativeBreakFunc))
 	static void Break(const UBeginPurchaseResponse* Serializable, int64& Txid, FOptionalString& AccessToken);
 };

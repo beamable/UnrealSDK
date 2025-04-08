@@ -13,12 +13,12 @@ class BEAMABLECORE_API UEntitlementGeneratorLibrary : public UBlueprintFunctionL
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - EntitlementGenerator To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="EntitlementGenerator To JSON String")
 	static FString EntitlementGeneratorToJsonString(const UEntitlementGenerator* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make EntitlementGenerator", meta=(DefaultToSelf="Outer", AdvancedDisplay="Quantity, ClaimWindow, Specialization, Params, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make EntitlementGenerator", meta=(DefaultToSelf="Outer", AdvancedDisplay="Quantity, ClaimWindow, Specialization, Params, Outer", NativeMakeFunc))
 	static UEntitlementGenerator* Make(FString Symbol, FString Action, FOptionalInt32 Quantity, FOptionalEntitlementClaimWindow ClaimWindow, FOptionalString Specialization, FOptionalMapOfString Params, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break EntitlementGenerator", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break EntitlementGenerator", meta=(NativeBreakFunc))
 	static void Break(const UEntitlementGenerator* Serializable, FString& Symbol, FString& Action, FOptionalInt32& Quantity, FOptionalEntitlementClaimWindow& ClaimWindow, FOptionalString& Specialization, FOptionalMapOfString& Params);
 };

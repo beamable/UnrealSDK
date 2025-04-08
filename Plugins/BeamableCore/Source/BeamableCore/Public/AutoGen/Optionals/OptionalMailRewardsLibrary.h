@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalMailRewards struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Make Optional MailRewards", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Make Optional MailRewards", NativeMakeFunc))
 	static FOptionalMailRewards MakeOptional(UMailRewards* Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The UMailRewards* to convert.
 	 * @return An optional with the MailRewards set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta = (DisplayName = "Beam - MailRewards To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta = (DisplayName = "MailRewards To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalMailRewards Conv_OptionalFromValue(UMailRewards* Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Optionals", meta=(DisplayName="Beam - Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Shared|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalMailRewards& Optional, UMailRewards*& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Get Optional's MailRewards Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Get Optional's MailRewards Value"))
 	static UMailRewards* GetOptionalValue(const FOptionalMailRewards& Optional, UMailRewards* DefaultValue, bool& WasSet);
 
 	

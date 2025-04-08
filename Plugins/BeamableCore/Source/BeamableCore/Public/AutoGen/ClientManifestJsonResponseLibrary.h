@@ -13,12 +13,12 @@ class BEAMABLECORE_API UClientManifestJsonResponseLibrary : public UBlueprintFun
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - ClientManifestJsonResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ClientManifestJsonResponse To JSON String")
 	static FString ClientManifestJsonResponseToJsonString(const UClientManifestJsonResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ClientManifestJsonResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UClientManifestJsonResponse* Make(TArray<FBeamRemoteContentManifestEntry> Entries, UObject* Outer);
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ClientManifestJsonResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Uid, Outer", NativeMakeFunc))
+	static UClientManifestJsonResponse* Make(TArray<FBeamRemoteContentManifestEntry> Entries, FOptionalString Uid, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break ClientManifestJsonResponse", meta=(NativeBreakFunc))
-	static void Break(const UClientManifestJsonResponse* Serializable, TArray<FBeamRemoteContentManifestEntry>& Entries);
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ClientManifestJsonResponse", meta=(NativeBreakFunc))
+	static void Break(const UClientManifestJsonResponse* Serializable, TArray<FBeamRemoteContentManifestEntry>& Entries, FOptionalString& Uid);
 };

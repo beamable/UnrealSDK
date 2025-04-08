@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGroupSearchResponseLibrary : public UBlueprintFunctionLi
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - GroupSearchResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GroupSearchResponse To JSON String")
 	static FString GroupSearchResponseToJsonString(const UGroupSearchResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GroupSearchResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GroupSearchResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UGroupSearchResponse* Make(TArray<UGroup*> Groups, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GroupSearchResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GroupSearchResponse", meta=(NativeBreakFunc))
 	static void Break(const UGroupSearchResponse* Serializable, TArray<UGroup*>& Groups);
 };

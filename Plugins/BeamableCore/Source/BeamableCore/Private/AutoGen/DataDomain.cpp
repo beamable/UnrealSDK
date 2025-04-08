@@ -33,8 +33,8 @@ void UDataDomain::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serialize
 
 void UDataDomain::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bMongoSSLEnabled = Bag->GetBoolField(TEXT("mongoSSLEnabled"));
-	bMongoSharded = Bag->GetBoolField(TEXT("mongoSharded"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("mongoSSLEnabled")), bMongoSSLEnabled);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("mongoSharded")), bMongoSharded);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("memcachedHosts")), MemcachedHosts, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("mongoHosts")), MongoHosts, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("mongoSSL", Bag, bMongoSSL, OuterOwner);

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UMatchTypeLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - MatchType To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="MatchType To JSON String")
 	static FString MatchTypeToJsonString(const UMatchType* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make MatchType", meta=(DefaultToSelf="Outer", AdvancedDisplay="Id, WaitAfterMinReachedSecs, MaxWaitDurationSecs, MatchingIntervalSecs, FederatedGameServerNamespace, Teams, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make MatchType", meta=(DefaultToSelf="Outer", AdvancedDisplay="Id, WaitAfterMinReachedSecs, MaxWaitDurationSecs, MatchingIntervalSecs, FederatedGameServerNamespace, Teams, Outer", NativeMakeFunc))
 	static UMatchType* Make(FOptionalBeamContentId Id, FOptionalInt32 WaitAfterMinReachedSecs, FOptionalInt32 MaxWaitDurationSecs, FOptionalInt32 MatchingIntervalSecs, FOptionalString FederatedGameServerNamespace, FOptionalArrayOfTeamContentProto Teams, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break MatchType", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break MatchType", meta=(NativeBreakFunc))
 	static void Break(const UMatchType* Serializable, FOptionalBeamContentId& Id, FOptionalInt32& WaitAfterMinReachedSecs, FOptionalInt32& MaxWaitDurationSecs, FOptionalInt32& MatchingIntervalSecs, FOptionalString& FederatedGameServerNamespace, FOptionalArrayOfTeamContentProto& Teams);
 };

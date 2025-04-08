@@ -19,8 +19,8 @@ void UPromotable::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serialize
 
 void UPromotable::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Checksum = Bag->GetStringField(TEXT("checksum"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("createdAt")), CreatedAt);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("checksum")), Checksum);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("createdAt")), CreatedAt);
 }
 
 

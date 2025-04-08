@@ -13,12 +13,12 @@ class BEAMABLEUNREALMICROSERVICECLIENTS_API ULiveOpsDemoMSGetSamlpeStatResponseL
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - LiveOpsDemoMSGetSamlpeStatResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="LiveOpsDemoMSGetSamlpeStatResponse To JSON String")
 	static FString LiveOpsDemoMSGetSamlpeStatResponseToJsonString(const ULiveOpsDemoMSGetSamlpeStatResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make LiveOpsDemoMSGetSamlpeStatResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Make LiveOpsDemoMSGetSamlpeStatResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static ULiveOpsDemoMSGetSamlpeStatResponse* Make(int32 Value, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break LiveOpsDemoMSGetSamlpeStatResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Break LiveOpsDemoMSGetSamlpeStatResponse", meta=(NativeBreakFunc))
 	static void Break(const ULiveOpsDemoMSGetSamlpeStatResponse* Serializable, int32& Value);
 };

@@ -21,9 +21,9 @@ void UPlayerOnlineStatusResponse::BeamSerializeProperties(TUnrealPrettyJsonSeria
 
 void UPlayerOnlineStatusResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bOnline = Bag->GetBoolField(TEXT("online"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("playerId")), PlayerId);
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("lastSeen")), LastSeen);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("online")), bOnline);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("playerId")), PlayerId);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("lastSeen")), LastSeen);
 }
 
 

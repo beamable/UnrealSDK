@@ -5,6 +5,7 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalMatchType.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalDateTime.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamGamerTag.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfLobbyPlayer.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalLobbyRestriction.h"
@@ -24,7 +25,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Match Type", Category="Beam")
 	FOptionalMatchType MatchType = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
-	FOptionalString Created = {};
+	FOptionalDateTime Created = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
 	FOptionalString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Description", Category="Beam")

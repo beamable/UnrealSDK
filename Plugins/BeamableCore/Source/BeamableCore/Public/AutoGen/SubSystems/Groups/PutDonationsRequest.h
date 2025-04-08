@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/MakeDonationRequestBody.h"
 #include "BeamableCore/Public/AutoGen/EmptyResponse.h"
 
@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Groups", DisplayName="Beam - Make PutDonations",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bAutoClaim,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Groups|Backend", DisplayName="Make PutDonations",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bAutoClaim,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPutDonationsRequest* Make(int64 _ObjectId, int64 _RecipientId, int64 _Amount, FOptionalBool _bAutoClaim, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

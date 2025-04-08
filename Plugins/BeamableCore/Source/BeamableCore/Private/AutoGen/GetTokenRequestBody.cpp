@@ -17,7 +17,7 @@ void UGetTokenRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 
 void UGetTokenRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Token = Bag->GetStringField(TEXT("token"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("token")), Token);
 }
 
 

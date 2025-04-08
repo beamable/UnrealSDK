@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPlayerIdRequestBodyLibrary : public UBlueprintFunctionLi
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - PlayerIdRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="PlayerIdRequestBody To JSON String")
 	static FString PlayerIdRequestBodyToJsonString(const UPlayerIdRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make PlayerIdRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make PlayerIdRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UPlayerIdRequestBody* Make(FBeamGamerTag PlayerId, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break PlayerIdRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break PlayerIdRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UPlayerIdRequestBody* Serializable, FBeamGamerTag& PlayerId);
 };

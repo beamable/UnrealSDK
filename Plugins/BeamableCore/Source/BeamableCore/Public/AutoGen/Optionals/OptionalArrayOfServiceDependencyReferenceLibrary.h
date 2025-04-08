@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalArrayOfServiceDependencyReference struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Make Optional TArray<UServiceDependencyReference*>", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Make Optional TArray<UServiceDependencyReference*>", NativeMakeFunc))
 	static FOptionalArrayOfServiceDependencyReference MakeOptional(TArray<UServiceDependencyReference*> Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The TArray<UServiceDependencyReference*> to convert.
 	 * @return An optional with the TArray<UServiceDependencyReference*> set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta = (DisplayName = "Beam - TArray<UServiceDependencyReference*> To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta = (DisplayName = "TArray<UServiceDependencyReference*> To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalArrayOfServiceDependencyReference Conv_OptionalFromValue(TArray<UServiceDependencyReference*> Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Optionals", meta=(DisplayName="Beam - Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Shared|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalArrayOfServiceDependencyReference& Optional, TArray<UServiceDependencyReference*>& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Get Optional's TArray<UServiceDependencyReference*> Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Get Optional's TArray<UServiceDependencyReference*> Value"))
 	static TArray<UServiceDependencyReference*> GetOptionalValue(const FOptionalArrayOfServiceDependencyReference& Optional, TArray<UServiceDependencyReference*> DefaultValue, bool& WasSet);
 
 	

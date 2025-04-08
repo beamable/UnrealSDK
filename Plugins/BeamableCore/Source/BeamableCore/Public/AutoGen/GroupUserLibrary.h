@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGroupUserLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - GroupUser To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GroupUser To JSON String")
 	static FString GroupUserToJsonString(const UGroupUser* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GroupUser", meta=(DefaultToSelf="Outer", AdvancedDisplay="InFlight, Scores, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GroupUser", meta=(DefaultToSelf="Outer", AdvancedDisplay="InFlight, Scores, Outer", NativeMakeFunc))
 	static UGroupUser* Make(int64 GamerTag, int64 Updated, UGroupMemberInfo* Member, TArray<UGroupUserMember*> AllGroups, FOptionalArrayOfInFlightMessage InFlight, FOptionalArrayOfGroupScoreBinding Scores, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GroupUser", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GroupUser", meta=(NativeBreakFunc))
 	static void Break(const UGroupUser* Serializable, int64& GamerTag, int64& Updated, UGroupMemberInfo*& Member, TArray<UGroupUserMember*>& AllGroups, FOptionalArrayOfInFlightMessage& InFlight, FOptionalArrayOfGroupScoreBinding& Scores);
 };

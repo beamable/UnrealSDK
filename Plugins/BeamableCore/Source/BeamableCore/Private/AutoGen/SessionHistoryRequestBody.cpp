@@ -21,7 +21,7 @@ void USessionHistoryRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void USessionHistoryRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("dbid")), Dbid);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("dbid")), Dbid);
 	UBeamJsonUtils::DeserializeOptional<int32>("month", Bag, Month, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("year", Bag, Year, OuterOwner);
 }

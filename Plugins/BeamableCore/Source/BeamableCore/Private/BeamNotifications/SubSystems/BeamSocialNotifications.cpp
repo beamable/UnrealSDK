@@ -78,7 +78,7 @@ FSocialPresenceRefreshNotificationMessage::FSocialPresenceRefreshNotificationMes
 	Status = OnlineStatus->Status.Val;
 	PlayerGamerTag = OnlineStatus->PlayerId.Val;
 	Description = OnlineStatus->Description.Val;
-	FDateTime::Parse(*OnlineStatus->LastOnline.Val, LastOnline);
+	LastOnline = OnlineStatus->LastOnline.Val;
 	Online = OnlineStatus->bOnline.Val;
 }
 

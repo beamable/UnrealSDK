@@ -21,7 +21,7 @@ void UPaymentHistoryEntryViewModel::BeamSerializeProperties(TUnrealPrettyJsonSer
 
 void UPaymentHistoryEntryViewModel::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Change = Bag->GetStringField(TEXT("change"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("change")), Change);
 	UBeamJsonUtils::DeserializeOptional<FString>("data", Bag, Data, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("timestamp", Bag, Timestamp, OuterOwner);
 }

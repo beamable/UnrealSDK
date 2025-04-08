@@ -4,20 +4,20 @@
 
 #include "WebhookInvocationType.generated.h"
 
-UENUM(BlueprintType, Category="Beam|Enums")
+UENUM(BlueprintType, Category="Beam|Shared|Enums")
 enum class EWebhookInvocationType : uint8
 {
 	BEAM_NonBlocking UMETA(DisplayName="Non Blocking"),
 	BEAM_Blocking UMETA(DisplayName="Blocking")		
 };
 
-UCLASS(BlueprintType, Category="Beam|Enums")
+UCLASS(BlueprintType, Category="Beam|Shared|Enums")
 class BEAMABLECORE_API UWebhookInvocationTypeLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:		
 	
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Beam - WebhookInvocationType To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "WebhookInvocationType To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Shared|Enums")
 	static FString WebhookInvocationTypeToSerializationName(EWebhookInvocationType Value)
 	{
 		const UEnum* Enum = StaticEnum<EWebhookInvocationType>();
@@ -29,7 +29,7 @@ public:
 		
 	}
 
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Beam - Serialization Name To WebhookInvocationType", CompactNodeTitle = "->"), Category="Beam|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "Serialization Name To WebhookInvocationType", CompactNodeTitle = "->"), Category="Beam|Shared|Enums")
 	static EWebhookInvocationType SerializationNameToWebhookInvocationType(FString Value)
 	{
 		const UEnum* Enum = StaticEnum<EWebhookInvocationType>();

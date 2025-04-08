@@ -13,12 +13,12 @@ class BEAMABLECORE_API UContentBasicManifestChecksumLibrary : public UBlueprintF
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - ContentBasicManifestChecksum To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ContentBasicManifestChecksum To JSON String")
 	static FString ContentBasicManifestChecksumToJsonString(const UContentBasicManifestChecksum* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ContentBasicManifestChecksum", meta=(DefaultToSelf="Outer", AdvancedDisplay="bArchived, Outer", NativeMakeFunc))
-	static UContentBasicManifestChecksum* Make(FBeamContentManifestId Id, FString Checksum, int64 CreatedAt, FOptionalBool bArchived, UObject* Outer);
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ContentBasicManifestChecksum", meta=(DefaultToSelf="Outer", AdvancedDisplay="bArchived, Uid, Outer", NativeMakeFunc))
+	static UContentBasicManifestChecksum* Make(FBeamContentManifestId Id, FString Checksum, int64 CreatedAt, FOptionalBool bArchived, FOptionalString Uid, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break ContentBasicManifestChecksum", meta=(NativeBreakFunc))
-	static void Break(const UContentBasicManifestChecksum* Serializable, FBeamContentManifestId& Id, FString& Checksum, int64& CreatedAt, FOptionalBool& bArchived);
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ContentBasicManifestChecksum", meta=(NativeBreakFunc))
+	static void Break(const UContentBasicManifestChecksum* Serializable, FBeamContentManifestId& Id, FString& Checksum, int64& CreatedAt, FOptionalBool& bArchived, FOptionalString& Uid);
 };

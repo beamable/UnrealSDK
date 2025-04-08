@@ -45,14 +45,14 @@ void UAnnouncementView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 
 void UAnnouncementView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bIsClaimed = Bag->GetBoolField(TEXT("isClaimed"));
-	bIsDeleted = Bag->GetBoolField(TEXT("isDeleted"));
-	bIsRead = Bag->GetBoolField(TEXT("isRead"));
-	Body = Bag->GetStringField(TEXT("body"));
-	Channel = Bag->GetStringField(TEXT("channel"));
-	Id = Bag->GetStringField(TEXT("id"));
-	Title = Bag->GetStringField(TEXT("title"));
-	Summary = Bag->GetStringField(TEXT("summary"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isClaimed")), bIsClaimed);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isDeleted")), bIsDeleted);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isRead")), bIsRead);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("body")), Body);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("channel")), Channel);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("title")), Title);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("summary")), Summary);
 	UBeamJsonUtils::DeserializeArray<UClientDataEntry*>(Bag->GetArrayField(TEXT("clientDataList")), ClientDataList, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UAnnouncementAttachment*>(Bag->GetArrayField(TEXT("attachments")), Attachments, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("endDate", Bag, EndDate, OuterOwner);

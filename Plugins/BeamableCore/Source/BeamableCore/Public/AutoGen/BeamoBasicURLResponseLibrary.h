@@ -13,12 +13,12 @@ class BEAMABLECORE_API UBeamoBasicURLResponseLibrary : public UBlueprintFunction
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - BeamoBasicURLResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="BeamoBasicURLResponse To JSON String")
 	static FString BeamoBasicURLResponseToJsonString(const UBeamoBasicURLResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make BeamoBasicURLResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make BeamoBasicURLResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UBeamoBasicURLResponse* Make(FString ServiceName, TArray<UUploadURL*> S3URLs, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break BeamoBasicURLResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break BeamoBasicURLResponse", meta=(NativeBreakFunc))
 	static void Break(const UBeamoBasicURLResponse* Serializable, FString& ServiceName, TArray<UUploadURL*>& S3URLs);
 };

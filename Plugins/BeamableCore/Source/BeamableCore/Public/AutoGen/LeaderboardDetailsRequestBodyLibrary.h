@@ -13,12 +13,12 @@ class BEAMABLECORE_API ULeaderboardDetailsRequestBodyLibrary : public UBlueprint
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - LeaderboardDetailsRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="LeaderboardDetailsRequestBody To JSON String")
 	static FString LeaderboardDetailsRequestBodyToJsonString(const ULeaderboardDetailsRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make LeaderboardDetailsRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="From, Max, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make LeaderboardDetailsRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="From, Max, Outer", NativeMakeFunc))
 	static ULeaderboardDetailsRequestBody* Make(FOptionalInt32 From, FOptionalInt32 Max, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break LeaderboardDetailsRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break LeaderboardDetailsRequestBody", meta=(NativeBreakFunc))
 	static void Break(const ULeaderboardDetailsRequestBody* Serializable, FOptionalInt32& From, FOptionalInt32& Max);
 };

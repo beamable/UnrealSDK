@@ -13,12 +13,12 @@ class BEAMABLECORE_API UStatUpdateRequestStringListFormatLibrary : public UBluep
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - StatUpdateRequestStringListFormat To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="StatUpdateRequestStringListFormat To JSON String")
 	static FString StatUpdateRequestStringListFormatToJsonString(const UStatUpdateRequestStringListFormat* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make StatUpdateRequestStringListFormat", meta=(DefaultToSelf="Outer", AdvancedDisplay="Set, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make StatUpdateRequestStringListFormat", meta=(DefaultToSelf="Outer", AdvancedDisplay="Set, Outer", NativeMakeFunc))
 	static UStatUpdateRequestStringListFormat* Make(FOptionalArrayOfStatStringListEntry Set, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break StatUpdateRequestStringListFormat", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break StatUpdateRequestStringListFormat", meta=(NativeBreakFunc))
 	static void Break(const UStatUpdateRequestStringListFormat* Serializable, FOptionalArrayOfStatStringListEntry& Set);
 };

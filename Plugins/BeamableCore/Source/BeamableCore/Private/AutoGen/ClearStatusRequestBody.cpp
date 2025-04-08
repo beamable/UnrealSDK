@@ -17,7 +17,7 @@ void UClearStatusRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 
 void UClearStatusRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Store = Bag->GetStringField(TEXT("store"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("store")), Store);
 }
 
 

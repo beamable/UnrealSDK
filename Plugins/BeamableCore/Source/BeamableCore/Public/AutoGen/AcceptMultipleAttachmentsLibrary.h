@@ -13,12 +13,12 @@ class BEAMABLECORE_API UAcceptMultipleAttachmentsLibrary : public UBlueprintFunc
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - AcceptMultipleAttachments To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="AcceptMultipleAttachments To JSON String")
 	static FString AcceptMultipleAttachmentsToJsonString(const UAcceptMultipleAttachments* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make AcceptMultipleAttachments", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make AcceptMultipleAttachments", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UAcceptMultipleAttachments* Make(TArray<int64> MailIds, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break AcceptMultipleAttachments", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break AcceptMultipleAttachments", meta=(NativeBreakFunc))
 	static void Break(const UAcceptMultipleAttachments* Serializable, TArray<int64>& MailIds);
 };

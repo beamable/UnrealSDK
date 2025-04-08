@@ -19,8 +19,8 @@ void UEventInventoryRewardCurrency::BeamSerializeProperties(TUnrealPrettyJsonSer
 
 void UEventInventoryRewardCurrency::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Id = Bag->GetStringField(TEXT("id"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("amount")), Amount);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("amount")), Amount);
 }
 
 

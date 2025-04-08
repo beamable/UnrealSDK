@@ -13,12 +13,12 @@ class BEAMABLECORE_API UDataDomainLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - DataDomain To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="DataDomain To JSON String")
 	static FString DataDomainToJsonString(const UDataDomain* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make DataDomain", meta=(DefaultToSelf="Outer", AdvancedDisplay="bMongoSSL, MongoSrvAddress, MessageBusAnalytics, MessageBusCommon, RedisShards, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make DataDomain", meta=(DefaultToSelf="Outer", AdvancedDisplay="bMongoSSL, MongoSrvAddress, MessageBusAnalytics, MessageBusCommon, RedisShards, Outer", NativeMakeFunc))
 	static UDataDomain* Make(bool bMongoSSLEnabled, bool bMongoSharded, TArray<FString> MemcachedHosts, TArray<FString> MongoHosts, FOptionalBool bMongoSSL, FOptionalString MongoSrvAddress, FOptionalArrayOfString MessageBusAnalytics, FOptionalArrayOfString MessageBusCommon, FOptionalArrayOfRedisShard RedisShards, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break DataDomain", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break DataDomain", meta=(NativeBreakFunc))
 	static void Break(const UDataDomain* Serializable, bool& bMongoSSLEnabled, bool& bMongoSharded, TArray<FString>& MemcachedHosts, TArray<FString>& MongoHosts, FOptionalBool& bMongoSSL, FOptionalString& MongoSrvAddress, FOptionalArrayOfString& MessageBusAnalytics, FOptionalArrayOfString& MessageBusCommon, FOptionalArrayOfRedisShard& RedisShards);
 };

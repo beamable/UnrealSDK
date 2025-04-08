@@ -17,7 +17,7 @@ void UGetMailDetailsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void UGetMailDetailsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("mid")), Mid);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("mid")), Mid);
 }
 
 

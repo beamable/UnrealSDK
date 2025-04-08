@@ -22,7 +22,7 @@ FString ULobbyLibrary::LobbyToJsonString(const ULobby* Serializable, const bool 
 	return Result;
 }	
 
-ULobby* ULobbyLibrary::Make(FOptionalString LobbyId, FOptionalMatchType MatchType, FOptionalString Created, FOptionalString Name, FOptionalString Description, FOptionalBeamGamerTag Host, FOptionalString Passcode, FOptionalLobbyRestriction Restriction, FOptionalInt32 MaxPlayers, FOptionalArrayOfLobbyPlayer Players, FOptionalMapOfString Data, UObject* Outer)
+ULobby* ULobbyLibrary::Make(FOptionalString LobbyId, FOptionalMatchType MatchType, FOptionalDateTime Created, FOptionalString Name, FOptionalString Description, FOptionalBeamGamerTag Host, FOptionalString Passcode, FOptionalLobbyRestriction Restriction, FOptionalInt32 MaxPlayers, FOptionalArrayOfLobbyPlayer Players, FOptionalMapOfString Data, UObject* Outer)
 {
 	auto Serializable = NewObject<ULobby>(Outer);
 	Serializable->LobbyId = LobbyId;
@@ -40,7 +40,7 @@ ULobby* ULobbyLibrary::Make(FOptionalString LobbyId, FOptionalMatchType MatchTyp
 	return Serializable;
 }
 
-void ULobbyLibrary::Break(const ULobby* Serializable, FOptionalString& LobbyId, FOptionalMatchType& MatchType, FOptionalString& Created, FOptionalString& Name, FOptionalString& Description, FOptionalBeamGamerTag& Host, FOptionalString& Passcode, FOptionalLobbyRestriction& Restriction, FOptionalInt32& MaxPlayers, FOptionalArrayOfLobbyPlayer& Players, FOptionalMapOfString& Data)
+void ULobbyLibrary::Break(const ULobby* Serializable, FOptionalString& LobbyId, FOptionalMatchType& MatchType, FOptionalDateTime& Created, FOptionalString& Name, FOptionalString& Description, FOptionalBeamGamerTag& Host, FOptionalString& Passcode, FOptionalLobbyRestriction& Restriction, FOptionalInt32& MaxPlayers, FOptionalArrayOfLobbyPlayer& Players, FOptionalMapOfString& Data)
 {
 	LobbyId = Serializable->LobbyId;
 	MatchType = Serializable->MatchType;

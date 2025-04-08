@@ -25,9 +25,9 @@ void UEventDateRanges::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 
 void UEventDateRanges::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Name = Bag->GetStringField(TEXT("name"));
-	State = Bag->GetStringField(TEXT("state"));
-	Id = Bag->GetStringField(TEXT("id"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("state")), State);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
 	UBeamJsonUtils::DeserializeArray<UDateRange*>(Bag->GetArrayField(TEXT("dates")), Dates, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("createdAt", Bag, CreatedAt, OuterOwner);
 }

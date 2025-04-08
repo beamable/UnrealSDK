@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetOffersReqLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - GetOffersReq To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GetOffersReq To JSON String")
 	static FString GetOffersReqToJsonString(const UGetOffersReq* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GetOffersReq", meta=(DefaultToSelf="Outer", AdvancedDisplay="Language, Time, Stores, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GetOffersReq", meta=(DefaultToSelf="Outer", AdvancedDisplay="Language, Time, Stores, Outer", NativeMakeFunc))
 	static UGetOffersReq* Make(FOptionalString Language, FOptionalString Time, FOptionalString Stores, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GetOffersReq", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GetOffersReq", meta=(NativeBreakFunc))
 	static void Break(const UGetOffersReq* Serializable, FOptionalString& Language, FOptionalString& Time, FOptionalString& Stores);
 };

@@ -23,10 +23,10 @@ void UListTokenResponseItem::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 
 void UListTokenResponseItem::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Token = Bag->GetStringField(TEXT("token"));
-	Platform = Bag->GetStringField(TEXT("platform"));
-	Device = Bag->GetStringField(TEXT("device"));
-	Created = Bag->GetStringField(TEXT("created"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("token")), Token);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("platform")), Platform);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("device")), Device);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("created")), Created);
 }
 
 

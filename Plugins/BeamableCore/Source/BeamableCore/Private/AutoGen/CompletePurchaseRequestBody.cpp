@@ -23,10 +23,10 @@ void UCompletePurchaseRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeri
 
 void UCompletePurchaseRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("txid")), Txid);
-	Receipt = Bag->GetStringField(TEXT("receipt"));
-	PriceInLocalCurrency = Bag->GetStringField(TEXT("priceInLocalCurrency"));
-	IsoCurrencySymbol = Bag->GetStringField(TEXT("isoCurrencySymbol"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("txid")), Txid);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("receipt")), Receipt);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("priceInLocalCurrency")), PriceInLocalCurrency);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isoCurrencySymbol")), IsoCurrencySymbol);
 }
 
 

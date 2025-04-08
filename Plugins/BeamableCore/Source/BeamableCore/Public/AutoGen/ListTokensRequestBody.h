@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamCid.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamPid.h"
 

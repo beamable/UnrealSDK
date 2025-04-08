@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "Serialization/BeamJsonUtils.h"
 #include "Serialization/BeamPlainTextResponseBody.h"
 
 #include "GetFacebookUpdateRequest.generated.h"
@@ -40,7 +40,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Payments", DisplayName="Beam - Make GetFacebookUpdate",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Payments|Backend", DisplayName="Make GetFacebookUpdate",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UGetFacebookUpdateRequest* Make(FString _HubMode, FString _HubChallenge, FString _HubVerifyToken, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

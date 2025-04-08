@@ -13,12 +13,12 @@ class BEAMABLECORE_API USearchAnnouncementsRequestBodyLibrary : public UBlueprin
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - SearchAnnouncementsRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="SearchAnnouncementsRequestBody To JSON String")
 	static FString SearchAnnouncementsRequestBodyToJsonString(const USearchAnnouncementsRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make SearchAnnouncementsRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Date, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make SearchAnnouncementsRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Date, Outer", NativeMakeFunc))
 	static USearchAnnouncementsRequestBody* Make(FOptionalString Date, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break SearchAnnouncementsRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break SearchAnnouncementsRequestBody", meta=(NativeBreakFunc))
 	static void Break(const USearchAnnouncementsRequestBody* Serializable, FOptionalString& Date);
 };

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UListDefinitionsResponseLibrary : public UBlueprintFuncti
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - ListDefinitionsResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ListDefinitionsResponse To JSON String")
 	static FString ListDefinitionsResponseToJsonString(const UListDefinitionsResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ListDefinitionsResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ListDefinitionsResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UListDefinitionsResponse* Make(TArray<UAnnouncementDto*> Content, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break ListDefinitionsResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ListDefinitionsResponse", meta=(NativeBreakFunc))
 	static void Break(const UListDefinitionsResponse* Serializable, TArray<UAnnouncementDto*>& Content);
 };

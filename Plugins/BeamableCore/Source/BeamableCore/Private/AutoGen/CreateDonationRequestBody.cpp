@@ -21,8 +21,8 @@ void UCreateDonationRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void UCreateDonationRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	CurrencyId = Bag->GetStringField(TEXT("currencyId"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("amount")), Amount);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("currencyId")), CurrencyId);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("amount")), Amount);
 	UBeamJsonUtils::DeserializeOptional<FString>("config", Bag, Config, OuterOwner);
 }
 

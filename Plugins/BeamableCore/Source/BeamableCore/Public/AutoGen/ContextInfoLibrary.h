@@ -13,12 +13,12 @@ class BEAMABLECORE_API UContextInfoLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - ContextInfo To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ContextInfo To JSON String")
 	static FString ContextInfoToJsonString(const UContextInfo* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ContextInfo", meta=(DefaultToSelf="Outer", AdvancedDisplay="Platform, Device, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ContextInfo", meta=(DefaultToSelf="Outer", AdvancedDisplay="Platform, Device, Outer", NativeMakeFunc))
 	static UContextInfo* Make(FOptionalString Platform, FOptionalString Device, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break ContextInfo", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ContextInfo", meta=(NativeBreakFunc))
 	static void Break(const UContextInfo* Serializable, FOptionalString& Platform, FOptionalString& Device);
 };

@@ -29,8 +29,8 @@ void UMailSearchClause::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 
 void UMailSearchClause::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bOnlyCount = Bag->GetBoolField(TEXT("onlyCount"));
-	Name = Bag->GetStringField(TEXT("name"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("onlyCount")), bOnlyCount);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
 	UBeamJsonUtils::DeserializeOptional<int64>("forSender", Bag, ForSender, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("start", Bag, Start, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("limit", Bag, Limit, OuterOwner);

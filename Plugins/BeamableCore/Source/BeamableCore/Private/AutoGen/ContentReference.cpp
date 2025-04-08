@@ -35,11 +35,11 @@ void UContentReference::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 
 void UContentReference::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Tag = Bag->GetStringField(TEXT("tag"));
-	Uri = Bag->GetStringField(TEXT("uri"));
-	Version = Bag->GetStringField(TEXT("version"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tag")), Tag);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("uri")), Uri);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("version")), Version);
 	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("id")), Id, OuterOwner);
-	Type = Bag->GetStringField(TEXT("type"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("type")), Type);
 	Visibility = UContentVisibilityLibrary::SerializationNameToContentVisibility(Bag->GetStringField(TEXT("visibility")));
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("tags")), Tags, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("checksum", Bag, Checksum, OuterOwner);

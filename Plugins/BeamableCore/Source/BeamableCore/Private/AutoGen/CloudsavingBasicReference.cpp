@@ -25,10 +25,10 @@ void UCloudsavingBasicReference::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void UCloudsavingBasicReference::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("size")), Size);
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("lastModified")), LastModified);
-	Key = Bag->GetStringField(TEXT("key"));
-	BucketName = Bag->GetStringField(TEXT("bucketName"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("size")), Size);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("lastModified")), LastModified);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("key")), Key);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("bucketName")), BucketName);
 	UBeamJsonUtils::DeserializeOptional<FString>("eTag", Bag, ETag, OuterOwner);
 }
 

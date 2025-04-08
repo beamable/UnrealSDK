@@ -13,12 +13,12 @@ class BEAMABLECORE_API ULambdaResponseLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - LambdaResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="LambdaResponse To JSON String")
 	static FString LambdaResponseToJsonString(const ULambdaResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make LambdaResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Body, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make LambdaResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Body, Outer", NativeMakeFunc))
 	static ULambdaResponse* Make(int32 StatusCode, FOptionalString Body, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break LambdaResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break LambdaResponse", meta=(NativeBreakFunc))
 	static void Break(const ULambdaResponse* Serializable, int32& StatusCode, FOptionalString& Body);
 };

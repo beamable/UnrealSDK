@@ -19,7 +19,7 @@ void ULocalizationQuery::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void ULocalizationQuery::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Id = Bag->GetStringField(TEXT("id"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("languages", Bag, Languages, OuterOwner);
 }
 

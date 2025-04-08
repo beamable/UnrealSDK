@@ -13,12 +13,12 @@ class BEAMABLECORE_API UListTokensRequestBodyLibrary : public UBlueprintFunction
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - ListTokensRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ListTokensRequestBody To JSON String")
 	static FString ListTokensRequestBodyToJsonString(const UListTokensRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ListTokensRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Cid, Pid, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ListTokensRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Cid, Pid, Outer", NativeMakeFunc))
 	static UListTokensRequestBody* Make(int32 PageSize, int32 Page, int64 GamerTagOrAccountId, FOptionalBeamCid Cid, FOptionalBeamPid Pid, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break ListTokensRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ListTokensRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UListTokensRequestBody* Serializable, int32& PageSize, int32& Page, int64& GamerTagOrAccountId, FOptionalBeamCid& Cid, FOptionalBeamPid& Pid);
 };

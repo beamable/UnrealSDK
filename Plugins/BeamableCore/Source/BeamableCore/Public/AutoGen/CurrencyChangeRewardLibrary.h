@@ -13,12 +13,12 @@ class BEAMABLECORE_API UCurrencyChangeRewardLibrary : public UBlueprintFunctionL
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - CurrencyChangeReward To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="CurrencyChangeReward To JSON String")
 	static FString CurrencyChangeRewardToJsonString(const UCurrencyChangeReward* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make CurrencyChangeReward", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make CurrencyChangeReward", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UCurrencyChangeReward* Make(FString Symbol, int64 Amount, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break CurrencyChangeReward", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break CurrencyChangeReward", meta=(NativeBreakFunc))
 	static void Break(const UCurrencyChangeReward* Serializable, FString& Symbol, int64& Amount);
 };

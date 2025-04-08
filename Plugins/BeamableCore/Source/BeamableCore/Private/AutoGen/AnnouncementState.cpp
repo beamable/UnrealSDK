@@ -21,9 +21,9 @@ void UAnnouncementState::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void UAnnouncementState::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bIsClaimed = Bag->GetBoolField(TEXT("isClaimed"));
-	bIsDeleted = Bag->GetBoolField(TEXT("isDeleted"));
-	bIsRead = Bag->GetBoolField(TEXT("isRead"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isClaimed")), bIsClaimed);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isDeleted")), bIsDeleted);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isRead")), bIsRead);
 }
 
 

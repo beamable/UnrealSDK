@@ -13,12 +13,12 @@ class BEAMABLECORE_API UServicePlansResponseLibrary : public UBlueprintFunctionL
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - ServicePlansResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ServicePlansResponse To JSON String")
 	static FString ServicePlansResponseToJsonString(const UServicePlansResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ServicePlansResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ServicePlansResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UServicePlansResponse* Make(TArray<UServicePlan*> Result, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break ServicePlansResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ServicePlansResponse", meta=(NativeBreakFunc))
 	static void Break(const UServicePlansResponse* Serializable, TArray<UServicePlan*>& Result);
 };

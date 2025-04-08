@@ -13,12 +13,12 @@ class BEAMABLECORE_API UMailTemplateLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - MailTemplate To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="MailTemplate To JSON String")
 	static FString MailTemplateToJsonString(const UMailTemplate* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make MailTemplate", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make MailTemplate", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UMailTemplate* Make(FString Subject, FString Body, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break MailTemplate", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break MailTemplate", meta=(NativeBreakFunc))
 	static void Break(const UMailTemplate* Serializable, FString& Subject, FString& Body);
 };

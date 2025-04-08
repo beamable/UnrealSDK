@@ -19,8 +19,8 @@ void UBeamoBasicReference::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 
 void UBeamoBasicReference::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bArchived = Bag->GetBoolField(TEXT("archived"));
-	bArm = Bag->GetBoolField(TEXT("arm"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("archived")), bArchived);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("arm")), bArm);
 }
 
 

@@ -19,8 +19,8 @@ void ULink::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) con
 
 void ULink::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Href = Bag->GetStringField(TEXT("href"));
-	Rel = Bag->GetStringField(TEXT("rel"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("href")), Href);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("rel")), Rel);
 }
 
 

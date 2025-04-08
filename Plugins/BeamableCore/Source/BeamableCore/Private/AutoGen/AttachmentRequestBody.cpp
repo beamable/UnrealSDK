@@ -25,8 +25,8 @@ void UAttachmentRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 
 void UAttachmentRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Symbol = Bag->GetStringField(TEXT("symbol"));
-	Action = Bag->GetStringField(TEXT("action"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("action")), Action);
 	UBeamJsonUtils::DeserializeOptional<int32>("quantity", Bag, Quantity, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("specialization", Bag, Specialization, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("target", Bag, Target, OuterOwner);

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UUpdateListingCooldownRequestBodyLibrary : public UBluepr
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - UpdateListingCooldownRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="UpdateListingCooldownRequestBody To JSON String")
 	static FString UpdateListingCooldownRequestBodyToJsonString(const UUpdateListingCooldownRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make UpdateListingCooldownRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make UpdateListingCooldownRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UUpdateListingCooldownRequestBody* Make(FString Symbol, int32 CooldownReduction, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break UpdateListingCooldownRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break UpdateListingCooldownRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UUpdateListingCooldownRequestBody* Serializable, FString& Symbol, int32& CooldownReduction);
 };

@@ -23,7 +23,7 @@ void UCurrencyArchetype::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void UCurrencyArchetype::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Symbol = Bag->GetStringField(TEXT("symbol"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
 	UBeamJsonUtils::DeserializeOptional<UFederationInfo*>("external", Bag, External, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FBeamClientPermission>("clientPermission", Bag, ClientPermission, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("startingAmount", Bag, StartingAmount, OuterOwner);

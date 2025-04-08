@@ -26,7 +26,7 @@ void UGetStatusResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void UGetStatusResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bIsCurrent = Bag->GetBoolField(TEXT("isCurrent"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isCurrent")), bIsCurrent);
 	UBeamJsonUtils::DeserializeArray<UServiceStatus*>(Bag->GetArrayField(TEXT("services")), Services, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UServiceStorageStatus*>, UServiceStorageStatus*>("storageStatuses", Bag, StorageStatuses, OuterOwner);
 }

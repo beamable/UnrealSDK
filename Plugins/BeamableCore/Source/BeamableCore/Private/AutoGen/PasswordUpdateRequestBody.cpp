@@ -19,7 +19,7 @@ void UPasswordUpdateRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void UPasswordUpdateRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Email = Bag->GetStringField(TEXT("email"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("email")), Email);
 	UBeamJsonUtils::DeserializeOptional<FString>("codeType", Bag, CodeType, OuterOwner);
 }
 

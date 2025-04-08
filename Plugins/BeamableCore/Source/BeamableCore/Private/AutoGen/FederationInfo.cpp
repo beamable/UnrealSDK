@@ -21,8 +21,8 @@ void UFederationInfo::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seria
 
 void UFederationInfo::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Service = Bag->GetStringField(TEXT("service"));
-	Namespace = Bag->GetStringField(TEXT("namespace"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("service")), Service);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("namespace")), Namespace);
 	UBeamJsonUtils::DeserializeJsonObject(TEXT("settings"), Bag, Settings, OuterOwner);
 }
 

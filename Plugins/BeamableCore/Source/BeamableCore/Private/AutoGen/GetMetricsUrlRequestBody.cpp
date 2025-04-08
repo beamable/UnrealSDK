@@ -25,8 +25,8 @@ void UGetMetricsUrlRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 
 void UGetMetricsUrlRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	ServiceName = Bag->GetStringField(TEXT("serviceName"));
-	MetricName = Bag->GetStringField(TEXT("metricName"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceName")), ServiceName);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("metricName")), MetricName);
 	UBeamJsonUtils::DeserializeOptional<int64>("startTime", Bag, StartTime, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("endTime", Bag, EndTime, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("period", Bag, Period, OuterOwner);

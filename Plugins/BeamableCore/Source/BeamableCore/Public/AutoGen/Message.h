@@ -6,6 +6,7 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalPlayerReward.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalMailRewards.h"
 #include "BeamableCore/Public/AutoGen/Attachment.h"
 

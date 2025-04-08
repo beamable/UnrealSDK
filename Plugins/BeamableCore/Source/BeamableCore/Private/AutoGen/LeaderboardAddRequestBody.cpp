@@ -27,8 +27,8 @@ void ULeaderboardAddRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void ULeaderboardAddRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Score = Bag->GetNumberField(TEXT("score"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("score")), Score);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
 	UBeamJsonUtils::DeserializeOptional<bool>("increment", Bag, bIncrement, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<double>("maxScore", Bag, MaxScore, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<double>("minScore", Bag, MinScore, OuterOwner);

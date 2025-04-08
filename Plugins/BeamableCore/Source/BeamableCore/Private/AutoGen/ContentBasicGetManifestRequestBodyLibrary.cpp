@@ -22,17 +22,19 @@ FString UContentBasicGetManifestRequestBodyLibrary::ContentBasicGetManifestReque
 	return Result;
 }	
 
-UContentBasicGetManifestRequestBody* UContentBasicGetManifestRequestBodyLibrary::Make(FOptionalBeamContentManifestId Id, UObject* Outer)
+UContentBasicGetManifestRequestBody* UContentBasicGetManifestRequestBodyLibrary::Make(FOptionalBeamContentManifestId Id, FOptionalString Uid, UObject* Outer)
 {
 	auto Serializable = NewObject<UContentBasicGetManifestRequestBody>(Outer);
 	Serializable->Id = Id;
+	Serializable->Uid = Uid;
 	
 	return Serializable;
 }
 
-void UContentBasicGetManifestRequestBodyLibrary::Break(const UContentBasicGetManifestRequestBody* Serializable, FOptionalBeamContentManifestId& Id)
+void UContentBasicGetManifestRequestBodyLibrary::Break(const UContentBasicGetManifestRequestBody* Serializable, FOptionalBeamContentManifestId& Id, FOptionalString& Uid)
 {
 	Id = Serializable->Id;
+	Uid = Serializable->Uid;
 		
 }
 

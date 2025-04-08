@@ -13,12 +13,12 @@ class BEAMABLECORE_API UEventGroupRewardsLibrary : public UBlueprintFunctionLibr
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - EventGroupRewards To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="EventGroupRewards To JSON String")
 	static FString EventGroupRewardsToJsonString(const UEventGroupRewards* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make EventGroupRewards", meta=(DefaultToSelf="Outer", AdvancedDisplay="ScoreRewards, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make EventGroupRewards", meta=(DefaultToSelf="Outer", AdvancedDisplay="ScoreRewards, Outer", NativeMakeFunc))
 	static UEventGroupRewards* Make(FOptionalArrayOfEventRewardContent ScoreRewards, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break EventGroupRewards", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break EventGroupRewards", meta=(NativeBreakFunc))
 	static void Break(const UEventGroupRewards* Serializable, FOptionalArrayOfEventRewardContent& ScoreRewards);
 };

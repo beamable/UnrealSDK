@@ -19,8 +19,8 @@ void UImportFriendsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 
 void UImportFriendsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Source = Bag->GetStringField(TEXT("source"));
-	Token = Bag->GetStringField(TEXT("token"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("source")), Source);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("token")), Token);
 }
 
 

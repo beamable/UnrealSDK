@@ -17,7 +17,7 @@ void UGetProductRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 
 void UGetProductRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Sku = Bag->GetStringField(TEXT("sku"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("sku")), Sku);
 }
 
 

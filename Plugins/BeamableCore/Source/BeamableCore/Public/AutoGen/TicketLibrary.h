@@ -13,12 +13,12 @@ class BEAMABLECORE_API UTicketLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - Ticket To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="Ticket To JSON String")
 	static FString TicketToJsonString(const UTicket* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make Ticket", meta=(DefaultToSelf="Outer", AdvancedDisplay="bWatchOnlineStatus, TicketId, Status, Created, Expires, MatchType, MatchId, Team, Priority, PartyId, LobbyId, Players, Tags, StringProperties, NumberProperties, Outer", NativeMakeFunc))
-	static UTicket* Make(FOptionalBool bWatchOnlineStatus, FOptionalString TicketId, FOptionalString Status, FOptionalString Created, FOptionalString Expires, FOptionalBeamContentId MatchType, FOptionalString MatchId, FOptionalString Team, FOptionalInt32 Priority, FOptionalString PartyId, FOptionalString LobbyId, FOptionalArrayOfBeamGamerTag Players, FOptionalArrayOfBeamTag Tags, FOptionalMapOfString StringProperties, FOptionalMapOfDouble NumberProperties, UObject* Outer);
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make Ticket", meta=(DefaultToSelf="Outer", AdvancedDisplay="bWatchOnlineStatus, TicketId, Status, Created, Expires, MatchType, MatchId, Team, Priority, PartyId, LobbyId, Players, Tags, StringProperties, NumberProperties, Outer", NativeMakeFunc))
+	static UTicket* Make(FOptionalBool bWatchOnlineStatus, FOptionalString TicketId, FOptionalString Status, FOptionalDateTime Created, FOptionalDateTime Expires, FOptionalBeamContentId MatchType, FOptionalString MatchId, FOptionalString Team, FOptionalInt32 Priority, FOptionalString PartyId, FOptionalString LobbyId, FOptionalArrayOfBeamGamerTag Players, FOptionalArrayOfBeamTag Tags, FOptionalMapOfString StringProperties, FOptionalMapOfDouble NumberProperties, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break Ticket", meta=(NativeBreakFunc))
-	static void Break(const UTicket* Serializable, FOptionalBool& bWatchOnlineStatus, FOptionalString& TicketId, FOptionalString& Status, FOptionalString& Created, FOptionalString& Expires, FOptionalBeamContentId& MatchType, FOptionalString& MatchId, FOptionalString& Team, FOptionalInt32& Priority, FOptionalString& PartyId, FOptionalString& LobbyId, FOptionalArrayOfBeamGamerTag& Players, FOptionalArrayOfBeamTag& Tags, FOptionalMapOfString& StringProperties, FOptionalMapOfDouble& NumberProperties);
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break Ticket", meta=(NativeBreakFunc))
+	static void Break(const UTicket* Serializable, FOptionalBool& bWatchOnlineStatus, FOptionalString& TicketId, FOptionalString& Status, FOptionalDateTime& Created, FOptionalDateTime& Expires, FOptionalBeamContentId& MatchType, FOptionalString& MatchId, FOptionalString& Team, FOptionalInt32& Priority, FOptionalString& PartyId, FOptionalString& LobbyId, FOptionalArrayOfBeamGamerTag& Players, FOptionalArrayOfBeamTag& Tags, FOptionalMapOfString& StringProperties, FOptionalMapOfDouble& NumberProperties);
 };

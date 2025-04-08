@@ -22,7 +22,7 @@ void UMailQueryResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void UMailQueryResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("unreadCount")), UnreadCount);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("unreadCount")), UnreadCount);
 }
 
 

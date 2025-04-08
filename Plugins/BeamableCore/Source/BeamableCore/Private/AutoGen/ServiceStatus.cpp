@@ -25,10 +25,10 @@ void UServiceStatus::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 
 void UServiceStatus::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bIsCurrent = Bag->GetBoolField(TEXT("isCurrent"));
-	bRunning = Bag->GetBoolField(TEXT("running"));
-	ServiceName = Bag->GetStringField(TEXT("serviceName"));
-	ImageId = Bag->GetStringField(TEXT("imageId"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isCurrent")), bIsCurrent);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("running")), bRunning);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceName")), ServiceName);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("imageId")), ImageId);
 	UBeamJsonUtils::DeserializeOptional<TArray<UServiceDependencyReference*>, UServiceDependencyReference*>("serviceDependencyReferences", Bag, ServiceDependencyReferences, OuterOwner);
 }
 

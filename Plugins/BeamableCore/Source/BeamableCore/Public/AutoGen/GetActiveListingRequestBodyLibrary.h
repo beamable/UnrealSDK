@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetActiveListingRequestBodyLibrary : public UBlueprintFu
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - GetActiveListingRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GetActiveListingRequestBody To JSON String")
 	static FString GetActiveListingRequestBodyToJsonString(const UGetActiveListingRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GetActiveListingRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Store, Time, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GetActiveListingRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Store, Time, Outer", NativeMakeFunc))
 	static UGetActiveListingRequestBody* Make(FString Listing, FOptionalString Store, FOptionalString Time, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GetActiveListingRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GetActiveListingRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UGetActiveListingRequestBody* Serializable, FString& Listing, FOptionalString& Store, FOptionalString& Time);
 };

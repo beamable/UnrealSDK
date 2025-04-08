@@ -19,8 +19,8 @@ void UOnlineStatusRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UOnlineStatusRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	PlayerIds = Bag->GetStringField(TEXT("playerIds"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("intervalSecs")), IntervalSecs);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("playerIds")), PlayerIds);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("intervalSecs")), IntervalSecs);
 }
 
 

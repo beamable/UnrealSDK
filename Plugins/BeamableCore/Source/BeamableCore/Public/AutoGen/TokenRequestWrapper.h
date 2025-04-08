@@ -9,6 +9,7 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalChallengeSolution.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalMapOfString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
+#include "Serialization/BeamJsonUtils.h"
 
 #include "TokenRequestWrapper.generated.h"
 

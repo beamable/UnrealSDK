@@ -29,7 +29,7 @@ void UStore::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) co
 
 void UStore::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Symbol = Bag->GetStringField(TEXT("symbol"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
 	UBeamJsonUtils::DeserializeArray<UListing*>(Bag->GetArrayField(TEXT("listings")), Listings, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("showInactiveListings", Bag, bShowInactiveListings, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("activeListingLimit", Bag, ActiveListingLimit, OuterOwner);

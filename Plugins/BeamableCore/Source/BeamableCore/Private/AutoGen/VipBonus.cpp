@@ -21,9 +21,9 @@ void UVipBonus::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer)
 
 void UVipBonus::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Currency = Bag->GetStringField(TEXT("currency"));
-	Multiplier = Bag->GetNumberField(TEXT("multiplier"));
-	RoundToNearest = Bag->GetIntegerField(TEXT("roundToNearest"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("currency")), Currency);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("multiplier")), Multiplier);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("roundToNearest")), RoundToNearest);
 }
 
 

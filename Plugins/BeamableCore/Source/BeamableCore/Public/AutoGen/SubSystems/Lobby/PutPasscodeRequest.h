@@ -36,7 +36,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Lobby", DisplayName="Beam - Make PutPasscode",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Passcode,_Tags,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Lobby|Backend", DisplayName="Make PutPasscode",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Passcode,_Tags,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPutPasscodeRequest* Make(FOptionalString _Passcode, FOptionalArrayOfBeamTag _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

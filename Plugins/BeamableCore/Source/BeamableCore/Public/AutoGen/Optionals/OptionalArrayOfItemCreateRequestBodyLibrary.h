@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalArrayOfItemCreateRequestBody struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Make Optional TArray<UItemCreateRequestBody*>", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Make Optional TArray<UItemCreateRequestBody*>", NativeMakeFunc))
 	static FOptionalArrayOfItemCreateRequestBody MakeOptional(TArray<UItemCreateRequestBody*> Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The TArray<UItemCreateRequestBody*> to convert.
 	 * @return An optional with the TArray<UItemCreateRequestBody*> set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta = (DisplayName = "Beam - TArray<UItemCreateRequestBody*> To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta = (DisplayName = "TArray<UItemCreateRequestBody*> To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalArrayOfItemCreateRequestBody Conv_OptionalFromValue(TArray<UItemCreateRequestBody*> Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Optionals", meta=(DisplayName="Beam - Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Shared|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalArrayOfItemCreateRequestBody& Optional, TArray<UItemCreateRequestBody*>& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Get Optional's TArray<UItemCreateRequestBody*> Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Get Optional's TArray<UItemCreateRequestBody*> Value"))
 	static TArray<UItemCreateRequestBody*> GetOptionalValue(const FOptionalArrayOfItemCreateRequestBody& Optional, TArray<UItemCreateRequestBody*> DefaultValue, bool& WasSet);
 
 	

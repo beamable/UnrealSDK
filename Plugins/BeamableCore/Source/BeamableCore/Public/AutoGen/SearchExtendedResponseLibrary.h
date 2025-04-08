@@ -13,12 +13,12 @@ class BEAMABLECORE_API USearchExtendedResponseLibrary : public UBlueprintFunctio
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - SearchExtendedResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="SearchExtendedResponse To JSON String")
 	static FString SearchExtendedResponseToJsonString(const USearchExtendedResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make SearchExtendedResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make SearchExtendedResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static USearchExtendedResponse* Make(TMap<FString, FMapOfString> GamerStats, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break SearchExtendedResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break SearchExtendedResponse", meta=(NativeBreakFunc))
 	static void Break(const USearchExtendedResponse* Serializable, TMap<FString, FMapOfString>& GamerStats);
 };

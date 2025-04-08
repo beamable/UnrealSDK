@@ -13,12 +13,12 @@ class BEAMABLECORE_API UListTagsRequestBodyLibrary : public UBlueprintFunctionLi
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - ListTagsRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ListTagsRequestBody To JSON String")
 	static FString ListTagsRequestBodyToJsonString(const UListTagsRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ListTagsRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="TagNameFilter, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ListTagsRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="TagNameFilter, Outer", NativeMakeFunc))
 	static UListTagsRequestBody* Make(FOptionalString TagNameFilter, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break ListTagsRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ListTagsRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UListTagsRequestBody* Serializable, FOptionalString& TagNameFilter);
 };

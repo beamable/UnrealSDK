@@ -41,7 +41,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", DisplayName="Beam - Make GetClientBatch",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Stats,_Format,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Stats|Backend", DisplayName="Make GetClientBatch",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Stats,_Format,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UGetClientBatchRequest* Make(FBeamStatsType _ObjectIds, FOptionalString _Stats, FOptionalString _Format, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

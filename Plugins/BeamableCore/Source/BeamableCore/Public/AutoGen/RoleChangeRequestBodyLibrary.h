@@ -13,12 +13,12 @@ class BEAMABLECORE_API URoleChangeRequestBodyLibrary : public UBlueprintFunction
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - RoleChangeRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="RoleChangeRequestBody To JSON String")
 	static FString RoleChangeRequestBodyToJsonString(const URoleChangeRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make RoleChangeRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="SubGroup, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make RoleChangeRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="SubGroup, Outer", NativeMakeFunc))
 	static URoleChangeRequestBody* Make(int64 GamerTag, FString Role, FOptionalInt64 SubGroup, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break RoleChangeRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break RoleChangeRequestBody", meta=(NativeBreakFunc))
 	static void Break(const URoleChangeRequestBody* Serializable, int64& GamerTag, FString& Role, FOptionalInt64& SubGroup);
 };

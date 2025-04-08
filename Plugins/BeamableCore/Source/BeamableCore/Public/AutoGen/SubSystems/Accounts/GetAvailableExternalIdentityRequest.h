@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/AccountAvailableResponse.h"
 
@@ -41,7 +41,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make GetAvailableExternalIdentity",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_ProviderNamespace,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Accounts|Backend", DisplayName="Make GetAvailableExternalIdentity",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_ProviderNamespace,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UGetAvailableExternalIdentityRequest* Make(FString _ProviderService, FString _UserId, FOptionalString _ProviderNamespace, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

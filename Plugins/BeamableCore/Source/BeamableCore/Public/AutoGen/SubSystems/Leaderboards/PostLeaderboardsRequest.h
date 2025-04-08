@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/LeaderboardCreateRequestBody.h"
 #include "BeamableCore/Public/AutoGen/CommonResponse.h"
 
@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make PostLeaderboards",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bPartitioned,_FreezeTime,_ScoreName,_CohortSettings,_Permissions,_MaxEntries,_Ttl,_Derivatives,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Leaderboards|Backend", DisplayName="Make PostLeaderboards",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bPartitioned,_FreezeTime,_ScoreName,_CohortSettings,_Permissions,_MaxEntries,_Ttl,_Derivatives,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPostLeaderboardsRequest* Make(FString _ObjectId, bool _bSharded, FOptionalBool _bPartitioned, FOptionalInt64 _FreezeTime, FOptionalString _ScoreName, FOptionalLeaderboardCohortSettings _CohortSettings, FOptionalBeamClientPermission _Permissions, FOptionalInt32 _MaxEntries, FOptionalInt64 _Ttl, FOptionalArrayOfString _Derivatives, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

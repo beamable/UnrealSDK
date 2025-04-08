@@ -31,11 +31,11 @@ void UInFlightMessage::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 
 void UInFlightMessage::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Method = Bag->GetStringField(TEXT("method"));
-	Body = Bag->GetStringField(TEXT("body"));
-	Path = Bag->GetStringField(TEXT("path"));
-	Service = Bag->GetStringField(TEXT("service"));
-	Id = Bag->GetStringField(TEXT("id"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("method")), Method);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("body")), Body);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("path")), Path);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("service")), Service);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
 	UBeamJsonUtils::DeserializeOptional<bool>("limitFailureRetries", Bag, bLimitFailureRetries, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("gamerTag", Bag, GamerTag, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("shard", Bag, Shard, OuterOwner);

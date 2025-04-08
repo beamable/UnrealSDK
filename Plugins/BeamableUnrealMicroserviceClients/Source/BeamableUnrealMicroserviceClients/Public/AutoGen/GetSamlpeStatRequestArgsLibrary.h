@@ -13,12 +13,12 @@ class BEAMABLEUNREALMICROSERVICECLIENTS_API UGetSamlpeStatRequestArgsLibrary : p
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - GetSamlpeStatRequestArgs To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="GetSamlpeStatRequestArgs To JSON String")
 	static FString GetSamlpeStatRequestArgsToJsonString(const UGetSamlpeStatRequestArgs* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GetSamlpeStatRequestArgs", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Make GetSamlpeStatRequestArgs", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UGetSamlpeStatRequestArgs* Make(int64 UserID, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GetSamlpeStatRequestArgs", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Break GetSamlpeStatRequestArgs", meta=(NativeBreakFunc))
 	static void Break(const UGetSamlpeStatRequestArgs* Serializable, int64& UserID);
 };

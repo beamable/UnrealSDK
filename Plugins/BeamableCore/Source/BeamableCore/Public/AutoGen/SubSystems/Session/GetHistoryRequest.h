@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
 #include "BeamableCore/Public/AutoGen/SessionHistoryResponse.h"
 
@@ -41,7 +41,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Session", DisplayName="Beam - Make GetHistory",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Month,_Year,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Session|Backend", DisplayName="Make GetHistory",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Month,_Year,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UGetHistoryRequest* Make(int64 _Dbid, FOptionalInt32 _Month, FOptionalInt32 _Year, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

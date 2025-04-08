@@ -36,7 +36,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Auth", DisplayName="Beam - Make ApiAuthPostServer",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_ClientId,_ClientSecret,_CustomerId,_RealmId,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Auth|Backend", DisplayName="Make ApiAuthPostServer",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_ClientId,_ClientSecret,_CustomerId,_RealmId,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UApiAuthPostServerRequest* Make(FOptionalString _ClientId, FOptionalString _ClientSecret, FOptionalBeamCid _CustomerId, FOptionalBeamPid _RealmId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

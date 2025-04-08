@@ -13,12 +13,12 @@ class BEAMABLECORE_API USendFriendRequestBodyLibrary : public UBlueprintFunction
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - SendFriendRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="SendFriendRequestBody To JSON String")
 	static FString SendFriendRequestBodyToJsonString(const USendFriendRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make SendFriendRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make SendFriendRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static USendFriendRequestBody* Make(FBeamGamerTag GamerTag, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break SendFriendRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break SendFriendRequestBody", meta=(NativeBreakFunc))
 	static void Break(const USendFriendRequestBody* Serializable, FBeamGamerTag& GamerTag);
 };

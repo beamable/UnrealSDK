@@ -17,7 +17,7 @@ void USubscriptionVerificationResponse::BeamSerializeProperties(TUnrealPrettyJso
 
 void USubscriptionVerificationResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	HubChallenge = Bag->GetStringField(TEXT("hubChallenge"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("hubChallenge")), HubChallenge);
 }
 
 

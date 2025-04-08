@@ -13,12 +13,12 @@ class BEAMABLECORE_API USupportedFederationLibrary : public UBlueprintFunctionLi
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - SupportedFederation To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="SupportedFederation To JSON String")
 	static FString SupportedFederationToJsonString(const USupportedFederation* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make SupportedFederation", meta=(DefaultToSelf="Outer", AdvancedDisplay="NameSpace, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make SupportedFederation", meta=(DefaultToSelf="Outer", AdvancedDisplay="NameSpace, Outer", NativeMakeFunc))
 	static USupportedFederation* Make(EFederationType Type, FOptionalString NameSpace, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break SupportedFederation", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break SupportedFederation", meta=(NativeBreakFunc))
 	static void Break(const USupportedFederation* Serializable, EFederationType& Type, FOptionalString& NameSpace);
 };

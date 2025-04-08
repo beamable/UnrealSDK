@@ -24,7 +24,7 @@ void USessionHeartbeat::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 
 void USessionHeartbeat::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("gt")), Gt);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("gt")), Gt);
 	UBeamJsonUtils::DeserializeOptional<int64>("heartbeat", Bag, Heartbeat, OuterOwner);
 }
 

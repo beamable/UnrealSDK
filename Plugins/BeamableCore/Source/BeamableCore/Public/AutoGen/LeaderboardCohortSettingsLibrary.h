@@ -13,12 +13,12 @@ class BEAMABLECORE_API ULeaderboardCohortSettingsLibrary : public UBlueprintFunc
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - LeaderboardCohortSettings To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="LeaderboardCohortSettings To JSON String")
 	static FString LeaderboardCohortSettingsToJsonString(const ULeaderboardCohortSettings* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make LeaderboardCohortSettings", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make LeaderboardCohortSettings", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static ULeaderboardCohortSettings* Make(TArray<ULeaderboardCohort*> Cohorts, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break LeaderboardCohortSettings", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break LeaderboardCohortSettings", meta=(NativeBreakFunc))
 	static void Break(const ULeaderboardCohortSettings* Serializable, TArray<ULeaderboardCohort*>& Cohorts);
 };

@@ -19,8 +19,8 @@ void UStatStringListEntry::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 
 void UStatStringListEntry::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	K = Bag->GetStringField(TEXT("k"));
-	V = Bag->GetStringField(TEXT("v"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("k")), K);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("v")), V);
 }
 
 

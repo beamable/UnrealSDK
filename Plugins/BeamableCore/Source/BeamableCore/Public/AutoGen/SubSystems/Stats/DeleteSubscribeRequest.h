@@ -36,7 +36,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", DisplayName="Beam - Make DeleteSubscribe",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Subscriptions,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Stats|Backend", DisplayName="Make DeleteSubscribe",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Subscriptions,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UDeleteSubscribeRequest* Make(FString _Service, FOptionalArrayOfString _Subscriptions, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

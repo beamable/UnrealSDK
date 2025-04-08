@@ -27,7 +27,7 @@ void UItem::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) con
 
 void UItem::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
 	UBeamJsonUtils::DeserializeArray<UItemProperty*>(Bag->GetArrayField(TEXT("properties")), Properties, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("updatedAt", Bag, UpdatedAt, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("proxyId", Bag, ProxyId, OuterOwner);

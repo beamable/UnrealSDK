@@ -19,8 +19,8 @@ void UAccountRegistration::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 
 void UAccountRegistration::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Email = Bag->GetStringField(TEXT("email"));
-	Password = Bag->GetStringField(TEXT("password"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("email")), Email);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("password")), Password);
 }
 
 

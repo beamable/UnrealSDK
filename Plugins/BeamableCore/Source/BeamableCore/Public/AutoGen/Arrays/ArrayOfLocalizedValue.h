@@ -6,7 +6,7 @@
 
 #include "ArrayOfLocalizedValue.generated.h"
 		
-USTRUCT(BlueprintType, Category="Beam|Wrappers|Arrays")
+USTRUCT(BlueprintType, Category="Beam|Shared|Wrappers|Arrays")
 struct BEAMABLECORE_API FArrayOfLocalizedValue : public FBeamArray
 {
 	GENERATED_BODY()

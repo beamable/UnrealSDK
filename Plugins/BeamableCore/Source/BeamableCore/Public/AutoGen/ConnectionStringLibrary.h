@@ -13,12 +13,12 @@ class BEAMABLECORE_API UConnectionStringLibrary : public UBlueprintFunctionLibra
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - ConnectionString To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ConnectionString To JSON String")
 	static FString ConnectionStringToJsonString(const UConnectionString* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ConnectionString", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ConnectionString", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UConnectionString* Make(FString ConnectionString, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break ConnectionString", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ConnectionString", meta=(NativeBreakFunc))
 	static void Break(const UConnectionString* Serializable, FString& ConnectionString);
 };

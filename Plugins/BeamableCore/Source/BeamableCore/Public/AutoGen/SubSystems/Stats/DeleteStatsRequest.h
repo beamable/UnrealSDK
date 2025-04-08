@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Stats", DisplayName="Beam - Make DeleteStats",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Stats,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Stats|Backend", DisplayName="Make DeleteStats",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Stats,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UDeleteStatsRequest* Make(FBeamStatsType _ObjectId, FOptionalString _Stats, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

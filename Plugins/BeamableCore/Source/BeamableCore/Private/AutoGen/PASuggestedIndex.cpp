@@ -25,9 +25,9 @@ void UPASuggestedIndex::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 
 void UPASuggestedIndex::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Weight = Bag->GetStringField(TEXT("weight"));
-	Id = Bag->GetStringField(TEXT("id"));
-	Namespace = Bag->GetStringField(TEXT("namespace"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("weight")), Weight);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("namespace")), Namespace);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("impact")), Impact, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("index")), Index, OuterOwner);
 }

@@ -19,8 +19,8 @@ void UEmailUpdateConfirmation::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UEmailUpdateConfirmation::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Code = Bag->GetStringField(TEXT("code"));
-	Password = Bag->GetStringField(TEXT("password"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("code")), Code);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("password")), Password);
 }
 
 

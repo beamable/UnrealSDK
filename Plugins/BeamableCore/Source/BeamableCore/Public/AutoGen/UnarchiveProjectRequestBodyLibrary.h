@@ -13,12 +13,12 @@ class BEAMABLECORE_API UUnarchiveProjectRequestBodyLibrary : public UBlueprintFu
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - UnarchiveProjectRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="UnarchiveProjectRequestBody To JSON String")
 	static FString UnarchiveProjectRequestBodyToJsonString(const UUnarchiveProjectRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make UnarchiveProjectRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make UnarchiveProjectRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UUnarchiveProjectRequestBody* Make(FBeamPid ProjectId, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break UnarchiveProjectRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break UnarchiveProjectRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UUnarchiveProjectRequestBody* Serializable, FBeamPid& ProjectId);
 };

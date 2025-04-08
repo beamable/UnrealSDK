@@ -13,12 +13,12 @@ class BEAMABLECORE_API UUploadRequestBodyLibrary : public UBlueprintFunctionLibr
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - UploadRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="UploadRequestBody To JSON String")
 	static FString UploadRequestBodyToJsonString(const UUploadRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make UploadRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bDeleted, LastModified, Checksum, Metadata, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make UploadRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bDeleted, LastModified, Checksum, Metadata, Outer", NativeMakeFunc))
 	static UUploadRequestBody* Make(FString ObjectKey, int64 SizeInBytes, FOptionalBool bDeleted, FOptionalInt64 LastModified, FOptionalString Checksum, FOptionalArrayOfMetadataPair Metadata, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break UploadRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break UploadRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UUploadRequestBody* Serializable, FString& ObjectKey, int64& SizeInBytes, FOptionalBool& bDeleted, FOptionalInt64& LastModified, FOptionalString& Checksum, FOptionalArrayOfMetadataPair& Metadata);
 };

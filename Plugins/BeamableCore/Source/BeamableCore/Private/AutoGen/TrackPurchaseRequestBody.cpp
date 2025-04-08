@@ -31,12 +31,12 @@ void UTrackPurchaseRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeriali
 
 void UTrackPurchaseRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	PriceInLocalCurrency = Bag->GetNumberField(TEXT("priceInLocalCurrency"));
-	SkuName = Bag->GetStringField(TEXT("skuName"));
-	SkuProductId = Bag->GetStringField(TEXT("skuProductId"));
-	Store = Bag->GetStringField(TEXT("store"));
-	PurchaseId = Bag->GetStringField(TEXT("purchaseId"));
-	IsoCurrencySymbol = Bag->GetStringField(TEXT("isoCurrencySymbol"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("priceInLocalCurrency")), PriceInLocalCurrency);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("skuName")), SkuName);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("skuProductId")), SkuProductId);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("store")), Store);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("purchaseId")), PurchaseId);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isoCurrencySymbol")), IsoCurrencySymbol);
 	UBeamJsonUtils::DeserializeArray<UItemCreateRequestBody*>(Bag->GetArrayField(TEXT("obtainItems")), ObtainItems, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UCurrencyChange*>(Bag->GetArrayField(TEXT("obtainCurrency")), ObtainCurrency, OuterOwner);
 }

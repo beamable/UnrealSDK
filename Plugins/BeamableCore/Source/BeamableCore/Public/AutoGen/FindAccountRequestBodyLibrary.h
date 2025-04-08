@@ -13,12 +13,12 @@ class BEAMABLECORE_API UFindAccountRequestBodyLibrary : public UBlueprintFunctio
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - FindAccountRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="FindAccountRequestBody To JSON String")
 	static FString FindAccountRequestBodyToJsonString(const UFindAccountRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make FindAccountRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make FindAccountRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UFindAccountRequestBody* Make(FString Query, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break FindAccountRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break FindAccountRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UFindAccountRequestBody* Serializable, FString& Query);
 };

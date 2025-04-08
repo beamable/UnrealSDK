@@ -4,6 +4,7 @@
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
+#include "Serialization/BeamJsonUtils.h"
 
 #include "ContentOrText.generated.h"
 

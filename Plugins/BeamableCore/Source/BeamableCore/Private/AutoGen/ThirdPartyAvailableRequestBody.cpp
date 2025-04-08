@@ -19,8 +19,8 @@ void UThirdPartyAvailableRequestBody::BeamSerializeProperties(TUnrealPrettyJsonS
 
 void UThirdPartyAvailableRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	ThirdParty = Bag->GetStringField(TEXT("thirdParty"));
-	Token = Bag->GetStringField(TEXT("token"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("thirdParty")), ThirdParty);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("token")), Token);
 }
 
 

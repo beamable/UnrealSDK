@@ -33,12 +33,12 @@ void UTournamentEntry::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 
 void UTournamentEntry::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Stage = Bag->GetIntegerField(TEXT("stage"));
-	Tier = Bag->GetIntegerField(TEXT("tier"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("rank")), Rank);
-	Score = Bag->GetNumberField(TEXT("score"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("playerId")), PlayerId);
-	StageChange = Bag->GetIntegerField(TEXT("stageChange"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("stage")), Stage);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tier")), Tier);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("rank")), Rank);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("score")), Score);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("playerId")), PlayerId);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("stageChange")), StageChange);
 	UBeamJsonUtils::DeserializeArray<UTournamentCurrencyReward*>(Bag->GetArrayField(TEXT("currencyRewards")), CurrencyRewards, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("previousStageChange", Bag, PreviousStageChange, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("nextStageChange", Bag, NextStageChange, OuterOwner);

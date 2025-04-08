@@ -21,8 +21,8 @@ void UGroupScoreBinding::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void UGroupScoreBinding::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Board = Bag->GetStringField(TEXT("board"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("score")), Score);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("board")), Board);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("score")), Score);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("derivatives")), Derivatives, OuterOwner);
 }
 

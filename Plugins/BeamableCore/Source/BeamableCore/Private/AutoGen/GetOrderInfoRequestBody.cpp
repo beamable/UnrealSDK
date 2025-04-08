@@ -17,7 +17,7 @@ void UGetOrderInfoRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UGetOrderInfoRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	OrderId = Bag->GetStringField(TEXT("orderId"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("orderId")), OrderId);
 }
 
 

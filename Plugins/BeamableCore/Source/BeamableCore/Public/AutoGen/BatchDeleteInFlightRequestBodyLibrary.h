@@ -13,12 +13,12 @@ class BEAMABLECORE_API UBatchDeleteInFlightRequestBodyLibrary : public UBlueprin
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - BatchDeleteInFlightRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="BatchDeleteInFlightRequestBody To JSON String")
 	static FString BatchDeleteInFlightRequestBodyToJsonString(const UBatchDeleteInFlightRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make BatchDeleteInFlightRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make BatchDeleteInFlightRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UBatchDeleteInFlightRequestBody* Make(TArray<FString> InFlightFailureIds, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break BatchDeleteInFlightRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break BatchDeleteInFlightRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UBatchDeleteInFlightRequestBody* Serializable, TArray<FString>& InFlightFailureIds);
 };

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UEntitlementRequirementLibrary : public UBlueprintFunctio
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - EntitlementRequirement To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="EntitlementRequirement To JSON String")
 	static FString EntitlementRequirementToJsonString(const UEntitlementRequirement* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make EntitlementRequirement", meta=(DefaultToSelf="Outer", AdvancedDisplay="Specialization, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make EntitlementRequirement", meta=(DefaultToSelf="Outer", AdvancedDisplay="Specialization, Outer", NativeMakeFunc))
 	static UEntitlementRequirement* Make(FString Symbol, FString Constraint, FString State, FOptionalString Specialization, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break EntitlementRequirement", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break EntitlementRequirement", meta=(NativeBreakFunc))
 	static void Break(const UEntitlementRequirement* Serializable, FString& Symbol, FString& Constraint, FString& State, FOptionalString& Specialization);
 };

@@ -25,9 +25,9 @@ void UListTokensRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 
 void UListTokensRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	PageSize = Bag->GetIntegerField(TEXT("pageSize"));
-	Page = Bag->GetIntegerField(TEXT("page"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("gamerTagOrAccountId")), GamerTagOrAccountId);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("pageSize")), PageSize);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("page")), Page);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("gamerTagOrAccountId")), GamerTagOrAccountId);
 	UBeamJsonUtils::DeserializeOptional<FBeamCid, int64>("cid", Bag, Cid, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FBeamPid, FString>("pid", Bag, Pid, OuterOwner);
 }

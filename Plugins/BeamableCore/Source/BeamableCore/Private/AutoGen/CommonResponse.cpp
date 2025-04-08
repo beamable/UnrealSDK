@@ -24,7 +24,7 @@ void UCommonResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seria
 
 void UCommonResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Result = Bag->GetStringField(TEXT("result"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("result")), Result);
 	UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("data")), Data, OuterOwner);
 }
 

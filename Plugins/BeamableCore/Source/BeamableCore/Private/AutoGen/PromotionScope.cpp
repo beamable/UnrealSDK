@@ -19,7 +19,7 @@ void UPromotionScope::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seria
 
 void UPromotionScope::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Name = Bag->GetStringField(TEXT("name"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
 	UBeamJsonUtils::DeserializeArray<UPromotion*>(Bag->GetArrayField(TEXT("promotions")), Promotions, OuterOwner);
 }
 

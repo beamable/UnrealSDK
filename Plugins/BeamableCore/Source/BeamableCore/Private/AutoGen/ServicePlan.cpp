@@ -25,7 +25,7 @@ void UServicePlan::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializ
 
 void UServicePlan::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Name = Bag->GetStringField(TEXT("name"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
 	UBeamJsonUtils::DeserializeUObject<UDataDomain*>("dataDomain", Bag, DataDomain, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("minCustomerStatusSaved", Bag, MinCustomerStatusSaved, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UServiceLimits*>("limits", Bag, Limits, OuterOwner);

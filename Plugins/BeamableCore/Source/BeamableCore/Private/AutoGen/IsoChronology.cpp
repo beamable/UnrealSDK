@@ -19,8 +19,8 @@ void UIsoChronology::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 
 void UIsoChronology::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	CalendarType = Bag->GetStringField(TEXT("calendarType"));
-	Id = Bag->GetStringField(TEXT("id"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("calendarType")), CalendarType);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
 }
 
 

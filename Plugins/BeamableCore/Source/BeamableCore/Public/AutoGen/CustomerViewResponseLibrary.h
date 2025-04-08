@@ -13,12 +13,12 @@ class BEAMABLECORE_API UCustomerViewResponseLibrary : public UBlueprintFunctionL
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - CustomerViewResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="CustomerViewResponse To JSON String")
 	static FString CustomerViewResponseToJsonString(const UCustomerViewResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make CustomerViewResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make CustomerViewResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UCustomerViewResponse* Make(UCustomerView* Customer, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break CustomerViewResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break CustomerViewResponse", meta=(NativeBreakFunc))
 	static void Break(const UCustomerViewResponse* Serializable, UCustomerView*& Customer);
 };

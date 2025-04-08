@@ -23,9 +23,9 @@ void UAttachment::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serialize
 
 void UAttachment::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
 	UBeamJsonUtils::DeserializeUObject<UEntitlementGenerator*>("wrapped", Bag, Wrapped, OuterOwner);
-	State = Bag->GetStringField(TEXT("state"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("state")), State);
 	UBeamJsonUtils::DeserializeOptional<int64>("target", Bag, Target, OuterOwner);
 }
 

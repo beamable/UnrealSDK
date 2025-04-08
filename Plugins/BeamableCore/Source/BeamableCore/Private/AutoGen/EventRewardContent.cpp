@@ -25,7 +25,7 @@ void UEventRewardContent::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 
 void UEventRewardContent::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Min = Bag->GetNumberField(TEXT("min"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("min")), Min);
 	UBeamJsonUtils::DeserializeOptional<double>("max", Bag, Max, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UEventInventoryRewardCurrency*>, UEventInventoryRewardCurrency*>("currencies", Bag, Currencies, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UEventInventoryRewardItem*>, UEventInventoryRewardItem*>("items", Bag, Items, OuterOwner);

@@ -23,9 +23,9 @@ void USKU::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) cons
 
 void USKU::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Name = Bag->GetStringField(TEXT("name"));
-	Description = Bag->GetStringField(TEXT("description"));
-	RealPrice = Bag->GetIntegerField(TEXT("realPrice"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("description")), Description);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("realPrice")), RealPrice);
 	UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("productIds")), ProductIds, OuterOwner);
 }
 

@@ -1503,10 +1503,10 @@ ULobby* FOnlineSessionBeamable::CreateDummyLobby(FBeamGamerTag HostGamerTag)
 {
 	TArray<ULobbyPlayer*> Players;
 
-	auto Player = ULobbyPlayerLibrary::Make(FOptionalBeamGamerTag(HostGamerTag), FOptionalString(), FOptionalArrayOfBeamTag(), GetTransientPackage());
+	auto Player = ULobbyPlayerLibrary::Make(FOptionalBeamGamerTag(HostGamerTag), FOptionalDateTime(), FOptionalArrayOfBeamTag(), GetTransientPackage());
 	Players.Add(Player);
 
-	ULobby* DummyLobby = ULobbyLibrary::Make(FOptionalString(), FOptionalMatchType(), FOptionalString(), FOptionalString(),
+	ULobby* DummyLobby = ULobbyLibrary::Make(FOptionalString(), FOptionalMatchType(), FOptionalDateTime(), FOptionalString(),
 	                                         FOptionalString(), FOptionalBeamGamerTag(HostGamerTag), FOptionalString(), FOptionalLobbyRestriction(),
 	                                         FOptionalInt32(2), FOptionalArrayOfLobbyPlayer(Players), FOptionalMapOfString(), GetTransientPackage());
 

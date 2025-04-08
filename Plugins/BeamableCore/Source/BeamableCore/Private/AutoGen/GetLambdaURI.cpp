@@ -22,7 +22,7 @@ void UGetLambdaURI::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 
 void UGetLambdaURI::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Uri = Bag->GetStringField(TEXT("uri"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("uri")), Uri);
 }
 
 

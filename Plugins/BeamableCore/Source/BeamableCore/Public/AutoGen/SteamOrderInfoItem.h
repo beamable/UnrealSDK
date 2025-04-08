@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
-
+#include "Serialization/BeamJsonUtils.h"
 
 #include "SteamOrderInfoItem.generated.h"
 

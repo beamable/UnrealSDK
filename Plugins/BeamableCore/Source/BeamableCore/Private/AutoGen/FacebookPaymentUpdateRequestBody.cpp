@@ -19,7 +19,7 @@ void UFacebookPaymentUpdateRequestBody::BeamSerializeProperties(TUnrealPrettyJso
 
 void UFacebookPaymentUpdateRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Object = Bag->GetStringField(TEXT("object"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("object")), Object);
 	UBeamJsonUtils::DeserializeArray<UFacebookUpdatedEntry*>(Bag->GetArrayField(TEXT("entry")), Entry, OuterOwner);
 }
 

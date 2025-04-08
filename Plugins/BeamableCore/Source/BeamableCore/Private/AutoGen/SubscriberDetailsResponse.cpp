@@ -36,12 +36,12 @@ void USubscriberDetailsResponse::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void USubscriberDetailsResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	CustomChannelPrefix = Bag->GetStringField(TEXT("customChannelPrefix"));
-	PlayerForRealmChannel = Bag->GetStringField(TEXT("playerForRealmChannel"));
-	AuthenticationKey = Bag->GetStringField(TEXT("authenticationKey"));
-	GameNotificationChannel = Bag->GetStringField(TEXT("gameNotificationChannel"));
-	SubscribeKey = Bag->GetStringField(TEXT("subscribeKey"));
-	PlayerChannel = Bag->GetStringField(TEXT("playerChannel"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("customChannelPrefix")), CustomChannelPrefix);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("playerForRealmChannel")), PlayerForRealmChannel);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("authenticationKey")), AuthenticationKey);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("gameNotificationChannel")), GameNotificationChannel);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("subscribeKey")), SubscribeKey);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("playerChannel")), PlayerChannel);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("playerChannels")), PlayerChannels, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("gameGlobalNotificationChannel", Bag, GameGlobalNotificationChannel, OuterOwner);
 }

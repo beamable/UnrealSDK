@@ -24,8 +24,8 @@ void UBinaryDefinition::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 void UBinaryDefinition::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("id")), Id, OuterOwner);
-	Checksum = Bag->GetStringField(TEXT("checksum"));
-	UploadContentType = Bag->GetStringField(TEXT("uploadContentType"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("checksum")), Checksum);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("uploadContentType")), UploadContentType);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("tags", Bag, Tags, OuterOwner);
 }
 

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UAvailableRolesResponseLibrary : public UBlueprintFunctio
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - AvailableRolesResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="AvailableRolesResponse To JSON String")
 	static FString AvailableRolesResponseToJsonString(const UAvailableRolesResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make AvailableRolesResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make AvailableRolesResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UAvailableRolesResponse* Make(TArray<FString> Roles, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break AvailableRolesResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break AvailableRolesResponse", meta=(NativeBreakFunc))
 	static void Break(const UAvailableRolesResponse* Serializable, TArray<FString>& Roles);
 };

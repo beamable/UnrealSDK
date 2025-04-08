@@ -23,8 +23,8 @@ void ULeaderboardSwapRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSeria
 
 void ULeaderboardSwapRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("swapBase")), SwapBase);
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("delta")), Delta);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("swapBase")), SwapBase);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("delta")), Delta);
 	UBeamJsonUtils::DeserializeOptional<int64>("winnerId", Bag, WinnerId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("loserId", Bag, LoserId, OuterOwner);
 }

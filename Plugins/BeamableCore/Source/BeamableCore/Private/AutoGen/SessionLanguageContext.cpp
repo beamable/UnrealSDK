@@ -19,8 +19,8 @@ void USessionLanguageContext::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 
 void USessionLanguageContext::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Code = Bag->GetStringField(TEXT("code"));
-	Ctx = Bag->GetStringField(TEXT("ctx"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("code")), Code);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("ctx")), Ctx);
 }
 
 

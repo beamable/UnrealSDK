@@ -13,12 +13,12 @@ class BEAMABLECORE_API UReportPurchaseRequestBodyLibrary : public UBlueprintFunc
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - ReportPurchaseRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ReportPurchaseRequestBody To JSON String")
 	static FString ReportPurchaseRequestBodyToJsonString(const UReportPurchaseRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ReportPurchaseRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bFree, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ReportPurchaseRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bFree, Outer", NativeMakeFunc))
 	static UReportPurchaseRequestBody* Make(FString ListingId, FOptionalBool bFree, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break ReportPurchaseRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ReportPurchaseRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UReportPurchaseRequestBody* Serializable, FString& ListingId, FOptionalBool& bFree);
 };

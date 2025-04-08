@@ -13,12 +13,12 @@ class BEAMABLECORE_API UCreatePartyLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - CreateParty To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="CreateParty To JSON String")
 	static FString CreatePartyToJsonString(const UCreateParty* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make CreateParty", meta=(DefaultToSelf="Outer", AdvancedDisplay="Restriction, Leader, MaxSize, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make CreateParty", meta=(DefaultToSelf="Outer", AdvancedDisplay="Restriction, Leader, MaxSize, Outer", NativeMakeFunc))
 	static UCreateParty* Make(FOptionalString Restriction, FOptionalBeamGamerTag Leader, FOptionalInt32 MaxSize, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break CreateParty", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break CreateParty", meta=(NativeBreakFunc))
 	static void Break(const UCreateParty* Serializable, FOptionalString& Restriction, FOptionalBeamGamerTag& Leader, FOptionalInt32& MaxSize);
 };

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGroupStatusLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - GroupStatus To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GroupStatus To JSON String")
 	static FString GroupStatusToJsonString(const UGroupStatus* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GroupStatus", meta=(DefaultToSelf="Outer", AdvancedDisplay="Completed, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GroupStatus", meta=(DefaultToSelf="Outer", AdvancedDisplay="Completed, Outer", NativeMakeFunc))
 	static UGroupStatus* Make(int32 LastUpdateCycle, FString TournamentId, int32 Stage, int32 Tier, int64 GroupId, FString ContentId, FOptionalArrayOfCompletedStatus Completed, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GroupStatus", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GroupStatus", meta=(NativeBreakFunc))
 	static void Break(const UGroupStatus* Serializable, int32& LastUpdateCycle, FString& TournamentId, int32& Stage, int32& Tier, int64& GroupId, FString& ContentId, FOptionalArrayOfCompletedStatus& Completed);
 };

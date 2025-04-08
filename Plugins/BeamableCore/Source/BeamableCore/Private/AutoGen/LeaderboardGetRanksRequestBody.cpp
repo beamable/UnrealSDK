@@ -17,7 +17,7 @@ void ULeaderboardGetRanksRequestBody::BeamSerializeProperties(TUnrealPrettyJsonS
 
 void ULeaderboardGetRanksRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Ids = Bag->GetStringField(TEXT("ids"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("ids")), Ids);
 }
 
 

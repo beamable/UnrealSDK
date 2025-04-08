@@ -19,8 +19,8 @@ void UCreateLaunchMessageRequestBody::BeamSerializeProperties(TUnrealPrettyJsonS
 
 void UCreateLaunchMessageRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Name = Bag->GetStringField(TEXT("name"));
-	Body = Bag->GetStringField(TEXT("body"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("body")), Body);
 }
 
 

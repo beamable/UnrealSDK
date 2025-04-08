@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPlayerBasicCloudDataRequestBodyLibrary : public UBluepri
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - PlayerBasicCloudDataRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="PlayerBasicCloudDataRequestBody To JSON String")
 	static FString PlayerBasicCloudDataRequestBodyToJsonString(const UPlayerBasicCloudDataRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make PlayerBasicCloudDataRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="PlayerId, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make PlayerBasicCloudDataRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="PlayerId, Outer", NativeMakeFunc))
 	static UPlayerBasicCloudDataRequestBody* Make(FOptionalInt64 PlayerId, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break PlayerBasicCloudDataRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break PlayerBasicCloudDataRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UPlayerBasicCloudDataRequestBody* Serializable, FOptionalInt64& PlayerId);
 };

@@ -72,17 +72,17 @@ void UGroup::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) co
 
 void UGroup::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("requirement")), Requirement);
-	MaxSize = Bag->GetIntegerField(TEXT("maxSize"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("requirement")), Requirement);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("maxSize")), MaxSize);
 	Type = UGroupTypeLibrary::SerializationNameToGroupType(Bag->GetStringField(TEXT("type")));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("id")), Id);
-	Motd = Bag->GetStringField(TEXT("motd"));
-	Slogan = Bag->GetStringField(TEXT("slogan"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("leader")), Leader);
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("created")), Created);
-	Name = Bag->GetStringField(TEXT("name"));
-	EnrollmentType = Bag->GetStringField(TEXT("enrollmentType"));
-	FreeSlots = Bag->GetIntegerField(TEXT("freeSlots"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("motd")), Motd);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("slogan")), Slogan);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("leader")), Leader);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("created")), Created);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("enrollmentType")), EnrollmentType);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("freeSlots")), FreeSlots);
 	UBeamJsonUtils::DeserializeArray<UGroup*>(Bag->GetArrayField(TEXT("subGroups")), SubGroups, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UMember*>(Bag->GetArrayField(TEXT("members")), Members, OuterOwner);
 	UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("scores")), Scores, OuterOwner);

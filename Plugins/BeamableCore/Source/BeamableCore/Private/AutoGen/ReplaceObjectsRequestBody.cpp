@@ -19,8 +19,8 @@ void UReplaceObjectsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void UReplaceObjectsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("sourcePlayerId")), SourcePlayerId);
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("targetPlayerId")), TargetPlayerId);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("sourcePlayerId")), SourcePlayerId);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("targetPlayerId")), TargetPlayerId);
 }
 
 

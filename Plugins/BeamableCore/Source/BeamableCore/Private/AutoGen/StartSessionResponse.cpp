@@ -24,7 +24,7 @@ void UStartSessionResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 
 void UStartSessionResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Result = Bag->GetStringField(TEXT("result"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("result")), Result);
 	UBeamJsonUtils::DeserializeOptional<UGamerTag*>("gamer", Bag, Gamer, OuterOwner);
 }
 

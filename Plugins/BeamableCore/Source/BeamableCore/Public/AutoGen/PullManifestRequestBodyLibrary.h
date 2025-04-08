@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPullManifestRequestBodyLibrary : public UBlueprintFuncti
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - PullManifestRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="PullManifestRequestBody To JSON String")
 	static FString PullManifestRequestBodyToJsonString(const UPullManifestRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make PullManifestRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Id, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make PullManifestRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Id, Outer", NativeMakeFunc))
 	static UPullManifestRequestBody* Make(FBeamPid SourceRealmPid, FOptionalBeamContentManifestId Id, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break PullManifestRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break PullManifestRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UPullManifestRequestBody* Serializable, FBeamPid& SourceRealmPid, FOptionalBeamContentManifestId& Id);
 };

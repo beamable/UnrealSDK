@@ -32,8 +32,8 @@ void UGroupUser::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer
 
 void UGroupUser::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("gamerTag")), GamerTag);
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("updated")), Updated);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("gamerTag")), GamerTag);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("updated")), Updated);
 	UBeamJsonUtils::DeserializeUObject<UGroupMemberInfo*>("member", Bag, Member, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UGroupUserMember*>(Bag->GetArrayField(TEXT("allGroups")), AllGroups, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UInFlightMessage*>, UInFlightMessage*>("inFlight", Bag, InFlight, OuterOwner);

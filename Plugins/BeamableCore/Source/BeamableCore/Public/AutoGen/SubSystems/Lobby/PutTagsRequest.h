@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/AddTags.h"
 #include "BeamableCore/Public/AutoGen/Lobby.h"
 
@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Lobby", DisplayName="Beam - Make PutTags",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_PlayerId,_bReplace,_Tags,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Lobby|Backend", DisplayName="Make PutTags",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_PlayerId,_bReplace,_Tags,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPutTagsRequest* Make(FGuid _Id, FOptionalBeamGamerTag _PlayerId, FOptionalBool _bReplace, FOptionalArrayOfBeamTag _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

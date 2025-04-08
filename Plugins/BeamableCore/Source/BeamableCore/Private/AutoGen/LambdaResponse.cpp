@@ -24,7 +24,7 @@ void ULambdaResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seria
 
 void ULambdaResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	StatusCode = Bag->GetIntegerField(TEXT("statusCode"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("statusCode")), StatusCode);
 	UBeamJsonUtils::DeserializeOptional<FString>("body", Bag, Body, OuterOwner);
 }
 

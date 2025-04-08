@@ -21,7 +21,7 @@ void UGroupUserMember::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 
 void UGroupUserMember::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
 	UBeamJsonUtils::DeserializeArray<UGroupUserMember*>(Bag->GetArrayField(TEXT("subGroups")), SubGroups, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("joined", Bag, Joined, OuterOwner);
 }

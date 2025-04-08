@@ -13,12 +13,12 @@ class BEAMABLECORE_API UEventInventoryRewardCurrencyLibrary : public UBlueprintF
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - EventInventoryRewardCurrency To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="EventInventoryRewardCurrency To JSON String")
 	static FString EventInventoryRewardCurrencyToJsonString(const UEventInventoryRewardCurrency* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make EventInventoryRewardCurrency", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make EventInventoryRewardCurrency", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UEventInventoryRewardCurrency* Make(FString Id, int64 Amount, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break EventInventoryRewardCurrency", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break EventInventoryRewardCurrency", meta=(NativeBreakFunc))
 	static void Break(const UEventInventoryRewardCurrency* Serializable, FString& Id, int64& Amount);
 };

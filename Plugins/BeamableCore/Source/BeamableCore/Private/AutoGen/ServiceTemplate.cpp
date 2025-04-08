@@ -17,7 +17,7 @@ void UServiceTemplate::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 
 void UServiceTemplate::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Id = Bag->GetStringField(TEXT("id"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
 }
 
 

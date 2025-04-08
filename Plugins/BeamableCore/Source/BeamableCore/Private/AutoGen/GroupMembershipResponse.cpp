@@ -30,7 +30,7 @@ void UGroupMembershipResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UGroupMembershipResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bMember = Bag->GetBoolField(TEXT("member"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("member")), bMember);
 	Type = UGroupTypeLibrary::SerializationNameToGroupType(Bag->GetStringField(TEXT("type")));
 	UBeamJsonUtils::DeserializeUObject<UGroupMetaData*>("group", Bag, Group, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<int64>(Bag->GetArrayField(TEXT("subGroups")), SubGroups, OuterOwner);

@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
@@ -50,7 +50,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Leaderboards", DisplayName="Beam - Make GetView",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Max,_Focus,_bFriends,_From,_Outlier,_bGuild,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Leaderboards|Backend", DisplayName="Make GetView",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Max,_Focus,_bFriends,_From,_Outlier,_bGuild,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UGetViewRequest* Make(FString _ObjectId, FOptionalInt32 _Max, FOptionalInt64 _Focus, FOptionalBool _bFriends, FOptionalInt32 _From, FOptionalInt64 _Outlier, FOptionalBool _bGuild, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

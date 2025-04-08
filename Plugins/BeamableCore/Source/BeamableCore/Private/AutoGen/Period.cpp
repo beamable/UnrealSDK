@@ -19,7 +19,7 @@ void UPeriod::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) c
 
 void UPeriod::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Start = Bag->GetStringField(TEXT("start"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("start")), Start);
 	UBeamJsonUtils::DeserializeOptional<FString>("end", Bag, End, OuterOwner);
 }
 

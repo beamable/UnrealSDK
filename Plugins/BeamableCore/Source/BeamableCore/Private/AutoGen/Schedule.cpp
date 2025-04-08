@@ -25,7 +25,7 @@ void USchedule::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer)
 
 void USchedule::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	ActiveFrom = Bag->GetStringField(TEXT("activeFrom"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("activeFrom")), ActiveFrom);
 	UBeamJsonUtils::DeserializeOptional<FString>("description", Bag, Description, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("activeTo", Bag, ActiveTo, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("crons", Bag, Crons, OuterOwner);

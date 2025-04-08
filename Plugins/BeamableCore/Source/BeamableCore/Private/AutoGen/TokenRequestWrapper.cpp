@@ -51,7 +51,7 @@ void UTokenRequestWrapper::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 
 void UTokenRequestWrapper::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	GrantType = Bag->GetStringField(TEXT("grant_type"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("grant_type")), GrantType);
 	UBeamJsonUtils::DeserializeOptional<bool>("customerScoped", Bag, bCustomerScoped, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("device_id", Bag, DeviceId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("provider_service", Bag, ProviderService, OuterOwner);

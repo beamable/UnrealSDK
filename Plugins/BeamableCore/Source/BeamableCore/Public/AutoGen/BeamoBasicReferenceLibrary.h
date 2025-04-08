@@ -13,12 +13,12 @@ class BEAMABLECORE_API UBeamoBasicReferenceLibrary : public UBlueprintFunctionLi
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - BeamoBasicReference To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="BeamoBasicReference To JSON String")
 	static FString BeamoBasicReferenceToJsonString(const UBeamoBasicReference* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make BeamoBasicReference", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make BeamoBasicReference", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UBeamoBasicReference* Make(bool bArchived, bool bArm, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break BeamoBasicReference", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break BeamoBasicReference", meta=(NativeBreakFunc))
 	static void Break(const UBeamoBasicReference* Serializable, bool& bArchived, bool& bArm);
 };

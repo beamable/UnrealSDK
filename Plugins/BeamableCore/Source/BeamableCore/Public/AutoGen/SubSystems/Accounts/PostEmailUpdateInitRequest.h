@@ -36,7 +36,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Accounts", DisplayName="Beam - Make PostEmailUpdateInit",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_CodeType,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Accounts|Backend", DisplayName="Make PostEmailUpdateInit",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_CodeType,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPostEmailUpdateInitRequest* Make(FString _NewEmail, FOptionalString _CodeType, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

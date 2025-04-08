@@ -100,6 +100,9 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				{
 					FString ValStr = EnumToSerializationName<TDataType>(*val);
 					Serializer->WriteValue(Identifier, ValStr);
+				}else if constexpr (std::is_same_v<TDataType, FDateTime>)
+				{
+					Serializer->WriteValue(Identifier, val->ToIso8601());
 				}
 				else
 				{
@@ -195,6 +198,10 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				{
 					FString ValStr = EnumToSerializationName<TDataType>(Value);
 					Serializer->WriteValue(ValStr);
+				}
+				if constexpr (std::is_same_v<TDataType, FDateTime>)
+				{
+					Serializer->WriteValue(Value.ToIso8601());
 				}
 				else
 				{
@@ -299,6 +306,9 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				{
 					FString ValStr = EnumToSerializationName<TDataType>(Kvp.Value);
 					Serializer->WriteValue(Kvp.Key, ValStr);
+				}else if constexpr (std::is_same_v<TMapType, FDateTime>)
+				{
+					Serializer->WriteValue(Kvp.Key,  Kvp.Value.ToIso8601());
 				}
 				else
 				{
@@ -751,6 +761,13 @@ public:
 						const FString Val = Item->AsString();
 						ParsedMap.Add(Key, Val);
 					}
+					else if constexpr (std::is_same_v<TDataType, FDateTime>)
+					{
+						const FString Val = Item->AsString();
+						FDateTime Parsed;
+						FDateTime::ParseIso8601(*Val, Parsed);
+						ParsedMap.Add(Key, Parsed);
+					}
 					else if constexpr (TIsDerivedFrom<TDataType, FBeamSemanticType>::Value)
 					{
 						TDataType Parsed;
@@ -937,6 +954,12 @@ public:
 						const FString Val = ArrayJsonItem->AsString();
 						bool Parsed = Val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
 						ParsedArray.Add(Parsed);
+					}else if constexpr (std::is_same_v<TDataType, FDateTime>)
+					{
+						const FString Val = ArrayJsonItem->AsString();
+						FDateTime Parsed;
+						FDateTime::ParseIso8601(*Val, Parsed);
+						ParsedArray.Add(Parsed);
 					}
 				}
 				FBeamOptional::Set(&ToDeserialize, &ParsedArray);
@@ -954,6 +977,12 @@ public:
 					Parsed->OuterOwner = OwnerOuter;
 					Parsed->BeamDeserializeProperties(JsonField->AsObject());
 					FBeamOptional::Set(&ToDeserialize, &Parsed);
+				}
+				else if constexpr (std::is_same_v<TOptionalType, FDateTime>)
+				{
+					FDateTime dateTime;
+					FDateTime::ParseIso8601(*JsonField->AsString(), dateTime);
+					FBeamOptional::Set(&ToDeserialize, &dateTime);
 				}
 				else if constexpr (std::is_same_v<TOptionalType, FString>)
 				{
@@ -1106,6 +1135,13 @@ public:
 				TDataType ParsedEnum = SerializationNameToEnum<TDataType>(Parsed);
 				Array.Add(ParsedEnum);
 			}
+			else if constexpr (std::is_same_v<TDataType, FDateTime>)
+			{
+				const FString val = JsonValue->AsString();
+				FDateTime Parsed;
+				FDateTime::ParseIso8601(*val, Parsed);
+				Array.Add(Parsed);
+			}
 			else if constexpr (std::is_same_v<TDataType, int>)
 			{
 				const FString val = JsonValue->AsString();
@@ -1220,6 +1256,13 @@ public:
 				FString Parsed = Value.Value->AsString();
 				TMapType ParsedEnum = SerializationNameToEnum<TDataType>(Parsed);
 				Map.Add(Key, ParsedEnum);
+			}
+			else if constexpr (std::is_same_v<TMapType, FDateTime>)
+			{
+				const FString Val = Value.Value->AsString();
+				FDateTime Parsed;
+				FDateTime::ParseIso8601(*Val, Parsed);
+				Map.Add(Key, Parsed);
 			}
 			else if constexpr (std::is_same_v<TMapType, int>)
 			{

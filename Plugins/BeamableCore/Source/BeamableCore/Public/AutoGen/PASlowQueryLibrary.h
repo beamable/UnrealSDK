@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPASlowQueryLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - PASlowQuery To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="PASlowQuery To JSON String")
 	static FString PASlowQueryToJsonString(const UPASlowQuery* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make PASlowQuery", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make PASlowQuery", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UPASlowQuery* Make(FString Line, FString Namespace, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break PASlowQuery", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break PASlowQuery", meta=(NativeBreakFunc))
 	static void Break(const UPASlowQuery* Serializable, FString& Line, FString& Namespace);
 };

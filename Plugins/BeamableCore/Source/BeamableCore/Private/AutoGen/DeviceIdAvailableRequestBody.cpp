@@ -17,7 +17,7 @@ void UDeviceIdAvailableRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSer
 
 void UDeviceIdAvailableRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	DeviceId = Bag->GetStringField(TEXT("deviceId"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("deviceId")), DeviceId);
 }
 
 

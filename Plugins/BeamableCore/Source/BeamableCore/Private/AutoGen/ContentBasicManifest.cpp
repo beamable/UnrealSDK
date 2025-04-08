@@ -17,6 +17,8 @@ void UContentBasicManifest::BeamSerializeProperties(TUnrealJsonSerializer& Seria
 	Serializer->WriteValue(TEXT("created"), Created);
 	UBeamJsonUtils::SerializeArray<UBaseContentReference*>(TEXT("references"), References, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("archived"), &bArchived, Serializer);
+	UBeamJsonUtils::SerializeOptional<int64>(TEXT("publisherAccountId"), &PublisherAccountId, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("uid"), &Uid, Serializer);
 }
 
 void UContentBasicManifest::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
@@ -25,16 +27,20 @@ void UContentBasicManifest::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 	Serializer->WriteValue(TEXT("checksum"), Checksum);
 	Serializer->WriteValue(TEXT("created"), Created);
 	UBeamJsonUtils::SerializeArray<UBaseContentReference*>(TEXT("references"), References, Serializer);
-	UBeamJsonUtils::SerializeOptional<bool>(TEXT("archived"), &bArchived, Serializer);		
+	UBeamJsonUtils::SerializeOptional<bool>(TEXT("archived"), &bArchived, Serializer);
+	UBeamJsonUtils::SerializeOptional<int64>(TEXT("publisherAccountId"), &PublisherAccountId, Serializer);
+	UBeamJsonUtils::SerializeOptional<FString>(TEXT("uid"), &Uid, Serializer);		
 }
 
 void UContentBasicManifest::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("id")), Id, OuterOwner);
-	Checksum = Bag->GetStringField(TEXT("checksum"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("created")), Created);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("checksum")), Checksum);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("created")), Created);
 	UBeamJsonUtils::DeserializeArray<UBaseContentReference*>(Bag->GetArrayField(TEXT("references")), References, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("archived", Bag, bArchived, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<int64>("publisherAccountId", Bag, PublisherAccountId, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FString>("uid", Bag, Uid, OuterOwner);
 }
 
 

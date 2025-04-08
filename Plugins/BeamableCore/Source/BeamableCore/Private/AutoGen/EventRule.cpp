@@ -19,8 +19,8 @@ void UEventRule::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer
 
 void UEventRule::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Rule = Bag->GetStringField(TEXT("rule"));
-	Value = Bag->GetStringField(TEXT("value"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("rule")), Rule);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("value")), Value);
 }
 
 

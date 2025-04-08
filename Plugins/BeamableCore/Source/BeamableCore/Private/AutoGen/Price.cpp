@@ -23,8 +23,8 @@ void UPrice::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) co
 
 void UPrice::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Type = Bag->GetStringField(TEXT("type"));
-	Symbol = Bag->GetStringField(TEXT("symbol"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("type")), Type);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
 	UBeamJsonUtils::DeserializeOptional<int32>("amount", Bag, Amount, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<int32>, int32>("schedule", Bag, Schedule, OuterOwner);
 }

@@ -25,11 +25,11 @@ void USteamOrderInfoItem::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 
 void USteamOrderInfoItem::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("vat")), Vat);
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("amount")), Amount);
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("itemid")), Itemid);
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("qty")), Qty);
-	Itemstatus = Bag->GetStringField(TEXT("itemstatus"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("vat")), Vat);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("amount")), Amount);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("itemid")), Itemid);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("qty")), Qty);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("itemstatus")), Itemstatus);
 }
 
 

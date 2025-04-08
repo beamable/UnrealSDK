@@ -43,12 +43,12 @@ void UPaymentAuditEntryViewModel::BeamSerializeProperties(TUnrealPrettyJsonSeria
 
 void UPaymentAuditEntryViewModel::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Providerid = Bag->GetStringField(TEXT("providerid"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("txid")), Txid);
-	Providername = Bag->GetStringField(TEXT("providername"));
-	Txstate = Bag->GetStringField(TEXT("txstate"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("providerid")), Providerid);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("txid")), Txid);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("providername")), Providername);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("txstate")), Txstate);
 	UBeamJsonUtils::DeserializeUObject<UPaymentDetailsEntryViewModel*>("details", Bag, Details, OuterOwner);
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("gt")), Gt);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("gt")), Gt);
 	UBeamJsonUtils::DeserializeArray<UPaymentHistoryEntryViewModel*>(Bag->GetArrayField(TEXT("history")), History, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UEntitlementGenerator*>(Bag->GetArrayField(TEXT("entitlements")), Entitlements, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("version", Bag, Version, OuterOwner);

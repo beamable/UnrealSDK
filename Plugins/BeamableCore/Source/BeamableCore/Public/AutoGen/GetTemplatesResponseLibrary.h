@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetTemplatesResponseLibrary : public UBlueprintFunctionL
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - GetTemplatesResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GetTemplatesResponse To JSON String")
 	static FString GetTemplatesResponseToJsonString(const UGetTemplatesResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GetTemplatesResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GetTemplatesResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UGetTemplatesResponse* Make(TArray<UServiceTemplate*> Templates, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GetTemplatesResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GetTemplatesResponse", meta=(NativeBreakFunc))
 	static void Break(const UGetTemplatesResponse* Serializable, TArray<UServiceTemplate*>& Templates);
 };

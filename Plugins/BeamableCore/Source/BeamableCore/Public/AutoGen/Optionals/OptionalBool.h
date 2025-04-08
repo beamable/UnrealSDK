@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamOptional.h"
-
+#include "Serialization/BeamJsonUtils.h"
 
 #include "OptionalBool.generated.h"
 

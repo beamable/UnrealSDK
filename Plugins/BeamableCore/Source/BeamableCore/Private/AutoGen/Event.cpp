@@ -39,9 +39,9 @@ void UEvent::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) co
 
 void UEvent::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Name = Bag->GetStringField(TEXT("name"));
-	StartDate = Bag->GetStringField(TEXT("start_date"));
-	Symbol = Bag->GetStringField(TEXT("symbol"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("start_date")), StartDate);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
 	UBeamJsonUtils::DeserializeArray<UEventPhase*>(Bag->GetArrayField(TEXT("phases")), Phases, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int32>("partition_size", Bag, PartitionSize, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UEventGroupRewards*>("group_rewards", Bag, GroupRewards, OuterOwner);

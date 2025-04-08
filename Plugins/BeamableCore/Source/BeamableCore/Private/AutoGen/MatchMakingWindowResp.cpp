@@ -19,7 +19,7 @@ void UMatchMakingWindowResp::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 
 void UMatchMakingWindowResp::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Difficulty = Bag->GetIntegerField(TEXT("difficulty"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("difficulty")), Difficulty);
 	UBeamJsonUtils::DeserializeArray<UMatchMakingRanking*>(Bag->GetArrayField(TEXT("matches")), Matches, OuterOwner);
 }
 

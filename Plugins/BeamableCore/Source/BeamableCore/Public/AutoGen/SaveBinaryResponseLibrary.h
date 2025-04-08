@@ -13,12 +13,12 @@ class BEAMABLECORE_API USaveBinaryResponseLibrary : public UBlueprintFunctionLib
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - SaveBinaryResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="SaveBinaryResponse To JSON String")
 	static FString SaveBinaryResponseToJsonString(const USaveBinaryResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make SaveBinaryResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make SaveBinaryResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static USaveBinaryResponse* Make(TArray<UBinaryReference*> Binary, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break SaveBinaryResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break SaveBinaryResponse", meta=(NativeBreakFunc))
 	static void Break(const USaveBinaryResponse* Serializable, TArray<UBinaryReference*>& Binary);
 };

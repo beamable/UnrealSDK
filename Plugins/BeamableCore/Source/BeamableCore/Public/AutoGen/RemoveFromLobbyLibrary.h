@@ -13,12 +13,12 @@ class BEAMABLECORE_API URemoveFromLobbyLibrary : public UBlueprintFunctionLibrar
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - RemoveFromLobby To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="RemoveFromLobby To JSON String")
 	static FString RemoveFromLobbyToJsonString(const URemoveFromLobby* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make RemoveFromLobby", meta=(DefaultToSelf="Outer", AdvancedDisplay="PlayerId, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make RemoveFromLobby", meta=(DefaultToSelf="Outer", AdvancedDisplay="PlayerId, Outer", NativeMakeFunc))
 	static URemoveFromLobby* Make(FOptionalBeamGamerTag PlayerId, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break RemoveFromLobby", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break RemoveFromLobby", meta=(NativeBreakFunc))
 	static void Break(const URemoveFromLobby* Serializable, FOptionalBeamGamerTag& PlayerId);
 };

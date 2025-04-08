@@ -17,7 +17,7 @@ void UObjectRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void UObjectRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	ObjectKey = Bag->GetStringField(TEXT("objectKey"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("objectKey")), ObjectKey);
 }
 
 

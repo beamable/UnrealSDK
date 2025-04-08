@@ -24,8 +24,8 @@ void UMailTemplate::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 
 void UMailTemplate::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Subject = Bag->GetStringField(TEXT("subject"));
-	Body = Bag->GetStringField(TEXT("body"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("subject")), Subject);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("body")), Body);
 }
 
 

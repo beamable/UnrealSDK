@@ -25,7 +25,7 @@ void UEventClaimResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& S
 void UEventClaimResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeUObject<UEventPlayerStateView*>("view", Bag, View, OuterOwner);
-	GameRspJson = Bag->GetStringField(TEXT("gameRspJson"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("gameRspJson")), GameRspJson);
 }
 
 

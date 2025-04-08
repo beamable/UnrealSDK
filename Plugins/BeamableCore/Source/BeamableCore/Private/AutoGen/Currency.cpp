@@ -25,8 +25,8 @@ void UCurrency::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer)
 
 void UCurrency::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("amount")), Amount);
-	Id = Bag->GetStringField(TEXT("id"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("amount")), Amount);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
 	UBeamJsonUtils::DeserializeOptional<int64>("updatedAt", Bag, UpdatedAt, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UFederationInfo*>("proxy", Bag, Proxy, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UCurrencyProperty*>, UCurrencyProperty*>("properties", Bag, Properties, OuterOwner);

@@ -35,10 +35,10 @@ void UPlayerListingView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Se
 
 void UPlayerListingView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bActive = Bag->GetBoolField(TEXT("active"));
-	bQueryAfterPurchase = Bag->GetBoolField(TEXT("queryAfterPurchase"));
-	Symbol = Bag->GetStringField(TEXT("symbol"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("secondsActive")), SecondsActive);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("active")), bActive);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("queryAfterPurchase")), bQueryAfterPurchase);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("secondsActive")), SecondsActive);
 	UBeamJsonUtils::DeserializeUObject<UPlayerOfferView*>("offer", Bag, Offer, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UClientDataEntry*>(Bag->GetArrayField(TEXT("clientDataList")), ClientDataList, OuterOwner);
 	UBeamJsonUtils::DeserializeMap<FString>(Bag->GetObjectField(TEXT("clientData")), ClientData, OuterOwner);

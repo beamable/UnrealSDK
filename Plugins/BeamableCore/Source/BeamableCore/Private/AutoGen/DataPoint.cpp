@@ -19,8 +19,8 @@ void UDataPoint::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer
 
 void UDataPoint::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Timestamp = Bag->GetStringField(TEXT("timestamp"));
-	Value = Bag->GetStringField(TEXT("value"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("timestamp")), Timestamp);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("value")), Value);
 }
 
 

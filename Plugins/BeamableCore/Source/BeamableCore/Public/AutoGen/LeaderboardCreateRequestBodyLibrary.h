@@ -13,12 +13,12 @@ class BEAMABLECORE_API ULeaderboardCreateRequestBodyLibrary : public UBlueprintF
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - LeaderboardCreateRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="LeaderboardCreateRequestBody To JSON String")
 	static FString LeaderboardCreateRequestBodyToJsonString(const ULeaderboardCreateRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make LeaderboardCreateRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bPartitioned, FreezeTime, ScoreName, CohortSettings, Permissions, MaxEntries, Ttl, Derivatives, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make LeaderboardCreateRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bPartitioned, FreezeTime, ScoreName, CohortSettings, Permissions, MaxEntries, Ttl, Derivatives, Outer", NativeMakeFunc))
 	static ULeaderboardCreateRequestBody* Make(bool bSharded, FOptionalBool bPartitioned, FOptionalInt64 FreezeTime, FOptionalString ScoreName, FOptionalLeaderboardCohortSettings CohortSettings, FOptionalBeamClientPermission Permissions, FOptionalInt32 MaxEntries, FOptionalInt64 Ttl, FOptionalArrayOfString Derivatives, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break LeaderboardCreateRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break LeaderboardCreateRequestBody", meta=(NativeBreakFunc))
 	static void Break(const ULeaderboardCreateRequestBody* Serializable, bool& bSharded, FOptionalBool& bPartitioned, FOptionalInt64& FreezeTime, FOptionalString& ScoreName, FOptionalLeaderboardCohortSettings& CohortSettings, FOptionalBeamClientPermission& Permissions, FOptionalInt32& MaxEntries, FOptionalInt64& Ttl, FOptionalArrayOfString& Derivatives);
 };

@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalBeamTag struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Make Optional BeamTag", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Make Optional BeamTag", NativeMakeFunc))
 	static FOptionalBeamTag MakeOptional(FBeamTag Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The FBeamTag to convert.
 	 * @return An optional with the BeamTag set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta = (DisplayName = "Beam - BeamTag To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta = (DisplayName = "BeamTag To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalBeamTag Conv_OptionalFromValue(FBeamTag Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Optionals", meta=(DisplayName="Beam - Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Shared|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalBeamTag& Optional, FBeamTag& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Get Optional's BeamTag Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Get Optional's BeamTag Value"))
 	static FBeamTag GetOptionalValue(const FOptionalBeamTag& Optional, FBeamTag DefaultValue, bool& WasSet);
 
 	

@@ -47,9 +47,9 @@ void UListing::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) 
 
 void UListing::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	OfferSymbol = Bag->GetStringField(TEXT("offerSymbol"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("offerSymbol")), OfferSymbol);
 	UBeamJsonUtils::DeserializeUObject<UPrice*>("price", Bag, Price, OuterOwner);
-	Symbol = Bag->GetStringField(TEXT("symbol"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
 	UBeamJsonUtils::DeserializeArray<UCohortRequirement*>(Bag->GetArrayField(TEXT("cohortRequirements")), CohortRequirements, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UPlayerStatRequirement*>(Bag->GetArrayField(TEXT("playerStatRequirements")), PlayerStatRequirements, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UEntitlementRequirement*>(Bag->GetArrayField(TEXT("entitlementRequirements")), EntitlementRequirements, OuterOwner);

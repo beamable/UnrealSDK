@@ -21,9 +21,9 @@ void ULeaderboardGetMatchRequestBody::BeamSerializeProperties(TUnrealPrettyJsonS
 
 void ULeaderboardGetMatchRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	PoolSize = Bag->GetIntegerField(TEXT("poolSize"));
-	Windows = Bag->GetIntegerField(TEXT("windows"));
-	WindowSize = Bag->GetIntegerField(TEXT("windowSize"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("poolSize")), PoolSize);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("windows")), Windows);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("windowSize")), WindowSize);
 }
 
 

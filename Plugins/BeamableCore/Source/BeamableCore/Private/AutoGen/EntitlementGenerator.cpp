@@ -27,8 +27,8 @@ void UEntitlementGenerator::BeamSerializeProperties(TUnrealPrettyJsonSerializer&
 
 void UEntitlementGenerator::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Symbol = Bag->GetStringField(TEXT("symbol"));
-	Action = Bag->GetStringField(TEXT("action"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("action")), Action);
 	UBeamJsonUtils::DeserializeOptional<int32>("quantity", Bag, Quantity, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UEntitlementClaimWindow*>("claimWindow", Bag, ClaimWindow, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("specialization", Bag, Specialization, OuterOwner);

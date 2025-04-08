@@ -13,12 +13,12 @@ class BEAMABLECORE_API UEventPhaseEndRequestBodyLibrary : public UBlueprintFunct
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - EventPhaseEndRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="EventPhaseEndRequestBody To JSON String")
 	static FString EventPhaseEndRequestBodyToJsonString(const UEventPhaseEndRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make EventPhaseEndRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Time, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make EventPhaseEndRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Time, Outer", NativeMakeFunc))
 	static UEventPhaseEndRequestBody* Make(FOptionalString Time, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break EventPhaseEndRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break EventPhaseEndRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UEventPhaseEndRequestBody* Serializable, FOptionalString& Time);
 };

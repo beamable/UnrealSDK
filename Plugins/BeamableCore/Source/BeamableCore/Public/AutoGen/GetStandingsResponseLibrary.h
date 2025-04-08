@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetStandingsResponseLibrary : public UBlueprintFunctionL
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - GetStandingsResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GetStandingsResponse To JSON String")
 	static FString GetStandingsResponseToJsonString(const UGetStandingsResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GetStandingsResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Me, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GetStandingsResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Me, Outer", NativeMakeFunc))
 	static UGetStandingsResponse* Make(TArray<UTournamentEntry*> Entries, FOptionalTournamentEntry Me, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GetStandingsResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GetStandingsResponse", meta=(NativeBreakFunc))
 	static void Break(const UGetStandingsResponse* Serializable, TArray<UTournamentEntry*>& Entries, FOptionalTournamentEntry& Me);
 };

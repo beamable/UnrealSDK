@@ -17,7 +17,7 @@ void UEndTransactionRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void UEndTransactionRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Transaction = Bag->GetStringField(TEXT("transaction"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("transaction")), Transaction);
 }
 
 

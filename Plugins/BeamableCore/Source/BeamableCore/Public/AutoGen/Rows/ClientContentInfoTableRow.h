@@ -3,9 +3,9 @@
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
 #include "BeamableCore/Public/AutoGen/Enums/ContentType.h"
-
-
-
+#include "Serialization/BeamJsonUtils.h"
+#include "Serialization/BeamJsonUtils.h"
+#include "Serialization/BeamJsonUtils.h"
 
 
 #include "ClientContentInfoTableRow.generated.h"

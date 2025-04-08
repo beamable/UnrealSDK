@@ -19,7 +19,7 @@ void UMyMailUpdate::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seriali
 
 void UMyMailUpdate::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
 	UBeamJsonUtils::DeserializeUObject<UUpdateMailRequestBody*>("update", Bag, Update, OuterOwner);
 }
 

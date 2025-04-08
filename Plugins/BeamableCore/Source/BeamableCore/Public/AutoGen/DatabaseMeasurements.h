@@ -6,6 +6,7 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfDatabaseMeasurement.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Link.h"
+#include "Serialization/BeamJsonUtils.h"
 
 #include "DatabaseMeasurements.generated.h"
 

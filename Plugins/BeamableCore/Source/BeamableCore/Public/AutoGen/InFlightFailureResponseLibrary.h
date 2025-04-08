@@ -13,12 +13,12 @@ class BEAMABLECORE_API UInFlightFailureResponseLibrary : public UBlueprintFuncti
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - InFlightFailureResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="InFlightFailureResponse To JSON String")
 	static FString InFlightFailureResponseToJsonString(const UInFlightFailureResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make InFlightFailureResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make InFlightFailureResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UInFlightFailureResponse* Make(TArray<UInFlightFailure*> Failures, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break InFlightFailureResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break InFlightFailureResponse", meta=(NativeBreakFunc))
 	static void Break(const UInFlightFailureResponse* Serializable, TArray<UInFlightFailure*>& Failures);
 };

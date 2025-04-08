@@ -35,9 +35,9 @@ void UPlayerOfferView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 
 void UPlayerOfferView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Coupons = Bag->GetIntegerField(TEXT("coupons"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("coupons")), Coupons);
 	UBeamJsonUtils::DeserializeUObject<UPrice*>("price", Bag, Price, OuterOwner);
-	Symbol = Bag->GetStringField(TEXT("symbol"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("titles")), Titles, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UItemCreateRequestBody*>(Bag->GetArrayField(TEXT("obtainItems")), ObtainItems, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UCurrencyChange*>(Bag->GetArrayField(TEXT("obtainCurrency")), ObtainCurrency, OuterOwner);
