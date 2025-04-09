@@ -1,0 +1,2063 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://beamable.github.io/UnrealSDK/user-reference/beamable-services/content/">
+      
+      
+        <link rel="prev" href="../identity/">
+      
+      
+        <link rel="next" href="../stats/">
+      
+      
+      <link rel="icon" href="../../../assets/images/beamable-badge.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.11">
+    
+    
+      
+        <title>Content - Unreal SDK</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.4af4bdda.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+   <link href="../../../assets/stylesheets/glightbox.min.css" rel="stylesheet"/><style>
+    html.glightbox-open { overflow: initial; height: 100%; }
+    .gslide-title { margin-top: 0px; user-select: text; }
+    .gslide-desc { color: #666; user-select: text; }
+    .gslide-image img { background: white; }
+    .gscrollbar-fixer { padding-right: 15px; }
+    .gdesc-inner { font-size: 0.75rem; }
+    body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color);}
+    body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color);}
+    body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color);}</style> <script src="../../../assets/javascripts/glightbox.min.js"></script></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#content-system" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Unreal SDK" class="md-header__button md-logo" aria-label="Unreal SDK" data-md-component="logo">
+      
+  <img src="../../../assets/images/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Unreal SDK
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Content
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Beamable/UnrealSDK" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Beamable/UnrealSDK
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Unreal SDK" class="md-nav__button md-logo" aria-label="Unreal SDK" data-md-component="logo">
+      
+  <img src="../../../assets/images/logo.png" alt="logo">
+
+    </a>
+    Unreal SDK
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Beamable/UnrealSDK" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Beamable/UnrealSDK
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    What's New
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            What's New
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../whatsnew/1.1.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    1.1.0
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../whatsnew/1.0.0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    1.0.0
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    User Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            User Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SDK Technical Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Runtime Systems
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            Runtime Systems
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runtime-systems/user-slots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    User Slots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runtime-systems/operations-and-waits/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Operations & Waits
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runtime-systems/connectivity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Connectivity Management
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runtime-systems/lower-level/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Lower Level SDK
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Beamable Services
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            Beamable Services
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../identity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Indentity
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Content
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Content
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#content-window" class="md-nav__link">
+    <span class="md-ellipsis">
+      Content Window
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Content Window">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creating-and-deleting-content" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating and Deleting Content
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#downloading-and-publishing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Downloading and Publishing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ubeamcontentobject-and-custom-content-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      UBeamContentObject and Custom Content Types
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="UBeamContentObject and Custom Content Types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-content-serialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supported Content Serialization
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#runtime-lifecycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runtime LifeCycle
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Runtime LifeCycle">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#baking-content" class="md-nav__link">
+    <span class="md-ellipsis">
+      Baking Content
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notes-on-binary-serialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notes on Binary Serialization
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Stats
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../announcements/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Announcements
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Inventory
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stores/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Stores
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../lobbies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Lobbies
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../matchmaking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Matchmaking
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Microservices
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            Microservices
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../microservices/microservices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../microservices/setting-microservices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Setting Up Microservices
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Federation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            Federation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../federation/federation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../federation/federated-login/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Federated Login
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../federation/federated-game-server/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Federated Game Server
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../federation/federated-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Federated Inventory
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Servers and Builds
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            Servers and Builds
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../servers-and-builds/dedicated-servers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dedicated Servers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../servers-and-builds/linux-builds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Linux Builds
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_7" id="__nav_4_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Unreal Online Subsystems
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_7">
+            <span class="md-nav__icon md-icon"></span>
+            Unreal Online Subsystems
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../online-subsystems/online-subsystem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../online-subsystems/online-subsystem-identity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Online Subsystem Identity
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Samples
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Samples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../samples/intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Setup Sample Projects
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Sample Projects
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            Sample Projects
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../samples/live-ops-demo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    LiveOps
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../samples/discord-demo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Discord
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../samples/steam-demo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Steam
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../samples/hathora-demo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Hathora
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#content-window" class="md-nav__link">
+    <span class="md-ellipsis">
+      Content Window
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Content Window">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creating-and-deleting-content" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating and Deleting Content
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#downloading-and-publishing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Downloading and Publishing
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ubeamcontentobject-and-custom-content-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      UBeamContentObject and Custom Content Types
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="UBeamContentObject and Custom Content Types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-content-serialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supported Content Serialization
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#runtime-lifecycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runtime LifeCycle
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Runtime LifeCycle">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#baking-content" class="md-nav__link">
+    <span class="md-ellipsis">
+      Baking Content
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notes-on-binary-serialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Notes on Binary Serialization
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="content-system">Content System<a class="headerlink" href="#content-system" title="Permanent link">¶</a></h1>
+<p>Beamable Content System is a read-only (at runtime) arbitrary data store that allows you to define arbitrary JSON-serialized <em>content objects</em> for use
+at runtime. Several of Beamable's own managed features also use content in some way or another.</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">¶</a></h2>
+<p>The system is manifest-based. This means:</p>
+<ul>
+<li>That a <strong>manifest</strong> is an list of published content objects in a realm indexed by their content ids.</li>
+<li>That publishing a <strong>manifest</strong> means first uploading all the individual content objects to Beamable and, after that, uploading a manifest that knows all where each content lives.</li>
+<li>That downloading a <strong>manifest</strong> does not necessarily imply downloading the individual content object jsons (more information below).</li>
+</ul>
+<p>We don't provide server-side schema enforcing which means you are solely responsible for maintaining backward compatibility for your custom content objects.</p>
+<p>Each individual content object in each manifest is identified by an ID with the format below:</p>
+<blockquote>
+<p>ContentTypeId.ContentName</p>
+</blockquote>
+<p><code>ContentType</code> expands to the hierarchy of <code>UBeamContentObject</code> types, starting from the root type. For example:</p>
+<blockquote>
+<p><code>UMyGameItemContent</code> inherits from <code>UBeamItemContent</code>
+<code>items.mygameitem.MyGameItemName</code></p>
+</blockquote>
+<p>The last part of the id is the only one you should edit through the <strong>Content Window</strong>.</p>
+<h2 id="content-window">Content Window<a class="headerlink" href="#content-window" title="Permanent link">¶</a></h2>
+<p>The content window is the main tool to create, edit and publish new content to your project.</p>
+<p><a class="glightbox" href="../../../media/imgs/content-window.png" data-type="image" data-width="auto" data-height="auto" data-desc-position="bottom"><img alt="content-window.png" src="../../../media/imgs/content-window.png" /></a></p>
+<p>The list of content objects displayed in the content window is very similar to a "Status" window in Git or some other version control systems. Beside show your local content it also present the differences between your local state and the state in your currently targeted <code>Realm</code>.</p>
+<p>These differences are represented by the <code>[+]</code>,<code>[-]</code> and <code>[M]</code> signs.</p>
+<ul>
+<li><code>[+]</code>: Means the content exists locally but NOT in the realm.</li>
+<li><code>[M]</code>: Means the content exists BOTH locally and in the realm AND that it is modified relative to the one in the realm.</li>
+<li><code>[-]</code>: Means the content DOES NOT exists locally but DOES exist in the realm.</li>
+</ul>
+<p>If the content is not marked with any of these signs, it means it is in sync with the realm.</p>
+<div class="admonition warning">
+<p class="admonition-title">Changing Realm</p>
+<p>Changing Realms does NOT auto-sync your local content with that realm's content. This means that you will see changes to these (<code>[+]</code>, <code>[M]</code>, <code>[NC]</code>, <code>[-]</code>) signs to reflect their new status against the new target realm.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Where can I find the content files?</p>
+<p>While you edit the content objects as <code>UObject</code> and a details panel, these are not stored as <code>UDataAsset</code> or anything inside Unreal itself. These are stored as individual JSON objects inside <code>ProjectRoot/.beamable/content/global</code> folder. This makes it more friendly for version control systems.</p>
+</div>
+<h3 id="creating-and-deleting-content">Creating and Deleting Content<a class="headerlink" href="#creating-and-deleting-content" title="Permanent link">¶</a></h3>
+<p><a class="glightbox" href="../../../media/imgs/content-add-content.gif" data-type="image" data-width="auto" data-height="auto" data-desc-position="bottom"><img alt="content-add-content.gif" src="../../../media/imgs/content-add-content.gif" /></a></p>
+<p>To create a new piece of content Locally:</p>
+<ol>
+<li>Select a content type from the <strong>Type</strong> dropdown.</li>
+<li>Type in a name for the content; it cannot contain whitespaces or <code>.</code>.</li>
+<li>Click the <code>Create</code> button.</li>
+</ol>
+<p>Deleting content can be done simply by pressing <code>Del</code> on your keyboard with a item selected or clicking the <code>Delete</code> button in the Item Details.</p>
+<p>Items created locally will have a <code>[+]</code> sign next to them informing that they are not in the realm yet and will be added in the next publish.</p>
+<p>Items deleted locally that have counterparts on the realm will have a <code>[-]</code> sign next to them informing that they will be removed from the realm in the next publish.</p>
+<h3 id="downloading-and-publishing">Downloading and Publishing<a class="headerlink" href="#downloading-and-publishing" title="Permanent link">¶</a></h3>
+<p>To sync your local content with the realm, you have to <strong>Download</strong> and <strong>Publish</strong>.</p>
+<p><strong>Download</strong> will collect all content from the realm, adding new content, replacing any <code>[M]</code> and restoring any <code>[-]</code> values to match the ones in the realm. It is similar to selecting all non-new files in a version control and "discarding changes".</p>
+<p><strong>Publish</strong> is similar to a commit. This will make the content in the realm the same as your local content. After publish, all pieces of content will match the realm and <code>[-]</code> content should disappear.</p>
+<div class="admonition warning">
+<p class="admonition-title">Publishing is a Destructive Operation</p>
+<p>Publishing <strong>replace all the content in the Realm with your local content</strong>. This means that if you have multiple users (Designers for example) working on the same realm, you might override each other's changes if you don't <strong>Download</strong> before <strong>Publishing</strong>. We highly recommend each user working in content to work in your own realm.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Workflow for Working as a Team</p>
+<p>Here is a sample worklow for a team of multiple developers:</p>
+<ul>
+<li>Each developer has it own Realm (Example: Realm1, Realm2, Realm3)</li>
+<li>The <code>Dev</code> Branch (If using Git) of the project is the <strong>Source of Truth</strong> shared for all developers, and each developer is working on this branch</li>
+<li>Each Developer tests their changes on their own realm and when done commits those changes to the <code>Dev</code> Branch so the rest of team can have access to this.</li>
+<li>After pulling the <code>Dev</code> Branch, each developer should publish the new version of the content to their realms,so here can keep working in sync with the Dev branch.</li>
+</ul>
+</div>
+<h2 id="ubeamcontentobject-and-custom-content-types"><code>UBeamContentObject</code> and Custom Content Types<a class="headerlink" href="#ubeamcontentobject-and-custom-content-types" title="Permanent link">¶</a></h2>
+<p>In Unreal, you define content schemas as sub-classes of <code>UBeamContentObject</code> or any of its sub-types available in the SDK ( <code>UBeamItemContent</code> , <code>UBeamGameTypeContent</code> , etc...). Every content type must define a unique string id for that particular type and a function that returns it.</p>
+<p>The following example of <code>UBeamCurrencyContent</code> shows how that can be done:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">UCLASS</span><span class="p">(</span><span class="n">BlueprintType</span><span class="p">)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">BEAMABLECORE_API</span><span class="w"> </span><span class="n">UBeamCurrencyContent</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">UBeamContentObject</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">{</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="n">GENERATED_BODY</span><span class="p">()</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="k">public</span><span class="o">:</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="c1">// Define the ContentTypeId for this type.</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="n">UFUNCTION</span><span class="p">()</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">GetContentType_UBeamCurrencyContent</span><span class="p">(</span><span class="n">FString</span><span class="o">&amp;</span><span class="w"> </span><span class="n">Result</span><span class="p">){</span><span class="w"> </span><span class="n">Result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;currency&quot;</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">    </span><span class="c1">// Define the properties you wish</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">    </span><span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">,</span><span class="w"> </span><span class="n">BlueprintReadWrite</span><span class="p">)</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">    </span><span class="n">FBeamClientPermission</span><span class="w"> </span><span class="n">clientPermission</span><span class="p">;</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">    </span><span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">,</span><span class="w"> </span><span class="n">BlueprintReadWrite</span><span class="p">)</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">    </span><span class="n">int64</span><span class="w"> </span><span class="n">startingAmount</span><span class="p">;</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">    </span><span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">,</span><span class="w"> </span><span class="n">BlueprintReadWrite</span><span class="p">,</span><span class="w"> </span><span class="n">DisplayName</span><span class="o">=</span><span class="s">&quot;Federation&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">    </span><span class="n">FOptionalBeamFederation</span><span class="w"> </span><span class="n">external</span><span class="p">;</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="p">};</span>
+</code></pre></div>
+<p>Please remember to annotate your <code>UPROPERTY</code> with <code>EditAnywhere</code> and either:</p>
+<ul>
+<li><code>BlueprintReadOnly</code> if you are not writing utilities to create the objects for you.</li>
+<li><code>BlueprintReadWrite</code> if you are writing utilities to create the objects for you.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Microservices</p>
+<p>In a lot of cases, you will want to access these content objects in Microservices.  For all of Beamable's own content-types ( <code>UBeamCurrencyContent</code> , etc...) you will find equivalents in the Microservice SDK. For your own custom types, you'll need to declare them in C#. To do so, use the serialization table below as reference to know how to map types from C++ to C#.</p>
+</div>
+<h3 id="supported-content-serialization">Supported Content Serialization<a class="headerlink" href="#supported-content-serialization" title="Permanent link">¶</a></h3>
+<table>
+<thead>
+<tr>
+<th>Serializable Type</th>
+<th>In C# Microservices</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Primitive Types</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>uint8</code> , <code>int32</code> , and <code>int64</code></td>
+<td><code>byte</code>, <code>int</code> and <code>long</code>.</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>float</code> and <code>double</code>.</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><code>bool</code></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Unreal Types</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>FString</code>, <code>FText</code>, <code>FName</code></td>
+<td><code>string</code></td>
+<td>These get serialized as JSON strings.</td>
+</tr>
+<tr>
+<td><code>FGameplayTag</code></td>
+<td><code>string</code></td>
+<td><code>FGameplayTag::RequestGameplayTag</code> for deserialization.</td>
+</tr>
+<tr>
+<td><code>FGameplayTagContainer</code></td>
+<td><code>string</code></td>
+<td><code>FGameplayTagContainer::FromExportString</code> for deserialization.</td>
+</tr>
+<tr>
+<td><code>UClass*</code></td>
+<td><code>string</code></td>
+<td>Gets converted to <code>FSoftObjectPath</code> when serializing. Deserializing will first create the <code>FSoftObjectPath</code> and then resolve it.</td>
+</tr>
+<tr>
+<td><code>TSoftObjectPtr</code></td>
+<td><code>string</code></td>
+<td>Gets converted to <code>FSoftObjectPath</code> when serializing. When <code>None</code> serializes as an empty <code>string</code>.</td>
+</tr>
+<tr>
+<td><code>TArray&lt;&gt;</code></td>
+<td><code>List&lt;&gt;</code> or <code>T[]</code></td>
+<td>Any <code>TArray&lt;SomeType&gt;</code> will serialize normally as long as <code>SomeType</code> is also supported.</td>
+</tr>
+<tr>
+<td><code>TMap&lt;FString, &gt;</code></td>
+<td><code>Dictionary&lt;string,&gt;</code></td>
+<td>We only support maps with <code>FString</code> as keys. The values can be any supported type.</td>
+</tr>
+<tr>
+<td><strong>Beamable Types</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>FBeamOptional</code></td>
+<td><code>Optional____</code></td>
+<td>Any property of a type implementing <code>FBeamOptional</code> doesn't get serialized if <code>IsSet==false</code> but does get serialized otherwise.<br><br>For example, <code>FOptionalInt32</code> serializes to nothing OR an <code>int32</code>.</td>
+</tr>
+<tr>
+<td><code>FBeamSemanticType</code></td>
+<td><code>string</code> OR semantic type equivalent in C#</td>
+<td>This always gets serialized as a JSON blob when inside <code>UBeamContentObject</code>.</td>
+</tr>
+<tr>
+<td><code>FBeamArray</code> and <code>FBeamMap</code></td>
+<td><code>ArrayOf</code> and <code>MapOf</code></td>
+<td>Any implementation of these wrappers are serialized correctly as JSON arrays and JSON<br>objects respectively. These are only used when<br>you want to nest <code>TArray&lt;TArray&lt;&gt;&gt;</code> / <code>TMap&lt;,TMap&lt;&gt;&gt;</code> and still have Blueprint Support.</td>
+</tr>
+<tr>
+<td><code>FBeamJsonSerializableUStruct</code></td>
+<td>Any C# class that maps to your struct</td>
+<td>Any type inheriting from this type gets serialized as a JSON object.</td>
+</tr>
+<tr>
+<td><code>IBeamJsonSerializableUObject</code></td>
+<td>Any C# class that maps to your class</td>
+<td><code>UObject</code> in content should have their classes<br>annotated with <code>DefaultToInstanced</code>,<br><code>EditInlineNew</code> since you shouldn't reference<br>assets directly inside content objects.<br><br>For that, use <code>TSoftObjectPtr&lt;&gt;</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Take a look at <code>UMockBeamContentObject</code> to see the supported types.</p>
+<h2 id="runtime-lifecycle">Runtime LifeCycle<a class="headerlink" href="#runtime-lifecycle" title="Permanent link">¶</a></h2>
+<p>The SDK fetches the content manifest before the <code>OnBeamableStarted</code> callback is triggered. By default, it downloads the content manifest and each individual piece of content. You can enable and disable this behavior it can be configured to do so inside <code>Project Settings -&gt; Beamable Runtime</code>.</p>
+<p><a class="glightbox" href="../../../media/imgs/content-download-individual-on-start.png" data-type="image" data-width="auto" data-height="auto" data-desc-position="bottom"><img alt="content-download-individual-on-start.png" src="../../../media/imgs/content-download-individual-on-start.png" /></a></p>
+<p>The SDK also supports live content updates (if you publish content while the game client is running):</p>
+<ul>
+<li>While signed in to Beamable, <code>UBeamContentSubsystem</code> listens for notifications that the realm's content manifest has been updated.</li>
+<li>If that happens, we will re-download the manifest. </li>
+<li>If the SDK is configured to download individual content pieces automatically, we do so for all changed content.<ul>
+<li>These updates are cached locally inside the <code>Saved</code> directory in binary form such that a user does not need to re-download content in subsequent runs of your game unless the published manifest changes.</li>
+</ul>
+</li>
+<li>If you disable this setting, you'll have to control fetching the actual content objects yourself.<ul>
+<li>There are APIs you can use to manually download individual content pieces: <code>FetchIndividualContentBatchOperation</code> and <code>FetchIndividualContentOperation</code>.</li>
+<li>Caching will still occur when manually downloading content.</li>
+</ul>
+</li>
+</ul>
+<h3 id="baking-content">Baking Content<a class="headerlink" href="#baking-content" title="Permanent link">¶</a></h3>
+<p>In a couple of cases, you might want to bake content to distribute it with your build:</p>
+<ul>
+<li>If you plan to release a new build every time you want to update your game.</li>
+<li>If you want to trade off some binary size for spending less time waiting for the individual content download at initialization time.</li>
+</ul>
+<p>To enable those cases, we provide an editor utility that will bake your local content into a <code>UBeamContentCache</code>. 
+This is a special asset type that has the <code>UBeamContentObject</code> instances serialized using UE's binary serialization as opposed to JSON.
+<strong>Keep in mind that this utility uses your local content; so make sure your content matches the realm's content before running it</strong>.</p>
+<p>The utility is called <code>EBP_BakeContent</code> and can be found in Beamable Core's plugin folder under <code>/Editor/Utility/EBP_BakeContent.EBP_BakeContent</code>. 
+Running this utility goes through your local content and bakes them into a <code>BCC_</code> assets ( <code>UBeamContentCache</code> ) stored in <code>/Game/Beamable/Content/Manifests/Cooked/</code> directory.
+This directory is configured, by default, to be included in packaged games.</p>
+<p>At runtime, any <code>UBeamContentCache</code> is loaded automatically by the <code>UBeamContentSubsystem</code> if it exists and is configured correctly; so you don't have to do anything to have it work.</p>
+<div class="admonition warning">
+<p class="admonition-title">I can't find the Beamable Core Content in the Content Browser</p>
+<p>UE's Content Browser does not show Plugin content folders by default. If you want to see these, you need to turn it on at <code>Content Browser -&gt; Settings -&gt; Show Plugin Content</code>.</p>
+</div>
+<h3 id="notes-on-binary-serialization">Notes on Binary Serialization<a class="headerlink" href="#notes-on-binary-serialization" title="Permanent link">¶</a></h3>
+<p>Unreal's Binary serialization of <code>UObject</code> types works <em>mostly</em> out of the box without any need for you to write any code.
+However, in cases where you have inlined (<code>DefaultToInstanced, EditInlineNew</code>) <code>IBeamJsonSerializableUObject</code> types inside your <code>UBeamContentObject</code> subtype's schema, you'll need to write two things to support caching content of these types:</p>
+<ul>
+<li>Override the <code>virtual void Serialize(FArchive&amp; Ar) override</code> function of the inlined <code>IBeamJsonSerializableUObject</code> type.</li>
+<li>Override the <code>virtual void SerializeUObjects(FArchive&amp; Ar) override</code> function of the <code>UBeamContentObject</code> subtype that contains in its schema the inlined <code>IBeamJsonSerializableUObject</code>.</li>
+</ul>
+<p>In most cases, you should prefer using <code>FBeamJsonSerializableUStruct</code> subtypes <code>UBeamContentObject</code> as these will automatically support binary serialization.
+It is only in cases where you need a recursive type that we recommend the use of inlined <code>IBeamJsonSerializableUObject</code>.</p>
+<p>For examples of handling this edge case, you can look at the <code>UBeamGameTypeContent</code> and <code>UBeamStatComparisonRule</code> types shipped with the SDK.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      &copy; 2024 <a href="https://github.com/Beamable"  target="_blank" rel="noopener">Beamable</a>
+
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+        <script src="../../../assets/javascripts/extra.js"></script>
+      
+    
+  <script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(() => { lightbox.reload() });
+</script></body>
+</html>
