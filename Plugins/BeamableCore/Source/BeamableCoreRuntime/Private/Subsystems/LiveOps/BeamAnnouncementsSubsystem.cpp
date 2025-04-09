@@ -25,7 +25,7 @@ TArray<TSubclassOf<UBeamRuntimeSubsystem>> UBeamAnnouncementsSubsystem::GetDepen
 
 void UBeamAnnouncementsSubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp)
 {
-	PerUserAnnouncements.Add(UserSlot, {});
+	PerUserAnnouncements.Add(UserSlot, FBeamAnnouncementsState{});
 
 	// We set up the announcement refresh notification here whenever the owner user signs in (we need to set this up again as websocket connections are established per-UserSlot).
 	const auto NotificationHandler = FOnAnnouncementRefreshNotificationCode::CreateLambda([this, UserSlot](const FAnnouncementRefreshNotificationMessage& Msg)
@@ -201,7 +201,13 @@ void UBeamAnnouncementsSubsystem::RefreshAnnouncements(FUserSlot UserSlot, FBeam
 		}
 		else
 		{
-			PerUserAnnouncements.Add(UserSlot, Resp.SuccessData->Announcements);
+			TArray<UAnnouncementView*> Views = {};
+			for (UAnnouncementView* Announcement : Resp.SuccessData->Announcements)
+			{
+				Views.Add(DuplicateObject<UAnnouncementView>(Announcement, GetTransientPackage()));
+			}
+
+			PerUserAnnouncements.Add(UserSlot, FBeamAnnouncementsState(UserSlot, Views));
 			TriggerAnnouncementsUpdated(UserSlot);
 			RequestTracker->TriggerOperationSuccess(Op, {});
 		}
@@ -238,7 +244,7 @@ void UBeamAnnouncementsSubsystem::MarkAnnouncementRead(FUserSlot UserSlot, FBeam
 			{
 				if (PerUserAnnouncements.Contains(UserSlot))
 				{
-					TArray<UAnnouncementView*> AnnouncementViewArr = PerUserAnnouncements[UserSlot];
+					TArray<UAnnouncementView*> AnnouncementViewArr = PerUserAnnouncements[UserSlot].Announcements;
 
 					if (!Resp.RequestData->Body->Announcement.Val.IsEmpty())
 					{
@@ -300,7 +306,7 @@ void UBeamAnnouncementsSubsystem::ClaimAnnouncement(FUserSlot UserSlot, FBeamOpe
 		{
 			if (PerUserAnnouncements.Contains(UserSlot))
 			{
-				TArray<UAnnouncementView*> AnnouncementViewArr = PerUserAnnouncements[UserSlot];
+				TArray<UAnnouncementView*> AnnouncementViewArr = PerUserAnnouncements[UserSlot].Announcements;
 
 				if (!Resp.RequestData->Body->Announcement.Val.IsEmpty())
 				{
@@ -386,9 +392,9 @@ FBeamRequestContext UBeamAnnouncementsSubsystem::RequestClaimAnnouncement(const 
 
 /* * ANNOUNCEMENTS SUBSYSTEM - Read Local State Functions * */
 
-bool UBeamAnnouncementsSubsystem::GetAnnouncements(FUserSlot Slot, TArray<UAnnouncementView*>& Announcements)
+bool UBeamAnnouncementsSubsystem::GetAnnouncements(FUserSlot Slot, FBeamAnnouncementsState& Announcements)
 {
-	Announcements = {};
+	Announcements = FBeamAnnouncementsState{};
 	if (!PerUserAnnouncements.Contains(Slot))
 		return false;
 

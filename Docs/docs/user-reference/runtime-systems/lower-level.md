@@ -39,7 +39,7 @@ It contains the implementations used by the `UBeam____Api` classes to make the a
 
 These implementations handle:
 
-- Request/Response serialization and deserialization.
+- Request/Response serialization, deserialization and memory lifecycle.
 - Configurable Retry Logic with per-request-type, per-user-slot and per-call-site granularity.
 - Request's response Cache-ing, though this is disabled by default as caching is a very context dependent endeavor.
 - Transparent and Automatic Re-Auth in case of expired `AccessToken` through a user's `RefreshToken`.
@@ -65,6 +65,9 @@ It will print out the entire process of building the request, sending it out and
 !!! note "Connectivity"
     In the Beamable SDK, we do NOT handle the concept of "player connectivity to the internet" via request/response heuristics. 
     See `UBeamNotifications` below and [Connectivity](connectivity.md) for more information.
+
+!!! note "Request/Response Object Lifecycle"
+    When we deserialize every request's response, all its `UObject` instances are created with the Request `UObject` instance as its `Outer` parameter. We ensure that, as long as there are running Operations and Waits depending on that Request, all of its `UObject` instances will not be garbage collected. However, after said Operations/Waits are done, we'll no longer keep a reference to the Request's `UObject`. This means that, if you want to cache or use any `UObject` instance from the Response hierarchy, you need to keep a reference to the Request `UObject` yourself.   
 
 ## `UBeamNotifications`
 Every Beamable player has an open WebSocket connection to the Beamable server while they are logged-in. 
