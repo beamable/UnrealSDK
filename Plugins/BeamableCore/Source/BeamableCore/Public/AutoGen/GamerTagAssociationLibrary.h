@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGamerTagAssociationLibrary : public UBlueprintFunctionLi
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GamerTagAssociation To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|4 - Json", DisplayName="GamerTagAssociation To JSON String")
 	static FString GamerTagAssociationToJsonString(const UGamerTagAssociation* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GamerTagAssociation", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Make GamerTagAssociation", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UGamerTagAssociation* Make(FBeamPid ProjectId, FBeamGamerTag GamerTag, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GamerTagAssociation", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Break GamerTagAssociation", meta=(NativeBreakFunc))
 	static void Break(const UGamerTagAssociation* Serializable, FBeamPid& ProjectId, FBeamGamerTag& GamerTag);
 };

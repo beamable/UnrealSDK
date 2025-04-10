@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalPeriod struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Make Optional Period", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|5 - Optionals", meta=(DisplayName="Make Optional Period", NativeMakeFunc))
 	static FOptionalPeriod MakeOptional(UPeriod* Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The UPeriod* to convert.
 	 * @return An optional with the Period set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta = (DisplayName = "Period To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|5 - Optionals", meta = (DisplayName="Period To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalPeriod Conv_OptionalFromValue(UPeriod* Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Shared|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Commerce|5 - Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalPeriod& Optional, UPeriod*& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Get Optional's Period Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|5 - Optionals", meta=(DisplayName="Get Optional's Period Value"))
 	static UPeriod* GetOptionalValue(const FOptionalPeriod& Optional, UPeriod* DefaultValue, bool& WasSet);
 
 	

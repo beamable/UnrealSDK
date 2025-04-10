@@ -13,12 +13,12 @@ class BEAMABLECORE_API UAnnouncementRequestBodyLibrary : public UBlueprintFuncti
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="AnnouncementRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|4 - Json", DisplayName="AnnouncementRequestBody To JSON String")
 	static FString AnnouncementRequestBodyToJsonString(const UAnnouncementRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make AnnouncementRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Announcement, Announcements, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|3 - Backend", DisplayName="Make AnnouncementRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Announcement, Announcements, Outer", NativeMakeFunc))
 	static UAnnouncementRequestBody* Make(FOptionalString Announcement, FOptionalArrayOfString Announcements, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break AnnouncementRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|3 - Backend", DisplayName="Break AnnouncementRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UAnnouncementRequestBody* Serializable, FOptionalString& Announcement, FOptionalArrayOfString& Announcements);
 };

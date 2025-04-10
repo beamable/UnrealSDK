@@ -13,12 +13,12 @@ class BEAMABLECORE_API UEventsInDateRangeResponseLibrary : public UBlueprintFunc
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="EventsInDateRangeResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Events|4 - Json", DisplayName="EventsInDateRangeResponse To JSON String")
 	static FString EventsInDateRangeResponseToJsonString(const UEventsInDateRangeResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make EventsInDateRangeResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Events|3 - Backend", DisplayName="Make EventsInDateRangeResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UEventsInDateRangeResponse* Make(TArray<UEventDateRanges*> EventInDateRange, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break EventsInDateRangeResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Events|3 - Backend", DisplayName="Break EventsInDateRangeResponse", meta=(NativeBreakFunc))
 	static void Break(const UEventsInDateRangeResponse* Serializable, TArray<UEventDateRanges*>& EventInDateRange);
 };

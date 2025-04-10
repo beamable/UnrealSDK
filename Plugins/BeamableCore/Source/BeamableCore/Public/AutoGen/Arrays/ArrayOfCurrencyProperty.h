@@ -6,7 +6,7 @@
 
 #include "ArrayOfCurrencyProperty.generated.h"
 		
-USTRUCT(BlueprintType, Category="Beam|Shared|Wrappers|Arrays")
+USTRUCT(BlueprintType, Category="Beam|₢ServiceName₢|Wrappers|Arrays")
 struct BEAMABLECORE_API FArrayOfCurrencyProperty : public FBeamArray
 {
 	GENERATED_BODY()

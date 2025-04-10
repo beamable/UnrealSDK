@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGroupMemberInfoLibrary : public UBlueprintFunctionLibrar
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GroupMemberInfo To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|4 - Json", DisplayName="GroupMemberInfo To JSON String")
 	static FString GroupMemberInfoToJsonString(const UGroupMemberInfo* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GroupMemberInfo", meta=(DefaultToSelf="Outer", AdvancedDisplay="Guild, Subgroup, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|3 - Backend", DisplayName="Make GroupMemberInfo", meta=(DefaultToSelf="Outer", AdvancedDisplay="Guild, Subgroup, Outer", NativeMakeFunc))
 	static UGroupMemberInfo* Make(FOptionalArrayOfGroupUserMember Guild, FOptionalArrayOfGroupUserMember Subgroup, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GroupMemberInfo", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|3 - Backend", DisplayName="Break GroupMemberInfo", meta=(NativeBreakFunc))
 	static void Break(const UGroupMemberInfo* Serializable, FOptionalArrayOfGroupUserMember& Guild, FOptionalArrayOfGroupUserMember& Subgroup);
 };

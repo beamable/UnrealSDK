@@ -13,12 +13,12 @@ class BEAMABLECORE_API UBatchReadStatsResponseLibrary : public UBlueprintFunctio
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="BatchReadStatsResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Stats|4 - Json", DisplayName="BatchReadStatsResponse To JSON String")
 	static FString BatchReadStatsResponseToJsonString(const UBatchReadStatsResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make BatchReadStatsResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Stats|3 - Backend", DisplayName="Make BatchReadStatsResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UBatchReadStatsResponse* Make(TArray<UNetworkSerializable*> Results, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break BatchReadStatsResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Stats|3 - Backend", DisplayName="Break BatchReadStatsResponse", meta=(NativeBreakFunc))
 	static void Break(const UBatchReadStatsResponse* Serializable, TArray<UNetworkSerializable*>& Results);
 };

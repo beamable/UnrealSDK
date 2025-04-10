@@ -13,12 +13,12 @@ class BEAMABLECORE_API UArchiveOrUnarchiveManifestsRequestBodyLibrary : public U
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ArchiveOrUnarchiveManifestsRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Content|4 - Json", DisplayName="ArchiveOrUnarchiveManifestsRequestBody To JSON String")
 	static FString ArchiveOrUnarchiveManifestsRequestBodyToJsonString(const UArchiveOrUnarchiveManifestsRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ArchiveOrUnarchiveManifestsRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|3 - Backend", DisplayName="Make ArchiveOrUnarchiveManifestsRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UArchiveOrUnarchiveManifestsRequestBody* Make(TArray<FBeamContentManifestId> ManifestIds, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ArchiveOrUnarchiveManifestsRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|3 - Backend", DisplayName="Break ArchiveOrUnarchiveManifestsRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UArchiveOrUnarchiveManifestsRequestBody* Serializable, TArray<FBeamContentManifestId>& ManifestIds);
 };

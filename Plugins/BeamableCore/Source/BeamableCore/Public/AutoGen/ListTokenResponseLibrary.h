@@ -13,12 +13,12 @@ class BEAMABLECORE_API UListTokenResponseLibrary : public UBlueprintFunctionLibr
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ListTokenResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Auth|4 - Json", DisplayName="ListTokenResponse To JSON String")
 	static FString ListTokenResponseToJsonString(const UListTokenResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ListTokenResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Auth|3 - Backend", DisplayName="Make ListTokenResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UListTokenResponse* Make(TArray<UListTokenResponseItem*> Items, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ListTokenResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Auth|3 - Backend", DisplayName="Break ListTokenResponse", meta=(NativeBreakFunc))
 	static void Break(const UListTokenResponse* Serializable, TArray<UListTokenResponseItem*>& Items);
 };

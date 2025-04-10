@@ -39,7 +39,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Realms|Backend", DisplayName="Make GetAdminInflightFailures",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_ServiceObjectId,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Realms|3 - Backend", DisplayName="Make GetAdminInflightFailures",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_ServiceObjectId,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UGetAdminInflightFailuresRequest* Make(FOptionalString _ServiceObjectId, FString _ServiceName, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

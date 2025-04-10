@@ -36,7 +36,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Stats|Backend", DisplayName="Make PostSearchExtended",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Stats|3 - Backend", DisplayName="Make PostSearchExtended",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPostSearchExtendedRequest* Make(FString _Domain, FString _ObjectType, FString _Access, TArray<UStatsSearchCriteria*> _Criteria, TArray<FString> _StatKeys, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

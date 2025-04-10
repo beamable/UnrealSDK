@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Player|Backend", DisplayName="Make PutPresenceStatus",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Status,_Description,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Player|3 - Backend", DisplayName="Make PutPresenceStatus",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Status,_Description,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPutPresenceStatusRequest* Make(FString _PlayerId, FOptionalPresenceStatus _Status, FOptionalString _Description, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

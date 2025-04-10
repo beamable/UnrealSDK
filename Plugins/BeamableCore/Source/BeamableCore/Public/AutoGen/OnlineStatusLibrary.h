@@ -13,12 +13,12 @@ class BEAMABLECORE_API UOnlineStatusLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="OnlineStatus To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Presence|4 - Json", DisplayName="OnlineStatus To JSON String")
 	static FString OnlineStatusToJsonString(const UOnlineStatus* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make OnlineStatus", meta=(DefaultToSelf="Outer", AdvancedDisplay="LastOnline, bOnline, PlayerId, Status, Description, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Presence|3 - Backend", DisplayName="Make OnlineStatus", meta=(DefaultToSelf="Outer", AdvancedDisplay="LastOnline, bOnline, PlayerId, Status, Description, Outer", NativeMakeFunc))
 	static UOnlineStatus* Make(FOptionalDateTime LastOnline, FOptionalBool bOnline, FOptionalBeamGamerTag PlayerId, FOptionalPresenceStatus Status, FOptionalString Description, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break OnlineStatus", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Presence|3 - Backend", DisplayName="Break OnlineStatus", meta=(NativeBreakFunc))
 	static void Break(const UOnlineStatus* Serializable, FOptionalDateTime& LastOnline, FOptionalBool& bOnline, FOptionalBeamGamerTag& PlayerId, FOptionalPresenceStatus& Status, FOptionalString& Description);
 };

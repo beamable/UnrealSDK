@@ -13,12 +13,12 @@ class BEAMABLECORE_API UMicroserviceRegistrationsQueryLibrary : public UBlueprin
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="MicroserviceRegistrationsQuery To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|4 - Json", DisplayName="MicroserviceRegistrationsQuery To JSON String")
 	static FString MicroserviceRegistrationsQueryToJsonString(const UMicroserviceRegistrationsQuery* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make MicroserviceRegistrationsQuery", meta=(DefaultToSelf="Outer", AdvancedDisplay="bLocalOnly, ServiceName, RoutingKey, Federation, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Make MicroserviceRegistrationsQuery", meta=(DefaultToSelf="Outer", AdvancedDisplay="bLocalOnly, ServiceName, RoutingKey, Federation, Outer", NativeMakeFunc))
 	static UMicroserviceRegistrationsQuery* Make(FOptionalBool bLocalOnly, FOptionalString ServiceName, FOptionalString RoutingKey, FOptionalSupportedFederation Federation, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break MicroserviceRegistrationsQuery", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Break MicroserviceRegistrationsQuery", meta=(NativeBreakFunc))
 	static void Break(const UMicroserviceRegistrationsQuery* Serializable, FOptionalBool& bLocalOnly, FOptionalString& ServiceName, FOptionalString& RoutingKey, FOptionalSupportedFederation& Federation);
 };

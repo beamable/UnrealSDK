@@ -13,12 +13,12 @@ class BEAMABLECORE_API UScoreRequestBodyLibrary : public UBlueprintFunctionLibra
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ScoreRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|4 - Json", DisplayName="ScoreRequestBody To JSON String")
 	static FString ScoreRequestBodyToJsonString(const UScoreRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ScoreRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bIncrement, ContentId, Stats, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|3 - Backend", DisplayName="Make ScoreRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bIncrement, ContentId, Stats, Outer", NativeMakeFunc))
 	static UScoreRequestBody* Make(FString TournamentId, double Score, int64 PlayerId, FOptionalBool bIncrement, FOptionalString ContentId, FOptionalMapOfString Stats, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ScoreRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|3 - Backend", DisplayName="Break ScoreRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UScoreRequestBody* Serializable, FString& TournamentId, double& Score, int64& PlayerId, FOptionalBool& bIncrement, FOptionalString& ContentId, FOptionalMapOfString& Stats);
 };

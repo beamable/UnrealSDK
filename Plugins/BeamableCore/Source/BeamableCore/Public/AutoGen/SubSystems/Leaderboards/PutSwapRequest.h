@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Leaderboards|Backend", DisplayName="Make PutSwap",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_WinnerId,_LoserId,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Leaderboards|3 - Backend", DisplayName="Make PutSwap",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_WinnerId,_LoserId,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPutSwapRequest* Make(FString _ObjectId, int64 _SwapBase, int64 _Delta, FOptionalInt64 _WinnerId, FOptionalInt64 _LoserId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

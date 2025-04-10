@@ -13,12 +13,12 @@ class BEAMABLECORE_API UURLSResponseLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="URLSResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Cloudsaving|4 - Json", DisplayName="URLSResponse To JSON String")
 	static FString URLSResponseToJsonString(const UURLSResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make URLSResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Cloudsaving|3 - Backend", DisplayName="Make URLSResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UURLSResponse* Make(TArray<UCloudsavingBasicURLResponse*> Response, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break URLSResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Cloudsaving|3 - Backend", DisplayName="Break URLSResponse", meta=(NativeBreakFunc))
 	static void Break(const UURLSResponse* Serializable, TArray<UCloudsavingBasicURLResponse*>& Response);
 };

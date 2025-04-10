@@ -13,12 +13,12 @@ class BEAMABLECORE_API UObjectMetadataResponseLibrary : public UBlueprintFunctio
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ObjectMetadataResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Cloudsaving|4 - Json", DisplayName="ObjectMetadataResponse To JSON String")
 	static FString ObjectMetadataResponseToJsonString(const UObjectMetadataResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ObjectMetadataResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Cloudsaving|3 - Backend", DisplayName="Make ObjectMetadataResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UObjectMetadataResponse* Make(FString ObjectKey, TMap<FString, FString> Metadata, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ObjectMetadataResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Cloudsaving|3 - Backend", DisplayName="Break ObjectMetadataResponse", meta=(NativeBreakFunc))
 	static void Break(const UObjectMetadataResponse* Serializable, FString& ObjectKey, TMap<FString, FString>& Metadata);
 };

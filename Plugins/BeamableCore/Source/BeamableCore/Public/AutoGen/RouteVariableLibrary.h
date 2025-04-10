@@ -13,12 +13,12 @@ class BEAMABLECORE_API URouteVariableLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="RouteVariable To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|4 - Json", DisplayName="RouteVariable To JSON String")
 	static FString RouteVariableToJsonString(const URouteVariable* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make RouteVariable", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|3 - Backend", DisplayName="Make RouteVariable", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static URouteVariable* Make(FString Name, FString TypeName, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break RouteVariable", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|3 - Backend", DisplayName="Break RouteVariable", meta=(NativeBreakFunc))
 	static void Break(const URouteVariable* Serializable, FString& Name, FString& TypeName);
 };

@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalArrayOfCurrencyChange struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Make Optional TArray<UCurrencyChange*>", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|5 - Optionals", meta=(DisplayName="Make Optional TArray<UCurrencyChange*>", NativeMakeFunc))
 	static FOptionalArrayOfCurrencyChange MakeOptional(TArray<UCurrencyChange*> Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The TArray<UCurrencyChange*> to convert.
 	 * @return An optional with the TArray<UCurrencyChange*> set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta = (DisplayName = "TArray<UCurrencyChange*> To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|5 - Optionals", meta = (DisplayName="TArray<UCurrencyChange*> To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalArrayOfCurrencyChange Conv_OptionalFromValue(TArray<UCurrencyChange*> Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Shared|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Accounts|5 - Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalArrayOfCurrencyChange& Optional, TArray<UCurrencyChange*>& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Get Optional's TArray<UCurrencyChange*> Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|5 - Optionals", meta=(DisplayName="Get Optional's TArray<UCurrencyChange*> Value"))
 	static TArray<UCurrencyChange*> GetOptionalValue(const FOptionalArrayOfCurrencyChange& Optional, TArray<UCurrencyChange*> DefaultValue, bool& WasSet);
 
 	

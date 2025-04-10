@@ -13,12 +13,12 @@ class BEAMABLECORE_API UBulkSendMailRequestBodyLibrary : public UBlueprintFuncti
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="BulkSendMailRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|4 - Json", DisplayName="BulkSendMailRequestBody To JSON String")
 	static FString BulkSendMailRequestBodyToJsonString(const UBulkSendMailRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make BulkSendMailRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|3 - Backend", DisplayName="Make BulkSendMailRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UBulkSendMailRequestBody* Make(TArray<USendMailRequestBody*> SendMailRequests, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break BulkSendMailRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|3 - Backend", DisplayName="Break BulkSendMailRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UBulkSendMailRequestBody* Serializable, TArray<USendMailRequestBody*>& SendMailRequests);
 };

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UAccountPortalViewLibrary : public UBlueprintFunctionLibr
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="AccountPortalView To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|4 - Json", DisplayName="AccountPortalView To JSON String")
 	static FString AccountPortalViewToJsonString(const UAccountPortalView* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make AccountPortalView", meta=(DefaultToSelf="Outer", AdvancedDisplay="Email, RoleString, Language, External, Roles, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Make AccountPortalView", meta=(DefaultToSelf="Outer", AdvancedDisplay="Email, RoleString, Language, External, Roles, Outer", NativeMakeFunc))
 	static UAccountPortalView* Make(FBeamAccountId Id, TArray<FString> Scopes, TArray<FString> ThirdPartyAppAssociations, FOptionalString Email, FOptionalString RoleString, FOptionalString Language, FOptionalArrayOfBeamExternalIdentity External, FOptionalArrayOfRoleMapping Roles, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break AccountPortalView", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Break AccountPortalView", meta=(NativeBreakFunc))
 	static void Break(const UAccountPortalView* Serializable, FBeamAccountId& Id, TArray<FString>& Scopes, TArray<FString>& ThirdPartyAppAssociations, FOptionalString& Email, FOptionalString& RoleString, FOptionalString& Language, FOptionalArrayOfBeamExternalIdentity& External, FOptionalArrayOfRoleMapping& Roles);
 };

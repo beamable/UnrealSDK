@@ -13,12 +13,12 @@ class BEAMABLECORE_API UEventObjectDataLibrary : public UBlueprintFunctionLibrar
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="EventObjectData To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Events|4 - Json", DisplayName="EventObjectData To JSON String")
 	static FString EventObjectDataToJsonString(const UEventObjectData* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make EventObjectData", meta=(DefaultToSelf="Outer", AdvancedDisplay="LastChildEventId, StartTime, RootEventId, OriginType, Phase, Permissions, EndTime, Origin, CreatedAt, InFlight, PhaseTimes, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Events|3 - Backend", DisplayName="Make EventObjectData", meta=(DefaultToSelf="Outer", AdvancedDisplay="LastChildEventId, StartTime, RootEventId, OriginType, Phase, Permissions, EndTime, Origin, CreatedAt, InFlight, PhaseTimes, Outer", NativeMakeFunc))
 	static UEventObjectData* Make(bool bDone, bool bRunning, EEventState State, FString LeaderboardId, FString Id, UEvent* Content, FOptionalString LastChildEventId, FOptionalInt64 StartTime, FOptionalString RootEventId, FOptionalString OriginType, FOptionalEventPhaseRuntime Phase, FOptionalBeamClientPermission Permissions, FOptionalInt64 EndTime, FOptionalString Origin, FOptionalInt64 CreatedAt, FOptionalArrayOfInFlightMessage InFlight, FOptionalArrayOfEventPhaseTime PhaseTimes, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break EventObjectData", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Events|3 - Backend", DisplayName="Break EventObjectData", meta=(NativeBreakFunc))
 	static void Break(const UEventObjectData* Serializable, bool& bDone, bool& bRunning, EEventState& State, FString& LeaderboardId, FString& Id, UEvent*& Content, FOptionalString& LastChildEventId, FOptionalInt64& StartTime, FOptionalString& RootEventId, FOptionalString& OriginType, FOptionalEventPhaseRuntime& Phase, FOptionalBeamClientPermission& Permissions, FOptionalInt64& EndTime, FOptionalString& Origin, FOptionalInt64& CreatedAt, FOptionalArrayOfInFlightMessage& InFlight, FOptionalArrayOfEventPhaseTime& PhaseTimes);
 };

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetSocialStatusesRequestBodyLibrary : public UBlueprintF
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GetSocialStatusesRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Friends|4 - Json", DisplayName="GetSocialStatusesRequestBody To JSON String")
 	static FString GetSocialStatusesRequestBodyToJsonString(const UGetSocialStatusesRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GetSocialStatusesRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Friends|3 - Backend", DisplayName="Make GetSocialStatusesRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UGetSocialStatusesRequestBody* Make(TArray<FString> PlayerIds, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GetSocialStatusesRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Friends|3 - Backend", DisplayName="Break GetSocialStatusesRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UGetSocialStatusesRequestBody* Serializable, TArray<FString>& PlayerIds);
 };

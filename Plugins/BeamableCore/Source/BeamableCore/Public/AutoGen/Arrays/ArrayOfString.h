@@ -6,7 +6,7 @@
 
 #include "ArrayOfString.generated.h"
 		
-USTRUCT(BlueprintType, Category="Beam|Shared|Wrappers|Arrays")
+USTRUCT(BlueprintType, Category="Beam|₢ServiceName₢|Wrappers|Arrays")
 struct BEAMABLECORE_API FArrayOfString : public FBeamArray
 {
 	GENERATED_BODY()

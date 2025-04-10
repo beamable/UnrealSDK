@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalLobbyRestriction struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Make Optional LobbyRestriction", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|5 - Optionals", meta=(DisplayName="Make Optional LobbyRestriction", NativeMakeFunc))
 	static FOptionalLobbyRestriction MakeOptional(ELobbyRestriction Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The ELobbyRestriction to convert.
 	 * @return An optional with the LobbyRestriction set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta = (DisplayName = "LobbyRestriction To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|5 - Optionals", meta = (DisplayName="LobbyRestriction To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalLobbyRestriction Conv_OptionalFromValue(ELobbyRestriction Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Shared|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Lobby|5 - Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalLobbyRestriction& Optional, ELobbyRestriction& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Get Optional's LobbyRestriction Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|5 - Optionals", meta=(DisplayName="Get Optional's LobbyRestriction Value"))
 	static ELobbyRestriction GetOptionalValue(const FOptionalLobbyRestriction& Optional, ELobbyRestriction DefaultValue, bool& WasSet);
 
 	

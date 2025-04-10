@@ -13,8 +13,10 @@ class UK2BeamNode_Operation_CommitInventoryUpdate : public UK2BeamNode_Operation
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Inventory - CommitInventoryUpdate"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Inventory - Operation - CommitInventoryUpdate"); }
 
+	virtual FString GetServiceName() const override { return FString("Inventory"); };
+	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamInventorySubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamInventorySubsystem, CommitInventoryUpdateOperation); }
@@ -32,8 +34,12 @@ class UK2BeamNode_Operation_ModifyCurrencies : public UK2BeamNode_Operation
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Inventory - ModifyCurrencies"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Inventory - Operation - ModifyCurrencies"); }
 
+	virtual FString GetServiceName() const override { return FString("Inventory"); };
+
+	virtual FText GetKeywords() const override {return FText::FromString("Beam Inventory");};
+	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamInventorySubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamInventorySubsystem, ModifyCurrenciesOperation); }
@@ -50,13 +56,19 @@ class UK2BeamNode_Operation_FetchAllInventory : public UK2BeamNode_Operation
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Inventory - FetchAllInventory"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Inventory - Operation - FetchAllInventory"); }
 
+	virtual FString GetServiceName() const override { return FString("Inventory"); };
+
+	virtual FText GetKeywords() const override {return FText::FromString("Beam Inventory");};
+	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamInventorySubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamInventorySubsystem, FetchAllInventoryOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamInventorySubsystem::StaticClass(); }
+
+	virtual bool IsNodeSafeToIgnore() const override { return false; }
 	
 };
 

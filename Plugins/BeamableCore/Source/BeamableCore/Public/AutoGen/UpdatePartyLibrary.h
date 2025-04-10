@@ -13,12 +13,12 @@ class BEAMABLECORE_API UUpdatePartyLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="UpdateParty To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Party|4 - Json", DisplayName="UpdateParty To JSON String")
 	static FString UpdatePartyToJsonString(const UUpdateParty* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make UpdateParty", meta=(DefaultToSelf="Outer", AdvancedDisplay="Restriction, MaxSize, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Party|3 - Backend", DisplayName="Make UpdateParty", meta=(DefaultToSelf="Outer", AdvancedDisplay="Restriction, MaxSize, Outer", NativeMakeFunc))
 	static UUpdateParty* Make(FOptionalString Restriction, FOptionalInt32 MaxSize, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break UpdateParty", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Party|3 - Backend", DisplayName="Break UpdateParty", meta=(NativeBreakFunc))
 	static void Break(const UUpdateParty* Serializable, FOptionalString& Restriction, FOptionalInt32& MaxSize);
 };

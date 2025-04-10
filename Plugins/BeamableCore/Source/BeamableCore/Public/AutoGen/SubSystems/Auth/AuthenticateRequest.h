@@ -36,7 +36,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Auth|Backend", DisplayName="Make Authenticate",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bCustomerScoped,_DeviceId,_ProviderService,_Token,_Code,_ExternalToken,_ChallengeSolution,_ProviderNamespace,_RedirectUri,_ThirdParty,_Context,_RefreshToken,_Username,_ClientId,_Password,_Scope,_InitProperties,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Auth|3 - Backend", DisplayName="Make Authenticate",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bCustomerScoped,_DeviceId,_ProviderService,_Token,_Code,_ExternalToken,_ChallengeSolution,_ProviderNamespace,_RedirectUri,_ThirdParty,_Context,_RefreshToken,_Username,_ClientId,_Password,_Scope,_InitProperties,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UAuthenticateRequest* Make(FString _GrantType, FOptionalBool _bCustomerScoped, FOptionalString _DeviceId, FOptionalString _ProviderService, FOptionalString _Token, FOptionalString _Code, FOptionalString _ExternalToken, FOptionalChallengeSolution _ChallengeSolution, FOptionalString _ProviderNamespace, FOptionalString _RedirectUri, FOptionalString _ThirdParty, FOptionalContextInfo _Context, FOptionalString _RefreshToken, FOptionalString _Username, FOptionalString _ClientId, FOptionalString _Password, FOptionalArrayOfString _Scope, FOptionalMapOfString _InitProperties, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

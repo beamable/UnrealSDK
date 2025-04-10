@@ -13,12 +13,12 @@ class BEAMABLECORE_API ULobbyPlayerLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="LobbyPlayer To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|4 - Json", DisplayName="LobbyPlayer To JSON String")
 	static FString LobbyPlayerToJsonString(const ULobbyPlayer* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make LobbyPlayer", meta=(DefaultToSelf="Outer", AdvancedDisplay="PlayerId, Joined, Tags, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|3 - Backend", DisplayName="Make LobbyPlayer", meta=(DefaultToSelf="Outer", AdvancedDisplay="PlayerId, Joined, Tags, Outer", NativeMakeFunc))
 	static ULobbyPlayer* Make(FOptionalBeamGamerTag PlayerId, FOptionalDateTime Joined, FOptionalArrayOfBeamTag Tags, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break LobbyPlayer", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|3 - Backend", DisplayName="Break LobbyPlayer", meta=(NativeBreakFunc))
 	static void Break(const ULobbyPlayer* Serializable, FOptionalBeamGamerTag& PlayerId, FOptionalDateTime& Joined, FOptionalArrayOfBeamTag& Tags);
 };

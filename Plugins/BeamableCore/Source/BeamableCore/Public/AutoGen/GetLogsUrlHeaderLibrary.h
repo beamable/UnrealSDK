@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetLogsUrlHeaderLibrary : public UBlueprintFunctionLibra
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GetLogsUrlHeader To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|4 - Json", DisplayName="GetLogsUrlHeader To JSON String")
 	static FString GetLogsUrlHeaderToJsonString(const UGetLogsUrlHeader* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GetLogsUrlHeader", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Make GetLogsUrlHeader", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UGetLogsUrlHeader* Make(FString Key, FString Value, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GetLogsUrlHeader", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Break GetLogsUrlHeader", meta=(NativeBreakFunc))
 	static void Break(const UGetLogsUrlHeader* Serializable, FString& Key, FString& Value);
 };

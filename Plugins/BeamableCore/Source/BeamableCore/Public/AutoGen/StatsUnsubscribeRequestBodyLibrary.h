@@ -13,12 +13,12 @@ class BEAMABLECORE_API UStatsUnsubscribeRequestBodyLibrary : public UBlueprintFu
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="StatsUnsubscribeRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Stats|4 - Json", DisplayName="StatsUnsubscribeRequestBody To JSON String")
 	static FString StatsUnsubscribeRequestBodyToJsonString(const UStatsUnsubscribeRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make StatsUnsubscribeRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Subscriptions, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Stats|3 - Backend", DisplayName="Make StatsUnsubscribeRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Subscriptions, Outer", NativeMakeFunc))
 	static UStatsUnsubscribeRequestBody* Make(FString Service, FOptionalArrayOfString Subscriptions, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break StatsUnsubscribeRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Stats|3 - Backend", DisplayName="Break StatsUnsubscribeRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UStatsUnsubscribeRequestBody* Serializable, FString& Service, FOptionalArrayOfString& Subscriptions);
 };

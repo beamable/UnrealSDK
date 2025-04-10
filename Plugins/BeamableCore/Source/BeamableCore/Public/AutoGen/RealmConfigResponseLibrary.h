@@ -13,12 +13,12 @@ class BEAMABLECORE_API URealmConfigResponseLibrary : public UBlueprintFunctionLi
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="RealmConfigResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|4 - Json", DisplayName="RealmConfigResponse To JSON String")
 	static FString RealmConfigResponseToJsonString(const URealmConfigResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make RealmConfigResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Make RealmConfigResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static URealmConfigResponse* Make(TMap<FString, FString> Config, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break RealmConfigResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Break RealmConfigResponse", meta=(NativeBreakFunc))
 	static void Break(const URealmConfigResponse* Serializable, TMap<FString, FString>& Config);
 };

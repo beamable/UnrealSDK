@@ -205,7 +205,7 @@ public:
 	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Matchmaking|Backend", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Matchmaking|3 - Backend", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void GetMatches(FUserSlot UserSlot, UApiMatchmakingGetMatchesByIdRequest* Request, const FOnApiMatchmakingGetMatchesByIdSuccess& OnSuccess, const FOnApiMatchmakingGetMatchesByIdError& OnError, const FOnApiMatchmakingGetMatchesByIdComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
@@ -220,7 +220,7 @@ public:
 	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Matchmaking|Backend", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Matchmaking|3 - Backend", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void ApiMatchmakingGetTickets(FUserSlot UserSlot, UApiMatchmakingGetTicketsRequest* Request, const FOnApiMatchmakingGetTicketsSuccess& OnSuccess, const FOnApiMatchmakingGetTicketsError& OnError, const FOnApiMatchmakingGetTicketsComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
@@ -235,7 +235,7 @@ public:
 	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Matchmaking|Backend", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Matchmaking|3 - Backend", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void PostTickets(FUserSlot UserSlot, UPostTicketsRequest* Request, const FOnPostTicketsSuccess& OnSuccess, const FOnPostTicketsError& OnError, const FOnPostTicketsComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
@@ -250,7 +250,7 @@ public:
 	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Matchmaking|Backend", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Matchmaking|3 - Backend", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void ApiMatchmakingGetTicketsById(FUserSlot UserSlot, UApiMatchmakingGetTicketsByIdRequest* Request, const FOnApiMatchmakingGetTicketsByIdSuccess& OnSuccess, const FOnApiMatchmakingGetTicketsByIdError& OnError, const FOnApiMatchmakingGetTicketsByIdComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 		
@@ -265,7 +265,7 @@ public:
 	 * @param OutRequestContext The Request Context associated with this request -- used to query information about the request or to cancel it while it's in flight.
 	 * @param CallingContext A UObject managed by the UWorld that's making the request. Used to support multiple PIEs (see UBeamUserSlot::GetNamespacedSlotId) and read-only RequestCaches.
 	 */
-	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Matchmaking|Backend", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
+	UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, Category="Beam|Matchmaking|3 - Backend", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="OpHandle,CallingContext",AutoCreateRefTerm="UserSlot,OnSuccess,OnError,OnComplete,OpHandle", BeamFlowFunction))
 	void DeleteTickets(FUserSlot UserSlot, UDeleteTicketsRequest* Request, const FOnDeleteTicketsSuccess& OnSuccess, const FOnDeleteTicketsError& OnError, const FOnDeleteTicketsComplete& OnComplete, FBeamRequestContext& OutRequestContext, FBeamOperationHandle OpHandle = FBeamOperationHandle(), const UObject* CallingContext = nullptr);
 
 };

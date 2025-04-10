@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "AutoGen/SubSystems/BeamPartyApi.h"
-#include "AutoGen/SubSystems/BeamPlayerPartyApi.h"
 #include "BeamNotifications/SubSystems/BeamPartyNotifications.h"
 #include "Runtime/BeamRuntimeSubsystem.h"
 #include "BeamPartySubsystem.generated.h"
@@ -80,9 +79,6 @@ class BEAMABLECORERUNTIME_API UBeamPartySubsystem : public UBeamRuntimeSubsystem
 
 	UPROPERTY()
 	UBeamPartyApi* PartyApi;
-
-	UPROPERTY()
-	UBeamPlayerPartyApi* PlayerPartyApi;
 
 	UPROPERTY()
 	UBeamPartyNotifications* PartyNotifications;

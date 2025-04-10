@@ -13,12 +13,12 @@ class BEAMABLECORE_API UUploadRequestsLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="UploadRequests To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Cloudsaving|4 - Json", DisplayName="UploadRequests To JSON String")
 	static FString UploadRequestsToJsonString(const UUploadRequests* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make UploadRequests", meta=(DefaultToSelf="Outer", AdvancedDisplay="PlayerId, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Cloudsaving|3 - Backend", DisplayName="Make UploadRequests", meta=(DefaultToSelf="Outer", AdvancedDisplay="PlayerId, Outer", NativeMakeFunc))
 	static UUploadRequests* Make(TArray<UUploadRequestBody*> Request, FOptionalInt64 PlayerId, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break UploadRequests", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Cloudsaving|3 - Backend", DisplayName="Break UploadRequests", meta=(NativeBreakFunc))
 	static void Break(const UUploadRequests* Serializable, TArray<UUploadRequestBody*>& Request, FOptionalInt64& PlayerId);
 };

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "AutoGen/SubSystems/BeamMailApi.h"
 #include "AutoGen/SubSystems/BeamPresenceApi.h"
-#include "AutoGen/SubSystems/BeamSocialApi.h"
+#include "AutoGen/SubSystems/BeamFriendsApi.h"
 #include "BeamNotifications/SubSystems/BeamMailNotifications.h"
 #include "BeamNotifications/SubSystems/BeamSocialNotifications.h"
 #include "Runtime/BeamRuntimeSubsystem.h"
@@ -120,7 +120,7 @@ class BEAMABLECORERUNTIME_API UBeamFriendSubsystem : public UBeamRuntimeSubsyste
 	GENERATED_BODY()
 
 	UPROPERTY()
-	UBeamSocialApi* BeamSocialApi;
+	UBeamFriendsApi* BeamSocialApi;
 
 	UPROPERTY()
 	UBeamMailApi* BeamMailApi;
@@ -319,7 +319,7 @@ public:
 	 *
 	 * @return Returns False if the user don't have the friend state initialized or if it's not possible to retrieve the data.
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Friend",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetUserFriendState(FUserSlot UserSlot, FBeamFriendState& FriendState);
 
@@ -333,7 +333,7 @@ public:
 	 *
 	 * @return Returns False if the user don't have the friend state initialized or if it's not possible to retrieve the data.
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Friend",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetPlayerFriendState(FBeamGamerTag PlayerGamerTag, FBeamFriendState& FriendState);
 
@@ -347,7 +347,7 @@ public:
 	 *
 	 * @return Returns False if the user don't have the friend state initialized or if it's not possible to retrieve the data.
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Friend",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetFriendPresenceState(FBeamGamerTag PlayerGamerTag, FBeamFriendPresenceStatus& StatusState);
 

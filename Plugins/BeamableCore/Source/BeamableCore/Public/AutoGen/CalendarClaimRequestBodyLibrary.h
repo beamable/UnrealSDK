@@ -13,12 +13,12 @@ class BEAMABLECORE_API UCalendarClaimRequestBodyLibrary : public UBlueprintFunct
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="CalendarClaimRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Calendars|4 - Json", DisplayName="CalendarClaimRequestBody To JSON String")
 	static FString CalendarClaimRequestBodyToJsonString(const UCalendarClaimRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make CalendarClaimRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Calendars|3 - Backend", DisplayName="Make CalendarClaimRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UCalendarClaimRequestBody* Make(FString Id, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break CalendarClaimRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Calendars|3 - Backend", DisplayName="Break CalendarClaimRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UCalendarClaimRequestBody* Serializable, FString& Id);
 };

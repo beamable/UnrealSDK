@@ -13,12 +13,12 @@ class BEAMABLECORE_API UProblemDetailsLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ProblemDetails To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Auth|4 - Json", DisplayName="ProblemDetails To JSON String")
 	static FString ProblemDetailsToJsonString(const UProblemDetails* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ProblemDetails", meta=(DefaultToSelf="Outer", AdvancedDisplay="Type, Title, Status, Detail, Instance, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Auth|3 - Backend", DisplayName="Make ProblemDetails", meta=(DefaultToSelf="Outer", AdvancedDisplay="Type, Title, Status, Detail, Instance, Outer", NativeMakeFunc))
 	static UProblemDetails* Make(FOptionalString Type, FOptionalString Title, FOptionalInt32 Status, FOptionalString Detail, FOptionalString Instance, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ProblemDetails", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Auth|3 - Backend", DisplayName="Break ProblemDetails", meta=(NativeBreakFunc))
 	static void Break(const UProblemDetails* Serializable, FOptionalString& Type, FOptionalString& Title, FOptionalInt32& Status, FOptionalString& Detail, FOptionalString& Instance);
 };

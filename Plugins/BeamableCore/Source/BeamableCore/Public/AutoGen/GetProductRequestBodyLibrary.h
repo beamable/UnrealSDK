@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetProductRequestBodyLibrary : public UBlueprintFunction
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GetProductRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|4 - Json", DisplayName="GetProductRequestBody To JSON String")
 	static FString GetProductRequestBodyToJsonString(const UGetProductRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GetProductRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|3 - Backend", DisplayName="Make GetProductRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UGetProductRequestBody* Make(FString Sku, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GetProductRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|3 - Backend", DisplayName="Break GetProductRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UGetProductRequestBody* Serializable, FString& Sku);
 };

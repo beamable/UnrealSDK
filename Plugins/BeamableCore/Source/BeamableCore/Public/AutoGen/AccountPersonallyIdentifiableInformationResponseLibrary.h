@@ -13,12 +13,12 @@ class BEAMABLECORE_API UAccountPersonallyIdentifiableInformationResponseLibrary 
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="AccountPersonallyIdentifiableInformationResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|4 - Json", DisplayName="AccountPersonallyIdentifiableInformationResponse To JSON String")
 	static FString AccountPersonallyIdentifiableInformationResponseToJsonString(const UAccountPersonallyIdentifiableInformationResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make AccountPersonallyIdentifiableInformationResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Make AccountPersonallyIdentifiableInformationResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UAccountPersonallyIdentifiableInformationResponse* Make(UAccountsBasicAccount* Account, UListAuditResponse* PaymentAudits, TArray<UStatsResponse*> Stats, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break AccountPersonallyIdentifiableInformationResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Break AccountPersonallyIdentifiableInformationResponse", meta=(NativeBreakFunc))
 	static void Break(const UAccountPersonallyIdentifiableInformationResponse* Serializable, UAccountsBasicAccount*& Account, UListAuditResponse*& PaymentAudits, TArray<UStatsResponse*>& Stats);
 };

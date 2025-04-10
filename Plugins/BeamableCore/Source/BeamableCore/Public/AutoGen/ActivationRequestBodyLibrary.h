@@ -13,12 +13,12 @@ class BEAMABLECORE_API UActivationRequestBodyLibrary : public UBlueprintFunction
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ActivationRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|4 - Json", DisplayName="ActivationRequestBody To JSON String")
 	static FString ActivationRequestBodyToJsonString(const UActivationRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ActivationRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Make ActivationRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UActivationRequestBody* Make(FString Token, int64 Cid, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ActivationRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Break ActivationRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UActivationRequestBody* Serializable, FString& Token, int64& Cid);
 };

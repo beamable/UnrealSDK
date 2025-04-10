@@ -15,7 +15,7 @@ public:
 	/**
 	 * @brief Builds a stats type handle for the given GamerTag, Domain and with the given Visibility level.	 
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Semantic Types", meta = (DisplayName = "Beam - Make StatsType"))
+	UFUNCTION(BlueprintPure, Category="Beam|Semantic Types", meta = (DisplayName="Make StatsType"))
 	static FBeamStatsType MakeStatsType(TEnumAsByte<EBeamStatsDomain> Domain, TEnumAsByte<EBeamStatsVisibility> Visibility, FBeamGamerTag GamerTag)
 	{
 		const FString DomainAsStr = StaticEnum<EBeamStatsDomain>()->GetNameByValue(Domain).ToString().ToLower();
@@ -28,7 +28,7 @@ public:
 	/**
 	 * @brief Builds a stats type handle for the given GamerTag, Domain and with the given Visibility level.	 
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Semantic Types", meta = (DisplayName = "Beam - Break StatsType"))
+	UFUNCTION(BlueprintPure, Category="Beam|Semantic Types", meta = (DisplayName="Break StatsType"))
 	static void BreakStatsType(const FBeamStatsType StatsType, TEnumAsByte<EBeamStatsDomain>& Domain, TEnumAsByte<EBeamStatsVisibility>& Visibility, FBeamGamerTag& GamerTag)
 	{
 		const auto StatType = StatsType.AsString;
@@ -49,7 +49,7 @@ public:
 	/**
 	 * @brief Builds a stats type handle for the given GamerTag, Domain and with the given Visibility level.	 
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Semantic Types", meta = (DisplayName = "Beam - Copy StatsType with GamerTag"))
+	UFUNCTION(BlueprintPure, Category="Beam|Semantic Types", meta = (DisplayName="Copy StatsType with GamerTag"))
 	static FBeamStatsType CopyStatsTypeWithGamerTag(const FBeamStatsType StatsType, const FBeamGamerTag& GamerTag)
 	{
 		const auto StatType = StatsType.AsString;
@@ -69,7 +69,7 @@ public:
 	/**
 	 * @brief Builds a stats type handle for the given GamerTag, Domain and with the given Visibility level.	 
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Semantic Types", meta = (DisplayName = "Beam - Get GamerTag"))
+	UFUNCTION(BlueprintPure, Category="Beam|Semantic Types", meta = (DisplayName="Get GamerTag"))
 	static FBeamGamerTag GetGamerTag(const FBeamStatsType StatsType)
 	{
 		const auto StatType = StatsType.AsString;

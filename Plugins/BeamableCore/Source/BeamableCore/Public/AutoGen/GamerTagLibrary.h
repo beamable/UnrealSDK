@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGamerTagLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GamerTag To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Session|4 - Json", DisplayName="GamerTag To JSON String")
 	static FString GamerTagToJsonString(const UGamerTag* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GamerTag", meta=(DefaultToSelf="Outer", AdvancedDisplay="Alias, Added, User, Trials, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Session|3 - Backend", DisplayName="Make GamerTag", meta=(DefaultToSelf="Outer", AdvancedDisplay="Alias, Added, User, Trials, Outer", NativeMakeFunc))
 	static UGamerTag* Make(int64 Tag, FString Platform, FOptionalString Alias, FOptionalInt64 Added, FOptionalSessionUser User, FOptionalArrayOfCohortEntry Trials, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GamerTag", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Session|3 - Backend", DisplayName="Break GamerTag", meta=(NativeBreakFunc))
 	static void Break(const UGamerTag* Serializable, int64& Tag, FString& Platform, FOptionalString& Alias, FOptionalInt64& Added, FOptionalSessionUser& User, FOptionalArrayOfCohortEntry& Trials);
 };

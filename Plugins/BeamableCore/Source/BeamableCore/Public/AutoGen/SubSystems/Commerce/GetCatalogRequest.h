@@ -36,7 +36,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Commerce|Backend", DisplayName="Make GetCatalog",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Version,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Commerce|3 - Backend", DisplayName="Make GetCatalog",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Version,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UGetCatalogRequest* Make(FOptionalInt64 _Version, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

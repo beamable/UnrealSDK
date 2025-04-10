@@ -13,12 +13,12 @@ class BEAMABLECORE_API UClientDataEntryLibrary : public UBlueprintFunctionLibrar
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ClientDataEntry To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|4 - Json", DisplayName="ClientDataEntry To JSON String")
 	static FString ClientDataEntryToJsonString(const UClientDataEntry* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ClientDataEntry", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|3 - Backend", DisplayName="Make ClientDataEntry", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UClientDataEntry* Make(FString Name, FString Value, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ClientDataEntry", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|3 - Backend", DisplayName="Break ClientDataEntry", meta=(NativeBreakFunc))
 	static void Break(const UClientDataEntry* Serializable, FString& Name, FString& Value);
 };

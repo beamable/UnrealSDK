@@ -13,12 +13,12 @@ class BEAMABLECORE_API UItemLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="Item To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|4 - Json", DisplayName="Item To JSON String")
 	static FString ItemToJsonString(const UItem* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make Item", meta=(DefaultToSelf="Outer", AdvancedDisplay="UpdatedAt, ProxyId, Proxy, CreatedAt, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|3 - Backend", DisplayName="Make Item", meta=(DefaultToSelf="Outer", AdvancedDisplay="UpdatedAt, ProxyId, Proxy, CreatedAt, Outer", NativeMakeFunc))
 	static UItem* Make(int64 Id, TArray<UItemProperty*> Properties, FOptionalInt64 UpdatedAt, FOptionalString ProxyId, FOptionalFederationInfo Proxy, FOptionalInt64 CreatedAt, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break Item", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|3 - Backend", DisplayName="Break Item", meta=(NativeBreakFunc))
 	static void Break(const UItem* Serializable, int64& Id, TArray<UItemProperty*>& Properties, FOptionalInt64& UpdatedAt, FOptionalString& ProxyId, FOptionalFederationInfo& Proxy, FOptionalInt64& CreatedAt);
 };

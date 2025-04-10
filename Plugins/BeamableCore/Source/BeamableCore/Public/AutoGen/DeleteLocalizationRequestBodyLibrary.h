@@ -13,12 +13,12 @@ class BEAMABLECORE_API UDeleteLocalizationRequestBodyLibrary : public UBlueprint
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="DeleteLocalizationRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Content|4 - Json", DisplayName="DeleteLocalizationRequestBody To JSON String")
 	static FString DeleteLocalizationRequestBodyToJsonString(const UDeleteLocalizationRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make DeleteLocalizationRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|3 - Backend", DisplayName="Make DeleteLocalizationRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UDeleteLocalizationRequestBody* Make(TArray<ULocalizationQuery*> Localizations, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break DeleteLocalizationRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|3 - Backend", DisplayName="Break DeleteLocalizationRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UDeleteLocalizationRequestBody* Serializable, TArray<ULocalizationQuery*>& Localizations);
 };

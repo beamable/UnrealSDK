@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalArrayOfEventInventoryRewardCurrency struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Make Optional TArray<UEventInventoryRewardCurrency*>", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|5 - Optionals", meta=(DisplayName="Make Optional TArray<UEventInventoryRewardCurrency*>", NativeMakeFunc))
 	static FOptionalArrayOfEventInventoryRewardCurrency MakeOptional(TArray<UEventInventoryRewardCurrency*> Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The TArray<UEventInventoryRewardCurrency*> to convert.
 	 * @return An optional with the TArray<UEventInventoryRewardCurrency*> set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta = (DisplayName = "TArray<UEventInventoryRewardCurrency*> To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|5 - Optionals", meta = (DisplayName="TArray<UEventInventoryRewardCurrency*> To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalArrayOfEventInventoryRewardCurrency Conv_OptionalFromValue(TArray<UEventInventoryRewardCurrency*> Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Shared|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|EventPlayers|5 - Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalArrayOfEventInventoryRewardCurrency& Optional, TArray<UEventInventoryRewardCurrency*>& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Get Optional's TArray<UEventInventoryRewardCurrency*> Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|5 - Optionals", meta=(DisplayName="Get Optional's TArray<UEventInventoryRewardCurrency*> Value"))
 	static TArray<UEventInventoryRewardCurrency*> GetOptionalValue(const FOptionalArrayOfEventInventoryRewardCurrency& Optional, TArray<UEventInventoryRewardCurrency*> DefaultValue, bool& WasSet);
 
 	

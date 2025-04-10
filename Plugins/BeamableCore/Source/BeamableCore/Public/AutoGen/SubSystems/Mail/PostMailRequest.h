@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Mail|Backend", DisplayName="Make PostMail",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Body,_Expires,_PlayerRewards,_Subject,_Rewards,_Id,_BodyRef,_Attachments,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Mail|3 - Backend", DisplayName="Make PostMail",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Body,_Expires,_PlayerRewards,_Subject,_Rewards,_Id,_BodyRef,_Attachments,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPostMailRequest* Make(int64 _ObjectId, int64 _SenderGamerTag, FString _Category, FOptionalString _Body, FOptionalString _Expires, FOptionalPlayerReward _PlayerRewards, FOptionalString _Subject, FOptionalMailRewards _Rewards, FOptionalInt64 _Id, FOptionalInt64 _BodyRef, FOptionalArrayOfAttachmentRequestBody _Attachments, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

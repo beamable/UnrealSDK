@@ -13,12 +13,12 @@ class BEAMABLECORE_API USaveCatalogRequestBodyLibrary : public UBlueprintFunctio
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="SaveCatalogRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|4 - Json", DisplayName="SaveCatalogRequestBody To JSON String")
 	static FString SaveCatalogRequestBodyToJsonString(const USaveCatalogRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make SaveCatalogRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|3 - Backend", DisplayName="Make SaveCatalogRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static USaveCatalogRequestBody* Make(TArray<UStore*> Stores, TArray<UOfferDefinition*> OfferDefinitions, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break SaveCatalogRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|3 - Backend", DisplayName="Break SaveCatalogRequestBody", meta=(NativeBreakFunc))
 	static void Break(const USaveCatalogRequestBody* Serializable, TArray<UStore*>& Stores, TArray<UOfferDefinition*>& OfferDefinitions);
 };

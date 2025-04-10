@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPromoteRealmResponseOldLibrary : public UBlueprintFuncti
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="PromoteRealmResponseOld To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|4 - Json", DisplayName="PromoteRealmResponseOld To JSON String")
 	static FString PromoteRealmResponseOldToJsonString(const UPromoteRealmResponseOld* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make PromoteRealmResponseOld", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Make PromoteRealmResponseOld", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UPromoteRealmResponseOld* Make(FString SourcePid, TArray<URealmPromotion*> Promotions, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break PromoteRealmResponseOld", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Break PromoteRealmResponseOld", meta=(NativeBreakFunc))
 	static void Break(const UPromoteRealmResponseOld* Serializable, FString& SourcePid, TArray<URealmPromotion*>& Promotions);
 };

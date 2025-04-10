@@ -13,12 +13,12 @@ class BEAMABLECORE_API UTrackPurchaseRequestBodyLibrary : public UBlueprintFunct
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="TrackPurchaseRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|4 - Json", DisplayName="TrackPurchaseRequestBody To JSON String")
 	static FString TrackPurchaseRequestBodyToJsonString(const UTrackPurchaseRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make TrackPurchaseRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|3 - Backend", DisplayName="Make TrackPurchaseRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UTrackPurchaseRequestBody* Make(double PriceInLocalCurrency, FString SkuName, FString SkuProductId, FString Store, FString PurchaseId, FString IsoCurrencySymbol, TArray<UItemCreateRequestBody*> ObtainItems, TArray<UCurrencyChange*> ObtainCurrency, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break TrackPurchaseRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|3 - Backend", DisplayName="Break TrackPurchaseRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UTrackPurchaseRequestBody* Serializable, double& PriceInLocalCurrency, FString& SkuName, FString& SkuProductId, FString& Store, FString& PurchaseId, FString& IsoCurrencySymbol, TArray<UItemCreateRequestBody*>& ObtainItems, TArray<UCurrencyChange*>& ObtainCurrency);
 };

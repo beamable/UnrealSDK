@@ -13,12 +13,12 @@ class BEAMABLECORE_API UAccountSearchResponseLibrary : public UBlueprintFunction
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="AccountSearchResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|4 - Json", DisplayName="AccountSearchResponse To JSON String")
 	static FString AccountSearchResponseToJsonString(const UAccountSearchResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make AccountSearchResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Make AccountSearchResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UAccountSearchResponse* Make(TArray<UAccountsBasicAccount*> Accounts, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break AccountSearchResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Break AccountSearchResponse", meta=(NativeBreakFunc))
 	static void Break(const UAccountSearchResponse* Serializable, TArray<UAccountsBasicAccount*>& Accounts);
 };

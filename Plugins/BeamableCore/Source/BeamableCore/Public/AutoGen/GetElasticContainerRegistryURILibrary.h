@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetElasticContainerRegistryURILibrary : public UBlueprin
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GetElasticContainerRegistryURI To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|4 - Json", DisplayName="GetElasticContainerRegistryURI To JSON String")
 	static FString GetElasticContainerRegistryURIToJsonString(const UGetElasticContainerRegistryURI* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GetElasticContainerRegistryURI", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Make GetElasticContainerRegistryURI", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UGetElasticContainerRegistryURI* Make(FString Uri, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GetElasticContainerRegistryURI", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Break GetElasticContainerRegistryURI", meta=(NativeBreakFunc))
 	static void Break(const UGetElasticContainerRegistryURI* Serializable, FString& Uri);
 };

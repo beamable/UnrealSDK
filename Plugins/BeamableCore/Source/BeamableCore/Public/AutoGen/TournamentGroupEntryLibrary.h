@@ -13,12 +13,12 @@ class BEAMABLECORE_API UTournamentGroupEntryLibrary : public UBlueprintFunctionL
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="TournamentGroupEntry To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|4 - Json", DisplayName="TournamentGroupEntry To JSON String")
 	static FString TournamentGroupEntryToJsonString(const UTournamentGroupEntry* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make TournamentGroupEntry", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|3 - Backend", DisplayName="Make TournamentGroupEntry", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UTournamentGroupEntry* Make(int64 Rank, double Score, int64 GroupId, int32 StageChange, TArray<UTournamentCurrencyReward*> CurrencyRewards, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break TournamentGroupEntry", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|3 - Backend", DisplayName="Break TournamentGroupEntry", meta=(NativeBreakFunc))
 	static void Break(const UTournamentGroupEntry* Serializable, int64& Rank, double& Score, int64& GroupId, int32& StageChange, TArray<UTournamentCurrencyReward*>& CurrencyRewards);
 };

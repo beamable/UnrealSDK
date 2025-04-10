@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Events|Backend", DisplayName="Make PutContent",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_RootEventId,_OriginType,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Events|3 - Backend", DisplayName="Make PutContent",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_RootEventId,_OriginType,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPutContentRequest* Make(FString _ObjectId, UEvent* _Event, FString _Origin, FOptionalString _RootEventId, FOptionalString _OriginType, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

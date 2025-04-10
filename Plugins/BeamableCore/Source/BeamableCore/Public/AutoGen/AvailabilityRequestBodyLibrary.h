@@ -13,12 +13,12 @@ class BEAMABLECORE_API UAvailabilityRequestBodyLibrary : public UBlueprintFuncti
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="AvailabilityRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|4 - Json", DisplayName="AvailabilityRequestBody To JSON String")
 	static FString AvailabilityRequestBodyToJsonString(const UAvailabilityRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make AvailabilityRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bSubGroup, Name, Tag, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|3 - Backend", DisplayName="Make AvailabilityRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bSubGroup, Name, Tag, Outer", NativeMakeFunc))
 	static UAvailabilityRequestBody* Make(EGroupType Type, FOptionalBool bSubGroup, FOptionalString Name, FOptionalString Tag, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break AvailabilityRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|3 - Backend", DisplayName="Break AvailabilityRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UAvailabilityRequestBody* Serializable, EGroupType& Type, FOptionalBool& bSubGroup, FOptionalString& Name, FOptionalString& Tag);
 };

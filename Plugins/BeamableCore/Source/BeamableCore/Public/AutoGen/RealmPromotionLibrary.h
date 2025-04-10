@@ -13,12 +13,12 @@ class BEAMABLECORE_API URealmPromotionLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="RealmPromotion To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|4 - Json", DisplayName="RealmPromotion To JSON String")
 	static FString RealmPromotionToJsonString(const URealmPromotion* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make RealmPromotion", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Make RealmPromotion", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static URealmPromotion* Make(FString Name, UPromotable* Source, UPromotable* Destination, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break RealmPromotion", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Break RealmPromotion", meta=(NativeBreakFunc))
 	static void Break(const URealmPromotion* Serializable, FString& Name, UPromotable*& Source, UPromotable*& Destination);
 };

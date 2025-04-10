@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPASuggestedIndexLibrary : public UBlueprintFunctionLibra
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="PASuggestedIndex To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|4 - Json", DisplayName="PASuggestedIndex To JSON String")
 	static FString PASuggestedIndexToJsonString(const UPASuggestedIndex* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make PASuggestedIndex", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Make PASuggestedIndex", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UPASuggestedIndex* Make(FString Weight, FString Id, FString Namespace, TArray<FString> Impact, TArray<FString> Index, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break PASuggestedIndex", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Break PASuggestedIndex", meta=(NativeBreakFunc))
 	static void Break(const UPASuggestedIndex* Serializable, FString& Weight, FString& Id, FString& Namespace, TArray<FString>& Impact, TArray<FString>& Index);
 };

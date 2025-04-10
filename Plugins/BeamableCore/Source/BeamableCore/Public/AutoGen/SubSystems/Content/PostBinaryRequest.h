@@ -36,7 +36,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Content|Backend", DisplayName="Make PostBinary",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Content|3 - Backend", DisplayName="Make PostBinary",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPostBinaryRequest* Make(TArray<UBinaryDefinition*> _Binary, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

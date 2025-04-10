@@ -50,7 +50,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Payments|Backend", DisplayName="Make GetAudits",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Providerid,_Provider,_State,_Txid,_Player,_Start,_Limit,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Payments|3 - Backend", DisplayName="Make GetAudits",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Providerid,_Provider,_State,_Txid,_Player,_Start,_Limit,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UGetAuditsRequest* Make(FOptionalString _Providerid, FOptionalString _Provider, FOptionalString _State, FOptionalInt64 _Txid, FOptionalInt64 _Player, FOptionalInt32 _Start, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

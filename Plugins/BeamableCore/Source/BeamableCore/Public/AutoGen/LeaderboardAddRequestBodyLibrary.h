@@ -13,12 +13,12 @@ class BEAMABLECORE_API ULeaderboardAddRequestBodyLibrary : public UBlueprintFunc
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="LeaderboardAddRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Leaderboards|4 - Json", DisplayName="LeaderboardAddRequestBody To JSON String")
 	static FString LeaderboardAddRequestBodyToJsonString(const ULeaderboardAddRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make LeaderboardAddRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bIncrement, MaxScore, MinScore, Stats, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Leaderboards|3 - Backend", DisplayName="Make LeaderboardAddRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bIncrement, MaxScore, MinScore, Stats, Outer", NativeMakeFunc))
 	static ULeaderboardAddRequestBody* Make(double Score, int64 Id, FOptionalBool bIncrement, FOptionalDouble MaxScore, FOptionalDouble MinScore, FOptionalMapOfString Stats, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break LeaderboardAddRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Leaderboards|3 - Backend", DisplayName="Break LeaderboardAddRequestBody", meta=(NativeBreakFunc))
 	static void Break(const ULeaderboardAddRequestBody* Serializable, double& Score, int64& Id, FOptionalBool& bIncrement, FOptionalDouble& MaxScore, FOptionalDouble& MinScore, FOptionalMapOfString& Stats);
 };

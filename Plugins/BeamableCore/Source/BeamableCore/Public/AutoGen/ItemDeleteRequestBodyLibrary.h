@@ -13,12 +13,12 @@ class BEAMABLECORE_API UItemDeleteRequestBodyLibrary : public UBlueprintFunction
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ItemDeleteRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|4 - Json", DisplayName="ItemDeleteRequestBody To JSON String")
 	static FString ItemDeleteRequestBodyToJsonString(const UItemDeleteRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ItemDeleteRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|3 - Backend", DisplayName="Make ItemDeleteRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UItemDeleteRequestBody* Make(FString ContentId, int64 Id, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ItemDeleteRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|3 - Backend", DisplayName="Break ItemDeleteRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UItemDeleteRequestBody* Serializable, FString& ContentId, int64& Id);
 };

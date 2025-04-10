@@ -16,9 +16,9 @@ public:
 	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="LiveOpsDemoMSPrepareNewPlayerResponse To JSON String")
 	static FString LiveOpsDemoMSPrepareNewPlayerResponseToJsonString(const ULiveOpsDemoMSPrepareNewPlayerResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Make LiveOpsDemoMSPrepareNewPlayerResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|2 - Backend", DisplayName="Make LiveOpsDemoMSPrepareNewPlayerResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static ULiveOpsDemoMSPrepareNewPlayerResponse* Make(bool bValue, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Break LiveOpsDemoMSPrepareNewPlayerResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|2 - Backend", DisplayName="Break LiveOpsDemoMSPrepareNewPlayerResponse", meta=(NativeBreakFunc))
 	static void Break(const ULiveOpsDemoMSPrepareNewPlayerResponse* Serializable, bool& bValue);
 };

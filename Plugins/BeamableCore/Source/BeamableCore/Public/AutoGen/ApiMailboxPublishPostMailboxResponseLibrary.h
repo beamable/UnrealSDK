@@ -13,10 +13,10 @@ class BEAMABLECORE_API UApiMailboxPublishPostMailboxResponseLibrary : public UBl
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ApiMailboxPublishPostMailboxResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Mailbox|4 - Json", DisplayName="ApiMailboxPublishPostMailboxResponse To JSON String")
 	static FString ApiMailboxPublishPostMailboxResponseToJsonString(const UApiMailboxPublishPostMailboxResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ApiMailboxPublishPostMailboxResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Mailbox|3 - Backend", DisplayName="Make ApiMailboxPublishPostMailboxResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UApiMailboxPublishPostMailboxResponse* Make(UObject* Outer);
 
 	

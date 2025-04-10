@@ -13,12 +13,12 @@ class BEAMABLECORE_API UCreateLobbyLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="CreateLobby To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|4 - Json", DisplayName="CreateLobby To JSON String")
 	static FString CreateLobbyToJsonString(const UCreateLobby* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make CreateLobby", meta=(DefaultToSelf="Outer", AdvancedDisplay="Name, Description, Restriction, MatchType, PasscodeLength, MaxPlayers, PlayerTags, Data, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|3 - Backend", DisplayName="Make CreateLobby", meta=(DefaultToSelf="Outer", AdvancedDisplay="Name, Description, Restriction, MatchType, PasscodeLength, MaxPlayers, PlayerTags, Data, Outer", NativeMakeFunc))
 	static UCreateLobby* Make(FOptionalString Name, FOptionalString Description, FOptionalLobbyRestriction Restriction, FOptionalBeamContentId MatchType, FOptionalInt32 PasscodeLength, FOptionalInt32 MaxPlayers, FOptionalArrayOfBeamTag PlayerTags, FOptionalMapOfString Data, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break CreateLobby", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|3 - Backend", DisplayName="Break CreateLobby", meta=(NativeBreakFunc))
 	static void Break(const UCreateLobby* Serializable, FOptionalString& Name, FOptionalString& Description, FOptionalLobbyRestriction& Restriction, FOptionalBeamContentId& MatchType, FOptionalInt32& PasscodeLength, FOptionalInt32& MaxPlayers, FOptionalArrayOfBeamTag& PlayerTags, FOptionalMapOfString& Data);
 };

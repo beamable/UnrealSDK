@@ -13,12 +13,12 @@ class BEAMABLECORE_API UNotificationRequestDataLibrary : public UBlueprintFuncti
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="NotificationRequestData To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Notification|4 - Json", DisplayName="NotificationRequestData To JSON String")
 	static FString NotificationRequestDataToJsonString(const UNotificationRequestData* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make NotificationRequestData", meta=(DefaultToSelf="Outer", AdvancedDisplay="Channel, MessageKey, Context, Shard, MessageFull, MessageParams, Meta, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Notification|3 - Backend", DisplayName="Make NotificationRequestData", meta=(DefaultToSelf="Outer", AdvancedDisplay="Channel, MessageKey, Context, Shard, MessageFull, MessageParams, Meta, Outer", NativeMakeFunc))
 	static UNotificationRequestData* Make(FOptionalString Channel, FOptionalString MessageKey, FOptionalString Context, FOptionalString Shard, FOptionalString MessageFull, FOptionalArrayOfString MessageParams, FOptionalMapOfString Meta, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break NotificationRequestData", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Notification|3 - Backend", DisplayName="Break NotificationRequestData", meta=(NativeBreakFunc))
 	static void Break(const UNotificationRequestData* Serializable, FOptionalString& Channel, FOptionalString& MessageKey, FOptionalString& Context, FOptionalString& Shard, FOptionalString& MessageFull, FOptionalArrayOfString& MessageParams, FOptionalMapOfString& Meta);
 };

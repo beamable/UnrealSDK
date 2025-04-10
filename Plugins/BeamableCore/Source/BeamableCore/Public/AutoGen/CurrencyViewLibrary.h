@@ -13,12 +13,12 @@ class BEAMABLECORE_API UCurrencyViewLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="CurrencyView To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|4 - Json", DisplayName="CurrencyView To JSON String")
 	static FString CurrencyViewToJsonString(const UCurrencyView* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make CurrencyView", meta=(DefaultToSelf="Outer", AdvancedDisplay="Proxy, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|3 - Backend", DisplayName="Make CurrencyView", meta=(DefaultToSelf="Outer", AdvancedDisplay="Proxy, Outer", NativeMakeFunc))
 	static UCurrencyView* Make(FString Id, int64 Amount, TArray<UCurrencyProperty*> Properties, FOptionalFederationInfo Proxy, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break CurrencyView", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|3 - Backend", DisplayName="Break CurrencyView", meta=(NativeBreakFunc))
 	static void Break(const UCurrencyView* Serializable, FString& Id, int64& Amount, TArray<UCurrencyProperty*>& Properties, FOptionalFederationInfo& Proxy);
 };

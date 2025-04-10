@@ -13,10 +13,10 @@ class BEAMABLECORE_API UApiPlayersPresencePutPlayerPresenceResponseLibrary : pub
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ApiPlayersPresencePutPlayerPresenceResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Player|4 - Json", DisplayName="ApiPlayersPresencePutPlayerPresenceResponse To JSON String")
 	static FString ApiPlayersPresencePutPlayerPresenceResponseToJsonString(const UApiPlayersPresencePutPlayerPresenceResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ApiPlayersPresencePutPlayerPresenceResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Player|3 - Backend", DisplayName="Make ApiPlayersPresencePutPlayerPresenceResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UApiPlayersPresencePutPlayerPresenceResponse* Make(UObject* Outer);
 
 	

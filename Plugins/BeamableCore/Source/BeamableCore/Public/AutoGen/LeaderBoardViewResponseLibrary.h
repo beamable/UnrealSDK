@@ -13,12 +13,12 @@ class BEAMABLECORE_API ULeaderBoardViewResponseLibrary : public UBlueprintFuncti
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="LeaderBoardViewResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Leaderboards|4 - Json", DisplayName="LeaderBoardViewResponse To JSON String")
 	static FString LeaderBoardViewResponseToJsonString(const ULeaderBoardViewResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make LeaderBoardViewResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Leaderboards|3 - Backend", DisplayName="Make LeaderBoardViewResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static ULeaderBoardViewResponse* Make(FString Result, ULeaderBoardView* Lb, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break LeaderBoardViewResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Leaderboards|3 - Backend", DisplayName="Break LeaderBoardViewResponse", meta=(NativeBreakFunc))
 	static void Break(const ULeaderBoardViewResponse* Serializable, FString& Result, ULeaderBoardView*& Lb);
 };

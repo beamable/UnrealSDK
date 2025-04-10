@@ -13,12 +13,12 @@ class BEAMABLECORE_API ULeaderboardRemoveEntryRequestBodyLibrary : public UBluep
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="LeaderboardRemoveEntryRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Leaderboards|4 - Json", DisplayName="LeaderboardRemoveEntryRequestBody To JSON String")
 	static FString LeaderboardRemoveEntryRequestBodyToJsonString(const ULeaderboardRemoveEntryRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make LeaderboardRemoveEntryRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Leaderboards|3 - Backend", DisplayName="Make LeaderboardRemoveEntryRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static ULeaderboardRemoveEntryRequestBody* Make(int64 Id, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break LeaderboardRemoveEntryRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Leaderboards|3 - Backend", DisplayName="Break LeaderboardRemoveEntryRequestBody", meta=(NativeBreakFunc))
 	static void Break(const ULeaderboardRemoveEntryRequestBody* Serializable, int64& Id);
 };

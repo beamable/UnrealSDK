@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalEntitlementClaimWindow struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Make Optional EntitlementClaimWindow", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|5 - Optionals", meta=(DisplayName="Make Optional EntitlementClaimWindow", NativeMakeFunc))
 	static FOptionalEntitlementClaimWindow MakeOptional(UEntitlementClaimWindow* Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The UEntitlementClaimWindow* to convert.
 	 * @return An optional with the EntitlementClaimWindow set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta = (DisplayName = "EntitlementClaimWindow To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|5 - Optionals", meta = (DisplayName="EntitlementClaimWindow To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalEntitlementClaimWindow Conv_OptionalFromValue(UEntitlementClaimWindow* Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Shared|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Accounts|5 - Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalEntitlementClaimWindow& Optional, UEntitlementClaimWindow*& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Get Optional's EntitlementClaimWindow Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|5 - Optionals", meta=(DisplayName="Get Optional's EntitlementClaimWindow Value"))
 	static UEntitlementClaimWindow* GetOptionalValue(const FOptionalEntitlementClaimWindow& Optional, UEntitlementClaimWindow* DefaultValue, bool& WasSet);
 
 	

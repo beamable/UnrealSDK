@@ -6,7 +6,7 @@
 void UBeamFriendSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperationHandle& ResultOp)
 {
 	//Initialize all the subsystem and APIs required to the FriendSubsystem to work
-	BeamSocialApi = GEngine->GetEngineSubsystem<UBeamSocialApi>();
+	BeamSocialApi = GEngine->GetEngineSubsystem<UBeamFriendsApi>();
 	SocialNotifications = GEngine->GetEngineSubsystem<UBeamSocialNotifications>();
 	BeamPresenceApi = GEngine->GetEngineSubsystem<UBeamPresenceApi>();
 	MailNotifications = GEngine->GetEngineSubsystem<UBeamMailNotifications>();
@@ -366,7 +366,7 @@ void UBeamFriendSubsystem::FetchPlayerFriendState(FUserSlot UserSlot, FBeamOpera
 void UBeamFriendSubsystem::FetchFriendsState(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerGamerTags,
                                              FBeamOperationHandle Op)
 {
-	const auto Handler = FOnGetSocialFullResponse::CreateLambda([this, UserSlot, Op](const FGetSocialFullResponse& Resp)
+	const auto Handler = FOnBasicFriendsGetFriendsFullResponse::CreateLambda([this, UserSlot, Op](const FBasicFriendsGetFriendsFullResponse& Resp)
 	{
 		if (Resp.State == RS_Retrying) return;
 
@@ -414,11 +414,11 @@ void UBeamFriendSubsystem::FetchFriendsState(FUserSlot UserSlot, TArray<FBeamGam
 		PlayerIdArray.Add(PlayerGamerTag.AsString);
 	}
 
-	UGetSocialRequest* const Request = UGetSocialRequest::Make(PlayerIdArray, this, {});
+	UBasicFriendsGetFriendsRequest* const Request = UBasicFriendsGetFriendsRequest::Make(PlayerIdArray, this, {});
 
 	FBeamRequestContext Ctx;
 
-	BeamSocialApi->CPP_GetSocial(UserSlot, Request, Handler, Ctx, Op, this);
+	BeamSocialApi->CPP_GetFriends(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
 void UBeamFriendSubsystem::FetchFriendPresenceStatus(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerGamerTags,

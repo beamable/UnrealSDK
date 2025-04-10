@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPromotionLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="Promotion To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|4 - Json", DisplayName="Promotion To JSON String")
 	static FString PromotionToJsonString(const UPromotion* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make Promotion", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Make Promotion", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UPromotion* Make(FString Id, UPromotable* Source, UPromotable* Destination, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break Promotion", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Break Promotion", meta=(NativeBreakFunc))
 	static void Break(const UPromotion* Serializable, FString& Id, UPromotable*& Source, UPromotable*& Destination);
 };

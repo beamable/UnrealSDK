@@ -13,12 +13,12 @@ class BEAMABLECORE_API UInventoryUpdateRequestBodyLibrary : public UBlueprintFun
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="InventoryUpdateRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|4 - Json", DisplayName="InventoryUpdateRequestBody To JSON String")
 	static FString InventoryUpdateRequestBodyToJsonString(const UInventoryUpdateRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make InventoryUpdateRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bApplyVipBonus, Transaction, UpdateItems, NewItems, DeleteItems, Currencies, CurrencyProperties, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|3 - Backend", DisplayName="Make InventoryUpdateRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bApplyVipBonus, Transaction, UpdateItems, NewItems, DeleteItems, Currencies, CurrencyProperties, Outer", NativeMakeFunc))
 	static UInventoryUpdateRequestBody* Make(FOptionalBool bApplyVipBonus, FOptionalString Transaction, FOptionalArrayOfItemUpdateRequestBody UpdateItems, FOptionalArrayOfItemCreateRequestBody NewItems, FOptionalArrayOfItemDeleteRequestBody DeleteItems, FOptionalMapOfInt64 Currencies, FOptionalMapOfArrayOfCurrencyProperty CurrencyProperties, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break InventoryUpdateRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|3 - Backend", DisplayName="Break InventoryUpdateRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UInventoryUpdateRequestBody* Serializable, FOptionalBool& bApplyVipBonus, FOptionalString& Transaction, FOptionalArrayOfItemUpdateRequestBody& UpdateItems, FOptionalArrayOfItemCreateRequestBody& NewItems, FOptionalArrayOfItemDeleteRequestBody& DeleteItems, FOptionalMapOfInt64& Currencies, FOptionalMapOfArrayOfCurrencyProperty& CurrencyProperties);
 };

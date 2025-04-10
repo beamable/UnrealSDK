@@ -13,12 +13,12 @@ class BEAMABLECORE_API ULocalDateLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="LocalDate To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Session|4 - Json", DisplayName="LocalDate To JSON String")
 	static FString LocalDateToJsonString(const ULocalDate* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make LocalDate", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Session|3 - Backend", DisplayName="Make LocalDate", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static ULocalDate* Make(bool bLeapYear, int32 DayOfYear, UIsoChronology* Chronology, FString DayOfWeek, int32 MonthValue, int32 DayOfMonth, int32 Year, UEra* Era, FString Month, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break LocalDate", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Session|3 - Backend", DisplayName="Break LocalDate", meta=(NativeBreakFunc))
 	static void Break(const ULocalDate* Serializable, bool& bLeapYear, int32& DayOfYear, UIsoChronology*& Chronology, FString& DayOfWeek, int32& MonthValue, int32& DayOfMonth, int32& Year, UEra*& Era, FString& Month);
 };

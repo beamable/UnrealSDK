@@ -13,12 +13,12 @@ class BEAMABLECORE_API UServiceImageLayersLibrary : public UBlueprintFunctionLib
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ServiceImageLayers To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|4 - Json", DisplayName="ServiceImageLayers To JSON String")
 	static FString ServiceImageLayersToJsonString(const UServiceImageLayers* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ServiceImageLayers", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Make ServiceImageLayers", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UServiceImageLayers* Make(UBeamoBasicReference* Service, TArray<FString> Layers, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ServiceImageLayers", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Break ServiceImageLayers", meta=(NativeBreakFunc))
 	static void Break(const UServiceImageLayers* Serializable, UBeamoBasicReference*& Service, TArray<FString>& Layers);
 };

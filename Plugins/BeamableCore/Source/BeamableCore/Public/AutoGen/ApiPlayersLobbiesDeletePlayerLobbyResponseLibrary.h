@@ -13,10 +13,10 @@ class BEAMABLECORE_API UApiPlayersLobbiesDeletePlayerLobbyResponseLibrary : publ
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ApiPlayersLobbiesDeletePlayerLobbyResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|PlayerLobby|4 - Json", DisplayName="ApiPlayersLobbiesDeletePlayerLobbyResponse To JSON String")
 	static FString ApiPlayersLobbiesDeletePlayerLobbyResponseToJsonString(const UApiPlayersLobbiesDeletePlayerLobbyResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ApiPlayersLobbiesDeletePlayerLobbyResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|PlayerLobby|3 - Backend", DisplayName="Make ApiPlayersLobbiesDeletePlayerLobbyResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UApiPlayersLobbiesDeletePlayerLobbyResponse* Make(UObject* Outer);
 
 	

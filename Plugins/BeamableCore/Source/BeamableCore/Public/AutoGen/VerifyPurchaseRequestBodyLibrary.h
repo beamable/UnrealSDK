@@ -13,12 +13,12 @@ class BEAMABLECORE_API UVerifyPurchaseRequestBodyLibrary : public UBlueprintFunc
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="VerifyPurchaseRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|4 - Json", DisplayName="VerifyPurchaseRequestBody To JSON String")
 	static FString VerifyPurchaseRequestBodyToJsonString(const UVerifyPurchaseRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make VerifyPurchaseRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|3 - Backend", DisplayName="Make VerifyPurchaseRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UVerifyPurchaseRequestBody* Make(FString Receipt, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break VerifyPurchaseRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|3 - Backend", DisplayName="Break VerifyPurchaseRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UVerifyPurchaseRequestBody* Serializable, FString& Receipt);
 };

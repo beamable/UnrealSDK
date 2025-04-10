@@ -4,20 +4,20 @@
 
 #include "InvitationDirection.generated.h"
 
-UENUM(BlueprintType, Category="Beam|Shared|Enums")
+UENUM(BlueprintType, Category="Beam|Friends|Enums")
 enum class EInvitationDirection : uint8
 {
 	BEAM_incoming UMETA(DisplayName="Incoming"),
 	BEAM_outgoing UMETA(DisplayName="Outgoing")		
 };
 
-UCLASS(BlueprintType, Category="Beam|Shared|Enums")
+UCLASS(BlueprintType, Category="Beam|Friends|Enums")
 class BEAMABLECORE_API UInvitationDirectionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:		
 	
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "InvitationDirection To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Shared|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="InvitationDirection To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Friends|Enums")
 	static FString InvitationDirectionToSerializationName(EInvitationDirection Value)
 	{
 		const UEnum* Enum = StaticEnum<EInvitationDirection>();
@@ -29,7 +29,7 @@ public:
 		
 	}
 
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Serialization Name To InvitationDirection", CompactNodeTitle = "->"), Category="Beam|Shared|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="Serialization Name To InvitationDirection", CompactNodeTitle = "->"), Category="Beam|Friends|Enums")
 	static EInvitationDirection SerializationNameToInvitationDirection(FString Value)
 	{
 		const UEnum* Enum = StaticEnum<EInvitationDirection>();

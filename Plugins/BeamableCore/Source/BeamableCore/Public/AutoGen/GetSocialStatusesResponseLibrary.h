@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetSocialStatusesResponseLibrary : public UBlueprintFunc
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GetSocialStatusesResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Friends|4 - Json", DisplayName="GetSocialStatusesResponse To JSON String")
 	static FString GetSocialStatusesResponseToJsonString(const UGetSocialStatusesResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GetSocialStatusesResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Friends|3 - Backend", DisplayName="Make GetSocialStatusesResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UGetSocialStatusesResponse* Make(TArray<USocial*> Statuses, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GetSocialStatusesResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Friends|3 - Backend", DisplayName="Break GetSocialStatusesResponse", meta=(NativeBreakFunc))
 	static void Break(const UGetSocialStatusesResponse* Serializable, TArray<USocial*>& Statuses);
 };

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UAdminGetPlayerStatusRequestBodyLibrary : public UBluepri
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="AdminGetPlayerStatusRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|4 - Json", DisplayName="AdminGetPlayerStatusRequestBody To JSON String")
 	static FString AdminGetPlayerStatusRequestBodyToJsonString(const UAdminGetPlayerStatusRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make AdminGetPlayerStatusRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bHasUnclaimedRewards, TournamentId, ContentId, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|3 - Backend", DisplayName="Make AdminGetPlayerStatusRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bHasUnclaimedRewards, TournamentId, ContentId, Outer", NativeMakeFunc))
 	static UAdminGetPlayerStatusRequestBody* Make(int64 PlayerId, FOptionalBool bHasUnclaimedRewards, FOptionalString TournamentId, FOptionalString ContentId, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break AdminGetPlayerStatusRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|3 - Backend", DisplayName="Break AdminGetPlayerStatusRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UAdminGetPlayerStatusRequestBody* Serializable, int64& PlayerId, FOptionalBool& bHasUnclaimedRewards, FOptionalString& TournamentId, FOptionalString& ContentId);
 };

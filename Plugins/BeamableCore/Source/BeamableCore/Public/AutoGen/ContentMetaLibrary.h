@@ -13,12 +13,12 @@ class BEAMABLECORE_API UContentMetaLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ContentMeta To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Content|4 - Json", DisplayName="ContentMeta To JSON String")
 	static FString ContentMetaToJsonString(const UContentMeta* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ContentMeta", meta=(DefaultToSelf="Outer", AdvancedDisplay="Text, Data, Outer", NativeMakeFunc))
-	static UContentMeta* Make(EContentVisibility Visibility, FOptionalString Text, FOptionalString Data, UObject* Outer);
+	UFUNCTION(BlueprintPure, Category="Beam|Content|3 - Backend", DisplayName="Make ContentMeta", meta=(DefaultToSelf="Outer", AdvancedDisplay="Text, Outer", NativeMakeFunc))
+	static UContentMeta* Make(EContentVisibility Visibility, FOptionalString Text, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ContentMeta", meta=(NativeBreakFunc))
-	static void Break(const UContentMeta* Serializable, EContentVisibility& Visibility, FOptionalString& Text, FOptionalString& Data);
+	UFUNCTION(BlueprintPure, Category="Beam|Content|3 - Backend", DisplayName="Break ContentMeta", meta=(NativeBreakFunc))
+	static void Break(const UContentMeta* Serializable, EContentVisibility& Visibility, FOptionalString& Text);
 };

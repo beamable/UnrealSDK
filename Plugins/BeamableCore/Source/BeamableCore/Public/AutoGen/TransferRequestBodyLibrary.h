@@ -13,12 +13,12 @@ class BEAMABLECORE_API UTransferRequestBodyLibrary : public UBlueprintFunctionLi
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="TransferRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|4 - Json", DisplayName="TransferRequestBody To JSON String")
 	static FString TransferRequestBodyToJsonString(const UTransferRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make TransferRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Transaction, Currencies, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|3 - Backend", DisplayName="Make TransferRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Transaction, Currencies, Outer", NativeMakeFunc))
 	static UTransferRequestBody* Make(FBeamGamerTag RecipientPlayer, FOptionalString Transaction, FOptionalMapOfInt64 Currencies, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break TransferRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|3 - Backend", DisplayName="Break TransferRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UTransferRequestBody* Serializable, FBeamGamerTag& RecipientPlayer, FOptionalString& Transaction, FOptionalMapOfInt64& Currencies);
 };

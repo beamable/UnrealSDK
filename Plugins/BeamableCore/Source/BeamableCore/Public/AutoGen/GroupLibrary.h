@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGroupLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="Group To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|4 - Json", DisplayName="Group To JSON String")
 	static FString GroupToJsonString(const UGroup* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make Group", meta=(DefaultToSelf="Outer", AdvancedDisplay="bCanDisband, bCanUpdateEnrollment, bCanUpdateMOTD, bCanUpdateSlogan, Shard, ClientData, Version, Tag, Donations, Roles, InFlight, MaybeDonations, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|3 - Backend", DisplayName="Make Group", meta=(DefaultToSelf="Outer", AdvancedDisplay="bCanDisband, bCanUpdateEnrollment, bCanUpdateMOTD, bCanUpdateSlogan, Shard, ClientData, Version, Tag, Donations, Roles, InFlight, MaybeDonations, Outer", NativeMakeFunc))
 	static UGroup* Make(int64 Requirement, int32 MaxSize, EGroupType Type, int64 Id, FString Motd, FString Slogan, int64 Leader, int64 Created, FString Name, FString EnrollmentType, int32 FreeSlots, TArray<UGroup*> SubGroups, TArray<UMember*> Members, TMap<FString, FString> Scores, FOptionalBool bCanDisband, FOptionalBool bCanUpdateEnrollment, FOptionalBool bCanUpdateMOTD, FOptionalBool bCanUpdateSlogan, FOptionalString Shard, FOptionalString ClientData, FOptionalInt32 Version, FOptionalString Tag, FOptionalArrayOfDonationRequestBody Donations, FOptionalArrayOfGroupRole Roles, FOptionalArrayOfInFlightMessage InFlight, FOptionalMapOfDonationRequestBody MaybeDonations, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break Group", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|3 - Backend", DisplayName="Break Group", meta=(NativeBreakFunc))
 	static void Break(const UGroup* Serializable, int64& Requirement, int32& MaxSize, EGroupType& Type, int64& Id, FString& Motd, FString& Slogan, int64& Leader, int64& Created, FString& Name, FString& EnrollmentType, int32& FreeSlots, TArray<UGroup*>& SubGroups, TArray<UMember*>& Members, TMap<FString, FString>& Scores, FOptionalBool& bCanDisband, FOptionalBool& bCanUpdateEnrollment, FOptionalBool& bCanUpdateMOTD, FOptionalBool& bCanUpdateSlogan, FOptionalString& Shard, FOptionalString& ClientData, FOptionalInt32& Version, FOptionalString& Tag, FOptionalArrayOfDonationRequestBody& Donations, FOptionalArrayOfGroupRole& Roles, FOptionalArrayOfInFlightMessage& InFlight, FOptionalMapOfDonationRequestBody& MaybeDonations);
 };

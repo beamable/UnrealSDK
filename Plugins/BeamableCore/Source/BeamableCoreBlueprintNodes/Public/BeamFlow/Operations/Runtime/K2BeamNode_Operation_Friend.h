@@ -17,8 +17,10 @@ class UK2BeamNode_Operation_FetchPlayerFriendState : public UK2BeamNode_Operatio
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Operation - Friend - FetchPlayerFriendState");
+		return LOCTEXT("Title", "Beam - Operation - Friend - FetchPlayerFriendState");
 	}
+
+	virtual FString GetServiceName() const override { return FString("Friends"); };
 
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
@@ -45,8 +47,10 @@ class UK2BeamNode_Operation_FetchFriendsState : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Operation - Friend - FetchFriendsState");
+		return LOCTEXT("Title", "Beam - Operation - Friend - FetchFriendsState");
 	}
+
+	virtual FString GetServiceName() const override { return FString("Friends"); };
 
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
@@ -72,8 +76,10 @@ class UK2BeamNode_Operation_FetchFriendPresenceStatus : public UK2BeamNode_Opera
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Operation - Friend - FetchFriendPresenceStatus");
+		return LOCTEXT("Title", "Beam - Operation - Friend - FetchFriendPresenceStatus");
 	}
+
+	virtual FString GetServiceName() const override { return FString("Friends"); };
 
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
@@ -99,8 +105,10 @@ class UK2BeamNode_Operation_SendFriendInvite : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Operation - Friend - SendFriendInvite");
+		return LOCTEXT("Title", "Beam - Operation - Friend - SendFriendInvite");
 	}
+
+	virtual FString GetServiceName() const override { return FString("Friends"); };
 
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
@@ -126,8 +134,10 @@ class UK2BeamNode_Operation_AcceptFriendInvite : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Operation - Friend - AcceptFriendInvite");
+		return LOCTEXT("Title", "Beam - Operation - Friend - AcceptFriendInvite");
 	}
+
+	virtual FString GetServiceName() const override { return FString("Friends"); };
 
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
@@ -154,8 +164,10 @@ class UK2BeamNode_Operation_DeclineFriendInvite : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Operation - Friend - DeclineFriendInvite");
+		return LOCTEXT("Title", "Beam - Operation - Friend - DeclineFriendInvite");
 	}
+
+	virtual FString GetServiceName() const override { return FString("Friends"); };
 
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
@@ -182,8 +194,10 @@ class UK2BeamNode_Operation_BlockPlayer : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Operation - Friend - BlockPlayer");
+		return LOCTEXT("Title", "Beam - Operation - Friend - BlockPlayer");
 	}
+
+	virtual FString GetServiceName() const override { return FString("Friends"); };
 
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
@@ -209,8 +223,10 @@ class UK2BeamNode_Operation_UnblockPlayer : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Operation - Friend - UnblockPlayer");
+		return LOCTEXT("Title", "Beam - Operation - Friend - UnblockPlayer");
 	}
+
+	virtual FString GetServiceName() const override { return FString("Friends"); };
 
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
@@ -238,8 +254,10 @@ class UK2BeamNode_Operation_RemoveFriend : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Operation - Friend - RemoveFriend");
+		return LOCTEXT("Title", "Beam - Operation - Friend - RemoveFriend");
 	}
+
+	virtual FString GetServiceName() const override { return FString("Friends"); };
 
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{

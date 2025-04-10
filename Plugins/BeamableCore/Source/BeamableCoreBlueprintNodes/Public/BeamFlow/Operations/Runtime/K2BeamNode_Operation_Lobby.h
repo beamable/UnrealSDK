@@ -15,8 +15,10 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_CreateOpenLobby : pub
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Lobby - Create Open Lobby"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Lobby - Create Open Lobby"); }
 
+	virtual FString GetServiceName() const override { return FString("Lobby"); };
+	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, CreateOpenLobbyOperation); }
@@ -33,8 +35,10 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_CreateClosedLobby : p
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Lobby - Create Closed Lobby"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Lobby - Create Closed Lobby"); }
 
+	virtual FString GetServiceName() const override { return FString("Lobby"); };
+	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, CreateClosedLobbyOperation); }
@@ -52,8 +56,10 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_RefreshLobbyData : pu
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Lobby - Refresh Lobby"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Lobby - Refresh Lobby"); }
 
+	virtual FString GetServiceName() const override { return FString("Lobby"); };
+	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, RefreshLobbyDataOperation); }
@@ -70,8 +76,10 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_RefreshLobbiesData : 
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Lobby - Refresh Lobbies"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Lobby - Refresh Lobbies"); }
 
+	virtual FString GetServiceName() const override { return FString("Lobby"); };
+	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, RefreshLobbiesDataOperation); }
@@ -88,8 +96,10 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_JoinLobby : public UK
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Lobby - Join Lobby"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Lobby - Join Lobby"); }
 
+	virtual FString GetServiceName() const override { return FString("Lobby"); };
+	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, JoinLobbyOperation); }
@@ -106,8 +116,10 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_JoinLobbyByPasscode :
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Lobby - Join Lobby by Passcode"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Lobby - Join Lobby by Passcode"); }
 
+	virtual FString GetServiceName() const override { return FString("Lobby"); };
+	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, JoinLobbyByPasscodeOperation); }
@@ -124,8 +136,10 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_LeaveLobby : public U
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Lobby - Leave Lobby"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Lobby - Leave Lobby"); }
 
+	virtual FString GetServiceName() const override { return FString("Lobby"); };
+	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, LeaveLobbyOperation); }
@@ -142,8 +156,10 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_KickPlayer : public U
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Lobby - Kick Player"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Lobby - Kick Player"); }
 
+	virtual FString GetServiceName() const override { return FString("Lobby"); };
+	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, KickPlayerOperation); }
@@ -161,8 +177,10 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_CommitLobbyUpdate : p
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Lobby - Commit Lobby Update"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Lobby - Commit Lobby Update"); }
 
+	virtual FString GetServiceName() const override { return FString("Lobby"); };
+	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, CommitLobbyUpdateOperation); }
@@ -179,8 +197,10 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_UpdatePlayerData : pu
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Lobby - Update Player Data"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Lobby - Update Player Data"); }
 
+	virtual FString GetServiceName() const override { return FString("Lobby"); };
+	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, UpdatePlayerDataOperation); }
@@ -197,8 +217,10 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_DeletePlayerData : pu
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Lobby - Delete Player Data"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Lobby - Delete Player Data"); }
 
+	virtual FString GetServiceName() const override { return FString("Lobby"); };
+	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, DeletePlayerDataOperation); }
@@ -215,8 +237,10 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_DeleteSlotPlayerData 
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Lobby - Delete Slot Player Data"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Lobby - Delete Slot Player Data"); }
 
+	virtual FString GetServiceName() const override { return FString("Lobby"); };
+	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, DeleteSlotPlayerDataOperation); }
@@ -233,8 +257,10 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_ProvisionGameServerFo
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Lobby - Provision Game Server for Lobby"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Lobby - Provision Game Server for Lobby"); }
 
+	virtual FString GetServiceName() const override { return FString("Lobby"); };
+	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, ProvisionGameServerForLobbyOperation); }

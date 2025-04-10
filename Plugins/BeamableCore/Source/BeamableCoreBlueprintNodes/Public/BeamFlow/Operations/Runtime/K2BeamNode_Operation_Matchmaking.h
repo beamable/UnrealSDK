@@ -15,8 +15,10 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_TryJoinQueue : public
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Matchmaking - Join Queue"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Matchmaking - Join Queue"); }
 
+	virtual FString GetServiceName() const override { return FString("Matchmaking"); };
+	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamMatchmakingSubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamMatchmakingSubsystem, TryJoinQueueOperation); }
@@ -33,8 +35,10 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_TryJoinQueueWithTags 
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Matchmaking - Join Queue with Tags"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Matchmaking - Join Queue with Tags"); }
 
+	virtual FString GetServiceName() const override { return FString("Matchmaking"); };
+	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamMatchmakingSubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamMatchmakingSubsystem, TryJoinQueueWithTagsOperation); }
@@ -51,8 +55,10 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_TryLeaveQueue : publi
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Matchmaking - Leave Queue"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Matchmaking - Leave Queue"); }
 
+	virtual FString GetServiceName() const override { return FString("Matchmaking"); };
+	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamMatchmakingSubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamMatchmakingSubsystem, TryLeaveQueueOperation); }

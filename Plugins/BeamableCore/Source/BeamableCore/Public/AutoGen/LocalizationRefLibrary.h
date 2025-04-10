@@ -13,12 +13,12 @@ class BEAMABLECORE_API ULocalizationRefLibrary : public UBlueprintFunctionLibrar
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="LocalizationRef To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|4 - Json", DisplayName="LocalizationRef To JSON String")
 	static FString LocalizationRefToJsonString(const ULocalizationRef* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make LocalizationRef", meta=(DefaultToSelf="Outer", AdvancedDisplay="DefaultValue, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|3 - Backend", DisplayName="Make LocalizationRef", meta=(DefaultToSelf="Outer", AdvancedDisplay="DefaultValue, Outer", NativeMakeFunc))
 	static ULocalizationRef* Make(bool bEmpty, FString LocalizationId, FOptionalString DefaultValue, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break LocalizationRef", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|3 - Backend", DisplayName="Break LocalizationRef", meta=(NativeBreakFunc))
 	static void Break(const ULocalizationRef* Serializable, bool& bEmpty, FString& LocalizationId, FOptionalString& DefaultValue);
 };

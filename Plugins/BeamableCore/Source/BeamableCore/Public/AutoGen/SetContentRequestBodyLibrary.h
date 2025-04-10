@@ -13,12 +13,12 @@ class BEAMABLECORE_API USetContentRequestBodyLibrary : public UBlueprintFunction
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="SetContentRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Events|4 - Json", DisplayName="SetContentRequestBody To JSON String")
 	static FString SetContentRequestBodyToJsonString(const USetContentRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make SetContentRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="RootEventId, OriginType, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Events|3 - Backend", DisplayName="Make SetContentRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="RootEventId, OriginType, Outer", NativeMakeFunc))
 	static USetContentRequestBody* Make(UEvent* Event, FString Origin, FOptionalString RootEventId, FOptionalString OriginType, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break SetContentRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Events|3 - Backend", DisplayName="Break SetContentRequestBody", meta=(NativeBreakFunc))
 	static void Break(const USetContentRequestBody* Serializable, UEvent*& Event, FString& Origin, FOptionalString& RootEventId, FOptionalString& OriginType);
 };

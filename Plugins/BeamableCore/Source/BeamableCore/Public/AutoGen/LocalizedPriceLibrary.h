@@ -13,12 +13,12 @@ class BEAMABLECORE_API ULocalizedPriceLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="LocalizedPrice To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|4 - Json", DisplayName="LocalizedPrice To JSON String")
 	static FString LocalizedPriceToJsonString(const ULocalizedPrice* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make LocalizedPrice", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|3 - Backend", DisplayName="Make LocalizedPrice", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static ULocalizedPrice* Make(int64 To, int64 Price, double PriceLocalized, FString PriceLocalizedString, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break LocalizedPrice", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|3 - Backend", DisplayName="Break LocalizedPrice", meta=(NativeBreakFunc))
 	static void Break(const ULocalizedPrice* Serializable, int64& To, int64& Price, double& PriceLocalized, FString& PriceLocalizedString);
 };

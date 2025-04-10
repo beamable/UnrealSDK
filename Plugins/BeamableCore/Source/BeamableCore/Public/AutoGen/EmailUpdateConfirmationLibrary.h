@@ -13,12 +13,12 @@ class BEAMABLECORE_API UEmailUpdateConfirmationLibrary : public UBlueprintFuncti
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="EmailUpdateConfirmation To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|4 - Json", DisplayName="EmailUpdateConfirmation To JSON String")
 	static FString EmailUpdateConfirmationToJsonString(const UEmailUpdateConfirmation* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make EmailUpdateConfirmation", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Make EmailUpdateConfirmation", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UEmailUpdateConfirmation* Make(FString Code, FString Password, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break EmailUpdateConfirmation", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Break EmailUpdateConfirmation", meta=(NativeBreakFunc))
 	static void Break(const UEmailUpdateConfirmation* Serializable, FString& Code, FString& Password);
 };

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UBatchSetStatsRequestBodyLibrary : public UBlueprintFunct
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="BatchSetStatsRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Stats|4 - Json", DisplayName="BatchSetStatsRequestBody To JSON String")
 	static FString BatchSetStatsRequestBodyToJsonString(const UBatchSetStatsRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make BatchSetStatsRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Stats|3 - Backend", DisplayName="Make BatchSetStatsRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UBatchSetStatsRequestBody* Make(TArray<UStatUpdateRequestBody*> Updates, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break BatchSetStatsRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Stats|3 - Backend", DisplayName="Break BatchSetStatsRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UBatchSetStatsRequestBody* Serializable, TArray<UStatUpdateRequestBody*>& Updates);
 };

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UMailRewardsLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="MailRewards To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|4 - Json", DisplayName="MailRewards To JSON String")
 	static FString MailRewardsToJsonString(const UMailRewards* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make MailRewards", meta=(DefaultToSelf="Outer", AdvancedDisplay="bApplyVipBonus, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|3 - Backend", DisplayName="Make MailRewards", meta=(DefaultToSelf="Outer", AdvancedDisplay="bApplyVipBonus, Outer", NativeMakeFunc))
 	static UMailRewards* Make(TArray<UCurrencyChange*> Currencies, TArray<UItemCreateRequestBody*> Items, FOptionalBool bApplyVipBonus, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break MailRewards", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|3 - Backend", DisplayName="Break MailRewards", meta=(NativeBreakFunc))
 	static void Break(const UMailRewards* Serializable, TArray<UCurrencyChange*>& Currencies, TArray<UItemCreateRequestBody*>& Items, FOptionalBool& bApplyVipBonus);
 };

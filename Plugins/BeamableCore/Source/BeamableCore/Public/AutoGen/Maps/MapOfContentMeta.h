@@ -6,7 +6,7 @@
 
 #include "MapOfContentMeta.generated.h"
 
-USTRUCT(BlueprintType, Category="Beam|Shared|Wrappers|Maps")
+USTRUCT(BlueprintType, Category="Beam|₢ServiceName₢|Wrappers|Maps")
 struct BEAMABLECORE_API FMapOfContentMeta : public FBeamMap
 {
 	GENERATED_BODY()

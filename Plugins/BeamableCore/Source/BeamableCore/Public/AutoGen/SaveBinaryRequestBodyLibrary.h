@@ -13,12 +13,12 @@ class BEAMABLECORE_API USaveBinaryRequestBodyLibrary : public UBlueprintFunction
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="SaveBinaryRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Content|4 - Json", DisplayName="SaveBinaryRequestBody To JSON String")
 	static FString SaveBinaryRequestBodyToJsonString(const USaveBinaryRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make SaveBinaryRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|3 - Backend", DisplayName="Make SaveBinaryRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static USaveBinaryRequestBody* Make(TArray<UBinaryDefinition*> Binary, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break SaveBinaryRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|3 - Backend", DisplayName="Break SaveBinaryRequestBody", meta=(NativeBreakFunc))
 	static void Break(const USaveBinaryRequestBody* Serializable, TArray<UBinaryDefinition*>& Binary);
 };

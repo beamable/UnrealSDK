@@ -13,12 +13,12 @@ class BEAMABLECORE_API UServiceStorageReferenceLibrary : public UBlueprintFuncti
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ServiceStorageReference To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|4 - Json", DisplayName="ServiceStorageReference To JSON String")
 	static FString ServiceStorageReferenceToJsonString(const UServiceStorageReference* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ServiceStorageReference", meta=(DefaultToSelf="Outer", AdvancedDisplay="TemplateId, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Make ServiceStorageReference", meta=(DefaultToSelf="Outer", AdvancedDisplay="TemplateId, Outer", NativeMakeFunc))
 	static UServiceStorageReference* Make(bool bArchived, bool bEnabled, FString StorageType, FString Id, FString Checksum, FOptionalString TemplateId, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ServiceStorageReference", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Break ServiceStorageReference", meta=(NativeBreakFunc))
 	static void Break(const UServiceStorageReference* Serializable, bool& bArchived, bool& bEnabled, FString& StorageType, FString& Id, FString& Checksum, FOptionalString& TemplateId);
 };

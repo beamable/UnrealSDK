@@ -13,12 +13,12 @@ class BEAMABLECORE_API UItemPropertyLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ItemProperty To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|4 - Json", DisplayName="ItemProperty To JSON String")
 	static FString ItemPropertyToJsonString(const UItemProperty* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ItemProperty", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|3 - Backend", DisplayName="Make ItemProperty", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UItemProperty* Make(FString Name, FString Value, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ItemProperty", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|3 - Backend", DisplayName="Break ItemProperty", meta=(NativeBreakFunc))
 	static void Break(const UItemProperty* Serializable, FString& Name, FString& Value);
 };

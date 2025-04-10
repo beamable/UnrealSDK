@@ -13,12 +13,12 @@ class BEAMABLECORE_API USubscriptionVerificationResponseLibrary : public UBluepr
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="SubscriptionVerificationResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|4 - Json", DisplayName="SubscriptionVerificationResponse To JSON String")
 	static FString SubscriptionVerificationResponseToJsonString(const USubscriptionVerificationResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make SubscriptionVerificationResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|3 - Backend", DisplayName="Make SubscriptionVerificationResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static USubscriptionVerificationResponse* Make(FString HubChallenge, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break SubscriptionVerificationResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|3 - Backend", DisplayName="Break SubscriptionVerificationResponse", meta=(NativeBreakFunc))
 	static void Break(const USubscriptionVerificationResponse* Serializable, FString& HubChallenge);
 };

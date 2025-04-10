@@ -13,12 +13,12 @@ class BEAMABLECORE_API UEmptyResponseLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="EmptyResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Content|4 - Json", DisplayName="EmptyResponse To JSON String")
 	static FString EmptyResponseToJsonString(const UEmptyResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make EmptyResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|3 - Backend", DisplayName="Make EmptyResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UEmptyResponse* Make(FString Result, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break EmptyResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|3 - Backend", DisplayName="Break EmptyResponse", meta=(NativeBreakFunc))
 	static void Break(const UEmptyResponse* Serializable, FString& Result);
 };

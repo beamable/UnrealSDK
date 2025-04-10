@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetChampionsRequestBodyLibrary : public UBlueprintFuncti
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GetChampionsRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|4 - Json", DisplayName="GetChampionsRequestBody To JSON String")
 	static FString GetChampionsRequestBodyToJsonString(const UGetChampionsRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GetChampionsRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="ContentId, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|3 - Backend", DisplayName="Make GetChampionsRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="ContentId, Outer", NativeMakeFunc))
 	static UGetChampionsRequestBody* Make(FString TournamentId, int32 Cycles, FOptionalString ContentId, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GetChampionsRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|3 - Backend", DisplayName="Break GetChampionsRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UGetChampionsRequestBody* Serializable, FString& TournamentId, int32& Cycles, FOptionalString& ContentId);
 };

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetAdminsResponseLibrary : public UBlueprintFunctionLibr
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GetAdminsResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|4 - Json", DisplayName="GetAdminsResponse To JSON String")
 	static FString GetAdminsResponseToJsonString(const UGetAdminsResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GetAdminsResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Make GetAdminsResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UGetAdminsResponse* Make(TArray<UAccountPortalView*> Accounts, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GetAdminsResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Break GetAdminsResponse", meta=(NativeBreakFunc))
 	static void Break(const UGetAdminsResponse* Serializable, TArray<UAccountPortalView*>& Accounts);
 };

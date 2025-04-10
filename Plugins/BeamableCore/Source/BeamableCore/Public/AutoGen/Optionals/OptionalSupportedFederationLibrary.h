@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalSupportedFederation struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Make Optional SupportedFederation", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|5 - Optionals", meta=(DisplayName="Make Optional SupportedFederation", NativeMakeFunc))
 	static FOptionalSupportedFederation MakeOptional(USupportedFederation* Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The USupportedFederation* to convert.
 	 * @return An optional with the SupportedFederation set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta = (DisplayName = "SupportedFederation To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|5 - Optionals", meta = (DisplayName="SupportedFederation To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalSupportedFederation Conv_OptionalFromValue(USupportedFederation* Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Shared|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Beamo|5 - Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalSupportedFederation& Optional, USupportedFederation*& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Get Optional's SupportedFederation Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|5 - Optionals", meta=(DisplayName="Get Optional's SupportedFederation Value"))
 	static USupportedFederation* GetOptionalValue(const FOptionalSupportedFederation& Optional, USupportedFederation* DefaultValue, bool& WasSet);
 
 	

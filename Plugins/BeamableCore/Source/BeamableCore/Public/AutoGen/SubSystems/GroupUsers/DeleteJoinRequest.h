@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|GroupUsers|Backend", DisplayName="Make DeleteJoin",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Successor,_Score,_SubGroup,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|GroupUsers|3 - Backend", DisplayName="Make DeleteJoin",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Successor,_Score,_SubGroup,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UDeleteJoinRequest* Make(int64 _ObjectId, EGroupType _Type, int64 _Group, FOptionalInt64 _Successor, FOptionalInt64 _Score, FOptionalInt64 _SubGroup, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

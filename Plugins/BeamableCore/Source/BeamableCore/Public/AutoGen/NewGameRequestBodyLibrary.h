@@ -13,12 +13,12 @@ class BEAMABLECORE_API UNewGameRequestBodyLibrary : public UBlueprintFunctionLib
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="NewGameRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|4 - Json", DisplayName="NewGameRequestBody To JSON String")
 	static FString NewGameRequestBodyToJsonString(const UNewGameRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make NewGameRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Make NewGameRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UNewGameRequestBody* Make(FString GameName, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break NewGameRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Break NewGameRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UNewGameRequestBody* Serializable, FString& GameName);
 };

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UBeginPurchaseRequestBodyLibrary : public UBlueprintFunct
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="BeginPurchaseRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|4 - Json", DisplayName="BeginPurchaseRequestBody To JSON String")
 	static FString BeginPurchaseRequestBodyToJsonString(const UBeginPurchaseRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make BeginPurchaseRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Language, Time, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|3 - Backend", DisplayName="Make BeginPurchaseRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Language, Time, Outer", NativeMakeFunc))
 	static UBeginPurchaseRequestBody* Make(FString PurchaseId, FOptionalString Language, FOptionalString Time, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break BeginPurchaseRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|3 - Backend", DisplayName="Break BeginPurchaseRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UBeginPurchaseRequestBody* Serializable, FString& PurchaseId, FOptionalString& Language, FOptionalString& Time);
 };

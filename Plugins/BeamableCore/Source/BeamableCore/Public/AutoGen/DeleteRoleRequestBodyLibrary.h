@@ -13,12 +13,12 @@ class BEAMABLECORE_API UDeleteRoleRequestBodyLibrary : public UBlueprintFunction
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="DeleteRoleRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|4 - Json", DisplayName="DeleteRoleRequestBody To JSON String")
 	static FString DeleteRoleRequestBodyToJsonString(const UDeleteRoleRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make DeleteRoleRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Realm, Role, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Make DeleteRoleRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Realm, Role, Outer", NativeMakeFunc))
 	static UDeleteRoleRequestBody* Make(FOptionalBeamPid Realm, FOptionalString Role, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break DeleteRoleRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Break DeleteRoleRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UDeleteRoleRequestBody* Serializable, FOptionalBeamPid& Realm, FOptionalString& Role);
 };

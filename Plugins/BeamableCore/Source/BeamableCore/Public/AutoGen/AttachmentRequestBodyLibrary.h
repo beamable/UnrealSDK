@@ -13,12 +13,12 @@ class BEAMABLECORE_API UAttachmentRequestBodyLibrary : public UBlueprintFunction
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="AttachmentRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|4 - Json", DisplayName="AttachmentRequestBody To JSON String")
 	static FString AttachmentRequestBodyToJsonString(const UAttachmentRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make AttachmentRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Quantity, Specialization, Target, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|3 - Backend", DisplayName="Make AttachmentRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Quantity, Specialization, Target, Outer", NativeMakeFunc))
 	static UAttachmentRequestBody* Make(FString Symbol, FString Action, FOptionalInt32 Quantity, FOptionalString Specialization, FOptionalInt64 Target, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break AttachmentRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|3 - Backend", DisplayName="Break AttachmentRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UAttachmentRequestBody* Serializable, FString& Symbol, FString& Action, FOptionalInt32& Quantity, FOptionalString& Specialization, FOptionalInt64& Target);
 };

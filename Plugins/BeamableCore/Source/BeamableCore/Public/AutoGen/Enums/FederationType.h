@@ -4,7 +4,7 @@
 
 #include "FederationType.generated.h"
 
-UENUM(BlueprintType, Category="Beam|Shared|Enums")
+UENUM(BlueprintType, Category="Beam|Beamo|Enums")
 enum class EFederationType : uint8
 {
 	BEAM_IFederatedPlayerInit UMETA(DisplayName="I Federated Player Init"),
@@ -14,13 +14,13 @@ enum class EFederationType : uint8
 	BEAM_IFederatedCommerce UMETA(DisplayName="I Federated Commerce")		
 };
 
-UCLASS(BlueprintType, Category="Beam|Shared|Enums")
+UCLASS(BlueprintType, Category="Beam|Beamo|Enums")
 class BEAMABLECORE_API UFederationTypeLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:		
 	
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "FederationType To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Shared|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="FederationType To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Beamo|Enums")
 	static FString FederationTypeToSerializationName(EFederationType Value)
 	{
 		const UEnum* Enum = StaticEnum<EFederationType>();
@@ -32,7 +32,7 @@ public:
 		
 	}
 
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Serialization Name To FederationType", CompactNodeTitle = "->"), Category="Beam|Shared|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="Serialization Name To FederationType", CompactNodeTitle = "->"), Category="Beam|Beamo|Enums")
 	static EFederationType SerializationNameToFederationType(FString Value)
 	{
 		const UEnum* Enum = StaticEnum<EFederationType>();

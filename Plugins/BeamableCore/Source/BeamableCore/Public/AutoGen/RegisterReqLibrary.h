@@ -13,12 +13,12 @@ class BEAMABLECORE_API URegisterReqLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="RegisterReq To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Push|4 - Json", DisplayName="RegisterReq To JSON String")
 	static FString RegisterReqToJsonString(const URegisterReq* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make RegisterReq", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Push|3 - Backend", DisplayName="Make RegisterReq", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static URegisterReq* Make(FString Provider, FString Token, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break RegisterReq", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Push|3 - Backend", DisplayName="Break RegisterReq", meta=(NativeBreakFunc))
 	static void Break(const URegisterReq* Serializable, FString& Provider, FString& Token);
 };

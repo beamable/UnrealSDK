@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalWebhookComet struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Make Optional WebhookComet", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|5 - Optionals", meta=(DisplayName="Make Optional WebhookComet", NativeMakeFunc))
 	static FOptionalWebhookComet MakeOptional(UWebhookComet* Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The UWebhookComet* to convert.
 	 * @return An optional with the WebhookComet set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta = (DisplayName = "WebhookComet To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|5 - Optionals", meta = (DisplayName="WebhookComet To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalWebhookComet Conv_OptionalFromValue(UWebhookComet* Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Shared|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Announcements|5 - Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalWebhookComet& Optional, UWebhookComet*& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Get Optional's WebhookComet Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|5 - Optionals", meta=(DisplayName="Get Optional's WebhookComet Value"))
 	static UWebhookComet* GetOptionalValue(const FOptionalWebhookComet& Optional, UWebhookComet* DefaultValue, bool& WasSet);
 
 	

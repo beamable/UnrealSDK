@@ -13,12 +13,12 @@ class BEAMABLECORE_API USKULibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="SKU To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|4 - Json", DisplayName="SKU To JSON String")
 	static FString SKUToJsonString(const USKU* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make SKU", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|3 - Backend", DisplayName="Make SKU", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static USKU* Make(FString Name, FString Description, int32 RealPrice, TMap<FString, FString> ProductIds, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break SKU", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|3 - Backend", DisplayName="Break SKU", meta=(NativeBreakFunc))
 	static void Break(const USKU* Serializable, FString& Name, FString& Description, int32& RealPrice, TMap<FString, FString>& ProductIds);
 };

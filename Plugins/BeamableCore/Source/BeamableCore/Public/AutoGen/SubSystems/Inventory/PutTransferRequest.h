@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Inventory|Backend", DisplayName="Make PutTransfer",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Transaction,_Currencies,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Inventory|3 - Backend", DisplayName="Make PutTransfer",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Transaction,_Currencies,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPutTransferRequest* Make(FBeamGamerTag _ObjectId, FBeamGamerTag _RecipientPlayer, FOptionalString _Transaction, FOptionalMapOfInt64 _Currencies, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

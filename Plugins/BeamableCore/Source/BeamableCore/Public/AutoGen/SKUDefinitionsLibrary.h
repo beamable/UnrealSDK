@@ -13,12 +13,12 @@ class BEAMABLECORE_API USKUDefinitionsLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="SKUDefinitions To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|4 - Json", DisplayName="SKUDefinitions To JSON String")
 	static FString SKUDefinitionsToJsonString(const USKUDefinitions* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make SKUDefinitions", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|3 - Backend", DisplayName="Make SKUDefinitions", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static USKUDefinitions* Make(int64 Version, int64 Created, TArray<USKU*> Definitions, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break SKUDefinitions", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|3 - Backend", DisplayName="Break SKUDefinitions", meta=(NativeBreakFunc))
 	static void Break(const USKUDefinitions* Serializable, int64& Version, int64& Created, TArray<USKU*>& Definitions);
 };

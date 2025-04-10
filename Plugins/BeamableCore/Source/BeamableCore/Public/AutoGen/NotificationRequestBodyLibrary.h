@@ -13,12 +13,12 @@ class BEAMABLECORE_API UNotificationRequestBodyLibrary : public UBlueprintFuncti
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="NotificationRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Notification|4 - Json", DisplayName="NotificationRequestBody To JSON String")
 	static FString NotificationRequestBodyToJsonString(const UNotificationRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make NotificationRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bUseSignalWhenPossible, CustomChannelSuffix, Dbid, Dbids, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Notification|3 - Backend", DisplayName="Make NotificationRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bUseSignalWhenPossible, CustomChannelSuffix, Dbid, Dbids, Outer", NativeMakeFunc))
 	static UNotificationRequestBody* Make(UNotificationRequestData* Payload, FOptionalBool bUseSignalWhenPossible, FOptionalString CustomChannelSuffix, FOptionalInt64 Dbid, FOptionalArrayOfInt64 Dbids, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break NotificationRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Notification|3 - Backend", DisplayName="Break NotificationRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UNotificationRequestBody* Serializable, UNotificationRequestData*& Payload, FOptionalBool& bUseSignalWhenPossible, FOptionalString& CustomChannelSuffix, FOptionalInt64& Dbid, FOptionalArrayOfInt64& Dbids);
 };

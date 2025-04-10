@@ -13,12 +13,12 @@ class BEAMABLECORE_API UAccountPlayerViewLibrary : public UBlueprintFunctionLibr
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="AccountPlayerView To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|4 - Json", DisplayName="AccountPlayerView To JSON String")
 	static FString AccountPlayerViewToJsonString(const UAccountPlayerView* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make AccountPlayerView", meta=(DefaultToSelf="Outer", AdvancedDisplay="Email, Language, External, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Make AccountPlayerView", meta=(DefaultToSelf="Outer", AdvancedDisplay="Email, Language, External, Outer", NativeMakeFunc))
 	static UAccountPlayerView* Make(FBeamGamerTag Id, TArray<FString> DeviceIds, TArray<FString> Scopes, TArray<FString> ThirdPartyAppAssociations, FOptionalString Email, FOptionalString Language, FOptionalArrayOfBeamExternalIdentity External, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break AccountPlayerView", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Break AccountPlayerView", meta=(NativeBreakFunc))
 	static void Break(const UAccountPlayerView* Serializable, FBeamGamerTag& Id, TArray<FString>& DeviceIds, TArray<FString>& Scopes, TArray<FString>& ThirdPartyAppAssociations, FOptionalString& Email, FOptionalString& Language, FOptionalArrayOfBeamExternalIdentity& External);
 };

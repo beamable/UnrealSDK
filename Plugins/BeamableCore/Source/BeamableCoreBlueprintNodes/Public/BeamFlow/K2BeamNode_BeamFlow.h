@@ -31,6 +31,8 @@ public:
 
 	virtual FText GetMenuCategory() const override;
 
+	virtual FString GetServiceName() const;
+	
 	virtual FSlateIcon GetIconAndTint(FLinearColor& OutColor) const override;
 	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual FName GetCornerIcon() const override;

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetTotalCouponResponseLibrary : public UBlueprintFunctio
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GetTotalCouponResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|4 - Json", DisplayName="GetTotalCouponResponse To JSON String")
 	static FString GetTotalCouponResponseToJsonString(const UGetTotalCouponResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GetTotalCouponResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|3 - Backend", DisplayName="Make GetTotalCouponResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UGetTotalCouponResponse* Make(int64 Count, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GetTotalCouponResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|3 - Backend", DisplayName="Break GetTotalCouponResponse", meta=(NativeBreakFunc))
 	static void Break(const UGetTotalCouponResponse* Serializable, int64& Count);
 };

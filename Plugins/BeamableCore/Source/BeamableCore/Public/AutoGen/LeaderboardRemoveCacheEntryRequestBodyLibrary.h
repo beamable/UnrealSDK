@@ -13,12 +13,12 @@ class BEAMABLECORE_API ULeaderboardRemoveCacheEntryRequestBodyLibrary : public U
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="LeaderboardRemoveCacheEntryRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Leaderboards|4 - Json", DisplayName="LeaderboardRemoveCacheEntryRequestBody To JSON String")
 	static FString LeaderboardRemoveCacheEntryRequestBodyToJsonString(const ULeaderboardRemoveCacheEntryRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make LeaderboardRemoveCacheEntryRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Leaderboards|3 - Backend", DisplayName="Make LeaderboardRemoveCacheEntryRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static ULeaderboardRemoveCacheEntryRequestBody* Make(int64 PlayerId, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break LeaderboardRemoveCacheEntryRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Leaderboards|3 - Backend", DisplayName="Break LeaderboardRemoveCacheEntryRequestBody", meta=(NativeBreakFunc))
 	static void Break(const ULeaderboardRemoveCacheEntryRequestBody* Serializable, int64& PlayerId);
 };

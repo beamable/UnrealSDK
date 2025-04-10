@@ -13,12 +13,12 @@ class BEAMABLECORE_API UMetadataViewLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="MetadataView To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Leaderboards|4 - Json", DisplayName="MetadataView To JSON String")
 	static FString MetadataViewToJsonString(const UMetadataView* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make MetadataView", meta=(DefaultToSelf="Outer", AdvancedDisplay="FreezeTime, CohortSettings, Permissions, MaxEntries, Expiration, Derivatives, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Leaderboards|3 - Backend", DisplayName="Make MetadataView", meta=(DefaultToSelf="Outer", AdvancedDisplay="FreezeTime, CohortSettings, Permissions, MaxEntries, Expiration, Derivatives, Outer", NativeMakeFunc))
 	static UMetadataView* Make(bool bCohorted, bool bFrozen, bool bPartitioned, FString ParentLeaderboard, FOptionalInt64 FreezeTime, FOptionalLeaderboardCohortSettings CohortSettings, FOptionalBeamClientPermission Permissions, FOptionalInt32 MaxEntries, FOptionalInt64 Expiration, FOptionalArrayOfString Derivatives, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break MetadataView", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Leaderboards|3 - Backend", DisplayName="Break MetadataView", meta=(NativeBreakFunc))
 	static void Break(const UMetadataView* Serializable, bool& bCohorted, bool& bFrozen, bool& bPartitioned, FString& ParentLeaderboard, FOptionalInt64& FreezeTime, FOptionalLeaderboardCohortSettings& CohortSettings, FOptionalBeamClientPermission& Permissions, FOptionalInt32& MaxEntries, FOptionalInt64& Expiration, FOptionalArrayOfString& Derivatives);
 };

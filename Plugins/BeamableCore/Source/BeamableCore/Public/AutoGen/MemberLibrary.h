@@ -13,12 +13,12 @@ class BEAMABLECORE_API UMemberLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="Member To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|4 - Json", DisplayName="Member To JSON String")
 	static FString MemberToJsonString(const UMember* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make Member", meta=(DefaultToSelf="Outer", AdvancedDisplay="bCanDemote, bCanKick, bCanPromote, Scores, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|3 - Backend", DisplayName="Make Member", meta=(DefaultToSelf="Outer", AdvancedDisplay="bCanDemote, bCanKick, bCanPromote, Scores, Outer", NativeMakeFunc))
 	static UMember* Make(FString Role, int64 GamerTag, FOptionalBool bCanDemote, FOptionalBool bCanKick, FOptionalBool bCanPromote, FOptionalArrayOfGroupScoreBinding Scores, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break Member", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|3 - Backend", DisplayName="Break Member", meta=(NativeBreakFunc))
 	static void Break(const UMember* Serializable, FString& Role, int64& GamerTag, FOptionalBool& bCanDemote, FOptionalBool& bCanKick, FOptionalBool& bCanPromote, FOptionalArrayOfGroupScoreBinding& Scores);
 };

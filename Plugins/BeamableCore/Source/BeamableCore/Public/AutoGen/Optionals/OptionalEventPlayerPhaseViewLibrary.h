@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalEventPlayerPhaseView struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Make Optional EventPlayerPhaseView", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|5 - Optionals", meta=(DisplayName="Make Optional EventPlayerPhaseView", NativeMakeFunc))
 	static FOptionalEventPlayerPhaseView MakeOptional(UEventPlayerPhaseView* Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The UEventPlayerPhaseView* to convert.
 	 * @return An optional with the EventPlayerPhaseView set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta = (DisplayName = "EventPlayerPhaseView To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|5 - Optionals", meta = (DisplayName="EventPlayerPhaseView To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalEventPlayerPhaseView Conv_OptionalFromValue(UEventPlayerPhaseView* Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Shared|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|EventPlayers|5 - Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalEventPlayerPhaseView& Optional, UEventPlayerPhaseView*& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Get Optional's EventPlayerPhaseView Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|5 - Optionals", meta=(DisplayName="Get Optional's EventPlayerPhaseView Value"))
 	static UEventPlayerPhaseView* GetOptionalValue(const FOptionalEventPlayerPhaseView& Optional, UEventPlayerPhaseView* DefaultValue, bool& WasSet);
 
 	

@@ -13,12 +13,12 @@ class BEAMABLECORE_API ULobbyQueryResponseLibrary : public UBlueprintFunctionLib
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="LobbyQueryResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|4 - Json", DisplayName="LobbyQueryResponse To JSON String")
 	static FString LobbyQueryResponseToJsonString(const ULobbyQueryResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make LobbyQueryResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Results, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|3 - Backend", DisplayName="Make LobbyQueryResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Results, Outer", NativeMakeFunc))
 	static ULobbyQueryResponse* Make(FOptionalArrayOfLobby Results, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break LobbyQueryResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|3 - Backend", DisplayName="Break LobbyQueryResponse", meta=(NativeBreakFunc))
 	static void Break(const ULobbyQueryResponse* Serializable, FOptionalArrayOfLobby& Results);
 };

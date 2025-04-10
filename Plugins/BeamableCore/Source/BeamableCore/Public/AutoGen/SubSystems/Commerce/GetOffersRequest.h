@@ -42,7 +42,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Commerce|Backend", DisplayName="Make GetOffers",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Language,_Time,_Stores,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Commerce|3 - Backend", DisplayName="Make GetOffers",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Language,_Time,_Stores,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UGetOffersRequest* Make(int64 _ObjectId, FOptionalString _Language, FOptionalString _Time, FOptionalString _Stores, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

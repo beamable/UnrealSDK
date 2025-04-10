@@ -13,12 +13,12 @@ class BEAMABLECORE_API UServerTokenAuthRequestBodyLibrary : public UBlueprintFun
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ServerTokenAuthRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Auth|4 - Json", DisplayName="ServerTokenAuthRequestBody To JSON String")
 	static FString ServerTokenAuthRequestBodyToJsonString(const UServerTokenAuthRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ServerTokenAuthRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="ClientId, ClientSecret, CustomerId, RealmId, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Auth|3 - Backend", DisplayName="Make ServerTokenAuthRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="ClientId, ClientSecret, CustomerId, RealmId, Outer", NativeMakeFunc))
 	static UServerTokenAuthRequestBody* Make(FOptionalString ClientId, FOptionalString ClientSecret, FOptionalBeamCid CustomerId, FOptionalBeamPid RealmId, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ServerTokenAuthRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Auth|3 - Backend", DisplayName="Break ServerTokenAuthRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UServerTokenAuthRequestBody* Serializable, FOptionalString& ClientId, FOptionalString& ClientSecret, FOptionalBeamCid& CustomerId, FOptionalBeamPid& RealmId);
 };

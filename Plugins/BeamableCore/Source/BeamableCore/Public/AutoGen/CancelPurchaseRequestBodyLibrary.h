@@ -13,12 +13,12 @@ class BEAMABLECORE_API UCancelPurchaseRequestBodyLibrary : public UBlueprintFunc
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="CancelPurchaseRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|4 - Json", DisplayName="CancelPurchaseRequestBody To JSON String")
 	static FString CancelPurchaseRequestBodyToJsonString(const UCancelPurchaseRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make CancelPurchaseRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|3 - Backend", DisplayName="Make CancelPurchaseRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UCancelPurchaseRequestBody* Make(int64 Txid, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break CancelPurchaseRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|3 - Backend", DisplayName="Break CancelPurchaseRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UCancelPurchaseRequestBody* Serializable, int64& Txid);
 };

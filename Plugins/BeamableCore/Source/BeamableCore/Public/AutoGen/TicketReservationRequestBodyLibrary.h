@@ -13,12 +13,12 @@ class BEAMABLECORE_API UTicketReservationRequestBodyLibrary : public UBlueprintF
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="TicketReservationRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Matchmaking|4 - Json", DisplayName="TicketReservationRequestBody To JSON String")
 	static FString TicketReservationRequestBodyToJsonString(const UTicketReservationRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make TicketReservationRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bWatchOnlineStatus, MaxWaitDurationSecs, Team, Players, MatchTypes, Tags, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Matchmaking|3 - Backend", DisplayName="Make TicketReservationRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bWatchOnlineStatus, MaxWaitDurationSecs, Team, Players, MatchTypes, Tags, Outer", NativeMakeFunc))
 	static UTicketReservationRequestBody* Make(FOptionalBool bWatchOnlineStatus, FOptionalInt32 MaxWaitDurationSecs, FOptionalString Team, FOptionalArrayOfBeamGamerTag Players, FOptionalArrayOfBeamContentId MatchTypes, FOptionalArrayOfBeamTag Tags, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break TicketReservationRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Matchmaking|3 - Backend", DisplayName="Break TicketReservationRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UTicketReservationRequestBody* Serializable, FOptionalBool& bWatchOnlineStatus, FOptionalInt32& MaxWaitDurationSecs, FOptionalString& Team, FOptionalArrayOfBeamGamerTag& Players, FOptionalArrayOfBeamContentId& MatchTypes, FOptionalArrayOfBeamTag& Tags);
 };

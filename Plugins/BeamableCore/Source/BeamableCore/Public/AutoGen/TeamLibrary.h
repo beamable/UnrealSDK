@@ -13,12 +13,12 @@ class BEAMABLECORE_API UTeamLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="Team To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Matchmaking|4 - Json", DisplayName="Team To JSON String")
 	static FString TeamToJsonString(const UTeam* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make Team", meta=(DefaultToSelf="Outer", AdvancedDisplay="Name, Players, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Matchmaking|3 - Backend", DisplayName="Make Team", meta=(DefaultToSelf="Outer", AdvancedDisplay="Name, Players, Outer", NativeMakeFunc))
 	static UTeam* Make(FOptionalString Name, FOptionalArrayOfBeamGamerTag Players, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break Team", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Matchmaking|3 - Backend", DisplayName="Break Team", meta=(NativeBreakFunc))
 	static void Break(const UTeam* Serializable, FOptionalString& Name, FOptionalArrayOfBeamGamerTag& Players);
 };

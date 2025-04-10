@@ -13,12 +13,12 @@ class BEAMABLECORE_API UServerTokenResponseLibrary : public UBlueprintFunctionLi
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ServerTokenResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Auth|4 - Json", DisplayName="ServerTokenResponse To JSON String")
 	static FString ServerTokenResponseToJsonString(const UServerTokenResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ServerTokenResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="AccessToken, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Auth|3 - Backend", DisplayName="Make ServerTokenResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="AccessToken, Outer", NativeMakeFunc))
 	static UServerTokenResponse* Make(FOptionalString AccessToken, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ServerTokenResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Auth|3 - Backend", DisplayName="Break ServerTokenResponse", meta=(NativeBreakFunc))
 	static void Break(const UServerTokenResponse* Serializable, FOptionalString& AccessToken);
 };

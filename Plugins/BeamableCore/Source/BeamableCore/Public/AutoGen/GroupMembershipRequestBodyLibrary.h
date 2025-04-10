@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGroupMembershipRequestBodyLibrary : public UBlueprintFun
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GroupMembershipRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|4 - Json", DisplayName="GroupMembershipRequestBody To JSON String")
 	static FString GroupMembershipRequestBodyToJsonString(const UGroupMembershipRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GroupMembershipRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Successor, Score, SubGroup, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|3 - Backend", DisplayName="Make GroupMembershipRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Successor, Score, SubGroup, Outer", NativeMakeFunc))
 	static UGroupMembershipRequestBody* Make(EGroupType Type, int64 Group, FOptionalInt64 Successor, FOptionalInt64 Score, FOptionalInt64 SubGroup, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GroupMembershipRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|3 - Backend", DisplayName="Break GroupMembershipRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UGroupMembershipRequestBody* Serializable, EGroupType& Type, int64& Group, FOptionalInt64& Successor, FOptionalInt64& Score, FOptionalInt64& SubGroup);
 };

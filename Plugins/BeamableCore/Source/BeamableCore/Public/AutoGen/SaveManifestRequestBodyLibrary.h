@@ -13,12 +13,12 @@ class BEAMABLECORE_API USaveManifestRequestBodyLibrary : public UBlueprintFuncti
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="SaveManifestRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Content|4 - Json", DisplayName="SaveManifestRequestBody To JSON String")
 	static FString SaveManifestRequestBodyToJsonString(const USaveManifestRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make SaveManifestRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|3 - Backend", DisplayName="Make SaveManifestRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static USaveManifestRequestBody* Make(FBeamContentManifestId Id, TArray<UReferenceSuperset*> References, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break SaveManifestRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|3 - Backend", DisplayName="Break SaveManifestRequestBody", meta=(NativeBreakFunc))
 	static void Break(const USaveManifestRequestBody* Serializable, FBeamContentManifestId& Id, TArray<UReferenceSuperset*>& References);
 };

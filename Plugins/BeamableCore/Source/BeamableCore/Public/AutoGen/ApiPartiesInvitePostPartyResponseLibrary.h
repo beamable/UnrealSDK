@@ -13,10 +13,10 @@ class BEAMABLECORE_API UApiPartiesInvitePostPartyResponseLibrary : public UBluep
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ApiPartiesInvitePostPartyResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Party|4 - Json", DisplayName="ApiPartiesInvitePostPartyResponse To JSON String")
 	static FString ApiPartiesInvitePostPartyResponseToJsonString(const UApiPartiesInvitePostPartyResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ApiPartiesInvitePostPartyResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Party|3 - Backend", DisplayName="Make ApiPartiesInvitePostPartyResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UApiPartiesInvitePostPartyResponse* Make(UObject* Outer);
 
 	

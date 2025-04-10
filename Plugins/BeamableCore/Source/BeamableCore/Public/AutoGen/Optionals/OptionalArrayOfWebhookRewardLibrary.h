@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalArrayOfWebhookReward struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Make Optional TArray<UWebhookReward*>", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|5 - Optionals", meta=(DisplayName="Make Optional TArray<UWebhookReward*>", NativeMakeFunc))
 	static FOptionalArrayOfWebhookReward MakeOptional(TArray<UWebhookReward*> Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The TArray<UWebhookReward*> to convert.
 	 * @return An optional with the TArray<UWebhookReward*> set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta = (DisplayName = "TArray<UWebhookReward*> To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|5 - Optionals", meta = (DisplayName="TArray<UWebhookReward*> To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalArrayOfWebhookReward Conv_OptionalFromValue(TArray<UWebhookReward*> Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Shared|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Announcements|5 - Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalArrayOfWebhookReward& Optional, TArray<UWebhookReward*>& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Get Optional's TArray<UWebhookReward*> Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|5 - Optionals", meta=(DisplayName="Get Optional's TArray<UWebhookReward*> Value"))
 	static TArray<UWebhookReward*> GetOptionalValue(const FOptionalArrayOfWebhookReward& Optional, TArray<UWebhookReward*> DefaultValue, bool& WasSet);
 
 	

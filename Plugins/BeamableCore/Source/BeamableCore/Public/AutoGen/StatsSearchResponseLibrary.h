@@ -13,12 +13,12 @@ class BEAMABLECORE_API UStatsSearchResponseLibrary : public UBlueprintFunctionLi
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="StatsSearchResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Stats|4 - Json", DisplayName="StatsSearchResponse To JSON String")
 	static FString StatsSearchResponseToJsonString(const UStatsSearchResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make StatsSearchResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Stats|3 - Backend", DisplayName="Make StatsSearchResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UStatsSearchResponse* Make(TArray<FBeamGamerTag> Ids, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break StatsSearchResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Stats|3 - Backend", DisplayName="Break StatsSearchResponse", meta=(NativeBreakFunc))
 	static void Break(const UStatsSearchResponse* Serializable, TArray<FBeamGamerTag>& Ids);
 };

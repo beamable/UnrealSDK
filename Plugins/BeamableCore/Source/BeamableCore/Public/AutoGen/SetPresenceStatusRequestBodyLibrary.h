@@ -13,12 +13,12 @@ class BEAMABLECORE_API USetPresenceStatusRequestBodyLibrary : public UBlueprintF
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="SetPresenceStatusRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Player|4 - Json", DisplayName="SetPresenceStatusRequestBody To JSON String")
 	static FString SetPresenceStatusRequestBodyToJsonString(const USetPresenceStatusRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make SetPresenceStatusRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Status, Description, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Player|3 - Backend", DisplayName="Make SetPresenceStatusRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Status, Description, Outer", NativeMakeFunc))
 	static USetPresenceStatusRequestBody* Make(FOptionalPresenceStatus Status, FOptionalString Description, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break SetPresenceStatusRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Player|3 - Backend", DisplayName="Break SetPresenceStatusRequestBody", meta=(NativeBreakFunc))
 	static void Break(const USetPresenceStatusRequestBody* Serializable, FOptionalPresenceStatus& Status, FOptionalString& Description);
 };

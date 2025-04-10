@@ -4,20 +4,20 @@
 
 #include "ContentVisibility.generated.h"
 
-UENUM(BlueprintType, Category="Beam|Shared|Enums")
+UENUM(BlueprintType, Category="Beam|Content|Enums")
 enum class EContentVisibility : uint8
 {
 	BEAM_public UMETA(DisplayName="Public"),
 	BEAM_private UMETA(DisplayName="Private")		
 };
 
-UCLASS(BlueprintType, Category="Beam|Shared|Enums")
+UCLASS(BlueprintType, Category="Beam|Content|Enums")
 class BEAMABLECORE_API UContentVisibilityLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:		
 	
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "ContentVisibility To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Shared|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="ContentVisibility To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Content|Enums")
 	static FString ContentVisibilityToSerializationName(EContentVisibility Value)
 	{
 		const UEnum* Enum = StaticEnum<EContentVisibility>();
@@ -29,7 +29,7 @@ public:
 		
 	}
 
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Serialization Name To ContentVisibility", CompactNodeTitle = "->"), Category="Beam|Shared|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="Serialization Name To ContentVisibility", CompactNodeTitle = "->"), Category="Beam|Content|Enums")
 	static EContentVisibility SerializationNameToContentVisibility(FString Value)
 	{
 		const UEnum* Enum = StaticEnum<EContentVisibility>();

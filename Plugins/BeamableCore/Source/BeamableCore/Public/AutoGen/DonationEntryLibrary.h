@@ -13,12 +13,12 @@ class BEAMABLECORE_API UDonationEntryLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="DonationEntry To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|4 - Json", DisplayName="DonationEntry To JSON String")
 	static FString DonationEntryToJsonString(const UDonationEntry* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make DonationEntry", meta=(DefaultToSelf="Outer", AdvancedDisplay="bClaimed, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|3 - Backend", DisplayName="Make DonationEntry", meta=(DefaultToSelf="Outer", AdvancedDisplay="bClaimed, Outer", NativeMakeFunc))
 	static UDonationEntry* Make(int64 PlayerId, int64 Amount, int64 Time, FOptionalBool bClaimed, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break DonationEntry", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|3 - Backend", DisplayName="Break DonationEntry", meta=(NativeBreakFunc))
 	static void Break(const UDonationEntry* Serializable, int64& PlayerId, int64& Amount, int64& Time, FOptionalBool& bClaimed);
 };

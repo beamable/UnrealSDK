@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPostManifestRequestBodyLibrary : public UBlueprintFuncti
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="PostManifestRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|4 - Json", DisplayName="PostManifestRequestBody To JSON String")
 	static FString PostManifestRequestBodyToJsonString(const UPostManifestRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make PostManifestRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bAutoDeploy, Comments, StorageReferences, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Make PostManifestRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bAutoDeploy, Comments, StorageReferences, Outer", NativeMakeFunc))
 	static UPostManifestRequestBody* Make(TArray<UServiceReference*> Manifest, FOptionalBool bAutoDeploy, FOptionalString Comments, FOptionalArrayOfServiceStorageReference StorageReferences, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break PostManifestRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Break PostManifestRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UPostManifestRequestBody* Serializable, TArray<UServiceReference*>& Manifest, FOptionalBool& bAutoDeploy, FOptionalString& Comments, FOptionalArrayOfServiceStorageReference& StorageReferences);
 };

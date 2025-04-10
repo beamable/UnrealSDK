@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Lobby|Backend", DisplayName="Make ApiLobbyPostServerById",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_MatchType,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Lobby|3 - Backend", DisplayName="Make ApiLobbyPostServerById",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_MatchType,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UApiLobbyPostServerByIdRequest* Make(FGuid _Id, FOptionalBeamContentId _MatchType, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

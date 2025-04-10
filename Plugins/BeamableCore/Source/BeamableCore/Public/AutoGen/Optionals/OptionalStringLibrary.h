@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalString struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Make Optional String", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|5 - Optionals", meta=(DisplayName="Make Optional String", NativeMakeFunc))
 	static FOptionalString MakeOptional(FString Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The FString to convert.
 	 * @return An optional with the String set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta = (DisplayName = "String To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|5 - Optionals", meta = (DisplayName="String To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalString Conv_OptionalFromValue(FString Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Shared|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Shared|5 - Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalString& Optional, FString& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Optionals", meta=(DisplayName="Get Optional's String Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|5 - Optionals", meta=(DisplayName="Get Optional's String Value"))
 	static FString GetOptionalValue(const FOptionalString& Optional, FString DefaultValue, bool& WasSet);
 
 	

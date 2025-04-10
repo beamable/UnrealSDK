@@ -43,7 +43,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Events|Backend", DisplayName="Make GetCalendar",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_From,_To,_Query,_Limit,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Events|3 - Backend", DisplayName="Make GetCalendar",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_From,_To,_Query,_Limit,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UGetCalendarRequest* Make(FOptionalString _From, FOptionalString _To, FOptionalString _Query, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

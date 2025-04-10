@@ -4,7 +4,7 @@
 
 #include "ContentType.generated.h"
 
-UENUM(BlueprintType, Category="Beam|Shared|Enums")
+UENUM(BlueprintType, Category="Beam|Content|Enums")
 enum class EContentType : uint8
 {
 	BEAM_content UMETA(DisplayName="Content"),
@@ -12,13 +12,13 @@ enum class EContentType : uint8
 	BEAM_binary UMETA(DisplayName="Binary")		
 };
 
-UCLASS(BlueprintType, Category="Beam|Shared|Enums")
+UCLASS(BlueprintType, Category="Beam|Content|Enums")
 class BEAMABLECORE_API UContentTypeLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:		
 	
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "ContentType To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Shared|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="ContentType To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Content|Enums")
 	static FString ContentTypeToSerializationName(EContentType Value)
 	{
 		const UEnum* Enum = StaticEnum<EContentType>();
@@ -30,7 +30,7 @@ public:
 		
 	}
 
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Serialization Name To ContentType", CompactNodeTitle = "->"), Category="Beam|Shared|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="Serialization Name To ContentType", CompactNodeTitle = "->"), Category="Beam|Content|Enums")
 	static EContentType SerializationNameToContentType(FString Value)
 	{
 		const UEnum* Enum = StaticEnum<EContentType>();

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetGameRequestBodyLibrary : public UBlueprintFunctionLib
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="GetGameRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|4 - Json", DisplayName="GetGameRequestBody To JSON String")
 	static FString GetGameRequestBodyToJsonString(const UGetGameRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make GetGameRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Make GetGameRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UGetGameRequestBody* Make(FBeamPid RootPID, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break GetGameRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Break GetGameRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UGetGameRequestBody* Serializable, FBeamPid& RootPID);
 };

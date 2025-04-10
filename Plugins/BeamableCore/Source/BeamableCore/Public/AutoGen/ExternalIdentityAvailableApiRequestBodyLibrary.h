@@ -13,12 +13,12 @@ class BEAMABLECORE_API UExternalIdentityAvailableApiRequestBodyLibrary : public 
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ExternalIdentityAvailableApiRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|4 - Json", DisplayName="ExternalIdentityAvailableApiRequestBody To JSON String")
 	static FString ExternalIdentityAvailableApiRequestBodyToJsonString(const UExternalIdentityAvailableApiRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ExternalIdentityAvailableApiRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="ProviderNamespace, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Make ExternalIdentityAvailableApiRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="ProviderNamespace, Outer", NativeMakeFunc))
 	static UExternalIdentityAvailableApiRequestBody* Make(FString ProviderService, FString UserId, FOptionalString ProviderNamespace, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break ExternalIdentityAvailableApiRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Break ExternalIdentityAvailableApiRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UExternalIdentityAvailableApiRequestBody* Serializable, FString& ProviderService, FString& UserId, FOptionalString& ProviderNamespace);
 };

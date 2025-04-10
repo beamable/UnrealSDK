@@ -13,12 +13,12 @@ class BEAMABLECORE_API UStatsSearchCriteriaLibrary : public UBlueprintFunctionLi
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="StatsSearchCriteria To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Stats|4 - Json", DisplayName="StatsSearchCriteria To JSON String")
 	static FString StatsSearchCriteriaToJsonString(const UStatsSearchCriteria* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make StatsSearchCriteria", meta=(DefaultToSelf="Outer", AdvancedDisplay="Value, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Stats|3 - Backend", DisplayName="Make StatsSearchCriteria", meta=(DefaultToSelf="Outer", AdvancedDisplay="Value, Outer", NativeMakeFunc))
 	static UStatsSearchCriteria* Make(FString Stat, FString Rel, FOptionalString Value, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break StatsSearchCriteria", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Stats|3 - Backend", DisplayName="Break StatsSearchCriteria", meta=(NativeBreakFunc))
 	static void Break(const UStatsSearchCriteria* Serializable, FString& Stat, FString& Rel, FOptionalString& Value);
 };

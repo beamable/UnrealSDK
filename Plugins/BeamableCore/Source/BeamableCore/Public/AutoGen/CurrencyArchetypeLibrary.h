@@ -13,12 +13,12 @@ class BEAMABLECORE_API UCurrencyArchetypeLibrary : public UBlueprintFunctionLibr
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="CurrencyArchetype To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|4 - Json", DisplayName="CurrencyArchetype To JSON String")
 	static FString CurrencyArchetypeToJsonString(const UCurrencyArchetype* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make CurrencyArchetype", meta=(DefaultToSelf="Outer", AdvancedDisplay="External, ClientPermission, StartingAmount, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|3 - Backend", DisplayName="Make CurrencyArchetype", meta=(DefaultToSelf="Outer", AdvancedDisplay="External, ClientPermission, StartingAmount, Outer", NativeMakeFunc))
 	static UCurrencyArchetype* Make(FString Symbol, FOptionalFederationInfo External, FOptionalBeamClientPermission ClientPermission, FOptionalInt64 StartingAmount, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break CurrencyArchetype", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|3 - Backend", DisplayName="Break CurrencyArchetype", meta=(NativeBreakFunc))
 	static void Break(const UCurrencyArchetype* Serializable, FString& Symbol, FOptionalFederationInfo& External, FOptionalBeamClientPermission& ClientPermission, FOptionalInt64& StartingAmount);
 };

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPaymentAuditEntryViewModelLibrary : public UBlueprintFun
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="PaymentAuditEntryViewModel To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|4 - Json", DisplayName="PaymentAuditEntryViewModel To JSON String")
 	static FString PaymentAuditEntryViewModelToJsonString(const UPaymentAuditEntryViewModel* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make PaymentAuditEntryViewModel", meta=(DefaultToSelf="Outer", AdvancedDisplay="Version, Updated, ReplayGuardValue, Created, ObtainItems, ObtainCurrency, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Make PaymentAuditEntryViewModel", meta=(DefaultToSelf="Outer", AdvancedDisplay="Version, Updated, ReplayGuardValue, Created, ObtainItems, ObtainCurrency, Outer", NativeMakeFunc))
 	static UPaymentAuditEntryViewModel* Make(FString Providerid, int64 Txid, FString Providername, FString Txstate, UPaymentDetailsEntryViewModel* Details, int64 Gt, TArray<UPaymentHistoryEntryViewModel*> History, TArray<UEntitlementGenerator*> Entitlements, FOptionalString Version, FOptionalInt64 Updated, FOptionalString ReplayGuardValue, FOptionalInt64 Created, FOptionalArrayOfItemCreateRequestBody ObtainItems, FOptionalArrayOfCurrencyChange ObtainCurrency, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break PaymentAuditEntryViewModel", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Break PaymentAuditEntryViewModel", meta=(NativeBreakFunc))
 	static void Break(const UPaymentAuditEntryViewModel* Serializable, FString& Providerid, int64& Txid, FString& Providername, FString& Txstate, UPaymentDetailsEntryViewModel*& Details, int64& Gt, TArray<UPaymentHistoryEntryViewModel*>& History, TArray<UEntitlementGenerator*>& Entitlements, FOptionalString& Version, FOptionalInt64& Updated, FOptionalString& ReplayGuardValue, FOptionalInt64& Created, FOptionalArrayOfItemCreateRequestBody& ObtainItems, FOptionalArrayOfCurrencyChange& ObtainCurrency);
 };

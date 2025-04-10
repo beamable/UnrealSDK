@@ -43,7 +43,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Commerce|Backend", DisplayName="Make GetListings",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Store,_Time,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Commerce|3 - Backend", DisplayName="Make GetListings",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Store,_Time,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UGetListingsRequest* Make(int64 _ObjectId, FString _Listing, FOptionalString _Store, FOptionalString _Time, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

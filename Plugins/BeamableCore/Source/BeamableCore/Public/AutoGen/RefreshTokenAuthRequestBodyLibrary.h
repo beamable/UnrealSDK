@@ -13,12 +13,12 @@ class BEAMABLECORE_API URefreshTokenAuthRequestBodyLibrary : public UBlueprintFu
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="RefreshTokenAuthRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Auth|4 - Json", DisplayName="RefreshTokenAuthRequestBody To JSON String")
 	static FString RefreshTokenAuthRequestBodyToJsonString(const URefreshTokenAuthRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make RefreshTokenAuthRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="RefreshToken, CustomerId, RealmId, Context, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Auth|3 - Backend", DisplayName="Make RefreshTokenAuthRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="RefreshToken, CustomerId, RealmId, Context, Outer", NativeMakeFunc))
 	static URefreshTokenAuthRequestBody* Make(FOptionalString RefreshToken, FOptionalBeamCid CustomerId, FOptionalBeamPid RealmId, FOptionalContextInfo Context, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break RefreshTokenAuthRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Auth|3 - Backend", DisplayName="Break RefreshTokenAuthRequestBody", meta=(NativeBreakFunc))
 	static void Break(const URefreshTokenAuthRequestBody* Serializable, FOptionalString& RefreshToken, FOptionalBeamCid& CustomerId, FOptionalBeamPid& RealmId, FOptionalContextInfo& Context);
 };

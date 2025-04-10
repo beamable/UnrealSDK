@@ -74,7 +74,8 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 	UPROPERTY()
 	TArray<FString> WrappedOperationFunctionInputPinNames;
 
-
+	virtual FText GetKeywords() const override {return FText::FromString(FString::Printf(TEXT("Beam %s"), *GetServiceName()));};
+	
 	//UK2Node impl
 	virtual void AllocateDefaultPins() override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;

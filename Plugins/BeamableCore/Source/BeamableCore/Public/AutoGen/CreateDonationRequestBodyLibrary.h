@@ -13,12 +13,12 @@ class BEAMABLECORE_API UCreateDonationRequestBodyLibrary : public UBlueprintFunc
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="CreateDonationRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Groups|4 - Json", DisplayName="CreateDonationRequestBody To JSON String")
 	static FString CreateDonationRequestBodyToJsonString(const UCreateDonationRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make CreateDonationRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Config, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Groups|3 - Backend", DisplayName="Make CreateDonationRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Config, Outer", NativeMakeFunc))
 	static UCreateDonationRequestBody* Make(FString CurrencyId, int64 Amount, FOptionalString Config, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break CreateDonationRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Groups|3 - Backend", DisplayName="Break CreateDonationRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UCreateDonationRequestBody* Serializable, FString& CurrencyId, int64& Amount, FOptionalString& Config);
 };

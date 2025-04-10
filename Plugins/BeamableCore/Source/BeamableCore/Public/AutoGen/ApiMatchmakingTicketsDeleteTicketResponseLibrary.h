@@ -13,10 +13,10 @@ class BEAMABLECORE_API UApiMatchmakingTicketsDeleteTicketResponseLibrary : publi
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="ApiMatchmakingTicketsDeleteTicketResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Matchmaking|4 - Json", DisplayName="ApiMatchmakingTicketsDeleteTicketResponse To JSON String")
 	static FString ApiMatchmakingTicketsDeleteTicketResponseToJsonString(const UApiMatchmakingTicketsDeleteTicketResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make ApiMatchmakingTicketsDeleteTicketResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Matchmaking|3 - Backend", DisplayName="Make ApiMatchmakingTicketsDeleteTicketResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UApiMatchmakingTicketsDeleteTicketResponse* Make(UObject* Outer);
 
 	

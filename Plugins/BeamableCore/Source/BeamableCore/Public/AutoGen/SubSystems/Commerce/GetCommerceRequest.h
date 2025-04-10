@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Commerce|Backend", DisplayName="Make GetCommerce",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Scope,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Commerce|3 - Backend", DisplayName="Make GetCommerce",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Scope,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UGetCommerceRequest* Make(int64 _ObjectId, FOptionalString _Scope, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

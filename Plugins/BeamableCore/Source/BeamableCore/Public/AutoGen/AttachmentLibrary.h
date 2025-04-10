@@ -13,12 +13,12 @@ class BEAMABLECORE_API UAttachmentLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="Attachment To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|4 - Json", DisplayName="Attachment To JSON String")
 	static FString AttachmentToJsonString(const UAttachment* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make Attachment", meta=(DefaultToSelf="Outer", AdvancedDisplay="Target, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|3 - Backend", DisplayName="Make Attachment", meta=(DefaultToSelf="Outer", AdvancedDisplay="Target, Outer", NativeMakeFunc))
 	static UAttachment* Make(int64 Id, UEntitlementGenerator* Wrapped, FString State, FOptionalInt64 Target, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break Attachment", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|3 - Backend", DisplayName="Break Attachment", meta=(NativeBreakFunc))
 	static void Break(const UAttachment* Serializable, int64& Id, UEntitlementGenerator*& Wrapped, FString& State, FOptionalInt64& Target);
 };

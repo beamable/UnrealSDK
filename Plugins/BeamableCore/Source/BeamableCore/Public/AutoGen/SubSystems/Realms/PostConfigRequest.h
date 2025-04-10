@@ -36,7 +36,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Realms|Backend", DisplayName="Make PostConfig",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Deletes,_Upserts,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Realms|3 - Backend", DisplayName="Make PostConfig",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Deletes,_Upserts,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPostConfigRequest* Make(FOptionalArrayOfString _Deletes, FOptionalMapOfString _Upserts, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

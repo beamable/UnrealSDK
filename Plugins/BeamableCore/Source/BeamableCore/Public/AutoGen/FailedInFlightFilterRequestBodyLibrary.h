@@ -13,12 +13,12 @@ class BEAMABLECORE_API UFailedInFlightFilterRequestBodyLibrary : public UBluepri
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Json", DisplayName="FailedInFlightFilterRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|4 - Json", DisplayName="FailedInFlightFilterRequestBody To JSON String")
 	static FString FailedInFlightFilterRequestBodyToJsonString(const UFailedInFlightFilterRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Make FailedInFlightFilterRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="ServiceObjectId, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Make FailedInFlightFilterRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="ServiceObjectId, Outer", NativeMakeFunc))
 	static UFailedInFlightFilterRequestBody* Make(FString ServiceName, FOptionalString ServiceObjectId, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|Backend", DisplayName="Break FailedInFlightFilterRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Break FailedInFlightFilterRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UFailedInFlightFilterRequestBody* Serializable, FString& ServiceName, FOptionalString& ServiceObjectId);
 };
