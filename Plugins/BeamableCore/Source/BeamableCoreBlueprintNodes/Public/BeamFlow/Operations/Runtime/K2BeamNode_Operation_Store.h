@@ -15,8 +15,6 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_PerformPurchase : pub
 	GENERATED_BODY()
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Store - Perform Purchase"); }
-
-	virtual FString GetServiceName() const override { return FString("Store"); };
 	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStoreSubsystem, GetSelf); }
 
@@ -35,8 +33,6 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_RefreshStore : public
 	GENERATED_BODY()
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Store - Refresh Store"); }
-
-	virtual FString GetServiceName() const override { return FString("Store"); };
 	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStoreSubsystem, GetSelf); }
 
@@ -55,8 +51,6 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_RefreshStores : publi
 	GENERATED_BODY()
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Store - Refresh Stores"); }
-
-	virtual FString GetServiceName() const override { return FString("Store"); };
 	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStoreSubsystem, GetSelf); }
 

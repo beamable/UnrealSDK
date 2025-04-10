@@ -14,8 +14,6 @@ class UK2BeamNode_Operation_FetchContentManifest : public UK2BeamNode_Operation
 	GENERATED_BODY()
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Content - FetchContentManifest"); }
-
-	virtual FString GetServiceName() const override { return FString("Content"); };
 	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamContentSubsystem, GetSelf); }
 
@@ -34,8 +32,6 @@ class UK2BeamNode_Operation_FetchIndividualContentBatch : public UK2BeamNode_Ope
 	GENERATED_BODY()
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Content - Fetch Individual Content (Batch)"); }
-
-	virtual FString GetServiceName() const override { return FString("Content"); };
 	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamContentSubsystem, GetSelf); }
 
@@ -54,8 +50,6 @@ class UK2BeamNode_Operation_FetchIndividualContent : public UK2BeamNode_Operatio
 	GENERATED_BODY()
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Content - Fetch Individual Content"); }
-
-	virtual FString GetServiceName() const override { return FString("Content"); };
 	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamContentSubsystem, GetSelf); }
 

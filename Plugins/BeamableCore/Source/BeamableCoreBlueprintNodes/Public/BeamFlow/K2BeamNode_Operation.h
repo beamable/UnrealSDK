@@ -73,6 +73,17 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 
 	UPROPERTY()
 	TArray<FString> WrappedOperationFunctionInputPinNames;
+	
+	virtual FString GetServiceName() const override
+	{
+		// In order to have the service name we are extract it from the name of the subsystem removing the Beam and Subsystem words from the name.
+		// E.g BeamInventorySubsystem will become only Inventory.
+		// If this pattern don't match with the case override this.
+		FString Name = GetRuntimeSubsystemClass()->GetName();
+		Name = Name.Replace(TEXT("Beam"), TEXT(""));
+		Name = Name.Replace(TEXT("Subsystem"), TEXT(""));
+		return Name;
+	};
 
 	virtual FText GetKeywords() const override {return FText::FromString(FString::Printf(TEXT("Beam %s"), *GetServiceName()));};
 	

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BeamFlow/K2BeamNode_Operation.h"
-#include "Subsystems/Friends/BeamFriendSubsystem.h"
+#include "Subsystems/Friends/BeamFriendsSubsystem.h"
 #include "K2BeamNode_Operation_Friend.generated.h"
 
 
@@ -20,19 +20,17 @@ class UK2BeamNode_Operation_FetchPlayerFriendState : public UK2BeamNode_Operatio
 		return LOCTEXT("Title", "Beam - Operation - Friend - FetchPlayerFriendState");
 	}
 
-	virtual FString GetServiceName() const override { return FString("Friends"); };
-
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, GetSelf);
+		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf);
 	}
 
 	virtual FName GetOperationFunctionName() const override
 	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, FetchPlayerFriendStateOperation);
+		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, FetchPlayerFriendStateOperation);
 	}
 
-	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendSubsystem::StaticClass(); }
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
 };
 
 #undef LOCTEXT_NAMESPACE
@@ -50,19 +48,17 @@ class UK2BeamNode_Operation_FetchFriendsState : public UK2BeamNode_Operation
 		return LOCTEXT("Title", "Beam - Operation - Friend - FetchFriendsState");
 	}
 
-	virtual FString GetServiceName() const override { return FString("Friends"); };
-
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, GetSelf);
+		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf);
 	}
 
 	virtual FName GetOperationFunctionName() const override
 	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, FetchFriendsStateOperation);
+		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, FetchFriendsStateOperation);
 	}
 
-	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendSubsystem::StaticClass(); }
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
 };
 
 #undef LOCTEXT_NAMESPACE
@@ -79,19 +75,17 @@ class UK2BeamNode_Operation_FetchFriendPresenceStatus : public UK2BeamNode_Opera
 		return LOCTEXT("Title", "Beam - Operation - Friend - FetchFriendPresenceStatus");
 	}
 
-	virtual FString GetServiceName() const override { return FString("Friends"); };
-
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, GetSelf);
+		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf);
 	}
 
 	virtual FName GetOperationFunctionName() const override
 	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, FetchFriendPresenceStatusOperation);
+		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, FetchFriendPresenceStatusOperation);
 	}
 
-	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendSubsystem::StaticClass(); }
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
 };
 
 #undef LOCTEXT_NAMESPACE
@@ -108,19 +102,17 @@ class UK2BeamNode_Operation_SendFriendInvite : public UK2BeamNode_Operation
 		return LOCTEXT("Title", "Beam - Operation - Friend - SendFriendInvite");
 	}
 
-	virtual FString GetServiceName() const override { return FString("Friends"); };
-
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, GetSelf);
+		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf);
 	}
 
 	virtual FName GetOperationFunctionName() const override
 	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, SendFriendInviteOperation);
+		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, SendFriendInviteOperation);
 	}
 
-	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendSubsystem::StaticClass(); }
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
 };
 
 #undef LOCTEXT_NAMESPACE
@@ -137,19 +129,17 @@ class UK2BeamNode_Operation_AcceptFriendInvite : public UK2BeamNode_Operation
 		return LOCTEXT("Title", "Beam - Operation - Friend - AcceptFriendInvite");
 	}
 
-	virtual FString GetServiceName() const override { return FString("Friends"); };
-
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, GetSelf);
+		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf);
 	}
 
 	virtual FName GetOperationFunctionName() const override
 	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, AcceptFriendInviteOperation);
+		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, AcceptFriendInviteOperation);
 	}
 
-	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendSubsystem::StaticClass(); }
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
 };
 
 #undef LOCTEXT_NAMESPACE
@@ -167,19 +157,17 @@ class UK2BeamNode_Operation_DeclineFriendInvite : public UK2BeamNode_Operation
 		return LOCTEXT("Title", "Beam - Operation - Friend - DeclineFriendInvite");
 	}
 
-	virtual FString GetServiceName() const override { return FString("Friends"); };
-
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, GetSelf);
+		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf);
 	}
 
 	virtual FName GetOperationFunctionName() const override
 	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, DeclineFriendInviteOperation);
+		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, DeclineFriendInviteOperation);
 	}
 
-	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendSubsystem::StaticClass(); }
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
 };
 
 #undef LOCTEXT_NAMESPACE
@@ -197,19 +185,17 @@ class UK2BeamNode_Operation_BlockPlayer : public UK2BeamNode_Operation
 		return LOCTEXT("Title", "Beam - Operation - Friend - BlockPlayer");
 	}
 
-	virtual FString GetServiceName() const override { return FString("Friends"); };
-
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, GetSelf);
+		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf);
 	}
 
 	virtual FName GetOperationFunctionName() const override
 	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, BlockPlayerOperation);
+		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, BlockPlayerOperation);
 	}
 
-	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendSubsystem::StaticClass(); }
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
 };
 
 #undef LOCTEXT_NAMESPACE
@@ -226,19 +212,17 @@ class UK2BeamNode_Operation_UnblockPlayer : public UK2BeamNode_Operation
 		return LOCTEXT("Title", "Beam - Operation - Friend - UnblockPlayer");
 	}
 
-	virtual FString GetServiceName() const override { return FString("Friends"); };
-
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, GetSelf);
+		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf);
 	}
 
 	virtual FName GetOperationFunctionName() const override
 	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, UnblockPlayerOperation);
+		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, UnblockPlayerOperation);
 	}
 
-	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendSubsystem::StaticClass(); }
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
 };
 
 #undef LOCTEXT_NAMESPACE
@@ -257,19 +241,17 @@ class UK2BeamNode_Operation_RemoveFriend : public UK2BeamNode_Operation
 		return LOCTEXT("Title", "Beam - Operation - Friend - RemoveFriend");
 	}
 
-	virtual FString GetServiceName() const override { return FString("Friends"); };
-
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, GetSelf);
+		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf);
 	}
 
 	virtual FName GetOperationFunctionName() const override
 	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamFriendSubsystem, RemoveFriendOperation);
+		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, RemoveFriendOperation);
 	}
 
-	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendSubsystem::StaticClass(); }
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
 };
 
 #undef LOCTEXT_NAMESPACE

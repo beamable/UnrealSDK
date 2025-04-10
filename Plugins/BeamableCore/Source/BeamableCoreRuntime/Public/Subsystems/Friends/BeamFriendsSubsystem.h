@@ -9,7 +9,7 @@
 #include "BeamNotifications/SubSystems/BeamMailNotifications.h"
 #include "BeamNotifications/SubSystems/BeamSocialNotifications.h"
 #include "Runtime/BeamRuntimeSubsystem.h"
-#include "BeamFriendSubsystem.generated.h"
+#include "BeamFriendsSubsystem.generated.h"
 
 
 USTRUCT(BlueprintType)
@@ -115,7 +115,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPlayerBlockedStatusChangedCode, FBeamGam
  * 
  */
 UCLASS()
-class BEAMABLECORERUNTIME_API UBeamFriendSubsystem : public UBeamRuntimeSubsystem
+class BEAMABLECORERUNTIME_API UBeamFriendsSubsystem : public UBeamRuntimeSubsystem
 {
 	GENERATED_BODY()
 
@@ -147,9 +147,9 @@ class BEAMABLECORERUNTIME_API UBeamFriendSubsystem : public UBeamRuntimeSubsyste
 
 public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
-	static UBeamFriendSubsystem* GetSelf(const UObject* CallingContext)
+	static UBeamFriendsSubsystem* GetSelf(const UObject* CallingContext)
 	{
-		return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamFriendSubsystem>();
+		return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamFriendsSubsystem>();
 	}
 
 	/**

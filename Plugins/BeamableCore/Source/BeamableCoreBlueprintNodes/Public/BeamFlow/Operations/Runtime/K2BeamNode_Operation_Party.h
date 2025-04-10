@@ -20,8 +20,6 @@ class UK2BeamNode_Operation_CreateParty : public UK2BeamNode_Operation
 		return LOCTEXT("Title", "Beam - Operation - Party - CreateParty");
 	}
 
-	virtual FString GetServiceName() const override { return FString("Party"); };
-
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
@@ -48,8 +46,6 @@ class UK2BeamNode_Operation_JoinParty : public UK2BeamNode_Operation
 	{
 		return LOCTEXT("Title", "Beam - Operation - Party - JoinParty");
 	}
-
-	virtual FString GetServiceName() const override { return FString("Party"); };
 
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
@@ -79,8 +75,6 @@ class UK2BeamNode_Operation_JoinPlayerParty : public UK2BeamNode_Operation
 		return LOCTEXT("Title", "Beam - Operation - Party - JoinPlayerParty");
 	}
 
-	virtual FString GetServiceName() const override { return FString("Party"); };
-
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
@@ -109,8 +103,6 @@ class UK2BeamNode_Operation_LeaveParty : public UK2BeamNode_Operation
 		return LOCTEXT("Title", "Beam - Operation - Party - LeaveParty");
 	}
 
-	virtual FString GetServiceName() const override { return FString("Party"); };
-
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
@@ -137,8 +129,6 @@ class UK2BeamNode_Operation_InvitePlayer : public UK2BeamNode_Operation
 	{
 		return LOCTEXT("Title", "Beam - Operation - Party - InvitePlayer");
 	}
-
-	virtual FString GetServiceName() const override { return FString("Party"); };
 
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
@@ -168,8 +158,6 @@ class UK2BeamNode_Operation_InvitePlayerToMyParty : public UK2BeamNode_Operation
 		return LOCTEXT("Title", "Beam - Operation - Party - InvitePlayerToMyParty");
 	}
 
-	virtual FString GetServiceName() const override { return FString("Party"); };
-
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
@@ -196,9 +184,7 @@ class UK2BeamNode_Operation_DeclinePlayerInvite : public UK2BeamNode_Operation
 	{
 		return LOCTEXT("Title", "Beam - Operation - Party - DeclinePlayerInvite");
 	}
-
-	virtual FString GetServiceName() const override { return FString("Party"); };
-
+	
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
@@ -227,8 +213,6 @@ class UK2BeamNode_Operation_DeclinePartyInvite : public UK2BeamNode_Operation
 		return LOCTEXT("Title", "Beam - Operation - Party - DeclinePartyInvite");
 	}
 
-	virtual FString GetServiceName() const override { return FString("Party"); };
-
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
@@ -255,8 +239,6 @@ class UK2BeamNode_Operation_FetchPartyState : public UK2BeamNode_Operation
 	{
 		return LOCTEXT("Title", "Beam - Operation - Party - FetchPartyState");
 	}
-
-	virtual FString GetServiceName() const override { return FString("Party"); };
 
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
@@ -285,8 +267,6 @@ class UK2BeamNode_Operation_FetchPlayerPartyState : public UK2BeamNode_Operation
 		return LOCTEXT("Title", "Beam - Operation - Party - FetchPlayerPartyState");
 	}
 	
-	virtual FString GetServiceName() const override { return FString("Party"); };
-	
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
@@ -313,8 +293,6 @@ class UK2BeamNode_Operation_FetchPartyInvites : public UK2BeamNode_Operation
 	{
 		return LOCTEXT("Title", "Beam - Operation - Party - FetchPartyInvites");
 	}
-
-	virtual FString GetServiceName() const override { return FString("Party"); };
 	
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
@@ -342,8 +320,6 @@ class UK2BeamNode_Operation_UpdateParty : public UK2BeamNode_Operation
 	{
 		return LOCTEXT("Title", "Beam - Operation - Party - Update Party Meta");
 	}
-
-	virtual FString GetServiceName() const override { return FString("Party"); };
 	
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
@@ -372,8 +348,6 @@ class UK2BeamNode_Operation_UpdateMyPartyMeta : public UK2BeamNode_Operation
 		return LOCTEXT("Title", "Beam - Operation - Party - UpdateParty");
 	}
 
-	virtual FString GetServiceName() const override { return FString("Party"); };
-
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
@@ -400,8 +374,6 @@ class UK2BeamNode_Operation_PartyKickPlayer : public UK2BeamNode_Operation
 	{
 		return LOCTEXT("Title", "Beam - Operation - Party - KickPlayer");
 	}
-
-	virtual FString GetServiceName() const override { return FString("Party"); };
 
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
@@ -430,8 +402,6 @@ class UK2BeamNode_Operation_KickPlayerFromMyParty : public UK2BeamNode_Operation
 		return LOCTEXT("Title", "Beam - Operation - Party - Kick Player From My Party");
 	}
 
-	virtual FString GetServiceName() const override { return FString("Party"); };
-
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
@@ -458,8 +428,6 @@ class UK2BeamNode_Operation_PromotePlayerToLeader : public UK2BeamNode_Operation
 	{
 		return LOCTEXT("Title", "Beam - Operation - Party - PromotePlayerToLeader");
 	}
-
-	virtual FString GetServiceName() const override { return FString("Party"); };
 
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
@@ -488,8 +456,6 @@ class UK2BeamNode_Operation_PromotePlayerAsMyPartyLeader : public UK2BeamNode_Op
 		return LOCTEXT("Title", "Beam - Operation - Party - Promote Player As My Party Leader");
 	}
 
-	virtual FString GetServiceName() const override { return FString("Party"); };
-
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
@@ -516,8 +482,6 @@ class UK2BeamNode_Operation_CancelSentPartyInvite : public UK2BeamNode_Operation
 	{
 		return LOCTEXT("Title", "Beam - Operation - Party - CancelSentPartyInvite");
 	}
-	
-	virtual FString GetServiceName() const override { return FString("Party"); };
 
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
@@ -545,8 +509,6 @@ class UK2BeamNode_Operation_CancelPlayerPartyInvite : public UK2BeamNode_Operati
 	{
 		return LOCTEXT("Title", "Beam - Operation - Party - CancelPlayerPartyInvite");
 	}
-
-	virtual FString GetServiceName() const override { return FString("Party"); };
 
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{

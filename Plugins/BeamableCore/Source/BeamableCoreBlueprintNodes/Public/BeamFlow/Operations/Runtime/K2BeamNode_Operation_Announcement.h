@@ -12,8 +12,6 @@ class UK2BeamNode_Operation_MarkSingleAnnouncementRead : public UK2BeamNode_Oper
 	GENERATED_BODY()
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Announcement - Mark Single Announcement Read"); }
-
-	virtual FString GetServiceName() const override { return FString("Announcements"); };
 	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamAnnouncementsSubsystem, GetSelf); }
 
@@ -34,8 +32,6 @@ class UK2BeamNode_Operation_MarkGroupAnnouncementsRead : public UK2BeamNode_Oper
 	GENERATED_BODY()
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Announcement - Mark group of Announcements as Read"); }
-
-	virtual FString GetServiceName() const override { return FString("Announcements"); };
 	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamAnnouncementsSubsystem, GetSelf); }
 
@@ -54,8 +50,6 @@ class UK2BeamNode_Operation_ClaimSingleAnnouncement : public UK2BeamNode_Operati
 	GENERATED_BODY()
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Announcement - Claim Single Announcement Gift"); }
-
-	virtual FString GetServiceName() const override { return FString("Announcements"); };
 	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamAnnouncementsSubsystem, GetSelf); }
 
@@ -76,8 +70,6 @@ class UK2BeamNode_Operation_ClaimGroupAnnouncements : public UK2BeamNode_Operati
 	GENERATED_BODY()
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Announcement - Claim Group Of Announcements Gifts"); }
-
-	virtual FString GetServiceName() const override { return FString("Announcements"); };
 	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamAnnouncementsSubsystem, GetSelf); }
 

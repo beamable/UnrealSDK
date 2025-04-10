@@ -13,6 +13,8 @@ class UK2BeamNode_Operation_FrictionlessAuth : public UK2BeamNode_Operation
 	GENERATED_BODY()
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Frictionless Authentication"); }
+
+	virtual FString GetServiceName() const override {return "Auth"; };
 	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
@@ -64,8 +66,6 @@ class UK2BeamNode_Operation_SignUpEmailAndPassword : public UK2BeamNode_Operatio
 	GENERATED_BODY()
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - SignUp - Email and Password"); }
-
-	virtual FString GetServiceName() const override { return FString("Auth"); };
 	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
@@ -83,8 +83,6 @@ class UK2BeamNode_Operation_SignUpExternalIdentity : public UK2BeamNode_Operatio
 	GENERATED_BODY()
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - SignUp - External Identity"); }
-
-	virtual FString GetServiceName() const override { return FString("Auth"); };
 	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
@@ -102,8 +100,6 @@ class UK2BeamNode_Operation_AttachEmailAndPassword : public UK2BeamNode_Operatio
 	GENERATED_BODY()
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Attach - Email and Password"); }
-
-	virtual FString GetServiceName() const override { return FString("Auth"); };
 	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
@@ -121,8 +117,6 @@ class UK2BeamNode_Operation_AttachExternalIdentity : public UK2BeamNode_Operatio
 	GENERATED_BODY()
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Attach - External Identity"); }
-
-	virtual FString GetServiceName() const override { return FString("Auth"); };
 	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
@@ -141,8 +135,6 @@ class UK2BeamNode_Operation_Logout : public UK2BeamNode_Operation
 	GENERATED_BODY()
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Logout"); }
-
-	virtual FString GetServiceName() const override { return FString("Auth"); };
 	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
@@ -161,8 +153,6 @@ class UK2BeamNode_Operation_ManuallyInitializeSubsystemWithUserData : public UK2
 	GENERATED_BODY()
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Manually Initialize Subsystem With User Data"); }
-
-	virtual FString GetServiceName() const override { return FString("Auth"); };
 	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
@@ -208,8 +198,6 @@ class UK2BeamNode_Operation_ManuallyInitializeSubsystem : public UK2BeamNode_Ope
 	GENERATED_BODY()
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Manually Initialize Subsystems WITHOUT User Data"); }
-
-	virtual FString GetServiceName() const override { return FString("Auth"); };
 	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
