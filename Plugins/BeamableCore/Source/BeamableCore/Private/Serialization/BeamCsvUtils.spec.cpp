@@ -4,7 +4,7 @@
 #include "Serialization/BeamCsvUtils.h"
 
 
-BEGIN_DEFINE_SPEC(FBeamCsvUtilsSpec, "BeamableUnreal.BeamCsvUtils", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(FBeamCsvUtilsSpec, "BeamableUnreal.BeamCsvUtils", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ProgramContext)
 END_DEFINE_SPEC(FBeamCsvUtilsSpec)
 
 

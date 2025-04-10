@@ -6,7 +6,7 @@
 #include "BeamBackend/SemanticTypes/BeamCid.h"
 
 
-BEGIN_DEFINE_SPEC(FBeamJsonUtilsSpec, "BeamableUnreal.BeamJsonUtils", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(FBeamJsonUtilsSpec, "BeamableUnreal.BeamJsonUtils", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ProgramContext)
 END_DEFINE_SPEC(FBeamJsonUtilsSpec)
 
 void FBeamJsonUtilsSpec::Define()

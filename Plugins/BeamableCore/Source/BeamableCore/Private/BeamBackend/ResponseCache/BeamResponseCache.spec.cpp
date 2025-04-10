@@ -4,7 +4,7 @@
 #include "BeamBackend/ResponseCache/BeamResponseCache.h"
 
 
-BEGIN_DEFINE_SPEC(FBeamResponseCacheSpec, "BeamableUnreal.BeamResponseCache", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(FBeamResponseCacheSpec, "BeamableUnreal.BeamResponseCache", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ProgramContext)
 	UBeamResponseCache* BeamResponseCache;
 	UBeamBackend* BeamBackendSystem;
 END_DEFINE_SPEC(FBeamResponseCacheSpec)
