@@ -773,6 +773,9 @@ void UBeamRuntime::TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent Evt, FU
 
 				for (auto& Subsystem : Subsystems)
 				{
+					if (!Subsystem->CurrentUserState.Contains(UserSlot))
+						Subsystem->CurrentUserState.Add(UserSlot, BeamInitializedNoUserData);
+					
 					if (Subsystem->CurrentUserState[UserSlot] == BeamInitializedNoUserData)
 					{
 						Subsystem->CurrentUserState[UserSlot] = BeamInitializedWithUserData;
@@ -1693,7 +1696,7 @@ void UBeamRuntime::SignUpExternalIdentity(FUserSlot UserSlot, FString Microservi
 
 void UBeamRuntime::SignUpEmailAndPassword(FUserSlot UserSlot, FString Email, FString Password, FBeamOperationHandle Op)
 {
-	Email = FGenericPlatformHttp::UrlEncode(Email);
+	const auto EncodedEmail = FGenericPlatformHttp::UrlEncode(Email);
 
 	const auto CheckIdentityAvailableHandler = FOnGetAvailableFullResponse::CreateLambda([this,UserSlot, Op, Email, Password](FGetAvailableFullResponse Resp)
 	{
@@ -1754,7 +1757,7 @@ void UBeamRuntime::SignUpEmailAndPassword(FUserSlot UserSlot, FString Email, FSt
 	}
 
 	// Kick off the process for sign up 
-	const auto _ = CheckEmailAvailable(Email, Op, CheckIdentityAvailableHandler);
+	const auto _ = CheckEmailAvailable(EncodedEmail, Op, CheckIdentityAvailableHandler);
 }
 
 void UBeamRuntime::Logout(FUserSlot UserSlot, EUserSlotClearedReason Reason, bool bRemoveLocalData, FBeamOperationHandle Op)
@@ -2108,9 +2111,9 @@ void UBeamRuntime::SendAnalyticsEvent(const FUserSlot& Slot, const FString& Even
 		TSharedPtr<FJsonObject> TopJsonObject = MakeShareable(new FJsonObject);
 
 		TopJsonObject->SetStringField(TEXT("op"), EventOpCode);
-		TopJsonObject->SetStringField(TEXT("category"), EventCategory);
-		TopJsonObject->SetStringField(TEXT("event"), EventName);
-		TopJsonObject->SetObjectField(TEXT("params"), EventParamsObj[i]);
+		TopJsonObject->SetStringField(TEXT("c"), EventCategory);
+		TopJsonObject->SetStringField(TEXT("e"), EventName);
+		TopJsonObject->SetObjectField(TEXT("p"), EventParamsObj[i]);
 
 		// Serialize the FJsonObject to a string
 		FString AnalyticsEvent;
