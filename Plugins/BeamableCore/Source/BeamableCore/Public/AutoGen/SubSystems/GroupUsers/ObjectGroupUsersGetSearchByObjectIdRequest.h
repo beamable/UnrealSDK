@@ -64,7 +64,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|GroupUsers|3 - Backend", DisplayName="Make ObjectGroupUsersGetSearchByObjectId",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Name,_ScoreMin,_SortField,_UserScore,_bHasSlots,_EnrollmentTypes,_Offset,_ScoreMax,_bSubGroup,_SortValue,_Limit,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|GroupUsers|Utils|Make/Break", DisplayName="Make ObjectGroupUsersGetSearchByObjectId",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Name,_ScoreMin,_SortField,_UserScore,_bHasSlots,_EnrollmentTypes,_Offset,_ScoreMax,_bSubGroup,_SortValue,_Limit,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UObjectGroupUsersGetSearchByObjectIdRequest* Make(int64 _ObjectId, FOptionalString _Name, FOptionalInt64 _ScoreMin, FOptionalString _SortField, FOptionalInt64 _UserScore, FOptionalBool _bHasSlots, FOptionalString _EnrollmentTypes, FOptionalInt32 _Offset, FOptionalInt64 _ScoreMax, FOptionalBool _bSubGroup, FOptionalInt32 _SortValue, EGroupType _Type, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

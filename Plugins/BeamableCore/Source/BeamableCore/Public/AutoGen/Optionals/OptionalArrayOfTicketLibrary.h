@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalArrayOfTicket struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|PlayerTicket|5 - Optionals", meta=(DisplayName="Make Optional TArray<UTicket*>", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|PlayerTicket|Utils|Optionals", meta=(DisplayName="Make Optional TArray<UTicket*>", NativeMakeFunc))
 	static FOptionalArrayOfTicket MakeOptional(TArray<UTicket*> Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The TArray<UTicket*> to convert.
 	 * @return An optional with the TArray<UTicket*> set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|PlayerTicket|5 - Optionals", meta = (DisplayName="TArray<UTicket*> To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|PlayerTicket|Utils|Optionals", meta = (DisplayName="TArray<UTicket*> To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalArrayOfTicket Conv_OptionalFromValue(TArray<UTicket*> Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|PlayerTicket|5 - Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|PlayerTicket|Utils|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalArrayOfTicket& Optional, TArray<UTicket*>& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|PlayerTicket|5 - Optionals", meta=(DisplayName="Get Optional's TArray<UTicket*> Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|PlayerTicket|Utils|Optionals", meta=(DisplayName="Get Optional's TArray<UTicket*> Value"))
 	static TArray<UTicket*> GetOptionalValue(const FOptionalArrayOfTicket& Optional, TArray<UTicket*> DefaultValue, bool& WasSet);
 
 	

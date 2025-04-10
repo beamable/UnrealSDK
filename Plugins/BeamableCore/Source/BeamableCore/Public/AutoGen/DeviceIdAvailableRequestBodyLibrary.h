@@ -13,12 +13,12 @@ class BEAMABLECORE_API UDeviceIdAvailableRequestBodyLibrary : public UBlueprintF
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|4 - Json", DisplayName="DeviceIdAvailableRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Json", DisplayName="DeviceIdAvailableRequestBody To JSON String")
 	static FString DeviceIdAvailableRequestBodyToJsonString(const UDeviceIdAvailableRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Make DeviceIdAvailableRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Make DeviceIdAvailableRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UDeviceIdAvailableRequestBody* Make(FString DeviceId, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Break DeviceIdAvailableRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Break DeviceIdAvailableRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UDeviceIdAvailableRequestBody* Serializable, FString& DeviceId);
 };

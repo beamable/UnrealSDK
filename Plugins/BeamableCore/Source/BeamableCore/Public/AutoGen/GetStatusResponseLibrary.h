@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetStatusResponseLibrary : public UBlueprintFunctionLibr
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|4 - Json", DisplayName="GetStatusResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Json", DisplayName="GetStatusResponse To JSON String")
 	static FString GetStatusResponseToJsonString(const UGetStatusResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Make GetStatusResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="StorageStatuses, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Make GetStatusResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="StorageStatuses, Outer", NativeMakeFunc))
 	static UGetStatusResponse* Make(bool bIsCurrent, TArray<UServiceStatus*> Services, FOptionalArrayOfServiceStorageStatus StorageStatuses, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Break GetStatusResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Break GetStatusResponse", meta=(NativeBreakFunc))
 	static void Break(const UGetStatusResponse* Serializable, bool& bIsCurrent, TArray<UServiceStatus*>& Services, FOptionalArrayOfServiceStorageStatus& StorageStatuses);
 };

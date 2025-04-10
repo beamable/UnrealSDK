@@ -13,12 +13,12 @@ class BEAMABLECORE_API USessionHeartbeatLibrary : public UBlueprintFunctionLibra
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Session|4 - Json", DisplayName="SessionHeartbeat To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Session|Utils|Json", DisplayName="SessionHeartbeat To JSON String")
 	static FString SessionHeartbeatToJsonString(const USessionHeartbeat* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Session|3 - Backend", DisplayName="Make SessionHeartbeat", meta=(DefaultToSelf="Outer", AdvancedDisplay="Heartbeat, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Session|Utils|Make/Break", DisplayName="Make SessionHeartbeat", meta=(DefaultToSelf="Outer", AdvancedDisplay="Heartbeat, Outer", NativeMakeFunc))
 	static USessionHeartbeat* Make(int64 Gt, FOptionalInt64 Heartbeat, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Session|3 - Backend", DisplayName="Break SessionHeartbeat", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Session|Utils|Make/Break", DisplayName="Break SessionHeartbeat", meta=(NativeBreakFunc))
 	static void Break(const USessionHeartbeat* Serializable, int64& Gt, FOptionalInt64& Heartbeat);
 };

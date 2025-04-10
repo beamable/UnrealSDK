@@ -13,12 +13,12 @@ class BEAMABLECORE_API USupportedFederationsResponseLibrary : public UBlueprintF
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|4 - Json", DisplayName="SupportedFederationsResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Json", DisplayName="SupportedFederationsResponse To JSON String")
 	static FString SupportedFederationsResponseToJsonString(const USupportedFederationsResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Make SupportedFederationsResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Make SupportedFederationsResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static USupportedFederationsResponse* Make(TArray<USupportedFederationRegistration*> Registrations, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Break SupportedFederationsResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Break SupportedFederationsResponse", meta=(NativeBreakFunc))
 	static void Break(const USupportedFederationsResponse* Serializable, TArray<USupportedFederationRegistration*>& Registrations);
 };

@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalSessionUser struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Session|5 - Optionals", meta=(DisplayName="Make Optional SessionUser", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Session|Utils|Optionals", meta=(DisplayName="Make Optional SessionUser", NativeMakeFunc))
 	static FOptionalSessionUser MakeOptional(USessionUser* Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The USessionUser* to convert.
 	 * @return An optional with the SessionUser set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Session|5 - Optionals", meta = (DisplayName="SessionUser To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Session|Utils|Optionals", meta = (DisplayName="SessionUser To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalSessionUser Conv_OptionalFromValue(USessionUser* Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Session|5 - Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Session|Utils|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalSessionUser& Optional, USessionUser*& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Session|5 - Optionals", meta=(DisplayName="Get Optional's SessionUser Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Session|Utils|Optionals", meta=(DisplayName="Get Optional's SessionUser Value"))
 	static USessionUser* GetOptionalValue(const FOptionalSessionUser& Optional, USessionUser* DefaultValue, bool& WasSet);
 
 	

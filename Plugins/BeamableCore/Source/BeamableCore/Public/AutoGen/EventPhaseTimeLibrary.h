@@ -13,12 +13,12 @@ class BEAMABLECORE_API UEventPhaseTimeLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Events|4 - Json", DisplayName="EventPhaseTime To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Events|Utils|Json", DisplayName="EventPhaseTime To JSON String")
 	static FString EventPhaseTimeToJsonString(const UEventPhaseTime* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Events|3 - Backend", DisplayName="Make EventPhaseTime", meta=(DefaultToSelf="Outer", AdvancedDisplay="StartTime, EndTime, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Events|Utils|Make/Break", DisplayName="Make EventPhaseTime", meta=(DefaultToSelf="Outer", AdvancedDisplay="StartTime, EndTime, Outer", NativeMakeFunc))
 	static UEventPhaseTime* Make(FString Name, FOptionalInt64 StartTime, FOptionalInt64 EndTime, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Events|3 - Backend", DisplayName="Break EventPhaseTime", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Events|Utils|Make/Break", DisplayName="Break EventPhaseTime", meta=(NativeBreakFunc))
 	static void Break(const UEventPhaseTime* Serializable, FString& Name, FOptionalInt64& StartTime, FOptionalInt64& EndTime);
 };

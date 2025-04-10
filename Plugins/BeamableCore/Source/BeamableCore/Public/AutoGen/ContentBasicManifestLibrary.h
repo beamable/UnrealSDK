@@ -13,12 +13,12 @@ class BEAMABLECORE_API UContentBasicManifestLibrary : public UBlueprintFunctionL
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Content|4 - Json", DisplayName="ContentBasicManifest To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Json", DisplayName="ContentBasicManifest To JSON String")
 	static FString ContentBasicManifestToJsonString(const UContentBasicManifest* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Content|3 - Backend", DisplayName="Make ContentBasicManifest", meta=(DefaultToSelf="Outer", AdvancedDisplay="bArchived, PublisherAccountId, Uid, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Make/Break", DisplayName="Make ContentBasicManifest", meta=(DefaultToSelf="Outer", AdvancedDisplay="bArchived, PublisherAccountId, Uid, Outer", NativeMakeFunc))
 	static UContentBasicManifest* Make(FBeamContentManifestId Id, FString Checksum, int64 Created, TArray<UBaseContentReference*> References, FOptionalBool bArchived, FOptionalInt64 PublisherAccountId, FOptionalString Uid, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Content|3 - Backend", DisplayName="Break ContentBasicManifest", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Make/Break", DisplayName="Break ContentBasicManifest", meta=(NativeBreakFunc))
 	static void Break(const UContentBasicManifest* Serializable, FBeamContentManifestId& Id, FString& Checksum, int64& Created, TArray<UBaseContentReference*>& References, FOptionalBool& bArchived, FOptionalInt64& PublisherAccountId, FOptionalString& Uid);
 };

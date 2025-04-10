@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPaymentTotalLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Session|4 - Json", DisplayName="PaymentTotal To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Session|Utils|Json", DisplayName="PaymentTotal To JSON String")
 	static FString PaymentTotalToJsonString(const UPaymentTotal* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Session|3 - Backend", DisplayName="Make PaymentTotal", meta=(DefaultToSelf="Outer", AdvancedDisplay="CurrencyCode, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Session|Utils|Make/Break", DisplayName="Make PaymentTotal", meta=(DefaultToSelf="Outer", AdvancedDisplay="CurrencyCode, Outer", NativeMakeFunc))
 	static UPaymentTotal* Make(int64 TotalRevenue, FOptionalString CurrencyCode, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Session|3 - Backend", DisplayName="Break PaymentTotal", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Session|Utils|Make/Break", DisplayName="Break PaymentTotal", meta=(NativeBreakFunc))
 	static void Break(const UPaymentTotal* Serializable, int64& TotalRevenue, FOptionalString& CurrencyCode);
 };

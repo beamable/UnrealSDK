@@ -13,12 +13,12 @@ class BEAMABLECORE_API UEventRuleLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|4 - Json", DisplayName="EventRule To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|Utils|Json", DisplayName="EventRule To JSON String")
 	static FString EventRuleToJsonString(const UEventRule* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|3 - Backend", DisplayName="Make EventRule", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|Utils|Make/Break", DisplayName="Make EventRule", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UEventRule* Make(FString Rule, FString Value, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|3 - Backend", DisplayName="Break EventRule", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|Utils|Make/Break", DisplayName="Break EventRule", meta=(NativeBreakFunc))
 	static void Break(const UEventRule* Serializable, FString& Rule, FString& Value);
 };

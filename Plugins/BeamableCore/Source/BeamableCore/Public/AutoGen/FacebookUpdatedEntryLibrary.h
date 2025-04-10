@@ -13,12 +13,12 @@ class BEAMABLECORE_API UFacebookUpdatedEntryLibrary : public UBlueprintFunctionL
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Payments|4 - Json", DisplayName="FacebookUpdatedEntry To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|Utils|Json", DisplayName="FacebookUpdatedEntry To JSON String")
 	static FString FacebookUpdatedEntryToJsonString(const UFacebookUpdatedEntry* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Payments|3 - Backend", DisplayName="Make FacebookUpdatedEntry", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|Utils|Make/Break", DisplayName="Make FacebookUpdatedEntry", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UFacebookUpdatedEntry* Make(FString Id, int64 Time, TArray<FString> ChangedFields, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Payments|3 - Backend", DisplayName="Break FacebookUpdatedEntry", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|Utils|Make/Break", DisplayName="Break FacebookUpdatedEntry", meta=(NativeBreakFunc))
 	static void Break(const UFacebookUpdatedEntry* Serializable, FString& Id, int64& Time, TArray<FString>& ChangedFields);
 };

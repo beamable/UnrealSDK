@@ -13,12 +13,12 @@ class BEAMABLECORE_API UOfferRequirementLibrary : public UBlueprintFunctionLibra
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Commerce|4 - Json", DisplayName="OfferRequirement To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|Utils|Json", DisplayName="OfferRequirement To JSON String")
 	static FString OfferRequirementToJsonString(const UOfferRequirement* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Commerce|3 - Backend", DisplayName="Make OfferRequirement", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|Utils|Make/Break", DisplayName="Make OfferRequirement", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UOfferRequirement* Make(FString OfferSymbol, UOfferConstraint* Purchases, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Commerce|3 - Backend", DisplayName="Break OfferRequirement", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|Utils|Make/Break", DisplayName="Break OfferRequirement", meta=(NativeBreakFunc))
 	static void Break(const UOfferRequirement* Serializable, FString& OfferSymbol, UOfferConstraint*& Purchases);
 };

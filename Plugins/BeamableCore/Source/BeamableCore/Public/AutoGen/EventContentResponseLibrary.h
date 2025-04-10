@@ -13,12 +13,12 @@ class BEAMABLECORE_API UEventContentResponseLibrary : public UBlueprintFunctionL
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Events|4 - Json", DisplayName="EventContentResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Events|Utils|Json", DisplayName="EventContentResponse To JSON String")
 	static FString EventContentResponseToJsonString(const UEventContentResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Events|3 - Backend", DisplayName="Make EventContentResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Events|Utils|Make/Break", DisplayName="Make EventContentResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UEventContentResponse* Make(TArray<UEvent*> Content, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Events|3 - Backend", DisplayName="Break EventContentResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Events|Utils|Make/Break", DisplayName="Break EventContentResponse", meta=(NativeBreakFunc))
 	static void Break(const UEventContentResponse* Serializable, TArray<UEvent*>& Content);
 };

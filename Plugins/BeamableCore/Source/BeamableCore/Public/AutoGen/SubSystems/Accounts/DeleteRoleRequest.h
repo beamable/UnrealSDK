@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Accounts|3 - Backend", DisplayName="Make DeleteRole",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Realm,_Role,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Make DeleteRole",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Realm,_Role,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UDeleteRoleRequest* Make(FBeamAccountId _ObjectId, FOptionalBeamPid _Realm, FOptionalString _Role, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

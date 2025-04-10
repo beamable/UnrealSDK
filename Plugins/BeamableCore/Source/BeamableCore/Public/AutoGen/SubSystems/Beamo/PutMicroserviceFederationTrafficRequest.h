@@ -36,7 +36,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Beamo|3 - Backend", DisplayName="Make PutMicroserviceFederationTraffic",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bTrafficFilterEnabled,_RoutingKey,_Federation,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Make PutMicroserviceFederationTraffic",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bTrafficFilterEnabled,_RoutingKey,_Federation,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPutMicroserviceFederationTrafficRequest* Make(FString _ServiceName, FOptionalBool _bTrafficFilterEnabled, FOptionalString _RoutingKey, FOptionalArrayOfSupportedFederation _Federation, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

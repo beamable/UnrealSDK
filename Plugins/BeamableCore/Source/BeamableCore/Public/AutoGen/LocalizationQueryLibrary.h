@@ -13,12 +13,12 @@ class BEAMABLECORE_API ULocalizationQueryLibrary : public UBlueprintFunctionLibr
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Content|4 - Json", DisplayName="LocalizationQuery To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Json", DisplayName="LocalizationQuery To JSON String")
 	static FString LocalizationQueryToJsonString(const ULocalizationQuery* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Content|3 - Backend", DisplayName="Make LocalizationQuery", meta=(DefaultToSelf="Outer", AdvancedDisplay="Languages, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Make/Break", DisplayName="Make LocalizationQuery", meta=(DefaultToSelf="Outer", AdvancedDisplay="Languages, Outer", NativeMakeFunc))
 	static ULocalizationQuery* Make(FString Id, FOptionalArrayOfString Languages, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Content|3 - Backend", DisplayName="Break LocalizationQuery", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Make/Break", DisplayName="Break LocalizationQuery", meta=(NativeBreakFunc))
 	static void Break(const ULocalizationQuery* Serializable, FString& Id, FOptionalArrayOfString& Languages);
 };

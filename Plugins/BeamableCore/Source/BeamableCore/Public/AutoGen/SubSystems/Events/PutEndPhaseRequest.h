@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Events|3 - Backend", DisplayName="Make PutEndPhase",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Time,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Events|Utils|Make/Break", DisplayName="Make PutEndPhase",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Time,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPutEndPhaseRequest* Make(FString _ObjectId, FOptionalString _Time, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

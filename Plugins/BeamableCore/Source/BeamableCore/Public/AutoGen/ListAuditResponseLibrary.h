@@ -13,12 +13,12 @@ class BEAMABLECORE_API UListAuditResponseLibrary : public UBlueprintFunctionLibr
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|4 - Json", DisplayName="ListAuditResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Json", DisplayName="ListAuditResponse To JSON String")
 	static FString ListAuditResponseToJsonString(const UListAuditResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Make ListAuditResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Make ListAuditResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UListAuditResponse* Make(TArray<UPaymentAuditEntryViewModel*> Audits, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Break ListAuditResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Break ListAuditResponse", meta=(NativeBreakFunc))
 	static void Break(const UListAuditResponse* Serializable, TArray<UPaymentAuditEntryViewModel*>& Audits);
 };

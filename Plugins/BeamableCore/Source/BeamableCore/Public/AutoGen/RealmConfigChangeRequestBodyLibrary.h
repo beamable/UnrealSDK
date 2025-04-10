@@ -13,12 +13,12 @@ class BEAMABLECORE_API URealmConfigChangeRequestBodyLibrary : public UBlueprintF
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Realms|4 - Json", DisplayName="RealmConfigChangeRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Json", DisplayName="RealmConfigChangeRequestBody To JSON String")
 	static FString RealmConfigChangeRequestBodyToJsonString(const URealmConfigChangeRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Make RealmConfigChangeRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Deletes, Upserts, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Make/Break", DisplayName="Make RealmConfigChangeRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Deletes, Upserts, Outer", NativeMakeFunc))
 	static URealmConfigChangeRequestBody* Make(FOptionalArrayOfString Deletes, FOptionalMapOfString Upserts, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Break RealmConfigChangeRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Make/Break", DisplayName="Break RealmConfigChangeRequestBody", meta=(NativeBreakFunc))
 	static void Break(const URealmConfigChangeRequestBody* Serializable, FOptionalArrayOfString& Deletes, FOptionalMapOfString& Upserts);
 };

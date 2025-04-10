@@ -13,12 +13,12 @@ class BEAMABLECORE_API UAnnouncementAttachmentLibrary : public UBlueprintFunctio
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Announcements|4 - Json", DisplayName="AnnouncementAttachment To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|Utils|Json", DisplayName="AnnouncementAttachment To JSON String")
 	static FString AnnouncementAttachmentToJsonString(const UAnnouncementAttachment* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Announcements|3 - Backend", DisplayName="Make AnnouncementAttachment", meta=(DefaultToSelf="Outer", AdvancedDisplay="Type, Properties, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|Utils|Make/Break", DisplayName="Make AnnouncementAttachment", meta=(DefaultToSelf="Outer", AdvancedDisplay="Type, Properties, Outer", NativeMakeFunc))
 	static UAnnouncementAttachment* Make(FString Symbol, int32 Count, FOptionalString Type, FOptionalArrayOfAttachmentProperty Properties, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Announcements|3 - Backend", DisplayName="Break AnnouncementAttachment", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|Utils|Make/Break", DisplayName="Break AnnouncementAttachment", meta=(NativeBreakFunc))
 	static void Break(const UAnnouncementAttachment* Serializable, FString& Symbol, int32& Count, FOptionalString& Type, FOptionalArrayOfAttachmentProperty& Properties);
 };

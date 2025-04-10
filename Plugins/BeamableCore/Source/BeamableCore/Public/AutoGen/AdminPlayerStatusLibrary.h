@@ -13,12 +13,12 @@ class BEAMABLECORE_API UAdminPlayerStatusLibrary : public UBlueprintFunctionLibr
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|4 - Json", DisplayName="AdminPlayerStatus To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|Utils|Json", DisplayName="AdminPlayerStatus To JSON String")
 	static FString AdminPlayerStatusToJsonString(const UAdminPlayerStatus* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|3 - Backend", DisplayName="Make AdminPlayerStatus", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|Utils|Make/Break", DisplayName="Make AdminPlayerStatus", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UAdminPlayerStatus* Make(FString TournamentId, int32 Stage, int32 Tier, int32 Rank, double Score, int64 PlayerId, FString ContentId, int64 NextCycleStartMs, TArray<UTournamentCurrencyReward*> UnclaimedRewards, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|3 - Backend", DisplayName="Break AdminPlayerStatus", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|Utils|Make/Break", DisplayName="Break AdminPlayerStatus", meta=(NativeBreakFunc))
 	static void Break(const UAdminPlayerStatus* Serializable, FString& TournamentId, int32& Stage, int32& Tier, int32& Rank, double& Score, int64& PlayerId, FString& ContentId, int64& NextCycleStartMs, TArray<UTournamentCurrencyReward*>& UnclaimedRewards);
 };

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UTicketQueryResponseLibrary : public UBlueprintFunctionLi
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|PlayerTicket|4 - Json", DisplayName="TicketQueryResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|PlayerTicket|Utils|Json", DisplayName="TicketQueryResponse To JSON String")
 	static FString TicketQueryResponseToJsonString(const UTicketQueryResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|PlayerTicket|3 - Backend", DisplayName="Make TicketQueryResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Results, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|PlayerTicket|Utils|Make/Break", DisplayName="Make TicketQueryResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Results, Outer", NativeMakeFunc))
 	static UTicketQueryResponse* Make(FOptionalArrayOfTicket Results, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|PlayerTicket|3 - Backend", DisplayName="Break TicketQueryResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|PlayerTicket|Utils|Make/Break", DisplayName="Break TicketQueryResponse", meta=(NativeBreakFunc))
 	static void Break(const UTicketQueryResponse* Serializable, FOptionalArrayOfTicket& Results);
 };

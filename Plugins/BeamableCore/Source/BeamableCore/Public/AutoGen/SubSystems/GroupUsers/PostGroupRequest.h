@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|GroupUsers|3 - Backend", DisplayName="Make PostGroup",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Tag,_ClientData,_Time,_Group,_Scores,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|GroupUsers|Utils|Make/Break", DisplayName="Make PostGroup",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Tag,_ClientData,_Time,_Group,_Scores,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPostGroupRequest* Make(int64 _ObjectId, FString _Name, FString _EnrollmentType, int64 _Requirement, EGroupType _Type, int32 _MaxSize, FOptionalString _Tag, FOptionalString _ClientData, FOptionalInt64 _Time, FOptionalInt64 _Group, FOptionalArrayOfGroupScoreBinding _Scores, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UChallengeSolutionLibrary : public UBlueprintFunctionLibr
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|4 - Json", DisplayName="ChallengeSolution To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Json", DisplayName="ChallengeSolution To JSON String")
 	static FString ChallengeSolutionToJsonString(const UChallengeSolution* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Make ChallengeSolution", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Make ChallengeSolution", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UChallengeSolution* Make(FString ChallengeToken, FString Solution, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Break ChallengeSolution", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Break ChallengeSolution", meta=(NativeBreakFunc))
 	static void Break(const UChallengeSolution* Serializable, FString& ChallengeToken, FString& Solution);
 };

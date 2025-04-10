@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetMailDetailsRequestBodyLibrary : public UBlueprintFunc
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Mail|4 - Json", DisplayName="GetMailDetailsRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|Utils|Json", DisplayName="GetMailDetailsRequestBody To JSON String")
 	static FString GetMailDetailsRequestBodyToJsonString(const UGetMailDetailsRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Mail|3 - Backend", DisplayName="Make GetMailDetailsRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|Utils|Make/Break", DisplayName="Make GetMailDetailsRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UGetMailDetailsRequestBody* Make(int64 Mid, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Mail|3 - Backend", DisplayName="Break GetMailDetailsRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|Utils|Make/Break", DisplayName="Break GetMailDetailsRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UGetMailDetailsRequestBody* Serializable, int64& Mid);
 };

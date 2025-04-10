@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPromoteNewLeaderLibrary : public UBlueprintFunctionLibra
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Party|4 - Json", DisplayName="PromoteNewLeader To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Party|Utils|Json", DisplayName="PromoteNewLeader To JSON String")
 	static FString PromoteNewLeaderToJsonString(const UPromoteNewLeader* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Party|3 - Backend", DisplayName="Make PromoteNewLeader", meta=(DefaultToSelf="Outer", AdvancedDisplay="PlayerId, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Party|Utils|Make/Break", DisplayName="Make PromoteNewLeader", meta=(DefaultToSelf="Outer", AdvancedDisplay="PlayerId, Outer", NativeMakeFunc))
 	static UPromoteNewLeader* Make(FOptionalBeamGamerTag PlayerId, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Party|3 - Backend", DisplayName="Break PromoteNewLeader", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Party|Utils|Make/Break", DisplayName="Break PromoteNewLeader", meta=(NativeBreakFunc))
 	static void Break(const UPromoteNewLeader* Serializable, FOptionalBeamGamerTag& PlayerId);
 };

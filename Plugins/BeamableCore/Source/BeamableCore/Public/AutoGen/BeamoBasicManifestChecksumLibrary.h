@@ -13,12 +13,12 @@ class BEAMABLECORE_API UBeamoBasicManifestChecksumLibrary : public UBlueprintFun
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|4 - Json", DisplayName="BeamoBasicManifestChecksum To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Json", DisplayName="BeamoBasicManifestChecksum To JSON String")
 	static FString BeamoBasicManifestChecksumToJsonString(const UBeamoBasicManifestChecksum* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Make BeamoBasicManifestChecksum", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Make BeamoBasicManifestChecksum", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UBeamoBasicManifestChecksum* Make(FString Id, FString Checksum, int64 CreatedAt, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Break BeamoBasicManifestChecksum", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Break BeamoBasicManifestChecksum", meta=(NativeBreakFunc))
 	static void Break(const UBeamoBasicManifestChecksum* Serializable, FString& Id, FString& Checksum, int64& CreatedAt);
 };

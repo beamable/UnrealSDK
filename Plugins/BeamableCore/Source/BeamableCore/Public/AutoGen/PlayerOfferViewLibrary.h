@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPlayerOfferViewLibrary : public UBlueprintFunctionLibrar
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Commerce|4 - Json", DisplayName="PlayerOfferView To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|Utils|Json", DisplayName="PlayerOfferView To JSON String")
 	static FString PlayerOfferViewToJsonString(const UPlayerOfferView* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Commerce|3 - Backend", DisplayName="Make PlayerOfferView", meta=(DefaultToSelf="Outer", AdvancedDisplay="ButtonText, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|Utils|Make/Break", DisplayName="Make PlayerOfferView", meta=(DefaultToSelf="Outer", AdvancedDisplay="ButtonText, Outer", NativeMakeFunc))
 	static UPlayerOfferView* Make(int32 Coupons, UPrice* Price, FString Symbol, TArray<FString> Titles, TArray<UItemCreateRequestBody*> ObtainItems, TArray<UCurrencyChange*> ObtainCurrency, TArray<FString> Images, TArray<FString> Descriptions, TArray<FString> Obtain, FOptionalString ButtonText, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Commerce|3 - Backend", DisplayName="Break PlayerOfferView", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|Utils|Make/Break", DisplayName="Break PlayerOfferView", meta=(NativeBreakFunc))
 	static void Break(const UPlayerOfferView* Serializable, int32& Coupons, UPrice*& Price, FString& Symbol, TArray<FString>& Titles, TArray<UItemCreateRequestBody*>& ObtainItems, TArray<UCurrencyChange*>& ObtainCurrency, TArray<FString>& Images, TArray<FString>& Descriptions, TArray<FString>& Obtain, FOptionalString& ButtonText);
 };

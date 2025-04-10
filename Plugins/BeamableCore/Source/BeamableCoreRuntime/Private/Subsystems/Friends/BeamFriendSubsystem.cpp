@@ -6,7 +6,7 @@
 void UBeamFriendSubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperationHandle& ResultOp)
 {
 	//Initialize all the subsystem and APIs required to the FriendSubsystem to work
-	BeamSocialApi = GEngine->GetEngineSubsystem<UBeamFriendsApi>();
+	BeamFriendsApi = GEngine->GetEngineSubsystem<UBeamFriendsApi>();
 	SocialNotifications = GEngine->GetEngineSubsystem<UBeamSocialNotifications>();
 	BeamPresenceApi = GEngine->GetEngineSubsystem<UBeamPresenceApi>();
 	MailNotifications = GEngine->GetEngineSubsystem<UBeamMailNotifications>();
@@ -360,7 +360,7 @@ void UBeamFriendSubsystem::FetchPlayerFriendState(FUserSlot UserSlot, FBeamOpera
 
 	FBeamRequestContext Ctx;
 
-	BeamSocialApi->CPP_GetMy(UserSlot, Request, Handler, Ctx, Op, this);
+	BeamFriendsApi->CPP_GetMy(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
 void UBeamFriendSubsystem::FetchFriendsState(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerGamerTags,
@@ -418,7 +418,7 @@ void UBeamFriendSubsystem::FetchFriendsState(FUserSlot UserSlot, TArray<FBeamGam
 
 	FBeamRequestContext Ctx;
 
-	BeamSocialApi->CPP_GetFriends(UserSlot, Request, Handler, Ctx, Op, this);
+	BeamFriendsApi->CPP_GetFriends(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
 void UBeamFriendSubsystem::FetchFriendPresenceStatus(FUserSlot UserSlot, TArray<FBeamGamerTag> PlayerGamerTags,
@@ -527,7 +527,7 @@ void UBeamFriendSubsystem::SendFriendInvite(FUserSlot UserSlot, FBeamGamerTag Fr
 
 	FBeamRequestContext Ctx;
 
-	BeamSocialApi->CPP_PostFriendsInvite(UserSlot, Request, Handler, Ctx, Op, this);
+	BeamFriendsApi->CPP_PostFriendsInvite(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
 void UBeamFriendSubsystem::AcceptFriendInvite(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag, FBeamOperationHandle Op)
@@ -601,7 +601,7 @@ void UBeamFriendSubsystem::AcceptFriendInvite(FUserSlot UserSlot, FBeamGamerTag 
 
 	FBeamRequestContext Ctx;
 
-	BeamSocialApi->CPP_PostFriendsMake(UserSlot, Request, Handler, Ctx, Op, this);
+	BeamFriendsApi->CPP_PostFriendsMake(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
 void UBeamFriendSubsystem::DeclineFriendInvite(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag,
@@ -655,7 +655,7 @@ void UBeamFriendSubsystem::DeclineFriendInvite(FUserSlot UserSlot, FBeamGamerTag
 
 	FBeamRequestContext Ctx;
 
-	BeamSocialApi->CPP_DeleteFriendsInvite(UserSlot, Request, Handler, Ctx, Op, this);
+	BeamFriendsApi->CPP_DeleteFriendsInvite(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
 void UBeamFriendSubsystem::BlockPlayer(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, FBeamOperationHandle Op)
@@ -728,7 +728,7 @@ void UBeamFriendSubsystem::BlockPlayer(FUserSlot UserSlot, FBeamGamerTag PlayerG
 
 	FBeamRequestContext Ctx;
 
-	BeamSocialApi->CPP_PostBlocked(UserSlot, Request, Handler, Ctx, Op, this);
+	BeamFriendsApi->CPP_PostBlocked(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
 void UBeamFriendSubsystem::UnblockPlayer(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, FBeamOperationHandle Op)
@@ -786,7 +786,7 @@ void UBeamFriendSubsystem::UnblockPlayer(FUserSlot UserSlot, FBeamGamerTag Playe
 
 	FBeamRequestContext Ctx;
 
-	BeamSocialApi->CPP_DeleteBlocked(UserSlot, Request, Handler, Ctx, Op, this);
+	BeamFriendsApi->CPP_DeleteBlocked(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
 void UBeamFriendSubsystem::RemoveFriend(FUserSlot UserSlot, FBeamGamerTag FriendGamerTag, FBeamOperationHandle Op)
@@ -853,7 +853,7 @@ void UBeamFriendSubsystem::RemoveFriend(FUserSlot UserSlot, FBeamGamerTag Friend
 
 	FBeamRequestContext Ctx;
 
-	BeamSocialApi->CPP_DeleteFriends(UserSlot, Request, Handler, Ctx, Op, this);
+	BeamFriendsApi->CPP_DeleteFriends(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
 bool UBeamFriendSubsystem::TryGetBeamGameTagFromUserSlot(FUserSlot UserSlot, FBeamGamerTag& PlayerGamerTag)

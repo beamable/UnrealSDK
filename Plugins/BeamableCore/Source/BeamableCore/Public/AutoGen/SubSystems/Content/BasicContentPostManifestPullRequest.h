@@ -36,7 +36,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Content|3 - Backend", DisplayName="Make BasicContentPostManifestPull",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Id,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Content|Utils|Make/Break", DisplayName="Make BasicContentPostManifestPull",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Id,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UBasicContentPostManifestPullRequest* Make(FBeamPid _SourceRealmPid, FOptionalBeamContentManifestId _Id, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

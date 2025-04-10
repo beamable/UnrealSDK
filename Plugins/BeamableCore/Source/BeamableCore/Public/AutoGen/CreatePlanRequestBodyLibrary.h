@@ -13,12 +13,12 @@ class BEAMABLECORE_API UCreatePlanRequestBodyLibrary : public UBlueprintFunction
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Realms|4 - Json", DisplayName="CreatePlanRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Json", DisplayName="CreatePlanRequestBody To JSON String")
 	static FString CreatePlanRequestBodyToJsonString(const UCreatePlanRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Make CreatePlanRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="MongoSrvAddress, MessageBusAnalytics, MessageBusCommon, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Make/Break", DisplayName="Make CreatePlanRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="MongoSrvAddress, MessageBusAnalytics, MessageBusCommon, Outer", NativeMakeFunc))
 	static UCreatePlanRequestBody* Make(bool bMongoSSL, bool bSharded, FString Name, FString MemcachedHosts, FString PlatformJBDC, FString MongoHosts, TArray<URedisShardRequestBody*> RedisShards, FOptionalString MongoSrvAddress, FOptionalArrayOfString MessageBusAnalytics, FOptionalArrayOfString MessageBusCommon, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Break CreatePlanRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Make/Break", DisplayName="Break CreatePlanRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UCreatePlanRequestBody* Serializable, bool& bMongoSSL, bool& bSharded, FString& Name, FString& MemcachedHosts, FString& PlatformJBDC, FString& MongoHosts, TArray<URedisShardRequestBody*>& RedisShards, FOptionalString& MongoSrvAddress, FOptionalArrayOfString& MessageBusAnalytics, FOptionalArrayOfString& MessageBusCommon);
 };

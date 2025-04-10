@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Party|3 - Backend", DisplayName="Make ApiPartyPutMetadataById",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Restriction,_MaxSize,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Party|Utils|Make/Break", DisplayName="Make ApiPartyPutMetadataById",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Restriction,_MaxSize,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UApiPartyPutMetadataByIdRequest* Make(FGuid _Id, FOptionalString _Restriction, FOptionalInt32 _MaxSize, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

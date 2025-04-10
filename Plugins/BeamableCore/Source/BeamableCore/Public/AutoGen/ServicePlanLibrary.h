@@ -13,12 +13,12 @@ class BEAMABLECORE_API UServicePlanLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Realms|4 - Json", DisplayName="ServicePlan To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Json", DisplayName="ServicePlan To JSON String")
 	static FString ServicePlanToJsonString(const UServicePlan* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Make ServicePlan", meta=(DefaultToSelf="Outer", AdvancedDisplay="MinCustomerStatusSaved, Limits, Created, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Make/Break", DisplayName="Make ServicePlan", meta=(DefaultToSelf="Outer", AdvancedDisplay="MinCustomerStatusSaved, Limits, Created, Outer", NativeMakeFunc))
 	static UServicePlan* Make(FString Name, UDataDomain* DataDomain, FOptionalString MinCustomerStatusSaved, FOptionalServiceLimits Limits, FOptionalInt64 Created, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Break ServicePlan", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Make/Break", DisplayName="Break ServicePlan", meta=(NativeBreakFunc))
 	static void Break(const UServicePlan* Serializable, FString& Name, UDataDomain*& DataDomain, FOptionalString& MinCustomerStatusSaved, FOptionalServiceLimits& Limits, FOptionalInt64& Created);
 };

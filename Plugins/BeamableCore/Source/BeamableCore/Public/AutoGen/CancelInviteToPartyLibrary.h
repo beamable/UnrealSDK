@@ -13,12 +13,12 @@ class BEAMABLECORE_API UCancelInviteToPartyLibrary : public UBlueprintFunctionLi
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Party|4 - Json", DisplayName="CancelInviteToParty To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Party|Utils|Json", DisplayName="CancelInviteToParty To JSON String")
 	static FString CancelInviteToPartyToJsonString(const UCancelInviteToParty* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Party|3 - Backend", DisplayName="Make CancelInviteToParty", meta=(DefaultToSelf="Outer", AdvancedDisplay="PlayerId, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Party|Utils|Make/Break", DisplayName="Make CancelInviteToParty", meta=(DefaultToSelf="Outer", AdvancedDisplay="PlayerId, Outer", NativeMakeFunc))
 	static UCancelInviteToParty* Make(FOptionalBeamGamerTag PlayerId, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Party|3 - Backend", DisplayName="Break CancelInviteToParty", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Party|Utils|Make/Break", DisplayName="Break CancelInviteToParty", meta=(NativeBreakFunc))
 	static void Break(const UCancelInviteToParty* Serializable, FOptionalBeamGamerTag& PlayerId);
 };

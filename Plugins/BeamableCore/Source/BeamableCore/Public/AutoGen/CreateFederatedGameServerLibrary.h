@@ -13,12 +13,12 @@ class BEAMABLECORE_API UCreateFederatedGameServerLibrary : public UBlueprintFunc
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Lobby|4 - Json", DisplayName="CreateFederatedGameServer To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|Utils|Json", DisplayName="CreateFederatedGameServer To JSON String")
 	static FString CreateFederatedGameServerToJsonString(const UCreateFederatedGameServer* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Lobby|3 - Backend", DisplayName="Make CreateFederatedGameServer", meta=(DefaultToSelf="Outer", AdvancedDisplay="MatchType, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|Utils|Make/Break", DisplayName="Make CreateFederatedGameServer", meta=(DefaultToSelf="Outer", AdvancedDisplay="MatchType, Outer", NativeMakeFunc))
 	static UCreateFederatedGameServer* Make(FOptionalBeamContentId MatchType, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Lobby|3 - Backend", DisplayName="Break CreateFederatedGameServer", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|Utils|Make/Break", DisplayName="Break CreateFederatedGameServer", meta=(NativeBreakFunc))
 	static void Break(const UCreateFederatedGameServer* Serializable, FOptionalBeamContentId& MatchType);
 };

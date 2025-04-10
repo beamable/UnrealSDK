@@ -13,12 +13,12 @@ class BEAMABLECORE_API USaveContentResponseLibrary : public UBlueprintFunctionLi
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Content|4 - Json", DisplayName="SaveContentResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Json", DisplayName="SaveContentResponse To JSON String")
 	static FString SaveContentResponseToJsonString(const USaveContentResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Content|3 - Backend", DisplayName="Make SaveContentResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Make/Break", DisplayName="Make SaveContentResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static USaveContentResponse* Make(TArray<UContentReference*> Content, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Content|3 - Backend", DisplayName="Break SaveContentResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Make/Break", DisplayName="Break SaveContentResponse", meta=(NativeBreakFunc))
 	static void Break(const USaveContentResponse* Serializable, TArray<UContentReference*>& Content);
 };

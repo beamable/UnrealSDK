@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalPresenceStatus struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Presence|5 - Optionals", meta=(DisplayName="Make Optional PresenceStatus", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Presence|Utils|Optionals", meta=(DisplayName="Make Optional PresenceStatus", NativeMakeFunc))
 	static FOptionalPresenceStatus MakeOptional(EPresenceStatus Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The EPresenceStatus to convert.
 	 * @return An optional with the PresenceStatus set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Presence|5 - Optionals", meta = (DisplayName="PresenceStatus To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Presence|Utils|Optionals", meta = (DisplayName="PresenceStatus To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalPresenceStatus Conv_OptionalFromValue(EPresenceStatus Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Presence|5 - Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Presence|Utils|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalPresenceStatus& Optional, EPresenceStatus& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Presence|5 - Optionals", meta=(DisplayName="Get Optional's PresenceStatus Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Presence|Utils|Optionals", meta=(DisplayName="Get Optional's PresenceStatus Value"))
 	static EPresenceStatus GetOptionalValue(const FOptionalPresenceStatus& Optional, EPresenceStatus DefaultValue, bool& WasSet);
 
 	

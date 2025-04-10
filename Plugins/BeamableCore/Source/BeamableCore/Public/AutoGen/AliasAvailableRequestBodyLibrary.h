@@ -13,12 +13,12 @@ class BEAMABLECORE_API UAliasAvailableRequestBodyLibrary : public UBlueprintFunc
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Realms|4 - Json", DisplayName="AliasAvailableRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Json", DisplayName="AliasAvailableRequestBody To JSON String")
 	static FString AliasAvailableRequestBodyToJsonString(const UAliasAvailableRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Make AliasAvailableRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Make/Break", DisplayName="Make AliasAvailableRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UAliasAvailableRequestBody* Make(FString Alias, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Break AliasAvailableRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Make/Break", DisplayName="Break AliasAvailableRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UAliasAvailableRequestBody* Serializable, FString& Alias);
 };

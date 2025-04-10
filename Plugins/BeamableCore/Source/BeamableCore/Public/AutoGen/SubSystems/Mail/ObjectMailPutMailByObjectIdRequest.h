@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Mail|3 - Backend", DisplayName="Make ObjectMailPutMailByObjectId",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bAcceptAttachments,_Body,_Expires,_Subject,_State,_Category,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Mail|Utils|Make/Break", DisplayName="Make ObjectMailPutMailByObjectId",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bAcceptAttachments,_Body,_Expires,_Subject,_State,_Category,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UObjectMailPutMailByObjectIdRequest* Make(int64 _ObjectId, int64 _MailId, FOptionalBool _bAcceptAttachments, FOptionalString _Body, FOptionalString _Expires, FOptionalString _Subject, FOptionalString _State, FOptionalString _Category, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UStoreLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Commerce|4 - Json", DisplayName="Store To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|Utils|Json", DisplayName="Store To JSON String")
 	static FString StoreToJsonString(const UStore* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Commerce|3 - Backend", DisplayName="Make Store", meta=(DefaultToSelf="Outer", AdvancedDisplay="bShowInactiveListings, ActiveListingLimit, Choose, RefreshTime, Title, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|Utils|Make/Break", DisplayName="Make Store", meta=(DefaultToSelf="Outer", AdvancedDisplay="bShowInactiveListings, ActiveListingLimit, Choose, RefreshTime, Title, Outer", NativeMakeFunc))
 	static UStore* Make(FString Symbol, TArray<UListing*> Listings, FOptionalBool bShowInactiveListings, FOptionalInt32 ActiveListingLimit, FOptionalInt32 Choose, FOptionalInt32 RefreshTime, FOptionalString Title, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Commerce|3 - Backend", DisplayName="Break Store", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|Utils|Make/Break", DisplayName="Break Store", meta=(NativeBreakFunc))
 	static void Break(const UStore* Serializable, FString& Symbol, TArray<UListing*>& Listings, FOptionalBool& bShowInactiveListings, FOptionalInt32& ActiveListingLimit, FOptionalInt32& Choose, FOptionalInt32& RefreshTime, FOptionalString& Title);
 };

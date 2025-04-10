@@ -13,12 +13,12 @@ class BEAMABLECORE_API UStartSessionResponseLibrary : public UBlueprintFunctionL
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Session|4 - Json", DisplayName="StartSessionResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Session|Utils|Json", DisplayName="StartSessionResponse To JSON String")
 	static FString StartSessionResponseToJsonString(const UStartSessionResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Session|3 - Backend", DisplayName="Make StartSessionResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Gamer, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Session|Utils|Make/Break", DisplayName="Make StartSessionResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Gamer, Outer", NativeMakeFunc))
 	static UStartSessionResponse* Make(FString Result, FOptionalGamerTag Gamer, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Session|3 - Backend", DisplayName="Break StartSessionResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Session|Utils|Make/Break", DisplayName="Break StartSessionResponse", meta=(NativeBreakFunc))
 	static void Break(const UStartSessionResponse* Serializable, FString& Result, FOptionalGamerTag& Gamer);
 };

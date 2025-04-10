@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetManifestResponseLibrary : public UBlueprintFunctionLi
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|4 - Json", DisplayName="GetManifestResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Json", DisplayName="GetManifestResponse To JSON String")
 	static FString GetManifestResponseToJsonString(const UGetManifestResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Make GetManifestResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Make GetManifestResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UGetManifestResponse* Make(UManifestView* Manifest, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Break GetManifestResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Break GetManifestResponse", meta=(NativeBreakFunc))
 	static void Break(const UGetManifestResponse* Serializable, UManifestView*& Manifest);
 };

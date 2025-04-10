@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetCurrentManifestRequestBodyLibrary : public UBlueprint
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|4 - Json", DisplayName="GetCurrentManifestRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Json", DisplayName="GetCurrentManifestRequestBody To JSON String")
 	static FString GetCurrentManifestRequestBodyToJsonString(const UGetCurrentManifestRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Make GetCurrentManifestRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bArchived, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Make GetCurrentManifestRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bArchived, Outer", NativeMakeFunc))
 	static UGetCurrentManifestRequestBody* Make(FOptionalBool bArchived, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Break GetCurrentManifestRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Break GetCurrentManifestRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UGetCurrentManifestRequestBody* Serializable, FOptionalBool& bArchived);
 };

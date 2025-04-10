@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGroupCreateLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|4 - Json", DisplayName="GroupCreate To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|Utils|Json", DisplayName="GroupCreate To JSON String")
 	static FString GroupCreateToJsonString(const UGroupCreate* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|3 - Backend", DisplayName="Make GroupCreate", meta=(DefaultToSelf="Outer", AdvancedDisplay="Tag, ClientData, Time, Group, Scores, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|Utils|Make/Break", DisplayName="Make GroupCreate", meta=(DefaultToSelf="Outer", AdvancedDisplay="Tag, ClientData, Time, Group, Scores, Outer", NativeMakeFunc))
 	static UGroupCreate* Make(FString Name, FString EnrollmentType, int64 Requirement, EGroupType Type, int32 MaxSize, FOptionalString Tag, FOptionalString ClientData, FOptionalInt64 Time, FOptionalInt64 Group, FOptionalArrayOfGroupScoreBinding Scores, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|3 - Backend", DisplayName="Break GroupCreate", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|Utils|Make/Break", DisplayName="Break GroupCreate", meta=(NativeBreakFunc))
 	static void Break(const UGroupCreate* Serializable, FString& Name, FString& EnrollmentType, int64& Requirement, EGroupType& Type, int32& MaxSize, FOptionalString& Tag, FOptionalString& ClientData, FOptionalInt64& Time, FOptionalInt64& Group, FOptionalArrayOfGroupScoreBinding& Scores);
 };

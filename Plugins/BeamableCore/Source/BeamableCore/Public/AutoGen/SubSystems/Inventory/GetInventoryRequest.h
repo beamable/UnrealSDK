@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Inventory|3 - Backend", DisplayName="Make GetInventory",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Scope,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Inventory|Utils|Make/Break", DisplayName="Make GetInventory",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Scope,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UGetInventoryRequest* Make(FBeamGamerTag _ObjectId, FOptionalString _Scope, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

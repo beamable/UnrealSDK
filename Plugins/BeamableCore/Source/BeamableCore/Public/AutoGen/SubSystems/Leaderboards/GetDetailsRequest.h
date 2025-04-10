@@ -40,7 +40,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Leaderboards|3 - Backend", DisplayName="Make GetDetails",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_From,_Max,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Leaderboards|Utils|Make/Break", DisplayName="Make GetDetails",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_From,_Max,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UGetDetailsRequest* Make(FString _ObjectId, FOptionalInt32 _From, FOptionalInt32 _Max, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

@@ -42,7 +42,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Tournaments|3 - Backend", DisplayName="Make GetChampions",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_ContentId,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Tournaments|Utils|Make/Break", DisplayName="Make GetChampions",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_ContentId,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UGetChampionsRequest* Make(FString _TournamentId, int32 _Cycles, FOptionalString _ContentId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

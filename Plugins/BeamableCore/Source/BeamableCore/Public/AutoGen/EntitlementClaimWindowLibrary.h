@@ -13,12 +13,12 @@ class BEAMABLECORE_API UEntitlementClaimWindowLibrary : public UBlueprintFunctio
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|4 - Json", DisplayName="EntitlementClaimWindow To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Json", DisplayName="EntitlementClaimWindow To JSON String")
 	static FString EntitlementClaimWindowToJsonString(const UEntitlementClaimWindow* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Make EntitlementClaimWindow", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Make EntitlementClaimWindow", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UEntitlementClaimWindow* Make(int64 Open, int64 Close, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Break EntitlementClaimWindow", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Break EntitlementClaimWindow", meta=(NativeBreakFunc))
 	static void Break(const UEntitlementClaimWindow* Serializable, int64& Open, int64& Close);
 };

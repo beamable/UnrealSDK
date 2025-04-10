@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPlayerRewardLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Announcements|4 - Json", DisplayName="PlayerReward To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|Utils|Json", DisplayName="PlayerReward To JSON String")
 	static FString PlayerRewardToJsonString(const UPlayerReward* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Announcements|3 - Backend", DisplayName="Make PlayerReward", meta=(DefaultToSelf="Outer", AdvancedDisplay="bApplyVipBonus, Description, ChangeCurrencies, CallWebhooks, AddItems, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|Utils|Make/Break", DisplayName="Make PlayerReward", meta=(DefaultToSelf="Outer", AdvancedDisplay="bApplyVipBonus, Description, ChangeCurrencies, CallWebhooks, AddItems, Outer", NativeMakeFunc))
 	static UPlayerReward* Make(TArray<UItemCreateRequestBody*> AddItemRequests, TMap<FString, FString> AddCurrencyMap, FOptionalBool bApplyVipBonus, FOptionalString Description, FOptionalArrayOfCurrencyChangeReward ChangeCurrencies, FOptionalArrayOfWebhookReward CallWebhooks, FOptionalArrayOfNewItemReward AddItems, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Announcements|3 - Backend", DisplayName="Break PlayerReward", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|Utils|Make/Break", DisplayName="Break PlayerReward", meta=(NativeBreakFunc))
 	static void Break(const UPlayerReward* Serializable, TArray<UItemCreateRequestBody*>& AddItemRequests, TMap<FString, FString>& AddCurrencyMap, FOptionalBool& bApplyVipBonus, FOptionalString& Description, FOptionalArrayOfCurrencyChangeReward& ChangeCurrencies, FOptionalArrayOfWebhookReward& CallWebhooks, FOptionalArrayOfNewItemReward& AddItems);
 };

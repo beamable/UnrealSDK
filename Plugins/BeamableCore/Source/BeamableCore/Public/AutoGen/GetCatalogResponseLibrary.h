@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetCatalogResponseLibrary : public UBlueprintFunctionLib
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Commerce|4 - Json", DisplayName="GetCatalogResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|Utils|Json", DisplayName="GetCatalogResponse To JSON String")
 	static FString GetCatalogResponseToJsonString(const UGetCatalogResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Commerce|3 - Backend", DisplayName="Make GetCatalogResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Catalog, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|Utils|Make/Break", DisplayName="Make GetCatalogResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Catalog, Outer", NativeMakeFunc))
 	static UGetCatalogResponse* Make(FOptionalCatalog Catalog, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Commerce|3 - Backend", DisplayName="Break GetCatalogResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|Utils|Make/Break", DisplayName="Break GetCatalogResponse", meta=(NativeBreakFunc))
 	static void Break(const UGetCatalogResponse* Serializable, FOptionalCatalog& Catalog);
 };

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetPricesRequestBodyLibrary : public UBlueprintFunctionL
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Payments|4 - Json", DisplayName="GetPricesRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|Utils|Json", DisplayName="GetPricesRequestBody To JSON String")
 	static FString GetPricesRequestBodyToJsonString(const UGetPricesRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Payments|3 - Backend", DisplayName="Make GetPricesRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|Utils|Make/Break", DisplayName="Make GetPricesRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UGetPricesRequestBody* Make(int64 SteamId, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Payments|3 - Backend", DisplayName="Break GetPricesRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Payments|Utils|Make/Break", DisplayName="Break GetPricesRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UGetPricesRequestBody* Serializable, int64& SteamId);
 };

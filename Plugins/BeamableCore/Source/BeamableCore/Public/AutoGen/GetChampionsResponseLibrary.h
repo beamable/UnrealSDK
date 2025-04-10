@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetChampionsResponseLibrary : public UBlueprintFunctionL
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|4 - Json", DisplayName="GetChampionsResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|Utils|Json", DisplayName="GetChampionsResponse To JSON String")
 	static FString GetChampionsResponseToJsonString(const UGetChampionsResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|3 - Backend", DisplayName="Make GetChampionsResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|Utils|Make/Break", DisplayName="Make GetChampionsResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UGetChampionsResponse* Make(TArray<UChampionScore*> Entries, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|3 - Backend", DisplayName="Break GetChampionsResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|Utils|Make/Break", DisplayName="Break GetChampionsResponse", meta=(NativeBreakFunc))
 	static void Break(const UGetChampionsResponse* Serializable, TArray<UChampionScore*>& Entries);
 };

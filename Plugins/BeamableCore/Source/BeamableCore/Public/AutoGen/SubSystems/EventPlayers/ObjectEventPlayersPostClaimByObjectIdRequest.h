@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|EventPlayers|3 - Backend", DisplayName="Make ObjectEventPlayersPostClaimByObjectId",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|EventPlayers|Utils|Make/Break", DisplayName="Make ObjectEventPlayersPostClaimByObjectId",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UObjectEventPlayersPostClaimByObjectIdRequest* Make(int64 _ObjectId, FString _EventId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

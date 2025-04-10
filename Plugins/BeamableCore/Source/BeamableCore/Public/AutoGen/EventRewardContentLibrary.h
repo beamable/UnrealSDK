@@ -13,12 +13,12 @@ class BEAMABLECORE_API UEventRewardContentLibrary : public UBlueprintFunctionLib
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Events|4 - Json", DisplayName="EventRewardContent To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Events|Utils|Json", DisplayName="EventRewardContent To JSON String")
 	static FString EventRewardContentToJsonString(const UEventRewardContent* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Events|3 - Backend", DisplayName="Make EventRewardContent", meta=(DefaultToSelf="Outer", AdvancedDisplay="Max, Currencies, Items, Obtain, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Events|Utils|Make/Break", DisplayName="Make EventRewardContent", meta=(DefaultToSelf="Outer", AdvancedDisplay="Max, Currencies, Items, Obtain, Outer", NativeMakeFunc))
 	static UEventRewardContent* Make(double Min, FOptionalDouble Max, FOptionalArrayOfEventInventoryRewardCurrency Currencies, FOptionalArrayOfEventInventoryRewardItem Items, FOptionalArrayOfEventRewardObtain Obtain, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Events|3 - Backend", DisplayName="Break EventRewardContent", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Events|Utils|Make/Break", DisplayName="Break EventRewardContent", meta=(NativeBreakFunc))
 	static void Break(const UEventRewardContent* Serializable, double& Min, FOptionalDouble& Max, FOptionalArrayOfEventInventoryRewardCurrency& Currencies, FOptionalArrayOfEventInventoryRewardItem& Items, FOptionalArrayOfEventRewardObtain& Obtain);
 };

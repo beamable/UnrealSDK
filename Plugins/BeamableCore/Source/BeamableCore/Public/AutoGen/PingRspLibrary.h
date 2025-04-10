@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPingRspLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Events|4 - Json", DisplayName="PingRsp To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Events|Utils|Json", DisplayName="PingRsp To JSON String")
 	static FString PingRspToJsonString(const UPingRsp* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Events|3 - Backend", DisplayName="Make PingRsp", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Events|Utils|Make/Break", DisplayName="Make PingRsp", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UPingRsp* Make(bool bKeepAlive, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Events|3 - Backend", DisplayName="Break PingRsp", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Events|Utils|Make/Break", DisplayName="Break PingRsp", meta=(NativeBreakFunc))
 	static void Break(const UPingRsp* Serializable, bool& bKeepAlive);
 };

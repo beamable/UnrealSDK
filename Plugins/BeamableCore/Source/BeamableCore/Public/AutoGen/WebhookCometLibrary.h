@@ -13,12 +13,12 @@ class BEAMABLECORE_API UWebhookCometLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Announcements|4 - Json", DisplayName="WebhookComet To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|Utils|Json", DisplayName="WebhookComet To JSON String")
 	static FString WebhookCometToJsonString(const UWebhookComet* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Announcements|3 - Backend", DisplayName="Make WebhookComet", meta=(DefaultToSelf="Outer", AdvancedDisplay="Description, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|Utils|Make/Break", DisplayName="Make WebhookComet", meta=(DefaultToSelf="Outer", AdvancedDisplay="Description, Outer", NativeMakeFunc))
 	static UWebhookComet* Make(FString Method, URouteVariables* Variables, FString Symbol, UServiceRoute* Route, URouteParameters* Parameters, FOptionalString Description, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Announcements|3 - Backend", DisplayName="Break WebhookComet", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|Utils|Make/Break", DisplayName="Break WebhookComet", meta=(NativeBreakFunc))
 	static void Break(const UWebhookComet* Serializable, FString& Method, URouteVariables*& Variables, FString& Symbol, UServiceRoute*& Route, URouteParameters*& Parameters, FOptionalString& Description);
 };

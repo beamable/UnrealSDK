@@ -13,12 +13,12 @@ class BEAMABLECORE_API UMicroserviceRegistrationRequestBodyLibrary : public UBlu
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|4 - Json", DisplayName="MicroserviceRegistrationRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Json", DisplayName="MicroserviceRegistrationRequestBody To JSON String")
 	static FString MicroserviceRegistrationRequestBodyToJsonString(const UMicroserviceRegistrationRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Make MicroserviceRegistrationRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bTrafficFilterEnabled, RoutingKey, Federation, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Make MicroserviceRegistrationRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bTrafficFilterEnabled, RoutingKey, Federation, Outer", NativeMakeFunc))
 	static UMicroserviceRegistrationRequestBody* Make(FString ServiceName, FOptionalBool bTrafficFilterEnabled, FOptionalString RoutingKey, FOptionalArrayOfSupportedFederation Federation, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|3 - Backend", DisplayName="Break MicroserviceRegistrationRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Break MicroserviceRegistrationRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UMicroserviceRegistrationRequestBody* Serializable, FString& ServiceName, FOptionalBool& bTrafficFilterEnabled, FOptionalString& RoutingKey, FOptionalArrayOfSupportedFederation& Federation);
 };

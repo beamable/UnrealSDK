@@ -13,12 +13,12 @@ class BEAMABLECORE_API ULaunchMessageListResponseLibrary : public UBlueprintFunc
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Realms|4 - Json", DisplayName="LaunchMessageListResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Json", DisplayName="LaunchMessageListResponse To JSON String")
 	static FString LaunchMessageListResponseToJsonString(const ULaunchMessageListResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Make LaunchMessageListResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Make/Break", DisplayName="Make LaunchMessageListResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static ULaunchMessageListResponse* Make(TArray<FString> Files, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Realms|3 - Backend", DisplayName="Break LaunchMessageListResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Make/Break", DisplayName="Break LaunchMessageListResponse", meta=(NativeBreakFunc))
 	static void Break(const ULaunchMessageListResponse* Serializable, TArray<FString>& Files);
 };

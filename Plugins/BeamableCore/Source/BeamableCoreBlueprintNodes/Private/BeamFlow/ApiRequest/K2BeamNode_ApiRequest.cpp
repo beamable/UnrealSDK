@@ -73,7 +73,7 @@ FText UK2BeamNode_ApiRequest::GetNodeTitle(ENodeTitleType::Type TitleType) const
 
 FText UK2BeamNode_ApiRequest::GetMenuCategory() const
 {
-	return FText::FromString(FString::Printf(TEXT("Beam|%s|2 - LowLevel"), *GetServiceName()));
+	return FText::FromString(FString::Printf(TEXT("Beam|%s|LowLevel"), *GetServiceName()));
 }
 
 void UK2BeamNode_ApiRequest::AllocateDefaultPins()

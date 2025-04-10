@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalArrayOfDatabaseMeasurement struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|5 - Optionals", meta=(DisplayName="Make Optional TArray<UDatabaseMeasurement*>", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Optionals", meta=(DisplayName="Make Optional TArray<UDatabaseMeasurement*>", NativeMakeFunc))
 	static FOptionalArrayOfDatabaseMeasurement MakeOptional(TArray<UDatabaseMeasurement*> Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The TArray<UDatabaseMeasurement*> to convert.
 	 * @return An optional with the TArray<UDatabaseMeasurement*> set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|5 - Optionals", meta = (DisplayName="TArray<UDatabaseMeasurement*> To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Optionals", meta = (DisplayName="TArray<UDatabaseMeasurement*> To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalArrayOfDatabaseMeasurement Conv_OptionalFromValue(TArray<UDatabaseMeasurement*> Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Beamo|5 - Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Beamo|Utils|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalArrayOfDatabaseMeasurement& Optional, TArray<UDatabaseMeasurement*>& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Beamo|5 - Optionals", meta=(DisplayName="Get Optional's TArray<UDatabaseMeasurement*> Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Optionals", meta=(DisplayName="Get Optional's TArray<UDatabaseMeasurement*> Value"))
 	static TArray<UDatabaseMeasurement*> GetOptionalValue(const FOptionalArrayOfDatabaseMeasurement& Optional, TArray<UDatabaseMeasurement*> DefaultValue, bool& WasSet);
 
 	

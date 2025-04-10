@@ -13,12 +13,12 @@ class BEAMABLECORE_API UEventPlayerGroupStateLibrary : public UBlueprintFunction
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|4 - Json", DisplayName="EventPlayerGroupState To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|Utils|Json", DisplayName="EventPlayerGroupState To JSON String")
 	static FString EventPlayerGroupStateToJsonString(const UEventPlayerGroupState* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|3 - Backend", DisplayName="Make EventPlayerGroupState", meta=(DefaultToSelf="Outer", AdvancedDisplay="GroupId, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|Utils|Make/Break", DisplayName="Make EventPlayerGroupState", meta=(DefaultToSelf="Outer", AdvancedDisplay="GroupId, Outer", NativeMakeFunc))
 	static UEventPlayerGroupState* Make(double GroupScore, int64 GroupRank, TArray<UEventRewardState*> RankRewards, TArray<UEventRewardState*> ScoreRewards, FOptionalString GroupId, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|3 - Backend", DisplayName="Break EventPlayerGroupState", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|EventPlayers|Utils|Make/Break", DisplayName="Break EventPlayerGroupState", meta=(NativeBreakFunc))
 	static void Break(const UEventPlayerGroupState* Serializable, double& GroupScore, int64& GroupRank, TArray<UEventRewardState*>& RankRewards, TArray<UEventRewardState*>& ScoreRewards, FOptionalString& GroupId);
 };

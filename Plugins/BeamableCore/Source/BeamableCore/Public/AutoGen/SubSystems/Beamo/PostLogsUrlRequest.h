@@ -36,7 +36,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Beamo|3 - Backend", DisplayName="Make PostLogsUrl",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_StartTime,_NextToken,_Filter,_EndTime,_Limit,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Make PostLogsUrl",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_StartTime,_NextToken,_Filter,_EndTime,_Limit,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPostLogsUrlRequest* Make(FString _ServiceName, FOptionalInt64 _StartTime, FOptionalString _NextToken, FOptionalString _Filter, FOptionalInt64 _EndTime, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

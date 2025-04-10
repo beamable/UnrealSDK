@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPaymentDetailsEntryViewModelLibrary : public UBlueprintF
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|4 - Json", DisplayName="PaymentDetailsEntryViewModel To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Json", DisplayName="PaymentDetailsEntryViewModel To JSON String")
 	static FString PaymentDetailsEntryViewModelToJsonString(const UPaymentDetailsEntryViewModel* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Make PaymentDetailsEntryViewModel", meta=(DefaultToSelf="Outer", AdvancedDisplay="Subcategory, LocalPrice, Category, LocalCurrency, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Make PaymentDetailsEntryViewModel", meta=(DefaultToSelf="Outer", AdvancedDisplay="Subcategory, LocalPrice, Category, LocalCurrency, Outer", NativeMakeFunc))
 	static UPaymentDetailsEntryViewModel* Make(FString Reference, FString Name, int32 Quantity, FString Sku, int32 Price, FString Gameplace, FString ProviderProductId, FOptionalString Subcategory, FOptionalString LocalPrice, FOptionalString Category, FOptionalString LocalCurrency, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Break PaymentDetailsEntryViewModel", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Break PaymentDetailsEntryViewModel", meta=(NativeBreakFunc))
 	static void Break(const UPaymentDetailsEntryViewModel* Serializable, FString& Reference, FString& Name, int32& Quantity, FString& Sku, int32& Price, FString& Gameplace, FString& ProviderProductId, FOptionalString& Subcategory, FOptionalString& LocalPrice, FOptionalString& Category, FOptionalString& LocalCurrency);
 };

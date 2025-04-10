@@ -13,12 +13,12 @@ class BEAMABLECORE_API UCreateElevatedAccountRequestBodyLibrary : public UBluepr
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|4 - Json", DisplayName="CreateElevatedAccountRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Json", DisplayName="CreateElevatedAccountRequestBody To JSON String")
 	static FString CreateElevatedAccountRequestBodyToJsonString(const UCreateElevatedAccountRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Make CreateElevatedAccountRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Role, InitProperties, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Make CreateElevatedAccountRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Role, InitProperties, Outer", NativeMakeFunc))
 	static UCreateElevatedAccountRequestBody* Make(FString Email, FOptionalString Role, FOptionalMapOfString InitProperties, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Break CreateElevatedAccountRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Break CreateElevatedAccountRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UCreateElevatedAccountRequestBody* Serializable, FString& Email, FOptionalString& Role, FOptionalMapOfString& InitProperties);
 };

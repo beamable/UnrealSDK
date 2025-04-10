@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalBeamClientPermission struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|5 - Optionals", meta=(DisplayName="Make Optional BeamClientPermission", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Utils|Optionals", meta=(DisplayName="Make Optional BeamClientPermission", NativeMakeFunc))
 	static FOptionalBeamClientPermission MakeOptional(FBeamClientPermission Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The FBeamClientPermission to convert.
 	 * @return An optional with the BeamClientPermission set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|5 - Optionals", meta = (DisplayName="BeamClientPermission To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Utils|Optionals", meta = (DisplayName="BeamClientPermission To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalBeamClientPermission Conv_OptionalFromValue(FBeamClientPermission Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Shared|5 - Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Shared|Utils|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalBeamClientPermission& Optional, FBeamClientPermission& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Shared|5 - Optionals", meta=(DisplayName="Get Optional's BeamClientPermission Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Shared|Utils|Optionals", meta=(DisplayName="Get Optional's BeamClientPermission Value"))
 	static FBeamClientPermission GetOptionalValue(const FOptionalBeamClientPermission& Optional, FBeamClientPermission DefaultValue, bool& WasSet);
 
 	

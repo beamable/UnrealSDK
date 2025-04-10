@@ -13,12 +13,12 @@ class BEAMABLECORE_API UMailSuccessResponseLibrary : public UBlueprintFunctionLi
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Mail|4 - Json", DisplayName="MailSuccessResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|Utils|Json", DisplayName="MailSuccessResponse To JSON String")
 	static FString MailSuccessResponseToJsonString(const UMailSuccessResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Mail|3 - Backend", DisplayName="Make MailSuccessResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|Utils|Make/Break", DisplayName="Make MailSuccessResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UMailSuccessResponse* Make(bool bResult, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Mail|3 - Backend", DisplayName="Break MailSuccessResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|Utils|Make/Break", DisplayName="Break MailSuccessResponse", meta=(NativeBreakFunc))
 	static void Break(const UMailSuccessResponse* Serializable, bool& bResult);
 };

@@ -36,7 +36,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Accounts|3 - Backend", DisplayName="Make PostPasswordUpdateInit",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_CodeType,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Make PostPasswordUpdateInit",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_CodeType,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPostPasswordUpdateInitRequest* Make(FString _Email, FOptionalString _CodeType, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

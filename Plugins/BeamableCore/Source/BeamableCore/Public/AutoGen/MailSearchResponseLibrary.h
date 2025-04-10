@@ -13,12 +13,12 @@ class BEAMABLECORE_API UMailSearchResponseLibrary : public UBlueprintFunctionLib
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Mail|4 - Json", DisplayName="MailSearchResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|Utils|Json", DisplayName="MailSearchResponse To JSON String")
 	static FString MailSearchResponseToJsonString(const UMailSearchResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Mail|3 - Backend", DisplayName="Make MailSearchResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|Utils|Make/Break", DisplayName="Make MailSearchResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UMailSearchResponse* Make(TArray<UMailSearchResponseClause*> Results, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Mail|3 - Backend", DisplayName="Break MailSearchResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|Utils|Make/Break", DisplayName="Break MailSearchResponse", meta=(NativeBreakFunc))
 	static void Break(const UMailSearchResponse* Serializable, TArray<UMailSearchResponseClause*>& Results);
 };

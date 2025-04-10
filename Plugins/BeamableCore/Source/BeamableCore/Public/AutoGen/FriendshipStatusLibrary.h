@@ -13,12 +13,12 @@ class BEAMABLECORE_API UFriendshipStatusLibrary : public UBlueprintFunctionLibra
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Friends|4 - Json", DisplayName="FriendshipStatus To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Friends|Utils|Json", DisplayName="FriendshipStatus To JSON String")
 	static FString FriendshipStatusToJsonString(const UFriendshipStatus* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Friends|3 - Backend", DisplayName="Make FriendshipStatus", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Friends|Utils|Make/Break", DisplayName="Make FriendshipStatus", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UFriendshipStatus* Make(bool bIsBlocked, FBeamGamerTag FriendId, FBeamGamerTag PlayerId, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Friends|3 - Backend", DisplayName="Break FriendshipStatus", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Friends|Utils|Make/Break", DisplayName="Break FriendshipStatus", meta=(NativeBreakFunc))
 	static void Break(const UFriendshipStatus* Serializable, bool& bIsBlocked, FBeamGamerTag& FriendId, FBeamGamerTag& PlayerId);
 };

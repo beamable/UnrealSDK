@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalContextInfo struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Auth|5 - Optionals", meta=(DisplayName="Make Optional ContextInfo", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Auth|Utils|Optionals", meta=(DisplayName="Make Optional ContextInfo", NativeMakeFunc))
 	static FOptionalContextInfo MakeOptional(UContextInfo* Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The UContextInfo* to convert.
 	 * @return An optional with the ContextInfo set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Auth|5 - Optionals", meta = (DisplayName="ContextInfo To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Auth|Utils|Optionals", meta = (DisplayName="ContextInfo To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalContextInfo Conv_OptionalFromValue(UContextInfo* Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Auth|5 - Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Auth|Utils|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalContextInfo& Optional, UContextInfo*& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Auth|5 - Optionals", meta=(DisplayName="Get Optional's ContextInfo Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Auth|Utils|Optionals", meta=(DisplayName="Get Optional's ContextInfo Value"))
 	static UContextInfo* GetOptionalValue(const FOptionalContextInfo& Optional, UContextInfo* DefaultValue, bool& WasSet);
 
 	

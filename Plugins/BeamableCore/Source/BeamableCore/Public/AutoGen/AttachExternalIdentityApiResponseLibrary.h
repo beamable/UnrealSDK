@@ -13,12 +13,12 @@ class BEAMABLECORE_API UAttachExternalIdentityApiResponseLibrary : public UBluep
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|4 - Json", DisplayName="AttachExternalIdentityApiResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Json", DisplayName="AttachExternalIdentityApiResponse To JSON String")
 	static FString AttachExternalIdentityApiResponseToJsonString(const UAttachExternalIdentityApiResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Make AttachExternalIdentityApiResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="ChallengeToken, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Make AttachExternalIdentityApiResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="ChallengeToken, Outer", NativeMakeFunc))
 	static UAttachExternalIdentityApiResponse* Make(FString Result, FOptionalString ChallengeToken, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Break AttachExternalIdentityApiResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Break AttachExternalIdentityApiResponse", meta=(NativeBreakFunc))
 	static void Break(const UAttachExternalIdentityApiResponse* Serializable, FString& Result, FOptionalString& ChallengeToken);
 };

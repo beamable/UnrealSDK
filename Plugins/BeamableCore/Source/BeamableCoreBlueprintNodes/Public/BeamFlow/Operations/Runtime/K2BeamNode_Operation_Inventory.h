@@ -59,8 +59,6 @@ class UK2BeamNode_Operation_FetchAllInventory : public UK2BeamNode_Operation
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Inventory - Operation - FetchAllInventory"); }
 
 	virtual FString GetServiceName() const override { return FString("Inventory"); };
-
-	virtual FText GetKeywords() const override {return FText::FromString("Beam Inventory");};
 	
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamInventorySubsystem, GetSelf); }
 

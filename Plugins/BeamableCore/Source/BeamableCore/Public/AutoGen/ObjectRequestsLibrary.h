@@ -13,12 +13,12 @@ class BEAMABLECORE_API UObjectRequestsLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Cloudsaving|4 - Json", DisplayName="ObjectRequests To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Cloudsaving|Utils|Json", DisplayName="ObjectRequests To JSON String")
 	static FString ObjectRequestsToJsonString(const UObjectRequests* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Cloudsaving|3 - Backend", DisplayName="Make ObjectRequests", meta=(DefaultToSelf="Outer", AdvancedDisplay="PlayerId, Request, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Cloudsaving|Utils|Make/Break", DisplayName="Make ObjectRequests", meta=(DefaultToSelf="Outer", AdvancedDisplay="PlayerId, Request, Outer", NativeMakeFunc))
 	static UObjectRequests* Make(FOptionalInt64 PlayerId, FOptionalArrayOfObjectRequestBody Request, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Cloudsaving|3 - Backend", DisplayName="Break ObjectRequests", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Cloudsaving|Utils|Make/Break", DisplayName="Break ObjectRequests", meta=(NativeBreakFunc))
 	static void Break(const UObjectRequests* Serializable, FOptionalInt64& PlayerId, FOptionalArrayOfObjectRequestBody& Request);
 };

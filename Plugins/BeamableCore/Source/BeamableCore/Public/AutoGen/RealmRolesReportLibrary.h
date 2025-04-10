@@ -13,12 +13,12 @@ class BEAMABLECORE_API URealmRolesReportLibrary : public UBlueprintFunctionLibra
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|4 - Json", DisplayName="RealmRolesReport To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Json", DisplayName="RealmRolesReport To JSON String")
 	static FString RealmRolesReportToJsonString(const URealmRolesReport* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Make RealmRolesReport", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Make RealmRolesReport", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static URealmRolesReport* Make(FString RealmName, FString RealmDisplayName, TArray<FString> Roles, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Break RealmRolesReport", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Break RealmRolesReport", meta=(NativeBreakFunc))
 	static void Break(const URealmRolesReport* Serializable, FString& RealmName, FString& RealmDisplayName, TArray<FString>& Roles);
 };

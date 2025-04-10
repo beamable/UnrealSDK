@@ -49,7 +49,7 @@ void UK2BeamNode_BeamFlow::GetMenuActions(FBlueprintActionDatabaseRegistrar& Act
 
 FText UK2BeamNode_BeamFlow::GetMenuCategory() const
 {
-	return FText::FromString(FString::Printf(TEXT("Beam|%s|1 - Operation"), *GetServiceName()));
+	return FText::FromString(FString::Printf(TEXT("Beam|%s|Operation"), *GetServiceName()));
 }
 
 FString UK2BeamNode_BeamFlow::GetServiceName() const

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UInviteLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Friends|4 - Json", DisplayName="Invite To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Friends|Utils|Json", DisplayName="Invite To JSON String")
 	static FString InviteToJsonString(const UInvite* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Friends|3 - Backend", DisplayName="Make Invite", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Friends|Utils|Make/Break", DisplayName="Make Invite", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UInvite* Make(FBeamGamerTag PlayerId, EInvitationDirection Direction, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Friends|3 - Backend", DisplayName="Break Invite", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Friends|Utils|Make/Break", DisplayName="Break Invite", meta=(NativeBreakFunc))
 	static void Break(const UInvite* Serializable, FBeamGamerTag& PlayerId, EInvitationDirection& Direction);
 };

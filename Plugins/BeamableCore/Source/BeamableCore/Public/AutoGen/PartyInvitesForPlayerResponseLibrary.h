@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPartyInvitesForPlayerResponseLibrary : public UBlueprint
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Party|4 - Json", DisplayName="PartyInvitesForPlayerResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Party|Utils|Json", DisplayName="PartyInvitesForPlayerResponse To JSON String")
 	static FString PartyInvitesForPlayerResponseToJsonString(const UPartyInvitesForPlayerResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Party|3 - Backend", DisplayName="Make PartyInvitesForPlayerResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Invitations, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Party|Utils|Make/Break", DisplayName="Make PartyInvitesForPlayerResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Invitations, Outer", NativeMakeFunc))
 	static UPartyInvitesForPlayerResponse* Make(FOptionalArrayOfPartyInvitation Invitations, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Party|3 - Backend", DisplayName="Break PartyInvitesForPlayerResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Party|Utils|Make/Break", DisplayName="Break PartyInvitesForPlayerResponse", meta=(NativeBreakFunc))
 	static void Break(const UPartyInvitesForPlayerResponse* Serializable, FOptionalArrayOfPartyInvitation& Invitations);
 };

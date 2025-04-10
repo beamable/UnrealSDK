@@ -13,12 +13,12 @@ class BEAMABLECORE_API UEntitlementGeneratorLibrary : public UBlueprintFunctionL
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|4 - Json", DisplayName="EntitlementGenerator To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Json", DisplayName="EntitlementGenerator To JSON String")
 	static FString EntitlementGeneratorToJsonString(const UEntitlementGenerator* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Make EntitlementGenerator", meta=(DefaultToSelf="Outer", AdvancedDisplay="Quantity, ClaimWindow, Specialization, Params, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Make EntitlementGenerator", meta=(DefaultToSelf="Outer", AdvancedDisplay="Quantity, ClaimWindow, Specialization, Params, Outer", NativeMakeFunc))
 	static UEntitlementGenerator* Make(FString Symbol, FString Action, FOptionalInt32 Quantity, FOptionalEntitlementClaimWindow ClaimWindow, FOptionalString Specialization, FOptionalMapOfString Params, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Break EntitlementGenerator", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Break EntitlementGenerator", meta=(NativeBreakFunc))
 	static void Break(const UEntitlementGenerator* Serializable, FString& Symbol, FString& Action, FOptionalInt32& Quantity, FOptionalEntitlementClaimWindow& ClaimWindow, FOptionalString& Specialization, FOptionalMapOfString& Params);
 };

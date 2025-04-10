@@ -36,7 +36,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Announcements|3 - Backend", DisplayName="Make PostAnnouncements",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_StartDate,_Gift,_EndDate,_Tags,_StatRequirements,_Attachments,_ClientData,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Announcements|Utils|Make/Break", DisplayName="Make PostAnnouncements",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_StartDate,_Gift,_EndDate,_Tags,_StatRequirements,_Attachments,_ClientData,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPostAnnouncementsRequest* Make(ULocalizationRef* _Body, FString _Channel, FString _Symbol, ULocalizationRef* _Title, ULocalizationRef* _Summary, FOptionalString _StartDate, FOptionalPlayerReward _Gift, FOptionalString _EndDate, FOptionalArrayOfString _Tags, FOptionalArrayOfPlayerStatRequirement _StatRequirements, FOptionalArrayOfAnnouncementAttachment _Attachments, FOptionalMapOfString _ClientData, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

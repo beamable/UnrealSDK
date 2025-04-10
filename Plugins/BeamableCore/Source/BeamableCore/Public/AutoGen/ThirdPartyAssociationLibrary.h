@@ -13,12 +13,12 @@ class BEAMABLECORE_API UThirdPartyAssociationLibrary : public UBlueprintFunction
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|4 - Json", DisplayName="ThirdPartyAssociation To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Json", DisplayName="ThirdPartyAssociation To JSON String")
 	static FString ThirdPartyAssociationToJsonString(const UThirdPartyAssociation* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Make ThirdPartyAssociation", meta=(DefaultToSelf="Outer", AdvancedDisplay="Email, UserBusinessId, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Make ThirdPartyAssociation", meta=(DefaultToSelf="Outer", AdvancedDisplay="Email, UserBusinessId, Outer", NativeMakeFunc))
 	static UThirdPartyAssociation* Make(FString Name, FString UserAppId, FString AppId, TMap<FString, FString> Meta, FOptionalString Email, FOptionalString UserBusinessId, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Accounts|3 - Backend", DisplayName="Break ThirdPartyAssociation", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Break ThirdPartyAssociation", meta=(NativeBreakFunc))
 	static void Break(const UThirdPartyAssociation* Serializable, FString& Name, FString& UserAppId, FString& AppId, TMap<FString, FString>& Meta, FOptionalString& Email, FOptionalString& UserBusinessId);
 };

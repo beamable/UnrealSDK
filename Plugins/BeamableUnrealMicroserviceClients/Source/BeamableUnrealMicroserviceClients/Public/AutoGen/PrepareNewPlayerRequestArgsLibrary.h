@@ -13,12 +13,12 @@ class BEAMABLEUNREALMICROSERVICECLIENTS_API UPrepareNewPlayerRequestArgsLibrary 
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="PrepareNewPlayerRequestArgs To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - PrepareNewPlayerRequestArgs To JSON String")
 	static FString PrepareNewPlayerRequestArgsToJsonString(const UPrepareNewPlayerRequestArgs* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|2 - Backend", DisplayName="Make PrepareNewPlayerRequestArgs", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make PrepareNewPlayerRequestArgs", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UPrepareNewPlayerRequestArgs* Make(int64 UserID, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|2 - Backend", DisplayName="Break PrepareNewPlayerRequestArgs", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break PrepareNewPlayerRequestArgs", meta=(NativeBreakFunc))
 	static void Break(const UPrepareNewPlayerRequestArgs* Serializable, int64& UserID);
 };

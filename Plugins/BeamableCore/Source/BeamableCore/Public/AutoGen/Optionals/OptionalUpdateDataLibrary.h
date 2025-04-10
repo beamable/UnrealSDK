@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalUpdateData struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Lobby|5 - Optionals", meta=(DisplayName="Make Optional UpdateData", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|Utils|Optionals", meta=(DisplayName="Make Optional UpdateData", NativeMakeFunc))
 	static FOptionalUpdateData MakeOptional(UUpdateData* Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The UUpdateData* to convert.
 	 * @return An optional with the UpdateData set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Lobby|5 - Optionals", meta = (DisplayName="UpdateData To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|Utils|Optionals", meta = (DisplayName="UpdateData To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalUpdateData Conv_OptionalFromValue(UUpdateData* Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Lobby|5 - Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Lobby|Utils|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalUpdateData& Optional, UUpdateData*& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Lobby|5 - Optionals", meta=(DisplayName="Get Optional's UpdateData Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|Utils|Optionals", meta=(DisplayName="Get Optional's UpdateData Value"))
 	static UUpdateData* GetOptionalValue(const FOptionalUpdateData& Optional, UUpdateData* DefaultValue, bool& WasSet);
 
 	

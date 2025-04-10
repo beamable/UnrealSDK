@@ -13,12 +13,12 @@ class BEAMABLECORE_API UInventoryQueryRequestBodyLibrary : public UBlueprintFunc
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Inventory|4 - Json", DisplayName="InventoryQueryRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|Utils|Json", DisplayName="InventoryQueryRequestBody To JSON String")
 	static FString InventoryQueryRequestBodyToJsonString(const UInventoryQueryRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Inventory|3 - Backend", DisplayName="Make InventoryQueryRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Scopes, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|Utils|Make/Break", DisplayName="Make InventoryQueryRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Scopes, Outer", NativeMakeFunc))
 	static UInventoryQueryRequestBody* Make(FOptionalArrayOfString Scopes, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Inventory|3 - Backend", DisplayName="Break InventoryQueryRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|Utils|Make/Break", DisplayName="Break InventoryQueryRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UInventoryQueryRequestBody* Serializable, FOptionalArrayOfString& Scopes);
 };

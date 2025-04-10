@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Leaderboards|3 - Backend", DisplayName="Make PutEntry",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bIncrement,_MaxScore,_MinScore,_Stats,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Leaderboards|Utils|Make/Break", DisplayName="Make PutEntry",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bIncrement,_MaxScore,_MinScore,_Stats,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPutEntryRequest* Make(FString _ObjectId, double _Score, int64 _Id, FOptionalBool _bIncrement, FOptionalDouble _MaxScore, FOptionalDouble _MinScore, FOptionalMapOfString _Stats, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

@@ -120,7 +120,7 @@ class BEAMABLECORERUNTIME_API UBeamFriendSubsystem : public UBeamRuntimeSubsyste
 	GENERATED_BODY()
 
 	UPROPERTY()
-	UBeamFriendsApi* BeamSocialApi;
+	UBeamFriendsApi* BeamFriendsApi;
 
 	UPROPERTY()
 	UBeamMailApi* BeamMailApi;

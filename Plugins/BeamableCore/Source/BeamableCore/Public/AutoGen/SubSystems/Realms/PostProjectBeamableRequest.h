@@ -36,7 +36,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Realms|3 - Backend", DisplayName="Make PostProjectBeamable",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bSharded,_Plan,_Parent,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Realms|Utils|Make/Break", DisplayName="Make PostProjectBeamable",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bSharded,_Plan,_Parent,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPostProjectBeamableRequest* Make(FString _Name, FOptionalBool _bSharded, FOptionalString _Plan, FOptionalString _Parent, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

@@ -44,7 +44,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Matchmaking|3 - Backend", DisplayName="Make ApiMatchmakingGetTickets",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Players,_bIncludeInactive,_Skip,_Limit,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Matchmaking|Utils|Make/Break", DisplayName="Make ApiMatchmakingGetTickets",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Players,_bIncludeInactive,_Skip,_Limit,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UApiMatchmakingGetTicketsRequest* Make(FOptionalArrayOfBeamGamerTag _Players, FOptionalBool _bIncludeInactive, FOptionalInt32 _Skip, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

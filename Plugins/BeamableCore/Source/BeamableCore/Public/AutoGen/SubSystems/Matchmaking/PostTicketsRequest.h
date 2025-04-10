@@ -36,7 +36,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Matchmaking|3 - Backend", DisplayName="Make PostTickets",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bWatchOnlineStatus,_MaxWaitDurationSecs,_Team,_Players,_MatchTypes,_Tags,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Matchmaking|Utils|Make/Break", DisplayName="Make PostTickets",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bWatchOnlineStatus,_MaxWaitDurationSecs,_Team,_Players,_MatchTypes,_Tags,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPostTicketsRequest* Make(FOptionalBool _bWatchOnlineStatus, FOptionalInt32 _MaxWaitDurationSecs, FOptionalString _Team, FOptionalArrayOfBeamGamerTag _Players, FOptionalArrayOfBeamContentId _MatchTypes, FOptionalArrayOfBeamTag _Tags, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

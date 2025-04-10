@@ -13,12 +13,12 @@ class BEAMABLECORE_API UAnnouncementRawResponseLibrary : public UBlueprintFuncti
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Announcements|4 - Json", DisplayName="AnnouncementRawResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|Utils|Json", DisplayName="AnnouncementRawResponse To JSON String")
 	static FString AnnouncementRawResponseToJsonString(const UAnnouncementRawResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Announcements|3 - Backend", DisplayName="Make AnnouncementRawResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|Utils|Make/Break", DisplayName="Make AnnouncementRawResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UAnnouncementRawResponse* Make(TMap<FString, UAnnouncementState*> Announcements, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Announcements|3 - Backend", DisplayName="Break AnnouncementRawResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Announcements|Utils|Make/Break", DisplayName="Break AnnouncementRawResponse", meta=(NativeBreakFunc))
 	static void Break(const UAnnouncementRawResponse* Serializable, TMap<FString, UAnnouncementState*>& Announcements);
 };
