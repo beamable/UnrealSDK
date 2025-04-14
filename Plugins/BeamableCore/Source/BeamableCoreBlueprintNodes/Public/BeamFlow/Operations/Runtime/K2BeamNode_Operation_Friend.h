@@ -3,10 +3,37 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamFlow/K2BeamNode_GetLocalState.h"
 #include "BeamFlow/K2BeamNode_Operation.h"
 #include "Subsystems/Friends/BeamFriendsSubsystem.h"
 #include "K2BeamNode_Operation_Friend.generated.h"
 
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_TryGetUserFriendState"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_Operation_TryGetUserFriendState : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
+	{
+		return LOCTEXT("Title", "Beam - Operation - Friends - GetUserFriendState");
+	}
+
+	virtual FName GetSubsystemSelfFunctionName() const override
+	{
+		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf);
+	}
+
+	virtual FName GetFunctionName() const override
+	{
+		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, TryGetUserFriendState);
+	}
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_Operation_FetchPlayerFriendState"
 

@@ -127,6 +127,12 @@ namespace BeamK2
 	                                          const CheckParamIsValidForNodePredicate Predicate);
 
 	/**
+	 * @brief Given a custom node and a UFUNCTION goes through the list of parameters of that function and, if that param passes the Predicate,
+	 * creates a pin for it and adds the pin name to the WrappedPinNames array.
+	 */
+	void ParseFunctionForNodePins(UEdGraphNode* CustomNode, const UFunction* Function, TArray<FString>& InputWrappedPinNames, TArray<FString>& OutputWrappedPinNames,
+											  const CheckParamIsValidForNodePredicate Predicate);
+	/**
 	* @brief  Given a custom node and a UFUNCTION, tries to create pins for all of the pins given.
 	 */
 	void ParseFunctionForNodeInputPins(UEdGraphNode* CustomNode, const UFunction* Function, const TArray<FName> PinsToAdd, bool bFailIfNotFound = false);
