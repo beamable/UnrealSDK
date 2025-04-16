@@ -4,7 +4,7 @@
 
 #include "WebhookServiceType.generated.h"
 
-UENUM(BlueprintType, Category="Beam|Announcements|Enums")
+UENUM(BlueprintType, Category="Beam|Announcements|Utils|Enums")
 enum class EWebhookServiceType : uint8
 {
 	BEAM_UserMicroservice UMETA(DisplayName="User Microservice"),
@@ -12,13 +12,13 @@ enum class EWebhookServiceType : uint8
 	BEAM_BasicService UMETA(DisplayName="Basic Service")		
 };
 
-UCLASS(BlueprintType, Category="Beam|Announcements|Enums")
+UCLASS(BlueprintType, Category="Beam|Announcements|Utils|Enums")
 class BEAMABLECORE_API UWebhookServiceTypeLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:		
 	
-	UFUNCTION(BlueprintPure, meta = (DisplayName="WebhookServiceType To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Announcements|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="WebhookServiceType To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Announcements|Utils|Enums")
 	static FString WebhookServiceTypeToSerializationName(EWebhookServiceType Value)
 	{
 		const UEnum* Enum = StaticEnum<EWebhookServiceType>();
@@ -30,7 +30,7 @@ public:
 		
 	}
 
-	UFUNCTION(BlueprintPure, meta = (DisplayName="Serialization Name To WebhookServiceType", CompactNodeTitle = "->"), Category="Beam|Announcements|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="Serialization Name To WebhookServiceType", CompactNodeTitle = "->"), Category="Beam|Announcements|Utils|Enums")
 	static EWebhookServiceType SerializationNameToWebhookServiceType(FString Value)
 	{
 		const UEnum* Enum = StaticEnum<EWebhookServiceType>();

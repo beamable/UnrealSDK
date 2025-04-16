@@ -22,19 +22,21 @@ FString UClientManifestJsonResponseLibrary::ClientManifestJsonResponseToJsonStri
 	return Result;
 }	
 
-UClientManifestJsonResponse* UClientManifestJsonResponseLibrary::Make(TArray<FBeamRemoteContentManifestEntry> Entries, FOptionalString Uid, UObject* Outer)
+UClientManifestJsonResponse* UClientManifestJsonResponseLibrary::Make(TArray<FBeamRemoteContentManifestEntry> Entries, FOptionalString Uid, FOptionalInt64 PublisherAccountId, UObject* Outer)
 {
 	auto Serializable = NewObject<UClientManifestJsonResponse>(Outer);
 	Serializable->Entries = Entries;
 	Serializable->Uid = Uid;
+	Serializable->PublisherAccountId = PublisherAccountId;
 	
 	return Serializable;
 }
 
-void UClientManifestJsonResponseLibrary::Break(const UClientManifestJsonResponse* Serializable, TArray<FBeamRemoteContentManifestEntry>& Entries, FOptionalString& Uid)
+void UClientManifestJsonResponseLibrary::Break(const UClientManifestJsonResponse* Serializable, TArray<FBeamRemoteContentManifestEntry>& Entries, FOptionalString& Uid, FOptionalInt64& PublisherAccountId)
 {
 	Entries = Serializable->Entries;
 	Uid = Serializable->Uid;
+	PublisherAccountId = Serializable->PublisherAccountId;
 		
 }
 

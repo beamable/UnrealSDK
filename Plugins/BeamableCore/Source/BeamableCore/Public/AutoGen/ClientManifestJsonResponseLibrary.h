@@ -16,9 +16,9 @@ public:
 	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Json", DisplayName="ClientManifestJsonResponse To JSON String")
 	static FString ClientManifestJsonResponseToJsonString(const UClientManifestJsonResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Make/Break", DisplayName="Make ClientManifestJsonResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Uid, Outer", NativeMakeFunc))
-	static UClientManifestJsonResponse* Make(TArray<FBeamRemoteContentManifestEntry> Entries, FOptionalString Uid, UObject* Outer);
+	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Make/Break", DisplayName="Make ClientManifestJsonResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Uid, PublisherAccountId, Outer", NativeMakeFunc))
+	static UClientManifestJsonResponse* Make(TArray<FBeamRemoteContentManifestEntry> Entries, FOptionalString Uid, FOptionalInt64 PublisherAccountId, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Make/Break", DisplayName="Break ClientManifestJsonResponse", meta=(NativeBreakFunc))
-	static void Break(const UClientManifestJsonResponse* Serializable, TArray<FBeamRemoteContentManifestEntry>& Entries, FOptionalString& Uid);
+	static void Break(const UClientManifestJsonResponse* Serializable, TArray<FBeamRemoteContentManifestEntry>& Entries, FOptionalString& Uid, FOptionalInt64& PublisherAccountId);
 };

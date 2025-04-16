@@ -4,20 +4,20 @@
 
 #include "ContentVisibility.generated.h"
 
-UENUM(BlueprintType, Category="Beam|Content|Enums")
+UENUM(BlueprintType, Category="Beam|Content|Utils|Enums")
 enum class EContentVisibility : uint8
 {
 	BEAM_public UMETA(DisplayName="Public"),
-	BEAM_private UMETA(DisplayName="Private")		
+	BEAM_private UMETA(DisplayName="Private")
 };
 
-UCLASS(BlueprintType, Category="Beam|Content|Enums")
+UCLASS(BlueprintType, Category="Beam|Content|Utils|Enums")
 class BEAMABLECORE_API UContentVisibilityLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
-public:		
-	
-	UFUNCTION(BlueprintPure, meta = (DisplayName="ContentVisibility To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Content|Enums")
+
+public:
+	UFUNCTION(BlueprintPure, meta = (DisplayName="ContentVisibility To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Content|Utils|Enums")
 	static FString ContentVisibilityToSerializationName(EContentVisibility Value)
 	{
 		const UEnum* Enum = StaticEnum<EContentVisibility>();
@@ -26,10 +26,9 @@ public:
 
 		// We chop off the first five "BEAM_" characters. 		
 		return SerializationName.RightChop(5);
-		
 	}
 
-	UFUNCTION(BlueprintPure, meta = (DisplayName="Serialization Name To ContentVisibility", CompactNodeTitle = "->"), Category="Beam|Content|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="Serialization Name To ContentVisibility", CompactNodeTitle = "->"), Category="Beam|Content|Utils|Enums")
 	static EContentVisibility SerializationNameToContentVisibility(FString Value)
 	{
 		const UEnum* Enum = StaticEnum<EContentVisibility>();
@@ -37,12 +36,11 @@ public:
 		{
 			// We chop off the first five "BEAM_" characters.
 			const FString& SerializationName = Enum->GetNameStringByIndex(NameIndex).RightChop(5);
-			if(Value == SerializationName)
+			if (Value == SerializationName)
 				return static_cast<EContentVisibility>(Enum->GetValueByIndex(NameIndex));
 		}
-		
+
 		ensureAlways(false); //  This should be impossible!
 		return EContentVisibility();
-	}	
+	}
 };
-

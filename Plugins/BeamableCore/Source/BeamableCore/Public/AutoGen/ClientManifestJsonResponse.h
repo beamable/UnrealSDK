@@ -5,6 +5,7 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamBackend/ReplacementTypes/BeamRemoteContentManifestEntry.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 
 #include "ClientManifestJsonResponse.generated.h"
 
@@ -18,6 +19,8 @@ public:
 	TArray<FBeamRemoteContentManifestEntry> Entries = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Uid", Category="Beam")
 	FOptionalString Uid = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Publisher Account Id", Category="Beam")
+	FOptionalInt64 PublisherAccountId = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

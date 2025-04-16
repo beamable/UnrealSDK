@@ -29,7 +29,7 @@ public:
 	 */
 	virtual FText GetMenuCategory() const override
 	{
-		FString Category = FString::Printf(TEXT("Beam|%s|GetState"), *GetServiceName());
+		FString Category = FString::Printf(TEXT("Beam|%s|LocalState"), *GetServiceName());
 		return FText::FromString(Category);
 	};
 

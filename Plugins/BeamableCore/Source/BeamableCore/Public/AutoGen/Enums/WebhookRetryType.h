@@ -4,7 +4,7 @@
 
 #include "WebhookRetryType.generated.h"
 
-UENUM(BlueprintType, Category="Beam|Announcements|Enums")
+UENUM(BlueprintType, Category="Beam|Announcements|Utils|Enums")
 enum class EWebhookRetryType : uint8
 {
 	BEAM_None UMETA(DisplayName="None"),
@@ -12,13 +12,13 @@ enum class EWebhookRetryType : uint8
 	BEAM_ExponentialBackoff UMETA(DisplayName="Exponential Backoff")		
 };
 
-UCLASS(BlueprintType, Category="Beam|Announcements|Enums")
+UCLASS(BlueprintType, Category="Beam|Announcements|Utils|Enums")
 class BEAMABLECORE_API UWebhookRetryTypeLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:		
 	
-	UFUNCTION(BlueprintPure, meta = (DisplayName="WebhookRetryType To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Announcements|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="WebhookRetryType To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Announcements|Utils|Enums")
 	static FString WebhookRetryTypeToSerializationName(EWebhookRetryType Value)
 	{
 		const UEnum* Enum = StaticEnum<EWebhookRetryType>();
@@ -30,7 +30,7 @@ public:
 		
 	}
 
-	UFUNCTION(BlueprintPure, meta = (DisplayName="Serialization Name To WebhookRetryType", CompactNodeTitle = "->"), Category="Beam|Announcements|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="Serialization Name To WebhookRetryType", CompactNodeTitle = "->"), Category="Beam|Announcements|Utils|Enums")
 	static EWebhookRetryType SerializationNameToWebhookRetryType(FString Value)
 	{
 		const UEnum* Enum = StaticEnum<EWebhookRetryType>();

@@ -4,20 +4,20 @@
 
 #include "GroupType.generated.h"
 
-UENUM(BlueprintType, Category="Beam|GroupUsers|Enums")
+UENUM(BlueprintType, Category="Beam|GroupUsers|Utils|Enums")
 enum class EGroupType : uint8
 {
 	BEAM_guild UMETA(DisplayName="Guild"),
 	BEAM_subgroup UMETA(DisplayName="Subgroup")		
 };
 
-UCLASS(BlueprintType, Category="Beam|GroupUsers|Enums")
+UCLASS(BlueprintType, Category="Beam|GroupUsers|Utils|Enums")
 class BEAMABLECORE_API UGroupTypeLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:		
 	
-	UFUNCTION(BlueprintPure, meta = (DisplayName="GroupType To Serialization Name", CompactNodeTitle = "->"), Category="Beam|GroupUsers|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="GroupType To Serialization Name", CompactNodeTitle = "->"), Category="Beam|GroupUsers|Utils|Enums")
 	static FString GroupTypeToSerializationName(EGroupType Value)
 	{
 		const UEnum* Enum = StaticEnum<EGroupType>();
@@ -29,7 +29,7 @@ public:
 		
 	}
 
-	UFUNCTION(BlueprintPure, meta = (DisplayName="Serialization Name To GroupType", CompactNodeTitle = "->"), Category="Beam|GroupUsers|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="Serialization Name To GroupType", CompactNodeTitle = "->"), Category="Beam|GroupUsers|Utils|Enums")
 	static EGroupType SerializationNameToGroupType(FString Value)
 	{
 		const UEnum* Enum = StaticEnum<EGroupType>();
