@@ -3,17 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeamFlow/K2BeamNode_BeamFlow.h"
-#include "K2BeamNode_GetLocalState.generated.h"
+#include "BeamK2.h"
+#include "K2BeamNode_GetLocalStateForeach.generated.h"
 
 /**
  * 
  */
 
 UCLASS(NotBlueprintable, NotBlueprintType, Hidden, meta=(BeamGetLocalState))
-class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_GetLocalState : public UK2Node
+class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_GetLocalStateForeach : public UK2Node
 {
 	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, Category="Get Local State Foreach")
+	bool bShowRawArrayMode = false;
 
 	UPROPERTY()
 	TArray<FString> WrappedOperationFunctionInputPinNames;
@@ -21,12 +24,10 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_GetLocalState : public UK2Node
 	UPROPERTY()
 	TArray<FString> WrappedOperationFunctionOutputPinNames;
 
-public:
-	virtual void GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const override;
+	UPROPERTY()
+	TArray<FString> WrappedOperationFunctionOutputPinArrayNames;
 
-	/**
-	 *  Get the menu category that will appears on the search node
-	 */
+public:
 	virtual FText GetMenuCategory() const override
 	{
 		FString Category = FString::Printf(TEXT("Beam|%s|GetState"), *GetServiceName());
@@ -45,16 +46,27 @@ public:
 	};
 
 	//UK2Node impl
+	virtual bool ShouldShowNodeProperties() const override { return true; }
 	virtual void AllocateDefaultPins() override;
 	virtual void ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
-
 	virtual FSlateIcon GetIconAndTint(FLinearColor& OutColor) const override;
 	virtual FLinearColor GetNodeTitleColor() const override;
+	virtual void GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const override;
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	//BeamFlowNode impl
 
 protected:
-	virtual FName GetSuccessPinName() { return FName("True"); }
-	virtual FName GetFailurePinName() { return FName("False"); }
+	virtual FName GetLoopBodyName() { return FName("Loop Body"); }
+	virtual FName GetArrayPinName() { return FName("Array"); }
+	virtual FName GetBreakPinName() { return FName("Break"); }
+	virtual FName GetArrayIndexPinName() { return FName("ArrayIndex"); }
+	virtual FName GetCompletedPinName() { return FName("Completed"); }
+
+	UEdGraphPin* GetArrayPin();
+	UEdGraphPin* GetBreakPin();
+	UEdGraphPin* GetForEachPin();
+	UEdGraphPin* GetArrayIndexPin();
+	UEdGraphPin* GetCompletedPin();
 
 	/**
 	 * @brief The subsystem's GetSelf function name that we can use to call a function on it.
@@ -78,7 +90,12 @@ protected:
 	virtual BeamK2::CheckParamIsValidForNodePredicate GetIgnoredPinPredicate() const;
 
 	/**
-	 * @brief The filter function to ignore the output pin of boolean type
+	 * @brief The filter function to ignore the output pin of array type 
 	 */
-	static bool IsIgnoredPinOfReturnBoolType(const UEdGraphNode* EdGraphNode, const FProperty* Param);
+	static bool IsIgnoredPinOfReturnArrayType(const UEdGraphNode* EdGraphNode, const FProperty* Param);
+
+	/**
+	 * @brief The filter function to ignore the non array pin type
+	 */
+	static bool IsIgnoredPinOfReturnNonArrayType(const UEdGraphNode* EdGraphNode, const FProperty* Param);
 };

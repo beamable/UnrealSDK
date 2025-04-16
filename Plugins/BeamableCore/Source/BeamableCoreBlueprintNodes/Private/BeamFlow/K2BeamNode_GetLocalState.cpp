@@ -26,7 +26,8 @@ void UK2BeamNode_GetLocalState::AllocateDefaultPins()
 	AdvancedPinDisplay = ENodeAdvancedPins::Hidden;
 
 	// Create the input execution flow pin
-	const auto _ = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Execute);
+	const auto ExecPin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Execute);
+	ExecPin->PinFriendlyName = FText::FromName(UEdGraphSchema_K2::PC_Exec);
 
 	const auto OperationFunction = GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName());
 
@@ -36,22 +37,25 @@ void UK2BeamNode_GetLocalState::AllocateDefaultPins()
 	// If the return is not a boolean we just have the then execute output
 	if (ReturnProperty != nullptr && ReturnProperty->IsA(FBoolProperty::StaticClass()))
 	{
-		CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, NAME_IsValidExec);
-		CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, NAME_IsNotValidExec);
+		auto SuccessPin = CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, GetSuccessPinName());
+		SuccessPin->PinFriendlyName = FText::FromName(GetSuccessPinName());
+		auto FailurePin = CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, GetFailurePinName());
+		FailurePin->PinFriendlyName = FText::FromName(GetFailurePinName());
 	}
 	else
 	{
-		CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Then);
+		auto Then = CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Then);
+		Then->PinFriendlyName = FText::FromName(UEdGraphSchema_K2::PN_Then);
 	}
 
 	//Create all the pins (input/output) for the function
-	BeamK2::ParseFunctionForNodePins(this, OperationFunction, WrappedOperationFunctionInputPinNames, WrappedOperationFunctionOutputPinNames, IsIgnoredPinOfReturnBoolType);
+	BeamK2::ParseFunctionForNodePins(this, OperationFunction, WrappedOperationFunctionInputPinNames, WrappedOperationFunctionOutputPinNames, GetIgnoredPinPredicate());
 }
 
 
 FSlateIcon UK2BeamNode_GetLocalState::GetIconAndTint(FLinearColor& OutColor) const
 {
-	const auto Icon = Super::GetIconAndTint(OutColor);
+	Super::GetIconAndTint(OutColor);
 	OutColor = FLinearColor::FromSRGBColor(FColor::FromHex("#826CCF"));
 	return FSlateIcon(TEXT("BeamableCore"), "BeamIconSmall");
 }
@@ -67,7 +71,8 @@ void UK2BeamNode_GetLocalState::ExpandNode(FKismetCompilerContext& CompilerConte
 
 	const UEdGraphSchema_K2* K2Schema = GetDefault<UEdGraphSchema_K2>();
 
-	const auto OperationFunction = GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName());
+	// Get the UFunction reference to extract the parameters
+	const auto Function = GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName());
 
 	const UK2Node_CallFunction* CallGetSubsystem = BeamK2::CreateCallFunctionNode(this, CompilerContext, SourceGraph, GetSubsystemSelfFunctionName(), GetRuntimeSubsystemClass());
 	const UK2Node_CallFunction* CallFunction = BeamK2::CreateCallFunctionNode(this, CompilerContext, SourceGraph, GetFunctionName(), GetRuntimeSubsystemClass());
@@ -87,14 +92,14 @@ void UK2BeamNode_GetLocalState::ExpandNode(FKismetCompilerContext& CompilerConte
 
 
 	// If the return type is a boolean we create the connections required to have a valid/invalid path
-	auto ReturnProperty = OperationFunction->GetReturnProperty();
+	auto ReturnProperty = Function->GetReturnProperty();
 	if (ReturnProperty != nullptr && ReturnProperty->IsA(FBoolProperty::StaticClass()))
 	{
 		// If the function contains the ReturnValue in the ExpandBoolAsExec we only need to connect the True and False outputs with the valid/invalid custom outputs.
-		if (OperationFunction->GetMetaData("ExpandBoolAsExecs").Contains("ReturnValue"))
+		if (Function->GetMetaData("ExpandBoolAsExecs").Contains("ReturnValue"))
 		{
-			CompilerContext.MovePinLinksToIntermediate(*FindPin(NAME_IsValidExec), *CallFunction->FindPin(TEXT("True")));
-			CompilerContext.MovePinLinksToIntermediate(*FindPin(NAME_IsNotValidExec), *CallFunction->FindPin(TEXT("False")));
+			CompilerContext.MovePinLinksToIntermediate(*FindPin(GetSuccessPinName()), *CallFunction->FindPin(TEXT("True")));
+			CompilerContext.MovePinLinksToIntermediate(*FindPin(GetFailurePinName()), *CallFunction->FindPin(TEXT("False")));
 		}
 		else
 		{
@@ -105,8 +110,8 @@ void UK2BeamNode_GetLocalState::ExpandNode(FKismetCompilerContext& CompilerConte
 			CompilerContext.GetSchema()->TryCreateConnection(CallFunction->GetThenPin(), IfThenElseNode->GetExecPin());
 			CompilerContext.GetSchema()->TryCreateConnection(CallFunction->GetReturnValuePin(), IfThenElseNode->GetConditionPin());
 
-			CompilerContext.MovePinLinksToIntermediate(*FindPin(NAME_IsValidExec), *IfThenElseNode->GetThenPin());
-			CompilerContext.MovePinLinksToIntermediate(*FindPin(NAME_IsNotValidExec), *IfThenElseNode->GetElsePin());
+			CompilerContext.MovePinLinksToIntermediate(*FindPin(GetSuccessPinName()), *IfThenElseNode->GetThenPin());
+			CompilerContext.MovePinLinksToIntermediate(*FindPin(GetFailurePinName()), *IfThenElseNode->GetElsePin());
 		}
 	}
 	else
@@ -144,6 +149,11 @@ FName UK2BeamNode_GetLocalState::GetFunctionName() const
 UClass* UK2BeamNode_GetLocalState::GetRuntimeSubsystemClass() const
 {
 	return UClass::StaticClass();
+}
+
+BeamK2::CheckParamIsValidForNodePredicate UK2BeamNode_GetLocalState::GetIgnoredPinPredicate() const
+{
+	return IsIgnoredPinOfReturnBoolType;
 }
 
 
