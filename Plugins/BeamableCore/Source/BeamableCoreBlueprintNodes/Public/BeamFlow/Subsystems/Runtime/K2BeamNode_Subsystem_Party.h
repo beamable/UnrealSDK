@@ -3,10 +3,149 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamFlow/K2BeamNode_GetLocalState.h"
+#include "BeamFlow/K2BeamNode_GetLocalStateForeach.h"
 #include "BeamFlow/K2BeamNode_Operation.h"
 #include "Subsystems/Party/BeamPartySubsystem.h"
-#include "K2BeamNode_Operation_Party.generated.h"
+#include "K2BeamNode_Subsystem_Party.generated.h"
+//  _                    _      ____  _        _       
+// | |    ___   ___ __ _| |    / ___|| |_ __ _| |_ ___ 
+// | |   / _ \ / __/ _` | |    \___ \| __/ _` | __/ _ \
+// | |__| (_) | (_| (_| | |     ___) | || (_| | ||  __/
+// |_____\___/ \___\__,_|_|    |____/ \__\__,_|\__\___|
 
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_IsPlayerInAParty"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_IsPlayerInAParty : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Party - IsPlayerInAParty"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, IsPlayerInAParty); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_IsInAParty"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_IsInAParty : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Party - IsInAParty"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, IsInAParty); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_IsThePartyLeader"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_IsThePartyLeader : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Party - IsThePartyLeader"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, IsThePartyLeader); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_TryGetUserPartyState"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_TryGetUserPartyState : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Party - TryGetUserPartyState"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, TryGetUserPartyState); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_TryGetPlayerPartyState"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_TryGetPlayerPartyState : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Party - TryGetPlayerPartyState"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, TryGetPlayerPartyState); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_TryGetPartyState"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_TryGetPartyState : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Party - TryGetPartyState"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, TryGetPartyState); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalStateForeach_TryGetUserInvitesState"
+
+UCLASS(meta=(BeamGetLocalStateForeach))
+class UK2BeamNode_GetLocalStateForeach_TryGetUserInvitesState : public UK2BeamNode_GetLocalStateForeach
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Party - TryGetUserInvitesState"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, TryGetUserInvitesState); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+//   ___                       _   _                 
+//  / _ \ _ __   ___ _ __ __ _| |_(_) ___  _ __  ___ 
+// | | | | '_ \ / _ \ '__/ _` | __| |/ _ \| '_ \/ __|
+// | |_| | |_) |  __/ | | (_| | |_| | (_) | | | \__ \
+//  \___/| .__/ \___|_|  \__,_|\__|_|\___/|_| |_|___/
+//       |_|     
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_Operation_CreateParty"
 
@@ -17,7 +156,7 @@ class UK2BeamNode_Operation_CreateParty : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Party - CreateParty");
+		return LOCTEXT("Title", "Operation - Party - CreateParty");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -44,7 +183,7 @@ class UK2BeamNode_Operation_JoinParty : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Party - JoinParty");
+		return LOCTEXT("Title", "Operation - Party - JoinParty");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -72,7 +211,7 @@ class UK2BeamNode_Operation_JoinPlayerParty : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Party - JoinPlayerParty");
+		return LOCTEXT("Title", "Operation - Party - JoinPlayerParty");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -100,7 +239,7 @@ class UK2BeamNode_Operation_LeaveParty : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Party - LeaveParty");
+		return LOCTEXT("Title", "Operation - Party - LeaveParty");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -127,7 +266,7 @@ class UK2BeamNode_Operation_InvitePlayer : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Party - InvitePlayer");
+		return LOCTEXT("Title", "Operation - Party - InvitePlayer");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -155,7 +294,7 @@ class UK2BeamNode_Operation_InvitePlayerToMyParty : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Party - InvitePlayerToMyParty");
+		return LOCTEXT("Title", "Operation - Party - InvitePlayerToMyParty");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -182,9 +321,9 @@ class UK2BeamNode_Operation_DeclinePlayerInvite : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Party - DeclinePlayerInvite");
+		return LOCTEXT("Title", "Operation - Party - DeclinePlayerInvite");
 	}
-	
+
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
@@ -210,7 +349,7 @@ class UK2BeamNode_Operation_DeclinePartyInvite : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Party - DeclinePartyInvite");
+		return LOCTEXT("Title", "Operation - Party - DeclinePartyInvite");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -237,7 +376,7 @@ class UK2BeamNode_Operation_FetchPartyState : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Party - FetchPartyState");
+		return LOCTEXT("Title", "Operation - Party - FetchPartyState");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -264,9 +403,9 @@ class UK2BeamNode_Operation_FetchPlayerPartyState : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Party - FetchPlayerPartyState");
+		return LOCTEXT("Title", "Operation - Party - FetchPlayerPartyState");
 	}
-	
+
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
@@ -291,9 +430,9 @@ class UK2BeamNode_Operation_FetchPartyInvites : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Party - FetchPartyInvites");
+		return LOCTEXT("Title", "Operation - Party - FetchPartyInvites");
 	}
-	
+
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
@@ -318,9 +457,9 @@ class UK2BeamNode_Operation_UpdateParty : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Party - Update Party Meta");
+		return LOCTEXT("Title", "Operation - Party - Update Party Meta");
 	}
-	
+
 	virtual FName GetSubsystemSelfFunctionName() const override
 	{
 		return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf);
@@ -345,7 +484,7 @@ class UK2BeamNode_Operation_UpdateMyPartyMeta : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Party - UpdateParty");
+		return LOCTEXT("Title", "Operation - Party - UpdateParty");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -372,7 +511,7 @@ class UK2BeamNode_Operation_PartyKickPlayer : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Party - KickPlayer");
+		return LOCTEXT("Title", "Operation - Party - KickPlayer");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -399,7 +538,7 @@ class UK2BeamNode_Operation_KickPlayerFromMyParty : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Party - Kick Player From My Party");
+		return LOCTEXT("Title", "Operation - Party - Kick Player From My Party");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -426,7 +565,7 @@ class UK2BeamNode_Operation_PromotePlayerToLeader : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Party - PromotePlayerToLeader");
+		return LOCTEXT("Title", "Operation - Party - PromotePlayerToLeader");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -453,7 +592,7 @@ class UK2BeamNode_Operation_PromotePlayerAsMyPartyLeader : public UK2BeamNode_Op
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Party - Promote Player As My Party Leader");
+		return LOCTEXT("Title", "Operation - Party - Promote Player As My Party Leader");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -480,7 +619,7 @@ class UK2BeamNode_Operation_CancelSentPartyInvite : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Party - CancelSentPartyInvite");
+		return LOCTEXT("Title", "Operation - Party - CancelSentPartyInvite");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -507,7 +646,7 @@ class UK2BeamNode_Operation_CancelPlayerPartyInvite : public UK2BeamNode_Operati
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Party - CancelPlayerPartyInvite");
+		return LOCTEXT("Title", "Operation - Party - CancelPlayerPartyInvite");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override

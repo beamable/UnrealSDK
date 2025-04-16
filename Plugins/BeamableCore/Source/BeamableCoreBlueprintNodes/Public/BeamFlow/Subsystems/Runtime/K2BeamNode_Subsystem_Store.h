@@ -3,9 +3,40 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamFlow/K2BeamNode_GetLocalState.h"
 #include "BeamFlow/K2BeamNode_Operation.h"
 #include "Subsystems/Store/BeamStoreSubsystem.h"
-#include "K2BeamNode_Operation_Store.generated.h"
+#include "K2BeamNode_Subsystem_Store.generated.h"
+//  _                    _      ____  _        _       
+// | |    ___   ___ __ _| |    / ___|| |_ __ _| |_ ___ 
+// | |   / _ \ / __/ _` | |    \___ \| __/ _` | __/ _ \
+// | |__| (_) | (_| (_| | |     ___) | || (_| | ||  __/
+// |_____\___/ \___\__,_|_|    |____/ \__\__,_|\__\___|
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_TryGetStoreView"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_TryGetStoreView : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Store - TryGetStoreView"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStoreSubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStoreSubsystem, TryGetStoreView); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamStoreSubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+//   ___                       _   _                 
+//  / _ \ _ __   ___ _ __ __ _| |_(_) ___  _ __  ___ 
+// | | | | '_ \ / _ \ '__/ _` | __| |/ _ \| '_ \/ __|
+// | |_| | |_) |  __/ | | (_| | |_| | (_) | | | \__ \
+//  \___/| .__/ \___|_|  \__,_|\__|_|\___/|_| |_|___/
+//       |_|     
 
 #define LOCTEXT_NAMESPACE "UK2BeamNode_Operation_PerformPurchase"
 
@@ -14,8 +45,8 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_PerformPurchase : pub
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Store - Perform Purchase"); }
-	
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Store - Perform Purchase"); }
+
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStoreSubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStoreSubsystem, PerformPurchaseOperation); }
@@ -32,8 +63,8 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_RefreshStore : public
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Store - Refresh Store"); }
-	
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Store - Refresh Store"); }
+
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStoreSubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStoreSubsystem, RefreshStoreOperation); }
@@ -50,8 +81,8 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation_RefreshStores : publi
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Beam - Operation - Store - Refresh Stores"); }
-	
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Store - Refresh Stores"); }
+
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStoreSubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamStoreSubsystem, RefreshStoresOperation); }

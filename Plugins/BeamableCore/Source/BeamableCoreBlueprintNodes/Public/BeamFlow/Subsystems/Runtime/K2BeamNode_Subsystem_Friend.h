@@ -6,34 +6,73 @@
 #include "BeamFlow/K2BeamNode_GetLocalState.h"
 #include "BeamFlow/K2BeamNode_Operation.h"
 #include "Subsystems/Friends/BeamFriendsSubsystem.h"
-#include "K2BeamNode_Operation_Friend.generated.h"
+#include "K2BeamNode_Subsystem_Friend.generated.h"
+//  _                    _      ____  _        _       
+// | |    ___   ___ __ _| |    / ___|| |_ __ _| |_ ___ 
+// | |   / _ \ / __/ _` | |    \___ \| __/ _` | __/ _ \
+// | |__| (_) | (_| (_| | |     ___) | || (_| | ||  __/
+// |_____\___/ \___\__,_|_|    |____/ \__\__,_|\__\___|
 
-#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_TryGetUserFriendState"
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_TryGetFriendPresenceState"
 
 UCLASS(meta=(BeamGetLocalState))
-class UK2BeamNode_Operation_TryGetUserFriendState : public UK2BeamNode_GetLocalState
+class UK2BeamNode_GetLocalState_TryGetFriendPresenceState : public UK2BeamNode_GetLocalState
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
-	{
-		return LOCTEXT("Title", "Beam - Operation - Friends - GetUserFriendState");
-	}
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Friends - TryGetFriendPresenceState"); }
 
-	virtual FName GetSubsystemSelfFunctionName() const override
-	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf);
-	}
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf); }
 
-	virtual FName GetFunctionName() const override
-	{
-		return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, TryGetUserFriendState);
-	}
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, TryGetFriendPresenceState); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
 };
 
 #undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_TryGetPlayerFriendState"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_TryGetPlayerFriendState : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Friends - TryGetPlayerFriendState"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, TryGetPlayerFriendState); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_TryGetUserFriendState"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_TryGetUserFriendState : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Friends - TryGetUserFriendState"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, TryGetUserFriendState); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+//   ___                       _   _                 
+//  / _ \ _ __   ___ _ __ __ _| |_(_) ___  _ __  ___ 
+// | | | | '_ \ / _ \ '__/ _` | __| |/ _ \| '_ \/ __|
+// | |_| | |_) |  __/ | | (_| | |_| | (_) | | | \__ \
+//  \___/| .__/ \___|_|  \__,_|\__|_|\___/|_| |_|___/
+//       |_|     
 
 #define LOCTEXT_NAMESPACE "K2BeamNode_Operation_FetchPlayerFriendState"
 
@@ -44,7 +83,7 @@ class UK2BeamNode_Operation_FetchPlayerFriendState : public UK2BeamNode_Operatio
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Friend - FetchPlayerFriendState");
+		return LOCTEXT("Title", "Operation - Friend - FetchPlayerFriendState");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -72,7 +111,7 @@ class UK2BeamNode_Operation_FetchFriendsState : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Friend - FetchFriendsState");
+		return LOCTEXT("Title", "Operation - Friend - FetchFriendsState");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -99,7 +138,7 @@ class UK2BeamNode_Operation_FetchFriendPresenceStatus : public UK2BeamNode_Opera
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Friend - FetchFriendPresenceStatus");
+		return LOCTEXT("Title", "Operation - Friend - FetchFriendPresenceStatus");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -126,7 +165,7 @@ class UK2BeamNode_Operation_SendFriendInvite : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Friend - SendFriendInvite");
+		return LOCTEXT("Title", "Operation - Friend - SendFriendInvite");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -153,7 +192,7 @@ class UK2BeamNode_Operation_AcceptFriendInvite : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Friend - AcceptFriendInvite");
+		return LOCTEXT("Title", "Operation - Friend - AcceptFriendInvite");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -181,7 +220,7 @@ class UK2BeamNode_Operation_DeclineFriendInvite : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Friend - DeclineFriendInvite");
+		return LOCTEXT("Title", "Operation - Friend - DeclineFriendInvite");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -209,7 +248,7 @@ class UK2BeamNode_Operation_BlockPlayer : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Friend - BlockPlayer");
+		return LOCTEXT("Title", "Operation - Friend - BlockPlayer");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -236,7 +275,7 @@ class UK2BeamNode_Operation_UnblockPlayer : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Friend - UnblockPlayer");
+		return LOCTEXT("Title", "Operation - Friend - UnblockPlayer");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
@@ -265,7 +304,7 @@ class UK2BeamNode_Operation_RemoveFriend : public UK2BeamNode_Operation
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
-		return LOCTEXT("Title", "Beam - Operation - Friend - RemoveFriend");
+		return LOCTEXT("Title", "Operation - Friend - RemoveFriend");
 	}
 
 	virtual FName GetSubsystemSelfFunctionName() const override
