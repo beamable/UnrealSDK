@@ -8,7 +8,7 @@ struct BEAMABLECORE_API FBeamOptional
 	GENERATED_BODY()
 	virtual ~FBeamOptional();
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool IsSet = false;
 
 	virtual const void* GetAddr() const;
