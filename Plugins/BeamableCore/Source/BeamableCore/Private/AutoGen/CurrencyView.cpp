@@ -7,16 +7,16 @@
 
 void UCurrencyView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("amount"), Amount);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("amount"), Amount, Serializer);
 	UBeamJsonUtils::SerializeArray<UCurrencyProperty*>(TEXT("properties"), Properties, Serializer);
 	UBeamJsonUtils::SerializeOptional<UFederationInfo*>(TEXT("proxy"), &Proxy, Serializer);
 }
 
 void UCurrencyView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("amount"), Amount);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("amount"), Amount, Serializer);
 	UBeamJsonUtils::SerializeArray<UCurrencyProperty*>(TEXT("properties"), Properties, Serializer);
 	UBeamJsonUtils::SerializeOptional<UFederationInfo*>(TEXT("proxy"), &Proxy, Serializer);		
 }

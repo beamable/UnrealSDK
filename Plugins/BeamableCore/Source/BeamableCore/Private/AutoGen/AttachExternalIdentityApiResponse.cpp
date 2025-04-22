@@ -12,13 +12,13 @@ void UAttachExternalIdentityApiResponse::DeserializeRequestResponse(UObject* Req
 
 void UAttachExternalIdentityApiResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("result"), Result);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("result"), Result, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("challenge_token"), &ChallengeToken, Serializer);
 }
 
 void UAttachExternalIdentityApiResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("result"), Result);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("result"), Result, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("challenge_token"), &ChallengeToken, Serializer);		
 }
 

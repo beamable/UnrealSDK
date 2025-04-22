@@ -7,20 +7,20 @@
 
 void UProductView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("localizedPrice"), LocalizedPrice);
-	Serializer->WriteValue(TEXT("sku"), Sku);
-	Serializer->WriteValue(TEXT("description"), Description);
-	Serializer->WriteValue(TEXT("isoCurrencyCode"), IsoCurrencyCode);
-	Serializer->WriteValue(TEXT("localizedPriceString"), LocalizedPriceString);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("localizedPrice"), LocalizedPrice, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("sku"), Sku, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("description"), Description, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("isoCurrencyCode"), IsoCurrencyCode, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("localizedPriceString"), LocalizedPriceString, Serializer);
 }
 
 void UProductView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("localizedPrice"), LocalizedPrice);
-	Serializer->WriteValue(TEXT("sku"), Sku);
-	Serializer->WriteValue(TEXT("description"), Description);
-	Serializer->WriteValue(TEXT("isoCurrencyCode"), IsoCurrencyCode);
-	Serializer->WriteValue(TEXT("localizedPriceString"), LocalizedPriceString);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("localizedPrice"), LocalizedPrice, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("sku"), Sku, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("description"), Description, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("isoCurrencyCode"), IsoCurrencyCode, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("localizedPriceString"), LocalizedPriceString, Serializer);		
 }
 
 void UProductView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

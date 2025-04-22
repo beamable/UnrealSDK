@@ -7,14 +7,14 @@
 
 void UAccountRegistration::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("email"), Email);
-	Serializer->WriteValue(TEXT("password"), Password);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("email"), Email, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("password"), Password, Serializer);
 }
 
 void UAccountRegistration::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("email"), Email);
-	Serializer->WriteValue(TEXT("password"), Password);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("email"), Email, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("password"), Password, Serializer);		
 }
 
 void UAccountRegistration::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

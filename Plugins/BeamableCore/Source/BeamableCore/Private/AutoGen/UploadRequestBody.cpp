@@ -7,8 +7,8 @@
 
 void UUploadRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("objectKey"), ObjectKey);
-	Serializer->WriteValue(TEXT("sizeInBytes"), SizeInBytes);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("objectKey"), ObjectKey, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("sizeInBytes"), SizeInBytes, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("deleted"), &bDeleted, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("lastModified"), &LastModified, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("checksum"), &Checksum, Serializer);
@@ -17,8 +17,8 @@ void UUploadRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializ
 
 void UUploadRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("objectKey"), ObjectKey);
-	Serializer->WriteValue(TEXT("sizeInBytes"), SizeInBytes);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("objectKey"), ObjectKey, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("sizeInBytes"), SizeInBytes, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("deleted"), &bDeleted, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("lastModified"), &LastModified, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("checksum"), &Checksum, Serializer);

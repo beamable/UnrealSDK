@@ -7,7 +7,7 @@
 
 void UServicePlan::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
 	UBeamJsonUtils::SerializeUObject<UDataDomain*>("dataDomain", DataDomain, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("minCustomerStatusSaved"), &MinCustomerStatusSaved, Serializer);
 	UBeamJsonUtils::SerializeOptional<UServiceLimits*>(TEXT("limits"), &Limits, Serializer);
@@ -16,7 +16,7 @@ void UServicePlan::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) co
 
 void UServicePlan::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
 	UBeamJsonUtils::SerializeUObject<UDataDomain*>("dataDomain", DataDomain, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("minCustomerStatusSaved"), &MinCustomerStatusSaved, Serializer);
 	UBeamJsonUtils::SerializeOptional<UServiceLimits*>(TEXT("limits"), &Limits, Serializer);

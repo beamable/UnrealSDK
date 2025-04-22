@@ -12,13 +12,13 @@ void ULambdaResponse::DeserializeRequestResponse(UObject* RequestData, FString R
 
 void ULambdaResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("statusCode"), StatusCode);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("statusCode"), StatusCode, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("body"), &Body, Serializer);
 }
 
 void ULambdaResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("statusCode"), StatusCode);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("statusCode"), StatusCode, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("body"), &Body, Serializer);		
 }
 

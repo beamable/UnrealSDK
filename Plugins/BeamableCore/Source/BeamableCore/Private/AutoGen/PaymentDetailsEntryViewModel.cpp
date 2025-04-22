@@ -7,13 +7,13 @@
 
 void UPaymentDetailsEntryViewModel::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("reference"), Reference);
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("quantity"), Quantity);
-	Serializer->WriteValue(TEXT("sku"), Sku);
-	Serializer->WriteValue(TEXT("price"), Price);
-	Serializer->WriteValue(TEXT("gameplace"), Gameplace);
-	Serializer->WriteValue(TEXT("providerProductId"), ProviderProductId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("reference"), Reference, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("quantity"), Quantity, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("sku"), Sku, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("price"), Price, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gameplace"), Gameplace, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("providerProductId"), ProviderProductId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("subcategory"), &Subcategory, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("localPrice"), &LocalPrice, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("category"), &Category, Serializer);
@@ -22,13 +22,13 @@ void UPaymentDetailsEntryViewModel::BeamSerializeProperties(TUnrealJsonSerialize
 
 void UPaymentDetailsEntryViewModel::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("reference"), Reference);
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("quantity"), Quantity);
-	Serializer->WriteValue(TEXT("sku"), Sku);
-	Serializer->WriteValue(TEXT("price"), Price);
-	Serializer->WriteValue(TEXT("gameplace"), Gameplace);
-	Serializer->WriteValue(TEXT("providerProductId"), ProviderProductId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("reference"), Reference, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("quantity"), Quantity, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("sku"), Sku, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("price"), Price, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gameplace"), Gameplace, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("providerProductId"), ProviderProductId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("subcategory"), &Subcategory, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("localPrice"), &LocalPrice, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("category"), &Category, Serializer);

@@ -7,19 +7,19 @@
 
 void UCloudsavingBasicReference::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("size"), Size);
-	Serializer->WriteValue(TEXT("lastModified"), LastModified);
-	Serializer->WriteValue(TEXT("key"), Key);
-	Serializer->WriteValue(TEXT("bucketName"), BucketName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("size"), Size, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("lastModified"), LastModified, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("key"), Key, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("bucketName"), BucketName, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("eTag"), &ETag, Serializer);
 }
 
 void UCloudsavingBasicReference::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("size"), Size);
-	Serializer->WriteValue(TEXT("lastModified"), LastModified);
-	Serializer->WriteValue(TEXT("key"), Key);
-	Serializer->WriteValue(TEXT("bucketName"), BucketName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("size"), Size, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("lastModified"), LastModified, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("key"), Key, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("bucketName"), BucketName, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("eTag"), &ETag, Serializer);		
 }
 

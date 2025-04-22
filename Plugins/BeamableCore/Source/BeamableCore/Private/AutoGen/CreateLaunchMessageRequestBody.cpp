@@ -7,14 +7,14 @@
 
 void UCreateLaunchMessageRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("body"), Body);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("body"), Body, Serializer);
 }
 
 void UCreateLaunchMessageRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("body"), Body);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("body"), Body, Serializer);		
 }
 
 void UCreateLaunchMessageRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

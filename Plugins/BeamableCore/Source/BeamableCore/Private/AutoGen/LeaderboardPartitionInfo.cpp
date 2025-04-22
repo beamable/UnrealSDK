@@ -12,17 +12,17 @@ void ULeaderboardPartitionInfo::DeserializeRequestResponse(UObject* RequestData,
 
 void ULeaderboardPartitionInfo::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("isEmpty"), bIsEmpty);
-	Serializer->WriteValue(TEXT("playerId"), PlayerId);
-	Serializer->WriteValue(TEXT("leaderboardId"), LeaderboardId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("isEmpty"), bIsEmpty, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("playerId"), PlayerId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("leaderboardId"), LeaderboardId, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("partition"), &Partition, Serializer);
 }
 
 void ULeaderboardPartitionInfo::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("isEmpty"), bIsEmpty);
-	Serializer->WriteValue(TEXT("playerId"), PlayerId);
-	Serializer->WriteValue(TEXT("leaderboardId"), LeaderboardId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("isEmpty"), bIsEmpty, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("playerId"), PlayerId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("leaderboardId"), LeaderboardId, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("partition"), &Partition, Serializer);		
 }
 

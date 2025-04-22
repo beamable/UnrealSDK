@@ -100,7 +100,8 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				{
 					FString ValStr = EnumToSerializationName<TDataType>(*val);
 					Serializer->WriteValue(Identifier, ValStr);
-				}else if constexpr (std::is_same_v<TDataType, FDateTime>)
+				}
+				else if constexpr (std::is_same_v<TDataType, FDateTime>)
 				{
 					Serializer->WriteValue(Identifier, val->ToIso8601());
 				}
@@ -306,9 +307,10 @@ class BEAMABLECORE_API UBeamJsonUtils final : public UBlueprintFunctionLibrary
 				{
 					FString ValStr = EnumToSerializationName<TDataType>(Kvp.Value);
 					Serializer->WriteValue(Kvp.Key, ValStr);
-				}else if constexpr (std::is_same_v<TMapType, FDateTime>)
+				}
+				else if constexpr (std::is_same_v<TMapType, FDateTime>)
 				{
-					Serializer->WriteValue(Kvp.Key,  Kvp.Value.ToIso8601());
+					Serializer->WriteValue(Kvp.Key, Kvp.Value.ToIso8601());
 				}
 				else
 				{
@@ -392,6 +394,43 @@ public:
 		else
 		{
 			Serializer->WriteNull();
+		}
+	}
+
+	template <typename TPrimitiveType, typename TJsonType>
+	static void SerializeRawPrimitive(const FString& JsonField, TPrimitiveType& ToSerialize, TSharedRef<TJsonStringWriter<TJsonType>>& Serializer)
+	{
+		if (TIsDerivedFrom<TPrimitiveType, FBeamSemanticType>::Value)
+		{
+			checkf(false, TEXT("TSerializationType cannot be a FBeamSemanticType type. We don't support it for now."))
+		}
+		else if constexpr (TIsPointer<TPrimitiveType>::Value)
+		{
+			checkf(false, TEXT("TSerializationType cannot be a UObject type. We don't support it for now."))
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FBeamMap>::Value)
+		{
+			checkf(false, TEXT("TSerializationType cannot be a FBeamMap. We don't support it for now."))
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FBeamArray>::Value)
+		{
+			checkf(false, TEXT("TSerializationType cannot be a FBeamArray. We don't support it for now."))
+		}
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FBeamJsonSerializableUStruct>::Value)
+		{
+			checkf(false, TEXT("TSerializationType cannot be a FBeamJsonSerializable. We don't support it for now."))
+		}
+		else if constexpr (std::is_same_v<TPrimitiveType, FGuid>)
+		{
+			Serializer->WriteValue(JsonField, ToSerialize.ToString(EGuidFormats::DigitsWithHyphensLower));
+		}
+		else if constexpr (std::is_same_v<TPrimitiveType, FDateTime>)
+		{
+			Serializer->WriteValue(JsonField, ToSerialize.ToIso8601());
+		}
+		else
+		{
+			Serializer->WriteValue(JsonField, ToSerialize);
 		}
 	}
 
@@ -954,7 +993,8 @@ public:
 						const FString Val = ArrayJsonItem->AsString();
 						bool Parsed = Val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
 						ParsedArray.Add(Parsed);
-					}else if constexpr (std::is_same_v<TDataType, FDateTime>)
+					}
+					else if constexpr (std::is_same_v<TDataType, FDateTime>)
 					{
 						const FString Val = ArrayJsonItem->AsString();
 						FDateTime Parsed;
@@ -1324,7 +1364,8 @@ public:
 			{
 				// We do this as the primitive content that is returned is a string enclosed with quotes.
 				ToDeserialize = JsonField.RightChop(1).LeftChop(1);
-			}else
+			}
+			else
 			{
 				ToDeserialize = JsonField;
 			}
@@ -1399,7 +1440,8 @@ public:
 			const FString Val = JsonField;
 			const bool Parsed = Val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
 			ToDeserialize = Parsed;
-		}else if constexpr (std::is_same_v<TPrimitiveType, FDateTime>)
+		}
+		else if constexpr (std::is_same_v<TPrimitiveType, FDateTime>)
 		{
 			FDateTime::ParseIso8601(*JsonField, ToDeserialize);
 		}

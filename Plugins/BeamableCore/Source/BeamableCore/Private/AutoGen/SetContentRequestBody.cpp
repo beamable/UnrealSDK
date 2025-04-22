@@ -8,7 +8,7 @@
 void USetContentRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeUObject<UEvent*>("event", Event, Serializer);
-	Serializer->WriteValue(TEXT("origin"), Origin);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("origin"), Origin, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("rootEventId"), &RootEventId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("originType"), &OriginType, Serializer);
 }
@@ -16,7 +16,7 @@ void USetContentRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Seri
 void USetContentRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeUObject<UEvent*>("event", Event, Serializer);
-	Serializer->WriteValue(TEXT("origin"), Origin);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("origin"), Origin, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("rootEventId"), &RootEventId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("originType"), &OriginType, Serializer);		
 }

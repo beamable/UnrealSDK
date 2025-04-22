@@ -7,9 +7,9 @@
 
 void UEvent::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("start_date"), StartDate);
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("start_date"), StartDate, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
 	UBeamJsonUtils::SerializeArray<UEventPhase*>(TEXT("phases"), Phases, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("partition_size"), &PartitionSize, Serializer);
 	UBeamJsonUtils::SerializeOptional<UEventGroupRewards*>(TEXT("group_rewards"), &GroupRewards, Serializer);
@@ -23,9 +23,9 @@ void UEvent::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 
 void UEvent::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("start_date"), StartDate);
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("start_date"), StartDate, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
 	UBeamJsonUtils::SerializeArray<UEventPhase*>(TEXT("phases"), Phases, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("partition_size"), &PartitionSize, Serializer);
 	UBeamJsonUtils::SerializeOptional<UEventGroupRewards*>(TEXT("group_rewards"), &GroupRewards, Serializer);

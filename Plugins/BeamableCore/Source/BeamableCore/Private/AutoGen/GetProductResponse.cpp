@@ -12,18 +12,18 @@ void UGetProductResponse::DeserializeRequestResponse(UObject* RequestData, FStri
 
 void UGetProductResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("description"), Description);
-	Serializer->WriteValue(TEXT("price"), Price);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("description"), Description, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("price"), Price, Serializer);
 }
 
 void UGetProductResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("description"), Description);
-	Serializer->WriteValue(TEXT("price"), Price);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("description"), Description, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("price"), Price, Serializer);		
 }
 
 void UGetProductResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

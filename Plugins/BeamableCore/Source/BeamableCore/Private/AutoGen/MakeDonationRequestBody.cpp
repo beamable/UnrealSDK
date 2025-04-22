@@ -7,15 +7,15 @@
 
 void UMakeDonationRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("recipientId"), RecipientId);
-	Serializer->WriteValue(TEXT("amount"), Amount);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("recipientId"), RecipientId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("amount"), Amount, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("autoClaim"), &bAutoClaim, Serializer);
 }
 
 void UMakeDonationRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("recipientId"), RecipientId);
-	Serializer->WriteValue(TEXT("amount"), Amount);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("recipientId"), RecipientId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("amount"), Amount, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("autoClaim"), &bAutoClaim, Serializer);		
 }
 

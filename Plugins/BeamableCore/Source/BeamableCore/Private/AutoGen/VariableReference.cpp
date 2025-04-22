@@ -7,12 +7,12 @@
 
 void UVariableReference::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
 }
 
 void UVariableReference::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);		
 }
 
 void UVariableReference::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

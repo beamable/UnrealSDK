@@ -7,22 +7,22 @@
 
 void UInFlightFailure::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("serviceObjectId"), ServiceObjectId);
-	Serializer->WriteValue(TEXT("timestamp"), Timestamp);
-	Serializer->WriteValue(TEXT("serviceName"), ServiceName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceObjectId"), ServiceObjectId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("timestamp"), Timestamp, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceName"), ServiceName, Serializer);
 	UBeamJsonUtils::SerializeUObject<UInFlightMessage*>("inFlightMessage", InFlightMessage, Serializer);
-	Serializer->WriteValue(TEXT("lastError"), LastError);
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("lastError"), LastError, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
 }
 
 void UInFlightFailure::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("serviceObjectId"), ServiceObjectId);
-	Serializer->WriteValue(TEXT("timestamp"), Timestamp);
-	Serializer->WriteValue(TEXT("serviceName"), ServiceName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceObjectId"), ServiceObjectId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("timestamp"), Timestamp, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceName"), ServiceName, Serializer);
 	UBeamJsonUtils::SerializeUObject<UInFlightMessage*>("inFlightMessage", InFlightMessage, Serializer);
-	Serializer->WriteValue(TEXT("lastError"), LastError);
-	Serializer->WriteValue(TEXT("id"), Id);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("lastError"), LastError, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);		
 }
 
 void UInFlightFailure::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

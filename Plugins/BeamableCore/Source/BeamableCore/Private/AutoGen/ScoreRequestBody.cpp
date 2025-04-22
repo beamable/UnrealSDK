@@ -7,9 +7,9 @@
 
 void UScoreRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);
-	Serializer->WriteValue(TEXT("score"), Score);
-	Serializer->WriteValue(TEXT("playerId"), PlayerId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tournamentId"), TournamentId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("score"), Score, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("playerId"), PlayerId, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("increment"), &bIncrement, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("contentId"), &ContentId, Serializer);
 	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("stats"), &Stats, Serializer);
@@ -17,9 +17,9 @@ void UScoreRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serialize
 
 void UScoreRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);
-	Serializer->WriteValue(TEXT("score"), Score);
-	Serializer->WriteValue(TEXT("playerId"), PlayerId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tournamentId"), TournamentId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("score"), Score, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("playerId"), PlayerId, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("increment"), &bIncrement, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("contentId"), &ContentId, Serializer);
 	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("stats"), &Stats, Serializer);		

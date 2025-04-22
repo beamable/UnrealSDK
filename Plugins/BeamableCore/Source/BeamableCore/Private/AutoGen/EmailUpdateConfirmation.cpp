@@ -7,14 +7,14 @@
 
 void UEmailUpdateConfirmation::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("code"), Code);
-	Serializer->WriteValue(TEXT("password"), Password);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("code"), Code, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("password"), Password, Serializer);
 }
 
 void UEmailUpdateConfirmation::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("code"), Code);
-	Serializer->WriteValue(TEXT("password"), Password);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("code"), Code, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("password"), Password, Serializer);		
 }
 
 void UEmailUpdateConfirmation::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

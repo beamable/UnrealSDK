@@ -7,16 +7,16 @@
 
 void UCatalog::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("version"), Version);
-	Serializer->WriteValue(TEXT("created"), Created);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("version"), Version, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
 	UBeamJsonUtils::SerializeArray<UStore*>(TEXT("stores"), Stores, Serializer);
 	UBeamJsonUtils::SerializeArray<UOfferDefinition*>(TEXT("offerDefinitions"), OfferDefinitions, Serializer);
 }
 
 void UCatalog::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("version"), Version);
-	Serializer->WriteValue(TEXT("created"), Created);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("version"), Version, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
 	UBeamJsonUtils::SerializeArray<UStore*>(TEXT("stores"), Stores, Serializer);
 	UBeamJsonUtils::SerializeArray<UOfferDefinition*>(TEXT("offerDefinitions"), OfferDefinitions, Serializer);		
 }

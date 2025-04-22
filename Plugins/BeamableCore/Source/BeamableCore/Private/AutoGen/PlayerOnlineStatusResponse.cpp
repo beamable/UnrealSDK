@@ -7,16 +7,16 @@
 
 void UPlayerOnlineStatusResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("online"), bOnline);
-	Serializer->WriteValue(TEXT("playerId"), PlayerId);
-	Serializer->WriteValue(TEXT("lastSeen"), LastSeen);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("online"), bOnline, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("playerId"), PlayerId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("lastSeen"), LastSeen, Serializer);
 }
 
 void UPlayerOnlineStatusResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("online"), bOnline);
-	Serializer->WriteValue(TEXT("playerId"), PlayerId);
-	Serializer->WriteValue(TEXT("lastSeen"), LastSeen);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("online"), bOnline, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("playerId"), PlayerId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("lastSeen"), LastSeen, Serializer);		
 }
 
 void UPlayerOnlineStatusResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

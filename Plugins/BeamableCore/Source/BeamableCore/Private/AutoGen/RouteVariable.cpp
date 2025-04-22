@@ -7,14 +7,14 @@
 
 void URouteVariable::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("typeName"), TypeName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("typeName"), TypeName, Serializer);
 }
 
 void URouteVariable::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("typeName"), TypeName);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("typeName"), TypeName, Serializer);		
 }
 
 void URouteVariable::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

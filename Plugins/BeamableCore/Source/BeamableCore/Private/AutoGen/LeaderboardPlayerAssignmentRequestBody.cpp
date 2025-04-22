@@ -7,13 +7,13 @@
 
 void ULeaderboardPlayerAssignmentRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("boardId"), BoardId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("boardId"), BoardId, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("joinBoard"), &bJoinBoard, Serializer);
 }
 
 void ULeaderboardPlayerAssignmentRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("boardId"), BoardId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("boardId"), BoardId, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("joinBoard"), &bJoinBoard, Serializer);		
 }
 

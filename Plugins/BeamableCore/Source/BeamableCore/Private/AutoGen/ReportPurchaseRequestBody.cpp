@@ -7,13 +7,13 @@
 
 void UReportPurchaseRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("listingId"), ListingId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("listingId"), ListingId, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("free"), &bFree, Serializer);
 }
 
 void UReportPurchaseRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("listingId"), ListingId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("listingId"), ListingId, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("free"), &bFree, Serializer);		
 }
 

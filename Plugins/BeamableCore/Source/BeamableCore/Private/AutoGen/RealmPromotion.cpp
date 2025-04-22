@@ -7,14 +7,14 @@
 
 void URealmPromotion::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
 	UBeamJsonUtils::SerializeUObject<UPromotable*>("source", Source, Serializer);
 	UBeamJsonUtils::SerializeUObject<UPromotable*>("destination", Destination, Serializer);
 }
 
 void URealmPromotion::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
 	UBeamJsonUtils::SerializeUObject<UPromotable*>("source", Source, Serializer);
 	UBeamJsonUtils::SerializeUObject<UPromotable*>("destination", Destination, Serializer);		
 }

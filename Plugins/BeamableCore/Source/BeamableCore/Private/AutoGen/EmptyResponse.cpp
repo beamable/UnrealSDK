@@ -12,12 +12,12 @@ void UEmptyResponse::DeserializeRequestResponse(UObject* RequestData, FString Re
 
 void UEmptyResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("result"), Result);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("result"), Result, Serializer);
 }
 
 void UEmptyResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("result"), Result);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("result"), Result, Serializer);		
 }
 
 void UEmptyResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

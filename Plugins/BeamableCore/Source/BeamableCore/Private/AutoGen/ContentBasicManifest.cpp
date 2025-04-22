@@ -13,8 +13,8 @@ void UContentBasicManifest::DeserializeRequestResponse(UObject* RequestData, FSt
 void UContentBasicManifest::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
-	Serializer->WriteValue(TEXT("checksum"), Checksum);
-	Serializer->WriteValue(TEXT("created"), Created);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("checksum"), Checksum, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
 	UBeamJsonUtils::SerializeArray<UBaseContentReference*>(TEXT("references"), References, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("archived"), &bArchived, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("publisherAccountId"), &PublisherAccountId, Serializer);
@@ -24,8 +24,8 @@ void UContentBasicManifest::BeamSerializeProperties(TUnrealJsonSerializer& Seria
 void UContentBasicManifest::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
-	Serializer->WriteValue(TEXT("checksum"), Checksum);
-	Serializer->WriteValue(TEXT("created"), Created);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("checksum"), Checksum, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
 	UBeamJsonUtils::SerializeArray<UBaseContentReference*>(TEXT("references"), References, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("archived"), &bArchived, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("publisherAccountId"), &PublisherAccountId, Serializer);

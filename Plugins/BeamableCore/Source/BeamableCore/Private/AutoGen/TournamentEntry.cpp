@@ -7,12 +7,12 @@
 
 void UTournamentEntry::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("stage"), Stage);
-	Serializer->WriteValue(TEXT("tier"), Tier);
-	Serializer->WriteValue(TEXT("rank"), Rank);
-	Serializer->WriteValue(TEXT("score"), Score);
-	Serializer->WriteValue(TEXT("playerId"), PlayerId);
-	Serializer->WriteValue(TEXT("stageChange"), StageChange);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("stage"), Stage, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tier"), Tier, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("rank"), Rank, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("score"), Score, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("playerId"), PlayerId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("stageChange"), StageChange, Serializer);
 	UBeamJsonUtils::SerializeArray<UTournamentCurrencyReward*>(TEXT("currencyRewards"), CurrencyRewards, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("previousStageChange"), &PreviousStageChange, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("nextStageChange"), &NextStageChange, Serializer);
@@ -20,12 +20,12 @@ void UTournamentEntry::BeamSerializeProperties(TUnrealJsonSerializer& Serializer
 
 void UTournamentEntry::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("stage"), Stage);
-	Serializer->WriteValue(TEXT("tier"), Tier);
-	Serializer->WriteValue(TEXT("rank"), Rank);
-	Serializer->WriteValue(TEXT("score"), Score);
-	Serializer->WriteValue(TEXT("playerId"), PlayerId);
-	Serializer->WriteValue(TEXT("stageChange"), StageChange);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("stage"), Stage, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tier"), Tier, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("rank"), Rank, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("score"), Score, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("playerId"), PlayerId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("stageChange"), StageChange, Serializer);
 	UBeamJsonUtils::SerializeArray<UTournamentCurrencyReward*>(TEXT("currencyRewards"), CurrencyRewards, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("previousStageChange"), &PreviousStageChange, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("nextStageChange"), &NextStageChange, Serializer);		

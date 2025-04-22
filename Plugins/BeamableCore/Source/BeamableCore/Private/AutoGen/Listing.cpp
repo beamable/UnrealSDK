@@ -7,9 +7,9 @@
 
 void UListing::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("offerSymbol"), OfferSymbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("offerSymbol"), OfferSymbol, Serializer);
 	UBeamJsonUtils::SerializeUObject<UPrice*>("price", Price, Serializer);
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
 	UBeamJsonUtils::SerializeArray<UCohortRequirement*>(TEXT("cohortRequirements"), CohortRequirements, Serializer);
 	UBeamJsonUtils::SerializeArray<UPlayerStatRequirement*>(TEXT("playerStatRequirements"), PlayerStatRequirements, Serializer);
 	UBeamJsonUtils::SerializeArray<UEntitlementRequirement*>(TEXT("entitlementRequirements"), EntitlementRequirements, Serializer);
@@ -27,9 +27,9 @@ void UListing::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 
 void UListing::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("offerSymbol"), OfferSymbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("offerSymbol"), OfferSymbol, Serializer);
 	UBeamJsonUtils::SerializeUObject<UPrice*>("price", Price, Serializer);
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
 	UBeamJsonUtils::SerializeArray<UCohortRequirement*>(TEXT("cohortRequirements"), CohortRequirements, Serializer);
 	UBeamJsonUtils::SerializeArray<UPlayerStatRequirement*>(TEXT("playerStatRequirements"), PlayerStatRequirements, Serializer);
 	UBeamJsonUtils::SerializeArray<UEntitlementRequirement*>(TEXT("entitlementRequirements"), EntitlementRequirements, Serializer);

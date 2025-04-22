@@ -7,13 +7,13 @@
 
 void UTransferThirdPartyAssociation::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("fromAccountId"), FromAccountId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("fromAccountId"), FromAccountId, Serializer);
 	UBeamJsonUtils::SerializeUObject<UThirdPartyAssociation*>("thirdParty", ThirdParty, Serializer);
 }
 
 void UTransferThirdPartyAssociation::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("fromAccountId"), FromAccountId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("fromAccountId"), FromAccountId, Serializer);
 	UBeamJsonUtils::SerializeUObject<UThirdPartyAssociation*>("thirdParty", ThirdParty, Serializer);		
 }
 

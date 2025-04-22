@@ -7,13 +7,13 @@
 
 void UMatchMakingWindowResp::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("difficulty"), Difficulty);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("difficulty"), Difficulty, Serializer);
 	UBeamJsonUtils::SerializeArray<UMatchMakingRanking*>(TEXT("matches"), Matches, Serializer);
 }
 
 void UMatchMakingWindowResp::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("difficulty"), Difficulty);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("difficulty"), Difficulty, Serializer);
 	UBeamJsonUtils::SerializeArray<UMatchMakingRanking*>(TEXT("matches"), Matches, Serializer);		
 }
 

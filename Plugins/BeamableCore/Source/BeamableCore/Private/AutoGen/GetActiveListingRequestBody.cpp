@@ -7,14 +7,14 @@
 
 void UGetActiveListingRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("listing"), Listing);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("listing"), Listing, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("store"), &Store, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("time"), &Time, Serializer);
 }
 
 void UGetActiveListingRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("listing"), Listing);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("listing"), Listing, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("store"), &Store, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("time"), &Time, Serializer);		
 }

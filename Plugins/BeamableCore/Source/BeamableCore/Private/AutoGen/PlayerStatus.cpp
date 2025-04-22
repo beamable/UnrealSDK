@@ -12,24 +12,24 @@ void UPlayerStatus::DeserializeRequestResponse(UObject* RequestData, FString Res
 
 void UPlayerStatus::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("lastUpdateCycle"), LastUpdateCycle);
-	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);
-	Serializer->WriteValue(TEXT("stage"), Stage);
-	Serializer->WriteValue(TEXT("tier"), Tier);
-	Serializer->WriteValue(TEXT("playerId"), PlayerId);
-	Serializer->WriteValue(TEXT("contentId"), ContentId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("lastUpdateCycle"), LastUpdateCycle, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tournamentId"), TournamentId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("stage"), Stage, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tier"), Tier, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("playerId"), PlayerId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("contentId"), ContentId, Serializer);
 	UBeamJsonUtils::SerializeArray<UTournamentCurrencyReward*>(TEXT("unclaimedRewards"), UnclaimedRewards, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("groupId"), &GroupId, Serializer);
 }
 
 void UPlayerStatus::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("lastUpdateCycle"), LastUpdateCycle);
-	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);
-	Serializer->WriteValue(TEXT("stage"), Stage);
-	Serializer->WriteValue(TEXT("tier"), Tier);
-	Serializer->WriteValue(TEXT("playerId"), PlayerId);
-	Serializer->WriteValue(TEXT("contentId"), ContentId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("lastUpdateCycle"), LastUpdateCycle, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tournamentId"), TournamentId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("stage"), Stage, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tier"), Tier, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("playerId"), PlayerId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("contentId"), ContentId, Serializer);
 	UBeamJsonUtils::SerializeArray<UTournamentCurrencyReward*>(TEXT("unclaimedRewards"), UnclaimedRewards, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("groupId"), &GroupId, Serializer);		
 }

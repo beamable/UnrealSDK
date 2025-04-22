@@ -7,18 +7,18 @@
 
 void UEventDateRanges::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("state"), State);
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("state"), State, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
 	UBeamJsonUtils::SerializeArray<UDateRange*>(TEXT("dates"), Dates, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("createdAt"), &CreatedAt, Serializer);
 }
 
 void UEventDateRanges::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("state"), State);
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("state"), State, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
 	UBeamJsonUtils::SerializeArray<UDateRange*>(TEXT("dates"), Dates, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("createdAt"), &CreatedAt, Serializer);		
 }

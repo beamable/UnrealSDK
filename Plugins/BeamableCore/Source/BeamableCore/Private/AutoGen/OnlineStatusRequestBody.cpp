@@ -7,14 +7,14 @@
 
 void UOnlineStatusRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("playerIds"), PlayerIds);
-	Serializer->WriteValue(TEXT("intervalSecs"), IntervalSecs);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("playerIds"), PlayerIds, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("intervalSecs"), IntervalSecs, Serializer);
 }
 
 void UOnlineStatusRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("playerIds"), PlayerIds);
-	Serializer->WriteValue(TEXT("intervalSecs"), IntervalSecs);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("playerIds"), PlayerIds, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("intervalSecs"), IntervalSecs, Serializer);		
 }
 
 void UOnlineStatusRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

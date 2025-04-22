@@ -7,15 +7,15 @@
 
 void URealmRolesReport::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("realmName"), RealmName);
-	Serializer->WriteValue(TEXT("realmDisplayName"), RealmDisplayName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("realmName"), RealmName, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("realmDisplayName"), RealmDisplayName, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("roles"), Roles, Serializer);
 }
 
 void URealmRolesReport::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("realmName"), RealmName);
-	Serializer->WriteValue(TEXT("realmDisplayName"), RealmDisplayName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("realmName"), RealmName, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("realmDisplayName"), RealmDisplayName, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("roles"), Roles, Serializer);		
 }
 

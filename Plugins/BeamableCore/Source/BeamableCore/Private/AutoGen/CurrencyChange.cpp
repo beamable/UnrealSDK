@@ -7,15 +7,15 @@
 
 void UCurrencyChange::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
-	Serializer->WriteValue(TEXT("amount"), Amount);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("amount"), Amount, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("originalAmount"), &OriginalAmount, Serializer);
 }
 
 void UCurrencyChange::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
-	Serializer->WriteValue(TEXT("amount"), Amount);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("amount"), Amount, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("originalAmount"), &OriginalAmount, Serializer);		
 }
 

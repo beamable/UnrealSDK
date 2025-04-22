@@ -7,14 +7,14 @@
 
 void UItemDeleteRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("contentId"), ContentId);
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("contentId"), ContentId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
 }
 
 void UItemDeleteRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("contentId"), ContentId);
-	Serializer->WriteValue(TEXT("id"), Id);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("contentId"), ContentId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);		
 }
 
 void UItemDeleteRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

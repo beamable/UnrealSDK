@@ -7,17 +7,17 @@
 
 void UStatsSearchRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("domain"), Domain);
-	Serializer->WriteValue(TEXT("access"), Access);
-	Serializer->WriteValue(TEXT("objectType"), ObjectType);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("domain"), Domain, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("access"), Access, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("objectType"), ObjectType, Serializer);
 	UBeamJsonUtils::SerializeArray<UStatsSearchCriteria*>(TEXT("criteria"), Criteria, Serializer);
 }
 
 void UStatsSearchRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("domain"), Domain);
-	Serializer->WriteValue(TEXT("access"), Access);
-	Serializer->WriteValue(TEXT("objectType"), ObjectType);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("domain"), Domain, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("access"), Access, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("objectType"), ObjectType, Serializer);
 	UBeamJsonUtils::SerializeArray<UStatsSearchCriteria*>(TEXT("criteria"), Criteria, Serializer);		
 }
 

@@ -7,18 +7,18 @@
 
 void UPlayerStatRequirement::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("stat"), Stat);
-	Serializer->WriteValue(TEXT("constraint"), Constraint);
-	Serializer->WriteValue(TEXT("value"), Value);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("stat"), Stat, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("constraint"), Constraint, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("value"), Value, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("domain"), &Domain, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("access"), &Access, Serializer);
 }
 
 void UPlayerStatRequirement::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("stat"), Stat);
-	Serializer->WriteValue(TEXT("constraint"), Constraint);
-	Serializer->WriteValue(TEXT("value"), Value);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("stat"), Stat, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("constraint"), Constraint, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("value"), Value, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("domain"), &Domain, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("access"), &Access, Serializer);		
 }

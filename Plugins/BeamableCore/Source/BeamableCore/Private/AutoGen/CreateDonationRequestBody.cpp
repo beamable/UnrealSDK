@@ -7,15 +7,15 @@
 
 void UCreateDonationRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("currencyId"), CurrencyId);
-	Serializer->WriteValue(TEXT("amount"), Amount);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("currencyId"), CurrencyId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("amount"), Amount, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("config"), &Config, Serializer);
 }
 
 void UCreateDonationRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("currencyId"), CurrencyId);
-	Serializer->WriteValue(TEXT("amount"), Amount);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("currencyId"), CurrencyId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("amount"), Amount, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("config"), &Config, Serializer);		
 }
 

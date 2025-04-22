@@ -8,8 +8,8 @@
 void UAnnouncementDto::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeUObject<ULocalizationRef*>("body", Body, Serializer);
-	Serializer->WriteValue(TEXT("channel"), Channel);
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("channel"), Channel, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
 	UBeamJsonUtils::SerializeUObject<ULocalizationRef*>("title", Title, Serializer);
 	UBeamJsonUtils::SerializeUObject<ULocalizationRef*>("summary", Summary, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("start_date"), &StartDate, Serializer);
@@ -24,8 +24,8 @@ void UAnnouncementDto::BeamSerializeProperties(TUnrealJsonSerializer& Serializer
 void UAnnouncementDto::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeUObject<ULocalizationRef*>("body", Body, Serializer);
-	Serializer->WriteValue(TEXT("channel"), Channel);
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("channel"), Channel, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
 	UBeamJsonUtils::SerializeUObject<ULocalizationRef*>("title", Title, Serializer);
 	UBeamJsonUtils::SerializeUObject<ULocalizationRef*>("summary", Summary, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("start_date"), &StartDate, Serializer);

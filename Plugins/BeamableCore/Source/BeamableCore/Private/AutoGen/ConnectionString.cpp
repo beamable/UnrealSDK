@@ -12,12 +12,12 @@ void UConnectionString::DeserializeRequestResponse(UObject* RequestData, FString
 
 void UConnectionString::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("connectionString"), ConnectionString);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("connectionString"), ConnectionString, Serializer);
 }
 
 void UConnectionString::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("connectionString"), ConnectionString);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("connectionString"), ConnectionString, Serializer);		
 }
 
 void UConnectionString::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

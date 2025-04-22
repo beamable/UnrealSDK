@@ -7,14 +7,14 @@
 
 void UEventRewardObtain::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
-	Serializer->WriteValue(TEXT("count"), Count);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("count"), Count, Serializer);
 }
 
 void UEventRewardObtain::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
-	Serializer->WriteValue(TEXT("count"), Count);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("count"), Count, Serializer);		
 }
 
 void UEventRewardObtain::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

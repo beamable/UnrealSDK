@@ -7,15 +7,15 @@
 
 void UServerEvent::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("event"), Event);
-	Serializer->WriteValue(TEXT("toAll"), bToAll);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("event"), Event, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("toAll"), bToAll, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("payload"), &Payload, Serializer);
 }
 
 void UServerEvent::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("event"), Event);
-	Serializer->WriteValue(TEXT("toAll"), bToAll);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("event"), Event, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("toAll"), bToAll, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("payload"), &Payload, Serializer);		
 }
 

@@ -12,12 +12,12 @@ void UMailQueryResponse::DeserializeRequestResponse(UObject* RequestData, FStrin
 
 void UMailQueryResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("unreadCount"), UnreadCount);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("unreadCount"), UnreadCount, Serializer);
 }
 
 void UMailQueryResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("unreadCount"), UnreadCount);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("unreadCount"), UnreadCount, Serializer);		
 }
 
 void UMailQueryResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

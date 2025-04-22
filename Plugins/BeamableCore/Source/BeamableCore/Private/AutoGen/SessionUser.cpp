@@ -7,14 +7,14 @@
 
 void USessionUser::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("email"), Email);
-	Serializer->WriteValue(TEXT("gamerTag"), GamerTag);
-	Serializer->WriteValue(TEXT("username"), Username);
-	Serializer->WriteValue(TEXT("lastName"), LastName);
-	Serializer->WriteValue(TEXT("firstName"), FirstName);
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("lang"), Lang);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("email"), Email, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gamerTag"), GamerTag, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("username"), Username, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("lastName"), LastName, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("firstName"), FirstName, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("lang"), Lang, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("cid"), &Cid, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("heartbeat"), &Heartbeat, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("password"), &Password, Serializer);
@@ -22,14 +22,14 @@ void USessionUser::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) co
 
 void USessionUser::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("email"), Email);
-	Serializer->WriteValue(TEXT("gamerTag"), GamerTag);
-	Serializer->WriteValue(TEXT("username"), Username);
-	Serializer->WriteValue(TEXT("lastName"), LastName);
-	Serializer->WriteValue(TEXT("firstName"), FirstName);
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("lang"), Lang);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("email"), Email, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gamerTag"), GamerTag, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("username"), Username, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("lastName"), LastName, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("firstName"), FirstName, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("lang"), Lang, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("cid"), &Cid, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("heartbeat"), &Heartbeat, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("password"), &Password, Serializer);		

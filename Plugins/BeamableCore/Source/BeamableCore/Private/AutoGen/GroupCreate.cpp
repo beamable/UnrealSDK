@@ -7,11 +7,11 @@
 
 void UGroupCreate::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("enrollmentType"), EnrollmentType);
-	Serializer->WriteValue(TEXT("requirement"), Requirement);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("enrollmentType"), EnrollmentType, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("requirement"), Requirement, Serializer);
 	Serializer->WriteValue(TEXT("type"), UGroupTypeLibrary::GroupTypeToSerializationName(Type));
-	Serializer->WriteValue(TEXT("maxSize"), MaxSize);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("maxSize"), MaxSize, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("tag"), &Tag, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("clientData"), &ClientData, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("time"), &Time, Serializer);
@@ -21,11 +21,11 @@ void UGroupCreate::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) co
 
 void UGroupCreate::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("enrollmentType"), EnrollmentType);
-	Serializer->WriteValue(TEXT("requirement"), Requirement);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("enrollmentType"), EnrollmentType, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("requirement"), Requirement, Serializer);
 	Serializer->WriteValue(TEXT("type"), UGroupTypeLibrary::GroupTypeToSerializationName(Type));
-	Serializer->WriteValue(TEXT("maxSize"), MaxSize);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("maxSize"), MaxSize, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("tag"), &Tag, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("clientData"), &ClientData, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("time"), &Time, Serializer);

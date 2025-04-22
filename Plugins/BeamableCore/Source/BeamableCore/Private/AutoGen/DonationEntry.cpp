@@ -7,17 +7,17 @@
 
 void UDonationEntry::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("playerId"), PlayerId);
-	Serializer->WriteValue(TEXT("amount"), Amount);
-	Serializer->WriteValue(TEXT("time"), Time);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("playerId"), PlayerId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("amount"), Amount, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("time"), Time, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("claimed"), &bClaimed, Serializer);
 }
 
 void UDonationEntry::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("playerId"), PlayerId);
-	Serializer->WriteValue(TEXT("amount"), Amount);
-	Serializer->WriteValue(TEXT("time"), Time);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("playerId"), PlayerId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("amount"), Amount, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("time"), Time, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("claimed"), &bClaimed, Serializer);		
 }
 

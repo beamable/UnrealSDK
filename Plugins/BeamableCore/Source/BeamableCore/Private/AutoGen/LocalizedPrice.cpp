@@ -7,18 +7,18 @@
 
 void ULocalizedPrice::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("to"), To);
-	Serializer->WriteValue(TEXT("price"), Price);
-	Serializer->WriteValue(TEXT("priceLocalized"), PriceLocalized);
-	Serializer->WriteValue(TEXT("priceLocalizedString"), PriceLocalizedString);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("to"), To, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("price"), Price, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("priceLocalized"), PriceLocalized, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("priceLocalizedString"), PriceLocalizedString, Serializer);
 }
 
 void ULocalizedPrice::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("to"), To);
-	Serializer->WriteValue(TEXT("price"), Price);
-	Serializer->WriteValue(TEXT("priceLocalized"), PriceLocalized);
-	Serializer->WriteValue(TEXT("priceLocalizedString"), PriceLocalizedString);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("to"), To, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("price"), Price, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("priceLocalized"), PriceLocalized, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("priceLocalizedString"), PriceLocalizedString, Serializer);		
 }
 
 void ULocalizedPrice::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

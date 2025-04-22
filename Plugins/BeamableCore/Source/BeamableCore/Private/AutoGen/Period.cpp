@@ -7,13 +7,13 @@
 
 void UPeriod::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("start"), Start);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("start"), Start, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("end"), &End, Serializer);
 }
 
 void UPeriod::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("start"), Start);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("start"), Start, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("end"), &End, Serializer);		
 }
 

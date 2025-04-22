@@ -7,13 +7,13 @@
 
 void UGroupRole::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("permissions"), Permissions, Serializer);
 }
 
 void UGroupRole::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("permissions"), Permissions, Serializer);		
 }
 

@@ -7,13 +7,13 @@
 
 void ULocalizationQuery::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("languages"), &Languages, Serializer);
 }
 
 void ULocalizationQuery::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("languages"), &Languages, Serializer);		
 }
 

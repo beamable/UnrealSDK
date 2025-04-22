@@ -7,9 +7,9 @@
 
 void UNewCustomerRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("projectName"), ProjectName);
-	Serializer->WriteValue(TEXT("email"), Email);
-	Serializer->WriteValue(TEXT("password"), Password);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("projectName"), ProjectName, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("email"), Email, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("password"), Password, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("hierarchy"), &bHierarchy, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("customerName"), &CustomerName, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("alias"), &Alias, Serializer);
@@ -17,9 +17,9 @@ void UNewCustomerRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Ser
 
 void UNewCustomerRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("projectName"), ProjectName);
-	Serializer->WriteValue(TEXT("email"), Email);
-	Serializer->WriteValue(TEXT("password"), Password);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("projectName"), ProjectName, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("email"), Email, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("password"), Password, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("hierarchy"), &bHierarchy, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("customerName"), &CustomerName, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("alias"), &Alias, Serializer);		

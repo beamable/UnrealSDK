@@ -7,14 +7,14 @@
 
 void UGetTemplateRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("templateName"), TemplateName);
-	Serializer->WriteValue(TEXT("gamerTag"), GamerTag);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("templateName"), TemplateName, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gamerTag"), GamerTag, Serializer);
 }
 
 void UGetTemplateRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("templateName"), TemplateName);
-	Serializer->WriteValue(TEXT("gamerTag"), GamerTag);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("templateName"), TemplateName, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gamerTag"), GamerTag, Serializer);		
 }
 
 void UGetTemplateRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

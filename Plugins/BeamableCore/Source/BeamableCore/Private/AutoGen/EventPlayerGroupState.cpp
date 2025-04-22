@@ -7,8 +7,8 @@
 
 void UEventPlayerGroupState::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("groupScore"), GroupScore);
-	Serializer->WriteValue(TEXT("groupRank"), GroupRank);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("groupScore"), GroupScore, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("groupRank"), GroupRank, Serializer);
 	UBeamJsonUtils::SerializeArray<UEventRewardState*>(TEXT("rankRewards"), RankRewards, Serializer);
 	UBeamJsonUtils::SerializeArray<UEventRewardState*>(TEXT("scoreRewards"), ScoreRewards, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("groupId"), &GroupId, Serializer);
@@ -16,8 +16,8 @@ void UEventPlayerGroupState::BeamSerializeProperties(TUnrealJsonSerializer& Seri
 
 void UEventPlayerGroupState::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("groupScore"), GroupScore);
-	Serializer->WriteValue(TEXT("groupRank"), GroupRank);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("groupScore"), GroupScore, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("groupRank"), GroupRank, Serializer);
 	UBeamJsonUtils::SerializeArray<UEventRewardState*>(TEXT("rankRewards"), RankRewards, Serializer);
 	UBeamJsonUtils::SerializeArray<UEventRewardState*>(TEXT("scoreRewards"), ScoreRewards, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("groupId"), &GroupId, Serializer);		

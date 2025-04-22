@@ -7,14 +7,14 @@
 
 void UOrderRule::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("v"), V);
-	Serializer->WriteValue(TEXT("o"), O);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("v"), V, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("o"), O, Serializer);
 }
 
 void UOrderRule::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("v"), V);
-	Serializer->WriteValue(TEXT("o"), O);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("v"), V, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("o"), O, Serializer);		
 }
 
 void UOrderRule::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

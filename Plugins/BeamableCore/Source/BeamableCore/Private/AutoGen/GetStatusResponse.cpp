@@ -12,14 +12,14 @@ void UGetStatusResponse::DeserializeRequestResponse(UObject* RequestData, FStrin
 
 void UGetStatusResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("isCurrent"), bIsCurrent);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("isCurrent"), bIsCurrent, Serializer);
 	UBeamJsonUtils::SerializeArray<UServiceStatus*>(TEXT("services"), Services, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UServiceStorageStatus*>, UServiceStorageStatus*>(TEXT("storageStatuses"), &StorageStatuses, Serializer);
 }
 
 void UGetStatusResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("isCurrent"), bIsCurrent);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("isCurrent"), bIsCurrent, Serializer);
 	UBeamJsonUtils::SerializeArray<UServiceStatus*>(TEXT("services"), Services, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UServiceStorageStatus*>, UServiceStorageStatus*>(TEXT("storageStatuses"), &StorageStatuses, Serializer);		
 }

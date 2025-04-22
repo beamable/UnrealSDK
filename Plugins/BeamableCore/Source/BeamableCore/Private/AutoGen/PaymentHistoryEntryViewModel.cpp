@@ -7,14 +7,14 @@
 
 void UPaymentHistoryEntryViewModel::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("change"), Change);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("change"), Change, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("data"), &Data, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("timestamp"), &Timestamp, Serializer);
 }
 
 void UPaymentHistoryEntryViewModel::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("change"), Change);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("change"), Change, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("data"), &Data, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("timestamp"), &Timestamp, Serializer);		
 }

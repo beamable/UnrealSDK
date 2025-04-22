@@ -7,12 +7,12 @@
 
 void URepeatManifestRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("uid"), Uid);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("uid"), Uid, Serializer);
 }
 
 void URepeatManifestRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("uid"), Uid);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("uid"), Uid, Serializer);		
 }
 
 void URepeatManifestRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

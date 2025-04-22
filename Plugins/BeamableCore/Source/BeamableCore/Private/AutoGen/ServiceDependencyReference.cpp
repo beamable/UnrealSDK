@@ -7,14 +7,14 @@
 
 void UServiceDependencyReference::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("storageType"), StorageType);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("storageType"), StorageType, Serializer);
 }
 
 void UServiceDependencyReference::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("storageType"), StorageType);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("storageType"), StorageType, Serializer);		
 }
 
 void UServiceDependencyReference::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

@@ -7,15 +7,15 @@
 
 void UFederationInfo::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("service"), Service);
-	Serializer->WriteValue(TEXT("namespace"), Namespace);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("service"), Service, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("namespace"), Namespace, Serializer);
 	UBeamJsonUtils::SerializeJsonObject(TEXT("settings"), Settings, Serializer);
 }
 
 void UFederationInfo::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("service"), Service);
-	Serializer->WriteValue(TEXT("namespace"), Namespace);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("service"), Service, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("namespace"), Namespace, Serializer);
 	UBeamJsonUtils::SerializeJsonObject(TEXT("settings"), Settings, Serializer);		
 }
 

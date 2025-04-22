@@ -12,12 +12,12 @@ void UPaymentResultResponse::DeserializeRequestResponse(UObject* RequestData, FS
 
 void UPaymentResultResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("result"), Result);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("result"), Result, Serializer);
 }
 
 void UPaymentResultResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("result"), Result);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("result"), Result, Serializer);		
 }
 
 void UPaymentResultResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

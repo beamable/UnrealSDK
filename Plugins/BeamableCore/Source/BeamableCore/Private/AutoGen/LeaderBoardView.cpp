@@ -7,16 +7,16 @@
 
 void ULeaderBoardView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("lbId"), LbId);
-	Serializer->WriteValue(TEXT("boardSize"), BoardSize);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("lbId"), LbId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("boardSize"), BoardSize, Serializer);
 	UBeamJsonUtils::SerializeArray<URankEntry*>(TEXT("rankings"), Rankings, Serializer);
 	UBeamJsonUtils::SerializeOptional<URankEntry*>(TEXT("rankgt"), &Rankgt, Serializer);
 }
 
 void ULeaderBoardView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("lbId"), LbId);
-	Serializer->WriteValue(TEXT("boardSize"), BoardSize);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("lbId"), LbId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("boardSize"), BoardSize, Serializer);
 	UBeamJsonUtils::SerializeArray<URankEntry*>(TEXT("rankings"), Rankings, Serializer);
 	UBeamJsonUtils::SerializeOptional<URankEntry*>(TEXT("rankgt"), &Rankgt, Serializer);		
 }

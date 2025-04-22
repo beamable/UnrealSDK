@@ -7,24 +7,24 @@
 
 void UTrackPurchaseRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("priceInLocalCurrency"), PriceInLocalCurrency);
-	Serializer->WriteValue(TEXT("skuName"), SkuName);
-	Serializer->WriteValue(TEXT("skuProductId"), SkuProductId);
-	Serializer->WriteValue(TEXT("store"), Store);
-	Serializer->WriteValue(TEXT("purchaseId"), PurchaseId);
-	Serializer->WriteValue(TEXT("isoCurrencySymbol"), IsoCurrencySymbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("priceInLocalCurrency"), PriceInLocalCurrency, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("skuName"), SkuName, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("skuProductId"), SkuProductId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("store"), Store, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("purchaseId"), PurchaseId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("isoCurrencySymbol"), IsoCurrencySymbol, Serializer);
 	UBeamJsonUtils::SerializeArray<UItemCreateRequestBody*>(TEXT("obtainItems"), ObtainItems, Serializer);
 	UBeamJsonUtils::SerializeArray<UCurrencyChange*>(TEXT("obtainCurrency"), ObtainCurrency, Serializer);
 }
 
 void UTrackPurchaseRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("priceInLocalCurrency"), PriceInLocalCurrency);
-	Serializer->WriteValue(TEXT("skuName"), SkuName);
-	Serializer->WriteValue(TEXT("skuProductId"), SkuProductId);
-	Serializer->WriteValue(TEXT("store"), Store);
-	Serializer->WriteValue(TEXT("purchaseId"), PurchaseId);
-	Serializer->WriteValue(TEXT("isoCurrencySymbol"), IsoCurrencySymbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("priceInLocalCurrency"), PriceInLocalCurrency, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("skuName"), SkuName, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("skuProductId"), SkuProductId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("store"), Store, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("purchaseId"), PurchaseId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("isoCurrencySymbol"), IsoCurrencySymbol, Serializer);
 	UBeamJsonUtils::SerializeArray<UItemCreateRequestBody*>(TEXT("obtainItems"), ObtainItems, Serializer);
 	UBeamJsonUtils::SerializeArray<UCurrencyChange*>(TEXT("obtainCurrency"), ObtainCurrency, Serializer);		
 }

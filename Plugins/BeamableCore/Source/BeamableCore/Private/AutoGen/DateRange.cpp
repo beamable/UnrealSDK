@@ -7,14 +7,14 @@
 
 void UDateRange::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("from"), From);
-	Serializer->WriteValue(TEXT("to"), To);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("from"), From, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("to"), To, Serializer);
 }
 
 void UDateRange::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("from"), From);
-	Serializer->WriteValue(TEXT("to"), To);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("from"), From, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("to"), To, Serializer);		
 }
 
 void UDateRange::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

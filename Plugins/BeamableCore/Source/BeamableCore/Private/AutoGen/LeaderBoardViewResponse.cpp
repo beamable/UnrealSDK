@@ -12,13 +12,13 @@ void ULeaderBoardViewResponse::DeserializeRequestResponse(UObject* RequestData, 
 
 void ULeaderBoardViewResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("result"), Result);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("result"), Result, Serializer);
 	UBeamJsonUtils::SerializeUObject<ULeaderBoardView*>("lb", Lb, Serializer);
 }
 
 void ULeaderBoardViewResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("result"), Result);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("result"), Result, Serializer);
 	UBeamJsonUtils::SerializeUObject<ULeaderBoardView*>("lb", Lb, Serializer);		
 }
 

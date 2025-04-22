@@ -7,13 +7,13 @@
 
 void UPaymentTotal::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("totalRevenue"), TotalRevenue);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("totalRevenue"), TotalRevenue, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("currencyCode"), &CurrencyCode, Serializer);
 }
 
 void UPaymentTotal::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("totalRevenue"), TotalRevenue);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("totalRevenue"), TotalRevenue, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("currencyCode"), &CurrencyCode, Serializer);		
 }
 

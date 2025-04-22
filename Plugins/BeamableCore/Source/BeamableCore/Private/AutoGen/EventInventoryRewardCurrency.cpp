@@ -7,14 +7,14 @@
 
 void UEventInventoryRewardCurrency::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("amount"), Amount);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("amount"), Amount, Serializer);
 }
 
 void UEventInventoryRewardCurrency::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("amount"), Amount);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("amount"), Amount, Serializer);		
 }
 
 void UEventInventoryRewardCurrency::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

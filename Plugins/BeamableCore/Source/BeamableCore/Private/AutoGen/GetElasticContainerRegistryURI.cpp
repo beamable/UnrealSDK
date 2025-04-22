@@ -12,12 +12,12 @@ void UGetElasticContainerRegistryURI::DeserializeRequestResponse(UObject* Reques
 
 void UGetElasticContainerRegistryURI::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("uri"), Uri);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("uri"), Uri, Serializer);
 }
 
 void UGetElasticContainerRegistryURI::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("uri"), Uri);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("uri"), Uri, Serializer);		
 }
 
 void UGetElasticContainerRegistryURI::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

@@ -8,16 +8,16 @@
 void UBinaryDefinition::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
-	Serializer->WriteValue(TEXT("checksum"), Checksum);
-	Serializer->WriteValue(TEXT("uploadContentType"), UploadContentType);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("checksum"), Checksum, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("uploadContentType"), UploadContentType, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("tags"), &Tags, Serializer);
 }
 
 void UBinaryDefinition::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
-	Serializer->WriteValue(TEXT("checksum"), Checksum);
-	Serializer->WriteValue(TEXT("uploadContentType"), UploadContentType);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("checksum"), Checksum, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("uploadContentType"), UploadContentType, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("tags"), &Tags, Serializer);		
 }
 

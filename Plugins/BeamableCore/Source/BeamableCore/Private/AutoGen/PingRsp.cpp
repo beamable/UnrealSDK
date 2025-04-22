@@ -12,12 +12,12 @@ void UPingRsp::DeserializeRequestResponse(UObject* RequestData, FString Response
 
 void UPingRsp::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("keepAlive"), bKeepAlive);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("keepAlive"), bKeepAlive, Serializer);
 }
 
 void UPingRsp::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("keepAlive"), bKeepAlive);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("keepAlive"), bKeepAlive, Serializer);		
 }
 
 void UPingRsp::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

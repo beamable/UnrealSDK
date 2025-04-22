@@ -7,13 +7,13 @@
 
 void UMyMailUpdate::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
 	UBeamJsonUtils::SerializeUObject<UUpdateMailRequestBody*>("update", Update, Serializer);
 }
 
 void UMyMailUpdate::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
 	UBeamJsonUtils::SerializeUObject<UUpdateMailRequestBody*>("update", Update, Serializer);		
 }
 

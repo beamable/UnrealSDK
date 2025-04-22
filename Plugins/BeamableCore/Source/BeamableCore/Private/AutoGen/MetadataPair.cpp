@@ -7,14 +7,14 @@
 
 void UMetadataPair::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("key"), Key);
-	Serializer->WriteValue(TEXT("value"), Value);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("key"), Key, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("value"), Value, Serializer);
 }
 
 void UMetadataPair::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("key"), Key);
-	Serializer->WriteValue(TEXT("value"), Value);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("key"), Key, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("value"), Value, Serializer);		
 }
 
 void UMetadataPair::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

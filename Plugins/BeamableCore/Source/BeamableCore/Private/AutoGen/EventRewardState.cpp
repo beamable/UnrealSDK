@@ -7,10 +7,10 @@
 
 void UEventRewardState::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("claimed"), bClaimed);
-	Serializer->WriteValue(TEXT("earned"), bEarned);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("claimed"), bClaimed, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("earned"), bEarned, Serializer);
 	UBeamJsonUtils::SerializeUObject<UEventInventoryPendingRewards*>("pendingInventoryRewards", PendingInventoryRewards, Serializer);
-	Serializer->WriteValue(TEXT("min"), Min);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("min"), Min, Serializer);
 	UBeamJsonUtils::SerializeOptional<double>(TEXT("max"), &Max, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UEventInventoryRewardCurrency*>, UEventInventoryRewardCurrency*>(TEXT("currencies"), &Currencies, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UItemCreateRequestBody*>, UItemCreateRequestBody*>(TEXT("pendingItemRewards"), &PendingItemRewards, Serializer);
@@ -22,10 +22,10 @@ void UEventRewardState::BeamSerializeProperties(TUnrealJsonSerializer& Serialize
 
 void UEventRewardState::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("claimed"), bClaimed);
-	Serializer->WriteValue(TEXT("earned"), bEarned);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("claimed"), bClaimed, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("earned"), bEarned, Serializer);
 	UBeamJsonUtils::SerializeUObject<UEventInventoryPendingRewards*>("pendingInventoryRewards", PendingInventoryRewards, Serializer);
-	Serializer->WriteValue(TEXT("min"), Min);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("min"), Min, Serializer);
 	UBeamJsonUtils::SerializeOptional<double>(TEXT("max"), &Max, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UEventInventoryRewardCurrency*>, UEventInventoryRewardCurrency*>(TEXT("currencies"), &Currencies, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UItemCreateRequestBody*>, UItemCreateRequestBody*>(TEXT("pendingItemRewards"), &PendingItemRewards, Serializer);

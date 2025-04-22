@@ -7,12 +7,12 @@
 
 void UMessage::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("receiverGamerTag"), ReceiverGamerTag);
-	Serializer->WriteValue(TEXT("state"), State);
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("senderGamerTag"), SenderGamerTag);
-	Serializer->WriteValue(TEXT("sent"), Sent);
-	Serializer->WriteValue(TEXT("category"), Category);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("receiverGamerTag"), ReceiverGamerTag, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("state"), State, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("senderGamerTag"), SenderGamerTag, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("sent"), Sent, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("category"), Category, Serializer);
 	UBeamJsonUtils::SerializeArray<UAttachment*>(TEXT("attachments"), Attachments, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("body"), &Body, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("expires"), &Expires, Serializer);
@@ -25,12 +25,12 @@ void UMessage::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 
 void UMessage::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("receiverGamerTag"), ReceiverGamerTag);
-	Serializer->WriteValue(TEXT("state"), State);
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("senderGamerTag"), SenderGamerTag);
-	Serializer->WriteValue(TEXT("sent"), Sent);
-	Serializer->WriteValue(TEXT("category"), Category);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("receiverGamerTag"), ReceiverGamerTag, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("state"), State, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("senderGamerTag"), SenderGamerTag, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("sent"), Sent, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("category"), Category, Serializer);
 	UBeamJsonUtils::SerializeArray<UAttachment*>(TEXT("attachments"), Attachments, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("body"), &Body, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("expires"), &Expires, Serializer);

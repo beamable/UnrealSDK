@@ -7,16 +7,16 @@
 
 void UCurrencyPreview::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("amount"), Amount);
-	Serializer->WriteValue(TEXT("originalAmount"), OriginalAmount);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("amount"), Amount, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("originalAmount"), OriginalAmount, Serializer);
 }
 
 void UCurrencyPreview::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("amount"), Amount);
-	Serializer->WriteValue(TEXT("originalAmount"), OriginalAmount);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("amount"), Amount, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("originalAmount"), OriginalAmount, Serializer);		
 }
 
 void UCurrencyPreview::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

@@ -7,14 +7,14 @@
 
 void UBeamoLimits::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("maxContainerSize"), MaxContainerSize);
-	Serializer->WriteValue(TEXT("maxRunningContainersPerService"), MaxRunningContainersPerService);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("maxContainerSize"), MaxContainerSize, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("maxRunningContainersPerService"), MaxRunningContainersPerService, Serializer);
 }
 
 void UBeamoLimits::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("maxContainerSize"), MaxContainerSize);
-	Serializer->WriteValue(TEXT("maxRunningContainersPerService"), MaxRunningContainersPerService);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("maxContainerSize"), MaxContainerSize, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("maxRunningContainersPerService"), MaxRunningContainersPerService, Serializer);		
 }
 
 void UBeamoLimits::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

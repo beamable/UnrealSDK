@@ -7,8 +7,8 @@
 
 void URankEntry::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("rank"), Rank);
-	Serializer->WriteValue(TEXT("gt"), Gt);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("rank"), Rank, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gt"), Gt, Serializer);
 	UBeamJsonUtils::SerializeMap<int64>(TEXT("columns"), Columns, Serializer);
 	UBeamJsonUtils::SerializeOptional<double>(TEXT("score"), &Score, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<URankEntryStat*>, URankEntryStat*>(TEXT("stats"), &Stats, Serializer);
@@ -16,8 +16,8 @@ void URankEntry::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) cons
 
 void URankEntry::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("rank"), Rank);
-	Serializer->WriteValue(TEXT("gt"), Gt);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("rank"), Rank, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gt"), Gt, Serializer);
 	UBeamJsonUtils::SerializeMap<int64>(TEXT("columns"), Columns, Serializer);
 	UBeamJsonUtils::SerializeOptional<double>(TEXT("score"), &Score, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<URankEntryStat*>, URankEntryStat*>(TEXT("stats"), &Stats, Serializer);		

@@ -7,14 +7,14 @@
 
 void UAttachmentProperty::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("value"), Value);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("value"), Value, Serializer);
 }
 
 void UAttachmentProperty::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("value"), Value);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("value"), Value, Serializer);		
 }
 
 void UAttachmentProperty::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

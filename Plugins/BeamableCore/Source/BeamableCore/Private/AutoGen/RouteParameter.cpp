@@ -7,17 +7,17 @@
 
 void URouteParameter::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("body"), Body);
-	Serializer->WriteValue(TEXT("typeName"), TypeName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("body"), Body, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("typeName"), TypeName, Serializer);
 	UBeamJsonUtils::SerializeOptional<UVariableReference*>(TEXT("variableRef"), &VariableRef, Serializer);
 }
 
 void URouteParameter::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("body"), Body);
-	Serializer->WriteValue(TEXT("typeName"), TypeName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("body"), Body, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("typeName"), TypeName, Serializer);
 	UBeamJsonUtils::SerializeOptional<UVariableReference*>(TEXT("variableRef"), &VariableRef, Serializer);		
 }
 

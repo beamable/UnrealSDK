@@ -7,10 +7,10 @@
 
 void UMetadataView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("cohorted"), bCohorted);
-	Serializer->WriteValue(TEXT("frozen"), bFrozen);
-	Serializer->WriteValue(TEXT("partitioned"), bPartitioned);
-	Serializer->WriteValue(TEXT("parentLeaderboard"), ParentLeaderboard);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("cohorted"), bCohorted, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("frozen"), bFrozen, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("partitioned"), bPartitioned, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("parentLeaderboard"), ParentLeaderboard, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("freezeTime"), &FreezeTime, Serializer);
 	UBeamJsonUtils::SerializeOptional<ULeaderboardCohortSettings*>(TEXT("cohortSettings"), &CohortSettings, Serializer);
 	UBeamJsonUtils::SerializeOptional<FBeamClientPermission>(TEXT("permissions"), &Permissions, Serializer);
@@ -21,10 +21,10 @@ void UMetadataView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) c
 
 void UMetadataView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("cohorted"), bCohorted);
-	Serializer->WriteValue(TEXT("frozen"), bFrozen);
-	Serializer->WriteValue(TEXT("partitioned"), bPartitioned);
-	Serializer->WriteValue(TEXT("parentLeaderboard"), ParentLeaderboard);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("cohorted"), bCohorted, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("frozen"), bFrozen, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("partitioned"), bPartitioned, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("parentLeaderboard"), ParentLeaderboard, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("freezeTime"), &FreezeTime, Serializer);
 	UBeamJsonUtils::SerializeOptional<ULeaderboardCohortSettings*>(TEXT("cohortSettings"), &CohortSettings, Serializer);
 	UBeamJsonUtils::SerializeOptional<FBeamClientPermission>(TEXT("permissions"), &Permissions, Serializer);

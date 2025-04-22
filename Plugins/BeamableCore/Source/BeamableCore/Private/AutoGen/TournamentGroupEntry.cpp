@@ -7,19 +7,19 @@
 
 void UTournamentGroupEntry::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("rank"), Rank);
-	Serializer->WriteValue(TEXT("score"), Score);
-	Serializer->WriteValue(TEXT("groupId"), GroupId);
-	Serializer->WriteValue(TEXT("stageChange"), StageChange);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("rank"), Rank, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("score"), Score, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("groupId"), GroupId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("stageChange"), StageChange, Serializer);
 	UBeamJsonUtils::SerializeArray<UTournamentCurrencyReward*>(TEXT("currencyRewards"), CurrencyRewards, Serializer);
 }
 
 void UTournamentGroupEntry::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("rank"), Rank);
-	Serializer->WriteValue(TEXT("score"), Score);
-	Serializer->WriteValue(TEXT("groupId"), GroupId);
-	Serializer->WriteValue(TEXT("stageChange"), StageChange);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("rank"), Rank, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("score"), Score, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("groupId"), GroupId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("stageChange"), StageChange, Serializer);
 	UBeamJsonUtils::SerializeArray<UTournamentCurrencyReward*>(TEXT("currencyRewards"), CurrencyRewards, Serializer);		
 }
 

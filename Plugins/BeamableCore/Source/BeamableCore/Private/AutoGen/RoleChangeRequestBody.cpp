@@ -7,15 +7,15 @@
 
 void URoleChangeRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("gamerTag"), GamerTag);
-	Serializer->WriteValue(TEXT("role"), Role);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gamerTag"), GamerTag, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("role"), Role, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("subGroup"), &SubGroup, Serializer);
 }
 
 void URoleChangeRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("gamerTag"), GamerTag);
-	Serializer->WriteValue(TEXT("role"), Role);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gamerTag"), GamerTag, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("role"), Role, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("subGroup"), &SubGroup, Serializer);		
 }
 

@@ -7,15 +7,15 @@
 
 void UMailSearchResponseClause::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("count"), Count);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("count"), Count, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UMessage*>, UMessage*>(TEXT("content"), &Content, Serializer);
 }
 
 void UMailSearchResponseClause::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("count"), Count);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("count"), Count, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UMessage*>, UMessage*>(TEXT("content"), &Content, Serializer);		
 }
 

@@ -7,17 +7,17 @@
 
 void UEventPhaseRuntime::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("startTime"), StartTime);
-	Serializer->WriteValue(TEXT("endTime"), EndTime);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("startTime"), StartTime, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("endTime"), EndTime, Serializer);
 	UBeamJsonUtils::SerializeArray<UEventRule*>(TEXT("rules"), Rules, Serializer);
 }
 
 void UEventPhaseRuntime::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("startTime"), StartTime);
-	Serializer->WriteValue(TEXT("endTime"), EndTime);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("startTime"), StartTime, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("endTime"), EndTime, Serializer);
 	UBeamJsonUtils::SerializeArray<UEventRule*>(TEXT("rules"), Rules, Serializer);		
 }
 

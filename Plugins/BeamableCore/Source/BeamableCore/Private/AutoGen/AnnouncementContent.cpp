@@ -7,11 +7,11 @@
 
 void UAnnouncementContent::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("body"), Body);
-	Serializer->WriteValue(TEXT("channel"), Channel);
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
-	Serializer->WriteValue(TEXT("title"), Title);
-	Serializer->WriteValue(TEXT("summary"), Summary);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("body"), Body, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("channel"), Channel, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("title"), Title, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("summary"), Summary, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("start_date"), &StartDate, Serializer);
 	UBeamJsonUtils::SerializeOptional<UPlayerReward*>(TEXT("gift"), &Gift, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("end_date"), &EndDate, Serializer);
@@ -23,11 +23,11 @@ void UAnnouncementContent::BeamSerializeProperties(TUnrealJsonSerializer& Serial
 
 void UAnnouncementContent::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("body"), Body);
-	Serializer->WriteValue(TEXT("channel"), Channel);
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
-	Serializer->WriteValue(TEXT("title"), Title);
-	Serializer->WriteValue(TEXT("summary"), Summary);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("body"), Body, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("channel"), Channel, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("title"), Title, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("summary"), Summary, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("start_date"), &StartDate, Serializer);
 	UBeamJsonUtils::SerializeOptional<UPlayerReward*>(TEXT("gift"), &Gift, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("end_date"), &EndDate, Serializer);

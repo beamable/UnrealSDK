@@ -12,14 +12,14 @@ void UAvailabilityResponse::DeserializeRequestResponse(UObject* RequestData, FSt
 
 void UAvailabilityResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), bName);
-	Serializer->WriteValue(TEXT("tag"), bTag);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), bName, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tag"), bTag, Serializer);
 }
 
 void UAvailabilityResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), bName);
-	Serializer->WriteValue(TEXT("tag"), bTag);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), bName, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tag"), bTag, Serializer);		
 }
 
 void UAvailabilityResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

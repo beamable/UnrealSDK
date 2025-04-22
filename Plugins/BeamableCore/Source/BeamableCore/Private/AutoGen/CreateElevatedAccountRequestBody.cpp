@@ -7,14 +7,14 @@
 
 void UCreateElevatedAccountRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("email"), Email);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("email"), Email, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("role"), &Role, Serializer);
 	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("initProperties"), &InitProperties, Serializer);
 }
 
 void UCreateElevatedAccountRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("email"), Email);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("email"), Email, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("role"), &Role, Serializer);
 	UBeamJsonUtils::SerializeOptional<TMap<FString, FString>, FString>(TEXT("initProperties"), &InitProperties, Serializer);		
 }

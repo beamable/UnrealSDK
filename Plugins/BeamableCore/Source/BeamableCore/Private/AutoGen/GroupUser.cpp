@@ -12,8 +12,8 @@ void UGroupUser::DeserializeRequestResponse(UObject* RequestData, FString Respon
 
 void UGroupUser::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("gamerTag"), GamerTag);
-	Serializer->WriteValue(TEXT("updated"), Updated);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gamerTag"), GamerTag, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("updated"), Updated, Serializer);
 	UBeamJsonUtils::SerializeUObject<UGroupMemberInfo*>("member", Member, Serializer);
 	UBeamJsonUtils::SerializeArray<UGroupUserMember*>(TEXT("allGroups"), AllGroups, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UInFlightMessage*>, UInFlightMessage*>(TEXT("inFlight"), &InFlight, Serializer);
@@ -22,8 +22,8 @@ void UGroupUser::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) cons
 
 void UGroupUser::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("gamerTag"), GamerTag);
-	Serializer->WriteValue(TEXT("updated"), Updated);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gamerTag"), GamerTag, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("updated"), Updated, Serializer);
 	UBeamJsonUtils::SerializeUObject<UGroupMemberInfo*>("member", Member, Serializer);
 	UBeamJsonUtils::SerializeArray<UGroupUserMember*>(TEXT("allGroups"), AllGroups, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UInFlightMessage*>, UInFlightMessage*>(TEXT("inFlight"), &InFlight, Serializer);

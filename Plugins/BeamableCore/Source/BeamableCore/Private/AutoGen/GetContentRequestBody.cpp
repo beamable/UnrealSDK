@@ -8,13 +8,13 @@
 void UGetContentRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("contentId"), &ContentId, Serializer);
-	Serializer->WriteValue(TEXT("version"), Version);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("version"), Version, Serializer);
 }
 
 void UGetContentRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("contentId"), &ContentId, Serializer);
-	Serializer->WriteValue(TEXT("version"), Version);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("version"), Version, Serializer);		
 }
 
 void UGetContentRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

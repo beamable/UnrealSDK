@@ -7,13 +7,13 @@
 
 void UOfferRequirement::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("offerSymbol"), OfferSymbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("offerSymbol"), OfferSymbol, Serializer);
 	UBeamJsonUtils::SerializeUObject<UOfferConstraint*>("purchases", Purchases, Serializer);
 }
 
 void UOfferRequirement::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("offerSymbol"), OfferSymbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("offerSymbol"), OfferSymbol, Serializer);
 	UBeamJsonUtils::SerializeUObject<UOfferConstraint*>("purchases", Purchases, Serializer);		
 }
 

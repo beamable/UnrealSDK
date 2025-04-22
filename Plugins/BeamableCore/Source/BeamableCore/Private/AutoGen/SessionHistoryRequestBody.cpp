@@ -7,14 +7,14 @@
 
 void USessionHistoryRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("dbid"), Dbid);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("dbid"), Dbid, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("month"), &Month, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("year"), &Year, Serializer);
 }
 
 void USessionHistoryRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("dbid"), Dbid);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("dbid"), Dbid, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("month"), &Month, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("year"), &Year, Serializer);		
 }

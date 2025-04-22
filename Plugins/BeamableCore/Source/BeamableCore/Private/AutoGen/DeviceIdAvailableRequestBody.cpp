@@ -7,12 +7,12 @@
 
 void UDeviceIdAvailableRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("deviceId"), DeviceId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("deviceId"), DeviceId, Serializer);
 }
 
 void UDeviceIdAvailableRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("deviceId"), DeviceId);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("deviceId"), DeviceId, Serializer);		
 }
 
 void UDeviceIdAvailableRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

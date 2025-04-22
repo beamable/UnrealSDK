@@ -6,6 +6,7 @@
 #include "BlueprintNodeSpawner.h"
 #include "K2Node_CallFunction.h"
 #include "KismetCompiler.h"
+#include "SourceCodeNavigation.h"
 
 void UK2BeamNode_GetLocalState::GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const
 {
@@ -134,6 +135,17 @@ void UK2BeamNode_GetLocalState::ExpandNode(FKismetCompilerContext& CompilerConte
 
 	// Break original links
 	BreakAllNodeLinks();
+}
+
+UObject* UK2BeamNode_GetLocalState::GetJumpTargetForDoubleClick() const
+{
+	const auto Function = GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName());
+
+	if (!Function) return nullptr;
+
+	FSourceCodeNavigation::NavigateToFunction(Function);
+
+	return Super::GetJumpTargetForDoubleClick();
 }
 
 FName UK2BeamNode_GetLocalState::GetSubsystemSelfFunctionName() const

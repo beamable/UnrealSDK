@@ -7,9 +7,9 @@
 
 void UPlayerOfferView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("coupons"), Coupons);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("coupons"), Coupons, Serializer);
 	UBeamJsonUtils::SerializeUObject<UPrice*>("price", Price, Serializer);
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("titles"), Titles, Serializer);
 	UBeamJsonUtils::SerializeArray<UItemCreateRequestBody*>(TEXT("obtainItems"), ObtainItems, Serializer);
 	UBeamJsonUtils::SerializeArray<UCurrencyChange*>(TEXT("obtainCurrency"), ObtainCurrency, Serializer);
@@ -21,9 +21,9 @@ void UPlayerOfferView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer
 
 void UPlayerOfferView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("coupons"), Coupons);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("coupons"), Coupons, Serializer);
 	UBeamJsonUtils::SerializeUObject<UPrice*>("price", Price, Serializer);
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("titles"), Titles, Serializer);
 	UBeamJsonUtils::SerializeArray<UItemCreateRequestBody*>(TEXT("obtainItems"), ObtainItems, Serializer);
 	UBeamJsonUtils::SerializeArray<UCurrencyChange*>(TEXT("obtainCurrency"), ObtainCurrency, Serializer);

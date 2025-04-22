@@ -7,17 +7,17 @@
 
 void UMatchMakingRanking::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("isUnranked"), bIsUnranked);
-	Serializer->WriteValue(TEXT("gt"), Gt);
-	Serializer->WriteValue(TEXT("rank"), Rank);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("isUnranked"), bIsUnranked, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gt"), Gt, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("rank"), Rank, Serializer);
 	UBeamJsonUtils::SerializeMap<FString>(TEXT("variables"), Variables, Serializer);
 }
 
 void UMatchMakingRanking::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("isUnranked"), bIsUnranked);
-	Serializer->WriteValue(TEXT("gt"), Gt);
-	Serializer->WriteValue(TEXT("rank"), Rank);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("isUnranked"), bIsUnranked, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gt"), Gt, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("rank"), Rank, Serializer);
 	UBeamJsonUtils::SerializeMap<FString>(TEXT("variables"), Variables, Serializer);		
 }
 

@@ -7,7 +7,7 @@
 
 void UPlayerStoreView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
 	UBeamJsonUtils::SerializeArray<UPlayerListingView*>(TEXT("listings"), Listings, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("nextDeltaSeconds"), &NextDeltaSeconds, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("title"), &Title, Serializer);
@@ -16,7 +16,7 @@ void UPlayerStoreView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer
 
 void UPlayerStoreView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
 	UBeamJsonUtils::SerializeArray<UPlayerListingView*>(TEXT("listings"), Listings, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("nextDeltaSeconds"), &NextDeltaSeconds, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("title"), &Title, Serializer);

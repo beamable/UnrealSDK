@@ -7,19 +7,19 @@
 
 void UEventPhase::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("duration_minutes"), DurationMinutes);
-	Serializer->WriteValue(TEXT("durationMillis"), DurationMillis);
-	Serializer->WriteValue(TEXT("durationSeconds"), DurationSeconds);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("duration_minutes"), DurationMinutes, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("durationMillis"), DurationMillis, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("durationSeconds"), DurationSeconds, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UEventRule*>, UEventRule*>(TEXT("rules"), &Rules, Serializer);
 }
 
 void UEventPhase::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("duration_minutes"), DurationMinutes);
-	Serializer->WriteValue(TEXT("durationMillis"), DurationMillis);
-	Serializer->WriteValue(TEXT("durationSeconds"), DurationSeconds);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("duration_minutes"), DurationMinutes, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("durationMillis"), DurationMillis, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("durationSeconds"), DurationSeconds, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UEventRule*>, UEventRule*>(TEXT("rules"), &Rules, Serializer);		
 }
 

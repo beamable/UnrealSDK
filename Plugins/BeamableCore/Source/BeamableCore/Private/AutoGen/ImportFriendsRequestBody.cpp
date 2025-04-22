@@ -7,14 +7,14 @@
 
 void UImportFriendsRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("source"), Source);
-	Serializer->WriteValue(TEXT("token"), Token);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("source"), Source, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("token"), Token, Serializer);
 }
 
 void UImportFriendsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("source"), Source);
-	Serializer->WriteValue(TEXT("token"), Token);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("source"), Source, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("token"), Token, Serializer);		
 }
 
 void UImportFriendsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

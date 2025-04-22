@@ -7,7 +7,7 @@
 
 void UUpdateMailRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("mailId"), MailId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("mailId"), MailId, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("acceptAttachments"), &bAcceptAttachments, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("body"), &Body, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("expires"), &Expires, Serializer);
@@ -18,7 +18,7 @@ void UUpdateMailRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Seri
 
 void UUpdateMailRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("mailId"), MailId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("mailId"), MailId, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("acceptAttachments"), &bAcceptAttachments, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("body"), &Body, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("expires"), &Expires, Serializer);

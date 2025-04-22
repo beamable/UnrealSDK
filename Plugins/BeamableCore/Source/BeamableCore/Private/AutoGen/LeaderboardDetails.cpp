@@ -12,9 +12,9 @@ void ULeaderboardDetails::DeserializeRequestResponse(UObject* RequestData, FStri
 
 void ULeaderboardDetails::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("lbid"), Lbid);
-	Serializer->WriteValue(TEXT("numberOfEntries"), NumberOfEntries);
-	Serializer->WriteValue(TEXT("fullName"), FullName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("lbid"), Lbid, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("numberOfEntries"), NumberOfEntries, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("fullName"), FullName, Serializer);
 	UBeamJsonUtils::SerializeUObject<ULeaderBoardView*>("view", View, Serializer);
 	UBeamJsonUtils::SerializeOptional<UOrderRules*>(TEXT("orules"), &Orules, Serializer);
 	UBeamJsonUtils::SerializeOptional<UMetadataView*>(TEXT("metaData"), &MetaData, Serializer);
@@ -22,9 +22,9 @@ void ULeaderboardDetails::BeamSerializeProperties(TUnrealJsonSerializer& Seriali
 
 void ULeaderboardDetails::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("lbid"), Lbid);
-	Serializer->WriteValue(TEXT("numberOfEntries"), NumberOfEntries);
-	Serializer->WriteValue(TEXT("fullName"), FullName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("lbid"), Lbid, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("numberOfEntries"), NumberOfEntries, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("fullName"), FullName, Serializer);
 	UBeamJsonUtils::SerializeUObject<ULeaderBoardView*>("view", View, Serializer);
 	UBeamJsonUtils::SerializeOptional<UOrderRules*>(TEXT("orules"), &Orules, Serializer);
 	UBeamJsonUtils::SerializeOptional<UMetadataView*>(TEXT("metaData"), &MetaData, Serializer);		

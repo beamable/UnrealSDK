@@ -7,14 +7,14 @@
 
 void USessionLanguageContext::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("code"), Code);
-	Serializer->WriteValue(TEXT("ctx"), Ctx);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("code"), Code, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("ctx"), Ctx, Serializer);
 }
 
 void USessionLanguageContext::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("code"), Code);
-	Serializer->WriteValue(TEXT("ctx"), Ctx);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("code"), Code, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("ctx"), Ctx, Serializer);		
 }
 
 void USessionLanguageContext::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

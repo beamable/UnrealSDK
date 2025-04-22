@@ -7,17 +7,17 @@
 
 void UAttachment::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
 	UBeamJsonUtils::SerializeUObject<UEntitlementGenerator*>("wrapped", Wrapped, Serializer);
-	Serializer->WriteValue(TEXT("state"), State);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("state"), State, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("target"), &Target, Serializer);
 }
 
 void UAttachment::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
 	UBeamJsonUtils::SerializeUObject<UEntitlementGenerator*>("wrapped", Wrapped, Serializer);
-	Serializer->WriteValue(TEXT("state"), State);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("state"), State, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("target"), &Target, Serializer);		
 }
 

@@ -7,12 +7,12 @@
 
 void UHtmlResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("html"), Html);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("html"), Html, Serializer);
 }
 
 void UHtmlResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("html"), Html);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("html"), Html, Serializer);		
 }
 
 void UHtmlResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

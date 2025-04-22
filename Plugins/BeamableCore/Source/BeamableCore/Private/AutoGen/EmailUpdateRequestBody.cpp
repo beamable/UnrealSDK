@@ -7,13 +7,13 @@
 
 void UEmailUpdateRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("newEmail"), NewEmail);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("newEmail"), NewEmail, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("codeType"), &CodeType, Serializer);
 }
 
 void UEmailUpdateRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("newEmail"), NewEmail);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("newEmail"), NewEmail, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("codeType"), &CodeType, Serializer);		
 }
 

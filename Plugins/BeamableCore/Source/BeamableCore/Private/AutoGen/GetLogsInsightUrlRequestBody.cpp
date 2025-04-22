@@ -7,7 +7,7 @@
 
 void UGetLogsInsightUrlRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("serviceName"), ServiceName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceName"), ServiceName, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("startTime"), &StartTime, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("filter"), &Filter, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("endTime"), &EndTime, Serializer);
@@ -18,7 +18,7 @@ void UGetLogsInsightUrlRequestBody::BeamSerializeProperties(TUnrealJsonSerialize
 
 void UGetLogsInsightUrlRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("serviceName"), ServiceName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceName"), ServiceName, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("startTime"), &StartTime, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("filter"), &Filter, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("endTime"), &EndTime, Serializer);

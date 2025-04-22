@@ -7,12 +7,12 @@
 
 void UCreatePlanRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("mongoSSL"), bMongoSSL);
-	Serializer->WriteValue(TEXT("sharded"), bSharded);
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("memcachedHosts"), MemcachedHosts);
-	Serializer->WriteValue(TEXT("platformJBDC"), PlatformJBDC);
-	Serializer->WriteValue(TEXT("mongoHosts"), MongoHosts);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("mongoSSL"), bMongoSSL, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("sharded"), bSharded, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("memcachedHosts"), MemcachedHosts, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("platformJBDC"), PlatformJBDC, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("mongoHosts"), MongoHosts, Serializer);
 	UBeamJsonUtils::SerializeArray<URedisShardRequestBody*>(TEXT("redisShards"), RedisShards, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("mongoSrvAddress"), &MongoSrvAddress, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("messageBusAnalytics"), &MessageBusAnalytics, Serializer);
@@ -21,12 +21,12 @@ void UCreatePlanRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Seri
 
 void UCreatePlanRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("mongoSSL"), bMongoSSL);
-	Serializer->WriteValue(TEXT("sharded"), bSharded);
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("memcachedHosts"), MemcachedHosts);
-	Serializer->WriteValue(TEXT("platformJBDC"), PlatformJBDC);
-	Serializer->WriteValue(TEXT("mongoHosts"), MongoHosts);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("mongoSSL"), bMongoSSL, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("sharded"), bSharded, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("memcachedHosts"), MemcachedHosts, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("platformJBDC"), PlatformJBDC, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("mongoHosts"), MongoHosts, Serializer);
 	UBeamJsonUtils::SerializeArray<URedisShardRequestBody*>(TEXT("redisShards"), RedisShards, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("mongoSrvAddress"), &MongoSrvAddress, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("messageBusAnalytics"), &MessageBusAnalytics, Serializer);

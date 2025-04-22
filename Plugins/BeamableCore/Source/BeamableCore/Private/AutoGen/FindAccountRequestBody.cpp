@@ -7,12 +7,12 @@
 
 void UFindAccountRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("query"), Query);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("query"), Query, Serializer);
 }
 
 void UFindAccountRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("query"), Query);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("query"), Query, Serializer);		
 }
 
 void UFindAccountRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

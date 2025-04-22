@@ -12,17 +12,17 @@ void UGetSignedUrlResponse::DeserializeRequestResponse(UObject* RequestData, FSt
 
 void UGetSignedUrlResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("url"), Url);
-	Serializer->WriteValue(TEXT("body"), Body);
-	Serializer->WriteValue(TEXT("method"), Method);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("url"), Url, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("body"), Body, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("method"), Method, Serializer);
 	UBeamJsonUtils::SerializeArray<UGetLogsUrlHeader*>(TEXT("headers"), Headers, Serializer);
 }
 
 void UGetSignedUrlResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("url"), Url);
-	Serializer->WriteValue(TEXT("body"), Body);
-	Serializer->WriteValue(TEXT("method"), Method);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("url"), Url, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("body"), Body, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("method"), Method, Serializer);
 	UBeamJsonUtils::SerializeArray<UGetLogsUrlHeader*>(TEXT("headers"), Headers, Serializer);		
 }
 

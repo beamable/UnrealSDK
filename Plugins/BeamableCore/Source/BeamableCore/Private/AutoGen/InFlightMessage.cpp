@@ -7,11 +7,11 @@
 
 void UInFlightMessage::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("method"), Method);
-	Serializer->WriteValue(TEXT("body"), Body);
-	Serializer->WriteValue(TEXT("path"), Path);
-	Serializer->WriteValue(TEXT("service"), Service);
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("method"), Method, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("body"), Body, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("path"), Path, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("service"), Service, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("limitFailureRetries"), &bLimitFailureRetries, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("gamerTag"), &GamerTag, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("shard"), &Shard, Serializer);
@@ -19,11 +19,11 @@ void UInFlightMessage::BeamSerializeProperties(TUnrealJsonSerializer& Serializer
 
 void UInFlightMessage::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("method"), Method);
-	Serializer->WriteValue(TEXT("body"), Body);
-	Serializer->WriteValue(TEXT("path"), Path);
-	Serializer->WriteValue(TEXT("service"), Service);
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("method"), Method, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("body"), Body, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("path"), Path, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("service"), Service, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("limitFailureRetries"), &bLimitFailureRetries, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("gamerTag"), &GamerTag, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("shard"), &Shard, Serializer);		

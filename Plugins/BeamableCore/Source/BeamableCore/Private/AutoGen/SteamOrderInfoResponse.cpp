@@ -12,29 +12,29 @@ void USteamOrderInfoResponse::DeserializeRequestResponse(UObject* RequestData, F
 
 void USteamOrderInfoResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("usstate"), Usstate);
-	Serializer->WriteValue(TEXT("country"), Country);
-	Serializer->WriteValue(TEXT("timecreated"), Timecreated);
-	Serializer->WriteValue(TEXT("transid"), Transid);
-	Serializer->WriteValue(TEXT("status"), Status);
-	Serializer->WriteValue(TEXT("orderid"), Orderid);
-	Serializer->WriteValue(TEXT("steamid"), Steamid);
-	Serializer->WriteValue(TEXT("currency"), Currency);
-	Serializer->WriteValue(TEXT("time"), Time);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("usstate"), Usstate, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("country"), Country, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("timecreated"), Timecreated, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("transid"), Transid, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("status"), Status, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("orderid"), Orderid, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("steamid"), Steamid, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("currency"), Currency, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("time"), Time, Serializer);
 	UBeamJsonUtils::SerializeArray<USteamOrderInfoItem*>(TEXT("items"), Items, Serializer);
 }
 
 void USteamOrderInfoResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("usstate"), Usstate);
-	Serializer->WriteValue(TEXT("country"), Country);
-	Serializer->WriteValue(TEXT("timecreated"), Timecreated);
-	Serializer->WriteValue(TEXT("transid"), Transid);
-	Serializer->WriteValue(TEXT("status"), Status);
-	Serializer->WriteValue(TEXT("orderid"), Orderid);
-	Serializer->WriteValue(TEXT("steamid"), Steamid);
-	Serializer->WriteValue(TEXT("currency"), Currency);
-	Serializer->WriteValue(TEXT("time"), Time);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("usstate"), Usstate, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("country"), Country, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("timecreated"), Timecreated, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("transid"), Transid, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("status"), Status, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("orderid"), Orderid, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("steamid"), Steamid, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("currency"), Currency, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("time"), Time, Serializer);
 	UBeamJsonUtils::SerializeArray<USteamOrderInfoItem*>(TEXT("items"), Items, Serializer);		
 }
 

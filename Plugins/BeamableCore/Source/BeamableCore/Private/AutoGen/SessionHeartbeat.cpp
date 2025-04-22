@@ -12,13 +12,13 @@ void USessionHeartbeat::DeserializeRequestResponse(UObject* RequestData, FString
 
 void USessionHeartbeat::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("gt"), Gt);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gt"), Gt, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("heartbeat"), &Heartbeat, Serializer);
 }
 
 void USessionHeartbeat::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("gt"), Gt);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gt"), Gt, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("heartbeat"), &Heartbeat, Serializer);		
 }
 

@@ -7,7 +7,7 @@
 
 void UTokenRequestWrapper::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("grant_type"), GrantType);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("grant_type"), GrantType, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("customerScoped"), &bCustomerScoped, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("device_id"), &DeviceId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("provider_service"), &ProviderService, Serializer);
@@ -29,7 +29,7 @@ void UTokenRequestWrapper::BeamSerializeProperties(TUnrealJsonSerializer& Serial
 
 void UTokenRequestWrapper::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("grant_type"), GrantType);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("grant_type"), GrantType, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("customerScoped"), &bCustomerScoped, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("device_id"), &DeviceId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("provider_service"), &ProviderService, Serializer);

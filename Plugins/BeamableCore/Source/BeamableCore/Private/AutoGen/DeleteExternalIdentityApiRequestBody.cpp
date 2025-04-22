@@ -7,15 +7,15 @@
 
 void UDeleteExternalIdentityApiRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("provider_service"), ProviderService);
-	Serializer->WriteValue(TEXT("user_id"), UserId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("provider_service"), ProviderService, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("user_id"), UserId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("provider_namespace"), &ProviderNamespace, Serializer);
 }
 
 void UDeleteExternalIdentityApiRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("provider_service"), ProviderService);
-	Serializer->WriteValue(TEXT("user_id"), UserId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("provider_service"), ProviderService, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("user_id"), UserId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("provider_namespace"), &ProviderNamespace, Serializer);		
 }
 

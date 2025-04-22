@@ -7,11 +7,11 @@
 
 void UProject::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("archived"), bArchived);
-	Serializer->WriteValue(TEXT("root"), bRoot);
-	Serializer->WriteValue(TEXT("secret"), Secret);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("archived"), bArchived, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("root"), bRoot, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("secret"), Secret, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("name"), &Name, Serializer);
-	Serializer->WriteValue(TEXT("plan"), Plan);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("plan"), Plan, Serializer);
 	UBeamJsonUtils::SerializeMap<FString>(TEXT("customCharts"), CustomCharts, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("sharded"), &bSharded, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("sigval"), &bSigval, Serializer);
@@ -25,11 +25,11 @@ void UProject::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 
 void UProject::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("archived"), bArchived);
-	Serializer->WriteValue(TEXT("root"), bRoot);
-	Serializer->WriteValue(TEXT("secret"), Secret);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("archived"), bArchived, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("root"), bRoot, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("secret"), Secret, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("name"), &Name, Serializer);
-	Serializer->WriteValue(TEXT("plan"), Plan);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("plan"), Plan, Serializer);
 	UBeamJsonUtils::SerializeMap<FString>(TEXT("customCharts"), CustomCharts, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("sharded"), &bSharded, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("sigval"), &bSigval, Serializer);

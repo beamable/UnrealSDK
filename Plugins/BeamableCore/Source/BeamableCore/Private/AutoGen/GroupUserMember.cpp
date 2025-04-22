@@ -7,14 +7,14 @@
 
 void UGroupUserMember::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
 	UBeamJsonUtils::SerializeArray<UGroupUserMember*>(TEXT("subGroups"), SubGroups, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("joined"), &Joined, Serializer);
 }
 
 void UGroupUserMember::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
 	UBeamJsonUtils::SerializeArray<UGroupUserMember*>(TEXT("subGroups"), SubGroups, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("joined"), &Joined, Serializer);		
 }

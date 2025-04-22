@@ -7,7 +7,7 @@
 
 void UStore::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
 	UBeamJsonUtils::SerializeArray<UListing*>(TEXT("listings"), Listings, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("showInactiveListings"), &bShowInactiveListings, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("activeListingLimit"), &ActiveListingLimit, Serializer);
@@ -18,7 +18,7 @@ void UStore::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 
 void UStore::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
 	UBeamJsonUtils::SerializeArray<UListing*>(TEXT("listings"), Listings, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("showInactiveListings"), &bShowInactiveListings, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("activeListingLimit"), &ActiveListingLimit, Serializer);

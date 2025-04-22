@@ -7,7 +7,7 @@
 
 void UCustomer::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);
 	UBeamJsonUtils::SerializeArray<UProject*>(TEXT("projects"), Projects, Serializer);
 	UBeamJsonUtils::SerializeArray<URealmsBasicAccount*>(TEXT("accounts"), Accounts, Serializer);
@@ -23,7 +23,7 @@ void UCustomer::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 
 void UCustomer::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);
 	UBeamJsonUtils::SerializeArray<UProject*>(TEXT("projects"), Projects, Serializer);
 	UBeamJsonUtils::SerializeArray<URealmsBasicAccount*>(TEXT("accounts"), Accounts, Serializer);

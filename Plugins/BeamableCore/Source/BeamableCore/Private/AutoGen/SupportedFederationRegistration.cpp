@@ -7,16 +7,16 @@
 
 void USupportedFederationRegistration::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("trafficFilterEnabled"), bTrafficFilterEnabled);
-	Serializer->WriteValue(TEXT("serviceName"), ServiceName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("trafficFilterEnabled"), bTrafficFilterEnabled, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceName"), ServiceName, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("routingKey"), &RoutingKey, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<USupportedFederation*>, USupportedFederation*>(TEXT("federation"), &Federation, Serializer);
 }
 
 void USupportedFederationRegistration::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("trafficFilterEnabled"), bTrafficFilterEnabled);
-	Serializer->WriteValue(TEXT("serviceName"), ServiceName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("trafficFilterEnabled"), bTrafficFilterEnabled, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceName"), ServiceName, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("routingKey"), &RoutingKey, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<USupportedFederation*>, USupportedFederation*>(TEXT("federation"), &Federation, Serializer);		
 }

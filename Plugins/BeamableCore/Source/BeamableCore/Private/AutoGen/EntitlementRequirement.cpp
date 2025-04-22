@@ -7,17 +7,17 @@
 
 void UEntitlementRequirement::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
-	Serializer->WriteValue(TEXT("constraint"), Constraint);
-	Serializer->WriteValue(TEXT("state"), State);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("constraint"), Constraint, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("state"), State, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("specialization"), &Specialization, Serializer);
 }
 
 void UEntitlementRequirement::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
-	Serializer->WriteValue(TEXT("constraint"), Constraint);
-	Serializer->WriteValue(TEXT("state"), State);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("constraint"), Constraint, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("state"), State, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("specialization"), &Specialization, Serializer);		
 }
 

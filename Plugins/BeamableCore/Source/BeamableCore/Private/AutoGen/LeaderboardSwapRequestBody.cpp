@@ -7,16 +7,16 @@
 
 void ULeaderboardSwapRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("swapBase"), SwapBase);
-	Serializer->WriteValue(TEXT("delta"), Delta);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("swapBase"), SwapBase, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("delta"), Delta, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("winnerId"), &WinnerId, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("loserId"), &LoserId, Serializer);
 }
 
 void ULeaderboardSwapRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("swapBase"), SwapBase);
-	Serializer->WriteValue(TEXT("delta"), Delta);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("swapBase"), SwapBase, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("delta"), Delta, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("winnerId"), &WinnerId, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("loserId"), &LoserId, Serializer);		
 }

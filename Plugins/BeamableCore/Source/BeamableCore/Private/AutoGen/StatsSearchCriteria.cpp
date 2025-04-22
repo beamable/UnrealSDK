@@ -7,15 +7,15 @@
 
 void UStatsSearchCriteria::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("stat"), Stat);
-	Serializer->WriteValue(TEXT("rel"), Rel);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("stat"), Stat, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("rel"), Rel, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("value"), &Value, Serializer);
 }
 
 void UStatsSearchCriteria::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("stat"), Stat);
-	Serializer->WriteValue(TEXT("rel"), Rel);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("stat"), Stat, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("rel"), Rel, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("value"), &Value, Serializer);		
 }
 

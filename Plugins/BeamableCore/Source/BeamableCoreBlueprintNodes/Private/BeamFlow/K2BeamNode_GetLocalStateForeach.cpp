@@ -72,6 +72,11 @@ FLinearColor UK2BeamNode_GetLocalStateForeach::GetNodeTitleColor() const
 	return FLinearColor::FromSRGBColor(FColor::FromHex("#674CC5"));
 }
 
+UObject* UK2BeamNode_GetLocalStateForeach::GetJumpTargetForDoubleClick() const
+{
+	return Super::GetJumpTargetForDoubleClick();
+}
+
 void UK2BeamNode_GetLocalStateForeach::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
 {
 	Super::ExpandNode(CompilerContext, SourceGraph);

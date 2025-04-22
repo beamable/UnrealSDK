@@ -7,19 +7,19 @@
 
 void UCalendarView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("nextIndex"), NextIndex);
-	Serializer->WriteValue(TEXT("nextClaimSeconds"), NextClaimSeconds);
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("remainingSeconds"), RemainingSeconds);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("nextIndex"), NextIndex, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("nextClaimSeconds"), NextClaimSeconds, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("remainingSeconds"), RemainingSeconds, Serializer);
 	UBeamJsonUtils::SerializeArray<URewardCalendarDay*>(TEXT("days"), Days, Serializer);
 }
 
 void UCalendarView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("nextIndex"), NextIndex);
-	Serializer->WriteValue(TEXT("nextClaimSeconds"), NextClaimSeconds);
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("remainingSeconds"), RemainingSeconds);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("nextIndex"), NextIndex, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("nextClaimSeconds"), NextClaimSeconds, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("remainingSeconds"), RemainingSeconds, Serializer);
 	UBeamJsonUtils::SerializeArray<URewardCalendarDay*>(TEXT("days"), Days, Serializer);		
 }
 

@@ -7,12 +7,12 @@
 
 void USubscriptionVerificationResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("hubChallenge"), HubChallenge);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("hubChallenge"), HubChallenge, Serializer);
 }
 
 void USubscriptionVerificationResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("hubChallenge"), HubChallenge);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("hubChallenge"), HubChallenge, Serializer);		
 }
 
 void USubscriptionVerificationResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

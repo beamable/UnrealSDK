@@ -7,18 +7,18 @@
 
 void USearchExtendedRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("domain"), Domain);
-	Serializer->WriteValue(TEXT("objectType"), ObjectType);
-	Serializer->WriteValue(TEXT("access"), Access);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("domain"), Domain, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("objectType"), ObjectType, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("access"), Access, Serializer);
 	UBeamJsonUtils::SerializeArray<UStatsSearchCriteria*>(TEXT("criteria"), Criteria, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("statKeys"), StatKeys, Serializer);
 }
 
 void USearchExtendedRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("domain"), Domain);
-	Serializer->WriteValue(TEXT("objectType"), ObjectType);
-	Serializer->WriteValue(TEXT("access"), Access);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("domain"), Domain, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("objectType"), ObjectType, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("access"), Access, Serializer);
 	UBeamJsonUtils::SerializeArray<UStatsSearchCriteria*>(TEXT("criteria"), Criteria, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("statKeys"), StatKeys, Serializer);		
 }

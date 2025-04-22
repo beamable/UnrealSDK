@@ -7,8 +7,8 @@
 
 void USendMailObjectRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("senderGamerTag"), SenderGamerTag);
-	Serializer->WriteValue(TEXT("category"), Category);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("senderGamerTag"), SenderGamerTag, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("category"), Category, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("body"), &Body, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("expires"), &Expires, Serializer);
 	UBeamJsonUtils::SerializeOptional<UPlayerReward*>(TEXT("playerRewards"), &PlayerRewards, Serializer);
@@ -21,8 +21,8 @@ void USendMailObjectRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& 
 
 void USendMailObjectRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("senderGamerTag"), SenderGamerTag);
-	Serializer->WriteValue(TEXT("category"), Category);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("senderGamerTag"), SenderGamerTag, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("category"), Category, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("body"), &Body, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("expires"), &Expires, Serializer);
 	UBeamJsonUtils::SerializeOptional<UPlayerReward*>(TEXT("playerRewards"), &PlayerRewards, Serializer);

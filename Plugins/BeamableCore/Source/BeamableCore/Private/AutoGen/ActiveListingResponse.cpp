@@ -12,13 +12,13 @@ void UActiveListingResponse::DeserializeRequestResponse(UObject* RequestData, FS
 
 void UActiveListingResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("storeSymbol"), StoreSymbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("storeSymbol"), StoreSymbol, Serializer);
 	UBeamJsonUtils::SerializeUObject<UPlayerListingView*>("listing", Listing, Serializer);
 }
 
 void UActiveListingResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("storeSymbol"), StoreSymbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("storeSymbol"), StoreSymbol, Serializer);
 	UBeamJsonUtils::SerializeUObject<UPlayerListingView*>("listing", Listing, Serializer);		
 }
 

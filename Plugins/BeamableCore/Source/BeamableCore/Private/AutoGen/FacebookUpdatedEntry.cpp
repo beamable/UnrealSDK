@@ -7,15 +7,15 @@
 
 void UFacebookUpdatedEntry::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("time"), Time);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("time"), Time, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("changed_fields"), ChangedFields, Serializer);
 }
 
 void UFacebookUpdatedEntry::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("time"), Time);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("time"), Time, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("changed_fields"), ChangedFields, Serializer);		
 }
 

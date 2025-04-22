@@ -7,8 +7,8 @@
 
 void UMember::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("role"), Role);
-	Serializer->WriteValue(TEXT("gamerTag"), GamerTag);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("role"), Role, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gamerTag"), GamerTag, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("canDemote"), &bCanDemote, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("canKick"), &bCanKick, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("canPromote"), &bCanPromote, Serializer);
@@ -17,8 +17,8 @@ void UMember::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 
 void UMember::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("role"), Role);
-	Serializer->WriteValue(TEXT("gamerTag"), GamerTag);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("role"), Role, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gamerTag"), GamerTag, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("canDemote"), &bCanDemote, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("canKick"), &bCanKick, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("canPromote"), &bCanPromote, Serializer);

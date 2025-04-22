@@ -8,7 +8,7 @@
 void UContentDefinition::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
-	Serializer->WriteValue(TEXT("checksum"), Checksum);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("checksum"), Checksum, Serializer);
 	UBeamJsonUtils::SerializeMap<UContentMeta*>(TEXT("properties"), Properties, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("tags"), &Tags, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FMapOfContentMeta>, FMapOfContentMeta>(TEXT("variants"), &Variants, Serializer);
@@ -17,7 +17,7 @@ void UContentDefinition::BeamSerializeProperties(TUnrealJsonSerializer& Serializ
 void UContentDefinition::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
-	Serializer->WriteValue(TEXT("checksum"), Checksum);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("checksum"), Checksum, Serializer);
 	UBeamJsonUtils::SerializeMap<UContentMeta*>(TEXT("properties"), Properties, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("tags"), &Tags, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FMapOfContentMeta>, FMapOfContentMeta>(TEXT("variants"), &Variants, Serializer);		

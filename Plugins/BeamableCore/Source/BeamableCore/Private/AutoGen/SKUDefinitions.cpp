@@ -7,15 +7,15 @@
 
 void USKUDefinitions::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("version"), Version);
-	Serializer->WriteValue(TEXT("created"), Created);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("version"), Version, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
 	UBeamJsonUtils::SerializeArray<USKU*>(TEXT("definitions"), Definitions, Serializer);
 }
 
 void USKUDefinitions::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("version"), Version);
-	Serializer->WriteValue(TEXT("created"), Created);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("version"), Version, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
 	UBeamJsonUtils::SerializeArray<USKU*>(TEXT("definitions"), Definitions, Serializer);		
 }
 

@@ -7,12 +7,12 @@
 
 void UEventClaimRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("eventId"), EventId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("eventId"), EventId, Serializer);
 }
 
 void UEventClaimRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("eventId"), EventId);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("eventId"), EventId, Serializer);		
 }
 
 void UEventClaimRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

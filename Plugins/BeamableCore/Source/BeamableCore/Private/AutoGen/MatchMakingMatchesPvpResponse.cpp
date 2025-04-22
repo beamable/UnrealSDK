@@ -12,16 +12,16 @@ void UMatchMakingMatchesPvpResponse::DeserializeRequestResponse(UObject* Request
 
 void UMatchMakingMatchesPvpResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("result"), Result);
-	Serializer->WriteValue(TEXT("totalEntries"), TotalEntries);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("result"), Result, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("totalEntries"), TotalEntries, Serializer);
 	UBeamJsonUtils::SerializeUObject<UMatchMakingRanking*>("playerRank", PlayerRank, Serializer);
 	UBeamJsonUtils::SerializeArray<UMatchMakingWindowResp*>(TEXT("windows"), Windows, Serializer);
 }
 
 void UMatchMakingMatchesPvpResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("result"), Result);
-	Serializer->WriteValue(TEXT("totalEntries"), TotalEntries);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("result"), Result, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("totalEntries"), TotalEntries, Serializer);
 	UBeamJsonUtils::SerializeUObject<UMatchMakingRanking*>("playerRank", PlayerRank, Serializer);
 	UBeamJsonUtils::SerializeArray<UMatchMakingWindowResp*>(TEXT("windows"), Windows, Serializer);		
 }

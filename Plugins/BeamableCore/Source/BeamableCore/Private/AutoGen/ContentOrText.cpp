@@ -13,14 +13,14 @@ void UContentOrText::DeserializeRequestResponse(UObject* RequestData, FString Re
 void UContentOrText::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
-	Serializer->WriteValue(TEXT("version"), Version);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("version"), Version, Serializer);
 	UBeamJsonUtils::SerializeMap<FString>(TEXT("properties"), Properties, Serializer);
 }
 
 void UContentOrText::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
-	Serializer->WriteValue(TEXT("version"), Version);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("version"), Version, Serializer);
 	UBeamJsonUtils::SerializeMap<FString>(TEXT("properties"), Properties, Serializer);		
 }
 

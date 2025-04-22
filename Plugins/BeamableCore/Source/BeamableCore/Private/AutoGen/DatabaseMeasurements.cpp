@@ -7,7 +7,7 @@
 
 void UDatabaseMeasurements::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("databaseName"), DatabaseName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("databaseName"), DatabaseName, Serializer);
 	UBeamJsonUtils::SerializeArray<ULink*>(TEXT("links"), Links, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("groupId"), &GroupId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("hostId"), &HostId, Serializer);
@@ -20,7 +20,7 @@ void UDatabaseMeasurements::BeamSerializeProperties(TUnrealJsonSerializer& Seria
 
 void UDatabaseMeasurements::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("databaseName"), DatabaseName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("databaseName"), DatabaseName, Serializer);
 	UBeamJsonUtils::SerializeArray<ULink*>(TEXT("links"), Links, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("groupId"), &GroupId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("hostId"), &HostId, Serializer);

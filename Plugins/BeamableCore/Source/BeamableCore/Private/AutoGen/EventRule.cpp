@@ -7,14 +7,14 @@
 
 void UEventRule::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("rule"), Rule);
-	Serializer->WriteValue(TEXT("value"), Value);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("rule"), Rule, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("value"), Value, Serializer);
 }
 
 void UEventRule::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("rule"), Rule);
-	Serializer->WriteValue(TEXT("value"), Value);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("rule"), Rule, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("value"), Value, Serializer);		
 }
 
 void UEventRule::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

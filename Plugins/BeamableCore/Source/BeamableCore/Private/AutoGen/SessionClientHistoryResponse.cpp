@@ -13,7 +13,7 @@ void USessionClientHistoryResponse::DeserializeRequestResponse(UObject* RequestD
 void USessionClientHistoryResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeUObject<ULocalDate*>("date", Date, Serializer);
-	Serializer->WriteValue(TEXT("daysPlayed"), DaysPlayed);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("daysPlayed"), DaysPlayed, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("sessions"), Sessions, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("installDate"), &InstallDate, Serializer);
 }
@@ -21,7 +21,7 @@ void USessionClientHistoryResponse::BeamSerializeProperties(TUnrealJsonSerialize
 void USessionClientHistoryResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeUObject<ULocalDate*>("date", Date, Serializer);
-	Serializer->WriteValue(TEXT("daysPlayed"), DaysPlayed);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("daysPlayed"), DaysPlayed, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("sessions"), Sessions, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("installDate"), &InstallDate, Serializer);		
 }

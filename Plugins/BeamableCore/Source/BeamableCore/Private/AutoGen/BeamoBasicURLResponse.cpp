@@ -7,13 +7,13 @@
 
 void UBeamoBasicURLResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("serviceName"), ServiceName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceName"), ServiceName, Serializer);
 	UBeamJsonUtils::SerializeArray<UUploadURL*>(TEXT("s3URLs"), S3URLs, Serializer);
 }
 
 void UBeamoBasicURLResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("serviceName"), ServiceName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceName"), ServiceName, Serializer);
 	UBeamJsonUtils::SerializeArray<UUploadURL*>(TEXT("s3URLs"), S3URLs, Serializer);		
 }
 

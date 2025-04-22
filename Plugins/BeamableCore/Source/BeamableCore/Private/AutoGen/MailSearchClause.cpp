@@ -7,8 +7,8 @@
 
 void UMailSearchClause::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("onlyCount"), bOnlyCount);
-	Serializer->WriteValue(TEXT("name"), Name);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("onlyCount"), bOnlyCount, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("forSender"), &ForSender, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("start"), &Start, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("limit"), &Limit, Serializer);
@@ -18,8 +18,8 @@ void UMailSearchClause::BeamSerializeProperties(TUnrealJsonSerializer& Serialize
 
 void UMailSearchClause::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("onlyCount"), bOnlyCount);
-	Serializer->WriteValue(TEXT("name"), Name);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("onlyCount"), bOnlyCount, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("forSender"), &ForSender, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("start"), &Start, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("limit"), &Limit, Serializer);

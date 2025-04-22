@@ -7,13 +7,13 @@
 
 void UServiceReference::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("archived"), bArchived);
-	Serializer->WriteValue(TEXT("arm"), bArm);
-	Serializer->WriteValue(TEXT("enabled"), bEnabled);
-	Serializer->WriteValue(TEXT("serviceName"), ServiceName);
-	Serializer->WriteValue(TEXT("checksum"), Checksum);
-	Serializer->WriteValue(TEXT("templateId"), TemplateId);
-	Serializer->WriteValue(TEXT("imageId"), ImageId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("archived"), bArchived, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("arm"), bArm, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("enabled"), bEnabled, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceName"), ServiceName, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("checksum"), Checksum, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("templateId"), TemplateId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("imageId"), ImageId, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("containerHealthCheckPort"), &ContainerHealthCheckPort, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("imageCpuArch"), &ImageCpuArch, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("comments"), &Comments, Serializer);
@@ -23,13 +23,13 @@ void UServiceReference::BeamSerializeProperties(TUnrealJsonSerializer& Serialize
 
 void UServiceReference::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("archived"), bArchived);
-	Serializer->WriteValue(TEXT("arm"), bArm);
-	Serializer->WriteValue(TEXT("enabled"), bEnabled);
-	Serializer->WriteValue(TEXT("serviceName"), ServiceName);
-	Serializer->WriteValue(TEXT("checksum"), Checksum);
-	Serializer->WriteValue(TEXT("templateId"), TemplateId);
-	Serializer->WriteValue(TEXT("imageId"), ImageId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("archived"), bArchived, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("arm"), bArm, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("enabled"), bEnabled, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceName"), ServiceName, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("checksum"), Checksum, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("templateId"), TemplateId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("imageId"), ImageId, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("containerHealthCheckPort"), &ContainerHealthCheckPort, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("imageCpuArch"), &ImageCpuArch, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("comments"), &Comments, Serializer);

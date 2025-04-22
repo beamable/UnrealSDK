@@ -12,10 +12,10 @@ void UAccountsObjectAccount::DeserializeRequestResponse(UObject* RequestData, FS
 
 void UAccountsObjectAccount::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("privilegedAccount"), bPrivilegedAccount);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("privilegedAccount"), bPrivilegedAccount, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("id"), &Id, Serializer);
-	Serializer->WriteValue(TEXT("createdTimeMillis"), CreatedTimeMillis);
-	Serializer->WriteValue(TEXT("updatedTimeMillis"), UpdatedTimeMillis);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("createdTimeMillis"), CreatedTimeMillis, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("updatedTimeMillis"), UpdatedTimeMillis, Serializer);
 	UBeamJsonUtils::SerializeArray<UThirdPartyAssociation*>(TEXT("thirdParties"), ThirdParties, Serializer);
 	UBeamJsonUtils::SerializeArray<FBeamExternalIdentity>(TEXT("external"), External, Serializer);
 	UBeamJsonUtils::SerializeArray<UGamerTagAssociation*>(TEXT("gamerTags"), GamerTags, Serializer);
@@ -36,10 +36,10 @@ void UAccountsObjectAccount::BeamSerializeProperties(TUnrealJsonSerializer& Seri
 
 void UAccountsObjectAccount::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("privilegedAccount"), bPrivilegedAccount);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("privilegedAccount"), bPrivilegedAccount, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("id"), &Id, Serializer);
-	Serializer->WriteValue(TEXT("createdTimeMillis"), CreatedTimeMillis);
-	Serializer->WriteValue(TEXT("updatedTimeMillis"), UpdatedTimeMillis);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("createdTimeMillis"), CreatedTimeMillis, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("updatedTimeMillis"), UpdatedTimeMillis, Serializer);
 	UBeamJsonUtils::SerializeArray<UThirdPartyAssociation*>(TEXT("thirdParties"), ThirdParties, Serializer);
 	UBeamJsonUtils::SerializeArray<FBeamExternalIdentity>(TEXT("external"), External, Serializer);
 	UBeamJsonUtils::SerializeArray<UGamerTagAssociation*>(TEXT("gamerTags"), GamerTags, Serializer);

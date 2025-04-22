@@ -7,20 +7,20 @@
 
 void USteamOrderInfoItem::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("vat"), Vat);
-	Serializer->WriteValue(TEXT("amount"), Amount);
-	Serializer->WriteValue(TEXT("itemid"), Itemid);
-	Serializer->WriteValue(TEXT("qty"), Qty);
-	Serializer->WriteValue(TEXT("itemstatus"), Itemstatus);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("vat"), Vat, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("amount"), Amount, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("itemid"), Itemid, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("qty"), Qty, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("itemstatus"), Itemstatus, Serializer);
 }
 
 void USteamOrderInfoItem::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("vat"), Vat);
-	Serializer->WriteValue(TEXT("amount"), Amount);
-	Serializer->WriteValue(TEXT("itemid"), Itemid);
-	Serializer->WriteValue(TEXT("qty"), Qty);
-	Serializer->WriteValue(TEXT("itemstatus"), Itemstatus);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("vat"), Vat, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("amount"), Amount, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("itemid"), Itemid, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("qty"), Qty, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("itemstatus"), Itemstatus, Serializer);		
 }
 
 void USteamOrderInfoItem::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

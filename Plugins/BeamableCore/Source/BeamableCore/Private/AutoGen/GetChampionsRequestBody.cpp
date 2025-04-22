@@ -7,15 +7,15 @@
 
 void UGetChampionsRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);
-	Serializer->WriteValue(TEXT("cycles"), Cycles);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tournamentId"), TournamentId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("cycles"), Cycles, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("contentId"), &ContentId, Serializer);
 }
 
 void UGetChampionsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);
-	Serializer->WriteValue(TEXT("cycles"), Cycles);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tournamentId"), TournamentId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("cycles"), Cycles, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("contentId"), &ContentId, Serializer);		
 }
 

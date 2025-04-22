@@ -7,18 +7,18 @@
 
 void UListTokenResponseItem::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("token"), Token);
-	Serializer->WriteValue(TEXT("platform"), Platform);
-	Serializer->WriteValue(TEXT("device"), Device);
-	Serializer->WriteValue(TEXT("created"), Created);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("token"), Token, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("platform"), Platform, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("device"), Device, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
 }
 
 void UListTokenResponseItem::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("token"), Token);
-	Serializer->WriteValue(TEXT("platform"), Platform);
-	Serializer->WriteValue(TEXT("device"), Device);
-	Serializer->WriteValue(TEXT("created"), Created);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("token"), Token, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("platform"), Platform, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("device"), Device, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);		
 }
 
 void UListTokenResponseItem::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

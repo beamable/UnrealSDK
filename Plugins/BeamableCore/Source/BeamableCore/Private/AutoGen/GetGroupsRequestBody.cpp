@@ -7,7 +7,7 @@
 
 void UGetGroupsRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tournamentId"), TournamentId, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("max"), &Max, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("focus"), &Focus, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("cycle"), &Cycle, Serializer);
@@ -17,7 +17,7 @@ void UGetGroupsRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Seria
 
 void UGetGroupsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tournamentId"), TournamentId, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("max"), &Max, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("focus"), &Focus, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("cycle"), &Cycle, Serializer);

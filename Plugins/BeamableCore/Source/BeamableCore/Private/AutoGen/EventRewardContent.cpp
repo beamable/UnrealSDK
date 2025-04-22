@@ -7,7 +7,7 @@
 
 void UEventRewardContent::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("min"), Min);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("min"), Min, Serializer);
 	UBeamJsonUtils::SerializeOptional<double>(TEXT("max"), &Max, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UEventInventoryRewardCurrency*>, UEventInventoryRewardCurrency*>(TEXT("currencies"), &Currencies, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UEventInventoryRewardItem*>, UEventInventoryRewardItem*>(TEXT("items"), &Items, Serializer);
@@ -16,7 +16,7 @@ void UEventRewardContent::BeamSerializeProperties(TUnrealJsonSerializer& Seriali
 
 void UEventRewardContent::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("min"), Min);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("min"), Min, Serializer);
 	UBeamJsonUtils::SerializeOptional<double>(TEXT("max"), &Max, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UEventInventoryRewardCurrency*>, UEventInventoryRewardCurrency*>(TEXT("currencies"), &Currencies, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UEventInventoryRewardItem*>, UEventInventoryRewardItem*>(TEXT("items"), &Items, Serializer);

@@ -12,22 +12,22 @@ void UTournamentClientView::DeserializeRequestResponse(UObject* RequestData, FSt
 
 void UTournamentClientView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);
-	Serializer->WriteValue(TEXT("startTimeUtc"), StartTimeUtc);
-	Serializer->WriteValue(TEXT("secondsRemaining"), SecondsRemaining);
-	Serializer->WriteValue(TEXT("cycle"), Cycle);
-	Serializer->WriteValue(TEXT("endTimeUtc"), EndTimeUtc);
-	Serializer->WriteValue(TEXT("contentId"), ContentId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tournamentId"), TournamentId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("startTimeUtc"), StartTimeUtc, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("secondsRemaining"), SecondsRemaining, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("cycle"), Cycle, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("endTimeUtc"), EndTimeUtc, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("contentId"), ContentId, Serializer);
 }
 
 void UTournamentClientView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);
-	Serializer->WriteValue(TEXT("startTimeUtc"), StartTimeUtc);
-	Serializer->WriteValue(TEXT("secondsRemaining"), SecondsRemaining);
-	Serializer->WriteValue(TEXT("cycle"), Cycle);
-	Serializer->WriteValue(TEXT("endTimeUtc"), EndTimeUtc);
-	Serializer->WriteValue(TEXT("contentId"), ContentId);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tournamentId"), TournamentId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("startTimeUtc"), StartTimeUtc, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("secondsRemaining"), SecondsRemaining, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("cycle"), Cycle, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("endTimeUtc"), EndTimeUtc, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("contentId"), ContentId, Serializer);		
 }
 
 void UTournamentClientView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

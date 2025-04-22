@@ -12,9 +12,9 @@ void UNewCustomerResponse::DeserializeRequestResponse(UObject* RequestData, FStr
 
 void UNewCustomerResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("activationPending"), bActivationPending);
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("projectName"), ProjectName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("activationPending"), bActivationPending, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("projectName"), ProjectName, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("pid"), &Pid, Serializer);
 	UBeamJsonUtils::SerializeUObject<UTokenResponse*>("token", Token, Serializer);
@@ -23,9 +23,9 @@ void UNewCustomerResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serial
 
 void UNewCustomerResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("activationPending"), bActivationPending);
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("projectName"), ProjectName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("activationPending"), bActivationPending, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("projectName"), ProjectName, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("pid"), &Pid, Serializer);
 	UBeamJsonUtils::SerializeUObject<UTokenResponse*>("token", Token, Serializer);

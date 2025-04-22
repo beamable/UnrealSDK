@@ -7,10 +7,10 @@
 
 void UPlayerListingView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("active"), bActive);
-	Serializer->WriteValue(TEXT("queryAfterPurchase"), bQueryAfterPurchase);
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
-	Serializer->WriteValue(TEXT("secondsActive"), SecondsActive);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("active"), bActive, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("queryAfterPurchase"), bQueryAfterPurchase, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("secondsActive"), SecondsActive, Serializer);
 	UBeamJsonUtils::SerializeUObject<UPlayerOfferView*>("offer", Offer, Serializer);
 	UBeamJsonUtils::SerializeArray<UClientDataEntry*>(TEXT("clientDataList"), ClientDataList, Serializer);
 	UBeamJsonUtils::SerializeMap<FString>(TEXT("clientData"), ClientData, Serializer);
@@ -21,10 +21,10 @@ void UPlayerListingView::BeamSerializeProperties(TUnrealJsonSerializer& Serializ
 
 void UPlayerListingView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("active"), bActive);
-	Serializer->WriteValue(TEXT("queryAfterPurchase"), bQueryAfterPurchase);
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
-	Serializer->WriteValue(TEXT("secondsActive"), SecondsActive);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("active"), bActive, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("queryAfterPurchase"), bQueryAfterPurchase, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("secondsActive"), SecondsActive, Serializer);
 	UBeamJsonUtils::SerializeUObject<UPlayerOfferView*>("offer", Offer, Serializer);
 	UBeamJsonUtils::SerializeArray<UClientDataEntry*>(TEXT("clientDataList"), ClientDataList, Serializer);
 	UBeamJsonUtils::SerializeMap<FString>(TEXT("clientData"), ClientData, Serializer);

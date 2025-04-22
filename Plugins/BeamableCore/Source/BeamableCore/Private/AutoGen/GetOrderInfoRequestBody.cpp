@@ -7,12 +7,12 @@
 
 void UGetOrderInfoRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("orderId"), OrderId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("orderId"), OrderId, Serializer);
 }
 
 void UGetOrderInfoRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("orderId"), OrderId);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("orderId"), OrderId, Serializer);		
 }
 
 void UGetOrderInfoRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

@@ -7,14 +7,14 @@
 
 void UPromotable::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("checksum"), Checksum);
-	Serializer->WriteValue(TEXT("createdAt"), CreatedAt);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("checksum"), Checksum, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("createdAt"), CreatedAt, Serializer);
 }
 
 void UPromotable::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("checksum"), Checksum);
-	Serializer->WriteValue(TEXT("createdAt"), CreatedAt);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("checksum"), Checksum, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("createdAt"), CreatedAt, Serializer);		
 }
 
 void UPromotable::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

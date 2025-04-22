@@ -8,7 +8,7 @@
 void UGroupMembershipRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("type"), UGroupTypeLibrary::GroupTypeToSerializationName(Type));
-	Serializer->WriteValue(TEXT("group"), Group);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("group"), Group, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("successor"), &Successor, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("score"), &Score, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("subGroup"), &SubGroup, Serializer);
@@ -17,7 +17,7 @@ void UGroupMembershipRequestBody::BeamSerializeProperties(TUnrealJsonSerializer&
 void UGroupMembershipRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	Serializer->WriteValue(TEXT("type"), UGroupTypeLibrary::GroupTypeToSerializationName(Type));
-	Serializer->WriteValue(TEXT("group"), Group);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("group"), Group, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("successor"), &Successor, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("score"), &Score, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("subGroup"), &SubGroup, Serializer);		

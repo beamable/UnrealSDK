@@ -7,13 +7,13 @@
 
 void UCommerceLootRoll::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("preroll"), bPreroll);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("preroll"), bPreroll, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("externalTables"), &ExternalTables, Serializer);
 }
 
 void UCommerceLootRoll::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("preroll"), bPreroll);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("preroll"), bPreroll, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("externalTables"), &ExternalTables, Serializer);		
 }
 

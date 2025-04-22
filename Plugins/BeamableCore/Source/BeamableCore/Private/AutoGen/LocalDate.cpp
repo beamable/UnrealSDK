@@ -7,28 +7,28 @@
 
 void ULocalDate::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("leapYear"), bLeapYear);
-	Serializer->WriteValue(TEXT("dayOfYear"), DayOfYear);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("leapYear"), bLeapYear, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("dayOfYear"), DayOfYear, Serializer);
 	UBeamJsonUtils::SerializeUObject<UIsoChronology*>("chronology", Chronology, Serializer);
-	Serializer->WriteValue(TEXT("dayOfWeek"), DayOfWeek);
-	Serializer->WriteValue(TEXT("monthValue"), MonthValue);
-	Serializer->WriteValue(TEXT("dayOfMonth"), DayOfMonth);
-	Serializer->WriteValue(TEXT("year"), Year);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("dayOfWeek"), DayOfWeek, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("monthValue"), MonthValue, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("dayOfMonth"), DayOfMonth, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("year"), Year, Serializer);
 	UBeamJsonUtils::SerializeUObject<UEra*>("era", Era, Serializer);
-	Serializer->WriteValue(TEXT("month"), Month);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("month"), Month, Serializer);
 }
 
 void ULocalDate::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("leapYear"), bLeapYear);
-	Serializer->WriteValue(TEXT("dayOfYear"), DayOfYear);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("leapYear"), bLeapYear, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("dayOfYear"), DayOfYear, Serializer);
 	UBeamJsonUtils::SerializeUObject<UIsoChronology*>("chronology", Chronology, Serializer);
-	Serializer->WriteValue(TEXT("dayOfWeek"), DayOfWeek);
-	Serializer->WriteValue(TEXT("monthValue"), MonthValue);
-	Serializer->WriteValue(TEXT("dayOfMonth"), DayOfMonth);
-	Serializer->WriteValue(TEXT("year"), Year);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("dayOfWeek"), DayOfWeek, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("monthValue"), MonthValue, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("dayOfMonth"), DayOfMonth, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("year"), Year, Serializer);
 	UBeamJsonUtils::SerializeUObject<UEra*>("era", Era, Serializer);
-	Serializer->WriteValue(TEXT("month"), Month);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("month"), Month, Serializer);		
 }
 
 void ULocalDate::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

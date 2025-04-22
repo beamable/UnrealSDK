@@ -7,14 +7,14 @@
 
 void UOfferConstraint::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("constraint"), Constraint);
-	Serializer->WriteValue(TEXT("value"), Value);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("constraint"), Constraint, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("value"), Value, Serializer);
 }
 
 void UOfferConstraint::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("constraint"), Constraint);
-	Serializer->WriteValue(TEXT("value"), Value);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("constraint"), Constraint, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("value"), Value, Serializer);		
 }
 
 void UOfferConstraint::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

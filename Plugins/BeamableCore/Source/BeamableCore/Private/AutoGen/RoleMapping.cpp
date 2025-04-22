@@ -7,14 +7,14 @@
 
 void URoleMapping::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("projectId"), ProjectId);
-	Serializer->WriteValue(TEXT("role"), Role);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("projectId"), ProjectId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("role"), Role, Serializer);
 }
 
 void URoleMapping::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("projectId"), ProjectId);
-	Serializer->WriteValue(TEXT("role"), Role);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("projectId"), ProjectId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("role"), Role, Serializer);		
 }
 
 void URoleMapping::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

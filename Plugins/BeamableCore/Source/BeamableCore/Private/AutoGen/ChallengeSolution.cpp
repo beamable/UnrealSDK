@@ -7,14 +7,14 @@
 
 void UChallengeSolution::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("challenge_token"), ChallengeToken);
-	Serializer->WriteValue(TEXT("solution"), Solution);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("challenge_token"), ChallengeToken, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("solution"), Solution, Serializer);
 }
 
 void UChallengeSolution::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("challenge_token"), ChallengeToken);
-	Serializer->WriteValue(TEXT("solution"), Solution);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("challenge_token"), ChallengeToken, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("solution"), Solution, Serializer);		
 }
 
 void UChallengeSolution::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

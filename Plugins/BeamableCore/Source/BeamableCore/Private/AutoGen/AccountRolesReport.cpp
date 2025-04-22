@@ -12,15 +12,15 @@ void UAccountRolesReport::DeserializeRequestResponse(UObject* RequestData, FStri
 
 void UAccountRolesReport::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("accountId"), AccountId);
-	Serializer->WriteValue(TEXT("email"), Email);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("accountId"), AccountId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("email"), Email, Serializer);
 	UBeamJsonUtils::SerializeArray<URealmRolesReport*>(TEXT("realms"), Realms, Serializer);
 }
 
 void UAccountRolesReport::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("accountId"), AccountId);
-	Serializer->WriteValue(TEXT("email"), Email);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("accountId"), AccountId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("email"), Email, Serializer);
 	UBeamJsonUtils::SerializeArray<URealmRolesReport*>(TEXT("realms"), Realms, Serializer);		
 }
 

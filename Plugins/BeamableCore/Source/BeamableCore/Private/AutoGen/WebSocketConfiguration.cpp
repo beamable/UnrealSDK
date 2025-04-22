@@ -7,13 +7,13 @@
 
 void UWebSocketConfiguration::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("provider"), Provider);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("provider"), Provider, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("uri"), &Uri, Serializer);
 }
 
 void UWebSocketConfiguration::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("provider"), Provider);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("provider"), Provider, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("uri"), &Uri, Serializer);		
 }
 

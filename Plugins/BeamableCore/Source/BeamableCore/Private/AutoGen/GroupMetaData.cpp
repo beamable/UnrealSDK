@@ -7,14 +7,14 @@
 
 void UGroupMetaData::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("name"), &Name, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("tag"), &Tag, Serializer);
 }
 
 void UGroupMetaData::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("name"), &Name, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("tag"), &Tag, Serializer);		
 }

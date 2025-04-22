@@ -7,13 +7,13 @@
 
 void UPromotionScope::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
 	UBeamJsonUtils::SerializeArray<UPromotion*>(TEXT("promotions"), Promotions, Serializer);
 }
 
 void UPromotionScope::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
 	UBeamJsonUtils::SerializeArray<UPromotion*>(TEXT("promotions"), Promotions, Serializer);		
 }
 

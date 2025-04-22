@@ -7,13 +7,13 @@
 
 void UFacebookPaymentUpdateRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("object"), Object);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("object"), Object, Serializer);
 	UBeamJsonUtils::SerializeArray<UFacebookUpdatedEntry*>(TEXT("entry"), Entry, Serializer);
 }
 
 void UFacebookPaymentUpdateRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("object"), Object);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("object"), Object, Serializer);
 	UBeamJsonUtils::SerializeArray<UFacebookUpdatedEntry*>(TEXT("entry"), Entry, Serializer);		
 }
 

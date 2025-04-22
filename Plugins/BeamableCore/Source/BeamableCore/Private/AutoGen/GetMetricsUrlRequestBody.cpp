@@ -7,8 +7,8 @@
 
 void UGetMetricsUrlRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("serviceName"), ServiceName);
-	Serializer->WriteValue(TEXT("metricName"), MetricName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceName"), ServiceName, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("metricName"), MetricName, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("startTime"), &StartTime, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("endTime"), &EndTime, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("period"), &Period, Serializer);
@@ -16,8 +16,8 @@ void UGetMetricsUrlRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& S
 
 void UGetMetricsUrlRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("serviceName"), ServiceName);
-	Serializer->WriteValue(TEXT("metricName"), MetricName);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceName"), ServiceName, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("metricName"), MetricName, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("startTime"), &StartTime, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("endTime"), &EndTime, Serializer);
 	UBeamJsonUtils::SerializeOptional<int32>(TEXT("period"), &Period, Serializer);		

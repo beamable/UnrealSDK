@@ -7,16 +7,16 @@
 
 void ULeaderboardGetMatchRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("poolSize"), PoolSize);
-	Serializer->WriteValue(TEXT("windows"), Windows);
-	Serializer->WriteValue(TEXT("windowSize"), WindowSize);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("poolSize"), PoolSize, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("windows"), Windows, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("windowSize"), WindowSize, Serializer);
 }
 
 void ULeaderboardGetMatchRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("poolSize"), PoolSize);
-	Serializer->WriteValue(TEXT("windows"), Windows);
-	Serializer->WriteValue(TEXT("windowSize"), WindowSize);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("poolSize"), PoolSize, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("windows"), Windows, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("windowSize"), WindowSize, Serializer);		
 }
 
 void ULeaderboardGetMatchRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

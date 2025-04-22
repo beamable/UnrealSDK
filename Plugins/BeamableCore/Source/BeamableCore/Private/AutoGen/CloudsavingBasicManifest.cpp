@@ -12,17 +12,17 @@ void UCloudsavingBasicManifest::DeserializeRequestResponse(UObject* RequestData,
 
 void UCloudsavingBasicManifest::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("replacement"), bReplacement);
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("created"), Created);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("replacement"), bReplacement, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
 	UBeamJsonUtils::SerializeArray<UCloudsavingBasicReference*>(TEXT("manifest"), Manifest, Serializer);
 }
 
 void UCloudsavingBasicManifest::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("replacement"), bReplacement);
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("created"), Created);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("replacement"), bReplacement, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
 	UBeamJsonUtils::SerializeArray<UCloudsavingBasicReference*>(TEXT("manifest"), Manifest, Serializer);		
 }
 

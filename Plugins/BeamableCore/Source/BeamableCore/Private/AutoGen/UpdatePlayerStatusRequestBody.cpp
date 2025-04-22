@@ -7,15 +7,15 @@
 
 void UUpdatePlayerStatusRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("playerId"), PlayerId);
-	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("playerId"), PlayerId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tournamentId"), TournamentId, Serializer);
 	UBeamJsonUtils::SerializeUObject<UPlayerStatusUpdate*>("update", Update, Serializer);
 }
 
 void UUpdatePlayerStatusRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("playerId"), PlayerId);
-	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("playerId"), PlayerId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tournamentId"), TournamentId, Serializer);
 	UBeamJsonUtils::SerializeUObject<UPlayerStatusUpdate*>("update", Update, Serializer);		
 }
 

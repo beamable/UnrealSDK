@@ -17,13 +17,14 @@ UCLASS(NotBlueprintable, NotBlueprintType, Hidden, meta=(BeamFlowNode))
 class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_BeamFlow : public UK2Node
 {
 	GENERATED_BODY()
+
 public:
 	UPROPERTY(EditAnywhere, Category="Beam Flow")
 	bool bIsInBeamFlowMode = true;
 
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	virtual bool ShouldShowNodeProperties() const override { return true; }
-	
+
 	virtual bool IsNodeSafeToIgnore() const override;
 	virtual bool IsCompatibleWithGraph(UEdGraph const* Graph) const override;
 
@@ -32,10 +33,12 @@ public:
 	virtual FText GetMenuCategory() const override;
 
 	virtual FString GetServiceName() const;
-	
+
 	virtual FSlateIcon GetIconAndTint(FLinearColor& OutColor) const override;
 	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual FName GetCornerIcon() const override;
+
+	virtual UObject* GetJumpTargetForDoubleClick() const override;
 
 	virtual void GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const override;
 

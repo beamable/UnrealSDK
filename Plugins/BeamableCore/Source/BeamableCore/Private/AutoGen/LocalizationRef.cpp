@@ -7,15 +7,15 @@
 
 void ULocalizationRef::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("empty"), bEmpty);
-	Serializer->WriteValue(TEXT("localizationId"), LocalizationId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("empty"), bEmpty, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("localizationId"), LocalizationId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("defaultValue"), &DefaultValue, Serializer);
 }
 
 void ULocalizationRef::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("empty"), bEmpty);
-	Serializer->WriteValue(TEXT("localizationId"), LocalizationId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("empty"), bEmpty, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("localizationId"), LocalizationId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("defaultValue"), &DefaultValue, Serializer);		
 }
 

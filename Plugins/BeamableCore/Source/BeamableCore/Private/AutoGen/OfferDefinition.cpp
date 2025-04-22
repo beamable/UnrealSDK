@@ -7,7 +7,7 @@
 
 void UOfferDefinition::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("titles"), Titles, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("images"), Images, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("descriptions"), Descriptions, Serializer);
@@ -20,7 +20,7 @@ void UOfferDefinition::BeamSerializeProperties(TUnrealJsonSerializer& Serializer
 
 void UOfferDefinition::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("titles"), Titles, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("images"), Images, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("descriptions"), Descriptions, Serializer);

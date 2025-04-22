@@ -12,15 +12,15 @@ void UAliasAvailableResponse::DeserializeRequestResponse(UObject* RequestData, F
 
 void UAliasAvailableResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("alias"), Alias);
-	Serializer->WriteValue(TEXT("available"), bAvailable);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("alias"), Alias, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("available"), bAvailable, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);
 }
 
 void UAliasAvailableResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("alias"), Alias);
-	Serializer->WriteValue(TEXT("available"), bAvailable);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("alias"), Alias, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("available"), bAvailable, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);		
 }
 

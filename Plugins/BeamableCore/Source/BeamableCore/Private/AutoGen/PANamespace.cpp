@@ -7,14 +7,14 @@
 
 void UPANamespace::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("namespace"), Namespace);
-	Serializer->WriteValue(TEXT("type"), Type);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("namespace"), Namespace, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("type"), Type, Serializer);
 }
 
 void UPANamespace::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("namespace"), Namespace);
-	Serializer->WriteValue(TEXT("type"), Type);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("namespace"), Namespace, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("type"), Type, Serializer);		
 }
 
 void UPANamespace::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

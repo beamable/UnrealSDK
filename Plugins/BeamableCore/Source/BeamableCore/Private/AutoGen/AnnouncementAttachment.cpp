@@ -7,16 +7,16 @@
 
 void UAnnouncementAttachment::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
-	Serializer->WriteValue(TEXT("count"), Count);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("count"), Count, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("type"), &Type, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UAttachmentProperty*>, UAttachmentProperty*>(TEXT("properties"), &Properties, Serializer);
 }
 
 void UAnnouncementAttachment::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
-	Serializer->WriteValue(TEXT("count"), Count);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("count"), Count, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("type"), &Type, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UAttachmentProperty*>, UAttachmentProperty*>(TEXT("properties"), &Properties, Serializer);		
 }

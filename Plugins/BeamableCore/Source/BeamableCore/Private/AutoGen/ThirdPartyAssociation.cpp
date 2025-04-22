@@ -7,9 +7,9 @@
 
 void UThirdPartyAssociation::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("userAppId"), UserAppId);
-	Serializer->WriteValue(TEXT("appId"), AppId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("userAppId"), UserAppId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("appId"), AppId, Serializer);
 	UBeamJsonUtils::SerializeMap<FString>(TEXT("meta"), Meta, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("email"), &Email, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("userBusinessId"), &UserBusinessId, Serializer);
@@ -17,9 +17,9 @@ void UThirdPartyAssociation::BeamSerializeProperties(TUnrealJsonSerializer& Seri
 
 void UThirdPartyAssociation::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("userAppId"), UserAppId);
-	Serializer->WriteValue(TEXT("appId"), AppId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("userAppId"), UserAppId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("appId"), AppId, Serializer);
 	UBeamJsonUtils::SerializeMap<FString>(TEXT("meta"), Meta, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("email"), &Email, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("userBusinessId"), &UserBusinessId, Serializer);		

@@ -7,12 +7,12 @@
 
 void UGetPricesRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("steamId"), SteamId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("steamId"), SteamId, Serializer);
 }
 
 void UGetPricesRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("steamId"), SteamId);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("steamId"), SteamId, Serializer);		
 }
 
 void UGetPricesRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

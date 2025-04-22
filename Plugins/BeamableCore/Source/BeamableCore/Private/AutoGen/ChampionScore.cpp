@@ -7,20 +7,20 @@
 
 void UChampionScore::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("endTimeMs"), EndTimeMs);
-	Serializer->WriteValue(TEXT("startTimeMs"), StartTimeMs);
-	Serializer->WriteValue(TEXT("score"), Score);
-	Serializer->WriteValue(TEXT("cycle"), Cycle);
-	Serializer->WriteValue(TEXT("playerId"), PlayerId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("endTimeMs"), EndTimeMs, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("startTimeMs"), StartTimeMs, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("score"), Score, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("cycle"), Cycle, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("playerId"), PlayerId, Serializer);
 }
 
 void UChampionScore::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("endTimeMs"), EndTimeMs);
-	Serializer->WriteValue(TEXT("startTimeMs"), StartTimeMs);
-	Serializer->WriteValue(TEXT("score"), Score);
-	Serializer->WriteValue(TEXT("cycle"), Cycle);
-	Serializer->WriteValue(TEXT("playerId"), PlayerId);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("endTimeMs"), EndTimeMs, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("startTimeMs"), StartTimeMs, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("score"), Score, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("cycle"), Cycle, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("playerId"), PlayerId, Serializer);		
 }
 
 void UChampionScore::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

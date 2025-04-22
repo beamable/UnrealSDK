@@ -12,12 +12,12 @@ void UAccountAvailableResponse::DeserializeRequestResponse(UObject* RequestData,
 
 void UAccountAvailableResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("available"), bAvailable);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("available"), bAvailable, Serializer);
 }
 
 void UAccountAvailableResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("available"), bAvailable);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("available"), bAvailable, Serializer);		
 }
 
 void UAccountAvailableResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

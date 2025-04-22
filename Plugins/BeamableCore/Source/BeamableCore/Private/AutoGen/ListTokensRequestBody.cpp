@@ -7,18 +7,18 @@
 
 void UListTokensRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("pageSize"), PageSize);
-	Serializer->WriteValue(TEXT("page"), Page);
-	Serializer->WriteValue(TEXT("gamerTagOrAccountId"), GamerTagOrAccountId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("pageSize"), PageSize, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("page"), Page, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gamerTagOrAccountId"), GamerTagOrAccountId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FBeamCid, int64>(TEXT("cid"), &Cid, Serializer);
 	UBeamJsonUtils::SerializeOptional<FBeamPid, FString>(TEXT("pid"), &Pid, Serializer);
 }
 
 void UListTokensRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("pageSize"), PageSize);
-	Serializer->WriteValue(TEXT("page"), Page);
-	Serializer->WriteValue(TEXT("gamerTagOrAccountId"), GamerTagOrAccountId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("pageSize"), PageSize, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("page"), Page, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gamerTagOrAccountId"), GamerTagOrAccountId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FBeamCid, int64>(TEXT("cid"), &Cid, Serializer);
 	UBeamJsonUtils::SerializeOptional<FBeamPid, FString>(TEXT("pid"), &Pid, Serializer);		
 }

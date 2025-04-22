@@ -7,14 +7,14 @@
 
 void UDeleteThirdPartyAssociation::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("thirdParty"), ThirdParty);
-	Serializer->WriteValue(TEXT("userAppId"), UserAppId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("thirdParty"), ThirdParty, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("userAppId"), UserAppId, Serializer);
 }
 
 void UDeleteThirdPartyAssociation::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("thirdParty"), ThirdParty);
-	Serializer->WriteValue(TEXT("userAppId"), UserAppId);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("thirdParty"), ThirdParty, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("userAppId"), UserAppId, Serializer);		
 }
 
 void UDeleteThirdPartyAssociation::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

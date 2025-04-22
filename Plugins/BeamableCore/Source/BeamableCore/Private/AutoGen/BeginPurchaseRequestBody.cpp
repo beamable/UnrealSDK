@@ -7,14 +7,14 @@
 
 void UBeginPurchaseRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("purchaseId"), PurchaseId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("purchaseId"), PurchaseId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("language"), &Language, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("time"), &Time, Serializer);
 }
 
 void UBeginPurchaseRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("purchaseId"), PurchaseId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("purchaseId"), PurchaseId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("language"), &Language, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("time"), &Time, Serializer);		
 }

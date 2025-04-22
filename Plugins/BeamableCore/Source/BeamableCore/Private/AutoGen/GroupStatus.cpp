@@ -7,23 +7,23 @@
 
 void UGroupStatus::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("lastUpdateCycle"), LastUpdateCycle);
-	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);
-	Serializer->WriteValue(TEXT("stage"), Stage);
-	Serializer->WriteValue(TEXT("tier"), Tier);
-	Serializer->WriteValue(TEXT("groupId"), GroupId);
-	Serializer->WriteValue(TEXT("contentId"), ContentId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("lastUpdateCycle"), LastUpdateCycle, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tournamentId"), TournamentId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("stage"), Stage, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tier"), Tier, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("groupId"), GroupId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("contentId"), ContentId, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UCompletedStatus*>, UCompletedStatus*>(TEXT("completed"), &Completed, Serializer);
 }
 
 void UGroupStatus::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("lastUpdateCycle"), LastUpdateCycle);
-	Serializer->WriteValue(TEXT("tournamentId"), TournamentId);
-	Serializer->WriteValue(TEXT("stage"), Stage);
-	Serializer->WriteValue(TEXT("tier"), Tier);
-	Serializer->WriteValue(TEXT("groupId"), GroupId);
-	Serializer->WriteValue(TEXT("contentId"), ContentId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("lastUpdateCycle"), LastUpdateCycle, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tournamentId"), TournamentId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("stage"), Stage, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tier"), Tier, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("groupId"), GroupId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("contentId"), ContentId, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UCompletedStatus*>, UCompletedStatus*>(TEXT("completed"), &Completed, Serializer);		
 }
 

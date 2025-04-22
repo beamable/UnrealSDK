@@ -7,13 +7,13 @@
 
 void UStatsUnsubscribeRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("service"), Service);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("service"), Service, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("subscriptions"), &Subscriptions, Serializer);
 }
 
 void UStatsUnsubscribeRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("service"), Service);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("service"), Service, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<FString>, FString>(TEXT("subscriptions"), &Subscriptions, Serializer);		
 }
 

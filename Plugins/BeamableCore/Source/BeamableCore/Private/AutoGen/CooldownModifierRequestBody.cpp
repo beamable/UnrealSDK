@@ -7,13 +7,13 @@
 
 void UCooldownModifierRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("gamerTag"), GamerTag);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gamerTag"), GamerTag, Serializer);
 	UBeamJsonUtils::SerializeArray<UUpdateListingCooldownRequestBody*>(TEXT("updateListingCooldownRequests"), UpdateListingCooldownRequests, Serializer);
 }
 
 void UCooldownModifierRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("gamerTag"), GamerTag);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("gamerTag"), GamerTag, Serializer);
 	UBeamJsonUtils::SerializeArray<UUpdateListingCooldownRequestBody*>(TEXT("updateListingCooldownRequests"), UpdateListingCooldownRequests, Serializer);		
 }
 

@@ -7,13 +7,13 @@
 
 void UEventPlayerStateView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("running"), bRunning);
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("rank"), Rank);
-	Serializer->WriteValue(TEXT("score"), Score);
-	Serializer->WriteValue(TEXT("secondsRemaining"), SecondsRemaining);
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("leaderboardId"), LeaderboardId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("running"), bRunning, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("rank"), Rank, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("score"), Score, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("secondsRemaining"), SecondsRemaining, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("leaderboardId"), LeaderboardId, Serializer);
 	UBeamJsonUtils::SerializeArray<UEventPlayerPhaseView*>(TEXT("allPhases"), AllPhases, Serializer);
 	UBeamJsonUtils::SerializeArray<UEventRewardState*>(TEXT("rankRewards"), RankRewards, Serializer);
 	UBeamJsonUtils::SerializeArray<UEventRewardState*>(TEXT("scoreRewards"), ScoreRewards, Serializer);
@@ -23,13 +23,13 @@ void UEventPlayerStateView::BeamSerializeProperties(TUnrealJsonSerializer& Seria
 
 void UEventPlayerStateView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("running"), bRunning);
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("rank"), Rank);
-	Serializer->WriteValue(TEXT("score"), Score);
-	Serializer->WriteValue(TEXT("secondsRemaining"), SecondsRemaining);
-	Serializer->WriteValue(TEXT("id"), Id);
-	Serializer->WriteValue(TEXT("leaderboardId"), LeaderboardId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("running"), bRunning, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("rank"), Rank, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("score"), Score, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("secondsRemaining"), SecondsRemaining, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("leaderboardId"), LeaderboardId, Serializer);
 	UBeamJsonUtils::SerializeArray<UEventPlayerPhaseView*>(TEXT("allPhases"), AllPhases, Serializer);
 	UBeamJsonUtils::SerializeArray<UEventRewardState*>(TEXT("rankRewards"), RankRewards, Serializer);
 	UBeamJsonUtils::SerializeArray<UEventRewardState*>(TEXT("scoreRewards"), ScoreRewards, Serializer);

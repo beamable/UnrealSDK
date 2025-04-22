@@ -7,12 +7,12 @@
 
 void ULeaderboardPlayerRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("dbid"), Dbid);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("dbid"), Dbid, Serializer);
 }
 
 void ULeaderboardPlayerRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("dbid"), Dbid);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("dbid"), Dbid, Serializer);		
 }
 
 void ULeaderboardPlayerRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)

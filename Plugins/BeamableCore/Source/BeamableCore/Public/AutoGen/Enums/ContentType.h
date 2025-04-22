@@ -9,15 +9,15 @@ enum class EContentType : uint8
 {
 	BEAM_content UMETA(DisplayName="Content"),
 	BEAM_text UMETA(DisplayName="Text"),
-	BEAM_binary UMETA(DisplayName="Binary")
+	BEAM_binary UMETA(DisplayName="Binary")		
 };
 
 UCLASS(BlueprintType, Category="Beam|Content|Utils|Enums")
 class BEAMABLECORE_API UContentTypeLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
-
-public:
+public:		
+	
 	UFUNCTION(BlueprintPure, meta = (DisplayName="ContentType To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Content|Utils|Enums")
 	static FString ContentTypeToSerializationName(EContentType Value)
 	{
@@ -27,6 +27,7 @@ public:
 
 		// We chop off the first five "BEAM_" characters. 		
 		return SerializationName.RightChop(5);
+		
 	}
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName="Serialization Name To ContentType", CompactNodeTitle = "->"), Category="Beam|Content|Utils|Enums")
@@ -37,11 +38,12 @@ public:
 		{
 			// We chop off the first five "BEAM_" characters.
 			const FString& SerializationName = Enum->GetNameStringByIndex(NameIndex).RightChop(5);
-			if (Value == SerializationName)
+			if(Value == SerializationName)
 				return static_cast<EContentType>(Enum->GetValueByIndex(NameIndex));
 		}
-
+		
 		ensureAlways(false); //  This should be impossible!
 		return EContentType();
-	}
+	}	
 };
+

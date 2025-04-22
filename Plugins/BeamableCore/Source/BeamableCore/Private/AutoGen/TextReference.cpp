@@ -7,11 +7,11 @@
 
 void UTextReference::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("uri"), Uri);
-	Serializer->WriteValue(TEXT("version"), Version);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("uri"), Uri, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("version"), Version, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
-	Serializer->WriteValue(TEXT("type"), Type);
-	Serializer->WriteValue(TEXT("visibility"), Visibility);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("type"), Type, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("visibility"), Visibility, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("tags"), Tags, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("checksum"), &Checksum, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("lastChanged"), &LastChanged, Serializer);
@@ -20,11 +20,11 @@ void UTextReference::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) 
 
 void UTextReference::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("uri"), Uri);
-	Serializer->WriteValue(TEXT("version"), Version);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("uri"), Uri, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("version"), Version, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
-	Serializer->WriteValue(TEXT("type"), Type);
-	Serializer->WriteValue(TEXT("visibility"), Visibility);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("type"), Type, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("visibility"), Visibility, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("tags"), Tags, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("checksum"), &Checksum, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("lastChanged"), &LastChanged, Serializer);
