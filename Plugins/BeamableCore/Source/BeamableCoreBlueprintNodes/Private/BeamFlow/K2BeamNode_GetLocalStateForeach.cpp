@@ -76,6 +76,10 @@ void UK2BeamNode_GetLocalStateForeach::ExpandNode(FKismetCompilerContext& Compil
 {
 	Super::ExpandNode(CompilerContext, SourceGraph);
 
+	const auto Function = GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName());
+
+	auto ReturnProperty = Function->GetReturnProperty();
+
 	const auto K2Schema = GetDefault<UEdGraphSchema_K2>();
 
 	const UK2Node_CallFunction* CallGetSubsystem = BeamK2::CreateCallFunctionNode(this, CompilerContext, SourceGraph, GetSubsystemSelfFunctionName(), GetRuntimeSubsystemClass());
@@ -130,7 +134,16 @@ void UK2BeamNode_GetLocalStateForeach::ExpandNode(FKismetCompilerContext& Compil
 	const auto Init_Then = InitTemporaryVariable->GetThenPin();
 
 	// Connect the function result with the init of the foreach
-	K2Schema->TryCreateConnection(CallFunction->GetThenPin(), Init_Exec);
+	if (ReturnProperty != nullptr && ReturnProperty->IsA(FBoolProperty::StaticClass()) && Function->GetMetaData("ExpandBoolAsExecs").Contains("ReturnValue"))
+	{
+		K2Schema->TryCreateConnection(CallFunction->FindPin(FName("True")), Init_Exec);
+		K2Schema->TryCreateConnection(CallFunction->FindPin(FName("False")), Init_Exec);
+	}
+	else
+	{
+		K2Schema->TryCreateConnection(CallFunction->GetThenPin(), Init_Exec);
+	}
+
 	K2Schema->TryCreateConnection(Init_Variable, Temp_Variable);
 	Init_Value->DefaultValue = TEXT("0");
 
