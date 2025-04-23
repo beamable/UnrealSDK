@@ -11,6 +11,7 @@ This sample will not be supported on future updates but you can use as a sample 
 1. Install Dependencies
     - NET 8.0
     - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+    - [Node.js](https://nodejs.org/en/download)
 2. Clone the UnrealSDK Repository
     - Clone the [UnrealSDK](https://github.com/Beamable/UnrealSDK) repository if you didn't yet.
     - Run the `prepare_repo.sh` Script. (We recommend using GitBash, but any similar shell should work)
@@ -44,13 +45,13 @@ To set up an organization and realm to run this sample, follow the steps below.
    4. Ensure there is two `SuiWeaponsItems` content with the name `darksaber` and `shisui`
    5. Make sure the Items have those parameters as informed in the table below:
    
-| Item      | Name      | Symbol | Image                                                                   | Description                                           | Initial Supply | Client Permission | Starting Amount | Federation - Service | Federation - Namespace | isSet |
-|-----------|-----------|--------|-------------------------------------------------------------------------|-------------------------------------------------------|----------------|-------------------|-----------------|----------------------|------------------------|-------|
-| beam      | Beam      | BEAM   | https://cdn.pixabay.com/photo/2018/08/30/12/24/bitcoin-3642042_1280.png | Beam game coin                                        | 1000           | True              | 0               | SuiFederation        | SuiIdentity            | true  |
-| star      | Star Coin | STR    | https://cdn.pixabay.com/photo/2016/03/31/17/33/icons-1293736_1280.png   |                                                       | 0              | True              | 0               | SuiFederation        | SuiIdentity            | true  |
-| gold      | Gold      | GLD    | https://cdn.pixabay.com/photo/2013/07/12/12/55/gold-bar-146539_1280.png | In Game Gold                                          | 100            | True              | 0               | SuiFederation        | SuiIdentity            | true  |
-| darksaber | DarkSaber |        | https://cdn.pixabay.com/photo/2012/04/15/20/07/light-35144_1280.png     | An ancient lightsaber created by Tarre Vizsla         |                | True              |                 |                      |                        |       |
-| shisui    | Shisui    |        | https://cdn.pixabay.com/photo/2019/04/05/15/01/katana-4105189_1280.png  | This sword is said to have the power to control water |                | True              |                 |                      |                        |       |
+| Item      | Name      | Symbol | Image                                                                   | Description                                           | Initial Supply | Client Permission | Starting Amount | Federation - Service   | Federation - Namespace | isSet |
+|-----------|-----------|--------|-------------------------------------------------------------------------|-------------------------------------------------------|----------------|-------------------|-----------------|------------------------|------------------------|-------|
+| beam      | Beam      | BEAM   | https://cdn.pixabay.com/photo/2018/08/30/12/24/bitcoin-3642042_1280.png | Beam game coin                                        | 1000           | True              | 0               | SuiFederation          | SuiIdentity            | true  |
+| star      | Star Coin | STR    | https://cdn.pixabay.com/photo/2016/03/31/17/33/icons-1293736_1280.png   |                                                       | 0              | True              | 0               | SuiFederation          | SuiIdentity            | true  |
+| gold      | Gold      | GLD    | https://cdn.pixabay.com/photo/2013/07/12/12/55/gold-bar-146539_1280.png | In Game Gold                                          | 100            | True              | 0               | SuiFederation          | SuiIdentity            | true  |
+| darksaber | DarkSaber |        | https://cdn.pixabay.com/photo/2012/04/15/20/07/light-35144_1280.png     | An ancient lightsaber created by Tarre Vizsla         |                | True              |                 | SuiFederation          | SuiIdentity            |       |
+| shisui    | Shisui    |        | https://cdn.pixabay.com/photo/2019/04/05/15/01/katana-4105189_1280.png  | This sword is said to have the power to control water |                | True              |                 | SuiFederation          | SuiIdentity            |       |
 
 5. Click `Publish` to publish those new contents to the realm.
 
@@ -58,6 +59,7 @@ To set up an organization and realm to run this sample, follow the steps below.
 Now you're set up to run the sample.
 
 1. Open the Docker Desktop and Make sure it's running
+2. From a terminal Open the directory `microservices/services/SuiFederation` and run `npm install`
 2. Open a terminal and run `dotnet beam services run --ids SuiFederation`
 3. Open the Unreal Editor
 4. Go to the `Beamable -> Microservice` window. You should see the `SuiFederation` service running there.
