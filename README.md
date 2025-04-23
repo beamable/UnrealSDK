@@ -50,7 +50,7 @@ To set up an organization and realm to run this sample, follow the steps below.
 | star      | Star Coin | STR    | https://cdn.pixabay.com/photo/2016/03/31/17/33/icons-1293736_1280.png   |                                                       | 0              | True              | 0               | SuiFederation        | SuiIdentity            | true  |
 | gold      | Gold      | GLD    | https://cdn.pixabay.com/photo/2013/07/12/12/55/gold-bar-146539_1280.png | In Game Gold                                          | 100            | True              | 0               | SuiFederation        | SuiIdentity            | true  |
 | darksaber | DarkSaber |        | https://cdn.pixabay.com/photo/2012/04/15/20/07/light-35144_1280.png     | An ancient lightsaber created by Tarre Vizsla         |                | True              |                 |                      |                        |       |
-| suisui    | Suisui    |        | https://cdn.pixabay.com/photo/2019/04/05/15/01/katana-4105189_1280.png  | This sword is said to have the power to control water |                | True              |                 |                      |                        |       |
+| shisui    | Shisui    |        | https://cdn.pixabay.com/photo/2019/04/05/15/01/katana-4105189_1280.png  | This sword is said to have the power to control water |                | True              |                 |                      |                        |       |
 
 5. Click `Publish` to publish those new contents to the realm.
 
