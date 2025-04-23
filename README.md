@@ -26,7 +26,6 @@ This sample will not be supported on future updates but you can use as a sample 
 2. Perform a Clean build of the Editor target.
 3. Run the `BeamableUnreal` Project and in the editor, go to Project Settings → Beamable Core → Beamable Environment and verify it’s set to `BeamProdEnv`.
 4. Sign in to your Beamable account in the Beamable Window.
-5. Follow Sample-Specific Instructions. Each sample has its own documentation for additional steps or guidance.
 
 !!! warning "Clean Up Sample Realms"
 If you are using your own organization (the one you’ll use to ship your game) to test any of these samples, don’t forget to delete the test realms when you’re finished exploring!
@@ -43,7 +42,17 @@ To set up an organization and realm to run this sample, follow the steps below.
    2. Ensure there's two `SuiCoins` currencies with the name `beam` and `stars`
    3. Ensure there is one `SuiGameCoins` currency with the name `gold`
    4. Ensure there is two `SuiWeaponsItems` content with the name `darksaber` and `shisui`
-   5. Click `Publish` to publish those new contents to the realm.
+   5. Make sure the Items have those parameters as informed in the table below:
+   
+| Item      | Name      | Symbol | Image                                                                   | Description                                           | Initial Supply | Client Permission | Starting Amount | Federation - Service | Federation - Namespace | isSet |
+|-----------|-----------|--------|-------------------------------------------------------------------------|-------------------------------------------------------|----------------|-------------------|-----------------|----------------------|------------------------|-------|
+| beam      | Beam      | BEAM   | https://cdn.pixabay.com/photo/2018/08/30/12/24/bitcoin-3642042_1280.png | Beam game coin                                        | 1000           | True              | 0               | SuiFederation        | SuiIdentity            | true  |
+| star      | Star Coin | STR    | https://cdn.pixabay.com/photo/2016/03/31/17/33/icons-1293736_1280.png   |                                                       | 0              | True              | 0               | SuiFederation        | SuiIdentity            | true  |
+| gold      | Gold      | GLD    | https://cdn.pixabay.com/photo/2013/07/12/12/55/gold-bar-146539_1280.png | In Game Gold                                          | 100            | True              | 0               | SuiFederation        | SuiIdentity            | true  |
+| darksaber | DarkSaber |        | https://cdn.pixabay.com/photo/2012/04/15/20/07/light-35144_1280.png     | An ancient lightsaber created by Tarre Vizsla         |                | True              |                 |                      |                        |       |
+| suisui    | Suisui    |        | https://cdn.pixabay.com/photo/2019/04/05/15/01/katana-4105189_1280.png  | This sword is said to have the power to control water |                | True              |                 |                      |                        |       |
+
+5. Click `Publish` to publish those new contents to the realm.
 
 ## Running the Sample in Editor
 Now you're set up to run the sample.
