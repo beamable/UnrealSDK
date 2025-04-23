@@ -34,7 +34,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|HathoraDemo", DisplayName="Beam - Make HathoraDemoInitializePlayer",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|HathoraDemo|Utils|Make/Break", DisplayName="Make HathoraDemoInitializePlayer",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UHathoraDemoInitializePlayerRequest* Make(UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

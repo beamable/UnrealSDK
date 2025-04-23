@@ -7,20 +7,20 @@
 
 void UAddRequestArgs::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("a"), A);
-	Serializer->WriteValue(TEXT("b"), B);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("a"), A, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("b"), B, Serializer);
 }
 
 void UAddRequestArgs::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("a"), A);
-	Serializer->WriteValue(TEXT("b"), B);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("a"), A, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("b"), B, Serializer);		
 }
 
 void UAddRequestArgs::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	A = Bag->GetIntegerField(TEXT("a"));
-	B = Bag->GetIntegerField(TEXT("b"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("a")), A);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("b")), B);
 }
 
 

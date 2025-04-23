@@ -398,7 +398,7 @@ public:
 	}
 
 	template <typename TPrimitiveType, typename TJsonType>
-	static void SerializeRawPrimitive(const FString& JsonField, TPrimitiveType& ToSerialize, TSharedRef<TJsonStringWriter<TJsonType>>& Serializer)
+	static void SerializeRawPrimitive(const FString& JsonField, TPrimitiveType& ToSerialize, TSharedRef<TJsonType>& Serializer)
 	{
 		if (TIsDerivedFrom<TPrimitiveType, FBeamSemanticType>::Value)
 		{
@@ -420,11 +420,11 @@ public:
 		{
 			checkf(false, TEXT("TSerializationType cannot be a FBeamJsonSerializable. We don't support it for now."))
 		}
-		else if constexpr (std::is_same_v<TPrimitiveType, FGuid>)
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FGuid>::Value)
 		{
 			Serializer->WriteValue(JsonField, ToSerialize.ToString(EGuidFormats::DigitsWithHyphensLower));
 		}
-		else if constexpr (std::is_same_v<TPrimitiveType, FDateTime>)
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FDateTime>::Value)
 		{
 			Serializer->WriteValue(JsonField, ToSerialize.ToIso8601());
 		}
@@ -1441,9 +1441,15 @@ public:
 			const bool Parsed = Val.Equals(TEXT("true"), ESearchCase::IgnoreCase);
 			ToDeserialize = Parsed;
 		}
-		else if constexpr (std::is_same_v<TPrimitiveType, FDateTime>)
+		else if constexpr (TIsDerivedFrom<TPrimitiveType, FDateTime>::Value)
 		{
-			FDateTime::ParseIso8601(*JsonField, ToDeserialize);
+			FString Val = JsonField;
+			if (JsonField.StartsWith("\""))
+			{
+				// We do this as the primitive content could come enclosed with quotes.
+				Val = JsonField.RightChop(1).LeftChop(1);
+			}
+			FDateTime::ParseIso8601(*Val, ToDeserialize);
 		}
 	}
 

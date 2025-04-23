@@ -13,12 +13,12 @@ class BEAMABLEUNREALMICROSERVICECLIENTS_API UAddRequestArgsLibrary : public UBlu
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - AddRequestArgs To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|MSPlayground|Utils|Json", DisplayName="AddRequestArgs To JSON String")
 	static FString AddRequestArgsToJsonString(const UAddRequestArgs* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make AddRequestArgs", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|MSPlayground|Utils|Make/Break", DisplayName="Make AddRequestArgs", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UAddRequestArgs* Make(int32 A, int32 B, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break AddRequestArgs", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|MSPlayground|Utils|Make/Break", DisplayName="Break AddRequestArgs", meta=(NativeBreakFunc))
 	static void Break(const UAddRequestArgs* Serializable, int32& A, int32& B);
 };

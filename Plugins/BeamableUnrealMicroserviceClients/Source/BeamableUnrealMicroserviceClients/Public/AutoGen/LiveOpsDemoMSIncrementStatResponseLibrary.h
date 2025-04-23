@@ -13,12 +13,12 @@ class BEAMABLEUNREALMICROSERVICECLIENTS_API ULiveOpsDemoMSIncrementStatResponseL
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - LiveOpsDemoMSIncrementStatResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|LiveOpsDemoMS|Utils|Json", DisplayName="LiveOpsDemoMSIncrementStatResponse To JSON String")
 	static FString LiveOpsDemoMSIncrementStatResponseToJsonString(const ULiveOpsDemoMSIncrementStatResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make LiveOpsDemoMSIncrementStatResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|LiveOpsDemoMS|Utils|Make/Break", DisplayName="Make LiveOpsDemoMSIncrementStatResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static ULiveOpsDemoMSIncrementStatResponse* Make(bool bValue, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break LiveOpsDemoMSIncrementStatResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|LiveOpsDemoMS|Utils|Make/Break", DisplayName="Break LiveOpsDemoMSIncrementStatResponse", meta=(NativeBreakFunc))
 	static void Break(const ULiveOpsDemoMSIncrementStatResponse* Serializable, bool& bValue);
 };
