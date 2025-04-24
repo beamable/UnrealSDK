@@ -1,10 +1,12 @@
 ﻿#pragma once
 
 #include "DetailWidgetRow.h"
+#include "IDetailChildrenBuilder.h"
 #include "IPropertyTypeCustomization.h"
+#include "IPropertyUtilities.h"
+#include "Serialization/BeamOptional.h"
 
 
-template <typename T>
 class FBeamOptionalCustomization : public IPropertyTypeCustomization
 {
 public:
@@ -27,14 +29,14 @@ public:
 
 		// Get the property handler of the type property:
 		void* ValuePtr = nullptr;
-		T*    Optional = nullptr;
+		FBeamOptional* Optional = nullptr;
 		if (StructPropertyHandle->GetValueData(ValuePtr) != FPropertyAccess::Fail)
 		{
-			Optional = static_cast<T*>(ValuePtr);
+			Optional = static_cast<FBeamOptional*>(ValuePtr);
 		}
 
 		// Find the Val property
-		const auto ValPropertyHandle = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(T, Val));
+		const auto ValPropertyHandle = StructPropertyHandle->GetChildHandle(FName("Val"));
 		check(ValPropertyHandle.IsValid());
 
 		// then change the HeaderRow to add some Slate widget
@@ -47,14 +49,21 @@ public:
 				[
 					SAssignNew(Checkbox, SCheckBox)
 					.OnCheckStateChanged(FOnCheckStateChanged::CreateLambda(
-						[this, Optional](ECheckBoxState NewState)
+						[this, Optional, &StructCustomizationUtils, StructPropertyHandle](ECheckBoxState NewState)
 						{
+							StructPropertyHandle->NotifyPreChange();
 							const bool bIsChecked = NewState == ECheckBoxState::Checked;
-							Optional->IsSet       = bIsChecked;
+							Optional->IsSet = bIsChecked;
+
+							StructPropertyHandle->NotifyPostChange(EPropertyChangeType::ValueSet);
+							StructPropertyHandle->NotifyFinishedChangingProperties();
+
+							StructCustomizationUtils.GetPropertyUtilities()->RequestForceRefresh();
 						}))
 				]
 				+ SHorizontalBox::Slot()
-				.AutoWidth()[
+				.AutoWidth()
+				[
 					SNew(SBox)
 					.Visibility_Lambda([Optional]
 					{
@@ -66,11 +75,55 @@ public:
 				]
 			];
 
+		ValPropertyHandle->SetOnPropertyValueChanged(FSimpleDelegate::CreateLambda([&StructCustomizationUtils]()
+		{
+			StructCustomizationUtils.GetPropertyUtilities()->RequestForceRefresh();
+		}));
+
 		Checkbox->SetIsChecked(Optional->IsSet ? ECheckBoxState::Checked : ECheckBoxState::Unchecked);
 	}
 
+
 	virtual void CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle, class IDetailChildrenBuilder& StructBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils) override
 	{
+		const auto ValPropertyHandle = StructPropertyHandle->GetChildHandle(FName("Val"));
+		check(ValPropertyHandle.IsValid());
+
+		if (!Checkbox->IsChecked())
+		{
+			return;
+		}
+		// Check if the type is a instanced propety, if it is we need to handle as a different case.
+		bool IsInstanced = false;
+		if (FProperty* Property = ValPropertyHandle->GetProperty())
+		{
+			if (FObjectProperty* ObjectProp = CastField<FObjectProperty>(Property))
+			{
+				if (ObjectProp->HasAnyPropertyFlags(CPF_InstancedReference))
+				{
+					IsInstanced = true;
+				}
+			}
+		}
+
+		uint32 NumChildren;
+		ValPropertyHandle->GetNumChildren(NumChildren);
+
+		for (uint32 i = 0; i < NumChildren; ++i)
+		{
+			TSharedPtr<IPropertyHandle> ChildHandle = ValPropertyHandle->GetChildHandle(i);
+
+			// If its a instanced property I need to get the child 0 to draw correctly
+			if (IsInstanced)
+			{
+				ChildHandle = ChildHandle->GetChildHandle(0);
+			}
+
+			if (ChildHandle.IsValid() && ChildHandle->IsValidHandle())
+			{
+				StructBuilder.AddProperty(ChildHandle.ToSharedRef());
+			}
+		}
 	}
 
 	// END IPropertyTypeCustomization interface

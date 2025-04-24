@@ -71,6 +71,7 @@ void FBeamableCoreEditorModule::StartupModule()
 	{
 		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 
+		// to register our custom property
 		PropertyModule.RegisterCustomClassLayout(
 			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
 			UK2BeamNode_EventRegister::StaticClass()->GetFName(),
@@ -111,42 +112,22 @@ void FBeamableCoreEditorModule::StartupModule()
 			// this is where our MakeInstance() method is useful
 			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamContentIdCustomization::MakeInstance));
 
-		PropertyModule.RegisterCustomPropertyTypeLayout(
-			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
-			FOptionalString::StaticStruct()->GetFName(),
-			// this is where our MakeInstance() method is useful
-			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamOptionalCustomization<FOptionalString>::MakeInstance));
+		// To register the FOptional properties
+		for (TObjectIterator<UStruct> It; It; ++It)
+		{
+			UStruct* Struct = *It;
 
-		PropertyModule.RegisterCustomPropertyTypeLayout(
-			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
-			FOptionalInt32::StaticStruct()->GetFName(),
-			// this is where our MakeInstance() method is useful
-			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamOptionalCustomization<FOptionalInt32>::MakeInstance));
-
-		PropertyModule.RegisterCustomPropertyTypeLayout(
-			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
-			FOptionalInt64::StaticStruct()->GetFName(),
-			// this is where our MakeInstance() method is useful
-			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamOptionalCustomization<FOptionalInt64>::MakeInstance));
-
-		PropertyModule.RegisterCustomPropertyTypeLayout(
-			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
-			FOptionalBeamGamerTag::StaticStruct()->GetFName(),
-			// this is where our MakeInstance() method is useful
-			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamOptionalCustomization<FOptionalBeamGamerTag>::MakeInstance));
-
-		PropertyModule.RegisterCustomPropertyTypeLayout(
-			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
-			FOptionalBeamAccountId::StaticStruct()->GetFName(),
-			// this is where our MakeInstance() method is useful
-			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamOptionalCustomization<FOptionalBeamAccountId>::MakeInstance));
-
-		PropertyModule.RegisterCustomPropertyTypeLayout(
-			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
-			FBeamOptionalSchedule::StaticStruct()->GetFName(),
-			// this is where our MakeInstance() method is useful
-			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamOptionalCustomization<FBeamOptionalSchedule>::MakeInstance));
-
+			// Make sure it's a child of FBeamOptional, not the base struct itself
+			if (Struct->IsChildOf(FBeamOptional::StaticStruct()) &&
+				Struct != FBeamOptional::StaticStruct())
+			{
+				PropertyModule.RegisterCustomPropertyTypeLayout(
+					// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
+					Struct->GetFName(),
+					// this is where our MakeInstance() method is useful
+					FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamOptionalCustomization::MakeInstance));
+			}
+		}
 
 		PropertyModule.NotifyCustomizationModuleChanged();
 	}
