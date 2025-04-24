@@ -7,17 +7,17 @@
 
 void URemoveLaunchMessageRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("file"), File);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("file"), File, Serializer);
 }
 
 void URemoveLaunchMessageRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("file"), File);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("file"), File, Serializer);		
 }
 
 void URemoveLaunchMessageRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	File = Bag->GetStringField(TEXT("file"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("file")), File);
 }
 
 

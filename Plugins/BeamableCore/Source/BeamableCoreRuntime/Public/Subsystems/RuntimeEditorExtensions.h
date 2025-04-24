@@ -25,13 +25,12 @@ class BEAMABLECORERUNTIME_API UBeamRuntimeEditorExtensions : public UBlueprintFu
 	GENERATED_BODY()
 
 public:
-
 	/**
 	 * Helper that gets a content object from the specified manifest.
 	 * When called inside the editor but outside of PIE, will return the local content definition.
 	 * In other cases, will try and fetch the content from the runtime Content Subsystem.
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Content", meta=(DefaultToSelf="CallingContext"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Content|Utils", meta=(DefaultToSelf="CallingContext"))
 	static bool GetContentFromManifest(const FBeamContentManifestId& ManifestId, FBeamContentId ContentId, UBeamContentObject*& OutContentObject, UObject* CallingContext = nullptr)
 	{
 #if WITH_EDITOR
@@ -47,9 +46,9 @@ public:
 	 * When called inside the editor but outside of PIE, will return the local content definition.
 	 * In other cases, will try and fetch the content from the runtime Content Subsystem.
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Content", meta=(DefaultToSelf="CallingContext"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Content|Utils", meta=(DefaultToSelf="CallingContext"))
 	static bool GetContent(FBeamContentId ContentId, UBeamContentObject*& OutContentObject, UObject* CallingContext = nullptr)
-	{		
+	{
 		return GetContentFromManifest({"global"}, ContentId, OutContentObject, CallingContext);
 	}
 };

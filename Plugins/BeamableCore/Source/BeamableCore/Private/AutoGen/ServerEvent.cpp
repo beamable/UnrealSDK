@@ -7,22 +7,22 @@
 
 void UServerEvent::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("event"), Event);
-	Serializer->WriteValue(TEXT("toAll"), bToAll);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("event"), Event, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("toAll"), bToAll, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("payload"), &Payload, Serializer);
 }
 
 void UServerEvent::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("event"), Event);
-	Serializer->WriteValue(TEXT("toAll"), bToAll);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("event"), Event, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("toAll"), bToAll, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("payload"), &Payload, Serializer);		
 }
 
 void UServerEvent::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Event = Bag->GetStringField(TEXT("event"));
-	bToAll = Bag->GetBoolField(TEXT("toAll"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("event")), Event);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("toAll")), bToAll);
 	UBeamJsonUtils::DeserializeOptional<FString>("payload", Bag, Payload, OuterOwner);
 }
 

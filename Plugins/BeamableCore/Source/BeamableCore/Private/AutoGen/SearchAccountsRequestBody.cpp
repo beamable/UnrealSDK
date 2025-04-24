@@ -7,23 +7,23 @@
 
 void USearchAccountsRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("query"), Query);
-	Serializer->WriteValue(TEXT("page"), Page);
-	Serializer->WriteValue(TEXT("pagesize"), Pagesize);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("query"), Query, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("page"), Page, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("pagesize"), Pagesize, Serializer);
 }
 
 void USearchAccountsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("query"), Query);
-	Serializer->WriteValue(TEXT("page"), Page);
-	Serializer->WriteValue(TEXT("pagesize"), Pagesize);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("query"), Query, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("page"), Page, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("pagesize"), Pagesize, Serializer);		
 }
 
 void USearchAccountsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Query = Bag->GetStringField(TEXT("query"));
-	Page = Bag->GetIntegerField(TEXT("page"));
-	Pagesize = Bag->GetIntegerField(TEXT("pagesize"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("query")), Query);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("page")), Page);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("pagesize")), Pagesize);
 }
 
 

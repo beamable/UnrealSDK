@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalBeamContentManifestId struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Make Optional BeamContentManifestId", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Optionals", meta=(DisplayName="Make Optional BeamContentManifestId", NativeMakeFunc))
 	static FOptionalBeamContentManifestId MakeOptional(FBeamContentManifestId Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The FBeamContentManifestId to convert.
 	 * @return An optional with the BeamContentManifestId set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta = (DisplayName = "Beam - BeamContentManifestId To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Optionals", meta = (DisplayName="BeamContentManifestId To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalBeamContentManifestId Conv_OptionalFromValue(FBeamContentManifestId Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Optionals", meta=(DisplayName="Beam - Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Content|Utils|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalBeamContentManifestId& Optional, FBeamContentManifestId& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Get Optional's BeamContentManifestId Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Optionals", meta=(DisplayName="Get Optional's BeamContentManifestId Value"))
 	static FBeamContentManifestId GetOptionalValue(const FOptionalBeamContentManifestId& Optional, FBeamContentManifestId DefaultValue, bool& WasSet);
 
 	

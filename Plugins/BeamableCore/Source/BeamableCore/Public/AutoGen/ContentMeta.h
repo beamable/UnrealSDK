@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "Dom/JsonObject.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Enums/ContentVisibility.h"
 
@@ -14,12 +15,11 @@ class BEAMABLECORE_API UContentMeta : public UObject, public IBeamJsonSerializab
 	GENERATED_BODY()
 
 public:
+	TSharedPtr<FJsonObject> Data = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Visibility", Category="Beam")
 	EContentVisibility Visibility = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Text", Category="Beam")
 	FOptionalString Text = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Data", Category="Beam")
-	FOptionalString Data = {};
 
 	
 

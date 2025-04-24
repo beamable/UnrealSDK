@@ -7,26 +7,26 @@
 
 void UCompletedStatus::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("cycle"), Cycle);
-	Serializer->WriteValue(TEXT("tier"), Tier);
-	Serializer->WriteValue(TEXT("stage"), Stage);
-	Serializer->WriteValue(TEXT("delta"), Delta);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("cycle"), Cycle, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tier"), Tier, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("stage"), Stage, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("delta"), Delta, Serializer);
 }
 
 void UCompletedStatus::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("cycle"), Cycle);
-	Serializer->WriteValue(TEXT("tier"), Tier);
-	Serializer->WriteValue(TEXT("stage"), Stage);
-	Serializer->WriteValue(TEXT("delta"), Delta);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("cycle"), Cycle, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("tier"), Tier, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("stage"), Stage, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("delta"), Delta, Serializer);		
 }
 
 void UCompletedStatus::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Cycle = Bag->GetIntegerField(TEXT("cycle"));
-	Tier = Bag->GetIntegerField(TEXT("tier"));
-	Stage = Bag->GetIntegerField(TEXT("stage"));
-	Delta = Bag->GetIntegerField(TEXT("delta"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("cycle")), Cycle);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tier")), Tier);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("stage")), Stage);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("delta")), Delta);
 }
 
 

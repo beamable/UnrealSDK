@@ -7,17 +7,17 @@
 
 void UAccountAvailableRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("email"), Email);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("email"), Email, Serializer);
 }
 
 void UAccountAvailableRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("email"), Email);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("email"), Email, Serializer);		
 }
 
 void UAccountAvailableRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Email = Bag->GetStringField(TEXT("email"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("email")), Email);
 }
 
 

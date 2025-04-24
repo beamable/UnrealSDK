@@ -5,6 +5,7 @@
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 #include "BeamableCore/Public/AutoGen/Enums/GroupType.h"
+#include "Serialization/BeamJsonUtils.h"
 
 #include "GroupMembershipRequestBody.generated.h"
 

@@ -21,6 +21,6 @@ public:
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 
-	UFUNCTION(BlueprintPure, Category="Beam|ResponseTypes", meta = (DisplayName = "Beam - Plain Text String", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|ResponseTypes", meta = (DisplayName="Plain Text String", CompactNodeTitle = "->", BlueprintAutocast))
 	static FString Conv_BeamPlainTextResponseBodyToString(UBeamPlainTextResponseBody* Value) { return Value->Response; }	
 };

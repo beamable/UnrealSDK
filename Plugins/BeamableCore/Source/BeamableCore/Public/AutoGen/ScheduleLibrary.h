@@ -13,12 +13,12 @@ class BEAMABLECORE_API UScheduleLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - Schedule To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Events|Utils|Json", DisplayName="Schedule To JSON String")
 	static FString ScheduleToJsonString(const USchedule* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make Schedule", meta=(DefaultToSelf="Outer", AdvancedDisplay="Description, ActiveTo, Crons, Definitions, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Events|Utils|Make/Break", DisplayName="Make Schedule", meta=(DefaultToSelf="Outer", AdvancedDisplay="Description, ActiveTo, Crons, Definitions, Outer", NativeMakeFunc))
 	static USchedule* Make(FString ActiveFrom, FOptionalString Description, FOptionalString ActiveTo, FOptionalArrayOfString Crons, FOptionalArrayOfScheduleDefinition Definitions, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break Schedule", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Events|Utils|Make/Break", DisplayName="Break Schedule", meta=(NativeBreakFunc))
 	static void Break(const USchedule* Serializable, FString& ActiveFrom, FOptionalString& Description, FOptionalString& ActiveTo, FOptionalArrayOfString& Crons, FOptionalArrayOfScheduleDefinition& Definitions);
 };

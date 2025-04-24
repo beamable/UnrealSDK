@@ -1833,7 +1833,7 @@ public:
 		UTILITIES
 	*/
 
-	UFUNCTION(BlueprintCallable, Category="Beam|Requests", DisplayName="Beam - Did Timeout", meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Requests", DisplayName="Did Timeout", meta=(ExpandBoolAsExecs="ReturnValue"))
 	static bool IsRetryingTimeout(FBeamRequestContext Ctx);
 
 	static bool IsSuccessfulResponse(int32 ResponseCode);

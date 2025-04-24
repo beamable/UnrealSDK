@@ -22,7 +22,7 @@ FString ULobbyPlayerLibrary::LobbyPlayerToJsonString(const ULobbyPlayer* Seriali
 	return Result;
 }	
 
-ULobbyPlayer* ULobbyPlayerLibrary::Make(FOptionalBeamGamerTag PlayerId, FOptionalString Joined, FOptionalArrayOfBeamTag Tags, UObject* Outer)
+ULobbyPlayer* ULobbyPlayerLibrary::Make(FOptionalBeamGamerTag PlayerId, FOptionalDateTime Joined, FOptionalArrayOfBeamTag Tags, UObject* Outer)
 {
 	auto Serializable = NewObject<ULobbyPlayer>(Outer);
 	Serializable->PlayerId = PlayerId;
@@ -32,7 +32,7 @@ ULobbyPlayer* ULobbyPlayerLibrary::Make(FOptionalBeamGamerTag PlayerId, FOptiona
 	return Serializable;
 }
 
-void ULobbyPlayerLibrary::Break(const ULobbyPlayer* Serializable, FOptionalBeamGamerTag& PlayerId, FOptionalString& Joined, FOptionalArrayOfBeamTag& Tags)
+void ULobbyPlayerLibrary::Break(const ULobbyPlayer* Serializable, FOptionalBeamGamerTag& PlayerId, FOptionalDateTime& Joined, FOptionalArrayOfBeamTag& Tags)
 {
 	PlayerId = Serializable->PlayerId;
 	Joined = Serializable->Joined;

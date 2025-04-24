@@ -12,17 +12,17 @@ void UGetTotalCouponResponse::DeserializeRequestResponse(UObject* RequestData, F
 
 void UGetTotalCouponResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("count"), Count);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("count"), Count, Serializer);
 }
 
 void UGetTotalCouponResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("count"), Count);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("count"), Count, Serializer);		
 }
 
 void UGetTotalCouponResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("count")), Count);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("count")), Count);
 }
 
 

@@ -22,6 +22,7 @@
 #include "PropertyType/FBeamOptionalCustomization.h"
 #include "PropertyType/FDocsPageItemCustomization.h"
 #include "PropertyType/RequestTypeCustomization.h"
+#include "PropertyType/UK2BeamEventRegisterCustomization.h"
 #include "Subsystems/BeamEditor.h"
 #include "Subsystems/Content/BeamEditorContent.h"
 #include "Toolkits/AssetEditorToolkit.h"
@@ -69,6 +70,13 @@ void FBeamableCoreEditorModule::StartupModule()
 	// Set up PropertyCustomizations
 	{
 		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
+
+		// to register our custom property
+		PropertyModule.RegisterCustomClassLayout(
+			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
+			UK2BeamNode_EventRegister::StaticClass()->GetFName(),
+			// this is where our MakeInstance() method is useful
+			FOnGetDetailCustomizationInstance::CreateStatic(&UK2BeamEventRegisterCustomization::MakeInstance));
 
 		// to register our custom property
 		PropertyModule.RegisterCustomPropertyTypeLayout(

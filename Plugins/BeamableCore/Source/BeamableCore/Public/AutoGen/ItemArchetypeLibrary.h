@@ -13,12 +13,12 @@ class BEAMABLECORE_API UItemArchetypeLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - ItemArchetype To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|Utils|Json", DisplayName="ItemArchetype To JSON String")
 	static FString ItemArchetypeToJsonString(const UItemArchetype* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ItemArchetype", meta=(DefaultToSelf="Outer", AdvancedDisplay="External, ClientPermission, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|Utils|Make/Break", DisplayName="Make ItemArchetype", meta=(DefaultToSelf="Outer", AdvancedDisplay="External, ClientPermission, Outer", NativeMakeFunc))
 	static UItemArchetype* Make(FString Symbol, FOptionalFederationInfo External, FOptionalBeamClientPermission ClientPermission, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break ItemArchetype", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|Utils|Make/Break", DisplayName="Break ItemArchetype", meta=(NativeBreakFunc))
 	static void Break(const UItemArchetype* Serializable, FString& Symbol, FOptionalFederationInfo& External, FOptionalBeamClientPermission& ClientPermission);
 };

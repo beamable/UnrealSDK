@@ -13,12 +13,12 @@ class BEAMABLEUNREALMICROSERVICECLIENTS_API UDiscordSampleMsUpdateFromDiscordRes
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - DiscordSampleMsUpdateFromDiscordResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|DiscordSampleMs|Utils|Json", DisplayName="DiscordSampleMsUpdateFromDiscordResponse To JSON String")
 	static FString DiscordSampleMsUpdateFromDiscordResponseToJsonString(const UDiscordSampleMsUpdateFromDiscordResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make DiscordSampleMsUpdateFromDiscordResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|DiscordSampleMs|Utils|Make/Break", DisplayName="Make DiscordSampleMsUpdateFromDiscordResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UDiscordSampleMsUpdateFromDiscordResponse* Make(bool bValue, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break DiscordSampleMsUpdateFromDiscordResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|DiscordSampleMs|Utils|Make/Break", DisplayName="Break DiscordSampleMsUpdateFromDiscordResponse", meta=(NativeBreakFunc))
 	static void Break(const UDiscordSampleMsUpdateFromDiscordResponse* Serializable, bool& bValue);
 };

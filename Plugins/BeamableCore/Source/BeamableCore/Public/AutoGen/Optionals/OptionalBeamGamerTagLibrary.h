@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalBeamGamerTag struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Make Optional BeamGamerTag", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|Utils|Optionals", meta=(DisplayName="Make Optional BeamGamerTag", NativeMakeFunc))
 	static FOptionalBeamGamerTag MakeOptional(FBeamGamerTag Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The FBeamGamerTag to convert.
 	 * @return An optional with the BeamGamerTag set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta = (DisplayName = "Beam - BeamGamerTag To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|Utils|Optionals", meta = (DisplayName="BeamGamerTag To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalBeamGamerTag Conv_OptionalFromValue(FBeamGamerTag Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Optionals", meta=(DisplayName="Beam - Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Lobby|Utils|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalBeamGamerTag& Optional, FBeamGamerTag& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Get Optional's BeamGamerTag Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|Utils|Optionals", meta=(DisplayName="Get Optional's BeamGamerTag Value"))
 	static FBeamGamerTag GetOptionalValue(const FOptionalBeamGamerTag& Optional, FBeamGamerTag DefaultValue, bool& WasSet);
 
 	

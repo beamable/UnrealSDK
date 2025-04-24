@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/FacebookUpdatedEntry.h"
 
 #include "FacebookPaymentUpdateRequestBody.generated.h"

@@ -42,7 +42,7 @@ class BEAMABLECORE_API UBeamErrorResponseLibrary : public UBlueprintFunctionLibr
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, Category="Beam|Json", DisplayName="Beam - JSON String to Beam Error")
+	UFUNCTION(BlueprintCallable, Category="Beam|Json", DisplayName="JSON String to Beam Error")
 	static FBeamErrorResponse JsonStringToBeamErrorResponse(FString Json)
 	{
 		FBeamErrorResponse Err;

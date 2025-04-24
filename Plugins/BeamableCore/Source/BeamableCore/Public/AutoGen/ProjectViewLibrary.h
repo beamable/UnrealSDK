@@ -13,12 +13,12 @@ class BEAMABLECORE_API UProjectViewLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - ProjectView To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Json", DisplayName="ProjectView To JSON String")
 	static FString ProjectViewToJsonString(const UProjectView* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ProjectView", meta=(DefaultToSelf="Outer", AdvancedDisplay="bArchived, bSharded, Secret, Parent, Cid, Children, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Make/Break", DisplayName="Make ProjectView", meta=(DefaultToSelf="Outer", AdvancedDisplay="bArchived, bSharded, Secret, Parent, Cid, Children, Outer", NativeMakeFunc))
 	static UProjectView* Make(FString ProjectName, FBeamPid Pid, FOptionalBool bArchived, FOptionalBool bSharded, FOptionalString Secret, FOptionalBeamPid Parent, FOptionalBeamCid Cid, FOptionalArrayOfBeamPid Children, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break ProjectView", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Make/Break", DisplayName="Break ProjectView", meta=(NativeBreakFunc))
 	static void Break(const UProjectView* Serializable, FString& ProjectName, FBeamPid& Pid, FOptionalBool& bArchived, FOptionalBool& bSharded, FOptionalString& Secret, FOptionalBeamPid& Parent, FOptionalBeamCid& Cid, FOptionalArrayOfBeamPid& Children);
 };

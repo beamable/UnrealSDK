@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPasswordUpdateConfirmationLibrary : public UBlueprintFun
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - PasswordUpdateConfirmation To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Json", DisplayName="PasswordUpdateConfirmation To JSON String")
 	static FString PasswordUpdateConfirmationToJsonString(const UPasswordUpdateConfirmation* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make PasswordUpdateConfirmation", meta=(DefaultToSelf="Outer", AdvancedDisplay="Email, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Make PasswordUpdateConfirmation", meta=(DefaultToSelf="Outer", AdvancedDisplay="Email, Outer", NativeMakeFunc))
 	static UPasswordUpdateConfirmation* Make(FString Code, FString NewPassword, FOptionalString Email, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break PasswordUpdateConfirmation", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Accounts|Utils|Make/Break", DisplayName="Break PasswordUpdateConfirmation", meta=(NativeBreakFunc))
 	static void Break(const UPasswordUpdateConfirmation* Serializable, FString& Code, FString& NewPassword, FOptionalString& Email);
 };

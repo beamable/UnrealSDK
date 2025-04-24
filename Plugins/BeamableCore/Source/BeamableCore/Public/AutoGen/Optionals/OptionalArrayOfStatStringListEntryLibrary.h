@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalArrayOfStatStringListEntry struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Make Optional TArray<UStatStringListEntry*>", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Stats|Utils|Optionals", meta=(DisplayName="Make Optional TArray<UStatStringListEntry*>", NativeMakeFunc))
 	static FOptionalArrayOfStatStringListEntry MakeOptional(TArray<UStatStringListEntry*> Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The TArray<UStatStringListEntry*> to convert.
 	 * @return An optional with the TArray<UStatStringListEntry*> set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta = (DisplayName = "Beam - TArray<UStatStringListEntry*> To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Stats|Utils|Optionals", meta = (DisplayName="TArray<UStatStringListEntry*> To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalArrayOfStatStringListEntry Conv_OptionalFromValue(TArray<UStatStringListEntry*> Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Optionals", meta=(DisplayName="Beam - Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Stats|Utils|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalArrayOfStatStringListEntry& Optional, TArray<UStatStringListEntry*>& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Get Optional's TArray<UStatStringListEntry*> Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Stats|Utils|Optionals", meta=(DisplayName="Get Optional's TArray<UStatStringListEntry*> Value"))
 	static TArray<UStatStringListEntry*> GetOptionalValue(const FOptionalArrayOfStatStringListEntry& Optional, TArray<UStatStringListEntry*> DefaultValue, bool& WasSet);
 
 	

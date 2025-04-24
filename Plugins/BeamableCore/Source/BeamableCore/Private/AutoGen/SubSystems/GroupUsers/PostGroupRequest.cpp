@@ -27,7 +27,7 @@ void UPostGroupRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UPostGroupRequest* UPostGroupRequest::Make(int64 _ObjectId, FString _Name, FString _EnrollmentType, int64 _Requirement, EGroupType _Type, int32 _MaxSize, FOptionalString _Tag, FOptionalString _ClientData, FOptionalInt32 _Time, FOptionalInt64 _Group, FOptionalArrayOfGroupScoreBinding _Scores, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UPostGroupRequest* UPostGroupRequest::Make(int64 _ObjectId, FString _Name, FString _EnrollmentType, int64 _Requirement, EGroupType _Type, int32 _MaxSize, FOptionalString _Tag, FOptionalString _ClientData, FOptionalInt64 _Time, FOptionalInt64 _Group, FOptionalArrayOfGroupScoreBinding _Scores, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UPostGroupRequest* Req = NewObject<UPostGroupRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};

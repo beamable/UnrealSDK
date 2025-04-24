@@ -7,20 +7,20 @@
 
 void URegisterReq::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("provider"), Provider);
-	Serializer->WriteValue(TEXT("token"), Token);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("provider"), Provider, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("token"), Token, Serializer);
 }
 
 void URegisterReq::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("provider"), Provider);
-	Serializer->WriteValue(TEXT("token"), Token);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("provider"), Provider, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("token"), Token, Serializer);		
 }
 
 void URegisterReq::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Provider = Bag->GetStringField(TEXT("provider"));
-	Token = Bag->GetStringField(TEXT("token"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("provider")), Provider);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("token")), Token);
 }
 
 

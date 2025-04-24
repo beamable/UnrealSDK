@@ -13,12 +13,12 @@ class BEAMABLECORE_API UAddTagsLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - AddTags To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|Utils|Json", DisplayName="AddTags To JSON String")
 	static FString AddTagsToJsonString(const UAddTags* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make AddTags", meta=(DefaultToSelf="Outer", AdvancedDisplay="PlayerId, bReplace, Tags, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|Utils|Make/Break", DisplayName="Make AddTags", meta=(DefaultToSelf="Outer", AdvancedDisplay="PlayerId, bReplace, Tags, Outer", NativeMakeFunc))
 	static UAddTags* Make(FOptionalBeamGamerTag PlayerId, FOptionalBool bReplace, FOptionalArrayOfBeamTag Tags, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break AddTags", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|Utils|Make/Break", DisplayName="Break AddTags", meta=(NativeBreakFunc))
 	static void Break(const UAddTags* Serializable, FOptionalBeamGamerTag& PlayerId, FOptionalBool& bReplace, FOptionalArrayOfBeamTag& Tags);
 };

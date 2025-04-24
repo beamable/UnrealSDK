@@ -22,7 +22,7 @@ FString UGroupCreateLibrary::GroupCreateToJsonString(const UGroupCreate* Seriali
 	return Result;
 }	
 
-UGroupCreate* UGroupCreateLibrary::Make(FString Name, FString EnrollmentType, int64 Requirement, EGroupType Type, int32 MaxSize, FOptionalString Tag, FOptionalString ClientData, FOptionalInt32 Time, FOptionalInt64 Group, FOptionalArrayOfGroupScoreBinding Scores, UObject* Outer)
+UGroupCreate* UGroupCreateLibrary::Make(FString Name, FString EnrollmentType, int64 Requirement, EGroupType Type, int32 MaxSize, FOptionalString Tag, FOptionalString ClientData, FOptionalInt64 Time, FOptionalInt64 Group, FOptionalArrayOfGroupScoreBinding Scores, UObject* Outer)
 {
 	auto Serializable = NewObject<UGroupCreate>(Outer);
 	Serializable->Name = Name;
@@ -39,7 +39,7 @@ UGroupCreate* UGroupCreateLibrary::Make(FString Name, FString EnrollmentType, in
 	return Serializable;
 }
 
-void UGroupCreateLibrary::Break(const UGroupCreate* Serializable, FString& Name, FString& EnrollmentType, int64& Requirement, EGroupType& Type, int32& MaxSize, FOptionalString& Tag, FOptionalString& ClientData, FOptionalInt32& Time, FOptionalInt64& Group, FOptionalArrayOfGroupScoreBinding& Scores)
+void UGroupCreateLibrary::Break(const UGroupCreate* Serializable, FString& Name, FString& EnrollmentType, int64& Requirement, EGroupType& Type, int32& MaxSize, FOptionalString& Tag, FOptionalString& ClientData, FOptionalInt64& Time, FOptionalInt64& Group, FOptionalArrayOfGroupScoreBinding& Scores)
 {
 	Name = Serializable->Name;
 	EnrollmentType = Serializable->EnrollmentType;

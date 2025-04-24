@@ -10,6 +10,7 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamClientPermission.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
+#include "Serialization/BeamJsonUtils.h"
 
 #include "LeaderboardCreateRequestBody.generated.h"
 

@@ -7,22 +7,22 @@
 
 void URedisShard::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("shardId"), ShardId);
-	Serializer->WriteValue(TEXT("masterHost"), MasterHost);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("shardId"), ShardId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("masterHost"), MasterHost, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("slaveHosts"), SlaveHosts, Serializer);
 }
 
 void URedisShard::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("shardId"), ShardId);
-	Serializer->WriteValue(TEXT("masterHost"), MasterHost);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("shardId"), ShardId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("masterHost"), MasterHost, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("slaveHosts"), SlaveHosts, Serializer);		
 }
 
 void URedisShard::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	ShardId = Bag->GetIntegerField(TEXT("shardId"));
-	MasterHost = Bag->GetStringField(TEXT("masterHost"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("shardId")), ShardId);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("masterHost")), MasterHost);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("slaveHosts")), SlaveHosts, OuterOwner);
 }
 

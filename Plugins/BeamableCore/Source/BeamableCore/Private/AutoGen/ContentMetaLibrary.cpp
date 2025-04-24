@@ -22,21 +22,19 @@ FString UContentMetaLibrary::ContentMetaToJsonString(const UContentMeta* Seriali
 	return Result;
 }	
 
-UContentMeta* UContentMetaLibrary::Make(EContentVisibility Visibility, FOptionalString Text, FOptionalString Data, UObject* Outer)
+UContentMeta* UContentMetaLibrary::Make(EContentVisibility Visibility, FOptionalString Text, UObject* Outer)
 {
 	auto Serializable = NewObject<UContentMeta>(Outer);
 	Serializable->Visibility = Visibility;
 	Serializable->Text = Text;
-	Serializable->Data = Data;
 	
 	return Serializable;
 }
 
-void UContentMetaLibrary::Break(const UContentMeta* Serializable, EContentVisibility& Visibility, FOptionalString& Text, FOptionalString& Data)
+void UContentMetaLibrary::Break(const UContentMeta* Serializable, EContentVisibility& Visibility, FOptionalString& Text)
 {
 	Visibility = Serializable->Visibility;
 	Text = Serializable->Text;
-	Data = Serializable->Data;
 		
 }
 

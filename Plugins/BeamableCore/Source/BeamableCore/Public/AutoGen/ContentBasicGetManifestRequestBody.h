@@ -4,6 +4,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamContentManifestId.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "ContentBasicGetManifestRequestBody.generated.h"
 
@@ -15,6 +16,8 @@ class BEAMABLECORE_API UContentBasicGetManifestRequestBody : public UObject, pub
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Id", Category="Beam")
 	FOptionalBeamContentManifestId Id = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Uid", Category="Beam")
+	FOptionalString Uid = {};
 
 	
 

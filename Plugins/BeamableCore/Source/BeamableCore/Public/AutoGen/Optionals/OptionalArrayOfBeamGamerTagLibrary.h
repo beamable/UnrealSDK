@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalArrayOfBeamGamerTag struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Make Optional TArray<FBeamGamerTag>", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Party|Utils|Optionals", meta=(DisplayName="Make Optional TArray<FBeamGamerTag>", NativeMakeFunc))
 	static FOptionalArrayOfBeamGamerTag MakeOptional(TArray<FBeamGamerTag> Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The TArray<FBeamGamerTag> to convert.
 	 * @return An optional with the TArray<FBeamGamerTag> set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta = (DisplayName = "Beam - TArray<FBeamGamerTag> To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Party|Utils|Optionals", meta = (DisplayName="TArray<FBeamGamerTag> To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalArrayOfBeamGamerTag Conv_OptionalFromValue(TArray<FBeamGamerTag> Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Optionals", meta=(DisplayName="Beam - Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Party|Utils|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalArrayOfBeamGamerTag& Optional, TArray<FBeamGamerTag>& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Get Optional's TArray<FBeamGamerTag> Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Party|Utils|Optionals", meta=(DisplayName="Get Optional's TArray<FBeamGamerTag> Value"))
 	static TArray<FBeamGamerTag> GetOptionalValue(const FOptionalArrayOfBeamGamerTag& Optional, TArray<FBeamGamerTag> DefaultValue, bool& WasSet);
 
 	

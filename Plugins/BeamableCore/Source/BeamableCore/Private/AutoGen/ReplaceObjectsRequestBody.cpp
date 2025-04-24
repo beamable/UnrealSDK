@@ -7,20 +7,20 @@
 
 void UReplaceObjectsRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("sourcePlayerId"), SourcePlayerId);
-	Serializer->WriteValue(TEXT("targetPlayerId"), TargetPlayerId);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("sourcePlayerId"), SourcePlayerId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("targetPlayerId"), TargetPlayerId, Serializer);
 }
 
 void UReplaceObjectsRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("sourcePlayerId"), SourcePlayerId);
-	Serializer->WriteValue(TEXT("targetPlayerId"), TargetPlayerId);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("sourcePlayerId"), SourcePlayerId, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("targetPlayerId"), TargetPlayerId, Serializer);		
 }
 
 void UReplaceObjectsRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("sourcePlayerId")), SourcePlayerId);
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("targetPlayerId")), TargetPlayerId);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("sourcePlayerId")), SourcePlayerId);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("targetPlayerId")), TargetPlayerId);
 }
 
 

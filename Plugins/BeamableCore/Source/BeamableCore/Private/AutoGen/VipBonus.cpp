@@ -7,23 +7,23 @@
 
 void UVipBonus::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("currency"), Currency);
-	Serializer->WriteValue(TEXT("multiplier"), Multiplier);
-	Serializer->WriteValue(TEXT("roundToNearest"), RoundToNearest);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("currency"), Currency, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("multiplier"), Multiplier, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("roundToNearest"), RoundToNearest, Serializer);
 }
 
 void UVipBonus::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("currency"), Currency);
-	Serializer->WriteValue(TEXT("multiplier"), Multiplier);
-	Serializer->WriteValue(TEXT("roundToNearest"), RoundToNearest);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("currency"), Currency, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("multiplier"), Multiplier, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("roundToNearest"), RoundToNearest, Serializer);		
 }
 
 void UVipBonus::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Currency = Bag->GetStringField(TEXT("currency"));
-	Multiplier = Bag->GetNumberField(TEXT("multiplier"));
-	RoundToNearest = Bag->GetIntegerField(TEXT("roundToNearest"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("currency")), Currency);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("multiplier")), Multiplier);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("roundToNearest")), RoundToNearest);
 }
 
 

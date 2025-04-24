@@ -13,7 +13,7 @@ void USessionHistoryResponse::DeserializeRequestResponse(UObject* RequestData, F
 void USessionHistoryResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeUObject<ULocalDate*>("date", Date, Serializer);
-	Serializer->WriteValue(TEXT("daysPlayed"), DaysPlayed);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("daysPlayed"), DaysPlayed, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("payments"), Payments, Serializer);
 	UBeamJsonUtils::SerializeArray<UPaymentTotal*>(TEXT("totalPaid"), TotalPaid, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("sessions"), Sessions, Serializer);
@@ -23,7 +23,7 @@ void USessionHistoryResponse::BeamSerializeProperties(TUnrealJsonSerializer& Ser
 void USessionHistoryResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeUObject<ULocalDate*>("date", Date, Serializer);
-	Serializer->WriteValue(TEXT("daysPlayed"), DaysPlayed);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("daysPlayed"), DaysPlayed, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("payments"), Payments, Serializer);
 	UBeamJsonUtils::SerializeArray<UPaymentTotal*>(TEXT("totalPaid"), TotalPaid, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("sessions"), Sessions, Serializer);
@@ -33,7 +33,7 @@ void USessionHistoryResponse::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 void USessionHistoryResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeUObject<ULocalDate*>("date", Bag, Date, OuterOwner);
-	DaysPlayed = Bag->GetIntegerField(TEXT("daysPlayed"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("daysPlayed")), DaysPlayed);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("payments")), Payments, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UPaymentTotal*>(Bag->GetArrayField(TEXT("totalPaid")), TotalPaid, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("sessions")), Sessions, OuterOwner);

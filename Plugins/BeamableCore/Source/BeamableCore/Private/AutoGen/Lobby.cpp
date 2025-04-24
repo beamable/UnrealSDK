@@ -14,7 +14,7 @@ void ULobby::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("lobbyId"), &LobbyId, Serializer);
 	UBeamJsonUtils::SerializeOptional<UMatchType*>(TEXT("matchType"), &MatchType, Serializer);
-	UBeamJsonUtils::SerializeOptional<FString>(TEXT("created"), &Created, Serializer);
+	UBeamJsonUtils::SerializeOptional<FDateTime>(TEXT("created"), &Created, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("name"), &Name, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("description"), &Description, Serializer);
 	UBeamJsonUtils::SerializeOptional<FBeamGamerTag, FString>(TEXT("host"), &Host, Serializer);
@@ -29,7 +29,7 @@ void ULobby::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) co
 {
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("lobbyId"), &LobbyId, Serializer);
 	UBeamJsonUtils::SerializeOptional<UMatchType*>(TEXT("matchType"), &MatchType, Serializer);
-	UBeamJsonUtils::SerializeOptional<FString>(TEXT("created"), &Created, Serializer);
+	UBeamJsonUtils::SerializeOptional<FDateTime>(TEXT("created"), &Created, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("name"), &Name, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("description"), &Description, Serializer);
 	UBeamJsonUtils::SerializeOptional<FBeamGamerTag, FString>(TEXT("host"), &Host, Serializer);
@@ -44,7 +44,7 @@ void ULobby::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeOptional<FString>("lobbyId", Bag, LobbyId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UMatchType*>("matchType", Bag, MatchType, OuterOwner);
-	UBeamJsonUtils::DeserializeOptional<FString>("created", Bag, Created, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FDateTime>("created", Bag, Created, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("name", Bag, Name, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("description", Bag, Description, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FBeamGamerTag, FString>("host", Bag, Host, OuterOwner);

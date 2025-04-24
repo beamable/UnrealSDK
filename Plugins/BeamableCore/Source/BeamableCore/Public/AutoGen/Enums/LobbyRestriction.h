@@ -4,7 +4,7 @@
 
 #include "LobbyRestriction.generated.h"
 
-UENUM(BlueprintType, Category="Beam|Enums")
+UENUM(BlueprintType, Category="Beam|Lobby|Utils|Enums")
 enum class ELobbyRestriction : uint8
 {
 	BEAM_Null UMETA(DisplayName="Null"),
@@ -12,13 +12,13 @@ enum class ELobbyRestriction : uint8
 	BEAM_Open UMETA(DisplayName="Open")		
 };
 
-UCLASS(BlueprintType, Category="Beam|Enums")
+UCLASS(BlueprintType, Category="Beam|Lobby|Utils|Enums")
 class BEAMABLECORE_API ULobbyRestrictionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:		
 	
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Beam - LobbyRestriction To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="LobbyRestriction To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Lobby|Utils|Enums")
 	static FString LobbyRestrictionToSerializationName(ELobbyRestriction Value)
 	{
 		const UEnum* Enum = StaticEnum<ELobbyRestriction>();
@@ -30,7 +30,7 @@ public:
 		
 	}
 
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Beam - Serialization Name To LobbyRestriction", CompactNodeTitle = "->"), Category="Beam|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="Serialization Name To LobbyRestriction", CompactNodeTitle = "->"), Category="Beam|Lobby|Utils|Enums")
 	static ELobbyRestriction SerializationNameToLobbyRestriction(FString Value)
 	{
 		const UEnum* Enum = StaticEnum<ELobbyRestriction>();

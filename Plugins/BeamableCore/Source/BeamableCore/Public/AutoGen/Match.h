@@ -4,6 +4,7 @@
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalDateTime.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalMatchType.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfTeam.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfTicket.h"
@@ -21,7 +22,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Status", Category="Beam")
 	FOptionalString Status = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Created", Category="Beam")
-	FOptionalString Created = {};
+	FOptionalDateTime Created = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Match Type", Category="Beam")
 	FOptionalMatchType MatchType = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Teams", Category="Beam")

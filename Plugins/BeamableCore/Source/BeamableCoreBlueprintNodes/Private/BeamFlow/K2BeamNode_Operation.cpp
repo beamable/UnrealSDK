@@ -11,6 +11,7 @@
 #include "K2Node_SwitchEnum.h"
 #include "K2Node_SwitchString.h"
 #include "KismetCompiler.h"
+#include "SourceCodeNavigation.h"
 #include "RequestTracker/BeamRequestTracker.h"
 #include "Runtime/BeamRuntime.h"
 using namespace BeamK2;
@@ -35,7 +36,7 @@ void UK2BeamNode_Operation::BuildPinToolTipMap(TMap<FName, FString>& OutTooltipM
 	OutTooltipMap.Add(OP_Operation_UserSlots, TEXT("The user slot for the user performing this operation. Only relevant if developing a game with local multiplayer."));
 	OutTooltipMap.Add(OP_Operation_Event, TEXT("The data for the raised operation event. Use this to understand what happened and react accordingly."));
 
-	OutTooltipMap.Add(OP_Operation_Expanded_OnSuccess, TEXT("This flow only runs for events of type SUCCESS."));	
+	OutTooltipMap.Add(OP_Operation_Expanded_OnSuccess, TEXT("This flow only runs for events of type SUCCESS."));
 	OutTooltipMap.Add(OP_Operation_Expanded_OnError, TEXT("This flow runs for events of type ERROR."));
 	OutTooltipMap.Add(OP_Operation_Expanded_OnCancelled, TEXT("This flow runs for events of type CANCELLED."));
 
@@ -188,6 +189,17 @@ void UK2BeamNode_Operation::ExpandNode(FKismetCompilerContext& CompilerContext, 
 	BreakAllNodeLinks();
 }
 
+UObject* UK2BeamNode_Operation::GetJumpTargetForDoubleClick() const
+{
+	const auto Function = GetRuntimeSubsystemClass()->FindFunctionByName(GetOperationFunctionName());
+
+	if (!Function) return nullptr;
+
+	FSourceCodeNavigation::NavigateToFunction(Function);
+
+	return Super::GetJumpTargetForDoubleClick();
+}
+
 FName UK2BeamNode_Operation::GetCornerIcon() const
 {
 	return FName("BeamIcon_Operations");
@@ -260,7 +272,7 @@ void UK2BeamNode_Operation::EnforceBeamFlowModePins()
 			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Exec, OP_Operation_OnOperationEvent, PinTooltipMap[OP_Operation_OnOperationEvent]);
 			EnforcePinExistence(this, EGPD_Output, UEdGraphSchema_K2::PC_Struct, OP_Operation_Event, PinTooltipMap[OP_Operation_Event], {}, FBeamOperationEvent::StaticStruct());
 			break;
-		}	
+		}
 	case Success_Error_Cancelled:
 		{
 			// Remove all pins except the ones this mode cares about
@@ -392,7 +404,7 @@ void UK2BeamNode_Operation::ExpandBeamFlowMode(FKismetCompilerContext& CompilerC
 			SetUpPinsForOnCompleteBeamFlow(CompilerContext, SourceGraph, CallOperationFunction, OutPerFlowNodes[1], OutPerFlowEventNodes[1],
 			                               CompleteFlowPin, ResultPin, UserSlotsPin);
 			break;
-		}	
+		}
 	case Success_Error_Cancelled:
 		{
 			// Gets the relevant pins
@@ -430,10 +442,10 @@ void UK2BeamNode_Operation::ExpandBeamFlowMode(FKismetCompilerContext& CompilerC
 			// Gets the relevant pins
 			const auto HandlePin = FindPin(OP_Operation_Handle);
 			const auto UserSlotsPin = FindPin(OP_Operation_UserSlots); // This can be either an array pin or a single pin --- depends on whether or not this operation involves multiple users.
-			
+
 			const auto EventPin = FindPin(OP_Operation_Event);
 
-			TArray<UEdGraphPin*> StartingGraphs{ThenPin,};			
+			TArray<UEdGraphPin*> StartingGraphs{ThenPin,};
 			for (const auto& Pin : SuccessEventFlowPinNames) StartingGraphs.Add(FindPin(Pin));
 			for (const auto& Pin : ErrorEventFlowPinNames) StartingGraphs.Add(FindPin(Pin));
 			for (const auto& Pin : CancelledEventFlowPinNames) StartingGraphs.Add(FindPin(Pin));

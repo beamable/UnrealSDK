@@ -12,19 +12,19 @@ void UStartSessionResponse::DeserializeRequestResponse(UObject* RequestData, FSt
 
 void UStartSessionResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("result"), Result);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("result"), Result, Serializer);
 	UBeamJsonUtils::SerializeOptional<UGamerTag*>(TEXT("gamer"), &Gamer, Serializer);
 }
 
 void UStartSessionResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("result"), Result);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("result"), Result, Serializer);
 	UBeamJsonUtils::SerializeOptional<UGamerTag*>(TEXT("gamer"), &Gamer, Serializer);		
 }
 
 void UStartSessionResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Result = Bag->GetStringField(TEXT("result"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("result")), Result);
 	UBeamJsonUtils::DeserializeOptional<UGamerTag*>("gamer", Bag, Gamer, OuterOwner);
 }
 

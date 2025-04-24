@@ -19,12 +19,6 @@ class BEAMABLECORE_API UInventoryUpdateRequestBody : public UObject, public IBea
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Empty", Category="Beam")
-	bool bEmpty = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Currency Content Ids", Category="Beam")
-	TArray<FString> CurrencyContentIds = {};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Item Content Ids", Category="Beam")
-	TArray<FString> ItemContentIds = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Apply Vip Bonus", Category="Beam")
 	FOptionalBool bApplyVipBonus = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Transaction", Category="Beam")

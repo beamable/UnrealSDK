@@ -7,20 +7,20 @@
 
 void UThirdPartyAvailableRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("thirdParty"), ThirdParty);
-	Serializer->WriteValue(TEXT("token"), Token);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("thirdParty"), ThirdParty, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("token"), Token, Serializer);
 }
 
 void UThirdPartyAvailableRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("thirdParty"), ThirdParty);
-	Serializer->WriteValue(TEXT("token"), Token);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("thirdParty"), ThirdParty, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("token"), Token, Serializer);		
 }
 
 void UThirdPartyAvailableRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	ThirdParty = Bag->GetStringField(TEXT("thirdParty"));
-	Token = Bag->GetStringField(TEXT("token"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("thirdParty")), ThirdParty);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("token")), Token);
 }
 
 

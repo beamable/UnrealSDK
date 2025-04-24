@@ -12,8 +12,8 @@ void UTokenResponse::DeserializeRequestResponse(UObject* RequestData, FString Re
 
 void UTokenResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("expires_in"), ExpiresIn);
-	Serializer->WriteValue(TEXT("token_type"), TokenType);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("expires_in"), ExpiresIn, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("token_type"), TokenType, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("access_token"), &AccessToken, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("refresh_token"), &RefreshToken, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("challenge_token"), &ChallengeToken, Serializer);
@@ -22,8 +22,8 @@ void UTokenResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) 
 
 void UTokenResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("expires_in"), ExpiresIn);
-	Serializer->WriteValue(TEXT("token_type"), TokenType);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("expires_in"), ExpiresIn, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("token_type"), TokenType, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("access_token"), &AccessToken, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("refresh_token"), &RefreshToken, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("challenge_token"), &ChallengeToken, Serializer);
@@ -32,8 +32,8 @@ void UTokenResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serial
 
 void UTokenResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("expires_in")), ExpiresIn);
-	TokenType = Bag->GetStringField(TEXT("token_type"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("expires_in")), ExpiresIn);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("token_type")), TokenType);
 	UBeamJsonUtils::DeserializeOptional<FString>("access_token", Bag, AccessToken, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("refresh_token", Bag, RefreshToken, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("challenge_token", Bag, ChallengeToken, OuterOwner);

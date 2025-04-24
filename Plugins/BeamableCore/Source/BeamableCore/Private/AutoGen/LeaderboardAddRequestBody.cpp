@@ -7,8 +7,8 @@
 
 void ULeaderboardAddRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("score"), Score);
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("score"), Score, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("increment"), &bIncrement, Serializer);
 	UBeamJsonUtils::SerializeOptional<double>(TEXT("maxScore"), &MaxScore, Serializer);
 	UBeamJsonUtils::SerializeOptional<double>(TEXT("minScore"), &MinScore, Serializer);
@@ -17,8 +17,8 @@ void ULeaderboardAddRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& 
 
 void ULeaderboardAddRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("score"), Score);
-	Serializer->WriteValue(TEXT("id"), Id);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("score"), Score, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("increment"), &bIncrement, Serializer);
 	UBeamJsonUtils::SerializeOptional<double>(TEXT("maxScore"), &MaxScore, Serializer);
 	UBeamJsonUtils::SerializeOptional<double>(TEXT("minScore"), &MinScore, Serializer);
@@ -27,8 +27,8 @@ void ULeaderboardAddRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerial
 
 void ULeaderboardAddRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Score = Bag->GetNumberField(TEXT("score"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("id")), Id);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("score")), Score);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
 	UBeamJsonUtils::DeserializeOptional<bool>("increment", Bag, bIncrement, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<double>("maxScore", Bag, MaxScore, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<double>("minScore", Bag, MinScore, OuterOwner);

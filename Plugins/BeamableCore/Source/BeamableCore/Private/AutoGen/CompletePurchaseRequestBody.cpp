@@ -7,26 +7,26 @@
 
 void UCompletePurchaseRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("txid"), Txid);
-	Serializer->WriteValue(TEXT("receipt"), Receipt);
-	Serializer->WriteValue(TEXT("priceInLocalCurrency"), PriceInLocalCurrency);
-	Serializer->WriteValue(TEXT("isoCurrencySymbol"), IsoCurrencySymbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("txid"), Txid, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("receipt"), Receipt, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("priceInLocalCurrency"), PriceInLocalCurrency, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("isoCurrencySymbol"), IsoCurrencySymbol, Serializer);
 }
 
 void UCompletePurchaseRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("txid"), Txid);
-	Serializer->WriteValue(TEXT("receipt"), Receipt);
-	Serializer->WriteValue(TEXT("priceInLocalCurrency"), PriceInLocalCurrency);
-	Serializer->WriteValue(TEXT("isoCurrencySymbol"), IsoCurrencySymbol);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("txid"), Txid, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("receipt"), Receipt, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("priceInLocalCurrency"), PriceInLocalCurrency, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("isoCurrencySymbol"), IsoCurrencySymbol, Serializer);		
 }
 
 void UCompletePurchaseRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("txid")), Txid);
-	Receipt = Bag->GetStringField(TEXT("receipt"));
-	PriceInLocalCurrency = Bag->GetStringField(TEXT("priceInLocalCurrency"));
-	IsoCurrencySymbol = Bag->GetStringField(TEXT("isoCurrencySymbol"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("txid")), Txid);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("receipt")), Receipt);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("priceInLocalCurrency")), PriceInLocalCurrency);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isoCurrencySymbol")), IsoCurrencySymbol);
 }
 
 

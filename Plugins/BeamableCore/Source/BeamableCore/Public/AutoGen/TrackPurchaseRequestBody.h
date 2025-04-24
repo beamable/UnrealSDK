@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/ItemCreateRequestBody.h"
 #include "BeamableCore/Public/AutoGen/CurrencyChange.h"
 

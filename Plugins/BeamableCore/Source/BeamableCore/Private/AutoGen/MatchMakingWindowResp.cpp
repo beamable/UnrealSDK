@@ -7,19 +7,19 @@
 
 void UMatchMakingWindowResp::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("difficulty"), Difficulty);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("difficulty"), Difficulty, Serializer);
 	UBeamJsonUtils::SerializeArray<UMatchMakingRanking*>(TEXT("matches"), Matches, Serializer);
 }
 
 void UMatchMakingWindowResp::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("difficulty"), Difficulty);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("difficulty"), Difficulty, Serializer);
 	UBeamJsonUtils::SerializeArray<UMatchMakingRanking*>(TEXT("matches"), Matches, Serializer);		
 }
 
 void UMatchMakingWindowResp::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Difficulty = Bag->GetIntegerField(TEXT("difficulty"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("difficulty")), Difficulty);
 	UBeamJsonUtils::DeserializeArray<UMatchMakingRanking*>(Bag->GetArrayField(TEXT("matches")), Matches, OuterOwner);
 }
 

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UMatchLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - Match To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Matchmaking|Utils|Json", DisplayName="Match To JSON String")
 	static FString MatchToJsonString(const UMatch* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make Match", meta=(DefaultToSelf="Outer", AdvancedDisplay="MatchId, Status, Created, MatchType, Teams, Tickets, Outer", NativeMakeFunc))
-	static UMatch* Make(FOptionalString MatchId, FOptionalString Status, FOptionalString Created, FOptionalMatchType MatchType, FOptionalArrayOfTeam Teams, FOptionalArrayOfTicket Tickets, UObject* Outer);
+	UFUNCTION(BlueprintPure, Category="Beam|Matchmaking|Utils|Make/Break", DisplayName="Make Match", meta=(DefaultToSelf="Outer", AdvancedDisplay="MatchId, Status, Created, MatchType, Teams, Tickets, Outer", NativeMakeFunc))
+	static UMatch* Make(FOptionalString MatchId, FOptionalString Status, FOptionalDateTime Created, FOptionalMatchType MatchType, FOptionalArrayOfTeam Teams, FOptionalArrayOfTicket Tickets, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break Match", meta=(NativeBreakFunc))
-	static void Break(const UMatch* Serializable, FOptionalString& MatchId, FOptionalString& Status, FOptionalString& Created, FOptionalMatchType& MatchType, FOptionalArrayOfTeam& Teams, FOptionalArrayOfTicket& Tickets);
+	UFUNCTION(BlueprintPure, Category="Beam|Matchmaking|Utils|Make/Break", DisplayName="Break Match", meta=(NativeBreakFunc))
+	static void Break(const UMatch* Serializable, FOptionalString& MatchId, FOptionalString& Status, FOptionalDateTime& Created, FOptionalMatchType& MatchType, FOptionalArrayOfTeam& Teams, FOptionalArrayOfTicket& Tickets);
 };

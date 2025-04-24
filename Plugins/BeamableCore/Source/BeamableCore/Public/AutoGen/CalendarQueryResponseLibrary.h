@@ -13,12 +13,12 @@ class BEAMABLECORE_API UCalendarQueryResponseLibrary : public UBlueprintFunction
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - CalendarQueryResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Calendars|Utils|Json", DisplayName="CalendarQueryResponse To JSON String")
 	static FString CalendarQueryResponseToJsonString(const UCalendarQueryResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make CalendarQueryResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Calendars|Utils|Make/Break", DisplayName="Make CalendarQueryResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UCalendarQueryResponse* Make(TArray<UCalendarView*> Calendars, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break CalendarQueryResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Calendars|Utils|Make/Break", DisplayName="Break CalendarQueryResponse", meta=(NativeBreakFunc))
 	static void Break(const UCalendarQueryResponse* Serializable, TArray<UCalendarView*>& Calendars);
 };
