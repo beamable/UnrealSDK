@@ -7,28 +7,28 @@
 
 void UEventPhase::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("duration_minutes"), DurationMinutes);
-	Serializer->WriteValue(TEXT("durationMillis"), DurationMillis);
-	Serializer->WriteValue(TEXT("durationSeconds"), DurationSeconds);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("duration_minutes"), DurationMinutes, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("durationMillis"), DurationMillis, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("durationSeconds"), DurationSeconds, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UEventRule*>, UEventRule*>(TEXT("rules"), &Rules, Serializer);
 }
 
 void UEventPhase::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("name"), Name);
-	Serializer->WriteValue(TEXT("duration_minutes"), DurationMinutes);
-	Serializer->WriteValue(TEXT("durationMillis"), DurationMillis);
-	Serializer->WriteValue(TEXT("durationSeconds"), DurationSeconds);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("name"), Name, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("duration_minutes"), DurationMinutes, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("durationMillis"), DurationMillis, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("durationSeconds"), DurationSeconds, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UEventRule*>, UEventRule*>(TEXT("rules"), &Rules, Serializer);		
 }
 
 void UEventPhase::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Name = Bag->GetStringField(TEXT("name"));
-	DurationMinutes = Bag->GetIntegerField(TEXT("duration_minutes"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("durationMillis")), DurationMillis);
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("durationSeconds")), DurationSeconds);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("name")), Name);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("duration_minutes")), DurationMinutes);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("durationMillis")), DurationMillis);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("durationSeconds")), DurationSeconds);
 	UBeamJsonUtils::DeserializeOptional<TArray<UEventRule*>, UEventRule*>("rules", Bag, Rules, OuterOwner);
 }
 

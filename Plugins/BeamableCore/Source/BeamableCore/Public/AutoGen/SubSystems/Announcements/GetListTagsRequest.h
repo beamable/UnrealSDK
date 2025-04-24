@@ -36,7 +36,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Announcements", DisplayName="Beam - Make GetListTags",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_TagNameFilter,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Announcements|Utils|Make/Break", DisplayName="Make GetListTags",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_TagNameFilter,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UGetListTagsRequest* Make(FOptionalString _TagNameFilter, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

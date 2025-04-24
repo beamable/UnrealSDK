@@ -22,13 +22,14 @@ FString UCustomerLibrary::CustomerToJsonString(const UCustomer* Serializable, co
 	return Result;
 }	
 
-UCustomer* UCustomerLibrary::Make(FString Name, FBeamCid Cid, TArray<UProject*> Projects, TArray<URealmsBasicAccount*> Accounts, FOptionalString PaymentStatus, FOptionalString Image, FOptionalString Contact, FOptionalString Alias, FOptionalInt64 Updated, FOptionalString CrmLink, FOptionalInt64 Created, UObject* Outer)
+UCustomer* UCustomerLibrary::Make(FString Name, FBeamCid Cid, TArray<UProject*> Projects, TArray<URealmsBasicAccount*> Accounts, FOptionalString ActivationStatus, FOptionalString PaymentStatus, FOptionalString Image, FOptionalString Contact, FOptionalString Alias, FOptionalInt64 Updated, FOptionalString CrmLink, FOptionalInt64 Created, UObject* Outer)
 {
 	auto Serializable = NewObject<UCustomer>(Outer);
 	Serializable->Name = Name;
 	Serializable->Cid = Cid;
 	Serializable->Projects = Projects;
 	Serializable->Accounts = Accounts;
+	Serializable->ActivationStatus = ActivationStatus;
 	Serializable->PaymentStatus = PaymentStatus;
 	Serializable->Image = Image;
 	Serializable->Contact = Contact;
@@ -40,12 +41,13 @@ UCustomer* UCustomerLibrary::Make(FString Name, FBeamCid Cid, TArray<UProject*> 
 	return Serializable;
 }
 
-void UCustomerLibrary::Break(const UCustomer* Serializable, FString& Name, FBeamCid& Cid, TArray<UProject*>& Projects, TArray<URealmsBasicAccount*>& Accounts, FOptionalString& PaymentStatus, FOptionalString& Image, FOptionalString& Contact, FOptionalString& Alias, FOptionalInt64& Updated, FOptionalString& CrmLink, FOptionalInt64& Created)
+void UCustomerLibrary::Break(const UCustomer* Serializable, FString& Name, FBeamCid& Cid, TArray<UProject*>& Projects, TArray<URealmsBasicAccount*>& Accounts, FOptionalString& ActivationStatus, FOptionalString& PaymentStatus, FOptionalString& Image, FOptionalString& Contact, FOptionalString& Alias, FOptionalInt64& Updated, FOptionalString& CrmLink, FOptionalInt64& Created)
 {
 	Name = Serializable->Name;
 	Cid = Serializable->Cid;
 	Projects = Serializable->Projects;
 	Accounts = Serializable->Accounts;
+	ActivationStatus = Serializable->ActivationStatus;
 	PaymentStatus = Serializable->PaymentStatus;
 	Image = Serializable->Image;
 	Contact = Serializable->Contact;

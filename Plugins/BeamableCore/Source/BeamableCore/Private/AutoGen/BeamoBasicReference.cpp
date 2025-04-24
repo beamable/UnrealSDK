@@ -7,20 +7,20 @@
 
 void UBeamoBasicReference::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("archived"), bArchived);
-	Serializer->WriteValue(TEXT("arm"), bArm);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("archived"), bArchived, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("arm"), bArm, Serializer);
 }
 
 void UBeamoBasicReference::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("archived"), bArchived);
-	Serializer->WriteValue(TEXT("arm"), bArm);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("archived"), bArchived, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("arm"), bArm, Serializer);		
 }
 
 void UBeamoBasicReference::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bArchived = Bag->GetBoolField(TEXT("archived"));
-	bArm = Bag->GetBoolField(TEXT("arm"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("archived")), bArchived);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("arm")), bArm);
 }
 
 

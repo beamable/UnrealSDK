@@ -13,12 +13,12 @@ class BEAMABLECORE_API URewardsResponseLibrary : public UBlueprintFunctionLibrar
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - RewardsResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|Utils|Json", DisplayName="RewardsResponse To JSON String")
 	static FString RewardsResponseToJsonString(const URewardsResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make RewardsResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|Utils|Make/Break", DisplayName="Make RewardsResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static URewardsResponse* Make(TArray<UTournamentCurrencyReward*> RewardCurrencies, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break RewardsResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|Utils|Make/Break", DisplayName="Break RewardsResponse", meta=(NativeBreakFunc))
 	static void Break(const URewardsResponse* Serializable, TArray<UTournamentCurrencyReward*>& RewardCurrencies);
 };

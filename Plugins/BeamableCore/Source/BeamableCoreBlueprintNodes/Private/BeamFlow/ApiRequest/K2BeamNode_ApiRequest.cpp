@@ -68,12 +68,12 @@ FString UK2BeamNode_ApiRequest::GetRequestCompleteDelegateName() const
 
 FText UK2BeamNode_ApiRequest::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	return FText::FromString(FString::Printf(TEXT("Beam - LowLevel - %s - %s"), *GetServiceName(), *GetEndpointName()));
+	return FText::FromString(FString::Printf(TEXT("LowLevel - %s - %s"), *GetServiceName(), *GetEndpointName()));
 }
 
 FText UK2BeamNode_ApiRequest::GetMenuCategory() const
 {
-	return FText::FromString(FString::Printf(TEXT("Beam|LowLevel|%s"), *GetServiceName()));
+	return FText::FromString(FString::Printf(TEXT("Beam|%s|LowLevel"), *GetServiceName()));
 }
 
 void UK2BeamNode_ApiRequest::AllocateDefaultPins()

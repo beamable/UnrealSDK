@@ -13,12 +13,12 @@ class BEAMABLECORE_API UStartSessionRequestBodyLibrary : public UBlueprintFuncti
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - StartSessionRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Session|Utils|Json", DisplayName="StartSessionRequestBody To JSON String")
 	static FString StartSessionRequestBodyToJsonString(const UStartSessionRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make StartSessionRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Source, Shard, Locale, Language, Time, Platform, Gamer, Device, CustomParams, DeviceParams, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Session|Utils|Make/Break", DisplayName="Make StartSessionRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Source, Shard, Locale, Language, Time, Platform, Gamer, Device, CustomParams, DeviceParams, Outer", NativeMakeFunc))
 	static UStartSessionRequestBody* Make(FOptionalString Source, FOptionalString Shard, FOptionalString Locale, FOptionalSessionLanguageContext Language, FOptionalInt64 Time, FOptionalString Platform, FOptionalInt64 Gamer, FOptionalString Device, FOptionalMapOfString CustomParams, FOptionalMapOfString DeviceParams, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break StartSessionRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Session|Utils|Make/Break", DisplayName="Break StartSessionRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UStartSessionRequestBody* Serializable, FOptionalString& Source, FOptionalString& Shard, FOptionalString& Locale, FOptionalSessionLanguageContext& Language, FOptionalInt64& Time, FOptionalString& Platform, FOptionalInt64& Gamer, FOptionalString& Device, FOptionalMapOfString& CustomParams, FOptionalMapOfString& DeviceParams);
 };

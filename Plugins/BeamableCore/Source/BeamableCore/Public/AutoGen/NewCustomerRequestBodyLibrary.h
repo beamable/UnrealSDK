@@ -13,12 +13,12 @@ class BEAMABLECORE_API UNewCustomerRequestBodyLibrary : public UBlueprintFunctio
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - NewCustomerRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Json", DisplayName="NewCustomerRequestBody To JSON String")
 	static FString NewCustomerRequestBodyToJsonString(const UNewCustomerRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make NewCustomerRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bHierarchy, CustomerName, Alias, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Make/Break", DisplayName="Make NewCustomerRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="bHierarchy, CustomerName, Alias, Outer", NativeMakeFunc))
 	static UNewCustomerRequestBody* Make(FString ProjectName, FString Email, FString Password, FOptionalBool bHierarchy, FOptionalString CustomerName, FOptionalString Alias, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break NewCustomerRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Realms|Utils|Make/Break", DisplayName="Break NewCustomerRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UNewCustomerRequestBody* Serializable, FString& ProjectName, FString& Email, FString& Password, FOptionalBool& bHierarchy, FOptionalString& CustomerName, FOptionalString& Alias);
 };

@@ -21,7 +21,7 @@
 #include "Runtime/BeamLevelSubsystem.h"
 #include "Runtime/BeamRuntime.h"
 #include "Runtime/CoreOnline/Private/Online/CoreOnlinePrivate.h"
-#include "Subsystems/Friends/BeamFriendSubsystem.h"
+#include "Subsystems/Friends/BeamFriendsSubsystem.h"
 #include "Subsystems/Party/BeamPartySubsystem.h"
 
 
@@ -475,7 +475,7 @@ protected:
 
 	void DoSendFriendInvite(FBeamGamerTag FriendId)
 	{
-		UBeamFriendSubsystem* BeamFriendSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamFriendSubsystem>();
+		UBeamFriendsSubsystem* BeamFriendSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UBeamFriendsSubsystem>();
 		FUserSlot UserSlot = GetDefault<UBeamCoreSettings>()->GetOwnerPlayerSlot();
 		const UBeamRuntimeSubsystem* RuntimeSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<
 			UBeamRuntimeSubsystem>();

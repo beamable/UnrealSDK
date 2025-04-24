@@ -12,19 +12,19 @@ void ULocalizedPriceMap::DeserializeRequestResponse(UObject* RequestData, FStrin
 
 void ULocalizedPriceMap::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("currency"), Currency);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("currency"), Currency, Serializer);
 	UBeamJsonUtils::SerializeArray<ULocalizedPrice*>(TEXT("prices"), Prices, Serializer);
 }
 
 void ULocalizedPriceMap::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("currency"), Currency);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("currency"), Currency, Serializer);
 	UBeamJsonUtils::SerializeArray<ULocalizedPrice*>(TEXT("prices"), Prices, Serializer);		
 }
 
 void ULocalizedPriceMap::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Currency = Bag->GetStringField(TEXT("currency"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("currency")), Currency);
 	UBeamJsonUtils::DeserializeArray<ULocalizedPrice*>(Bag->GetArrayField(TEXT("prices")), Prices, OuterOwner);
 }
 

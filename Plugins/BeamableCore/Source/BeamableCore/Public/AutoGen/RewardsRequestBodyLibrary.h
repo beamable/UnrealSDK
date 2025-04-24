@@ -13,12 +13,12 @@ class BEAMABLECORE_API URewardsRequestBodyLibrary : public UBlueprintFunctionLib
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - RewardsRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|Utils|Json", DisplayName="RewardsRequestBody To JSON String")
 	static FString RewardsRequestBodyToJsonString(const URewardsRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make RewardsRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="TournamentId, ContentId, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|Utils|Make/Break", DisplayName="Make RewardsRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="TournamentId, ContentId, Outer", NativeMakeFunc))
 	static URewardsRequestBody* Make(FOptionalString TournamentId, FOptionalString ContentId, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break RewardsRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|Utils|Make/Break", DisplayName="Break RewardsRequestBody", meta=(NativeBreakFunc))
 	static void Break(const URewardsRequestBody* Serializable, FOptionalString& TournamentId, FOptionalString& ContentId);
 };

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetTemplateRequestBodyLibrary : public UBlueprintFunctio
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - GetTemplateRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|Utils|Json", DisplayName="GetTemplateRequestBody To JSON String")
 	static FString GetTemplateRequestBodyToJsonString(const UGetTemplateRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GetTemplateRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|Utils|Make/Break", DisplayName="Make GetTemplateRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UGetTemplateRequestBody* Make(FString TemplateName, int64 GamerTag, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GetTemplateRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|Utils|Make/Break", DisplayName="Break GetTemplateRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UGetTemplateRequestBody* Serializable, FString& TemplateName, int64& GamerTag);
 };

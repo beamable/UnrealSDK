@@ -7,20 +7,20 @@
 
 void UCohortEntry::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("trial"), Trial);
-	Serializer->WriteValue(TEXT("cohort"), Cohort);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("trial"), Trial, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("cohort"), Cohort, Serializer);
 }
 
 void UCohortEntry::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("trial"), Trial);
-	Serializer->WriteValue(TEXT("cohort"), Cohort);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("trial"), Trial, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("cohort"), Cohort, Serializer);		
 }
 
 void UCohortEntry::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Trial = Bag->GetStringField(TEXT("trial"));
-	Cohort = Bag->GetStringField(TEXT("cohort"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("trial")), Trial);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("cohort")), Cohort);
 }
 
 

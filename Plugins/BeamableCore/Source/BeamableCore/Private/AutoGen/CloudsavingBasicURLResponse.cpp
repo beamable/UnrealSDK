@@ -7,20 +7,20 @@
 
 void UCloudsavingBasicURLResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("url"), Url);
-	Serializer->WriteValue(TEXT("objectKey"), ObjectKey);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("url"), Url, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("objectKey"), ObjectKey, Serializer);
 }
 
 void UCloudsavingBasicURLResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("url"), Url);
-	Serializer->WriteValue(TEXT("objectKey"), ObjectKey);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("url"), Url, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("objectKey"), ObjectKey, Serializer);		
 }
 
 void UCloudsavingBasicURLResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Url = Bag->GetStringField(TEXT("url"));
-	ObjectKey = Bag->GetStringField(TEXT("objectKey"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("url")), Url);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("objectKey")), ObjectKey);
 }
 
 

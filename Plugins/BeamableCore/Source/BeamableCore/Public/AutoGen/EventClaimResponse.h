@@ -4,6 +4,7 @@
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/EventPlayerStateView.h"
+#include "Serialization/BeamJsonUtils.h"
 
 #include "EventClaimResponse.generated.h"
 

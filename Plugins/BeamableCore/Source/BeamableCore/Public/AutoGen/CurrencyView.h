@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 
 #include "Serialization/BeamJsonSerializable.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/CurrencyProperty.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalFederationInfo.h"
 

@@ -13,12 +13,12 @@ class BEAMABLECORE_API UMyMailUpdateLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - MyMailUpdate To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|Utils|Json", DisplayName="MyMailUpdate To JSON String")
 	static FString MyMailUpdateToJsonString(const UMyMailUpdate* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make MyMailUpdate", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|Utils|Make/Break", DisplayName="Make MyMailUpdate", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UMyMailUpdate* Make(int64 Id, UUpdateMailRequestBody* Update, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break MyMailUpdate", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Mail|Utils|Make/Break", DisplayName="Break MyMailUpdate", meta=(NativeBreakFunc))
 	static void Break(const UMyMailUpdate* Serializable, int64& Id, UUpdateMailRequestBody*& Update);
 };

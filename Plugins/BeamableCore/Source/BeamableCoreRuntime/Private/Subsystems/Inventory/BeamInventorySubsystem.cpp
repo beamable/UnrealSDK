@@ -703,8 +703,7 @@ bool UBeamInventorySubsystem::CommitInventoryUpdate(FUserSlot Player, FBeamOpera
 		}
 	});
 
-	UPutInventoryRequest* const Request = UPutInventoryRequest::Make(GamerTag, false, CurrencyIds, {},
-	                                                                 {}, {},
+	UPutInventoryRequest* const Request = UPutInventoryRequest::Make(GamerTag,{}, {},
 	                                                                 UpdatedItems, CreatedItems, DeletedItems,
 	                                                                 CurrencyChanges, {},
 	                                                                 GetTransientPackage(), {});

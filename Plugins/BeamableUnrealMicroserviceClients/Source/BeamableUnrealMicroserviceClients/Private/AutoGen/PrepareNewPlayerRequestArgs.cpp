@@ -7,17 +7,17 @@
 
 void UPrepareNewPlayerRequestArgs::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("userID"), UserID);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("userID"), UserID, Serializer);
 }
 
 void UPrepareNewPlayerRequestArgs::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("userID"), UserID);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("userID"), UserID, Serializer);		
 }
 
 void UPrepareNewPlayerRequestArgs::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("userID")), UserID);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("userID")), UserID);
 }
 
 

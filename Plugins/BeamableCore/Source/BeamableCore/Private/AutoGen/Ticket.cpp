@@ -15,8 +15,8 @@ void UTicket::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("watchOnlineStatus"), &bWatchOnlineStatus, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("ticketId"), &TicketId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("status"), &Status, Serializer);
-	UBeamJsonUtils::SerializeOptional<FString>(TEXT("created"), &Created, Serializer);
-	UBeamJsonUtils::SerializeOptional<FString>(TEXT("expires"), &Expires, Serializer);
+	UBeamJsonUtils::SerializeOptional<FDateTime>(TEXT("created"), &Created, Serializer);
+	UBeamJsonUtils::SerializeOptional<FDateTime>(TEXT("expires"), &Expires, Serializer);
 	UBeamJsonUtils::SerializeOptional<FBeamContentId, FString>(TEXT("matchType"), &MatchType, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("matchId"), &MatchId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("team"), &Team, Serializer);
@@ -34,8 +34,8 @@ void UTicket::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) c
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("watchOnlineStatus"), &bWatchOnlineStatus, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("ticketId"), &TicketId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("status"), &Status, Serializer);
-	UBeamJsonUtils::SerializeOptional<FString>(TEXT("created"), &Created, Serializer);
-	UBeamJsonUtils::SerializeOptional<FString>(TEXT("expires"), &Expires, Serializer);
+	UBeamJsonUtils::SerializeOptional<FDateTime>(TEXT("created"), &Created, Serializer);
+	UBeamJsonUtils::SerializeOptional<FDateTime>(TEXT("expires"), &Expires, Serializer);
 	UBeamJsonUtils::SerializeOptional<FBeamContentId, FString>(TEXT("matchType"), &MatchType, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("matchId"), &MatchId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("team"), &Team, Serializer);
@@ -53,8 +53,8 @@ void UTicket::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 	UBeamJsonUtils::DeserializeOptional<bool>("watchOnlineStatus", Bag, bWatchOnlineStatus, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("ticketId", Bag, TicketId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("status", Bag, Status, OuterOwner);
-	UBeamJsonUtils::DeserializeOptional<FString>("created", Bag, Created, OuterOwner);
-	UBeamJsonUtils::DeserializeOptional<FString>("expires", Bag, Expires, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FDateTime>("created", Bag, Created, OuterOwner);
+	UBeamJsonUtils::DeserializeOptional<FDateTime>("expires", Bag, Expires, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FBeamContentId, FString>("matchType", Bag, MatchType, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("matchId", Bag, MatchId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("team", Bag, Team, OuterOwner);

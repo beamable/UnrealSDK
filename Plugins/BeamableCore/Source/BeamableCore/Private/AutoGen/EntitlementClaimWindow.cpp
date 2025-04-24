@@ -7,20 +7,20 @@
 
 void UEntitlementClaimWindow::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("open"), Open);
-	Serializer->WriteValue(TEXT("close"), Close);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("open"), Open, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("close"), Close, Serializer);
 }
 
 void UEntitlementClaimWindow::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("open"), Open);
-	Serializer->WriteValue(TEXT("close"), Close);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("open"), Open, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("close"), Close, Serializer);		
 }
 
 void UEntitlementClaimWindow::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("open")), Open);
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("close")), Close);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("open")), Open);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("close")), Close);
 }
 
 

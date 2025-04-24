@@ -12,17 +12,17 @@ void UGetLambdaURI::DeserializeRequestResponse(UObject* RequestData, FString Res
 
 void UGetLambdaURI::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("uri"), Uri);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("uri"), Uri, Serializer);
 }
 
 void UGetLambdaURI::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("uri"), Uri);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("uri"), Uri, Serializer);		
 }
 
 void UGetLambdaURI::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Uri = Bag->GetStringField(TEXT("uri"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("uri")), Uri);
 }
 
 

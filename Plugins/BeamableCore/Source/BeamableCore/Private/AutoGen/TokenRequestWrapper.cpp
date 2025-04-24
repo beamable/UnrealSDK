@@ -7,7 +7,7 @@
 
 void UTokenRequestWrapper::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("grant_type"), GrantType);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("grant_type"), GrantType, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("customerScoped"), &bCustomerScoped, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("device_id"), &DeviceId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("provider_service"), &ProviderService, Serializer);
@@ -29,7 +29,7 @@ void UTokenRequestWrapper::BeamSerializeProperties(TUnrealJsonSerializer& Serial
 
 void UTokenRequestWrapper::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("grant_type"), GrantType);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("grant_type"), GrantType, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("customerScoped"), &bCustomerScoped, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("device_id"), &DeviceId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("provider_service"), &ProviderService, Serializer);
@@ -51,7 +51,7 @@ void UTokenRequestWrapper::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 
 void UTokenRequestWrapper::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	GrantType = Bag->GetStringField(TEXT("grant_type"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("grant_type")), GrantType);
 	UBeamJsonUtils::DeserializeOptional<bool>("customerScoped", Bag, bCustomerScoped, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("device_id", Bag, DeviceId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("provider_service", Bag, ProviderService, OuterOwner);

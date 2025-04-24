@@ -10,6 +10,7 @@
 #include "BeamBackend/SemanticTypes/BeamCid.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamPid.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "Token.generated.h"

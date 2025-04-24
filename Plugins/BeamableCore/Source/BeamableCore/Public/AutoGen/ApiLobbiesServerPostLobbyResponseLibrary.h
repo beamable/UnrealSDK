@@ -13,10 +13,10 @@ class BEAMABLECORE_API UApiLobbiesServerPostLobbyResponseLibrary : public UBluep
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - ApiLobbiesServerPostLobbyResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|Utils|Json", DisplayName="ApiLobbiesServerPostLobbyResponse To JSON String")
 	static FString ApiLobbiesServerPostLobbyResponseToJsonString(const UApiLobbiesServerPostLobbyResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make ApiLobbiesServerPostLobbyResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Lobby|Utils|Make/Break", DisplayName="Make ApiLobbiesServerPostLobbyResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UApiLobbiesServerPostLobbyResponse* Make(UObject* Outer);
 
 	

@@ -7,25 +7,25 @@
 
 void UStatsSearchRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("domain"), Domain);
-	Serializer->WriteValue(TEXT("access"), Access);
-	Serializer->WriteValue(TEXT("objectType"), ObjectType);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("domain"), Domain, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("access"), Access, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("objectType"), ObjectType, Serializer);
 	UBeamJsonUtils::SerializeArray<UStatsSearchCriteria*>(TEXT("criteria"), Criteria, Serializer);
 }
 
 void UStatsSearchRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("domain"), Domain);
-	Serializer->WriteValue(TEXT("access"), Access);
-	Serializer->WriteValue(TEXT("objectType"), ObjectType);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("domain"), Domain, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("access"), Access, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("objectType"), ObjectType, Serializer);
 	UBeamJsonUtils::SerializeArray<UStatsSearchCriteria*>(TEXT("criteria"), Criteria, Serializer);		
 }
 
 void UStatsSearchRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Domain = Bag->GetStringField(TEXT("domain"));
-	Access = Bag->GetStringField(TEXT("access"));
-	ObjectType = Bag->GetStringField(TEXT("objectType"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("domain")), Domain);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("access")), Access);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("objectType")), ObjectType);
 	UBeamJsonUtils::DeserializeArray<UStatsSearchCriteria*>(Bag->GetArrayField(TEXT("criteria")), Criteria, OuterOwner);
 }
 

@@ -97,7 +97,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalBeamFederation struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Make Optional BeamFederation", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Make Optional BeamFederation", NativeMakeFunc))
 	static FOptionalBeamFederation MakeOptional(FBeamFederation Value);
 
 	/**
@@ -105,7 +105,7 @@ public:
 	 * @param Value The FBeamFederation to convert.
 	 * @return An optional with the BeamFederation set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta = (DisplayName = "Beam - BeamFederation To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta = (DisplayName="BeamFederation To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalBeamFederation Conv_OptionalFromValue(FBeamFederation Value);
 
 	/**
@@ -114,7 +114,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Optionals", meta=(DisplayName="Beam - Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalBeamFederation& Optional, FBeamFederation& Value);
 
 	/**
@@ -124,7 +124,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Get Optional's BeamFederation Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Get Optional's BeamFederation Value"))
 	static FBeamFederation GetOptionalValue(const FOptionalBeamFederation& Optional, FBeamFederation DefaultValue, bool& WasSet);
 };
 

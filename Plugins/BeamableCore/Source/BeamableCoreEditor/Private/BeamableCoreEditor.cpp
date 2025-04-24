@@ -22,6 +22,7 @@
 #include "PropertyType/FBeamOptionalCustomization.h"
 #include "PropertyType/FDocsPageItemCustomization.h"
 #include "PropertyType/RequestTypeCustomization.h"
+#include "PropertyType/UK2BeamEventRegisterCustomization.h"
 #include "Subsystems/BeamEditor.h"
 #include "Subsystems/Content/BeamEditorContent.h"
 #include "Toolkits/AssetEditorToolkit.h"
@@ -69,6 +70,13 @@ void FBeamableCoreEditorModule::StartupModule()
 	// Set up PropertyCustomizations
 	{
 		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
+
+		PropertyModule.RegisterCustomClassLayout(
+			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
+			UK2BeamNode_EventRegister::StaticClass()->GetFName(),
+			// this is where our MakeInstance() method is useful
+			FOnGetDetailCustomizationInstance::CreateStatic(&UK2BeamEventRegisterCustomization::MakeInstance));
+
 		// to register our custom property
 		PropertyModule.RegisterCustomPropertyTypeLayout(
 			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
@@ -119,13 +127,13 @@ void FBeamableCoreEditorModule::StartupModule()
 			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
 			FOptionalInt64::StaticStruct()->GetFName(),
 			// this is where our MakeInstance() method is useful
-			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamOptionalCustomization<FOptionalInt64>::MakeInstance));		
+			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamOptionalCustomization<FOptionalInt64>::MakeInstance));
 
 		PropertyModule.RegisterCustomPropertyTypeLayout(
 			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
 			FOptionalBeamGamerTag::StaticStruct()->GetFName(),
 			// this is where our MakeInstance() method is useful
-			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamOptionalCustomization<FOptionalBeamGamerTag>::MakeInstance));		
+			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamOptionalCustomization<FOptionalBeamGamerTag>::MakeInstance));
 
 		PropertyModule.RegisterCustomPropertyTypeLayout(
 			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
@@ -138,8 +146,8 @@ void FBeamableCoreEditorModule::StartupModule()
 			FBeamOptionalSchedule::StaticStruct()->GetFName(),
 			// this is where our MakeInstance() method is useful
 			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamOptionalCustomization<FBeamOptionalSchedule>::MakeInstance));
-		
-		
+
+
 		PropertyModule.NotifyCustomizationModuleChanged();
 	}
 
@@ -237,7 +245,8 @@ UEdGraphNode* FBeamableCoreEditorModule::CreatePostBeginPlayEvent(UBlueprint* In
 	NewEventNode->EventReference.SetExternalMember(InMemberName, InMemberParentClass);
 	NewEventNode->bOverrideFunction = true;
 
-	UK2Node_Event* ExistingEvent = FBlueprintEditorUtils::FindOverrideForFunction(InBlueprint, NewEventNode->EventReference.GetMemberParentClass(NewEventNode->GetBlueprintClassFromNode()), NewEventNode->EventReference.GetMemberName());
+	UK2Node_Event* ExistingEvent = FBlueprintEditorUtils::FindOverrideForFunction(InBlueprint, NewEventNode->EventReference.GetMemberParentClass(NewEventNode->GetBlueprintClassFromNode()),
+	                                                                              NewEventNode->EventReference.GetMemberName());
 
 	if (!ExistingEvent)
 	{

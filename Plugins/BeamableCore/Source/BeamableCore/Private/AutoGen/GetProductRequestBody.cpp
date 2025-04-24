@@ -7,17 +7,17 @@
 
 void UGetProductRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("sku"), Sku);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("sku"), Sku, Serializer);
 }
 
 void UGetProductRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("sku"), Sku);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("sku"), Sku, Serializer);		
 }
 
 void UGetProductRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Sku = Bag->GetStringField(TEXT("sku"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("sku")), Sku);
 }
 
 

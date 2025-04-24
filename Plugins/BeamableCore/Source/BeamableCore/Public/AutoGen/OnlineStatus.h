@@ -4,9 +4,10 @@
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
-#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalDateTime.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamGamerTag.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalPresenceStatus.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "OnlineStatus.generated.h"
 
@@ -17,7 +18,7 @@ class BEAMABLECORE_API UOnlineStatus : public UObject, public IBeamJsonSerializa
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Last Online", Category="Beam")
-	FOptionalString LastOnline = {};
+	FOptionalDateTime LastOnline = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Online", Category="Beam")
 	FOptionalBool bOnline = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")

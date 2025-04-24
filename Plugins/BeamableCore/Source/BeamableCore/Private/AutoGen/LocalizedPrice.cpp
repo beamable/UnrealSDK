@@ -7,26 +7,26 @@
 
 void ULocalizedPrice::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("to"), To);
-	Serializer->WriteValue(TEXT("price"), Price);
-	Serializer->WriteValue(TEXT("priceLocalized"), PriceLocalized);
-	Serializer->WriteValue(TEXT("priceLocalizedString"), PriceLocalizedString);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("to"), To, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("price"), Price, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("priceLocalized"), PriceLocalized, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("priceLocalizedString"), PriceLocalizedString, Serializer);
 }
 
 void ULocalizedPrice::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("to"), To);
-	Serializer->WriteValue(TEXT("price"), Price);
-	Serializer->WriteValue(TEXT("priceLocalized"), PriceLocalized);
-	Serializer->WriteValue(TEXT("priceLocalizedString"), PriceLocalizedString);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("to"), To, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("price"), Price, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("priceLocalized"), PriceLocalized, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("priceLocalizedString"), PriceLocalizedString, Serializer);		
 }
 
 void ULocalizedPrice::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("to")), To);
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("price")), Price);
-	PriceLocalized = Bag->GetNumberField(TEXT("priceLocalized"));
-	PriceLocalizedString = Bag->GetStringField(TEXT("priceLocalizedString"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("to")), To);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("price")), Price);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("priceLocalized")), PriceLocalized);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("priceLocalizedString")), PriceLocalizedString);
 }
 
 

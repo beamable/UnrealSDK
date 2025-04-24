@@ -2,11 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "Serialization/BeamArray.h"
-
+#include "Serialization/BeamJsonUtils.h"
 
 #include "ArrayOfString.generated.h"
 		
-USTRUCT(BlueprintType, Category="Beam|Wrappers|Arrays")
+USTRUCT(BlueprintType, Category="Beam|₢ServiceName₢|Wrappers|Arrays")
 struct BEAMABLECORE_API FArrayOfString : public FBeamArray
 {
 	GENERATED_BODY()

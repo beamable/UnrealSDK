@@ -12,43 +12,43 @@ void USteamOrderInfoResponse::DeserializeRequestResponse(UObject* RequestData, F
 
 void USteamOrderInfoResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("usstate"), Usstate);
-	Serializer->WriteValue(TEXT("country"), Country);
-	Serializer->WriteValue(TEXT("timecreated"), Timecreated);
-	Serializer->WriteValue(TEXT("transid"), Transid);
-	Serializer->WriteValue(TEXT("status"), Status);
-	Serializer->WriteValue(TEXT("orderid"), Orderid);
-	Serializer->WriteValue(TEXT("steamid"), Steamid);
-	Serializer->WriteValue(TEXT("currency"), Currency);
-	Serializer->WriteValue(TEXT("time"), Time);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("usstate"), Usstate, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("country"), Country, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("timecreated"), Timecreated, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("transid"), Transid, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("status"), Status, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("orderid"), Orderid, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("steamid"), Steamid, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("currency"), Currency, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("time"), Time, Serializer);
 	UBeamJsonUtils::SerializeArray<USteamOrderInfoItem*>(TEXT("items"), Items, Serializer);
 }
 
 void USteamOrderInfoResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("usstate"), Usstate);
-	Serializer->WriteValue(TEXT("country"), Country);
-	Serializer->WriteValue(TEXT("timecreated"), Timecreated);
-	Serializer->WriteValue(TEXT("transid"), Transid);
-	Serializer->WriteValue(TEXT("status"), Status);
-	Serializer->WriteValue(TEXT("orderid"), Orderid);
-	Serializer->WriteValue(TEXT("steamid"), Steamid);
-	Serializer->WriteValue(TEXT("currency"), Currency);
-	Serializer->WriteValue(TEXT("time"), Time);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("usstate"), Usstate, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("country"), Country, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("timecreated"), Timecreated, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("transid"), Transid, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("status"), Status, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("orderid"), Orderid, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("steamid"), Steamid, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("currency"), Currency, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("time"), Time, Serializer);
 	UBeamJsonUtils::SerializeArray<USteamOrderInfoItem*>(TEXT("items"), Items, Serializer);		
 }
 
 void USteamOrderInfoResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Usstate = Bag->GetStringField(TEXT("usstate"));
-	Country = Bag->GetStringField(TEXT("country"));
-	Timecreated = Bag->GetStringField(TEXT("timecreated"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("transid")), Transid);
-	Status = Bag->GetStringField(TEXT("status"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("orderid")), Orderid);
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("steamid")), Steamid);
-	Currency = Bag->GetStringField(TEXT("currency"));
-	Time = Bag->GetStringField(TEXT("time"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("usstate")), Usstate);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("country")), Country);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("timecreated")), Timecreated);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("transid")), Transid);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("status")), Status);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("orderid")), Orderid);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("steamid")), Steamid);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("currency")), Currency);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("time")), Time);
 	UBeamJsonUtils::DeserializeArray<USteamOrderInfoItem*>(Bag->GetArrayField(TEXT("items")), Items, OuterOwner);
 }
 

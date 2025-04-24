@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetManifestRequestJsonLibrary : public UBlueprintFunctio
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - GetManifestRequestJson To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Json", DisplayName="GetManifestRequestJson To JSON String")
 	static FString GetManifestRequestJsonToJsonString(const UGetManifestRequestJson* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GetManifestRequestJson", meta=(DefaultToSelf="Outer", AdvancedDisplay="Id, Outer", NativeMakeFunc))
-	static UGetManifestRequestJson* Make(FOptionalBeamContentManifestId Id, UObject* Outer);
+	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Make/Break", DisplayName="Make GetManifestRequestJson", meta=(DefaultToSelf="Outer", AdvancedDisplay="Id, Uid, Outer", NativeMakeFunc))
+	static UGetManifestRequestJson* Make(FOptionalBeamContentManifestId Id, FOptionalString Uid, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GetManifestRequestJson", meta=(NativeBreakFunc))
-	static void Break(const UGetManifestRequestJson* Serializable, FOptionalBeamContentManifestId& Id);
+	UFUNCTION(BlueprintPure, Category="Beam|Content|Utils|Make/Break", DisplayName="Break GetManifestRequestJson", meta=(NativeBreakFunc))
+	static void Break(const UGetManifestRequestJson* Serializable, FOptionalBeamContentManifestId& Id, FOptionalString& Uid);
 };
