@@ -70,6 +70,41 @@ void FBeamableCoreEditorModule::StartupModule()
 	{
 		FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 
+		// to register our custom property
+		PropertyModule.RegisterCustomPropertyTypeLayout(
+			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
+			FRequestType::StaticStruct()->GetFName(),
+			// this is where our MakeInstance() method is useful
+			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FRequestTypeCustomization::MakeInstance));
+
+		PropertyModule.RegisterCustomPropertyTypeLayout(
+			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
+			FBeamClientPermission::StaticStruct()->GetFName(),
+			// this is where our MakeInstance() method is useful
+			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamClientPermissionCustomization::MakeInstance));
+
+		// to register our custom property
+		PropertyModule.RegisterCustomPropertyTypeLayout(
+			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
+			FBeamContentId::StaticStruct()->GetFName(),
+			// this is where our MakeInstance() method is useful
+			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamContentIdCustomization::MakeInstance));
+
+		// to register our custom property
+		PropertyModule.RegisterCustomPropertyTypeLayout(
+			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
+			FDocsPageItem::StaticStruct()->GetFName(),
+			// this is where our MakeInstance() method is useful
+			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FDocsPageItemCustomization::MakeInstance));
+
+		// to register our custom property
+		PropertyModule.RegisterCustomPropertyTypeLayout(
+			// This is the name of the Struct this tells the property editor which is the struct property our customization will applied on.
+			FBeamContentLink::StaticStruct()->GetFName(),
+			// this is where our MakeInstance() method is useful
+			FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FBeamContentIdCustomization::MakeInstance));
+
+		// To register the FOptional properties
 		for (TObjectIterator<UStruct> It; It; ++It)
 		{
 			UStruct* Struct = *It;
