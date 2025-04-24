@@ -1,11 +1,53 @@
 #pragma once
 
+#include "BeamFlow/K2BeamNode_EventRegister.h"
 #include "BeamFlow/K2BeamNode_GetLocalState.h"
 #include "BeamFlow/K2BeamNode_GetLocalStateForeach.h"
 #include "BeamFlow/K2BeamNode_Operation.h"
 #include "Subsystems/Inventory/BeamInventorySubsystem.h"
 
 #include "K2BeamNode_Subsystem_Inventory.generated.h"
+
+/***
+ *      ______                          _         
+ *     |  ____|                        | |        
+ *     | |__    __   __   ___   _ __   | |_   ___ 
+ *     |  __|   \ \ / /  / _ \ | '_ \  | __| / __|
+ *     | |____   \ V /  |  __/ | | | | | |_  \__ \
+ *     |______|   \_/    \___| |_| |_|  \__| |___/
+ *                                                
+ *                                                
+ */
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_EventUnregister_InventorySubsystem"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_EventUnregister_InventorySubsystem : public UK2BeamNode_EventUnregister
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Events - Inventory - Unbind"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamInventorySubsystem, GetSelf); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamInventorySubsystem::StaticClass(); }
+};
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_EventRegister_InventorySubsystem"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_EventRegister_InventorySubsystem : public UK2BeamNode_EventRegister
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Events - Inventory - Bind"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamInventorySubsystem, GetSelf); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamInventorySubsystem::StaticClass(); }
+};
+#undef LOCTEXT_NAMESPACE
 
 //  _                    _      ____  _        _       
 // | |    ___   ___ __ _| |    / ___|| |_ __ _| |_ ___ 

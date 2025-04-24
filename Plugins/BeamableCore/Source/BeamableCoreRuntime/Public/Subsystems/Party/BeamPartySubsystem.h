@@ -116,18 +116,6 @@ public:
 	FOnPartyEventReceivedCode OnPartyUpdatedCode;
 
 	/**
-	 * This gets called when the Player received an invitation to a party.
-	 * The local state of the PartyInvitesState is updated before this event is called.
-	 */
-	UPROPERTY(BlueprintAssignable)
-	FOnPartyEventReceived OnPlayerInvited;
-
-	/**
-	 * @copybrief OnPlayerInvited
-	 */
-	FOnPartyEventReceivedCode OnPlayerInvitedCode;
-
-	/**
 	 * This gets called when a new player join to the party.
 	 * For the player that joined the party it will only call locally by the JoinPartyOperation.
 	 * The local state of the PartyStates is updated before this event is called.
@@ -166,6 +154,31 @@ public:
 	FOnPartyEventReceivedCode OnPlayerLeftCode;
 
 	/**
+	 * This gets called when another player is promoted to be leader.
+	 * Could be trigger by the PromotePlayerToLeaderOperation or if the current leader leave the party, than another random person in the party will be promoted to new leader.
+	 * The local state of the PartyStates is updated before this event is called.
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FOnPartyEventReceived OnPlayerPromotedToLeader;
+
+	/**
+	 * @copybrief OnPlayerPromotedToLeader
+	 */
+	FOnPartyEventReceivedCode OnPlayerPromotedToLeaderCode;
+
+	/**
+	 * This gets called when the Player received an invitation to a party.
+	 * The local state of the PartyInvitesState is updated before this event is called.
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FOnPartyEventReceived OnPlayerInvited;
+
+	/**
+	 * @copybrief OnPlayerInvited
+	 */
+	FOnPartyEventReceivedCode OnPlayerInvitedCode;
+
+	/**
 	 * This gets called when an invitation is canceled.
 	 * The leader and the player receiver of the invitation can cancel the invitation that will trigger this event, others players aren't allowed to do this.
 	 * The local state of the PartyInvitesState is updated before this event is called.
@@ -191,18 +204,6 @@ public:
 	 */
 	FOnPartyEventReceivedCode OnPlayerInviteExpiredCode;
 
-	/**
-	 * This gets called when another player is promoted to be leader.
-	 * Could be trigger by the PromotePlayerToLeaderOperation or if the current leader leave the party, than another random person in the party will be promoted to new leader.
-	 * The local state of the PartyStates is updated before this event is called.
-	 */
-	UPROPERTY(BlueprintAssignable)
-	FOnPartyEventReceived OnPlayerPromotedToLeader;
-
-	/**
-	 * @copybrief OnPlayerPromotedToLeader
-	 */
-	FOnPartyEventReceivedCode OnPlayerPromotedToLeaderCode;
 
 	/**
 	 * This gets called when there's an internal error during the process of received party event.

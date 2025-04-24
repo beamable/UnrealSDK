@@ -3,10 +3,55 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamFlow/K2BeamNode_EventRegister.h"
+#include "BeamFlow/K2BeamNode_EventUnregister.h"
 #include "BeamFlow/K2BeamNode_GetLocalState.h"
 #include "BeamFlow/K2BeamNode_Operation.h"
 #include "Subsystems/Friends/BeamFriendsSubsystem.h"
 #include "K2BeamNode_Subsystem_Friend.generated.h"
+
+/***
+ *      ______                          _         
+ *     |  ____|                        | |        
+ *     | |__    __   __   ___   _ __   | |_   ___ 
+ *     |  __|   \ \ / /  / _ \ | '_ \  | __| / __|
+ *     | |____   \ V /  |  __/ | | | | | |_  \__ \
+ *     |______|   \_/    \___| |_| |_|  \__| |___/
+ *                                                
+ *                                                
+ */
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_EventUnregister_FriendsSubsystem"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_EventUnregister_FriendsSubsystem : public UK2BeamNode_EventUnregister
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Events - Friends - Unbind"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
+};
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_EventRegister_FriendsSubsystem"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_EventRegister_FriendsSubsystem : public UK2BeamNode_EventRegister
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Events - Friends - Bind"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamFriendsSubsystem, GetSelf); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamFriendsSubsystem::StaticClass(); }
+};
+#undef LOCTEXT_NAMESPACE
+
+
 //  _                    _      ____  _        _       
 // | |    ___   ___ __ _| |    / ___|| |_ __ _| |_ ___ 
 // | |   / _ \ / __/ _` | |    \___ \| __/ _` | __/ _ \

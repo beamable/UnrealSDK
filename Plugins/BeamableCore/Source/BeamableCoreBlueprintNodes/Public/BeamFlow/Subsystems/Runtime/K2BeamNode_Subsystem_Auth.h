@@ -1,10 +1,57 @@
 #pragma once
 
+#include "BeamFlow/K2BeamNode_EventRegister.h"
+#include "BeamFlow/K2BeamNode_EventUnregister.h"
 #include "BeamFlow/K2BeamNode_GetLocalState.h"
 #include "BeamFlow/K2BeamNode_Operation.h"
 #include "Runtime/BeamRuntime.h"
 
 #include "K2BeamNode_Subsystem_Auth.generated.h"
+
+/***
+ *      ______                          _         
+ *     |  ____|                        | |        
+ *     | |__    __   __   ___   _ __   | |_   ___ 
+ *     |  __|   \ \ / /  / _ \ | '_ \  | __| / __|
+ *     | |____   \ V /  |  __/ | | | | | |_  \__ \
+ *     |______|   \_/    \___| |_| |_|  \__| |___/
+ *                                                
+ *                                                
+ */
+
+#define LOCTEXT_NAMESPACE "UK2BeamNode_EventUnregister_Auth"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_EventUnregister_Auth : public UK2BeamNode_EventUnregister
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Events - Auth - Unbind"); }
+
+	virtual FString GetServiceName() const override { return "Auth"; };
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
+};
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "UK2BeamNode_EventRegister_Auth"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_EventRegister_Auth : public UK2BeamNode_EventRegister
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Events - Auth - Bind"); }
+
+	virtual FString GetServiceName() const override { return "Auth"; };
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
+};
+#undef LOCTEXT_NAMESPACE
 
 //  _                    _      ____  _        _       
 // | |    ___   ___ __ _| |    / ___|| |_ __ _| |_ ___ 
@@ -43,7 +90,7 @@ class UK2BeamNode_GetLocalState_GetSlotConnectivity : public UK2BeamNode_GetLoca
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Auth - GetSlotConnectivity"); }
 
 	virtual FString GetServiceName() const override { return "Auth"; };
-	
+
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
 	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSlotConnectivity); }
@@ -83,7 +130,7 @@ class UK2BeamNode_GetLocalState_IsLoggedIn : public UK2BeamNode_GetLocalState
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Auth - IsLoggedIn"); }
 
 	virtual FString GetServiceName() const override { return "Auth"; };
-	
+
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
 
 	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, IsLoggedIn); }

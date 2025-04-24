@@ -1,9 +1,11 @@
 ﻿#pragma once
+#include "K2Node_AddDelegate.h"
 #include "K2Node_BreakStruct.h"
 #include "K2Node_EnumEquality.h"
 #include "K2Node_Event.h"
 #include "K2Node_IfThenElse.h"
 #include "K2Node_MakeArray.h"
+#include "K2Node_RemoveDelegate.h"
 #include "K2Node_SwitchEnum.h"
 #include "K2Node_SwitchName.h"
 #include "Kismet2/BlueprintEditorUtils.h"
@@ -82,6 +84,12 @@ namespace BeamK2
 	 */
 	UK2Node_IfThenElse* CreateIfThenElseNodeAgainstCondition(UEdGraphNode* CustomNode, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, const UEdGraphSchema_K2* K2Schema,
 	                                                         UEdGraphPin* const ExecPin, UEdGraphPin* ConditionPin);
+
+	/**
+	 * @brief Utility that creates a correctly configured Event pin for a give FProperty
+	 */
+	UEdGraphPin* CreateEventPinFromProperty(UEdGraphNode* Node, const FProperty* Property);
+
 	/**
 	 * @brief Utility that creates a correctly configured event node for the given delegate name.
 	 */
@@ -96,6 +104,17 @@ namespace BeamK2
 	 * @brief Utility that connects and checks both of the True and False pins to the respective output pins of the given IfThenElse Node.
 	 */
 	void ConnectIfThenElseNodeOutputs(FKismetCompilerContext& CompilerContext, UEdGraphPin* const TruePin, UEdGraphPin* const FalsePin, const UK2Node_IfThenElse* IfThenElseNode);
+
+	/**
+	 * @brief   Utility that creates a AddDelegate node targeting a specific FMulticastDelegate. 	
+	 */
+	UK2Node_AddDelegate* CreateAddDelegateNode(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, FMulticastDelegateProperty* MulticastDelegateProperty);
+
+	/**
+	 * @brief   Utility that creates a RemoveDelegate node targeting a specific FMulticastDelegate. 	
+	 */
+	UK2Node_RemoveDelegate* CreateRemoveDelegateNode(UEdGraphNode* Node, FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph, FMulticastDelegateProperty* MulticastDelegateProperty);
+
 
 	/**
 	 * @brief Utility that creates a call function node targeting a specific UClass's UFunction. 	 
