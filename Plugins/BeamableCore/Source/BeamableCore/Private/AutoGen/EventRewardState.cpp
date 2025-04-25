@@ -7,10 +7,10 @@
 
 void UEventRewardState::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("claimed"), bClaimed);
-	Serializer->WriteValue(TEXT("earned"), bEarned);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("claimed"), bClaimed, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("earned"), bEarned, Serializer);
 	UBeamJsonUtils::SerializeUObject<UEventInventoryPendingRewards*>("pendingInventoryRewards", PendingInventoryRewards, Serializer);
-	Serializer->WriteValue(TEXT("min"), Min);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("min"), Min, Serializer);
 	UBeamJsonUtils::SerializeOptional<double>(TEXT("max"), &Max, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UEventInventoryRewardCurrency*>, UEventInventoryRewardCurrency*>(TEXT("currencies"), &Currencies, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UItemCreateRequestBody*>, UItemCreateRequestBody*>(TEXT("pendingItemRewards"), &PendingItemRewards, Serializer);
@@ -22,10 +22,10 @@ void UEventRewardState::BeamSerializeProperties(TUnrealJsonSerializer& Serialize
 
 void UEventRewardState::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("claimed"), bClaimed);
-	Serializer->WriteValue(TEXT("earned"), bEarned);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("claimed"), bClaimed, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("earned"), bEarned, Serializer);
 	UBeamJsonUtils::SerializeUObject<UEventInventoryPendingRewards*>("pendingInventoryRewards", PendingInventoryRewards, Serializer);
-	Serializer->WriteValue(TEXT("min"), Min);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("min"), Min, Serializer);
 	UBeamJsonUtils::SerializeOptional<double>(TEXT("max"), &Max, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UEventInventoryRewardCurrency*>, UEventInventoryRewardCurrency*>(TEXT("currencies"), &Currencies, Serializer);
 	UBeamJsonUtils::SerializeOptional<TArray<UItemCreateRequestBody*>, UItemCreateRequestBody*>(TEXT("pendingItemRewards"), &PendingItemRewards, Serializer);
@@ -37,10 +37,10 @@ void UEventRewardState::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Ser
 
 void UEventRewardState::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bClaimed = Bag->GetBoolField(TEXT("claimed"));
-	bEarned = Bag->GetBoolField(TEXT("earned"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("claimed")), bClaimed);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("earned")), bEarned);
 	UBeamJsonUtils::DeserializeUObject<UEventInventoryPendingRewards*>("pendingInventoryRewards", Bag, PendingInventoryRewards, OuterOwner);
-	Min = Bag->GetNumberField(TEXT("min"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("min")), Min);
 	UBeamJsonUtils::DeserializeOptional<double>("max", Bag, Max, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UEventInventoryRewardCurrency*>, UEventInventoryRewardCurrency*>("currencies", Bag, Currencies, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<TArray<UItemCreateRequestBody*>, UItemCreateRequestBody*>("pendingItemRewards", Bag, PendingItemRewards, OuterOwner);

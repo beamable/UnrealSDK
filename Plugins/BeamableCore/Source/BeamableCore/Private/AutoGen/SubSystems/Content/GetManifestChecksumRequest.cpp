@@ -20,6 +20,12 @@ void UGetManifestChecksumRequest::BuildRoute(FString& RouteString) const
 		bIsFirstQueryParam = false;
 	}
 
+	if(Uid.IsSet){
+		bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
+		QueryParams.Appendf(TEXT("%s=%s"), TEXT("uid"), *Uid.Val);
+		bIsFirstQueryParam = false;
+	}
+
 	RouteString.Appendf(TEXT("%s%s"), *Route, *QueryParams);		
 }
 
@@ -28,13 +34,14 @@ void UGetManifestChecksumRequest::BuildBody(FString& BodyString) const
 	
 }
 
-UGetManifestChecksumRequest* UGetManifestChecksumRequest::Make(FOptionalBeamContentManifestId _Id, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UGetManifestChecksumRequest* UGetManifestChecksumRequest::Make(FOptionalBeamContentManifestId _Id, FOptionalString _Uid, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UGetManifestChecksumRequest* Req = NewObject<UGetManifestChecksumRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
 
 	// Pass in Path and Query Parameters (Blank if no path parameters exist)
 	Req->Id = _Id;
+	Req->Uid = _Uid;
 	
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)

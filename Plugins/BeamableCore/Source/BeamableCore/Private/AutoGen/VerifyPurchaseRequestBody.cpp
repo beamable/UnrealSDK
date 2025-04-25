@@ -7,17 +7,17 @@
 
 void UVerifyPurchaseRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("receipt"), Receipt);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("receipt"), Receipt, Serializer);
 }
 
 void UVerifyPurchaseRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("receipt"), Receipt);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("receipt"), Receipt, Serializer);		
 }
 
 void UVerifyPurchaseRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Receipt = Bag->GetStringField(TEXT("receipt"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("receipt")), Receipt);
 }
 
 

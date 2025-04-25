@@ -7,29 +7,29 @@
 
 void USteamOrderInfoItem::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("vat"), Vat);
-	Serializer->WriteValue(TEXT("amount"), Amount);
-	Serializer->WriteValue(TEXT("itemid"), Itemid);
-	Serializer->WriteValue(TEXT("qty"), Qty);
-	Serializer->WriteValue(TEXT("itemstatus"), Itemstatus);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("vat"), Vat, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("amount"), Amount, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("itemid"), Itemid, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("qty"), Qty, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("itemstatus"), Itemstatus, Serializer);
 }
 
 void USteamOrderInfoItem::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("vat"), Vat);
-	Serializer->WriteValue(TEXT("amount"), Amount);
-	Serializer->WriteValue(TEXT("itemid"), Itemid);
-	Serializer->WriteValue(TEXT("qty"), Qty);
-	Serializer->WriteValue(TEXT("itemstatus"), Itemstatus);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("vat"), Vat, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("amount"), Amount, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("itemid"), Itemid, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("qty"), Qty, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("itemstatus"), Itemstatus, Serializer);		
 }
 
 void USteamOrderInfoItem::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("vat")), Vat);
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("amount")), Amount);
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("itemid")), Itemid);
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("qty")), Qty);
-	Itemstatus = Bag->GetStringField(TEXT("itemstatus"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("vat")), Vat);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("amount")), Amount);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("itemid")), Itemid);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("qty")), Qty);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("itemstatus")), Itemstatus);
 }
 
 

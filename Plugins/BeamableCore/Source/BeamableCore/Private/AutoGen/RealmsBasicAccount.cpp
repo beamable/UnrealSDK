@@ -7,24 +7,24 @@
 
 void URealmsBasicAccount::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("user"), User);
-	Serializer->WriteValue(TEXT("password"), Password);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("user"), User, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("password"), Password, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("projects"), Projects, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("created"), &Created, Serializer);
 }
 
 void URealmsBasicAccount::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("user"), User);
-	Serializer->WriteValue(TEXT("password"), Password);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("user"), User, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("password"), Password, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("projects"), Projects, Serializer);
 	UBeamJsonUtils::SerializeOptional<int64>(TEXT("created"), &Created, Serializer);		
 }
 
 void URealmsBasicAccount::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	User = Bag->GetStringField(TEXT("user"));
-	Password = Bag->GetStringField(TEXT("password"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("user")), User);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("password")), Password);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("projects")), Projects, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<int64>("created", Bag, Created, OuterOwner);
 }

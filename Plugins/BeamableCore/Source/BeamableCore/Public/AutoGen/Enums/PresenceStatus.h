@@ -4,7 +4,7 @@
 
 #include "PresenceStatus.generated.h"
 
-UENUM(BlueprintType, Category="Beam|Enums")
+UENUM(BlueprintType, Category="Beam|Presence|Utils|Enums")
 enum class EPresenceStatus : uint8
 {
 	BEAM_Visible UMETA(DisplayName="Visible"),
@@ -13,13 +13,13 @@ enum class EPresenceStatus : uint8
 	BEAM_Away UMETA(DisplayName="Away")		
 };
 
-UCLASS(BlueprintType, Category="Beam|Enums")
+UCLASS(BlueprintType, Category="Beam|Presence|Utils|Enums")
 class BEAMABLECORE_API UPresenceStatusLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:		
 	
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Beam - PresenceStatus To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="PresenceStatus To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Presence|Utils|Enums")
 	static FString PresenceStatusToSerializationName(EPresenceStatus Value)
 	{
 		const UEnum* Enum = StaticEnum<EPresenceStatus>();
@@ -31,7 +31,7 @@ public:
 		
 	}
 
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Beam - Serialization Name To PresenceStatus", CompactNodeTitle = "->"), Category="Beam|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="Serialization Name To PresenceStatus", CompactNodeTitle = "->"), Category="Beam|Presence|Utils|Enums")
 	static EPresenceStatus SerializationNameToPresenceStatus(FString Value)
 	{
 		const UEnum* Enum = StaticEnum<EPresenceStatus>();

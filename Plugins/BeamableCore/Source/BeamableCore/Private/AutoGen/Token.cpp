@@ -13,9 +13,9 @@ void UToken::DeserializeRequestResponse(UObject* RequestData, FString ResponseCo
 void UToken::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);
-	Serializer->WriteValue(TEXT("token"), Token);
-	Serializer->WriteValue(TEXT("type"), Type);
-	Serializer->WriteValue(TEXT("created"), Created);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("token"), Token, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("type"), Type, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
 	UBeamJsonUtils::SerializeOptional<FBeamGamerTag, int64>(TEXT("gamerTag"), &GamerTag, Serializer);
 	UBeamJsonUtils::SerializeOptional<FBeamAccountId, int64>(TEXT("accountId"), &AccountId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FBeamPid, FString>(TEXT("pid"), &Pid, Serializer);
@@ -29,9 +29,9 @@ void UToken::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 void UToken::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("cid"), &Cid, Serializer);
-	Serializer->WriteValue(TEXT("token"), Token);
-	Serializer->WriteValue(TEXT("type"), Type);
-	Serializer->WriteValue(TEXT("created"), Created);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("token"), Token, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("type"), Type, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
 	UBeamJsonUtils::SerializeOptional<FBeamGamerTag, int64>(TEXT("gamerTag"), &GamerTag, Serializer);
 	UBeamJsonUtils::SerializeOptional<FBeamAccountId, int64>(TEXT("accountId"), &AccountId, Serializer);
 	UBeamJsonUtils::SerializeOptional<FBeamPid, FString>(TEXT("pid"), &Pid, Serializer);
@@ -45,9 +45,9 @@ void UToken::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) co
 void UToken::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
 	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("cid")), Cid, OuterOwner);
-	Token = Bag->GetStringField(TEXT("token"));
-	Type = Bag->GetStringField(TEXT("type"));
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("created")), Created);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("token")), Token);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("type")), Type);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("created")), Created);
 	UBeamJsonUtils::DeserializeOptional<FBeamGamerTag, int64>("gamerTag", Bag, GamerTag, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FBeamAccountId, int64>("accountId", Bag, AccountId, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FBeamPid, FString>("pid", Bag, Pid, OuterOwner);

@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamBackend/SemanticTypes/BeamCid.h"
 #include "BeamBackend/SemanticTypes/BeamPid.h"
@@ -16,6 +17,8 @@ class BEAMABLECORE_API UNewCustomerResponse : public UObject, public IBeamJsonSe
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Activation Pending", Category="Beam")
+	bool bActivationPending = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Name", Category="Beam")
 	FString Name = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Project Name", Category="Beam")

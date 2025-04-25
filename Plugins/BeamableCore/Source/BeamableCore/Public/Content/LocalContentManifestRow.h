@@ -49,7 +49,6 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("prefix"), Prefix);
 		UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
 		Serializer->WriteValue(TEXT("checksum"), Checksum);
 		Serializer->WriteRawJSONValue(TEXT("properties"), SerializedProperties);
@@ -59,7 +58,6 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("prefix"), Prefix);
 		UBeamJsonUtils::SerializeSemanticType<FString>(TEXT("id"), &Id, Serializer);
 		Serializer->WriteValue(TEXT("checksum"), Checksum);
 		Serializer->WriteRawJSONValue(TEXT("properties"), SerializedProperties);
@@ -69,7 +67,6 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Prefix = Bag->GetStringField(TEXT("prefix"));
 		UBeamJsonUtils::DeserializeSemanticType<FString>(Bag->TryGetField(TEXT("id")), Id, OuterOwner);
 		Checksum = Bag->GetStringField(TEXT("checksum"));
 		UBeamJsonUtils::DeserializeOptional<TArray<FString>, FString>("tags", Bag, Tags, OuterOwner);

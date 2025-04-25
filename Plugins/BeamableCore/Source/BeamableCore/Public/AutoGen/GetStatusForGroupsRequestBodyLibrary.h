@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGetStatusForGroupsRequestBodyLibrary : public UBlueprint
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - GetStatusForGroupsRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|Utils|Json", DisplayName="GetStatusForGroupsRequestBody To JSON String")
 	static FString GetStatusForGroupsRequestBodyToJsonString(const UGetStatusForGroupsRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GetStatusForGroupsRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|Utils|Make/Break", DisplayName="Make GetStatusForGroupsRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UGetStatusForGroupsRequestBody* Make(FString ContentId, TArray<int64> GroupIds, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GetStatusForGroupsRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Tournaments|Utils|Make/Break", DisplayName="Break GetStatusForGroupsRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UGetStatusForGroupsRequestBody* Serializable, FString& ContentId, TArray<int64>& GroupIds);
 };

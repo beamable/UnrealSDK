@@ -60,7 +60,7 @@ void FSocialPresenceRefreshNotificationMessage::BeamDeserializeProperties(const 
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("lastOnline")), LastOnline, OuterOwner);
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("friendId")), PlayerIdLong, OuterOwner);
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("onlineStatus")), OnlineStatus, OuterOwner);
-	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("eventType")), Status, OuterOwner);
+	// UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("eventType")), Status, OuterOwner);
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("description")), Description, OuterOwner);
 
 	PlayerGamerTag = FBeamGamerTag(PlayerIdLong);
@@ -78,7 +78,7 @@ FSocialPresenceRefreshNotificationMessage::FSocialPresenceRefreshNotificationMes
 	Status = OnlineStatus->Status.Val;
 	PlayerGamerTag = OnlineStatus->PlayerId.Val;
 	Description = OnlineStatus->Description.Val;
-	FDateTime::Parse(*OnlineStatus->LastOnline.Val, LastOnline);
+	LastOnline = OnlineStatus->LastOnline.Val;
 	Online = OnlineStatus->bOnline.Val;
 }
 

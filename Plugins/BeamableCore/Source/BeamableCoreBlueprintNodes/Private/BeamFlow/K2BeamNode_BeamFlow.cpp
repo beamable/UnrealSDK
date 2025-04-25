@@ -6,6 +6,7 @@
 
 #include "BlueprintNodeSpawner.h"
 #include "ScopedTransaction.h"
+#include "SourceCodeNavigation.h"
 #include "ToolMenu.h"
 
 #define LOCTEXT_NAMESPACE "BeamK2_BeamFlow"
@@ -49,7 +50,12 @@ void UK2BeamNode_BeamFlow::GetMenuActions(FBlueprintActionDatabaseRegistrar& Act
 
 FText UK2BeamNode_BeamFlow::GetMenuCategory() const
 {
-	return LOCTEXT("BeamNodeCategory", "Beam|Flow");
+	return FText::FromString(FString::Printf(TEXT("Beam|%s|Operation"), *GetServiceName()));
+}
+
+FString UK2BeamNode_BeamFlow::GetServiceName() const
+{
+	return FString("NullService");
 }
 
 FSlateIcon UK2BeamNode_BeamFlow::GetIconAndTint(FLinearColor& OutColor) const
@@ -67,6 +73,11 @@ FLinearColor UK2BeamNode_BeamFlow::GetNodeTitleColor() const
 FName UK2BeamNode_BeamFlow::GetCornerIcon() const
 {
 	return FName("BeamIcon_AutoGenRequests");
+}
+
+UObject* UK2BeamNode_BeamFlow::GetJumpTargetForDoubleClick() const
+{
+	return Super::GetJumpTargetForDoubleClick();
 }
 
 void UK2BeamNode_BeamFlow::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNodeContextMenuContext* Context) const

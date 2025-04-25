@@ -1166,7 +1166,7 @@ FBeamOperationHandle UBeamContentSubsystem::CPP_FetchIndividualContentOperation(
 
 void UBeamContentSubsystem::FetchContentManifest(FBeamContentManifestId ManifestId, bool bDownloadIndividualContent, bool bIgnoreFilterMap, FBeamOperationHandle Op)
 {
-	const auto Request = UGetManifestPublicJsonRequest::Make(FOptionalBeamContentManifestId(ManifestId), GetTransientPackage(), {});
+	const auto Request = UGetManifestPublicJsonRequest::Make(FOptionalBeamContentManifestId(ManifestId), {}, GetTransientPackage(), {});
 	const auto Handler = FOnGetManifestPublicJsonFullResponse::CreateLambda([this, ManifestId, Op, bDownloadIndividualContent, bIgnoreFilterMap](FGetManifestPublicJsonFullResponse Resp)
 	{
 		if (Resp.State == RS_Retrying) return;

@@ -12,7 +12,7 @@ void UGroupMembershipResponse::DeserializeRequestResponse(UObject* RequestData, 
 
 void UGroupMembershipResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("member"), bMember);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("member"), bMember, Serializer);
 	Serializer->WriteValue(TEXT("type"), UGroupTypeLibrary::GroupTypeToSerializationName(Type));
 	UBeamJsonUtils::SerializeUObject<UGroupMetaData*>("group", Group, Serializer);
 	UBeamJsonUtils::SerializeArray<int64>(TEXT("subGroups"), SubGroups, Serializer);
@@ -21,7 +21,7 @@ void UGroupMembershipResponse::BeamSerializeProperties(TUnrealJsonSerializer& Se
 
 void UGroupMembershipResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("member"), bMember);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("member"), bMember, Serializer);
 	Serializer->WriteValue(TEXT("type"), UGroupTypeLibrary::GroupTypeToSerializationName(Type));
 	UBeamJsonUtils::SerializeUObject<UGroupMetaData*>("group", Group, Serializer);
 	UBeamJsonUtils::SerializeArray<int64>(TEXT("subGroups"), SubGroups, Serializer);
@@ -30,7 +30,7 @@ void UGroupMembershipResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializ
 
 void UGroupMembershipResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bMember = Bag->GetBoolField(TEXT("member"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("member")), bMember);
 	Type = UGroupTypeLibrary::SerializationNameToGroupType(Bag->GetStringField(TEXT("type")));
 	UBeamJsonUtils::DeserializeUObject<UGroupMetaData*>("group", Bag, Group, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<int64>(Bag->GetArrayField(TEXT("subGroups")), SubGroups, OuterOwner);

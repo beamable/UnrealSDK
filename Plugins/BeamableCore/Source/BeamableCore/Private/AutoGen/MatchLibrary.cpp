@@ -22,7 +22,7 @@ FString UMatchLibrary::MatchToJsonString(const UMatch* Serializable, const bool 
 	return Result;
 }	
 
-UMatch* UMatchLibrary::Make(FOptionalString MatchId, FOptionalString Status, FOptionalString Created, FOptionalMatchType MatchType, FOptionalArrayOfTeam Teams, FOptionalArrayOfTicket Tickets, UObject* Outer)
+UMatch* UMatchLibrary::Make(FOptionalString MatchId, FOptionalString Status, FOptionalDateTime Created, FOptionalMatchType MatchType, FOptionalArrayOfTeam Teams, FOptionalArrayOfTicket Tickets, UObject* Outer)
 {
 	auto Serializable = NewObject<UMatch>(Outer);
 	Serializable->MatchId = MatchId;
@@ -35,7 +35,7 @@ UMatch* UMatchLibrary::Make(FOptionalString MatchId, FOptionalString Status, FOp
 	return Serializable;
 }
 
-void UMatchLibrary::Break(const UMatch* Serializable, FOptionalString& MatchId, FOptionalString& Status, FOptionalString& Created, FOptionalMatchType& MatchType, FOptionalArrayOfTeam& Teams, FOptionalArrayOfTicket& Tickets)
+void UMatchLibrary::Break(const UMatch* Serializable, FOptionalString& MatchId, FOptionalString& Status, FOptionalDateTime& Created, FOptionalMatchType& MatchType, FOptionalArrayOfTeam& Teams, FOptionalArrayOfTicket& Tickets)
 {
 	MatchId = Serializable->MatchId;
 	Status = Serializable->Status;

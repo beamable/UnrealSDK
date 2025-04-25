@@ -4,6 +4,7 @@
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamableCore/Public/AutoGen/GroupStatus.h"
+#include "Serialization/BeamJsonUtils.h"
 
 #include "GetStatusForGroupsResponse.generated.h"
 

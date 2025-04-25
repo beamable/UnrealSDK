@@ -22,12 +22,25 @@ FString UCloudsavingBasicReferenceLibrary::CloudsavingBasicReferenceToJsonString
 	return Result;
 }	
 
-UCloudsavingBasicReference* UCloudsavingBasicReferenceLibrary::Make(UObject* Outer)
+UCloudsavingBasicReference* UCloudsavingBasicReferenceLibrary::Make(int64 Size, int64 LastModified, FString Key, FString BucketName, FOptionalString ETag, UObject* Outer)
 {
 	auto Serializable = NewObject<UCloudsavingBasicReference>(Outer);
+	Serializable->Size = Size;
+	Serializable->LastModified = LastModified;
+	Serializable->Key = Key;
+	Serializable->BucketName = BucketName;
+	Serializable->ETag = ETag;
 	
 	return Serializable;
 }
 
-
+void UCloudsavingBasicReferenceLibrary::Break(const UCloudsavingBasicReference* Serializable, int64& Size, int64& LastModified, FString& Key, FString& BucketName, FOptionalString& ETag)
+{
+	Size = Serializable->Size;
+	LastModified = Serializable->LastModified;
+	Key = Serializable->Key;
+	BucketName = Serializable->BucketName;
+	ETag = Serializable->ETag;
+		
+}
 

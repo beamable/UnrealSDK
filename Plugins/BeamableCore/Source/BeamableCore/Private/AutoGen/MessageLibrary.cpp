@@ -22,7 +22,7 @@ FString UMessageLibrary::MessageToJsonString(const UMessage* Serializable, const
 	return Result;
 }	
 
-UMessage* UMessageLibrary::Make(int64 ReceiverGamerTag, FString State, int64 Id, int64 SenderGamerTag, int64 Sent, FString Category, TArray<UAttachment*> Attachments, FOptionalString Body, FOptionalInt32 Expires, FOptionalPlayerReward PlayerRewards, FOptionalString Subject, FOptionalMailRewards Rewards, FOptionalInt64 BodyRef, FOptionalInt64 ClaimedTimeMs, UObject* Outer)
+UMessage* UMessageLibrary::Make(int64 ReceiverGamerTag, FString State, int64 Id, int64 SenderGamerTag, int64 Sent, FString Category, TArray<UAttachment*> Attachments, FOptionalString Body, FOptionalInt64 Expires, FOptionalPlayerReward PlayerRewards, FOptionalString Subject, FOptionalMailRewards Rewards, FOptionalInt64 BodyRef, FOptionalInt64 ClaimedTimeMs, UObject* Outer)
 {
 	auto Serializable = NewObject<UMessage>(Outer);
 	Serializable->ReceiverGamerTag = ReceiverGamerTag;
@@ -43,7 +43,7 @@ UMessage* UMessageLibrary::Make(int64 ReceiverGamerTag, FString State, int64 Id,
 	return Serializable;
 }
 
-void UMessageLibrary::Break(const UMessage* Serializable, int64& ReceiverGamerTag, FString& State, int64& Id, int64& SenderGamerTag, int64& Sent, FString& Category, TArray<UAttachment*>& Attachments, FOptionalString& Body, FOptionalInt32& Expires, FOptionalPlayerReward& PlayerRewards, FOptionalString& Subject, FOptionalMailRewards& Rewards, FOptionalInt64& BodyRef, FOptionalInt64& ClaimedTimeMs)
+void UMessageLibrary::Break(const UMessage* Serializable, int64& ReceiverGamerTag, FString& State, int64& Id, int64& SenderGamerTag, int64& Sent, FString& Category, TArray<UAttachment*>& Attachments, FOptionalString& Body, FOptionalInt64& Expires, FOptionalPlayerReward& PlayerRewards, FOptionalString& Subject, FOptionalMailRewards& Rewards, FOptionalInt64& BodyRef, FOptionalInt64& ClaimedTimeMs)
 {
 	ReceiverGamerTag = Serializable->ReceiverGamerTag;
 	State = Serializable->State;

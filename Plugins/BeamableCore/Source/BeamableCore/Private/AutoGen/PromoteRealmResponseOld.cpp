@@ -12,19 +12,19 @@ void UPromoteRealmResponseOld::DeserializeRequestResponse(UObject* RequestData, 
 
 void UPromoteRealmResponseOld::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("sourcePid"), SourcePid);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("sourcePid"), SourcePid, Serializer);
 	UBeamJsonUtils::SerializeArray<URealmPromotion*>(TEXT("promotions"), Promotions, Serializer);
 }
 
 void UPromoteRealmResponseOld::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("sourcePid"), SourcePid);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("sourcePid"), SourcePid, Serializer);
 	UBeamJsonUtils::SerializeArray<URealmPromotion*>(TEXT("promotions"), Promotions, Serializer);		
 }
 
 void UPromoteRealmResponseOld::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	SourcePid = Bag->GetStringField(TEXT("sourcePid"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("sourcePid")), SourcePid);
 	UBeamJsonUtils::DeserializeArray<URealmPromotion*>(Bag->GetArrayField(TEXT("promotions")), Promotions, OuterOwner);
 }
 

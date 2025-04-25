@@ -22,10 +22,9 @@ FString UContentDefinitionLibrary::ContentDefinitionToJsonString(const UContentD
 	return Result;
 }	
 
-UContentDefinition* UContentDefinitionLibrary::Make(FString Prefix, FBeamContentId Id, FString Checksum, TMap<FString, UContentMeta*> Properties, FOptionalArrayOfString Tags, FOptionalArrayOfMapOfContentMeta Variants, UObject* Outer)
+UContentDefinition* UContentDefinitionLibrary::Make(FBeamContentId Id, FString Checksum, TMap<FString, UContentMeta*> Properties, FOptionalArrayOfString Tags, FOptionalArrayOfMapOfContentMeta Variants, UObject* Outer)
 {
 	auto Serializable = NewObject<UContentDefinition>(Outer);
-	Serializable->Prefix = Prefix;
 	Serializable->Id = Id;
 	Serializable->Checksum = Checksum;
 	Serializable->Properties = Properties;
@@ -35,9 +34,8 @@ UContentDefinition* UContentDefinitionLibrary::Make(FString Prefix, FBeamContent
 	return Serializable;
 }
 
-void UContentDefinitionLibrary::Break(const UContentDefinition* Serializable, FString& Prefix, FBeamContentId& Id, FString& Checksum, TMap<FString, UContentMeta*>& Properties, FOptionalArrayOfString& Tags, FOptionalArrayOfMapOfContentMeta& Variants)
+void UContentDefinitionLibrary::Break(const UContentDefinition* Serializable, FBeamContentId& Id, FString& Checksum, TMap<FString, UContentMeta*>& Properties, FOptionalArrayOfString& Tags, FOptionalArrayOfMapOfContentMeta& Variants)
 {
-	Prefix = Serializable->Prefix;
 	Id = Serializable->Id;
 	Checksum = Serializable->Checksum;
 	Properties = Serializable->Properties;

@@ -4,20 +4,20 @@
 
 #include "FriendSource.generated.h"
 
-UENUM(BlueprintType, Category="Beam|Enums")
+UENUM(BlueprintType, Category="Beam|Friends|Utils|Enums")
 enum class EFriendSource : uint8
 {
 	BEAM_native UMETA(DisplayName="Native"),
 	BEAM_facebook UMETA(DisplayName="Facebook")		
 };
 
-UCLASS(BlueprintType, Category="Beam|Enums")
+UCLASS(BlueprintType, Category="Beam|Friends|Utils|Enums")
 class BEAMABLECORE_API UFriendSourceLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:		
 	
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Beam - FriendSource To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="FriendSource To Serialization Name", CompactNodeTitle = "->"), Category="Beam|Friends|Utils|Enums")
 	static FString FriendSourceToSerializationName(EFriendSource Value)
 	{
 		const UEnum* Enum = StaticEnum<EFriendSource>();
@@ -29,7 +29,7 @@ public:
 		
 	}
 
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "Beam - Serialization Name To FriendSource", CompactNodeTitle = "->"), Category="Beam|Enums")
+	UFUNCTION(BlueprintPure, meta = (DisplayName="Serialization Name To FriendSource", CompactNodeTitle = "->"), Category="Beam|Friends|Utils|Enums")
 	static EFriendSource SerializationNameToFriendSource(FString Value)
 	{
 		const UEnum* Enum = StaticEnum<EFriendSource>();

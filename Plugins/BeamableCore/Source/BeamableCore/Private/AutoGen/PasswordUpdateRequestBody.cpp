@@ -7,19 +7,19 @@
 
 void UPasswordUpdateRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("email"), Email);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("email"), Email, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("codeType"), &CodeType, Serializer);
 }
 
 void UPasswordUpdateRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("email"), Email);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("email"), Email, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("codeType"), &CodeType, Serializer);		
 }
 
 void UPasswordUpdateRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Email = Bag->GetStringField(TEXT("email"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("email")), Email);
 	UBeamJsonUtils::DeserializeOptional<FString>("codeType", Bag, CodeType, OuterOwner);
 }
 

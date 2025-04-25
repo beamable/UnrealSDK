@@ -4,7 +4,7 @@
 #include "Subsystems/Party/BeamPartySubsystem.h"
 
 #include "AutoGen/Optionals/OptionalGamerTag.h"
-#include "AutoGen/SubSystems/Social/PostFriendsInviteRequest.h"
+#include "AutoGen/SubSystems/Friends/PostFriendsInviteRequest.h"
 #include "BeamNotifications/SubSystems/BeamInventoryNotifications.h"
 #include "Subsystems/Inventory/BeamInventorySubsystem.h"
 
@@ -14,7 +14,6 @@ void UBeamPartySubsystem::InitializeWhenUnrealReady_Implementation(FBeamOperatio
 {
 	// Initializing the subsystems after unreal is ready
 	PartyApi = GEngine->GetEngineSubsystem<UBeamPartyApi>();
-	PlayerPartyApi = GEngine->GetEngineSubsystem<UBeamPlayerPartyApi>();
 	PartyNotifications = GEngine->GetEngineSubsystem<UBeamPartyNotifications>();
 
 
@@ -641,7 +640,7 @@ void UBeamPartySubsystem::FetchPlayerPartyState(FUserSlot UserSlot, FBeamOperati
 
 	FBeamRequestContext Ctx;
 
-	PlayerPartyApi->CPP_GetParties(UserSlot, Request, Handler, Ctx, Op, this);
+	PartyApi->CPP_GetParties(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
 void UBeamPartySubsystem::FetchPartyInvites(FUserSlot UserSlot, FBeamOperationHandle Op)
@@ -700,7 +699,7 @@ void UBeamPartySubsystem::FetchPartyInvites(FUserSlot UserSlot, FBeamOperationHa
 
 	UGetPartyInvitesRequest* const Request = UGetPartyInvitesRequest::Make(RealmUser.GamerTag.AsString, this, {});
 
-	PlayerPartyApi->CPP_GetPartyInvites(UserSlot, Request, Handler, Ctx, Op, this);
+	PartyApi->CPP_GetPartyInvites(UserSlot, Request, Handler, Ctx, Op, this);
 }
 
 

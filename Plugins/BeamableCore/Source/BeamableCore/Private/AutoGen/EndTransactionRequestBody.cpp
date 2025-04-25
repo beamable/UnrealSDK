@@ -7,17 +7,17 @@
 
 void UEndTransactionRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("transaction"), Transaction);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("transaction"), Transaction, Serializer);
 }
 
 void UEndTransactionRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("transaction"), Transaction);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("transaction"), Transaction, Serializer);		
 }
 
 void UEndTransactionRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Transaction = Bag->GetStringField(TEXT("transaction"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("transaction")), Transaction);
 }
 
 

@@ -14,7 +14,7 @@ public:
 	/**
 	* @brief Constructs an FOptionalBeamAccountId struct from the given value.	  
 	*/
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Make Optional BeamAccountId", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Auth|Utils|Optionals", meta=(DisplayName="Make Optional BeamAccountId", NativeMakeFunc))
 	static FOptionalBeamAccountId MakeOptional(FBeamAccountId Value);
 
 	/**
@@ -22,7 +22,7 @@ public:
 	 * @param Value The FBeamAccountId to convert.
 	 * @return An optional with the BeamAccountId set as it's value.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta = (DisplayName = "Beam - BeamAccountId To Optional", CompactNodeTitle = "->", BlueprintAutocast))
+	UFUNCTION(BlueprintPure, Category="Beam|Auth|Utils|Optionals", meta = (DisplayName="BeamAccountId To Optional", CompactNodeTitle = "->", BlueprintAutocast))
 	static FOptionalBeamAccountId Conv_OptionalFromValue(FBeamAccountId Value);
 	
 	/**
@@ -31,7 +31,7 @@ public:
 	 * @param Value The value in the optional. 
 	 * @return Whether or not the value was set. We provide no guarantees on what the value is if the optional is not set. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Optionals", meta=(DisplayName="Beam - Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Auth|Utils|Optionals", meta=(DisplayName="Optional Has Value", ExpandBoolAsExecs="ReturnValue"))
 	static bool HasValue(const FOptionalBeamAccountId& Optional, FBeamAccountId& Value);
 
 	/**
@@ -41,7 +41,7 @@ public:
 	 * @param WasSet Whether or not the value was set. When false, the return value is the given DefaultValue.   
 	 * @return The default value, if the Optional IS NOT set. The optional value, otherwise.
 	 */
-	UFUNCTION(BlueprintPure, Category="Beam|Optionals", meta=(DisplayName="Beam - Get Optional's BeamAccountId Value"))
+	UFUNCTION(BlueprintPure, Category="Beam|Auth|Utils|Optionals", meta=(DisplayName="Get Optional's BeamAccountId Value"))
 	static FBeamAccountId GetOptionalValue(const FOptionalBeamAccountId& Optional, FBeamAccountId DefaultValue, bool& WasSet);
 
 	

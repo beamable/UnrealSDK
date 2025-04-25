@@ -55,7 +55,7 @@ struct BEAMABLECORE_API FSocialPresenceRefreshNotificationMessage : public FBeam
 	FDateTime LastOnline;
 
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category="Beam")
-	EPresenceStatus Status;
+	EPresenceStatus Status = EPresenceStatus::BEAM_Invisible;
 
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category="Beam")
 	FString Description;

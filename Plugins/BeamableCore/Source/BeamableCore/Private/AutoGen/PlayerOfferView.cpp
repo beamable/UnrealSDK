@@ -7,9 +7,9 @@
 
 void UPlayerOfferView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("coupons"), Coupons);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("coupons"), Coupons, Serializer);
 	UBeamJsonUtils::SerializeUObject<UPrice*>("price", Price, Serializer);
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("titles"), Titles, Serializer);
 	UBeamJsonUtils::SerializeArray<UItemCreateRequestBody*>(TEXT("obtainItems"), ObtainItems, Serializer);
 	UBeamJsonUtils::SerializeArray<UCurrencyChange*>(TEXT("obtainCurrency"), ObtainCurrency, Serializer);
@@ -21,9 +21,9 @@ void UPlayerOfferView::BeamSerializeProperties(TUnrealJsonSerializer& Serializer
 
 void UPlayerOfferView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("coupons"), Coupons);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("coupons"), Coupons, Serializer);
 	UBeamJsonUtils::SerializeUObject<UPrice*>("price", Price, Serializer);
-	Serializer->WriteValue(TEXT("symbol"), Symbol);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("symbol"), Symbol, Serializer);
 	UBeamJsonUtils::SerializeArray<FString>(TEXT("titles"), Titles, Serializer);
 	UBeamJsonUtils::SerializeArray<UItemCreateRequestBody*>(TEXT("obtainItems"), ObtainItems, Serializer);
 	UBeamJsonUtils::SerializeArray<UCurrencyChange*>(TEXT("obtainCurrency"), ObtainCurrency, Serializer);
@@ -35,9 +35,9 @@ void UPlayerOfferView::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 
 void UPlayerOfferView::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Coupons = Bag->GetIntegerField(TEXT("coupons"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("coupons")), Coupons);
 	UBeamJsonUtils::DeserializeUObject<UPrice*>("price", Bag, Price, OuterOwner);
-	Symbol = Bag->GetStringField(TEXT("symbol"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("symbol")), Symbol);
 	UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("titles")), Titles, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UItemCreateRequestBody*>(Bag->GetArrayField(TEXT("obtainItems")), ObtainItems, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UCurrencyChange*>(Bag->GetArrayField(TEXT("obtainCurrency")), ObtainCurrency, OuterOwner);

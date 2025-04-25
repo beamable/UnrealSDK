@@ -3,8 +3,10 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
-#include "BeamBackend/SemanticTypes/BeamContentManifestId.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
+#include "BeamBackend/SemanticTypes/BeamContentManifestId.h"
+#include "Serialization/BeamJsonUtils.h"
+#include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 
 #include "ContentBasicManifestChecksum.generated.h"
 
@@ -22,6 +24,8 @@ public:
 	int64 CreatedAt = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Archived", Category="Beam")
 	FOptionalBool bArchived = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Uid", Category="Beam")
+	FOptionalString Uid = {};
 
 	virtual void DeserializeRequestResponse(UObject* RequestData, FString ResponseContent) override;
 

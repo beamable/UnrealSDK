@@ -12,17 +12,17 @@ void ULiveOpsDemoMSUpgradeItemResponse::DeserializeRequestResponse(UObject* Requ
 
 void ULiveOpsDemoMSUpgradeItemResponse::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("Value"), bValue);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("Value"), bValue, Serializer);
 }
 
 void ULiveOpsDemoMSUpgradeItemResponse::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("Value"), bValue);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("Value"), bValue, Serializer);		
 }
 
 void ULiveOpsDemoMSUpgradeItemResponse::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bValue = Bag->GetBoolField(TEXT("Value"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Value")), bValue);
 }
 
 

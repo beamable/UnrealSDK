@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPlayerListingViewLibrary : public UBlueprintFunctionLibr
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - PlayerListingView To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|Utils|Json", DisplayName="PlayerListingView To JSON String")
 	static FString PlayerListingViewToJsonString(const UPlayerListingView* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make PlayerListingView", meta=(DefaultToSelf="Outer", AdvancedDisplay="Cooldown, PurchasesRemain, SecondsRemain, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|Utils|Make/Break", DisplayName="Make PlayerListingView", meta=(DefaultToSelf="Outer", AdvancedDisplay="Cooldown, PurchasesRemain, SecondsRemain, Outer", NativeMakeFunc))
 	static UPlayerListingView* Make(bool bActive, bool bQueryAfterPurchase, FString Symbol, int64 SecondsActive, UPlayerOfferView* Offer, TArray<UClientDataEntry*> ClientDataList, TMap<FString, FString> ClientData, FOptionalInt32 Cooldown, FOptionalInt32 PurchasesRemain, FOptionalInt64 SecondsRemain, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break PlayerListingView", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|Utils|Make/Break", DisplayName="Break PlayerListingView", meta=(NativeBreakFunc))
 	static void Break(const UPlayerListingView* Serializable, bool& bActive, bool& bQueryAfterPurchase, FString& Symbol, int64& SecondsActive, UPlayerOfferView*& Offer, TArray<UClientDataEntry*>& ClientDataList, TMap<FString, FString>& ClientData, FOptionalInt32& Cooldown, FOptionalInt32& PurchasesRemain, FOptionalInt64& SecondsRemain);
 };

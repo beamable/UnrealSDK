@@ -7,17 +7,17 @@
 
 void UGetExactManifestRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("uid"), Uid);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("uid"), Uid, Serializer);
 }
 
 void UGetExactManifestRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("uid"), Uid);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("uid"), Uid, Serializer);		
 }
 
 void UGetExactManifestRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Uid = Bag->GetStringField(TEXT("uid"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("uid")), Uid);
 }
 
 

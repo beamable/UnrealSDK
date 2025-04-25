@@ -7,20 +7,20 @@
 
 void UStatStringListEntry::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("k"), K);
-	Serializer->WriteValue(TEXT("v"), V);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("k"), K, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("v"), V, Serializer);
 }
 
 void UStatStringListEntry::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("k"), K);
-	Serializer->WriteValue(TEXT("v"), V);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("k"), K, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("v"), V, Serializer);		
 }
 
 void UStatStringListEntry::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	K = Bag->GetStringField(TEXT("k"));
-	V = Bag->GetStringField(TEXT("v"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("k")), K);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("v")), V);
 }
 
 

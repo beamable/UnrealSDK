@@ -7,17 +7,17 @@
 
 void ULeaderboardGetRanksRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("ids"), Ids);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("ids"), Ids, Serializer);
 }
 
 void ULeaderboardGetRanksRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("ids"), Ids);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("ids"), Ids, Serializer);		
 }
 
 void ULeaderboardGetRanksRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Ids = Bag->GetStringField(TEXT("ids"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("ids")), Ids);
 }
 
 

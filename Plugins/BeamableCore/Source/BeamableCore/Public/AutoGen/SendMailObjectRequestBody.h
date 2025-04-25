@@ -7,6 +7,7 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalPlayerReward.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalMailRewards.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfAttachmentRequestBody.h"
 
 #include "SendMailObjectRequestBody.generated.h"

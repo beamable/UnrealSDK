@@ -12,20 +12,20 @@ void UMailTemplate::DeserializeRequestResponse(UObject* RequestData, FString Res
 
 void UMailTemplate::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("subject"), Subject);
-	Serializer->WriteValue(TEXT("body"), Body);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("subject"), Subject, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("body"), Body, Serializer);
 }
 
 void UMailTemplate::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("subject"), Subject);
-	Serializer->WriteValue(TEXT("body"), Body);		
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("subject"), Subject, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("body"), Body, Serializer);		
 }
 
 void UMailTemplate::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Subject = Bag->GetStringField(TEXT("subject"));
-	Body = Bag->GetStringField(TEXT("body"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("subject")), Subject);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("body")), Body);
 }
 
 

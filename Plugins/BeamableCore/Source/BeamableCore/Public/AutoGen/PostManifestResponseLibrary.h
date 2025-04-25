@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPostManifestResponseLibrary : public UBlueprintFunctionL
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - PostManifestResponse To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Json", DisplayName="PostManifestResponse To JSON String")
 	static FString PostManifestResponseToJsonString(const UPostManifestResponse* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make PostManifestResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Manifest, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Make PostManifestResponse", meta=(DefaultToSelf="Outer", AdvancedDisplay="Manifest, Outer", NativeMakeFunc))
 	static UPostManifestResponse* Make(FOptionalBeamoBasicManifestChecksum Manifest, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break PostManifestResponse", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Beamo|Utils|Make/Break", DisplayName="Break PostManifestResponse", meta=(NativeBreakFunc))
 	static void Break(const UPostManifestResponse* Serializable, FOptionalBeamoBasicManifestChecksum& Manifest);
 };

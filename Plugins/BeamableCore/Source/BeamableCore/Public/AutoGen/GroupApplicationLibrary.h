@@ -13,12 +13,12 @@ class BEAMABLECORE_API UGroupApplicationLibrary : public UBlueprintFunctionLibra
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - GroupApplication To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Groups|Utils|Json", DisplayName="GroupApplication To JSON String")
 	static FString GroupApplicationToJsonString(const UGroupApplication* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make GroupApplication", meta=(DefaultToSelf="Outer", AdvancedDisplay="SubGroup, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Groups|Utils|Make/Break", DisplayName="Make GroupApplication", meta=(DefaultToSelf="Outer", AdvancedDisplay="SubGroup, Outer", NativeMakeFunc))
 	static UGroupApplication* Make(FOptionalInt64 SubGroup, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break GroupApplication", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Groups|Utils|Make/Break", DisplayName="Break GroupApplication", meta=(NativeBreakFunc))
 	static void Break(const UGroupApplication* Serializable, FOptionalInt64& SubGroup);
 };

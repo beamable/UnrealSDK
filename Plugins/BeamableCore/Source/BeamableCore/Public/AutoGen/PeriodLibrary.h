@@ -13,12 +13,12 @@ class BEAMABLECORE_API UPeriodLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - Period To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|Utils|Json", DisplayName="Period To JSON String")
 	static FString PeriodToJsonString(const UPeriod* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make Period", meta=(DefaultToSelf="Outer", AdvancedDisplay="End, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|Utils|Make/Break", DisplayName="Make Period", meta=(DefaultToSelf="Outer", AdvancedDisplay="End, Outer", NativeMakeFunc))
 	static UPeriod* Make(FString Start, FOptionalString End, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break Period", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Commerce|Utils|Make/Break", DisplayName="Break Period", meta=(NativeBreakFunc))
 	static void Break(const UPeriod* Serializable, FString& Start, FOptionalString& End);
 };

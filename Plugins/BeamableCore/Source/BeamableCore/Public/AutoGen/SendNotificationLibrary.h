@@ -13,12 +13,12 @@ class BEAMABLECORE_API USendNotificationLibrary : public UBlueprintFunctionLibra
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - SendNotification To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Push|Utils|Json", DisplayName="SendNotification To JSON String")
 	static FString SendNotificationToJsonString(const USendNotification* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make SendNotification", meta=(DefaultToSelf="Outer", AdvancedDisplay="Title, Body, Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Push|Utils|Make/Break", DisplayName="Make SendNotification", meta=(DefaultToSelf="Outer", AdvancedDisplay="Title, Body, Outer", NativeMakeFunc))
 	static USendNotification* Make(FOptionalString Title, FOptionalString Body, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break SendNotification", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Push|Utils|Make/Break", DisplayName="Break SendNotification", meta=(NativeBreakFunc))
 	static void Break(const USendNotification* Serializable, FOptionalString& Title, FOptionalString& Body);
 };

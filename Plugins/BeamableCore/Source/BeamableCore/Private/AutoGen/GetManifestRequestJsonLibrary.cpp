@@ -22,17 +22,19 @@ FString UGetManifestRequestJsonLibrary::GetManifestRequestJsonToJsonString(const
 	return Result;
 }	
 
-UGetManifestRequestJson* UGetManifestRequestJsonLibrary::Make(FOptionalBeamContentManifestId Id, UObject* Outer)
+UGetManifestRequestJson* UGetManifestRequestJsonLibrary::Make(FOptionalBeamContentManifestId Id, FOptionalString Uid, UObject* Outer)
 {
 	auto Serializable = NewObject<UGetManifestRequestJson>(Outer);
 	Serializable->Id = Id;
+	Serializable->Uid = Uid;
 	
 	return Serializable;
 }
 
-void UGetManifestRequestJsonLibrary::Break(const UGetManifestRequestJson* Serializable, FOptionalBeamContentManifestId& Id)
+void UGetManifestRequestJsonLibrary::Break(const UGetManifestRequestJson* Serializable, FOptionalBeamContentManifestId& Id, FOptionalString& Uid)
 {
 	Id = Serializable->Id;
+	Uid = Serializable->Uid;
 		
 }
 

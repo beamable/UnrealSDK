@@ -36,7 +36,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Notification", DisplayName="Beam - Make BasicNotificationPostServer",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Payload,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Notification|Utils|Make/Break", DisplayName="Make BasicNotificationPostServer",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Payload,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UBasicNotificationPostServerRequest* Make(FString _Event, bool _bToAll, FOptionalString _Payload, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

@@ -12,10 +12,10 @@ void UAccountsObjectAccount::DeserializeRequestResponse(UObject* RequestData, FS
 
 void UAccountsObjectAccount::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("privilegedAccount"), bPrivilegedAccount);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("privilegedAccount"), bPrivilegedAccount, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("id"), &Id, Serializer);
-	Serializer->WriteValue(TEXT("createdTimeMillis"), CreatedTimeMillis);
-	Serializer->WriteValue(TEXT("updatedTimeMillis"), UpdatedTimeMillis);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("createdTimeMillis"), CreatedTimeMillis, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("updatedTimeMillis"), UpdatedTimeMillis, Serializer);
 	UBeamJsonUtils::SerializeArray<UThirdPartyAssociation*>(TEXT("thirdParties"), ThirdParties, Serializer);
 	UBeamJsonUtils::SerializeArray<FBeamExternalIdentity>(TEXT("external"), External, Serializer);
 	UBeamJsonUtils::SerializeArray<UGamerTagAssociation*>(TEXT("gamerTags"), GamerTags, Serializer);
@@ -36,10 +36,10 @@ void UAccountsObjectAccount::BeamSerializeProperties(TUnrealJsonSerializer& Seri
 
 void UAccountsObjectAccount::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("privilegedAccount"), bPrivilegedAccount);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("privilegedAccount"), bPrivilegedAccount, Serializer);
 	UBeamJsonUtils::SerializeSemanticType<int64>(TEXT("id"), &Id, Serializer);
-	Serializer->WriteValue(TEXT("createdTimeMillis"), CreatedTimeMillis);
-	Serializer->WriteValue(TEXT("updatedTimeMillis"), UpdatedTimeMillis);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("createdTimeMillis"), CreatedTimeMillis, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("updatedTimeMillis"), UpdatedTimeMillis, Serializer);
 	UBeamJsonUtils::SerializeArray<UThirdPartyAssociation*>(TEXT("thirdParties"), ThirdParties, Serializer);
 	UBeamJsonUtils::SerializeArray<FBeamExternalIdentity>(TEXT("external"), External, Serializer);
 	UBeamJsonUtils::SerializeArray<UGamerTagAssociation*>(TEXT("gamerTags"), GamerTags, Serializer);
@@ -60,10 +60,10 @@ void UAccountsObjectAccount::BeamSerializeProperties(TUnrealPrettyJsonSerializer
 
 void UAccountsObjectAccount::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	bPrivilegedAccount = Bag->GetBoolField(TEXT("privilegedAccount"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("privilegedAccount")), bPrivilegedAccount);
 	UBeamJsonUtils::DeserializeSemanticType<int64>(Bag->TryGetField(TEXT("id")), Id, OuterOwner);
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("createdTimeMillis")), CreatedTimeMillis);
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("updatedTimeMillis")), UpdatedTimeMillis);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("createdTimeMillis")), CreatedTimeMillis);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("updatedTimeMillis")), UpdatedTimeMillis);
 	UBeamJsonUtils::DeserializeArray<UThirdPartyAssociation*>(Bag->GetArrayField(TEXT("thirdParties")), ThirdParties, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<FBeamExternalIdentity>(Bag->GetArrayField(TEXT("external")), External, OuterOwner);
 	UBeamJsonUtils::DeserializeArray<UGamerTagAssociation*>(Bag->GetArrayField(TEXT("gamerTags")), GamerTags, OuterOwner);

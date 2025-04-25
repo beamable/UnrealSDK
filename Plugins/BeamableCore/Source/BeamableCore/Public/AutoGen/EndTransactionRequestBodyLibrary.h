@@ -13,12 +13,12 @@ class BEAMABLECORE_API UEndTransactionRequestBodyLibrary : public UBlueprintFunc
 
 public:
 
-	UFUNCTION(BlueprintPure, Category="Beam|Json", DisplayName="Beam - EndTransactionRequestBody To JSON String")
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|Utils|Json", DisplayName="EndTransactionRequestBody To JSON String")
 	static FString EndTransactionRequestBodyToJsonString(const UEndTransactionRequestBody* Serializable, const bool Pretty);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Make EndTransactionRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|Utils|Make/Break", DisplayName="Make EndTransactionRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
 	static UEndTransactionRequestBody* Make(FString Transaction, UObject* Outer);
 
-	UFUNCTION(BlueprintPure, Category="Beam|Backend", DisplayName="Beam - Break EndTransactionRequestBody", meta=(NativeBreakFunc))
+	UFUNCTION(BlueprintPure, Category="Beam|Inventory|Utils|Make/Break", DisplayName="Break EndTransactionRequestBody", meta=(NativeBreakFunc))
 	static void Break(const UEndTransactionRequestBody* Serializable, FString& Transaction);
 };

@@ -6,6 +6,7 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamPid.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalArrayOfBeamPid.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBeamCid.h"
 #include "BeamBackend/SemanticTypes/BeamPid.h"

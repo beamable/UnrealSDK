@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/UpdateParty.h"
 #include "BeamableCore/Public/AutoGen/Party.h"
 
@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Party", DisplayName="Beam - Make ApiPartyPutMetadataById",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Restriction,_MaxSize,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Party|Utils|Make/Break", DisplayName="Make ApiPartyPutMetadataById",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Restriction,_MaxSize,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UApiPartyPutMetadataByIdRequest* Make(FGuid _Id, FOptionalString _Restriction, FOptionalInt32 _MaxSize, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

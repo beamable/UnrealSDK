@@ -7,9 +7,9 @@
 
 void USendMailRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("receiverGamerTag"), ReceiverGamerTag);
-	Serializer->WriteValue(TEXT("senderGamerTag"), SenderGamerTag);
-	Serializer->WriteValue(TEXT("category"), Category);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("receiverGamerTag"), ReceiverGamerTag, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("senderGamerTag"), SenderGamerTag, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("category"), Category, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("body"), &Body, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("expires"), &Expires, Serializer);
 	UBeamJsonUtils::SerializeOptional<UPlayerReward*>(TEXT("playerRewards"), &PlayerRewards, Serializer);
@@ -22,9 +22,9 @@ void USendMailRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serial
 
 void USendMailRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("receiverGamerTag"), ReceiverGamerTag);
-	Serializer->WriteValue(TEXT("senderGamerTag"), SenderGamerTag);
-	Serializer->WriteValue(TEXT("category"), Category);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("receiverGamerTag"), ReceiverGamerTag, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("senderGamerTag"), SenderGamerTag, Serializer);
+	UBeamJsonUtils::SerializeRawPrimitive(TEXT("category"), Category, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("body"), &Body, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("expires"), &Expires, Serializer);
 	UBeamJsonUtils::SerializeOptional<UPlayerReward*>(TEXT("playerRewards"), &PlayerRewards, Serializer);
@@ -37,9 +37,9 @@ void USendMailRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& 
 
 void USendMailRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("receiverGamerTag")), ReceiverGamerTag);
-	FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("senderGamerTag")), SenderGamerTag);
-	Category = Bag->GetStringField(TEXT("category"));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("receiverGamerTag")), ReceiverGamerTag);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("senderGamerTag")), SenderGamerTag);
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("category")), Category);
 	UBeamJsonUtils::DeserializeOptional<FString>("body", Bag, Body, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("expires", Bag, Expires, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<UPlayerReward*>("playerRewards", Bag, PlayerRewards, OuterOwner);

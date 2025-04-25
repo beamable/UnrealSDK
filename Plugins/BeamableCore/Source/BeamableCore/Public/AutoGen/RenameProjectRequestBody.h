@@ -4,6 +4,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamBackend/SemanticTypes/BeamPid.h"
+#include "Serialization/BeamJsonUtils.h"
 
 #include "RenameProjectRequestBody.generated.h"
 

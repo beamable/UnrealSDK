@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 #include "BeamableCore/Public/AutoGen/AnnouncementQueryResponse.h"
 
@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|Announcements", DisplayName="Beam - Make GetAnnouncements",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bIncludeDeleted,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Announcements|Utils|Make/Break", DisplayName="Make GetAnnouncements",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_bIncludeDeleted,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UGetAnnouncementsRequest* Make(int64 _ObjectId, FOptionalBool _bIncludeDeleted, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

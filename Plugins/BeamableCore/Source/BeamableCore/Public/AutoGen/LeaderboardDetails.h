@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "BeamBackend/BeamBaseResponseBodyInterface.h"
 #include "Serialization/BeamJsonSerializable.h"
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalOrderRules.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalMetadataView.h"
 #include "BeamableCore/Public/AutoGen/LeaderBoardView.h"

@@ -80,7 +80,7 @@ public:
 	TMap<FString, UClass*> ContentTypeStringToContentClass;
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TMap<UClass*, FString> ContentClassToContentTypeString;
-	
+
 	/**
 	 * This is invoked whenever a content is saved. 
 	 */
@@ -176,7 +176,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Content", meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
 	bool DownloadContent(FBeamContentManifestId ContentManifestId, TArray<FBeamContentId> Ids, FString& Err);
-	
+
 	/**
 	 * @brief Fetches the local content manifest from the CLI synchronously. 
 	 */
@@ -186,7 +186,7 @@ public:
 	/**
 	 * Checks if the given ContentName is a valid content name. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam|Content", meta=(ExpandBoolAsExecs="ReturnValue"))
+	UFUNCTION(BlueprintCallable, Category="Beam|Content|Utils", meta=(ExpandBoolAsExecs="ReturnValue"))
 	bool IsValidContentName(const FString& ContentName, FText& Err);
 
 private:

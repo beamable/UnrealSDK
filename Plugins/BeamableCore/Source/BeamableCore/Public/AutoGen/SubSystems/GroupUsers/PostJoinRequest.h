@@ -7,7 +7,7 @@
 #include "BeamBackend/BeamErrorResponse.h"
 #include "BeamBackend/BeamFullResponse.h"
 
-
+#include "Serialization/BeamJsonUtils.h"
 #include "BeamableCore/Public/AutoGen/GroupMembershipRequestBody.h"
 #include "BeamableCore/Public/AutoGen/GroupMembershipResponse.h"
 
@@ -38,7 +38,7 @@ public:
 	virtual void BuildRoute(FString& RouteString) const override;
 	virtual void BuildBody(FString& BodyString) const override;
 
-	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|Backend|GroupUsers", DisplayName="Beam - Make PostJoin",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Successor,_Score,_SubGroup,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
+	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|GroupUsers|Utils|Make/Break", DisplayName="Make PostJoin",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="_Successor,_Score,_SubGroup,RequestOwner", AutoCreateRefTerm="CustomHeaders"))
 	static UPostJoinRequest* Make(int64 _ObjectId, EGroupType _Type, int64 _Group, FOptionalInt64 _Successor, FOptionalInt64 _Score, FOptionalInt64 _SubGroup, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 

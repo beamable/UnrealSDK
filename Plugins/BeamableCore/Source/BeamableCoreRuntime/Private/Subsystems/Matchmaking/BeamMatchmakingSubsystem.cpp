@@ -257,11 +257,9 @@ void UBeamMatchmakingSubsystem::TryJoinQueue(FUserSlot Slot, FBeamContentId Game
 
 			// Update the requesting slot's state of matchmaking and then complete the operation
 			auto SlotState = Slots.Find(Slot);
-			int64 TicketCreated;
-			FDefaultValueHelper::ParseInt64(Ticket->Created.Val, TicketCreated);
-
+			
 			SlotState->InTicket = TicketId;
-			SlotState->LastJoinTime = FDateTime::FromUnixTimestamp(TicketCreated);
+			SlotState->LastJoinTime = Ticket->Created.Val;
 			LiveTickets.Add(NewTicket);
 
 			RequestTracker->TriggerOperationSuccess(Op, TicketId.ToString());
@@ -363,11 +361,9 @@ void UBeamMatchmakingSubsystem::OnMatchmakingRemoteUpdateReceived(FMatchmakingRe
 
 					// Update the per-slot state of matchmaking
 					auto SlotState = Slots.Find(UserSlot);
-					int64 TicketCreated;
-					FDefaultValueHelper::ParseInt64(TicketData->Created.Val, TicketCreated);
-
+	
 					SlotState->InTicket = MsgTicketId;
-					SlotState->LastJoinTime = FDateTime::FromUnixTimestamp(TicketCreated);
+					SlotState->LastJoinTime = TicketData->Created.Val;
 
 
 					// Trigger the system level callbacks for "my party leader in another client joined and I now know that"			
