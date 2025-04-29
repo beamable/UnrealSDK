@@ -21,7 +21,7 @@ namespace Beamable.BeamballMs
 			await userAPI.Services.Inventory.AddCurrency("currency.coins", 100);
 			
 			// Add Item
-			await userAPI.Services.Inventory.AddItem("itemskin.skin1",new Dictionary<string, string>(){});
+			await userAPI.Services.Inventory.AddItem("items.itemskin.skin1",new Dictionary<string, string>(){});
 			
 			var a = new PlayerInitResult();
 			return a;
