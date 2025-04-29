@@ -20,7 +20,7 @@ public:
 	UFUNCTION()
 	void GetContentType_UBeamballSkinItem(FString& Result){Result = TEXT("itemskin");};
 	
-	// Define a SoftObjectPath for the skin item
+	// Define a SoftObjectPath for the skin item data Asset
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSoftObjectPtr<UBeamBallSkinDataAsset> SelectedSkin;
+	TSoftObjectPtr<UBeamBallSkinDataAsset> SkinData;
 };

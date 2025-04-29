@@ -23,7 +23,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString ItemDescription;
 
-	// Define a SoftObjectPath for the skin item
+	// Define a SoftObjectPath for the skin model
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSoftObjectPtr<USkeletalMesh> ItemPath;
 };

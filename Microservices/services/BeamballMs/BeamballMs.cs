@@ -20,6 +20,9 @@ namespace Beamable.BeamballMs
 			await userAPI.Services.Stats.SetStats("client", "public", "player", gamerTag, new Dictionary<string, string>(){{"player_name",name}});
 			await userAPI.Services.Inventory.AddCurrency("currency.coins", 100);
 			
+			// Add Item
+			await userAPI.Services.Inventory.AddItem("itemskin.skin1",new Dictionary<string, string>(){});
+			
 			var a = new PlayerInitResult();
 			return a;
 		}
