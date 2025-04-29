@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "BeamBallSkinDataAsset.h"
-#include "Content/BeamContentObject.h"
+#include "Content/BeamContentTypes/BeamItemContent.h"
 #include "BeamballSkinItem.generated.h"
 
 /**
  * 
  */
 UCLASS(BlueprintType)
-class BEAMPROJ_BEAMBALL_API UBeamballSkinItem : public UBeamContentObject
+class BEAMPROJ_BEAMBALL_API UBeamballSkinItem : public UBeamItemContent
 {
 	GENERATED_BODY()
 	
