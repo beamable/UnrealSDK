@@ -4,7 +4,7 @@
 class UBeamBackendTestCallbacks;
 
 BEGIN_DEFINE_SPEC(FBeamBackendSpec, "BeamableUnreal.BeamBackend",
-                  EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+                  EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ProgramContext)
 	UBeamBackend* BeamBackendSystem;
 	UObject* RequestFuncUObject;
 	FName RequestFuncName;
