@@ -17,8 +17,12 @@ namespace Beamable.BeamballMs
 			var gamerTag = account.gamerTags[0].gamerTag;
 			
 			var userAPI = AssumeNewUser(gamerTag);
+			
+			// Add Initial Currency and Skin
 			await userAPI.Services.Stats.SetStats("client", "public", "player", gamerTag, new Dictionary<string, string>(){{"player_name",name}});
 			await userAPI.Services.Inventory.AddCurrency("currency.coins", 100);
+			
+			await userAPI.Services.Inventory.AddItem("items.itemskin.skin1",new Dictionary<string, string>(){});
 			
 			var a = new PlayerInitResult();
 			return a;
