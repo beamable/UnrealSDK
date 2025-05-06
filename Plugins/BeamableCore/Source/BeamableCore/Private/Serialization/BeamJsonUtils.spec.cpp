@@ -8,7 +8,7 @@
 #include "BeamBackend/SemanticTypes/BeamCid.h"
 
 
-BEGIN_DEFINE_SPEC(FBeamJsonUtilsSpec, "BeamableUnreal.BeamJsonUtils", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ApplicationContextMask)
+BEGIN_DEFINE_SPEC(FBeamJsonUtilsSpec, "BeamableUnreal.BeamJsonUtils", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ProgramContext)
 END_DEFINE_SPEC(FBeamJsonUtilsSpec)
 
 void FBeamJsonUtilsSpec::Define()
@@ -753,7 +753,7 @@ void FBeamJsonUtilsSpec::Define()
 			BeamArray.BeamSerialize(JsonSerializer);
 			JsonSerializer->Close();
 
-			FString ExpectedDateItem = L"\""+ReferenceDate.ToIso8601()+"\"";
+			FString ExpectedDateItem = "\""+ReferenceDate.ToIso8601()+"\"";
 			// Get a condensed string so we can easily compare with the condensed string we generate.
 			const FString Expected = TEXT("["+ExpectedDateItem+","+ExpectedDateItem+","+ExpectedDateItem+"]");
 			TestEqual("JSON result", OutJson, Expected);

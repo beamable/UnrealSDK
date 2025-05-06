@@ -28,6 +28,16 @@ struct BEAMABLECORERUNTIME_API FBeamFriendPresenceStatus
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Description;
+
+	FBeamFriendPresenceStatus() = default;
+
+	FBeamFriendPresenceStatus(bool bOnline, const FDateTime& LastOnline, EPresenceStatus Status, const FString& Description)
+		: Online(bOnline),
+		  LastOnline(LastOnline),
+		  Status(Status),
+		  Description(Description)
+	{
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -44,6 +54,13 @@ struct BEAMABLECORERUNTIME_API FBeamFriendInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FGuid LobbyId;
 
+	FBeamFriendInfo() = default;
+
+	explicit FBeamFriendInfo(const FBeamGamerTag& FriendGamerTag)
+		: FriendGamerTag(FriendGamerTag)
+	{
+	}
+
 	bool operator==(const FBeamFriendInfo& Other) const
 	{
 		return Other.FriendGamerTag == FriendGamerTag;
@@ -58,6 +75,13 @@ struct BEAMABLECORERUNTIME_API FBeamPlayerBlocked
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FBeamGamerTag PlayerGamerTag;
 
+	FBeamPlayerBlocked() = default;
+
+	explicit FBeamPlayerBlocked(const FBeamGamerTag& PlayerGamerTag)
+		: PlayerGamerTag(PlayerGamerTag)
+	{
+	}
+
 	bool operator==(const FBeamPlayerBlocked& Other) const
 	{
 		return Other.PlayerGamerTag == PlayerGamerTag;
@@ -71,6 +95,13 @@ struct BEAMABLECORERUNTIME_API FBeamFriendInvite
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FBeamGamerTag FriendGamerTag;
+
+	FBeamFriendInvite() = default;
+
+	explicit FBeamFriendInvite(const FBeamGamerTag& FriendGamerTag)
+		: FriendGamerTag(FriendGamerTag)
+	{
+	}
 
 	bool operator==(const FBeamFriendInvite& Other) const
 	{
@@ -100,6 +131,18 @@ struct BEAMABLECORERUNTIME_API FBeamFriendState
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<FBeamPlayerBlocked> BlockedPlayers;
+
+	FBeamFriendState() = default;
+
+	FBeamFriendState(const FBeamGamerTag& PlayerGamerTag, const FBeamFriendPresenceStatus& Status)
+		: PlayerGamerTag(PlayerGamerTag),
+		  Status(Status)
+	{
+	}
+
+	FBeamFriendState(const FBeamGamerTag& SenderId) : PlayerGamerTag(SenderId)
+	{
+	}
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpdateFriend, FBeamGamerTag, FriendGamerTag, FUserSlot, UserSlot);

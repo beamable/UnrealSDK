@@ -1,20 +1,36 @@
 #!/bin/sh
 
-# ARG-1: Will clean up all the sandboxes
-CLEAN_SANDBOXES=${1:-false}
-# ARG-2: Will not keep the shell open after the script finishes running.
-SKIP_WAITING=${2:-false}
 
-if ! command -v dotnet >/dev/null 2>&1; then
-    echo ".NET is not installed."
-    return 1
+# ARGS LIST
+CLEAN_SANDOBOX_ARG="--clean-sandbox"
+SKIP_WAITING_ARG="--skip-waiting"
+INSTALL_MOBILE_SDK_ARG="--install-mobile-sdk"
+HELP_ARG="--help"
+
+
+# Get All arguments to ARGS variable
+ARGS=("$@")
+
+# HELP_ARG: Will show all the commands available for this SH.
+HELP=$([[ " ${ARGS[@]} " =~ " $HELP_ARG " ]] && echo true || echo false)
+
+# CLEAN_SANDOBOX_ARG: Will clean up all the sandboxes
+CLEAN_SANDBOXES=$([[ " ${ARGS[@]} " =~ " $CLEAN_SANDOBOX_ARG " ]] && echo true || echo false)
+
+# SKIP_WAITING_ARG: Will not keep the shell open after the script finishes running.
+SKIP_WAITING=$([[ " ${ARGS[@]} " =~ " $SKIP_WAITING_ARG " ]] && echo true || echo false)
+
+# INSTAL_SDK_ARG: Will install all the Mobile SDK dependencies
+INSTALL_MOBILE_SDK=$([[ " ${ARGS[@]} " =~ " $INSTALL_MOBILE_SDK_ARG " ]] && echo true || echo false)
+
+if [ $HELP == "true" ]; then
+  echo "    $CLEAN_SANDOBOX_ARG: Will clean up all the sandboxes"
+  echo "    $SKIP_WAITING_ARG: Will not keep the shell open after the script finishes running."
+  echo "    $INSTALL_MOBILE_SDK_ARG: Will install all the Mobile SDK dependencies"
+  return 1;
 fi
 
-# Verify that the dotnet tool is callable by listing installed tools
-if ! dotnet tool list >/dev/null 2>&1; then
-    echo "The dotnet tool cannot be called, which may indicate a misconfiguration. Make sure that Dotnet SDK is installed."
-    return 1
-fi
+
 
 # Install the SDK in your project
 # Find the .uproject file path and name
@@ -103,7 +119,68 @@ fi
 cd "Microservices" || exit 
 dotnet restore
 cd ..
- 
+
+
+# Check if the user is running as Administrator
+net session > /dev/null 2>&1
+
+if [ $? -eq 0 ] && [ $INSTALL_MOBILE_SDK = "true" ]; then
+    
+    if [ $INSTALL_MOBILE_SDK = 'true' ] && [ $UPROJECT_PATH ]; then
+      echo "INSTALLING MOBILE SDK"
+      # Extract the version directly from the .uproject file using grep and sed
+      ENGINE_VERSION=$(grep -o '"EngineVersion": *"[^"]*"' "$UPROJECT_PATH" | sed -E 's/.*"EngineVersion": *"([^"]+)".*/\1/')
+
+      # If EngineVersion is not found, try to get EngineAssociation
+      if [ -z "$ENGINE_VERSION" ]; then
+          ENGINE_VERSION=$(grep -o '"EngineAssociation": *"[^"]*"' "$UPROJECT_PATH" | sed -E 's/.*"EngineAssociation": *"([^"]+)".*/\1/')
+      fi
+
+      # If neither EngineVersion nor EngineAssociation is found, set to unknown
+      if [ -z "$ENGINE_VERSION" ]; then
+          ENGINE_VERSION="unkown"
+      fi
+
+      echo "ENGINE VERSION $ENGINE_VERSION"
+
+      if ! [ $ENGINE_VERSION = 'unknown' ]; then
+
+        KEY="HKLM\\SOFTWARE\\EpicGames\\Unreal Engine\\${ENGINE_VERSION}"
+       
+        ENGINE_PATH=$(reg query "$KEY" | awk -F'    ' '/InstalledDirectory/ {print $NF}')
+
+        if [ -z "$ENGINE_PATH" ]; then
+            echo "Unreal Engine $ENGINE_VERSION not found in registry."
+        else
+            echo "Unreal Engine $ENGINE_VERSION is installed at: $ENGINE_PATH"
+        fi
+
+        # Check if the engine path exists
+        if [ -d "$ENGINE_PATH" ]; then
+              
+              BAT_PATH_FILE="${ENGINE_PATH}\\Engine\\Build\\BatchFiles\\RunUAT.bat"
+
+              output=$(start cmd.exe //k " "${BAT_PATH_FILE}" Turnkey -Command=InstallSDK Platform=Android")
+        else
+              echo "Engine version $ENGINE_VERSION not found in expected locations."
+        fi
+      fi
+    fi
+else
+  echo "WARNING: You are NOT running as Administrator! It's required to SDK install."
+fi
+
+if ! command -v dotnet >/dev/null 2>&1; then
+    echo ".NET is not installed."
+    return 1
+fi
+
+# Verify that the dotnet tool is callable by listing installed tools
+if ! dotnet tool list >/dev/null 2>&1; then
+    echo "The dotnet tool cannot be called, which may indicate a misconfiguration. Make sure that Dotnet SDK is installed."
+    return 1
+fi
+
 
 if [ $SKIP_WAITING = 'false' ]; then
   echo "Prepare Repo finished executing. Press any key to exit."
