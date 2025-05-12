@@ -16,10 +16,10 @@ struct BEAMABLECORERUNTIME_API FBeamRankEntry
 	FBeamGamerTag PlayerGamerTag;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int64 Rank;
+	int64 Rank = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	double Score;
+	double Score = 0.0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FString, FString> Stats;
@@ -64,7 +64,10 @@ struct BEAMABLECORERUNTIME_API FBeamLeaderboardView
 	TArray<FBeamRankEntry> RankEntries;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int64 BoardSize;
+	TMap<FBeamGamerTag, int32> FocusedEntries;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int64 BoardSize = 0;
 };
 
 USTRUCT(BlueprintType)
@@ -103,8 +106,6 @@ class BEAMABLECORERUNTIME_API UBeamLeaderboardsSubsystem : public UBeamRuntimeSu
 	UBeamLeaderboardsApi* LeaderboardsApi;
 
 	TMap<FString, FString> AssignmentLeaderboardCache;
-
-	TMap<FBeamGamerTag, TMap<FString, FBeamPlayerLeaderboardView>> PlayerLeaderboardsCache;
 
 	TMap<FString, FBeamLeaderboardView> LeaderboardsCache;
 
@@ -153,6 +154,138 @@ public:
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
 	bool TryReleasePageRankEntries(FString LeaderboardId, int PageSize, int Page);
 
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle FetchAssignmentOperation(FUserSlot UserSlot, FString LeaderboardId, bool Join,
+	                                              FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc FetchAssignmentOperation
+	 */
+	FBeamOperationHandle CPP_FetchAssignmentOperation(FUserSlot UserSlot, FString LeaderboardId, bool Join,
+	                                                  FBeamOperationEventHandlerCode OnOperationEvent);
+
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle FetchLeaderboardOperation(FUserSlot UserSlot, FString LeaderboardId, int From, int Max,
+	                                               FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc FetchLeaderboardOperation
+	 */
+	FBeamOperationHandle CPP_FetchLeaderboardOperation(FUserSlot UserSlot, FString LeaderboardId, int From, int Max,
+	                                                   FBeamOperationEventHandlerCode OnOperationEvent);
+
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle FetchLeaderboardPageOperation(FUserSlot UserSlot, FString LeaderboardId, int PageSize, int StartPage, int LastPage,
+	                                                   FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc FetchLeaderboardPageOperation
+	 */
+	FBeamOperationHandle CPP_FetchLeaderboardPageOperation(FUserSlot UserSlot, FString LeaderboardId, int PageSize, int StartPage, int LastPage,
+	                                                       FBeamOperationEventHandlerCode OnOperationEvent);
+
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle FetchLeaderboardFocusPlayerOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag FocusPlayer, int Max, FOptionalBeamGamerTag Outlier,
+	                                                          FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc FetchLeaderboardFocusPlayerOperation
+	 */
+	FBeamOperationHandle CPP_FetchLeaderboardFocusPlayerOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag FocusPlayer, int Max, FOptionalBeamGamerTag Outlier,
+	                                                              FBeamOperationEventHandlerCode OnOperationEvent);
+
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle FetchAssignedLeaderboardOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, int From, int Max,
+	                                                       FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc FetchAssignedLeaderboardOperation
+	 */
+	FBeamOperationHandle CPP_FetchAssignedLeaderboardOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, int From, int Max,
+	                                                           FBeamOperationEventHandlerCode OnOperationEvent);
+
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle FetchAssignedLeaderboardFocusPlayerOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, FBeamGamerTag FocusPlayer, int Max, FOptionalBeamGamerTag Outlier,
+	                                                                  FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc FetchAssignedLeaderboardFocusPlayerOperation
+	 */
+	FBeamOperationHandle CPP_FetchAssignedLeaderboardFocusPlayerOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, FBeamGamerTag FocusPlayer, int Max, FOptionalBeamGamerTag Outlier,
+	                                                                      FBeamOperationEventHandlerCode OnOperationEvent);
+
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle FetchPlayerLeaderboardsOperation(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
+	                                                      FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc FetchPlayerLeaderboardsOperation
+	 */
+	FBeamOperationHandle CPP_FetchPlayerLeaderboardsOperation(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
+	                                                          FBeamOperationEventHandlerCode OnOperationEvent);
+
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle FetchPlayerRankOperation(FUserSlot UserSlot, FString LeaderboardId, TArray<FBeamGamerTag> PlayersGamerTag,
+	                                              FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc FetchPlayerRankOperation
+	 */
+	FBeamOperationHandle CPP_FetchPlayerRankOperation(FUserSlot UserSlot, FString LeaderboardId, TArray<FBeamGamerTag> PlayersGamerTag,
+	                                                  FBeamOperationEventHandlerCode OnOperationEvent);
+
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle FetchFriendsRanksOperation(FUserSlot UserSlot, FString LeaderboardId,
+	                                                FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc FetchFriendsRanksOperation
+	 */
+	FBeamOperationHandle CPP_FetchFriendsRanksOperation(FUserSlot UserSlot, FString LeaderboardId,
+	                                                    FBeamOperationEventHandlerCode OnOperationEvent);
+
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle UpdateLeaderboardScoreOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, TMap<FString, FString> Stats,
+	                                                     FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc UpdateLeaderboardScoreOperation
+	 */
+	FBeamOperationHandle CPP_UpdateLeaderboardScoreOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, TMap<FString, FString> Stats,
+	                                                         FBeamOperationEventHandlerCode OnOperationEvent);
+
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle IncrementLeaderboardScoreOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, TMap<FString, FString> Stats,
+	                                                        FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc IncrementLeaderboardScoreOperation
+	 */
+	FBeamOperationHandle CPP_IncrementLeaderboardScoreOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, TMap<FString, FString> Stats,
+	                                                            FBeamOperationEventHandlerCode OnOperationEvent);
+
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle FreezeLeaderboardOperation(FUserSlot UserSlot, FString LeaderboardId,
+	                                                FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc IncrementLeaderboardScoreOperation
+	 */
+	FBeamOperationHandle CPP_FreezeLeaderboardOperation(FUserSlot UserSlot, FString LeaderboardId,
+	                                                    FBeamOperationEventHandlerCode OnOperationEvent);
+
 protected:
 	// Async Operations
 
@@ -166,11 +299,11 @@ protected:
 
 	void FetchAssignedLeaderboard(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, int From, int Max, FBeamOperationHandle Op);
 
-	void FetchAssignedLeaderboard(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, FBeamGamerTag FocusPlayer, int Max, FOptionalBeamGamerTag Outlier, FBeamOperationHandle Op);
+	void FetchAssignedLeaderboard(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag FocusPlayer, int Max, FOptionalBeamGamerTag Outlier, FBeamOperationHandle Op);
 
 	void FetchPlayerLeaderboards(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, FBeamOperationHandle Op);
 
-	void FetchPlayerRanks(FUserSlot UserSlot, FString LeaderboardId, TArray<FBeamGamerTag> PlayersGamerTag, FBeamOperationHandle Op);
+	void FetchPlayerRank(FUserSlot UserSlot, FString LeaderboardId, TArray<FBeamGamerTag> PlayersGamerTag, FBeamOperationHandle Op);
 
 	void FetchFriendsRanks(FUserSlot UserSlot, FString LeaderboardId, FBeamOperationHandle Op);
 
