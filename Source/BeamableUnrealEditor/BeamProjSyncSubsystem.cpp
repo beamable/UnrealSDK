@@ -264,7 +264,12 @@ void UBeamProjSyncSubsystem::OnContentSaved(FBeamContentManifestId ManifestId, F
 	GetPaths(BeamableContentDir(), WatchDir, TargetDir, AbsWatchDir, AbsTargetDir);
 
 	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-	if (PlatformFile.CopyDirectoryTree(*AbsTargetDir, *AbsWatchDir, true))
+
+	if (PlatformFile.DirectoryExists(*AbsTargetDir))
+		PlatformFile.DeleteDirectoryRecursively(*AbsTargetDir);
+
+	bool bSuccess = CopyDirectoryRecursive(AbsWatchDir, AbsTargetDir);
+	if (bSuccess)
 	{
 		UE_LOG(LogTemp, Display, TEXT("Keeping BEAMPROJ in Sync. BEAMPROJ=%s WATCH_DIR=%s, TARGET_DIR=%s"), *ActiveBeamProj, *AbsWatchDir, *AbsTargetDir);
 	}
