@@ -67,7 +67,7 @@ bool UBeamLeaderboardsSubsystem::TryGetLeaderboard(FString LeaderboardId, FBeamL
 	return true;
 }
 
-bool UBeamLeaderboardsSubsystem::TryGetPlayerRankEntry(FString LeaderboardId, FBeamGamerTag Player, FBeamRankEntry& PlayerRankEntry)
+bool UBeamLeaderboardsSubsystem::TryGetPlayerRankEntry(FString LeaderboardId, FBeamGamerTag PlayerGamerTag, FBeamRankEntry& PlayerRankEntry)
 {
 	//Return last player if false
 	if (!LeaderboardsCache.Contains(LeaderboardId))
@@ -77,9 +77,9 @@ bool UBeamLeaderboardsSubsystem::TryGetPlayerRankEntry(FString LeaderboardId, FB
 
 	// Get all the leaderboards that the player are in.
 
-	if (LeaderboardsCache[LeaderboardId].FocusedEntries.Contains(Player))
+	if (LeaderboardsCache[LeaderboardId].FocusedEntries.Contains(PlayerGamerTag))
 	{
-		int32 RankIndex = LeaderboardsCache[LeaderboardId].FocusedEntries[Player];
+		int32 RankIndex = LeaderboardsCache[LeaderboardId].FocusedEntries[PlayerGamerTag];
 		PlayerRankEntry = LeaderboardsCache[LeaderboardId].RankEntries[RankIndex];
 		return true;
 	}
@@ -102,6 +102,66 @@ bool UBeamLeaderboardsSubsystem::TryGetAllRankEntries(FString LeaderboardId, TAr
 	return true;
 }
 
+void UBeamLeaderboardsSubsystem::TryGetRankEntriesRange(FString LeaderboardId, int From, int Max, TArray<FBeamRankEntry>& RankEntries)
+{
+	if (!LeaderboardsCache.Contains(LeaderboardId))
+	{
+		return;
+	}
+	auto LeaderboardView = LeaderboardsCache[LeaderboardId];
+
+	int32 LastRank = From + Max;
+	int32 StartRank = From;
+
+	RankEntries.Reset();
+	for (int32 i = 0; i < LeaderboardView.RankEntries.Num(); i++)
+	{
+		if (LeaderboardView.RankEntries[i].Rank > LastRank)
+		{
+			break;
+		}
+		if (LeaderboardView.RankEntries[i].Rank >= StartRank)
+		{
+			RankEntries.Add(LeaderboardView.RankEntries[i]);
+		}
+	}
+}
+
+bool UBeamLeaderboardsSubsystem::TryGetFocusRankEntries(FString LeaderboardId, int StartEntriesSize, FBeamGamerTag FocusEntryGamerTag, int LastEntriesSize, TArray<FBeamRankEntry>& StartEntries,
+                                                        FBeamRankEntry& FocusEntry,
+                                                        TArray<FBeamRankEntry>& LastEntries)
+{
+	if (!LeaderboardsCache.Contains(LeaderboardId))
+	{
+		return false;
+	}
+
+	auto LeaderboardView = LeaderboardsCache[LeaderboardId];
+
+	StartEntries.Reset();
+	LastEntries.Reset();
+
+	for (int32 i = 0; i < LeaderboardView.RankEntries.Num(); i++)
+	{
+		FBeamRankEntry Item = LeaderboardView.RankEntries[i];
+		if (i < StartEntriesSize)
+		{
+			StartEntries.Add(Item);
+		}
+
+		if (FocusEntryGamerTag == Item.PlayerGamerTag)
+		{
+			FocusEntry = Item;
+		}
+
+		if (i > LeaderboardView.RankEntries.Num() - LastEntriesSize)
+		{
+			LastEntries.Add(Item);
+		}
+	}
+	return true;
+}
+
 bool UBeamLeaderboardsSubsystem::TryReleaseRankEntries(FString LeaderboardId, int From, int Max)
 {
 	if (!LeaderboardsCache.Contains(LeaderboardId))
@@ -118,7 +178,7 @@ bool UBeamLeaderboardsSubsystem::TryReleaseRankEntries(FString LeaderboardId, in
 	return false;
 }
 
-bool UBeamLeaderboardsSubsystem::TryGetPlayerPageInfo(FString LeaderboardId, FBeamGamerTag Player, int PageSize, FBeamRankEntry& PlayerRankEntry, int& PlayerPage)
+bool UBeamLeaderboardsSubsystem::TryGetPlayerPageInfo(FString LeaderboardId, FBeamGamerTag PlayerGamerTag, int PageSize, FBeamRankEntry& PlayerRankEntry, int& PlayerPage)
 {
 	if (!LeaderboardsCache.Contains(LeaderboardId))
 	{
@@ -127,11 +187,11 @@ bool UBeamLeaderboardsSubsystem::TryGetPlayerPageInfo(FString LeaderboardId, FBe
 
 	auto LeaderboardView = LeaderboardsCache[LeaderboardId];
 
-	if (!LeaderboardView.FocusedEntries.Contains(Player))
+	if (!LeaderboardView.FocusedEntries.Contains(PlayerGamerTag))
 	{
 		return false;
 	}
-	int32 RankIndex = LeaderboardView.FocusedEntries[Player];
+	int32 RankIndex = LeaderboardView.FocusedEntries[PlayerGamerTag];
 
 	PlayerRankEntry = LeaderboardsCache[LeaderboardId].RankEntries[RankIndex];
 
@@ -190,14 +250,14 @@ bool UBeamLeaderboardsSubsystem::TryReleasePageRankEntries(FString LeaderboardId
 	return true;
 }
 
-FBeamOperationHandle UBeamLeaderboardsSubsystem::FetchAssignmentOperation(FUserSlot UserSlot, FString LeaderboardId, bool Join, FBeamOperationEventHandler OnOperationEvent)
+FBeamOperationHandle UBeamLeaderboardsSubsystem::LeaderboardAssignmentOperation(FUserSlot UserSlot, FString LeaderboardId, bool Join, FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
 	FetchAssignment(UserSlot, LeaderboardId, Join, Handle);
 	return Handle;
 }
 
-FBeamOperationHandle UBeamLeaderboardsSubsystem::CPP_FetchAssignmentOperation(FUserSlot UserSlot, FString LeaderboardId, bool Join, FBeamOperationEventHandlerCode OnOperationEvent)
+FBeamOperationHandle UBeamLeaderboardsSubsystem::CPP_LeaderboardAssignmentOperation(FUserSlot UserSlot, FString LeaderboardId, bool Join, FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
 	FetchAssignment(UserSlot, LeaderboardId, Join, Handle);

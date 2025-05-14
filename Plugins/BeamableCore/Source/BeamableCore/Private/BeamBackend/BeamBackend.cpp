@@ -86,7 +86,7 @@ bool UBeamBackend::IsInPIE() const
 	return bIsInPIE;
 }
 
-FString UBeamBackend::GetProjectBuildVersion() const
+FString UBeamBackend::GetProjectAppVersion() const
 {
 	FString AppVersion;
 	GConfig->GetString(
@@ -215,7 +215,7 @@ void UBeamBackend::PrepareBeamableRequestToRealm(const TUnrealRequestPtr& Unreal
 
 	UnrealRequest->SetHeader(HEADER_BEAMABLE_VERSION, BeamEnvironment->Data->Version.ToString());
 	UnrealRequest->SetHeader(HEADER_UNREAL_VERSION, FEngineVersion::Current().ToString());
-	UnrealRequest->SetHeader(HEADER_APPLICATION_VERSION, GetProjectBuildVersion());
+	UnrealRequest->SetHeader(HEADER_APPLICATION_VERSION, GetProjectAppVersion());
 
 
 	const auto Cid = RealmHandle.Cid;

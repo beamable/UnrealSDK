@@ -125,45 +125,159 @@ public:
 		return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamLeaderboardsSubsystem>();
 	}
 
-
+	/**
+	 * @brief Attempts to retrieve the local leaderboard state for a specific leaderboard.
+	 *
+	 * Please make sure to fetch the information before try to get it.
+	 *
+	 * @param LeaderboardId: The target leaderboard id.
+	 * @param LeaderboardView: The leaderboard output state.
+	 *
+	 * @return Returns False if the user don't have the leaderboard state initialized or if it's not possible to retrieve the data.
+	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetLeaderboard(FString LeaderboardId, FBeamLeaderboardView& LeaderboardView);
 
+	/**
+	 * @brief Attempts to retrieve the local player state for a specific leaderboard.
+	 *
+	 * Please make sure to fetch the information before try to get it.
+	 *
+	 * @param LeaderboardId: The target leaderboard id.
+	 * @param PlayerGamerTag: The target player gamer tag.
+	 * @param PlayerRankEntry: The output player entry to get from the leaderboard.
+	 *
+	 * @return Returns False if the user don't have the leaderboard state initialized or if it's not possible to retrieve the data.
+	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetPlayerRankEntry(FString LeaderboardId, FBeamGamerTag Player, FBeamRankEntry& PlayerRankEntry);
+	bool TryGetPlayerRankEntry(FString LeaderboardId, FBeamGamerTag PlayerGamerTag, FBeamRankEntry& PlayerRankEntry);
 
+	/**
+	 * @brief Attempts to retrieve the local all the rank entries for a specific leaderboard.
+	 *
+	 * Please make sure to fetch the information before try to get it.
+	 *
+	 * @param LeaderboardId: The target leaderboard id.
+	 * @param RankEntries: The output rank entries.
+	 *
+	 * @return Returns False if the user don't have the leaderboard state initialized or if it's not possible to retrieve the data.
+	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetAllRankEntries(FString LeaderboardId, TArray<FBeamRankEntry>& RankEntries);
 
+	/**
+	 * @brief Attempts to retrieve the local all the rank entries for a specific leaderboard.
+	 *
+	 * Please make sure to fetch the information before try to get it.
+	 *
+	 * @param LeaderboardId: The target leaderboard id.
+	 * @param From: The start rank to get (Inclusive).
+	 * @param Max: The amount of entries (Inclusive). Obs: If you fetch less than the max amount it will return the possible entries.
+	 * @param RankEntries: The output rank entries.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	void TryGetRankEntriesRange(FString LeaderboardId, int From, int Max, TArray<FBeamRankEntry>& RankEntries);
+
+
+	/**
+	 * @brief This is a utility that cover a case of get some entries from the beginning and ending of the leaderboard. And show the position of the player in between.
+	 *
+	 * Please make sure to fetch the information before try to get it.
+	 *
+	 * @param LeaderboardId: The target leaderboard id.
+	 * @param StartEntriesSize: The entries that is in the range of the rank 1 to StartEntriesSize will be returned.
+	 * @param StartEntries: The output for the start entries.
+	 * @param FocusEntryGamerTag: The Focus entry gamer tage.
+	 * @param FocusEntry: The output for the focus entry.
+	 * @param LastEntriesSize: The entries that is in the range of the rank last rank entry to LastEntriesSize will be returned.
+	 * @param LastEntries: The output for the last entries.
+	 *
+	 * @return Returns False if the user don't have the leaderboard state initialized or if it's not possible to retrieve the data.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetFocusRankEntries(FString LeaderboardId, int StartEntriesSize, FBeamGamerTag FocusEntryGamerTag, int LastEntriesSize, TArray<FBeamRankEntry>& StartEntries, FBeamRankEntry& FocusEntry,
+	                            TArray<FBeamRankEntry>& LastEntries);
+	
+	/**
+	 * @brief Attempts release the local rank entries for a specific leaderboard in a given range.
+	 *
+	 * @param LeaderboardId: The target leaderboard id.
+	 * @param From: The start rank to get (Inclusive).
+	 * @param Max: The amount of entries (Inclusive). Obs: If you fetch less than the max amount it will return the possible entries.
+	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
 	bool TryReleaseRankEntries(FString LeaderboardId, int From, int Max);
 
+
+	/**
+	 * @brief Attempts to retrieve the page info of a player entry.
+	 *
+	 * Please make sure to fetch the information before try to get it.
+	 *
+	 * @param LeaderboardId: The target leaderboard id.
+	 * @param PlayerGamerTag: the target player gamer tag.
+	 * @param PageSize: Tha page size for the leaderboard pagination.
+	 * @param PlayerRankEntry: The output of the player rank entry.
+	 * @param PlayerPage: The output for which page the player currently are.
+	 *
+	 * @return Returns False if the user don't have the leaderboard state initialized or if it's not possible to retrieve the data.
+	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetPlayerPageInfo(FString LeaderboardId, FBeamGamerTag Player, int PageSize, FBeamRankEntry& PlayerRankEntry, int& PlayerPage);
+	bool TryGetPlayerPageInfo(FString LeaderboardId, FBeamGamerTag PlayerGamerTag, int PageSize, FBeamRankEntry& PlayerRankEntry, int& PlayerPage);
 
+	/**
+	 * @brief Attempts to retrieve all the entries for a specific leaderboard page.
+	 *
+	 * Please make sure to fetch the information before try to get it.
+	 *
+	 * @param LeaderboardId: The target leaderboard id.
+	 * @param PageSize: the size of each leaderboard page.
+	 * @param Page: The target page to retrive the entries.
+	 * @param RankEntries: The output of all entries for the page.
+	 * @param CachedEntriesCount: The output for the current cached entries.
+	 * @param TotalPages: The output for the total of pages in the leaderboard (not only the cached).
+	 *
+	 * @return Returns False if the user don't have the leaderboard state initialized or if it's not possible to retrieve the data.
+	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetPageRankEntries(FString LeaderboardId, int PageSize, int Page, TArray<FBeamRankEntry>& RankEntries, int& CachedEntriesCount, int& TotalPages);
 
+	/**
+	 * @brief Attempts to release all the entries for a specific leaderboard page.
+	 *
+	 * Please make sure to fetch the information before try to get it.
+	 *
+	 * @param LeaderboardId: The target leaderboard id.
+	 * @param PageSize: the size of each leaderboard page.
+	 * @param Page: The target page to release the entries.
+	 *
+	 * @return Returns False if the user don't have the leaderboard state initialized or if it's not possible to retrieve the data.
+	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
 	bool TryReleasePageRankEntries(FString LeaderboardId, int PageSize, int Page);
 
+
+	// Operations
+	
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle FetchAssignmentOperation(FUserSlot UserSlot, FString LeaderboardId, bool Join,
-	                                              FBeamOperationEventHandler OnOperationEvent);
+	FBeamOperationHandle LeaderboardAssignmentOperation(FUserSlot UserSlot, FString LeaderboardId, bool Join,
+	                                                    FBeamOperationEventHandler OnOperationEvent);
 
 	/**
-	 * @copydoc FetchAssignmentOperation
+	 * @copydoc LeaderboardAssignmentOperation
 	 */
-	FBeamOperationHandle CPP_FetchAssignmentOperation(FUserSlot UserSlot, FString LeaderboardId, bool Join,
-	                                                  FBeamOperationEventHandlerCode OnOperationEvent);
+	FBeamOperationHandle CPP_LeaderboardAssignmentOperation(FUserSlot UserSlot, FString LeaderboardId, bool Join,
+	                                                        FBeamOperationEventHandlerCode OnOperationEvent);
 
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))

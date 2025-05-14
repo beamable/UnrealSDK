@@ -268,7 +268,7 @@ public:
 	bool IsInPIE() const;
 
 	/** Returns the current project build version from the ini file.  */
-	FString GetProjectBuildVersion() const;
+	FString GetProjectAppVersion() const;
 
 	/*
 	  _____                            _         __  _____                                      

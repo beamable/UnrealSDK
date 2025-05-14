@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AutoGen/Optionals/OptionalBool.h"
+#include "AutoGen/Optionals/OptionalCatalog.h"
 #include "AutoGen/Optionals/OptionalInt32.h"
 #include "AutoGen/Optionals/OptionalLeaderboardCohortSettings.h"
 #include "BeamBackend/ReplacementTypes/BeamClientPermission.h"
@@ -22,7 +23,10 @@ public:
 	UFUNCTION()
 	void GetContentType_UBeamLeaderboardContent(FString& Result);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	/**
+	 * Allow the clients to modify they own entries in the leaderboard
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Client Permission")
 	FBeamClientPermission permissions;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
