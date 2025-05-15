@@ -64,7 +64,7 @@ struct BEAMABLECORERUNTIME_API FBeamLeaderboardView
 	TArray<FBeamRankEntry> RankEntries;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TMap<FBeamGamerTag, int32> FocusedEntries;
+	TMap<FBeamGamerTag, int32> PlayerEntriesCache;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int64 BoardSize = 0;
@@ -202,7 +202,7 @@ public:
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
 	bool TryGetFocusRankEntries(FString LeaderboardId, int StartEntriesSize, FBeamGamerTag FocusEntryGamerTag, int LastEntriesSize, TArray<FBeamRankEntry>& StartEntries, FBeamRankEntry& FocusEntry,
 	                            TArray<FBeamRankEntry>& LastEntries);
-	
+
 	/**
 	 * @brief Attempts release the local rank entries for a specific leaderboard in a given range.
 	 *
@@ -242,13 +242,15 @@ public:
 	 * @param Page: The target page to retrive the entries.
 	 * @param RankEntries: The output of all entries for the page.
 	 * @param CachedEntriesCount: The output for the current cached entries.
+	 * @param LastPageCached: The output for the number of the last cached page.
+	 * @param FirstPageCached: The output for the number of the first cached page.
 	 * @param TotalPages: The output for the total of pages in the leaderboard (not only the cached).
 	 *
 	 * @return Returns False if the user don't have the leaderboard state initialized or if it's not possible to retrieve the data.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetPageRankEntries(FString LeaderboardId, int PageSize, int Page, TArray<FBeamRankEntry>& RankEntries, int& CachedEntriesCount, int& TotalPages);
+	bool TryGetPageRankEntries(FString LeaderboardId, int PageSize, int Page, TArray<FBeamRankEntry>& RankEntries, int& CachedEntriesCount, int& FirstPageCached, int& LastPageCached, int& TotalPages);
 
 	/**
 	 * @brief Attempts to release all the entries for a specific leaderboard page.
@@ -267,7 +269,7 @@ public:
 
 
 	// Operations
-	
+
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle LeaderboardAssignmentOperation(FUserSlot UserSlot, FString LeaderboardId, bool Join,
@@ -311,6 +313,17 @@ public:
 	 */
 	FBeamOperationHandle CPP_FetchLeaderboardFocusPlayerOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag FocusPlayer, int Max, FOptionalBeamGamerTag Outlier,
 	                                                              FBeamOperationEventHandlerCode OnOperationEvent);
+
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle FetchUserSlotAssignedLeaderboardOperation(FUserSlot UserSlot, FString LeaderboardId, int From, int Max,
+	                                                               FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc FetchUserSlotAssignedLeaderboardOperation
+	 */
+	FBeamOperationHandle CPP_FetchUserSlotAssignedLeaderboardOperation(FUserSlot UserSlot, FString LeaderboardId, int From, int Max,
+	                                                                   FBeamOperationEventHandlerCode OnOperationEvent);
 
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
@@ -430,9 +443,9 @@ protected:
 
 	// Utils
 
-	long GetLeaderboardPage(int PageSize, long Rank);
+	static int64 GetLeaderboardPage(int PageSize, long Rank);
 
-	void GetLeaderboardPageRange(int PageSize, long Page, long& StartPageRank, long& LastPageRank);
+	static void GetLeaderboardPageRange(int PageSize, long Page, long& StartPageRank, long& LastPageRank);
 
 	FBeamLeaderboardView GetLeaderboardView(ULeaderBoardView* LeaderBoard);
 
@@ -440,5 +453,7 @@ protected:
 
 	void UpdateLeaderboardCache(FBeamLeaderboardView LeaderboardView);
 
-	void UpdatePlayerLeaderboardCache(FBeamLeaderboardView LeaderboardView, const FBeamGamerTag& PlayerGamerTag);
+	void UpdatePlayerEntriesLeaderboardCache(const FString& LeaderboardId, const FBeamGamerTag& PlayerGamerTag);
+
+	void UpdatePlayerEntriesLeaderboardCache(const FString& LeaderboardId);
 };

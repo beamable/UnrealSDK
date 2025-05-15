@@ -259,6 +259,24 @@ class UK2BeamNode_Operation_FetchLeaderboardFocusPlayerOperation : public UK2Bea
 
 #undef LOCTEXT_NAMESPACE
 
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_FetchUserSlotAssignedLeaderboardOperation"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamNode_Operation_FetchUserSlotAssignedLeaderboardOperation : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Leaderboards - FetchUserSlotAssignedLeaderboardOperation"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
+
+	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, FetchUserSlotAssignedLeaderboardOperation); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
 #define LOCTEXT_NAMESPACE "K2BeamNode_Operation_FetchAssignedLeaderboardOperation"
 
 UCLASS(meta=(BeamFlowNode))

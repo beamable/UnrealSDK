@@ -79,12 +79,6 @@ void UK2BeamNode_GetLocalState::ExpandNode(FKismetCompilerContext& CompilerConte
 	const UK2Node_CallFunction* CallFunction = BeamK2::CreateCallFunctionNode(this, CompilerContext, SourceGraph, GetFunctionName(), GetRuntimeSubsystemClass());
 
 
-	// Check if there's only one input execute pin
-	const auto ExecutionPin = K2Schema->FindExecutionPin(*this, EGPD_Input);
-	if (ExecutionPin->LinkedTo.Num() > 1)
-		CompilerContext.MessageLog.Error(TEXT("@@ has more than one input! Beam Flow nodes do not allow that!"), this);
-
-
 	// Connects the result of the "static BeamApi::GetSelf" call to the "non-static RuntimeSubsystem::___function" Call Function node.
 	BeamK2::SetUpPinsFunctionToOwnerSubsystem(CallGetSubsystem, CallFunction);
 
