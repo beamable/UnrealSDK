@@ -89,10 +89,10 @@ class UK2BeamNode_GetLocalStateForeach_TryGetRankEntriesRange : public UK2BeamNo
 
 #undef LOCTEXT_NAMESPACE
 
-#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_TryGetFocusRankEntries"
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalStateForeach_TryGetFocusRankEntries"
 
-UCLASS(meta=(BeamGetLocalState))
-class UK2BeamNode_GetLocalState_TryGetFocusRankEntries : public UK2BeamNode_GetLocalState
+UCLASS(meta=(BeamGetLocalStateForeach))
+class UK2BeamNode_GetLocalStateForeach_TryGetFocusRankEntries : public UK2BeamNode_GetLocalStateForeach
 {
 	GENERATED_BODY()
 
@@ -235,6 +235,24 @@ class UK2BeamNode_Operation_FetchAssignmentOperation : public UK2BeamNode_Operat
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetLeaderboardAssignmentOperation); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_FetchFocusRankEntriesOperation"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamNode_Operation_FetchFocusRankEntriesOperation : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Leaderboards - FetchFocusRankEntriesOperation"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
+
+	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, FetchFocusRankEntriesOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
 };

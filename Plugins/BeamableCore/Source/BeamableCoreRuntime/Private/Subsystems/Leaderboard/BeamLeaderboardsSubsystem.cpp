@@ -122,9 +122,8 @@ void UBeamLeaderboardsSubsystem::TryGetRankEntriesRange(FString LeaderboardId, i
 	}
 }
 
-bool UBeamLeaderboardsSubsystem::TryGetFocusRankEntries(FString LeaderboardId, int StartEntriesSize, FBeamGamerTag FocusEntryGamerTag, int LastEntriesSize, TArray<FBeamRankEntry>& StartEntries,
-                                                        FBeamRankEntry& FocusEntry,
-                                                        TArray<FBeamRankEntry>& LastEntries)
+bool UBeamLeaderboardsSubsystem::TryGetFocusRankEntries(FString LeaderboardId, int StartEntriesSize, FBeamGamerTag FocusEntryGamerTag, int LastEntriesSize, TArray<FBeamRankEntry>& Entries,
+                                                        FBeamRankEntry& FocusEntry)
 {
 	if (!LeaderboardsCache.Contains(LeaderboardId))
 	{
@@ -133,31 +132,34 @@ bool UBeamLeaderboardsSubsystem::TryGetFocusRankEntries(FString LeaderboardId, i
 
 	auto LeaderboardView = LeaderboardsCache[LeaderboardId];
 
-	StartEntries.Reset();
-	LastEntries.Reset();
+	Entries.Reset();
 
 	bool FoundFocusEntry = false;
 
+
 	for (int32 i = 0; i < LeaderboardView.RankEntries.Num(); i++)
 	{
+		bool IsStartEntry = false;
 		FBeamRankEntry Item = LeaderboardView.RankEntries[i];
 
-		if (i < StartEntriesSize)
+		if (i < StartEntriesSize && FocusEntryGamerTag != Item.PlayerGamerTag)
 		{
 			// Adding all the entries below the StartEntriesSize
-			StartEntries.Add(Item);
+			Entries.Add(Item);
+			IsStartEntry = true;
 		}
 
 		if (FocusEntryGamerTag == Item.PlayerGamerTag)
 		{
 			FocusEntry = Item;
 			FoundFocusEntry = true;
+			Entries.Add(Item);
 		}
 
-		if (i > LeaderboardView.RankEntries.Num() - LastEntriesSize)
+		if (i >= LeaderboardView.RankEntries.Num() - LastEntriesSize && FocusEntryGamerTag != Item.PlayerGamerTag && !IsStartEntry)
 		{
 			// Adding all the entries below the above the Lenght - LastEntriesSize
-			LastEntries.Add(Item);
+			Entries.Add(Item);
 		}
 	}
 	// If don't found any focus entry it will return false
@@ -327,6 +329,22 @@ FBeamOperationHandle UBeamLeaderboardsSubsystem::CPP_LeaderboardAssignmentOperat
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
 	FetchAssignment(UserSlot, LeaderboardId, Join, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamLeaderboardsSubsystem::FetchFocusRankEntriesOperation(FUserSlot UserSlot, FString LeaderboardId, int StartEntriesSize, FBeamGamerTag FocusEntryGamerTag, int LastEntriesSize,
+                                                                                FBeamOperationEventHandler OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	FetchFocusRankEntries(UserSlot, LeaderboardId, StartEntriesSize, FocusEntryGamerTag, LastEntriesSize, Handle);
+	return Handle;
+}
+
+FBeamOperationHandle UBeamLeaderboardsSubsystem::CPP_FetchFocusRankEntriesOperation(FUserSlot UserSlot, FString LeaderboardId, int StartEntriesSize, FBeamGamerTag FocusEntryGamerTag, int LastEntriesSize,
+                                                                                    FBeamOperationEventHandlerCode OnOperationEvent)
+{
+	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
+	FetchFocusRankEntries(UserSlot, LeaderboardId, StartEntriesSize, FocusEntryGamerTag, LastEntriesSize, Handle);
 	return Handle;
 }
 
@@ -583,6 +601,46 @@ void UBeamLeaderboardsSubsystem::FetchLeaderboard(FUserSlot UserSlot, FString Le
 	FBeamRequestContext Ctx;
 
 	LeaderboardsApi->CPP_GetView(UserSlot, Request, Handle, Ctx, Op, this);
+}
+
+void UBeamLeaderboardsSubsystem::FetchFocusRankEntries(FUserSlot UserSlot, FString LeaderboardId, int StartEntriesSize, FBeamGamerTag FocusEntryGamerTag, int LastEntriesSize, FBeamOperationHandle Op)
+{
+	auto FetchStartEntriesHandle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetName(), FBeamOperationEventHandlerCode::CreateLambda(
+		                                                                                 [this, Op, LeaderboardId, StartEntriesSize, UserSlot, LastEntriesSize, FocusEntryGamerTag](FBeamOperationEvent Evt)
+		                                                                                 {
+			                                                                                 if (Evt.EventType == OET_SUCCESS)
+			                                                                                 {
+				                                                                                 FBeamLeaderboardView LeaderboardView;
+				                                                                                 if (TryGetLeaderboard(LeaderboardId, LeaderboardView))
+				                                                                                 {
+					                                                                                 auto FetchLastEntriesHandle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
+						                                                                                 {UserSlot}, GetName(), FBeamOperationEventHandlerCode::CreateLambda(
+							                                                                                 [this, Op, LeaderboardId, StartEntriesSize, UserSlot, FocusEntryGamerTag](FBeamOperationEvent Evt)
+							                                                                                 {
+								                                                                                 if (Evt.EventType == OET_SUCCESS)
+								                                                                                 {
+									                                                                                 FetchPlayerRank(UserSlot, LeaderboardId, {FocusEntryGamerTag}, Op);
+								                                                                                 }
+								                                                                                 else
+								                                                                                 {
+									                                                                                 Runtime->RequestTrackerSystem->TriggerOperationError(Op, TEXT("Fail to get the target leaderboard."));
+								                                                                                 }
+							                                                                                 }));
+					                                                                                 FetchLeaderboard(UserSlot, LeaderboardId, LeaderboardView.BoardSize - LastEntriesSize, LastEntriesSize,
+					                                                                                                  FetchLastEntriesHandle);
+				                                                                                 }
+				                                                                                 else
+				                                                                                 {
+					                                                                                 Runtime->RequestTrackerSystem->TriggerOperationError(Op, TEXT("Fail to get the target leaderboard from cache."));
+				                                                                                 }
+			                                                                                 }
+			                                                                                 else
+			                                                                                 {
+				                                                                                 Runtime->RequestTrackerSystem->TriggerOperationError(Op, TEXT("Fail to get the target leaderboard."));
+			                                                                                 }
+		                                                                                 }));
+
+	FetchLeaderboard(UserSlot, LeaderboardId, 1, StartEntriesSize, FetchStartEntriesHandle);
 }
 
 void UBeamLeaderboardsSubsystem::FetchLeaderboard(FUserSlot UserSlot, FString LeaderboardId, int PageSize, int StartPage, int LastPage, FBeamOperationHandle Op)

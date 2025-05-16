@@ -192,18 +192,16 @@ public:
 	 *
 	 * @param LeaderboardId: The target leaderboard id.
 	 * @param StartEntriesSize: The entries that is in the range of the rank 1 to StartEntriesSize will be returned.
-	 * @param StartEntries: The output for the start entries.
+	 * @param Entries: The output for the start entries.
 	 * @param FocusEntryGamerTag: The Focus entry gamer tage.
 	 * @param FocusEntry: The output for the focus entry.
 	 * @param LastEntriesSize: The entries that is in the range of the rank last rank entry to LastEntriesSize will be returned.
-	 * @param LastEntries: The output for the last entries.
 	 *
 	 * @return Returns False if the user don't have the leaderboard state initialized or if it's not possible to retrieve the data.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetFocusRankEntries(FString LeaderboardId, int StartEntriesSize, FBeamGamerTag FocusEntryGamerTag, int LastEntriesSize, TArray<FBeamRankEntry>& StartEntries, FBeamRankEntry& FocusEntry,
-	                            TArray<FBeamRankEntry>& LastEntries);
+	bool TryGetFocusRankEntries(FString LeaderboardId, int StartEntriesSize, FBeamGamerTag FocusEntryGamerTag, int LastEntriesSize, TArray<FBeamRankEntry>& Entries, FBeamRankEntry& FocusEntry);
 
 	/**
 	 * @brief Attempts release the local rank entries for a specific leaderboard in a given range.
@@ -319,6 +317,27 @@ public:
 	                                                        FBeamOperationEventHandlerCode OnOperationEvent);
 
 	/**
+	 * @brief This will fetch some entries in the beginning and in the end of the leaderboard and return a focus entry.
+	 *
+	 * It will be useful for the @link UBeamLeaderboardsSubsystem::TryGetFocusRankEntries @endlink usage.
+	 *
+	 * @param LeaderboardId: The target leaderboard id.
+	 * @param StartEntriesSize: The entries that is in the range of the rank 1 to StartEntriesSize will be returned.
+	 * @param FocusEntryGamerTag: The Focus entry gamer tage.
+	 * @param LastEntriesSize: The entries that is in the range of the rank last rank entry to LastEntriesSize will be returned.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	FBeamOperationHandle FetchFocusRankEntriesOperation(FUserSlot UserSlot, FString LeaderboardId, int StartEntriesSize, FBeamGamerTag FocusEntryGamerTag, int LastEntriesSize,
+	                                                    FBeamOperationEventHandler OnOperationEvent);
+
+	/**
+	 * @copydoc FetchFocusRankEntriesOperation
+	 */
+	FBeamOperationHandle CPP_FetchFocusRankEntriesOperation(FUserSlot UserSlot, FString LeaderboardId, int StartEntriesSize, FBeamGamerTag FocusEntryGamerTag, int LastEntriesSize,
+	                                                        FBeamOperationEventHandlerCode OnOperationEvent);
+
+	/**
 	* Get a view with rankings from a specific leaderboard.
 	*
 	* @param LeaderboardId: The target leaderboard id.
@@ -379,6 +398,11 @@ public:
 	FBeamOperationHandle CPP_FetchLeaderboardFocusPlayerOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag FocusPlayer, int Max, FOptionalBeamGamerTag Outlier,
 	                                                              FBeamOperationEventHandlerCode OnOperationEvent);
 
+	/** 
+	 * @brief: This works exactly like the @link UBeamLeaderboardsSubsystem::FetchLeaderboardFocusPlayerOperation @endlink, but also assign the player to the leaderboard automatically before fetch it.
+	 *
+	 * @copydoc FetchLeaderboardFocusPlayerOperation
+	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle FetchUserSlotAssignedLeaderboardOperation(FUserSlot UserSlot, FString LeaderboardId, int From, int Max,
@@ -525,6 +549,8 @@ protected:
 	void FetchAssignment(FUserSlot UserSlot, FString LeaderboardId, bool Join, FBeamOperationHandle Op);
 
 	void FetchLeaderboard(FUserSlot UserSlot, FString LeaderboardId, int From, int Max, FBeamOperationHandle Op);
+
+	void FetchFocusRankEntries(FUserSlot UserSlot, FString LeaderboardId, int StartEntriesSize, FBeamGamerTag FocusEntryGamerTag, int LastEntriesSize, FBeamOperationHandle Op);
 
 	void FetchLeaderboard(FUserSlot UserSlot, FString LeaderboardId, int PageSize, int StartPage, int LastPage, FBeamOperationHandle Op);
 
