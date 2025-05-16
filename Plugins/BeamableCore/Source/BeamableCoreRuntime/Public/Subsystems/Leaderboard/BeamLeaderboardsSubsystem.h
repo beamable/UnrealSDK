@@ -188,6 +188,8 @@ public:
 	 *
 	 * Please make sure to fetch the information before try to get it.
 	 *
+	 * If it didn't find the focus entry it will return false.
+	 *
 	 * @param LeaderboardId: The target leaderboard id.
 	 * @param StartEntriesSize: The entries that is in the range of the rank 1 to StartEntriesSize will be returned.
 	 * @param StartEntries: The output for the start entries.
@@ -233,6 +235,25 @@ public:
 	bool TryGetPlayerPageInfo(FString LeaderboardId, FBeamGamerTag PlayerGamerTag, int PageSize, FBeamRankEntry& PlayerRankEntry, int& PlayerPage);
 
 	/**
+	 * @brief Attempts to retrieve the page info of a player entry.
+	 *
+	 * Please make sure to fetch the information before try to get it.
+	 *
+	 * @param LeaderboardId: The target leaderboard id.
+
+	 * @param PageSize: Tha page size for the leaderboard pagination.
+	 * @param LastPageCached: The output for the number of the last cached page.
+	 * @param FirstPageCached: The output for the number of the first cached page.
+	 * @param TotalPages: The output for the total of pages in the leaderboard (not only the cached).
+	 *
+	 * @return Returns False if the user don't have the leaderboard state initialized or if it's not possible to retrieve the data.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetLeaderboardPageInfo(FString LeaderboardId, int PageSize, int& FirstPageCached, int& LastPageCached, int& TotalPages);
+
+
+	/**
 	 * @brief Attempts to retrieve all the entries for a specific leaderboard page.
 	 *
 	 * Please make sure to fetch the information before try to get it.
@@ -242,15 +263,12 @@ public:
 	 * @param Page: The target page to retrive the entries.
 	 * @param RankEntries: The output of all entries for the page.
 	 * @param CachedEntriesCount: The output for the current cached entries.
-	 * @param LastPageCached: The output for the number of the last cached page.
-	 * @param FirstPageCached: The output for the number of the first cached page.
-	 * @param TotalPages: The output for the total of pages in the leaderboard (not only the cached).
 	 *
 	 * @return Returns False if the user don't have the leaderboard state initialized or if it's not possible to retrieve the data.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
-	bool TryGetPageRankEntries(FString LeaderboardId, int PageSize, int Page, TArray<FBeamRankEntry>& RankEntries, int& CachedEntriesCount, int& FirstPageCached, int& LastPageCached, int& TotalPages);
+	bool TryGetPageRankEntries(FString LeaderboardId, int PageSize, int Page, TArray<FBeamRankEntry>& RankEntries, int& CachedEntriesCount);
 
 	/**
 	 * @brief Attempts to release all the entries for a specific leaderboard page.
@@ -267,20 +285,46 @@ public:
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
 	bool TryReleasePageRankEntries(FString LeaderboardId, int PageSize, int Page);
 
+	/**
+	 * @brief Check if the leaderboard page is cached.
+	 *
+	 * @param LeaderboardId: The target leaderboard id.
+	 * @param PageSize: The max size of each page.
+	 * @param Page: The target page to be checked.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool IsLeaderboardPageCached(FString LeaderboardId, int PageSize, int Page);
+
 
 	// Operations
 
+	/**
+	* For partitioned or cohorted leaderboards
+	* Resolves the specific child leaderboard the player is assigned to
+	* e.g. "leaderboards.my_partitioned_board" -> "leaderboards.my_partitioned_board#0" -- where #0 denotes the partition identifier
+	*
+	* @param LeaderboardId: The target leaderboard id.
+	* @param Join: If it should join the leaderboard.
+	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle LeaderboardAssignmentOperation(FUserSlot UserSlot, FString LeaderboardId, bool Join,
-	                                                    FBeamOperationEventHandler OnOperationEvent);
+	FBeamOperationHandle GetLeaderboardAssignmentOperation(FUserSlot UserSlot, FString LeaderboardId, bool Join,
+	                                                       FBeamOperationEventHandler OnOperationEvent);
 
 	/**
-	 * @copydoc LeaderboardAssignmentOperation
+	 * @copydoc GetLeaderboardAssignmentOperation
 	 */
 	FBeamOperationHandle CPP_LeaderboardAssignmentOperation(FUserSlot UserSlot, FString LeaderboardId, bool Join,
 	                                                        FBeamOperationEventHandlerCode OnOperationEvent);
 
+	/**
+	* Get a view with rankings from a specific leaderboard.
+	*
+	* @param LeaderboardId: The target leaderboard id.
+	* @param From: The Starting Rank you wish to have in the leaderboard.
+	* @param Max: Number of ranks. Moves towards the lowest rank; as in, if from is 20 and max is 10, you'll get ranks 20~30.
+	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle FetchLeaderboardOperation(FUserSlot UserSlot, FString LeaderboardId, int From, int Max,
@@ -292,6 +336,16 @@ public:
 	FBeamOperationHandle CPP_FetchLeaderboardOperation(FUserSlot UserSlot, FString LeaderboardId, int From, int Max,
 	                                                   FBeamOperationEventHandlerCode OnOperationEvent);
 
+	/**
+	 * Fetch all the entries for a leaderboard for specific pages.
+	 *
+	 * This will help in case of pagination for leaderboards with a big amount of entries
+	 *
+	 * @param LeaderboardId: The specific leaderboard id.
+	 * @param PageSize: The size of each page intended to have in the leaderboard (for the view)
+	 * @param StartPage: The page to start fetch, that helps cases were you have a lot of pages and would like to fetch it on demand.
+	 * @param LastPage: The last page to fetch.
+	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle FetchLeaderboardPageOperation(FUserSlot UserSlot, FString LeaderboardId, int PageSize, int StartPage, int LastPage,
@@ -303,6 +357,17 @@ public:
 	FBeamOperationHandle CPP_FetchLeaderboardPageOperation(FUserSlot UserSlot, FString LeaderboardId, int PageSize, int StartPage, int LastPage,
 	                                                       FBeamOperationEventHandlerCode OnOperationEvent);
 
+	/**
+	* Get a view with rankings from a specific leaderboard.
+	*
+	* @param LeaderboardId: The target leaderboard id.
+	* @param FocusPlayer: A user's GamerTag that'll be used as the middle <see cref="RankEntry"/> of the resulting <see cref="LeaderBoardView"/>.
+	* Will take Max/2 from above the focus user and Max/2 from below the focus user.
+	* It is inclusive. As in, if focus is at rank 50 and you pass in max as 10, you'll get ranks 40~61.
+	* If there are not enough entries in the leaderboard either above or below you, the corresponding Max/2' will be truncated. 
+	* @param Max: Explained in the Focus Player Param.
+	* @param Outlier: A GamerTag whose rank entry is guaranteed to be included. Will be stored in @link FBeamLeaderboardView::PlayerRankEntry @endlink. 
+	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle FetchLeaderboardFocusPlayerOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag FocusPlayer, int Max, FOptionalBeamGamerTag Outlier,
@@ -325,6 +390,11 @@ public:
 	FBeamOperationHandle CPP_FetchUserSlotAssignedLeaderboardOperation(FUserSlot UserSlot, FString LeaderboardId, int From, int Max,
 	                                                                   FBeamOperationEventHandlerCode OnOperationEvent);
 
+	/** 
+	 * @brief: This works exactly like the @link UBeamLeaderboardsSubsystem::FetchLeaderboardOperation @endlink, but also assign the player to the leaderboard automatically before fetch it.
+	 *
+	 * @copydoc FetchLeaderboardOperation
+	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle FetchAssignedLeaderboardOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, int From, int Max,
@@ -336,6 +406,11 @@ public:
 	FBeamOperationHandle CPP_FetchAssignedLeaderboardOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, int From, int Max,
 	                                                           FBeamOperationEventHandlerCode OnOperationEvent);
 
+	/** 
+	* @brief: This works exactly like the @link UBeamLeaderboardsSubsystem::FetchLeaderboardFocusPlayerOperation @endlink, but also assign the player to the leaderboard automatically before fetch it.
+	*
+	* @copydoc FetchLeaderboardFocusPlayerOperation
+	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle FetchAssignedLeaderboardFocusPlayerOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, FBeamGamerTag FocusPlayer, int Max, FOptionalBeamGamerTag Outlier,
@@ -347,17 +422,12 @@ public:
 	FBeamOperationHandle CPP_FetchAssignedLeaderboardFocusPlayerOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, FBeamGamerTag FocusPlayer, int Max, FOptionalBeamGamerTag Outlier,
 	                                                                      FBeamOperationEventHandlerCode OnOperationEvent);
 
-	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
-		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle FetchPlayerLeaderboardsOperation(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
-	                                                      FBeamOperationEventHandler OnOperationEvent);
-
 	/**
-	 * @copydoc FetchPlayerLeaderboardsOperation
+	 * @brief Fetch the rank for array of players in a specific leaderboard
+	 *
+	 * @param LeaderboardId: The target leaderboard id.
+	 * @param PlayersGamerTag: The array of players to retrieve the rank entries.
 	 */
-	FBeamOperationHandle CPP_FetchPlayerLeaderboardsOperation(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag,
-	                                                          FBeamOperationEventHandlerCode OnOperationEvent);
-
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle FetchPlayerRankOperation(FUserSlot UserSlot, FString LeaderboardId, TArray<FBeamGamerTag> PlayersGamerTag,
@@ -369,6 +439,11 @@ public:
 	FBeamOperationHandle CPP_FetchPlayerRankOperation(FUserSlot UserSlot, FString LeaderboardId, TArray<FBeamGamerTag> PlayersGamerTag,
 	                                                  FBeamOperationEventHandlerCode OnOperationEvent);
 
+	/**
+	 * @brief: Fetch all the friends ranks in a specific leaderboard.
+	 *
+	 * @param LeaderboardId: The target leaderboard to fetch.
+	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle FetchFriendsRanksOperation(FUserSlot UserSlot, FString LeaderboardId,
@@ -380,28 +455,59 @@ public:
 	FBeamOperationHandle CPP_FetchFriendsRanksOperation(FUserSlot UserSlot, FString LeaderboardId,
 	                                                    FBeamOperationEventHandlerCode OnOperationEvent);
 
+	/**
+	 * @brief: Update the score for a player in a specific leaderboard.
+	 *
+	 * This call will override the current value of this player.
+	 * 
+	 * IMPORTANT: It's Only allowed in the client side if the leaderboard have Client Permissions.
+	 *
+	 * @param LeaderboardId: The target leaderboard id.
+	 * @param PlayerGamerTag: The target player to change the score.
+	 * @param Score: The value of the new score.
+	 * @param Stats: Custom stats that can be added to the Rank Entry.
+	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle UpdateLeaderboardScoreOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, TMap<FString, FString> Stats,
+	FBeamOperationHandle UpdateLeaderboardScoreOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, FOptionalMapOfString Stats,
 	                                                     FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc UpdateLeaderboardScoreOperation
 	 */
-	FBeamOperationHandle CPP_UpdateLeaderboardScoreOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, TMap<FString, FString> Stats,
+	FBeamOperationHandle CPP_UpdateLeaderboardScoreOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, FOptionalMapOfString Stats,
 	                                                         FBeamOperationEventHandlerCode OnOperationEvent);
 
+	/**
+	* @brief: Increment the score for a player in a specific leaderboard.
+	*
+	* This will be an addition to the current value that exist in the leaderboard.
+	* 
+	* IMPORTANT: It's Only allowed in the client side if the leaderboard have Client Permissions.
+	*
+	* @param LeaderboardId: The target leaderboard id.
+	* @param PlayerGamerTag: The target player to change the score.
+	* @param Score: The value to increment in the new score.
+	* @param Stats: Custom stats that can be added to the Rank Entry.
+	*/
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
-	FBeamOperationHandle IncrementLeaderboardScoreOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, TMap<FString, FString> Stats,
+	FBeamOperationHandle IncrementLeaderboardScoreOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, FOptionalMapOfString Stats,
 	                                                        FBeamOperationEventHandler OnOperationEvent);
 
 	/**
 	 * @copydoc IncrementLeaderboardScoreOperation
 	 */
-	FBeamOperationHandle CPP_IncrementLeaderboardScoreOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, TMap<FString, FString> Stats,
+	FBeamOperationHandle CPP_IncrementLeaderboardScoreOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, FOptionalMapOfString Stats,
 	                                                            FBeamOperationEventHandlerCode OnOperationEvent);
 
+	/**
+	 * @brief: Freeze the leaderboard, so that stops to receive new entries or change score.
+	 *
+	 *
+	 * @param LeaderboardId: The target leaderboard id.
+	 * 
+	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
 		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
 	FBeamOperationHandle FreezeLeaderboardOperation(FUserSlot UserSlot, FString LeaderboardId,
@@ -428,15 +534,13 @@ protected:
 
 	void FetchAssignedLeaderboard(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag FocusPlayer, int Max, FOptionalBeamGamerTag Outlier, FBeamOperationHandle Op);
 
-	void FetchPlayerLeaderboards(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, FBeamOperationHandle Op);
-
 	void FetchPlayerRank(FUserSlot UserSlot, FString LeaderboardId, TArray<FBeamGamerTag> PlayersGamerTag, FBeamOperationHandle Op);
 
 	void FetchFriendsRanks(FUserSlot UserSlot, FString LeaderboardId, FBeamOperationHandle Op);
 
-	void UpdateLeaderboardScore(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, TMap<FString, FString> Stats, FBeamOperationHandle Op);
+	void UpdateLeaderboardScore(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, FOptionalMapOfString Stats, FBeamOperationHandle Op);
 
-	void IncrementLeaderboardScore(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, TMap<FString, FString> Stats, FBeamOperationHandle Op);
+	void IncrementLeaderboardScore(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, FOptionalMapOfString Stats, FBeamOperationHandle Op);
 
 	// Admin
 	void FreezeLeaderboard(FUserSlot UserSlot, FString LeaderboardId, FBeamOperationHandle Op);
@@ -444,6 +548,8 @@ protected:
 	// Utils
 
 	static int64 GetLeaderboardPage(int PageSize, long Rank);
+
+	static int64 GetExpectedPageEntriesCount(int PageSize, int Page, long LeaderboardSize);
 
 	static void GetLeaderboardPageRange(int PageSize, long Page, long& StartPageRank, long& LastPageRank);
 

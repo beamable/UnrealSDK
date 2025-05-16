@@ -41,14 +41,7 @@ void UBeamLeaderboardsSubsystem::InitializeWhenUnrealReady_Implementation(FBeamO
 
 void UBeamLeaderboardsSubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp)
 {
-	if (!IsRunningDedicatedServer())
-	{
-		ResultOp = Runtime->RequestTrackerSystem->CPP_BeginSuccessfulOperation({}, GetName(), {}, {});
-	}
-	else
-	{
-		ResultOp = Runtime->RequestTrackerSystem->CPP_BeginSuccessfulOperation({}, GetName(), {}, {});
-	}
+	ResultOp = Runtime->RequestTrackerSystem->CPP_BeginSuccessfulOperation({}, GetName(), {}, {});
 }
 
 void UBeamLeaderboardsSubsystem::OnUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp)
@@ -76,7 +69,6 @@ bool UBeamLeaderboardsSubsystem::TryGetPlayerRankEntry(FString LeaderboardId, FB
 	}
 
 	// Get all the leaderboards that the player are in.
-
 	if (LeaderboardsCache[LeaderboardId].PlayerEntriesCache.Contains(PlayerGamerTag))
 	{
 		int32 RankIndex = LeaderboardsCache[LeaderboardId].PlayerEntriesCache[PlayerGamerTag];
@@ -108,6 +100,8 @@ void UBeamLeaderboardsSubsystem::TryGetRankEntriesRange(FString LeaderboardId, i
 	{
 		return;
 	}
+	// Prevent to get a 0 rank instead of 1.
+	From = FGenericPlatformMath::Max(1, From);
 	auto LeaderboardView = LeaderboardsCache[LeaderboardId];
 
 	int32 LastRank = From + Max;
@@ -116,8 +110,9 @@ void UBeamLeaderboardsSubsystem::TryGetRankEntriesRange(FString LeaderboardId, i
 	RankEntries.Reset();
 	for (int32 i = 0; i < LeaderboardView.RankEntries.Num(); i++)
 	{
-		if (LeaderboardView.RankEntries[i].Rank > LastRank)
+		if (LeaderboardView.RankEntries[i].Rank >= LastRank)
 		{
+			// As the ranks are sorted all the time it's fetched if the rank is greater than the last rank we can break the loop.
 			break;
 		}
 		if (LeaderboardView.RankEntries[i].Rank >= StartRank)
@@ -141,25 +136,32 @@ bool UBeamLeaderboardsSubsystem::TryGetFocusRankEntries(FString LeaderboardId, i
 	StartEntries.Reset();
 	LastEntries.Reset();
 
+	bool FoundFocusEntry = false;
+
 	for (int32 i = 0; i < LeaderboardView.RankEntries.Num(); i++)
 	{
 		FBeamRankEntry Item = LeaderboardView.RankEntries[i];
+
 		if (i < StartEntriesSize)
 		{
+			// Adding all the entries below the StartEntriesSize
 			StartEntries.Add(Item);
 		}
 
 		if (FocusEntryGamerTag == Item.PlayerGamerTag)
 		{
 			FocusEntry = Item;
+			FoundFocusEntry = true;
 		}
 
 		if (i > LeaderboardView.RankEntries.Num() - LastEntriesSize)
 		{
+			// Adding all the entries below the above the Lenght - LastEntriesSize
 			LastEntries.Add(Item);
 		}
 	}
-	return true;
+	// If don't found any focus entry it will return false
+	return FoundFocusEntry;
 }
 
 bool UBeamLeaderboardsSubsystem::TryReleaseRankEntries(FString LeaderboardId, int From, int Max)
@@ -170,6 +172,8 @@ bool UBeamLeaderboardsSubsystem::TryReleaseRankEntries(FString LeaderboardId, in
 	}
 
 	auto LeaderboardView = &LeaderboardsCache[LeaderboardId];
+
+	// Remove all the entries in the range.
 	LeaderboardView->RankEntries.RemoveAll([From, Max](FBeamRankEntry RankEntry)
 	{
 		return RankEntry.Rank >= From && RankEntry.Rank < From + Max;
@@ -187,10 +191,12 @@ bool UBeamLeaderboardsSubsystem::TryGetPlayerPageInfo(FString LeaderboardId, FBe
 
 	auto LeaderboardView = LeaderboardsCache[LeaderboardId];
 
+	// Check if the leaderboard view contains the player
 	if (!LeaderboardView.PlayerEntriesCache.Contains(PlayerGamerTag))
 	{
 		return false;
 	}
+
 	int32 RankIndex = LeaderboardView.PlayerEntriesCache[PlayerGamerTag];
 
 	PlayerRankEntry = LeaderboardsCache[LeaderboardId].RankEntries[RankIndex];
@@ -200,8 +206,36 @@ bool UBeamLeaderboardsSubsystem::TryGetPlayerPageInfo(FString LeaderboardId, FBe
 	return true;
 }
 
-bool UBeamLeaderboardsSubsystem::TryGetPageRankEntries(FString LeaderboardId, int PageSize, int Page, TArray<FBeamRankEntry>& RankEntries, int& CachedEntriesCount, int& FirstPageCached, int& LastPageCached,
-                                                       int& TotalPages)
+bool UBeamLeaderboardsSubsystem::TryGetLeaderboardPageInfo(FString LeaderboardId, int PageSize, int& FirstPageCached, int& LastPageCached, int& TotalPages)
+{
+	if (!LeaderboardsCache.Contains(LeaderboardId))
+	{
+		return false;
+	}
+	auto LeaderboardView = LeaderboardsCache[LeaderboardId];
+
+	TotalPages = FGenericPlatformMath::CeilToInt(static_cast<float>(LeaderboardView.BoardSize) / static_cast<float>(PageSize));
+
+	if (LeaderboardView.RankEntries.Num() > 0)
+	{
+		FBeamRankEntry _;
+		// Get the last cached page from the utility method
+		auto LastIndex = LeaderboardView.RankEntries.Num() - 1;
+		TryGetPlayerPageInfo(LeaderboardId, LeaderboardView.RankEntries[LastIndex].PlayerGamerTag, PageSize, _, LastPageCached);
+
+		// Get the first cached page from the utility method
+		auto FirstIndex = 0;
+		TryGetPlayerPageInfo(LeaderboardId, LeaderboardView.RankEntries[FirstIndex].PlayerGamerTag, PageSize, _, FirstPageCached);
+	}
+	else
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool UBeamLeaderboardsSubsystem::TryGetPageRankEntries(FString LeaderboardId, int PageSize, int Page, TArray<FBeamRankEntry>& RankEntries, int& CachedEntriesCount)
 {
 	if (!LeaderboardsCache.Contains(LeaderboardId))
 	{
@@ -214,7 +248,7 @@ bool UBeamLeaderboardsSubsystem::TryGetPageRankEntries(FString LeaderboardId, in
 	GetLeaderboardPageRange(PageSize, Page, StartRank, EndRank);
 
 	RankEntries.Reset();
-
+	// Find all the entries in the range of the start and the end rank.
 	for (auto RankEntry : LeaderboardView.RankEntries)
 	{
 		if (RankEntry.Rank >= StartRank && RankEntry.Rank <= EndRank)
@@ -223,21 +257,7 @@ bool UBeamLeaderboardsSubsystem::TryGetPageRankEntries(FString LeaderboardId, in
 		}
 	}
 
-	if (LeaderboardView.RankEntries.Num() > 0)
-	{
-		FBeamRankEntry _;
-
-		auto LastIndex = LeaderboardView.RankEntries.Num() - 1;
-		TryGetPlayerPageInfo(LeaderboardId, LeaderboardView.RankEntries[LastIndex].PlayerGamerTag, PageSize, _, LastPageCached);
-
-		auto FirstIndex = 0;
-		TryGetPlayerPageInfo(LeaderboardId, LeaderboardView.RankEntries[FirstIndex].PlayerGamerTag, PageSize, _, FirstIndex);
-	}
-
-
 	CachedEntriesCount = LeaderboardView.RankEntries.Num();
-
-	TotalPages = FGenericPlatformMath::CeilToInt(static_cast<float>(LeaderboardView.BoardSize) / static_cast<float>(PageSize));
 
 	return true;
 }
@@ -253,8 +273,9 @@ bool UBeamLeaderboardsSubsystem::TryReleasePageRankEntries(FString LeaderboardId
 
 	long StartRank;
 	long LastRank;
-	GetLeaderboardPageRange(PageSize, PageSize, StartRank, LastRank);
+	GetLeaderboardPageRange(PageSize, Page, StartRank, LastRank);
 
+	// Remove all the entries for a specific page
 	LeaderboardView->RankEntries.RemoveAll([StartRank, LastRank](FBeamRankEntry RankEntry)
 	{
 		return RankEntry.Rank >= StartRank && RankEntry.Rank <= LastRank;
@@ -263,7 +284,39 @@ bool UBeamLeaderboardsSubsystem::TryReleasePageRankEntries(FString LeaderboardId
 	return true;
 }
 
-FBeamOperationHandle UBeamLeaderboardsSubsystem::LeaderboardAssignmentOperation(FUserSlot UserSlot, FString LeaderboardId, bool Join, FBeamOperationEventHandler OnOperationEvent)
+bool UBeamLeaderboardsSubsystem::IsLeaderboardPageCached(FString LeaderboardId, int PageSize, int Page)
+{
+	if (!LeaderboardsCache.Contains(LeaderboardId))
+	{
+		return false;
+	}
+	auto LeaderboardView = LeaderboardsCache[LeaderboardId];
+
+	if (LeaderboardView.RankEntries.Num() > 0)
+	{
+		int FirstPageCached;
+		int LastPageCached;
+		int TotalPagesCached;
+		TryGetLeaderboardPageInfo(LeaderboardId, PageSize, FirstPageCached, LastPageCached, TotalPagesCached);
+
+		int CachedEntriesCount;
+		TArray<FBeamRankEntry> RankEntries;
+		TryGetPageRankEntries(LeaderboardId, PageSize, Page, RankEntries, CachedEntriesCount);
+
+		int ExpectedEntriesAmount = GetExpectedPageEntriesCount(PageSize, Page, LeaderboardView.BoardSize);
+
+		// To verify if the cache is valid it should be in the range of the cached pages
+		// And also have the same amount of entries as the expected for the page
+		if (TotalPagesCached > 0 && Page >= FirstPageCached && Page <= LastPageCached && RankEntries.Num() == ExpectedEntriesAmount)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+FBeamOperationHandle UBeamLeaderboardsSubsystem::GetLeaderboardAssignmentOperation(FUserSlot UserSlot, FString LeaderboardId, bool Join, FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
 	FetchAssignment(UserSlot, LeaderboardId, Join, Handle);
@@ -377,20 +430,6 @@ FBeamOperationHandle UBeamLeaderboardsSubsystem::CPP_FetchAssignedLeaderboardFoc
 	return Handle;
 }
 
-FBeamOperationHandle UBeamLeaderboardsSubsystem::FetchPlayerLeaderboardsOperation(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, FBeamOperationEventHandler OnOperationEvent)
-{
-	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	FetchPlayerLeaderboards(UserSlot, PlayerGamerTag, Handle);
-	return Handle;
-}
-
-FBeamOperationHandle UBeamLeaderboardsSubsystem::CPP_FetchPlayerLeaderboardsOperation(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, FBeamOperationEventHandlerCode OnOperationEvent)
-{
-	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
-	FetchPlayerLeaderboards(UserSlot, PlayerGamerTag, Handle);
-	return Handle;
-}
-
 FBeamOperationHandle UBeamLeaderboardsSubsystem::FetchPlayerRankOperation(FUserSlot UserSlot, FString LeaderboardId, TArray<FBeamGamerTag> PlayersGamerTag, FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
@@ -419,7 +458,7 @@ FBeamOperationHandle UBeamLeaderboardsSubsystem::CPP_FetchFriendsRanksOperation(
 	return Handle;
 }
 
-FBeamOperationHandle UBeamLeaderboardsSubsystem::UpdateLeaderboardScoreOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, TMap<FString, FString> Stats,
+FBeamOperationHandle UBeamLeaderboardsSubsystem::UpdateLeaderboardScoreOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, FOptionalMapOfString Stats,
                                                                                  FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
@@ -427,7 +466,7 @@ FBeamOperationHandle UBeamLeaderboardsSubsystem::UpdateLeaderboardScoreOperation
 	return Handle;
 }
 
-FBeamOperationHandle UBeamLeaderboardsSubsystem::CPP_UpdateLeaderboardScoreOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, TMap<FString, FString> Stats,
+FBeamOperationHandle UBeamLeaderboardsSubsystem::CPP_UpdateLeaderboardScoreOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, FOptionalMapOfString Stats,
                                                                                      FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
@@ -435,7 +474,7 @@ FBeamOperationHandle UBeamLeaderboardsSubsystem::CPP_UpdateLeaderboardScoreOpera
 	return Handle;
 }
 
-FBeamOperationHandle UBeamLeaderboardsSubsystem::IncrementLeaderboardScoreOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, TMap<FString, FString> Stats,
+FBeamOperationHandle UBeamLeaderboardsSubsystem::IncrementLeaderboardScoreOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, FOptionalMapOfString Stats,
                                                                                     FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
@@ -443,7 +482,7 @@ FBeamOperationHandle UBeamLeaderboardsSubsystem::IncrementLeaderboardScoreOperat
 	return Handle;
 }
 
-FBeamOperationHandle UBeamLeaderboardsSubsystem::CPP_IncrementLeaderboardScoreOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, TMap<FString, FString> Stats,
+FBeamOperationHandle UBeamLeaderboardsSubsystem::CPP_IncrementLeaderboardScoreOperation(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, FOptionalMapOfString Stats,
                                                                                         FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation({UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
@@ -685,45 +724,6 @@ void UBeamLeaderboardsSubsystem::FetchAssignedLeaderboard(FUserSlot UserSlot, FS
 	}
 }
 
-void UBeamLeaderboardsSubsystem::FetchPlayerLeaderboards(FUserSlot UserSlot, FBeamGamerTag PlayerGamerTag, FBeamOperationHandle Op)
-{
-	auto Handle = FOnGetPlayerFullResponse::CreateLambda([this, Op](const FGetPlayerFullResponse& Response)
-	{
-		if (Response.State == RS_Retrying) return;
-
-		if (Response.State == RS_Success)
-		{
-			for (auto LeaderBoardView : Response.SuccessData->Lbs)
-			{
-				FBeamLeaderboardView BeamLeaderboardView = GetLeaderboardView(LeaderBoardView);
-
-				UpdateLeaderboardCache(BeamLeaderboardView);
-			}
-
-			Runtime->RequestTrackerSystem->TriggerOperationSuccess(Op, TEXT(""));
-			return;
-		}
-
-		if (Response.State == RS_Error)
-		{
-			Runtime->RequestTrackerSystem->TriggerOperationError(Op, Response.ErrorData.message);
-			return;
-		}
-
-		if (Response.State == RS_Cancelled)
-		{
-			Runtime->RequestTrackerSystem->TriggerOperationCancelled(Op, Response.ErrorData.message);
-			return;
-		}
-	});
-
-	auto Request = UGetPlayerRequest::Make(PlayerGamerTag.AsLong, this, {});
-
-	FBeamRequestContext Ctx;
-
-	LeaderboardsApi->CPP_GetPlayer(UserSlot, Request, Handle, Ctx, Op, this);
-}
-
 void UBeamLeaderboardsSubsystem::FetchPlayerRank(FUserSlot UserSlot, FString LeaderboardId, TArray<FBeamGamerTag> PlayersGamerTag, FBeamOperationHandle Op)
 {
 	auto Handle = FOnGetRanksFullResponse::CreateLambda([this, Op, PlayersGamerTag](const FGetRanksFullResponse& Response)
@@ -809,7 +809,7 @@ void UBeamLeaderboardsSubsystem::FetchFriendsRanks(FUserSlot UserSlot, FString L
 	LeaderboardsApi->CPP_GetFriends(UserSlot, Request, Handle, Ctx, Op, this);
 }
 
-void UBeamLeaderboardsSubsystem::UpdateLeaderboardScore(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, TMap<FString, FString> Stats, FBeamOperationHandle Op)
+void UBeamLeaderboardsSubsystem::UpdateLeaderboardScore(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, FOptionalMapOfString Stats, FBeamOperationHandle Op)
 {
 	auto Handle = FOnPutEntryFullResponse::CreateLambda([this, Op, UserSlot, LeaderboardId, PlayerGamerTag](const FPutEntryFullResponse& Response)
 	{
@@ -835,14 +835,14 @@ void UBeamLeaderboardsSubsystem::UpdateLeaderboardScore(FUserSlot UserSlot, FStr
 		}
 	});
 
-	auto Request = UPutEntryRequest::Make(LeaderboardId, Score, PlayerGamerTag.AsLong, FOptionalBool(false), FOptionalDouble(), FOptionalDouble(), FOptionalMapOfString(Stats), this, {});
+	auto Request = UPutEntryRequest::Make(LeaderboardId, Score, PlayerGamerTag.AsLong, FOptionalBool(false), FOptionalDouble(), FOptionalDouble(), Stats, this, {});
 
 	FBeamRequestContext Ctx;
 
 	LeaderboardsApi->CPP_PutEntry(UserSlot, Request, Handle, Ctx, Op, this);
 }
 
-void UBeamLeaderboardsSubsystem::IncrementLeaderboardScore(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, TMap<FString, FString> Stats, FBeamOperationHandle Op)
+void UBeamLeaderboardsSubsystem::IncrementLeaderboardScore(FUserSlot UserSlot, FString LeaderboardId, FBeamGamerTag PlayerGamerTag, double Score, FOptionalMapOfString Stats, FBeamOperationHandle Op)
 {
 	auto Handle = FOnPutEntryFullResponse::CreateLambda([this, Op, UserSlot, LeaderboardId, PlayerGamerTag](const FPutEntryFullResponse& Response)
 	{
@@ -868,7 +868,7 @@ void UBeamLeaderboardsSubsystem::IncrementLeaderboardScore(FUserSlot UserSlot, F
 		}
 	});
 
-	auto Request = UPutEntryRequest::Make(LeaderboardId, Score, PlayerGamerTag.AsLong, FOptionalBool(true), FOptionalDouble(), FOptionalDouble(), FOptionalMapOfString(Stats), this, {});
+	auto Request = UPutEntryRequest::Make(LeaderboardId, Score, PlayerGamerTag.AsLong, FOptionalBool(true), FOptionalDouble(), FOptionalDouble(), Stats, this, {});
 
 	FBeamRequestContext Ctx;
 
@@ -910,6 +910,18 @@ void UBeamLeaderboardsSubsystem::FreezeLeaderboard(FUserSlot UserSlot, FString L
 int64 UBeamLeaderboardsSubsystem::GetLeaderboardPage(int PageSize, long Rank)
 {
 	return FGenericPlatformMath::FloorToInt64((Rank - 1) / static_cast<double>(PageSize)) + 1;
+}
+
+int64 UBeamLeaderboardsSubsystem::GetExpectedPageEntriesCount(int PageSize, int Page, long LeaderboardSize)
+{
+	if (Page <= 0 || PageSize <= 0 || LeaderboardSize <= 0)
+		return 0;
+
+	int startIndex = (Page - 1) * PageSize;
+	if (startIndex >= LeaderboardSize)
+		return 0;
+
+	return FGenericPlatformMath::Min(PageSize, LeaderboardSize - startIndex);
 }
 
 void UBeamLeaderboardsSubsystem::GetLeaderboardPageRange(int PageSize, long Page, long& StartPageRank, long& LastPageRank)
