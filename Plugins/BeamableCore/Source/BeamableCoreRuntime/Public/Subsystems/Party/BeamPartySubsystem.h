@@ -850,7 +850,4 @@ private:
 	static FString GetRestrictionString(EBeamPartyRestriction RestrictionType);
 
 	EBeamPartyRestriction GetRestrictionType(FString RestrictionName);
-
-	//TODO: We could move it to be reused by the others subsystems
-	bool IsUserSlotAuthenticated(FUserSlot UserSlot, FString FunctionName, FBeamOperationHandle OperationHandle);
 };

@@ -614,9 +614,6 @@ protected:
 	 */
 	void RefreshPresenceAndTriggerEvent(FBeamGamerTag FriendGamerTag, FUserSlot UserSlot);
 
-	//TODO: We could move it to be reused by the others subsystems
-	bool IsUserSlotAuthenticated(FUserSlot UserSlot, FString FunctionName, FBeamOperationHandle OperationHandle);
-
 	//Notifications - Handle update and callbacks from the backend
 	UFUNCTION()
 	void SocialRefreshNotificationHandler(FSocialRefreshNotificationMessage Message, FUserSlot UserSlot);
