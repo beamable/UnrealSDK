@@ -131,15 +131,13 @@ void UK2BeamNode_GetLocalState::ExpandNode(FKismetCompilerContext& CompilerConte
 	BreakAllNodeLinks();
 }
 
-UObject* UK2BeamNode_GetLocalState::GetJumpTargetForDoubleClick() const
+void UK2BeamNode_GetLocalState::JumpToDefinition() const
 {
 	const auto Function = GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName());
 
-	if (!Function) return nullptr;
+	if (!Function) return;
 
 	FSourceCodeNavigation::NavigateToFunction(Function);
-
-	return Super::GetJumpTargetForDoubleClick();
 }
 
 FName UK2BeamNode_GetLocalState::GetSubsystemSelfFunctionName() const

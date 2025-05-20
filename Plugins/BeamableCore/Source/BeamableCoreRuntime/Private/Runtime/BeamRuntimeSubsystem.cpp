@@ -73,7 +73,7 @@ void UBeamRuntimeSubsystem::OnBeamableStarting_Implementation(FBeamOperationHand
 {
 	// By default, just return an empty completed operation
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({}, GetName(), {});
-	Runtime->RequestTrackerSystem->TriggerOperationSuccess(Handle, {});	
+	Runtime->RequestTrackerSystem->TriggerOperationSuccess(Handle, {});
 	ResultOp = Handle;
 }
 
@@ -81,7 +81,7 @@ void UBeamRuntimeSubsystem::OnBeamableContentReady_Implementation(FBeamOperation
 {
 	// By default, just return an empty completed operation
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({}, GetName(), {});
-	Runtime->RequestTrackerSystem->TriggerOperationSuccess(Handle, {});	
+	Runtime->RequestTrackerSystem->TriggerOperationSuccess(Handle, {});
 	ResultOp = Handle;
 }
 
@@ -95,6 +95,19 @@ void UBeamRuntimeSubsystem::OnUserConnectionLost_Implementation(const FUserSlot&
 	UE_LOG(LogBeamRuntime, Verbose, TEXT("Runtime Subsystem %s - On User Connection Lost"), *GetName())
 }
 
+bool UBeamRuntimeSubsystem::IsUserSlotAuthenticated(FUserSlot UserSlot, FString FunctionName, FBeamOperationHandle OperationHandle)
+{
+	FBeamRealmUser RealmUser;
+	if (!Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
+	{
+		FString ErrorMessage = "The function: " + FunctionName + " requires a authenticated user slot";
+		Runtime->RequestTrackerSystem->TriggerOperationError(OperationHandle, *ErrorMessage);
+		return false;
+	}
+	return true;
+}
+
+
 void UBeamRuntimeSubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp)
 {
 	UE_LOG(LogBeamRuntime, Verbose, TEXT("Runtime Subsystem %s - On User Signed In from Slot %s"), *GetName(), *UserSlot.Name)
@@ -107,7 +120,7 @@ void UBeamRuntimeSubsystem::OnUserSignedIn_Implementation(const FUserSlot& UserS
 
 void UBeamRuntimeSubsystem::OnPostUserSignedIn_Implementation(const FUserSlot& UserSlot, const FBeamRealmUser& BeamRealmUser, const bool bIsOwnerUserAuth, FBeamOperationHandle& ResultOp)
 {
-	UE_LOG(LogBeamRuntime, Verbose, TEXT("Runtime Subsystem %s - On Post User Signed Into Slot %s"), *GetName(), *UserSlot.Name)	
+	UE_LOG(LogBeamRuntime, Verbose, TEXT("Runtime Subsystem %s - On Post User Signed Into Slot %s"), *GetName(), *UserSlot.Name)
 
 	// By default, just return an empty completed operation
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({}, GetName(), {});
@@ -129,12 +142,10 @@ void UBeamRuntimeSubsystem::OnUserSignedOut_Implementation(const FUserSlot& User
 void UBeamRuntimeSubsystem::OnPostUserSignedOut_Implementation(const FUserSlot& UserSlot, const EUserSlotClearedReason Reason, const FBeamRealmUser& BeamRealmUser, FBeamOperationHandle& ResultOp)
 {
 	UE_LOG(LogBeamRuntime, Verbose, TEXT("Runtime Subsystem %s - On Post User Signed Out from Slot %s and Reason %s"), *GetName(), *UserSlot.Name,
-		   *StaticEnum<EUserSlotClearedReason>()->GetValueAsString(Reason))
-	
+	       *StaticEnum<EUserSlotClearedReason>()->GetValueAsString(Reason))
+
 	// By default, just return an empty completed operation
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({}, GetName(), {});
 	Runtime->RequestTrackerSystem->TriggerOperationSuccess(Handle, {});
 	ResultOp = Handle;
 }
-
-

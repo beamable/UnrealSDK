@@ -12,6 +12,7 @@
 #include "K2Node_IfThenElse.h"
 #include "K2Node_TemporaryVariable.h"
 #include "KismetCompiler.h"
+#include "SourceCodeNavigation.h"
 #include "Kismet/KismetArrayLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -72,9 +73,13 @@ FLinearColor UK2BeamNode_GetLocalStateForeach::GetNodeTitleColor() const
 	return FLinearColor::FromSRGBColor(FColor::FromHex("#674CC5"));
 }
 
-UObject* UK2BeamNode_GetLocalStateForeach::GetJumpTargetForDoubleClick() const
+void UK2BeamNode_GetLocalStateForeach::JumpToDefinition() const
 {
-	return Super::GetJumpTargetForDoubleClick();
+	const auto Function = GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName());
+
+	if (!Function) return;
+
+	FSourceCodeNavigation::NavigateToFunction(Function);
 }
 
 void UK2BeamNode_GetLocalStateForeach::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)

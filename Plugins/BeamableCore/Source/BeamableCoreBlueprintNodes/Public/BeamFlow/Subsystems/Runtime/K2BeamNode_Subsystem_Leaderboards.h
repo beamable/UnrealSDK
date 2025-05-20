@@ -3,12 +3,56 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamFlow/K2BeamNode_EventRegister.h"
+#include "BeamFlow/K2BeamNode_EventUnregister.h"
 #include "BeamFlow/K2BeamNode_GetLocalState.h"
 #include "BeamFlow/K2BeamNode_Operation.h"
 #include "BeamFlow/K2BeamNode_GetLocalStateForeach.h"
 #include "Subsystems/Leaderboard/BeamLeaderboardsSubsystem.h"
 
 #include "K2BeamNode_Subsystem_Leaderboards.generated.h"
+
+/***
+ *      ______                          _         
+ *     |  ____|                        | |        
+ *     | |__    __   __   ___   _ __   | |_   ___ 
+ *     |  __|   \ \ / /  / _ \ | '_ \  | __| / __|
+ *     | |____   \ V /  |  __/ | | | | | |_  \__ \
+ *     |______|   \_/    \___| |_| |_|  \__| |___/
+ *                                                
+ *                                                
+ */
+
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_EventUnregister_LeaderboardsSubsystem"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_EventUnregister_LeaderboardsSubsystem : public UK2BeamNode_EventUnregister
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Events - Leaderboards - Unbind"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
+};
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_EventRegister_LeaderboardsSubsystem"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_EventRegister_LeaderboardsSubsystem : public UK2BeamNode_EventRegister
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Events - Leaderboards - Bind"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
+};
+#undef LOCTEXT_NAMESPACE
 
 
 //  _                    _      ____  _        _       
@@ -223,24 +267,6 @@ class UK2BeamNode_GetLocalState_IsLeaderboardPageCached : public UK2BeamNode_Get
 //  \___/| .__/ \___|_|  \__,_|\__|_|\___/|_| |_|___/
 //       |_|     
 
-#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_FetchAssignmentOperation"
-
-UCLASS(meta=(BeamFlowNode))
-class UK2BeamNode_Operation_FetchAssignmentOperation : public UK2BeamNode_Operation
-{
-	GENERATED_BODY()
-
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Leaderboards - FetchAssignmentOperation"); }
-
-	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
-
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetLeaderboardAssignmentOperation); }
-
-	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
-};
-
-#undef LOCTEXT_NAMESPACE
-
 #define LOCTEXT_NAMESPACE "K2BeamNode_Operation_FetchFocusRankEntriesOperation"
 
 UCLASS(meta=(BeamFlowNode))
@@ -307,60 +333,6 @@ class UK2BeamNode_Operation_FetchLeaderboardFocusPlayerOperation : public UK2Bea
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
 
 	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, FetchLeaderboardFocusPlayerOperation); }
-
-	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
-};
-
-#undef LOCTEXT_NAMESPACE
-
-#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_FetchUserSlotAssignedLeaderboardOperation"
-
-UCLASS(meta=(BeamFlowNode))
-class UK2BeamNode_Operation_FetchUserSlotAssignedLeaderboardOperation : public UK2BeamNode_Operation
-{
-	GENERATED_BODY()
-
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Leaderboards - FetchUserSlotAssignedLeaderboardOperation"); }
-
-	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
-
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, FetchUserSlotAssignedLeaderboardOperation); }
-
-	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
-};
-
-#undef LOCTEXT_NAMESPACE
-
-#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_FetchAssignedLeaderboardOperation"
-
-UCLASS(meta=(BeamFlowNode))
-class UK2BeamNode_Operation_FetchAssignedLeaderboardOperation : public UK2BeamNode_Operation
-{
-	GENERATED_BODY()
-
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Leaderboards - FetchAssignedLeaderboardOperation"); }
-
-	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
-
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, FetchAssignedLeaderboardOperation); }
-
-	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
-};
-
-#undef LOCTEXT_NAMESPACE
-
-#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_FetchAssignedLeaderboardFocusPlayerOperation"
-
-UCLASS(meta=(BeamFlowNode))
-class UK2BeamNode_Operation_FetchAssignedLeaderboardFocusPlayerOperation : public UK2BeamNode_Operation
-{
-	GENERATED_BODY()
-
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Leaderboards - FetchAssignedLeaderboardFocusPlayerOperation"); }
-
-	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
-
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, FetchAssignedLeaderboardFocusPlayerOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
 };
@@ -439,18 +411,18 @@ class UK2BeamNode_Operation_IncrementLeaderboardScoreOperation : public UK2BeamN
 
 #undef LOCTEXT_NAMESPACE
 
-#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_FreezeLeaderboardOperation"
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_DecrementLeaderboardScoreOperation"
 
 UCLASS(meta=(BeamFlowNode))
-class UK2BeamNode_Operation_FreezeLeaderboardOperation : public UK2BeamNode_Operation
+class UK2BeamNode_Operation_DecrementLeaderboardScoreOperation : public UK2BeamNode_Operation
 {
 	GENERATED_BODY()
 
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Leaderboards - FreezeLeaderboardOperation"); }
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Leaderboards - DecrementLeaderboardScoreOperation"); }
 
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, GetSelf); }
 
-	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, FreezeLeaderboardOperation); }
+	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLeaderboardsSubsystem, DecrementLeaderboardScoreOperation); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLeaderboardsSubsystem::StaticClass(); }
 };

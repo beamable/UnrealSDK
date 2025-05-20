@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BeamK2.h"
+#include "K2BeamNode_GetLocalState.h"
 #include "K2BeamNode_GetLocalStateForeach.generated.h"
 
 /**
@@ -45,13 +46,26 @@ public:
 		return Name;
 	};
 
+	virtual FText GetTooltipText() const override
+	{
+		auto Function = GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName());
+		FText BaseTooltip = {};
+		if (Function != nullptr)
+		{
+			return FText::FromString(ObjectTools::GetDefaultTooltipForFunction(Function));
+		}
+
+		return Super::GetTooltipText();
+	}
+
 	//UK2Node impl
 	virtual bool ShouldShowNodeProperties() const override { return true; }
 	virtual void AllocateDefaultPins() override;
 	virtual void ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
 	virtual FSlateIcon GetIconAndTint(FLinearColor& OutColor) const override;
 	virtual FLinearColor GetNodeTitleColor() const override;
-	virtual UObject* GetJumpTargetForDoubleClick() const override;
+	virtual bool CanJumpToDefinition() const override { return true; };
+	virtual void JumpToDefinition() const override;
 	virtual void GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	//BeamFlowNode impl
