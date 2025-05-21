@@ -203,7 +203,7 @@ void UBeamEditorBootstrapper::Run_DelayedInitialize()
 		EditorSettings->SaveConfig(CPF_Config, *EditorSettings->GetDefaultConfigFilename());
 	}
 
-	const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
+	const auto Subsystems = GEditor->GetEditorSubsystemArrayCopy<UBeamEditorSubsystem>();
 	BeamEditor->InitializeAfterEditorReadyOps.Reset(Subsystems.Num());
 	for (auto& Subsystem : Subsystems)
 	{
@@ -344,7 +344,7 @@ void UBeamEditor::OnUserSlotCleared(const EUserSlotClearedReason& Reason, const 
 			SetActiveTargetRealmUnsafe(Signed_Out_Realm_Handle);
 
 			// Invoke the sign out callback on all Editor Subsystems
-			const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
+			const auto Subsystems = GEditor->GetEditorSubsystemArrayCopy<UBeamEditorSubsystem>();
 			for (auto& Subsystem : Subsystems)
 			{
 				Subsystem->OnSignOut();
@@ -562,7 +562,7 @@ void UBeamEditor::SelectRealm(const FBeamRealmHandle& NewRealmHandle, const FBea
 	auto Settings = GetMutableDefault<UBeamCoreSettings>();
 	const auto LeavingRealm = Settings->TargetRealm;
 
-	const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
+	const auto Subsystems = GEditor->GetEditorSubsystemArrayCopy<UBeamEditorSubsystem>();
 	PrepareForRealmChangeOps.Reset(Subsystems.Num());
 	for (auto& Subsystem : Subsystems)
 	{
@@ -597,7 +597,7 @@ void UBeamEditor::SelectRealm_OnReadyForChange(FBeamWaitCompleteEvent, FBeamReal
 			{
 				if (PutResp.State == RS_Success)
 				{
-					const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
+					const auto Subsystems = GEditor->GetEditorSubsystemArrayCopy<UBeamEditorSubsystem>();
 					InitalizeFromRealmOps.Reset(Subsystems.Num());
 					for (auto& Subsystem : Subsystems)
 					{
@@ -637,7 +637,7 @@ void UBeamEditor::SelectRealm_OnRealmInitialized(FBeamWaitCompleteEvent, FBeamRe
 	SetBeamableWindowMessage(Message);
 
 	// Notify all systems that we have successfully initialized the realm
-	const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
+	const auto Subsystems = GEditor->GetEditorSubsystemArrayCopy<UBeamEditorSubsystem>();
 	RealmInitializedOps.Reset(Subsystems.Num());
 	for (auto& Subsystem : Subsystems)
 	{
@@ -654,8 +654,8 @@ void UBeamEditor::SelectRealm_OnSystemsReady(FBeamWaitCompleteEvent, FBeamRealmH
 	Message->MessageType = EMessageType::VE_Info;
 	Message->MessageValue = TEXT("Realm Changed!");
 	SetBeamableWindowMessage(Message);
-
-	const auto Subsystems = GEditor->GetEditorSubsystemArray<UBeamEditorSubsystem>();
+	
+	const auto Subsystems = GEditor->GetEditorSubsystemArrayCopy<UBeamEditorSubsystem>();
 	for (auto& Subsystem : Subsystems)
 	{
 		Subsystem->OnReady();

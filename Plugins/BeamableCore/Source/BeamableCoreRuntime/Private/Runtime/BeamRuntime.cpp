@@ -417,7 +417,7 @@ void UBeamRuntime::TriggerInitializeWhenUnrealReady(bool bApplyFrictionlessLogin
 		{
 			if (const UGameInstance* GameInstance = World->GetGameInstance())
 			{
-				const TArray<UBeamRuntimeSubsystem*> Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
+				const TArray<UBeamRuntimeSubsystem*> Subsystems = GameInstance->GetSubsystemArrayCopy<UBeamRuntimeSubsystem>();
 
 				TArray<TSubclassOf<UBeamRuntimeSubsystem>> ManuallyInitializedSubsystems = GetDefault<UBeamRuntimeSettings>()->ManualyInitializedRuntimeSubsystems;
 
@@ -670,7 +670,7 @@ void UBeamRuntime::TriggerOnUserSlotAuthenticated(const FUserSlot& UserSlot, con
 	{
 		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
-			const TArray<UBeamRuntimeSubsystem*> Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
+			const TArray<UBeamRuntimeSubsystem*> Subsystems = GameInstance->GetSubsystemArrayCopy<UBeamRuntimeSubsystem>();
 			for (auto& Subsystem : Subsystems)
 			{
 				if (Subsystem->CurrentState == BeamInitialized)
@@ -732,7 +732,7 @@ void UBeamRuntime::TriggerSubsystemPostUserSignIn(FBeamWaitCompleteEvent Evt, FU
 	{
 		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
-			const TArray<UBeamRuntimeSubsystem*> Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
+			const TArray<UBeamRuntimeSubsystem*> Subsystems = GameInstance->GetSubsystemArrayCopy<UBeamRuntimeSubsystem>();
 			for (auto& Subsystem : Subsystems)
 			{
 				if (Subsystem->CurrentState == BeamInitialized)
@@ -833,7 +833,7 @@ void UBeamRuntime::TriggerOnUserSlotCleared(const EUserSlotClearedReason& Reason
 	{
 		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
-			const TArray<UBeamRuntimeSubsystem*> Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
+			const TArray<UBeamRuntimeSubsystem*> Subsystems = GameInstance->GetSubsystemArrayCopy<UBeamRuntimeSubsystem>();
 
 			SignedOutOps.Reset(Subsystems.Num());
 			for (auto& Subsystem : Subsystems)
@@ -878,7 +878,7 @@ void UBeamRuntime::TriggerPostUserSignedOut(FBeamWaitCompleteEvent Evt, FUserSlo
 	{
 		if (const UGameInstance* GameInstance = World->GetGameInstance())
 		{
-			const TArray<UBeamRuntimeSubsystem*> Subsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
+			const TArray<UBeamRuntimeSubsystem*> Subsystems = GameInstance->GetSubsystemArrayCopy<UBeamRuntimeSubsystem>();
 
 			SignedOutOps.Reset(Subsystems.Num());
 			for (auto& Subsystem : Subsystems)
@@ -987,7 +987,7 @@ void UBeamRuntime::ManuallyInitializeSubsystem(TArray<TSubclassOf<UBeamRuntimeSu
 					                                          TEXT("Attempting to initialize subsystems that are already initialized"));
 					return;
 				}
-				const auto AllSubsystems = GameInstance->GetSubsystemArray<UBeamRuntimeSubsystem>();
+				const auto AllSubsystems = GameInstance->GetSubsystemArrayCopy<UBeamRuntimeSubsystem>();
 
 				bool DependencyError = false;
 				FString ErrorMessage;

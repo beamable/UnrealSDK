@@ -344,7 +344,7 @@ FBeamOperationHandle UBeamPartySubsystem::DeclinePlayerPartyInviteOperation(
 }
 
 FBeamOperationHandle UBeamPartySubsystem::CPP_DeclinePlayerPartyInviteOperation(FUserSlot UserSlot,
-	FBeamGamerTag PlayerGamerTag, FBeamOperationEventHandlerCode OnOperationEvent)
+                                                                                FBeamGamerTag PlayerGamerTag, FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
 		{UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
@@ -475,7 +475,7 @@ FBeamOperationHandle UBeamPartySubsystem::CPP_PromotePlayerToLeaderOperation(
 }
 
 FBeamOperationHandle UBeamPartySubsystem::PromotePlayerToMyPartyLeaderOperation(FUserSlot UserSlot,
-	FBeamGamerTag PlayerGamerTag, FBeamOperationEventHandler OnOperationEvent)
+                                                                                FBeamGamerTag PlayerGamerTag, FBeamOperationEventHandler OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->BeginOperation({UserSlot}, GetClass()->GetFName().ToString(),
 	                                                                  OnOperationEvent);
@@ -484,7 +484,7 @@ FBeamOperationHandle UBeamPartySubsystem::PromotePlayerToMyPartyLeaderOperation(
 }
 
 FBeamOperationHandle UBeamPartySubsystem::CPP_PromotePlayerToMyPartyLeaderOperation(FUserSlot UserSlot,
-	FBeamGamerTag PlayerGamerTag, FBeamOperationEventHandlerCode OnOperationEvent)
+                                                                                    FBeamGamerTag PlayerGamerTag, FBeamOperationEventHandlerCode OnOperationEvent)
 {
 	const auto Handle = Runtime->RequestTrackerSystem->CPP_BeginOperation(
 		{UserSlot}, GetClass()->GetFName().ToString(), OnOperationEvent);
@@ -1537,7 +1537,7 @@ void UBeamPartySubsystem::PartyUpdatedMessageHandler(FPartyRefreshNotificationMe
 void UBeamPartySubsystem::HandlePartyEventReceivedUpdatePartyState(FGuid PartyId, FUserSlot UserSlot,
                                                                    EBeamPartyEvent PartyEvent)
 {
-	UEnum* pEnum = FindObject<UEnum>(ANY_PACKAGE, TEXT(stringify(EBeamPartyEvent)), true);
+	UEnum* pEnum = FindObject<UEnum>(GetOuter(), TEXT(stringify(EBeamPartyEvent)), true);
 
 	FString PartyEventName = pEnum->GetNameStringByIndex(static_cast<int32>(PartyEvent));
 
@@ -1565,7 +1565,7 @@ void UBeamPartySubsystem::HandlePartyEventReceivedUpdatePartyState(FGuid PartyId
 void UBeamPartySubsystem::HandlePartyEventReceivedUpdateInvitesState(FGuid PartyId, FUserSlot UserSlot,
                                                                      EBeamPartyEvent PartyEvent)
 {
-	UEnum* pEnum = FindObject<UEnum>(ANY_PACKAGE, TEXT(stringify(EBeamPartyEvent)), true);
+	UEnum* pEnum = FindObject<UEnum>(GetOuter(), TEXT(stringify(EBeamPartyEvent)), true);
 
 	FString PartyEventName = pEnum->GetNameStringByIndex(static_cast<int32>(PartyEvent));
 
@@ -1674,17 +1674,4 @@ EBeamPartyRestriction UBeamPartySubsystem::GetRestrictionType(FString Restrictio
 	}
 
 	return EBeamPartyRestriction::BEAM_Unrestricted;
-}
-
-bool UBeamPartySubsystem::IsUserSlotAuthenticated(FUserSlot UserSlot, FString FunctionName,
-                                                  FBeamOperationHandle OperationHandle)
-{
-	FBeamRealmUser RealmUser;
-	if (!Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
-	{
-		FString ErrorMessage = "The function: " + FunctionName + " requires a authenticated user slot";
-		Runtime->RequestTrackerSystem->TriggerOperationError(OperationHandle, *ErrorMessage);
-		return false;
-	}
-	return true;
 }

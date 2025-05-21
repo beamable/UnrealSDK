@@ -21,7 +21,7 @@ public:
 
 private:
 	virtual FArchive& operator<<(struct FSoftObjectPtr& Value)
-	{		
+	{
 		// Serialize the FName as a string
 		if (IsLoading())
 		{
@@ -31,8 +31,25 @@ private:
 		}
 		else
 		{
-			FString Path = Value.ToSoftObjectPath().GetAssetPathString();			
+			FString Path = Value.ToSoftObjectPath().GetAssetPathString();
 			*this << Path;
+		}
+		return *this;
+	}
+
+
+	virtual FArchive& operator<<(class UObject*& Res) override
+	{
+		bool IsNull = Res == nullptr;
+
+		*this << IsNull;
+
+		if (!IsNull)
+		{
+			FSoftClassPath PathSoftObject = Res->GetClass();
+			FString Path = PathSoftObject.GetAssetPathString();
+			*this << Path;
+			Res->Serialize(*this);
 		}
 		return *this;
 	}
@@ -48,7 +65,7 @@ public:
 
 private:
 	virtual FArchive& operator<<(struct FSoftObjectPtr& Value)
-	{		
+	{
 		// Serialize the FName as a string
 		if (IsLoading())
 		{
@@ -58,8 +75,47 @@ private:
 		}
 		else
 		{
-			FString Path = Value.ToSoftObjectPath().GetAssetPathString();			
+			FString Path = Value.ToSoftObjectPath().GetAssetPathString();
 			*this << Path;
+		}
+		return *this;
+	}
+
+	/**
+	 * The for UObject* serialization we implement this custom way to handle it.
+	 * 
+	 * The case is for using UObject* in contents, the serialization wouldn't work correctly if this content contains a reference for a UObject*.
+	 * In order to fix it, we save the path for the class that will be serialized and recreate the object in the deserialization.
+	 * 
+	 * IMPORTANT: It works for most of the cases, but you want to do you won serialization you just need to override the Serialize(FArchive* Ar) in the UObject target.
+	 */
+	virtual FArchive& operator<<(class UObject*& Res) override
+	{
+		bool IsNull = false;
+
+		// Reading if the Res in the serialization was Null 
+		*this << IsNull;
+
+		if (!IsNull)
+		{
+			FString Path = "";
+			// Getting the class path to load the target class. 
+			*this << Path;
+			if (this->IsLoading())
+			{
+				// Recreate the target UObject and calling the serialize method.
+				FSoftClassPath PathSoftObject{Path};
+				UClass* Class = PathSoftObject.ResolveClass();
+
+				Res = NewObject<UObject>(GetTransientPackage(), Class);
+
+				if (!ensureAlwaysMsgf(
+					Res, TEXT("The deserialization of a un-existent class should be impossible, this means the cache wasn't invalidated. Take a look if you bumped your project version or the SDK version correctly.")))
+				{
+					return *this;
+				}
+			}
+			Res->Serialize(*this);
 		}
 		return *this;
 	}
@@ -90,7 +146,10 @@ public:
 	{
 		if (Ar.IsSaving())
 		{
-			Ar << GetDefault<UBeamCoreSettings>()->BeamableEnvironment->Version;			
+			FString AppVersion = GetProjectAppVersion();
+
+			Ar << AppVersion;
+			Ar << GetDefault<UBeamCoreSettings>()->BeamableEnvironment->Version;
 			Ar << ManifestId.AsString;
 
 			int32 CashSize = Cache.Num();
@@ -113,24 +172,6 @@ public:
 				if (ContentObject)
 				{
 					ContentObject->GetClass()->SerializeTaggedProperties(Ar, (uint8*)ContentObject, nullptr, nullptr);
-
-					int64 PositionBeforeUObjectData = Ar.Tell();
-
-					//Write an empty int to overwrite it again later with the final position after writing the uobject
-					int64 UObjectsDataSize = 0;
-					Ar << UObjectsDataSize;
-					//SerializeTaggedProperties will not serialize UObjects so a custom function for serializing UObjects needs to be called.
-					ContentObject->SerializeUObjects(Ar);
-
-					int64 FinalPosition = Ar.Tell();
-
-					//Seek to the placae before the uobject serialization began
-					Ar.Seek(PositionBeforeUObjectData);
-
-					//Overwrite the integar we wrote before with the final position after writing the uobject
-					Ar << FinalPosition;
-
-					Ar.Seek(FinalPosition);
 				}
 			}
 
@@ -166,10 +207,22 @@ public:
 			Ar << SdkVersion;
 			if (!CurrSdkVersion.Equals(SdkVersion))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("This cache was created with a different SDK version. It cannot be used with this version. So, we are invalidating it. CACHE_VERSION=%s, CURR_VERSION=%s"), *SdkVersion.ToString(), *CurrSdkVersion.ToString());
+				UE_LOG(LogTemp, Warning, TEXT("This cache was created with a different SDK version. It cannot be used with this version. So, we are invalidating it. CACHE_VERSION=%s, CURR_VERSION=%s"),
+				       *SdkVersion.ToString(), *CurrSdkVersion.ToString());
 				return false;
 			}
-			
+
+			FString ProjectAppVersion;
+			FString CurrentProjectAppVersion = GetProjectAppVersion();
+			Ar << ProjectAppVersion;
+
+			if (!CurrentProjectAppVersion.Equals(ProjectAppVersion))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("This cache was created with a different project app version. It cannot be used with this version. So, we are invalidating it. CACHE_VERSION=%s, CURR_VERSION=%s"),
+				       *ProjectAppVersion, *CurrentProjectAppVersion);
+				return false;
+			}
+
 			Ar << ManifestId.AsString;
 
 			//Read the number of contents in the serialized file.
@@ -198,27 +251,6 @@ public:
 				{
 					ContentObject->GetClass()->SerializeTaggedProperties(Ar, (uint8*)ContentObject, nullptr, nullptr);
 
-
-					int64 FinalPositionAfterReadingUObjectData;
-					//Get the position in which the uobject reading should be finished at
-					Ar << FinalPositionAfterReadingUObjectData;
-
-					//SerializeTaggedProperties will not serialize UObjects so a custom function for serializing UObjects needs to be called.
-					ContentObject->SerializeUObjects(Ar);
-
-					int64 CurrenArchivePos = Ar.Tell();
-
-					if (CurrenArchivePos > FinalPositionAfterReadingUObjectData)
-					{
-						UE_LOG(LogTemp, Error, TEXT("While serializing a uboject more data was read than possible, ignoring the rest of serialization"));
-						return false;
-					}
-					else if (CurrenArchivePos < FinalPositionAfterReadingUObjectData)
-					{
-						Ar.Seek(FinalPositionAfterReadingUObjectData);
-						UE_LOG(LogTemp, Warning, TEXT("While serializing a Uboject less data was read than it should"));
-					}
-
 					IdsStrings.Add(ContentId);
 					Cache.Add(ContentId, ContentObject);
 				}
@@ -229,10 +261,10 @@ public:
 				TArray<FBeamContentId> Contents;
 				Cache.GetKeys(Contents);
 
-				UE_LOG(LogTemp, Warning,TEXT("At least one object in the cache was corrupted."
-					"The list below contains all content ids that were successfully deserialized."
-					"\nIf you see a missing content, that was the one that was corrupted. \n%s"),
-					*FString::Join(IdsStrings, TEXT("\n")));
+				UE_LOG(LogTemp, Warning, TEXT("At least one object in the cache was corrupted."
+					       "The list below contains all content ids that were successfully deserialized."
+					       "\nIf you see a missing content, that was the one that was corrupted. \n%s"),
+				       *FString::Join(IdsStrings, TEXT("\n")));
 			}
 
 			// Read the number of  hash items
@@ -270,4 +302,17 @@ public:
 
 		return true;
 	}
+
+	FString GetProjectAppVersion() const
+	{
+		FString AppVersion;
+		GConfig->GetString(
+			TEXT("/Script/EngineSettings.GeneralProjectSettings"),
+			TEXT("ProjectVersion"),
+			AppVersion,
+			GGameIni
+		);
+
+		return AppVersion;
+	};
 };

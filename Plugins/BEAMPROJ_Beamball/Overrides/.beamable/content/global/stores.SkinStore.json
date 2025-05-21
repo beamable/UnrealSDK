@@ -1,0 +1,14 @@
+{
+  "listings": {
+    "links": [
+      "listings.skin1",
+      "listings.skin2"
+    ]
+  },
+  "symbol": {
+    "data": "stores.SkinStore"
+  },
+  "title": {
+    "data": ""
+  }
+}

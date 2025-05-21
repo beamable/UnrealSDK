@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ObjectTools.h"
 #include "BeamFlow/K2BeamNode_BeamFlow.h"
 #include "K2BeamNode_GetLocalState.generated.h"
 
@@ -44,10 +45,24 @@ public:
 		return Name;
 	};
 
+
+	virtual FText GetTooltipText() const override
+	{
+		auto Function = GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName());
+		FText BaseTooltip = {};
+		if (Function != nullptr)
+		{
+			return FText::FromString(ObjectTools::GetDefaultTooltipForFunction(Function));
+		}
+
+		return Super::GetTooltipText();
+	}
+
 	//UK2Node impl
 	virtual void AllocateDefaultPins() override;
 	virtual void ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
-	virtual UObject* GetJumpTargetForDoubleClick() const override;
+	virtual bool CanJumpToDefinition() const override { return true; };
+	virtual void JumpToDefinition() const override;
 	virtual FSlateIcon GetIconAndTint(FLinearColor& OutColor) const override;
 	virtual FLinearColor GetNodeTitleColor() const override;
 	//BeamFlowNode impl

@@ -106,13 +106,6 @@ public:
 	virtual void ParsePropertiesJsonObject(const TSharedPtr<FJsonObject>& JsonProperties);
 
 	/**
-	 * @brief Override this function if you have a UObject that needs to be serialized while caching or baking the content object
-	 * By default the UObjects will not be correctly serialized causing the editor to crash
-	 * you need to add "SkipSerialization" tag on them and do custom serialization using this function
-	 */
-	virtual void SerializeUObjects(FArchive& Ar) {};
-	
-	/**
 	 * @brief Walks up the ContentObject class hierarchy and creates a '.'-separated string from the top-most type to the current one.
 	 * This is leveraged by the Beamable backend for various things (for legacy reasons). 
 	 */

@@ -1,0 +1,27 @@
+{
+  "price": {
+    "data": {
+      "type": "currency",
+      "symbol": "currency.coins",
+      "amount": 50
+    }
+  },
+  "clientData": {
+    "data": {
+      "path": "/Script/BEAMPROJ_Beamball.BeamBallListingDataAsset\u0027/BEAMPROJ_Beamball/Database/Listing/Skin2.Skin2\u0027"
+    }
+  },
+  "offer": {
+    "data": {
+      "titles": [],
+      "descriptions": [],
+      "obtainCurrency": [],
+      "obtainItems": [
+        {
+          "contentId": "items.itemskin.skin2",
+          "properties": []
+        }
+      ]
+    }
+  }
+}

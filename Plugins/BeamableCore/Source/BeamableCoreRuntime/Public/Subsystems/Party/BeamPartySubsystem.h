@@ -22,6 +22,13 @@ struct BEAMABLECORERUNTIME_API FBeamPartyPlayerState
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FBeamGamerTag GameTag;
+
+	FBeamPartyPlayerState() = default;
+
+	explicit FBeamPartyPlayerState(const FBeamGamerTag& GameTag)
+		: GameTag(GameTag)
+	{
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -58,6 +65,14 @@ struct BEAMABLECORERUNTIME_API FBeamPartyInviteState
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FBeamGamerTag Sender;
+
+	FBeamPartyInviteState() = default;
+
+	FBeamPartyInviteState(const FGuid& PartyId, const FBeamGamerTag& Sender)
+		: PartyId(PartyId),
+		  Sender(Sender)
+	{
+	}
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPartyEventReceived, FGuid, PartyId, FUserSlot, UserSlot);
@@ -835,7 +850,4 @@ private:
 	static FString GetRestrictionString(EBeamPartyRestriction RestrictionType);
 
 	EBeamPartyRestriction GetRestrictionType(FString RestrictionName);
-
-	//TODO: We could move it to be reused by the others subsystems
-	bool IsUserSlotAuthenticated(FUserSlot UserSlot, FString FunctionName, FBeamOperationHandle OperationHandle);
 };
