@@ -27,38 +27,73 @@ public:
 	TArray<FString> DeviceIds = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UAccountMeExternalIdentityStreamData*> External = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString TokenCid = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString TokenPid = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString AccessToken = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FString RefreshToken = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FDateTime TokenExpiration = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FDateTime TokenIssuedAt = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int64 TokenExpiresIn = {};
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("id"), Id);
-		Serializer->WriteValue(TEXT("email"), Email);
-		Serializer->WriteValue(TEXT("language"), Language);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("email"), Email, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("language"), Language, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("scopes"), Scopes, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("thirdPartyAppAssociations"), ThirdPartyAppAssociations, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("deviceIds"), DeviceIds, Serializer);
-		UBeamJsonUtils::SerializeArray<UAccountMeExternalIdentityStreamData*>(TEXT("external"), External, Serializer);	
+		UBeamJsonUtils::SerializeArray<UAccountMeExternalIdentityStreamData*>(TEXT("external"), External, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("tokenCid"), TokenCid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("tokenPid"), TokenPid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("accessToken"), AccessToken, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("refreshToken"), RefreshToken, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("tokenExpiration"), TokenExpiration, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("tokenIssuedAt"), TokenIssuedAt, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("tokenExpiresIn"), TokenExpiresIn, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("id"), Id);
-		Serializer->WriteValue(TEXT("email"), Email);
-		Serializer->WriteValue(TEXT("language"), Language);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("email"), Email, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("language"), Language, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("scopes"), Scopes, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("thirdPartyAppAssociations"), ThirdPartyAppAssociations, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("deviceIds"), DeviceIds, Serializer);
-		UBeamJsonUtils::SerializeArray<UAccountMeExternalIdentityStreamData*>(TEXT("external"), External, Serializer);	
+		UBeamJsonUtils::SerializeArray<UAccountMeExternalIdentityStreamData*>(TEXT("external"), External, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("tokenCid"), TokenCid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("tokenPid"), TokenPid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("accessToken"), AccessToken, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("refreshToken"), RefreshToken, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("tokenExpiration"), TokenExpiration, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("tokenIssuedAt"), TokenIssuedAt, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("tokenExpiresIn"), TokenExpiresIn, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("id")), Id);
-		Email = Bag->GetStringField(TEXT("email"));
-		Language = Bag->GetStringField(TEXT("language"));
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("email")), Email);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("language")), Language);
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("scopes")), Scopes, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("thirdPartyAppAssociations")), ThirdPartyAppAssociations, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("deviceIds")), DeviceIds, OuterOwner);
-		UBeamJsonUtils::DeserializeArray<UAccountMeExternalIdentityStreamData*>(Bag->GetArrayField(TEXT("external")), External, OuterOwner);	
+		UBeamJsonUtils::DeserializeArray<UAccountMeExternalIdentityStreamData*>(Bag->GetArrayField(TEXT("external")), External, OuterOwner);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tokenCid")), TokenCid);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tokenPid")), TokenPid);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("accessToken")), AccessToken);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("refreshToken")), RefreshToken);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tokenExpiration")), TokenExpiration);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tokenIssuedAt")), TokenIssuedAt);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tokenExpiresIn")), TokenExpiresIn);	
 	}
 };
 

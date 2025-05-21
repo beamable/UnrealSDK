@@ -24,26 +24,26 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("versionString"), VersionString);
-		Serializer->WriteValue(TEXT("versionPrefix"), VersionPrefix);
-		Serializer->WriteValue(TEXT("versionSuffix"), VersionSuffix);
-		Serializer->WriteValue(TEXT("exists"), Exists);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("versionString"), VersionString, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("versionPrefix"), VersionPrefix, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("versionSuffix"), VersionSuffix, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("exists"), Exists, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("versionString"), VersionString);
-		Serializer->WriteValue(TEXT("versionPrefix"), VersionPrefix);
-		Serializer->WriteValue(TEXT("versionSuffix"), VersionSuffix);
-		Serializer->WriteValue(TEXT("exists"), Exists);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("versionString"), VersionString, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("versionPrefix"), VersionPrefix, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("versionSuffix"), VersionSuffix, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("exists"), Exists, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		VersionString = Bag->GetStringField(TEXT("versionString"));
-		VersionPrefix = Bag->GetStringField(TEXT("versionPrefix"));
-		VersionSuffix = Bag->GetStringField(TEXT("versionSuffix"));
-		Exists = Bag->GetBoolField(TEXT("exists"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("versionString")), VersionString);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("versionPrefix")), VersionPrefix);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("versionSuffix")), VersionSuffix);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("exists")), Exists);	
 	}
 };
 

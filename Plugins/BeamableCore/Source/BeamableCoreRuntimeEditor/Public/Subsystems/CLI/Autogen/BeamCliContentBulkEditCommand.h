@@ -9,13 +9,13 @@
 
 /**
  Description:
-  Saves a serialized content properties JSON-blob into a manifest
+  Saves a serialized content properties JSON-blob into a manifest (expects the blob to be in Beamable's Serialization Format). This command is not meant for manual usage. It is meant for CI/CD content enforcing use-cases.Editing of content is to be made either via engine integrations OR via a JSON text-editor
 
 Usage:
   Beamable.Tools content bulk-edit [options]
 
 Options:
-  --manifest-ids <manifest-ids>              Inform a subset of ','-separated manifest ids for which to return data. By default, will return all manifests []
+  --manifest-ids <manifest-ids>              Inform a subset of ','-separated manifest ids for which to return data. By default, will return just the global manifest [default: global]
   --content-ids <content-ids>                An array of existing content ids []
   --content-properties <content-properties>  An array, parallel to the --content-ids, that contain the escaped properties json for each content []
   --dryrun                                   [DEPRECATED] Run as much of the command as possible without making any network calls

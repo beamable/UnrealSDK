@@ -657,10 +657,11 @@ void UBeamContentObject::BuildPropertiesJsonObject(FJsonDomBuilder::FObject& Pro
 
 void UBeamContentObject::ParseBasicJsonObject(const TSharedPtr<FJsonObject>& Object)
 {
-	Id = Object->GetStringField(TEXT("id"));
-	Version = Object->GetStringField(TEXT("version"));
+	Object->TryGetStringField(TEXT("id"), Id);
+	Object->TryGetStringField(TEXT("version"), Version);
+	Object->TryGetStringArrayField(TEXT("tags"), Tags);
 
-	// We only parse properties IF we are a sup
+	// We only parse properties IF we are of the correct type to parse it at least partially.
 	if (!SupportLevel)
 	{
 		const auto Properties = Object->GetObjectField(TEXT("properties"));
@@ -2483,4 +2484,55 @@ void UBeamContentObject::ParseMapProperty(const FString& PropName, const TShared
 	{
 		UE_LOG(LogBeamContent, Error, TEXT("Content Serialization does not support maps with non-FString keys.\n"))
 	}
+}
+
+
+// STATIC UTILITIES
+void UBeamContentObject::NewFromTypeId(const TMap<FString, UClass*>& ContentTypeToContentClass, const FString& ContentTypeId, UBeamContentObject*& OutObject)
+{
+	UClass* ObjectClass;
+	TEnumAsByte<EBeamContentObjectSupportLevel> SupportLevel;
+	GetClassForTypeId(ContentTypeToContentClass, ContentTypeId, ObjectClass, SupportLevel);
+	if (ObjectClass)
+	{
+		OutObject = NewObject<UBeamContentObject>(GetTransientPackage(), ObjectClass, NAME_None, EObjectFlags::RF_Public | EObjectFlags::RF_Standalone);
+		OutObject->SupportLevel = SupportLevel;
+	}
+}
+
+void UBeamContentObject::GetClassForTypeId(const TMap<FString, UClass*>& ContentTypeToContentClass, const FString& ContentTypeId, UClass*& OutObjectClass, TEnumAsByte<EBeamContentObjectSupportLevel>& OutSupportLevel)
+{
+	bool bKnowsType;
+	auto TypeStringCpy = ContentTypeId;
+	do
+	{
+		bKnowsType = ContentTypeToContentClass.Contains(TypeStringCpy);
+		if (bKnowsType)
+		{
+			OutObjectClass = *ContentTypeToContentClass.Find(TypeStringCpy);
+
+			// Set the support level to full support only if we found a UClass that's an exact match to the given type id; otherwise, PartialSupport it is. 
+			OutSupportLevel = TypeStringCpy.Equals(ContentTypeId) ? FullSupport : PartialSupport;
+		}
+		else
+		{
+			int32 LastDotIdx;
+			TypeStringCpy.FindLastChar('.', LastDotIdx);
+
+			// Cut off the part of the type and let us fall through to the while clause again.
+			if (LastDotIdx != INDEX_NONE)
+			{
+				TypeStringCpy.MidInline(0, LastDotIdx);
+			}
+			// If we were at the last possible type and we still didn't find a UClass to deserialize it in it...
+			else
+			{
+				// Clear the type string so we fall out of the while loop.
+				TypeStringCpy.Empty();
+				OutObjectClass = UBeamContentObject::StaticClass();
+				OutSupportLevel = NoSupport;
+			}
+		}
+	}
+	while (!bKnowsType && !TypeStringCpy.IsEmpty());
 }

@@ -2126,9 +2126,9 @@ void UBeamRuntime::SendAnalyticsEvent(const FUserSlot& Slot, const FString& Even
 		TSharedPtr<FJsonObject> TopJsonObject = MakeShareable(new FJsonObject);
 
 		TopJsonObject->SetStringField(TEXT("op"), EventOpCode);
-		TopJsonObject->SetStringField(TEXT("category"), EventCategory);
-		TopJsonObject->SetStringField(TEXT("event"), EventName);
-		TopJsonObject->SetObjectField(TEXT("params"), EventParamsObj[i]);
+		TopJsonObject->SetStringField(TEXT("c"), EventCategory);
+		TopJsonObject->SetStringField(TEXT("e"), EventName);
+		TopJsonObject->SetObjectField(TEXT("p"), EventParamsObj[i]);
 
 		// Serialize the FJsonObject to a string
 		FString AnalyticsEvent;

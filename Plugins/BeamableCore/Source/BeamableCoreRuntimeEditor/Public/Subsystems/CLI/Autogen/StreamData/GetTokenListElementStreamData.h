@@ -24,26 +24,26 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("created"), Created);
-		Serializer->WriteValue(TEXT("device"), Device);
-		Serializer->WriteValue(TEXT("platform"), Platform);
-		Serializer->WriteValue(TEXT("token"), Token);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("device"), Device, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("platform"), Platform, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("token"), Token, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("created"), Created);
-		Serializer->WriteValue(TEXT("device"), Device);
-		Serializer->WriteValue(TEXT("platform"), Platform);
-		Serializer->WriteValue(TEXT("token"), Token);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("created"), Created, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("device"), Device, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("platform"), Platform, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("token"), Token, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Created = Bag->GetStringField(TEXT("created"));
-		Device = Bag->GetStringField(TEXT("device"));
-		Platform = Bag->GetStringField(TEXT("platform"));
-		Token = Bag->GetStringField(TEXT("token"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("created")), Created);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("device")), Device);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("platform")), Platform);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("token")), Token);	
 	}
 };
 

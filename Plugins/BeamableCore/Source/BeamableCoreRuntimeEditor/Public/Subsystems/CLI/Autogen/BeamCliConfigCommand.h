@@ -24,26 +24,26 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("host"), Host);
-		Serializer->WriteValue(TEXT("cid"), Cid);
-		Serializer->WriteValue(TEXT("pid"), Pid);
-		Serializer->WriteValue(TEXT("configPath"), ConfigPath);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("host"), Host, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("cid"), Cid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("pid"), Pid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("configPath"), ConfigPath, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("host"), Host);
-		Serializer->WriteValue(TEXT("cid"), Cid);
-		Serializer->WriteValue(TEXT("pid"), Pid);
-		Serializer->WriteValue(TEXT("configPath"), ConfigPath);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("host"), Host, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("cid"), Cid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("pid"), Pid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("configPath"), ConfigPath, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Host = Bag->GetStringField(TEXT("host"));
-		Cid = Bag->GetStringField(TEXT("cid"));
-		Pid = Bag->GetStringField(TEXT("pid"));
-		ConfigPath = Bag->GetStringField(TEXT("configPath"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("host")), Host);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("cid")), Cid);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("pid")), Pid);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("configPath")), ConfigPath);	
 	}
 };
 

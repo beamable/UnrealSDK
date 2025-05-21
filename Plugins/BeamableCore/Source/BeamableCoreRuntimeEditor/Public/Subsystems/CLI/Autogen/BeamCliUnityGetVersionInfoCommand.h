@@ -22,23 +22,23 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("beamableNugetVersion"), BeamableNugetVersion);
-		Serializer->WriteValue(TEXT("sdkVersion"), SdkVersion);
-		Serializer->WriteValue(TEXT("packageFolder"), PackageFolder);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("beamableNugetVersion"), BeamableNugetVersion, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("sdkVersion"), SdkVersion, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("packageFolder"), PackageFolder, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("beamableNugetVersion"), BeamableNugetVersion);
-		Serializer->WriteValue(TEXT("sdkVersion"), SdkVersion);
-		Serializer->WriteValue(TEXT("packageFolder"), PackageFolder);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("beamableNugetVersion"), BeamableNugetVersion, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("sdkVersion"), SdkVersion, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("packageFolder"), PackageFolder, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		BeamableNugetVersion = Bag->GetStringField(TEXT("beamableNugetVersion"));
-		SdkVersion = Bag->GetStringField(TEXT("sdkVersion"));
-		PackageFolder = Bag->GetStringField(TEXT("packageFolder"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("beamableNugetVersion")), BeamableNugetVersion);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("sdkVersion")), SdkVersion);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("packageFolder")), PackageFolder);	
 	}
 };
 

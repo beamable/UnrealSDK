@@ -22,23 +22,23 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("service"), Service);
-		Serializer->WriteValue(TEXT("isBuilt"), IsBuilt);
-		Serializer->WriteValue(TEXT("openApi"), OpenApi);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("service"), Service, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("isBuilt"), IsBuilt, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("openApi"), OpenApi, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("service"), Service);
-		Serializer->WriteValue(TEXT("isBuilt"), IsBuilt);
-		Serializer->WriteValue(TEXT("openApi"), OpenApi);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("service"), Service, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("isBuilt"), IsBuilt, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("openApi"), OpenApi, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Service = Bag->GetStringField(TEXT("service"));
-		IsBuilt = Bag->GetBoolField(TEXT("isBuilt"));
-		OpenApi = Bag->GetStringField(TEXT("openApi"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("service")), Service);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("isBuilt")), IsBuilt);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("openApi")), OpenApi);	
 	}
 };
 

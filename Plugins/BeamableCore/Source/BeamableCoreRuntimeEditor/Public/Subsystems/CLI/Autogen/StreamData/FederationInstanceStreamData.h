@@ -22,21 +22,21 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("FederationId"), FederationId);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("FederationId"), FederationId, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("FederationTypes"), FederationTypes, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("LocalSettings"), LocalSettings, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("FederationId"), FederationId);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("FederationId"), FederationId, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("FederationTypes"), FederationTypes, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("LocalSettings"), LocalSettings, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		FederationId = Bag->GetStringField(TEXT("FederationId"));
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("FederationId")), FederationId);
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("FederationTypes")), FederationTypes, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("LocalSettings")), LocalSettings, OuterOwner);	
 	}

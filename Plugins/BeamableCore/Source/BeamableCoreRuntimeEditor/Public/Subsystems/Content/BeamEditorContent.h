@@ -15,6 +15,7 @@
 #include "UObject/SavePackage.h"
 #include "Factories/DataTableFactory.h"
 #include "GameDelegates.h"
+#include "AutoGen/Arrays/ArrayOfString.h"
 #include "Subsystems/CLI/BeamCli.h"
 #include "Subsystems/CLI/Autogen/StreamData/LocalContentManifestStreamData.h"
 #include "BeamEditorContent.generated.h"
@@ -101,7 +102,11 @@ public:
 	UClass** FindContentTypeByName(FString TypeName);
 	UClass** FindContentTypeByTypeId(FString TypeId);
 
-	void FindSubTypesOfContentType(const TArray<FString>& TypeNames, TMap<FString, TArray<FString>>& OutMappings);
+	UFUNCTION(BlueprintCallable)
+	UClass* GetContentTypeByTypeId(FString TypeId);
+
+	UFUNCTION(BlueprintCallable)
+	void FindSubTypesOfContentType(const TArray<FString>& TypeNames, TMap<FString, FArrayOfString>& OutMappings);
 
 	bool TryLoadContentObject(const FBeamContentManifestId& OwnerManifest, FBeamContentId ContentId, UBeamContentObject*& OutLoadedContentObject);
 

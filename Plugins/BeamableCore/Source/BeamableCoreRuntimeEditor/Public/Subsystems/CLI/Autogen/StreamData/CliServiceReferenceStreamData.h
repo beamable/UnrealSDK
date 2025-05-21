@@ -35,40 +35,40 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("serviceName"), ServiceName);
-		Serializer->WriteValue(TEXT("checksum"), Checksum);
-		Serializer->WriteValue(TEXT("enabled"), Enabled);
-		Serializer->WriteValue(TEXT("imageId"), ImageId);
-		Serializer->WriteValue(TEXT("templateId"), TemplateId);
-		Serializer->WriteValue(TEXT("comments"), Comments);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceName"), ServiceName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("checksum"), Checksum, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("enabled"), Enabled, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("imageId"), ImageId, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("templateId"), TemplateId, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("comments"), Comments, Serializer);
 		UBeamJsonUtils::SerializeArray<UCliServiceDependencyStreamData*>(TEXT("dependencies"), Dependencies, Serializer);
-		Serializer->WriteValue(TEXT("containerHealthCheckPort"), ContainerHealthCheckPort);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("containerHealthCheckPort"), ContainerHealthCheckPort, Serializer);
 		UBeamJsonUtils::SerializeArray<UCliServiceComponentStreamData*>(TEXT("components"), Components, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("serviceName"), ServiceName);
-		Serializer->WriteValue(TEXT("checksum"), Checksum);
-		Serializer->WriteValue(TEXT("enabled"), Enabled);
-		Serializer->WriteValue(TEXT("imageId"), ImageId);
-		Serializer->WriteValue(TEXT("templateId"), TemplateId);
-		Serializer->WriteValue(TEXT("comments"), Comments);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceName"), ServiceName, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("checksum"), Checksum, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("enabled"), Enabled, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("imageId"), ImageId, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("templateId"), TemplateId, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("comments"), Comments, Serializer);
 		UBeamJsonUtils::SerializeArray<UCliServiceDependencyStreamData*>(TEXT("dependencies"), Dependencies, Serializer);
-		Serializer->WriteValue(TEXT("containerHealthCheckPort"), ContainerHealthCheckPort);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("containerHealthCheckPort"), ContainerHealthCheckPort, Serializer);
 		UBeamJsonUtils::SerializeArray<UCliServiceComponentStreamData*>(TEXT("components"), Components, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		ServiceName = Bag->GetStringField(TEXT("serviceName"));
-		Checksum = Bag->GetStringField(TEXT("checksum"));
-		Enabled = Bag->GetBoolField(TEXT("enabled"));
-		ImageId = Bag->GetStringField(TEXT("imageId"));
-		TemplateId = Bag->GetStringField(TEXT("templateId"));
-		Comments = Bag->GetStringField(TEXT("comments"));
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceName")), ServiceName);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("checksum")), Checksum);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("enabled")), Enabled);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("imageId")), ImageId);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("templateId")), TemplateId);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("comments")), Comments);
 		UBeamJsonUtils::DeserializeArray<UCliServiceDependencyStreamData*>(Bag->GetArrayField(TEXT("dependencies")), Dependencies, OuterOwner);
-		FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("containerHealthCheckPort")), ContainerHealthCheckPort);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("containerHealthCheckPort")), ContainerHealthCheckPort);
 		UBeamJsonUtils::DeserializeArray<UCliServiceComponentStreamData*>(Bag->GetArrayField(TEXT("components")), Components, OuterOwner);	
 	}
 };

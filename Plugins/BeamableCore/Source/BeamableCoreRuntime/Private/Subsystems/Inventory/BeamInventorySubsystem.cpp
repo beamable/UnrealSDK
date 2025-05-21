@@ -735,7 +735,7 @@ void UBeamInventorySubsystem::MergeInventoryViewIntoState(const UInventoryView* 
 		}
 	};
 	TArray<FReceivedCurrencyData> ReceivedCurrencies;
-	for (const auto ReceivedCurrency : InventoryView->Currencies)
+	for (auto ReceivedCurrency : InventoryView->Currencies)
 		ReceivedCurrencies.Add({ReceivedCurrency->Id, ReceivedCurrency});
 
 	// Then, we iterate over all local currencies we have and:

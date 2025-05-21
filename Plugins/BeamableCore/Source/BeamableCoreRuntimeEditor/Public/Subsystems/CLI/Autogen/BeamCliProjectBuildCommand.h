@@ -21,19 +21,19 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("service"), Service);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("service"), Service, Serializer);
 		UBeamJsonUtils::SerializeUObject<UProjectErrorReportStreamData*>("report", Report, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("service"), Service);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("service"), Service, Serializer);
 		UBeamJsonUtils::SerializeUObject<UProjectErrorReportStreamData*>("report", Report, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Service = Bag->GetStringField(TEXT("service"));
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("service")), Service);
 		UBeamJsonUtils::DeserializeUObject<UProjectErrorReportStreamData*>("report", Bag, Report, OuterOwner);	
 	}
 };

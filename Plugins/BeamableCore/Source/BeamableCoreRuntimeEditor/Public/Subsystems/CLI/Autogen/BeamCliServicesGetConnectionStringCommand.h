@@ -18,17 +18,17 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("connectionString"), ConnectionString);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("connectionString"), ConnectionString, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("connectionString"), ConnectionString);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("connectionString"), ConnectionString, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		ConnectionString = Bag->GetStringField(TEXT("connectionString"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("connectionString")), ConnectionString);	
 	}
 };
 

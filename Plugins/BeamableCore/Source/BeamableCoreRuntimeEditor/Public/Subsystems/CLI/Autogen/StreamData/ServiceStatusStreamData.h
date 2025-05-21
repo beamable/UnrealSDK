@@ -29,24 +29,24 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("service"), Service);
-		Serializer->WriteValue(TEXT("serviceType"), ServiceType);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("service"), Service, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceType"), ServiceType, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("groups"), Groups, Serializer);
 		UBeamJsonUtils::SerializeArray<UServicesForRouteCollectionStreamData*>(TEXT("availableRoutes"), AvailableRoutes, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("service"), Service);
-		Serializer->WriteValue(TEXT("serviceType"), ServiceType);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("service"), Service, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceType"), ServiceType, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("groups"), Groups, Serializer);
 		UBeamJsonUtils::SerializeArray<UServicesForRouteCollectionStreamData*>(TEXT("availableRoutes"), AvailableRoutes, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Service = Bag->GetStringField(TEXT("service"));
-		ServiceType = Bag->GetStringField(TEXT("serviceType"));
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("service")), Service);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceType")), ServiceType);
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("groups")), Groups, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<UServicesForRouteCollectionStreamData*>(Bag->GetArrayField(TEXT("availableRoutes")), AvailableRoutes, OuterOwner);	
 	}

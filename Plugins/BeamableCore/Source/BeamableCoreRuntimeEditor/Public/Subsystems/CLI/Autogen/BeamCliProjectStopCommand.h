@@ -24,19 +24,19 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("serviceName"), ServiceName);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceName"), ServiceName, Serializer);
 		UBeamJsonUtils::SerializeUObject<UServiceInstanceStreamData*>("instance", Instance, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("serviceName"), ServiceName);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("serviceName"), ServiceName, Serializer);
 		UBeamJsonUtils::SerializeUObject<UServiceInstanceStreamData*>("instance", Instance, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		ServiceName = Bag->GetStringField(TEXT("serviceName"));
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("serviceName")), ServiceName);
 		UBeamJsonUtils::DeserializeUObject<UServiceInstanceStreamData*>("instance", Bag, Instance, OuterOwner);	
 	}
 };

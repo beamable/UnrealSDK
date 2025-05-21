@@ -23,22 +23,22 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("cid"), Cid);
-		Serializer->WriteValue(TEXT("pid"), Pid);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("cid"), Cid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("pid"), Pid, Serializer);
 		UBeamJsonUtils::SerializeArray<UServiceFederationsStreamData*>(TEXT("services"), Services, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("cid"), Cid);
-		Serializer->WriteValue(TEXT("pid"), Pid);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("cid"), Cid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("pid"), Pid, Serializer);
 		UBeamJsonUtils::SerializeArray<UServiceFederationsStreamData*>(TEXT("services"), Services, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Cid = Bag->GetStringField(TEXT("cid"));
-		Pid = Bag->GetStringField(TEXT("pid"));
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("cid")), Cid);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("pid")), Pid);
 		UBeamJsonUtils::DeserializeArray<UServiceFederationsStreamData*>(Bag->GetArrayField(TEXT("services")), Services, OuterOwner);	
 	}
 };
