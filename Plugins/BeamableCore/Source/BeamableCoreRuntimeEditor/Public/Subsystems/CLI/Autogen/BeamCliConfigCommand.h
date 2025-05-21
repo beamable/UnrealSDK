@@ -24,26 +24,26 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("host"), Host);
-		Serializer->WriteValue(TEXT("cid"), Cid);
-		Serializer->WriteValue(TEXT("pid"), Pid);
-		Serializer->WriteValue(TEXT("configPath"), ConfigPath);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("host"), Host, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("cid"), Cid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("pid"), Pid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("configPath"), ConfigPath, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("host"), Host);
-		Serializer->WriteValue(TEXT("cid"), Cid);
-		Serializer->WriteValue(TEXT("pid"), Pid);
-		Serializer->WriteValue(TEXT("configPath"), ConfigPath);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("host"), Host, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("cid"), Cid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("pid"), Pid, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("configPath"), ConfigPath, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Host = Bag->GetStringField(TEXT("host"));
-		Cid = Bag->GetStringField(TEXT("cid"));
-		Pid = Bag->GetStringField(TEXT("pid"));
-		ConfigPath = Bag->GetStringField(TEXT("configPath"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("host")), Host);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("cid")), Cid);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("pid")), Pid);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("configPath")), ConfigPath);	
 	}
 };
 
@@ -56,6 +56,8 @@ Usage:
   Beamable.Tools config [command] [options]
 
 Options:
+  --no-overrides                         Whether this command should ignore the local config overrides [default: False]
+  --set                                  When true, whatever '--host', '--cid', '--pid' values you provide will be set. If '--no-overrides' is true, this will set the version controlled configuration file. If not, this will set the local overrides file inside the .beamable/temp directory [default: False]
   --dryrun                               [DEPRECATED] Run as much of the command as possible without making any network calls
   --cid <cid>                            CID (CustomerId) to use (found in Portal->Account); defaults to whatever is in '.beamable/connection-configuration.json'
   --pid <pid>                            PID (Realm ID) to use (found in Portal -> Games -> Any Realm's details); defaults to whatever is in '.beamable/connection-configuration.json'

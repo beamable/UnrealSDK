@@ -1675,16 +1675,3 @@ EBeamPartyRestriction UBeamPartySubsystem::GetRestrictionType(FString Restrictio
 
 	return EBeamPartyRestriction::BEAM_Unrestricted;
 }
-
-bool UBeamPartySubsystem::IsUserSlotAuthenticated(FUserSlot UserSlot, FString FunctionName,
-                                                  FBeamOperationHandle OperationHandle)
-{
-	FBeamRealmUser RealmUser;
-	if (!Runtime->UserSlotSystem->GetUserDataAtSlot(UserSlot, RealmUser, this))
-	{
-		FString ErrorMessage = "The function: " + FunctionName + " requires a authenticated user slot";
-		Runtime->RequestTrackerSystem->TriggerOperationError(OperationHandle, *ErrorMessage);
-		return false;
-	}
-	return true;
-}

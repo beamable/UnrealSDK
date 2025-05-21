@@ -20,19 +20,19 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("itemCount"), ItemCount);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("itemCount"), ItemCount, Serializer);
 		UBeamJsonUtils::SerializeArray<UGetTokenListElementStreamData*>(TEXT("items"), Items, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("itemCount"), ItemCount);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("itemCount"), ItemCount, Serializer);
 		UBeamJsonUtils::SerializeArray<UGetTokenListElementStreamData*>(TEXT("items"), Items, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		ItemCount = Bag->GetIntegerField(TEXT("itemCount"));
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("itemCount")), ItemCount);
 		UBeamJsonUtils::DeserializeArray<UGetTokenListElementStreamData*>(Bag->GetArrayField(TEXT("items")), Items, OuterOwner);	
 	}
 };

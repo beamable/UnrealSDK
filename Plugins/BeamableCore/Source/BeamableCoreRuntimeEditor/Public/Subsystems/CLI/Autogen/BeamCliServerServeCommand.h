@@ -20,20 +20,20 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("port"), Port);
-		Serializer->WriteValue(TEXT("uri"), Uri);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("port"), Port, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("uri"), Uri, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("port"), Port);
-		Serializer->WriteValue(TEXT("uri"), Uri);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("port"), Port, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("uri"), Uri, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Port = Bag->GetIntegerField(TEXT("port"));
-		Uri = Bag->GetStringField(TEXT("uri"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("port")), Port);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("uri")), Uri);	
 	}
 };
 

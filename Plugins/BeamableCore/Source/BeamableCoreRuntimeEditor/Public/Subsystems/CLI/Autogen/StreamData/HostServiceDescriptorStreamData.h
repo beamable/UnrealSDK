@@ -30,33 +30,33 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("service"), Service);
-		Serializer->WriteValue(TEXT("processId"), ProcessId);
-		Serializer->WriteValue(TEXT("healthPort"), HealthPort);
-		Serializer->WriteValue(TEXT("routingKey"), RoutingKey);
-		Serializer->WriteValue(TEXT("startedByAccountId"), StartedByAccountId);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("service"), Service, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("processId"), ProcessId, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("healthPort"), HealthPort, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("routingKey"), RoutingKey, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("startedByAccountId"), StartedByAccountId, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("groups"), Groups, Serializer);
 		UBeamJsonUtils::SerializeArray<UFederationInstanceStreamData*>(TEXT("federations"), Federations, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("service"), Service);
-		Serializer->WriteValue(TEXT("processId"), ProcessId);
-		Serializer->WriteValue(TEXT("healthPort"), HealthPort);
-		Serializer->WriteValue(TEXT("routingKey"), RoutingKey);
-		Serializer->WriteValue(TEXT("startedByAccountId"), StartedByAccountId);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("service"), Service, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("processId"), ProcessId, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("healthPort"), HealthPort, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("routingKey"), RoutingKey, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("startedByAccountId"), StartedByAccountId, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("groups"), Groups, Serializer);
 		UBeamJsonUtils::SerializeArray<UFederationInstanceStreamData*>(TEXT("federations"), Federations, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Service = Bag->GetStringField(TEXT("service"));
-		ProcessId = Bag->GetIntegerField(TEXT("processId"));
-		HealthPort = Bag->GetIntegerField(TEXT("healthPort"));
-		RoutingKey = Bag->GetStringField(TEXT("routingKey"));
-		FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("startedByAccountId")), StartedByAccountId);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("service")), Service);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("processId")), ProcessId);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("healthPort")), HealthPort);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("routingKey")), RoutingKey);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("startedByAccountId")), StartedByAccountId);
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("groups")), Groups, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<UFederationInstanceStreamData*>(Bag->GetArrayField(TEXT("federations")), Federations, OuterOwner);	
 	}

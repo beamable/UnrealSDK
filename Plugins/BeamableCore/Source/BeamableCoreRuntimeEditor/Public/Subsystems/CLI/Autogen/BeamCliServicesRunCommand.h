@@ -20,20 +20,20 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("Success"), Success);
-		Serializer->WriteValue(TEXT("FailureReason"), FailureReason);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Success"), Success, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("FailureReason"), FailureReason, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("Success"), Success);
-		Serializer->WriteValue(TEXT("FailureReason"), FailureReason);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("Success"), Success, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("FailureReason"), FailureReason, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Success = Bag->GetBoolField(TEXT("Success"));
-		FailureReason = Bag->GetStringField(TEXT("FailureReason"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("Success")), Success);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("FailureReason")), FailureReason);	
 	}
 };
 
@@ -52,20 +52,20 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("BeamoId"), BeamoId);
-		Serializer->WriteValue(TEXT("LocalDeployProgress"), LocalDeployProgress);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("BeamoId"), BeamoId, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("LocalDeployProgress"), LocalDeployProgress, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("BeamoId"), BeamoId);
-		Serializer->WriteValue(TEXT("LocalDeployProgress"), LocalDeployProgress);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("BeamoId"), BeamoId, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("LocalDeployProgress"), LocalDeployProgress, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		BeamoId = Bag->GetStringField(TEXT("BeamoId"));
-		LocalDeployProgress = Bag->GetNumberField(TEXT("LocalDeployProgress"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("BeamoId")), BeamoId);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("LocalDeployProgress")), LocalDeployProgress);	
 	}
 };
 

@@ -24,25 +24,25 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("beamoId"), BeamoId);
-		Serializer->WriteValue(TEXT("csprojPath"), CsprojPath);
-		Serializer->WriteValue(TEXT("shouldBeEnabledOnRemote"), ShouldBeEnabledOnRemote);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("beamoId"), BeamoId, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("csprojPath"), CsprojPath, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("shouldBeEnabledOnRemote"), ShouldBeEnabledOnRemote, Serializer);
 		UBeamJsonUtils::SerializeArray<UUnityAssemblyReferenceDataStreamData*>(TEXT("unityReferences"), UnityReferences, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("beamoId"), BeamoId);
-		Serializer->WriteValue(TEXT("csprojPath"), CsprojPath);
-		Serializer->WriteValue(TEXT("shouldBeEnabledOnRemote"), ShouldBeEnabledOnRemote);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("beamoId"), BeamoId, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("csprojPath"), CsprojPath, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("shouldBeEnabledOnRemote"), ShouldBeEnabledOnRemote, Serializer);
 		UBeamJsonUtils::SerializeArray<UUnityAssemblyReferenceDataStreamData*>(TEXT("unityReferences"), UnityReferences, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		BeamoId = Bag->GetStringField(TEXT("beamoId"));
-		CsprojPath = Bag->GetStringField(TEXT("csprojPath"));
-		ShouldBeEnabledOnRemote = Bag->GetBoolField(TEXT("shouldBeEnabledOnRemote"));
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("beamoId")), BeamoId);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("csprojPath")), CsprojPath);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("shouldBeEnabledOnRemote")), ShouldBeEnabledOnRemote);
 		UBeamJsonUtils::DeserializeArray<UUnityAssemblyReferenceDataStreamData*>(Bag->GetArrayField(TEXT("unityReferences")), UnityReferences, OuterOwner);	
 	}
 };

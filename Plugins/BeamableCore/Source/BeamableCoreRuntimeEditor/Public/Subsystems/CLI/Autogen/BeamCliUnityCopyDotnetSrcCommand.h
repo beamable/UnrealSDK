@@ -18,17 +18,17 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("filesCopied"), FilesCopied);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("filesCopied"), FilesCopied, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("filesCopied"), FilesCopied);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("filesCopied"), FilesCopied, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		FilesCopied = Bag->GetIntegerField(TEXT("filesCopied"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("filesCopied")), FilesCopied);	
 	}
 };
 

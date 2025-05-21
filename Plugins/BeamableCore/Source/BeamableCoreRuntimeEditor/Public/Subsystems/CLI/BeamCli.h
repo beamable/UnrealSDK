@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AutoGen/Optionals/OptionalBool.h"
 #include "Misc/MonitoredProcess.h"
-#include "Subsystems/BeamEditor.h"
 #include "Subsystems/BeamEditorSubsystem.h"
 #include "BeamCli.generated.h"
 
@@ -36,7 +36,7 @@ protected:
 	 */
 	FString CurrentCliServerUri;
 
-	void StartCliServer(FBeamOperationHandle Op);
+	void StartCliServer(FBeamOperationHandle Op);	
 
 public:
 	/**
@@ -62,7 +62,7 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="Params"))
 	void RunCommandSync(UBeamCliCommand* Command, const TArray<FString>& Params);
-	
+
 
 	/**
 	 * @brief Stops a long-running command. 
@@ -70,6 +70,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Beam")
 	void StopCommand(UBeamCliCommand* Command);
 
+	/**
+	 * @brief Stops all commands that are running and then stops the CLI server itself.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam")
+	void StopCli();
+	
 	/**
 	 * @brief Whether or not the CLI is installed on this machine. We check for all editor integrations that require the CLI to work. 
 	 */

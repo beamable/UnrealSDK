@@ -28,32 +28,32 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("accessToken"), AccessToken);
-		Serializer->WriteValue(TEXT("challengeToken"), ChallengeToken);
-		Serializer->WriteValue(TEXT("expiresIn"), ExpiresIn);
-		Serializer->WriteValue(TEXT("refreshToken"), RefreshToken);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("accessToken"), AccessToken, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("challengeToken"), ChallengeToken, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("expiresIn"), ExpiresIn, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("refreshToken"), RefreshToken, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("scopes"), Scopes, Serializer);
-		Serializer->WriteValue(TEXT("tokenType"), TokenType);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("tokenType"), TokenType, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("accessToken"), AccessToken);
-		Serializer->WriteValue(TEXT("challengeToken"), ChallengeToken);
-		Serializer->WriteValue(TEXT("expiresIn"), ExpiresIn);
-		Serializer->WriteValue(TEXT("refreshToken"), RefreshToken);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("accessToken"), AccessToken, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("challengeToken"), ChallengeToken, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("expiresIn"), ExpiresIn, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("refreshToken"), RefreshToken, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("scopes"), Scopes, Serializer);
-		Serializer->WriteValue(TEXT("tokenType"), TokenType);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("tokenType"), TokenType, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		AccessToken = Bag->GetStringField(TEXT("accessToken"));
-		ChallengeToken = Bag->GetStringField(TEXT("challengeToken"));
-		FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("expiresIn")), ExpiresIn);
-		RefreshToken = Bag->GetStringField(TEXT("refreshToken"));
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("accessToken")), AccessToken);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("challengeToken")), ChallengeToken);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("expiresIn")), ExpiresIn);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("refreshToken")), RefreshToken);
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("scopes")), Scopes, OuterOwner);
-		TokenType = Bag->GetStringField(TEXT("tokenType"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("tokenType")), TokenType);	
 	}
 };
 

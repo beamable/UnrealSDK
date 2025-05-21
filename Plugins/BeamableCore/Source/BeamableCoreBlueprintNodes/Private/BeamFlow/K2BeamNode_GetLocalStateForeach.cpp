@@ -12,6 +12,7 @@
 #include "K2Node_IfThenElse.h"
 #include "K2Node_TemporaryVariable.h"
 #include "KismetCompiler.h"
+#include "SourceCodeNavigation.h"
 #include "Kismet/KismetArrayLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -72,9 +73,13 @@ FLinearColor UK2BeamNode_GetLocalStateForeach::GetNodeTitleColor() const
 	return FLinearColor::FromSRGBColor(FColor::FromHex("#674CC5"));
 }
 
-UObject* UK2BeamNode_GetLocalStateForeach::GetJumpTargetForDoubleClick() const
+void UK2BeamNode_GetLocalStateForeach::JumpToDefinition() const
 {
-	return Super::GetJumpTargetForDoubleClick();
+	const auto Function = GetRuntimeSubsystemClass()->FindFunctionByName(GetFunctionName());
+
+	if (!Function) return;
+
+	FSourceCodeNavigation::NavigateToFunction(Function);
 }
 
 void UK2BeamNode_GetLocalStateForeach::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
@@ -89,12 +94,6 @@ void UK2BeamNode_GetLocalStateForeach::ExpandNode(FKismetCompilerContext& Compil
 
 	const UK2Node_CallFunction* CallGetSubsystem = BeamK2::CreateCallFunctionNode(this, CompilerContext, SourceGraph, GetSubsystemSelfFunctionName(), GetRuntimeSubsystemClass());
 	const UK2Node_CallFunction* CallFunction = BeamK2::CreateCallFunctionNode(this, CompilerContext, SourceGraph, GetFunctionName(), GetRuntimeSubsystemClass());
-
-
-	// Check if there's only one input execute pin
-	const auto ExecutionPin = K2Schema->FindExecutionPin(*this, EGPD_Input);
-	if (ExecutionPin->LinkedTo.Num() > 1)
-		CompilerContext.MessageLog.Error(TEXT("@@ has more than one input! Beam Flow nodes do not allow that!"), this);
 
 
 	// Connects the result of the "static BeamApi::GetSelf" call to the "non-static RuntimeSubsystem::___function" Call Function node.

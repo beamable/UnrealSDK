@@ -48,23 +48,23 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("logLevel"), LogLevel);
-		Serializer->WriteValue(TEXT("message"), Message);
-		Serializer->WriteValue(TEXT("timestamp"), Timestamp);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("logLevel"), LogLevel, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("timestamp"), Timestamp, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("logLevel"), LogLevel);
-		Serializer->WriteValue(TEXT("message"), Message);
-		Serializer->WriteValue(TEXT("timestamp"), Timestamp);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("logLevel"), LogLevel, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("timestamp"), Timestamp, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		LogLevel = Bag->GetStringField(TEXT("logLevel"));
-		Message = Bag->GetStringField(TEXT("message"));
-		FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("timestamp")), Timestamp);	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("logLevel")), LogLevel);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("message")), Message);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("timestamp")), Timestamp);	
 	}
 };
 

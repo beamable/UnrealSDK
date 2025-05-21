@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "K2BeamNode_BeamFlow.h"
+#include "K2BeamNode_GetLocalState.h"
 #include "K2Node_BreakStruct.h"
 #include "K2Node_CallFunction.h"
 #include "RequestTracker/BeamOperation.h"
@@ -84,6 +85,18 @@ class BEAMABLECOREBLUEPRINTNODES_API UK2BeamNode_Operation : public UK2BeamNode_
 		Name = Name.Replace(TEXT("Subsystem"), TEXT(""));
 		return Name;
 	};
+
+	virtual FText GetTooltipText() const override
+	{
+		auto Function = GetRuntimeSubsystemClass()->FindFunctionByName(GetOperationFunctionName());
+		FText BaseTooltip = {};
+		if (Function != nullptr)
+		{
+			return FText::FromString(ObjectTools::GetDefaultTooltipForFunction(Function));
+		}
+
+		return Super::GetTooltipText();
+	}
 
 	virtual FText GetKeywords() const override { return FText::FromString(FString::Printf(TEXT("Beam %s"), *GetServiceName())); };
 

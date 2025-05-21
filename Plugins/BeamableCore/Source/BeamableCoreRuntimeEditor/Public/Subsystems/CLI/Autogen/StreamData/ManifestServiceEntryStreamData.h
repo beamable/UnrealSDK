@@ -31,10 +31,10 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("beamoId"), BeamoId);
-		Serializer->WriteValue(TEXT("shouldBeEnabledOnRemote"), ShouldBeEnabledOnRemote);
-		Serializer->WriteValue(TEXT("csprojPath"), CsprojPath);
-		Serializer->WriteValue(TEXT("buildDllPath"), BuildDllPath);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("beamoId"), BeamoId, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("shouldBeEnabledOnRemote"), ShouldBeEnabledOnRemote, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("csprojPath"), CsprojPath, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("buildDllPath"), BuildDllPath, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("storageDependencies"), StorageDependencies, Serializer);
 		UBeamJsonUtils::SerializeArray<UUnityAssemblyReferenceDataStreamData*>(TEXT("unityReferences"), UnityReferences, Serializer);
 		UBeamJsonUtils::SerializeArray<UFederationEntryStreamData*>(TEXT("federations"), Federations, Serializer);	
@@ -42,10 +42,10 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("beamoId"), BeamoId);
-		Serializer->WriteValue(TEXT("shouldBeEnabledOnRemote"), ShouldBeEnabledOnRemote);
-		Serializer->WriteValue(TEXT("csprojPath"), CsprojPath);
-		Serializer->WriteValue(TEXT("buildDllPath"), BuildDllPath);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("beamoId"), BeamoId, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("shouldBeEnabledOnRemote"), ShouldBeEnabledOnRemote, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("csprojPath"), CsprojPath, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("buildDllPath"), BuildDllPath, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("storageDependencies"), StorageDependencies, Serializer);
 		UBeamJsonUtils::SerializeArray<UUnityAssemblyReferenceDataStreamData*>(TEXT("unityReferences"), UnityReferences, Serializer);
 		UBeamJsonUtils::SerializeArray<UFederationEntryStreamData*>(TEXT("federations"), Federations, Serializer);	
@@ -53,10 +53,10 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		BeamoId = Bag->GetStringField(TEXT("beamoId"));
-		ShouldBeEnabledOnRemote = Bag->GetBoolField(TEXT("shouldBeEnabledOnRemote"));
-		CsprojPath = Bag->GetStringField(TEXT("csprojPath"));
-		BuildDllPath = Bag->GetStringField(TEXT("buildDllPath"));
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("beamoId")), BeamoId);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("shouldBeEnabledOnRemote")), ShouldBeEnabledOnRemote);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("csprojPath")), CsprojPath);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("buildDllPath")), BuildDllPath);
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("storageDependencies")), StorageDependencies, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<UUnityAssemblyReferenceDataStreamData*>(Bag->GetArrayField(TEXT("unityReferences")), UnityReferences, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<UFederationEntryStreamData*>(Bag->GetArrayField(TEXT("federations")), Federations, OuterOwner);	

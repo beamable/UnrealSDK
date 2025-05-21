@@ -18,17 +18,17 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("uploadUrl"), UploadUrl);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("uploadUrl"), UploadUrl, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("uploadUrl"), UploadUrl);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("uploadUrl"), UploadUrl, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		UploadUrl = Bag->GetStringField(TEXT("uploadUrl"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("uploadUrl")), UploadUrl);	
 	}
 };
 

@@ -20,20 +20,20 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("context"), Context);
-		Serializer->WriteValue(TEXT("payload"), Payload);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("context"), Context, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("payload"), Payload, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("context"), Context);
-		Serializer->WriteValue(TEXT("payload"), Payload);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("context"), Context, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("payload"), Payload, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Context = Bag->GetStringField(TEXT("context"));
-		Payload = Bag->GetStringField(TEXT("payload"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("context")), Context);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("payload")), Payload);	
 	}
 };
 

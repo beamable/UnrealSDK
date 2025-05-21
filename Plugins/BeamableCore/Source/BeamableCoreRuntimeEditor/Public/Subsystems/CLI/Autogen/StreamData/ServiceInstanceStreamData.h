@@ -31,9 +31,9 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("startedByAccountId"), StartedByAccountId);
-		Serializer->WriteValue(TEXT("startedByAccountEmail"), StartedByAccountEmail);
-		Serializer->WriteValue(TEXT("primaryKey"), PrimaryKey);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("startedByAccountId"), StartedByAccountId, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("startedByAccountEmail"), StartedByAccountEmail, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("primaryKey"), PrimaryKey, Serializer);
 		UBeamJsonUtils::SerializeUObject<UDockerServiceDescriptorStreamData*>("latestDockerEvent", LatestDockerEvent, Serializer);
 		UBeamJsonUtils::SerializeUObject<UHostServiceDescriptorStreamData*>("latestHostEvent", LatestHostEvent, Serializer);
 		UBeamJsonUtils::SerializeUObject<URemoteServiceDescriptorStreamData*>("latestRemoteEvent", LatestRemoteEvent, Serializer);	
@@ -41,9 +41,9 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("startedByAccountId"), StartedByAccountId);
-		Serializer->WriteValue(TEXT("startedByAccountEmail"), StartedByAccountEmail);
-		Serializer->WriteValue(TEXT("primaryKey"), PrimaryKey);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("startedByAccountId"), StartedByAccountId, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("startedByAccountEmail"), StartedByAccountEmail, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("primaryKey"), PrimaryKey, Serializer);
 		UBeamJsonUtils::SerializeUObject<UDockerServiceDescriptorStreamData*>("latestDockerEvent", LatestDockerEvent, Serializer);
 		UBeamJsonUtils::SerializeUObject<UHostServiceDescriptorStreamData*>("latestHostEvent", LatestHostEvent, Serializer);
 		UBeamJsonUtils::SerializeUObject<URemoteServiceDescriptorStreamData*>("latestRemoteEvent", LatestRemoteEvent, Serializer);	
@@ -51,9 +51,9 @@ public:
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		FDefaultValueHelper::ParseInt64(Bag->GetStringField(TEXT("startedByAccountId")), StartedByAccountId);
-		StartedByAccountEmail = Bag->GetStringField(TEXT("startedByAccountEmail"));
-		PrimaryKey = Bag->GetStringField(TEXT("primaryKey"));
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("startedByAccountId")), StartedByAccountId);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("startedByAccountEmail")), StartedByAccountEmail);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("primaryKey")), PrimaryKey);
 		UBeamJsonUtils::DeserializeUObject<UDockerServiceDescriptorStreamData*>("latestDockerEvent", Bag, LatestDockerEvent, OuterOwner);
 		UBeamJsonUtils::DeserializeUObject<UHostServiceDescriptorStreamData*>("latestHostEvent", Bag, LatestHostEvent, OuterOwner);
 		UBeamJsonUtils::DeserializeUObject<URemoteServiceDescriptorStreamData*>("latestRemoteEvent", Bag, LatestRemoteEvent, OuterOwner);	

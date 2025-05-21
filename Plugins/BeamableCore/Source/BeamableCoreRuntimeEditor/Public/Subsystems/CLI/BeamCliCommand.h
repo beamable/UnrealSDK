@@ -6,6 +6,7 @@
 #include "RequestTracker/BeamOperationHandle.h"
 #include "Async/Async.h"
 #include "HttpModule.h"
+#include "Serialization/BeamJsonSerializable.h"
 #include "BeamCliCommand.generated.h"
 
 class FMonitoredProcess;

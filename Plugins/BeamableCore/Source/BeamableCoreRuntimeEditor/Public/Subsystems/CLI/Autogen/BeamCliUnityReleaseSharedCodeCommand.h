@@ -18,17 +18,17 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("message"), Message);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("message"), Message);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("message"), Message, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Message = Bag->GetStringField(TEXT("message"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("message")), Message);	
 	}
 };
 

@@ -51,7 +51,7 @@ public:
 		UBeamJsonUtils::SerializeArray<bool>(TEXT("ExistInLocal"), ExistInLocal, Serializer);
 		UBeamJsonUtils::SerializeArray<bool>(TEXT("ExistInRemote"), ExistInRemote, Serializer);
 		UBeamJsonUtils::SerializeArray<bool>(TEXT("IsRunningRemotely"), IsRunningRemotely, Serializer);
-		Serializer->WriteValue(TEXT("IsDockerRunning"), IsDockerRunning);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("IsDockerRunning"), IsDockerRunning, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("BeamoIds"), BeamoIds, Serializer);
 		UBeamJsonUtils::SerializeArray<bool>(TEXT("ShouldBeEnabledOnRemote"), ShouldBeEnabledOnRemote, Serializer);
 		UBeamJsonUtils::SerializeArray<bool>(TEXT("IsRunningLocally"), IsRunningLocally, Serializer);
@@ -71,7 +71,7 @@ public:
 		UBeamJsonUtils::SerializeArray<bool>(TEXT("ExistInLocal"), ExistInLocal, Serializer);
 		UBeamJsonUtils::SerializeArray<bool>(TEXT("ExistInRemote"), ExistInRemote, Serializer);
 		UBeamJsonUtils::SerializeArray<bool>(TEXT("IsRunningRemotely"), IsRunningRemotely, Serializer);
-		Serializer->WriteValue(TEXT("IsDockerRunning"), IsDockerRunning);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("IsDockerRunning"), IsDockerRunning, Serializer);
 		UBeamJsonUtils::SerializeArray<FString>(TEXT("BeamoIds"), BeamoIds, Serializer);
 		UBeamJsonUtils::SerializeArray<bool>(TEXT("ShouldBeEnabledOnRemote"), ShouldBeEnabledOnRemote, Serializer);
 		UBeamJsonUtils::SerializeArray<bool>(TEXT("IsRunningLocally"), IsRunningLocally, Serializer);
@@ -91,7 +91,7 @@ public:
 		UBeamJsonUtils::DeserializeArray<bool>(Bag->GetArrayField(TEXT("ExistInLocal")), ExistInLocal, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<bool>(Bag->GetArrayField(TEXT("ExistInRemote")), ExistInRemote, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<bool>(Bag->GetArrayField(TEXT("IsRunningRemotely")), IsRunningRemotely, OuterOwner);
-		IsDockerRunning = Bag->GetBoolField(TEXT("IsDockerRunning"));
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("IsDockerRunning")), IsDockerRunning);
 		UBeamJsonUtils::DeserializeArray<FString>(Bag->GetArrayField(TEXT("BeamoIds")), BeamoIds, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<bool>(Bag->GetArrayField(TEXT("ShouldBeEnabledOnRemote")), ShouldBeEnabledOnRemote, OuterOwner);
 		UBeamJsonUtils::DeserializeArray<bool>(Bag->GetArrayField(TEXT("IsRunningLocally")), IsRunningLocally, OuterOwner);

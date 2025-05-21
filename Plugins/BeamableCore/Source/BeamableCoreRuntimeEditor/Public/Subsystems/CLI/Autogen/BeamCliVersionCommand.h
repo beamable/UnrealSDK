@@ -24,26 +24,26 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("version"), Version);
-		Serializer->WriteValue(TEXT("location"), Location);
-		Serializer->WriteValue(TEXT("type"), Type);
-		Serializer->WriteValue(TEXT("templates"), Templates);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("version"), Version, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("location"), Location, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("type"), Type, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("templates"), Templates, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("version"), Version);
-		Serializer->WriteValue(TEXT("location"), Location);
-		Serializer->WriteValue(TEXT("type"), Type);
-		Serializer->WriteValue(TEXT("templates"), Templates);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("version"), Version, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("location"), Location, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("type"), Type, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("templates"), Templates, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Version = Bag->GetStringField(TEXT("version"));
-		Location = Bag->GetStringField(TEXT("location"));
-		Type = Bag->GetStringField(TEXT("type"));
-		Templates = Bag->GetStringField(TEXT("templates"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("version")), Version);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("location")), Location);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("type")), Type);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("templates")), Templates);	
 	}
 };
 

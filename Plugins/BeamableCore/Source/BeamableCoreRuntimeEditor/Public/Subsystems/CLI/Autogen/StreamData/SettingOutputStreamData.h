@@ -20,20 +20,20 @@ public:
 
 	virtual void BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("key"), Key);
-		Serializer->WriteValue(TEXT("value"), Value);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("key"), Key, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("value"), Value, Serializer);	
 	}
 
 	virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 	{
-		Serializer->WriteValue(TEXT("key"), Key);
-		Serializer->WriteValue(TEXT("value"), Value);	
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("key"), Key, Serializer);
+		UBeamJsonUtils::SerializeRawPrimitive(TEXT("value"), Value, Serializer);	
 	}
 
 	virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
 	{
-		Key = Bag->GetStringField(TEXT("key"));
-		Value = Bag->GetStringField(TEXT("value"));	
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("key")), Key);
+		UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("value")), Value);	
 	}
 };
 

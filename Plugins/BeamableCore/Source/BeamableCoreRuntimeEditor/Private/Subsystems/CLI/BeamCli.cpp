@@ -7,6 +7,7 @@
 #include "RequestTracker/BeamRequestTracker.h"
 #include "Subsystems/BeamEditor.h"
 #include "Subsystems/CLI/BeamCliCommand.h"
+#include "Subsystems/CLI/Autogen/BeamCliConfigCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliInitCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliServerServeCommand.h"
 #include "Subsystems/CLI/Autogen/BeamCliVersionCommand.h"
@@ -81,14 +82,31 @@ FBeamOperationHandle UBeamCli::InitializeWhenEditorReady()
 		});
 	});
 	IsInstalledProcess->OnCompleted().BindLambda([this, Op, ExpectedVersion](int ResCode)
-	{		
+	{
 		AsyncTask(ENamedThreads::GameThread, [this, Op, ResCode, ExpectedVersion]
 		{
 			// Kick off our CLI running in server mode ONLY if the version command worked as expected.
 			if (ResCode == 0)
 			{
-				bInstalled = FOptionalBool{true};				
-				RequestTracker->TriggerOperationSuccess(Op, CurrentCliServerUri);				
+				bInstalled = FOptionalBool{true};
+
+				// Run the command server to get the current target cid/pid and set it in TargetRealm.
+				const auto ConfigCmd = NewObject<UBeamCliConfigCommand>();
+				ConfigCmd->OnStreamOutput = [this](const TArray<UBeamCliConfigStreamData*>& Stream, const TArray<int64>&, const FBeamOperationHandle& CfgOp)
+				{
+					if (Stream.Num() > 0)
+					{
+						const auto Cfg = Stream[0];
+						GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Cid.AsString = Cfg->Cid;
+						GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Pid.AsString = Cfg->Pid;
+						RequestTracker->TriggerOperationSuccess(CfgOp, "");
+					}
+					else
+					{
+						RequestTracker->TriggerOperationError(CfgOp, TEXT("An error occurred when running the `beam config` command for us to know which realm we are targeting."));
+					}
+				};
+				RunCommandServer(ConfigCmd, {}, Op);
 			}
 			else
 			{
@@ -106,11 +124,31 @@ FBeamOperationHandle UBeamCli::InitializeWhenEditorReady()
 		bInstalled = FOptionalBool{false};
 	}
 
-	// If we couldn't find either version, we return a failed op instead.
+	// If we couldn't find a local CLI version, we return a successful op instead, but... we set the target realm to be the one from `.beamable/connection-configuration.json`.
 	if (bInstalled.IsSet && !bInstalled.Val)
 	{
-		const auto NoCliErr = FString::Printf(TEXT("Beam CLI not found. Please make sure you have an installed Beamable CLI (Version: %s)"), *DotnetTools);
-		RequestTracker->TriggerOperationError(Op, NoCliErr);
+		const auto NoCliErr = FString::Printf(TEXT("Beam CLI not found. Please make sure you have an installed Beamable CLI (Version: %s) if you want to use any editor features."), *DotnetTools);
+		RequestTracker->TriggerOperationSuccess(Op, NoCliErr);
+
+		FString ConfigJson;
+		FString PathToConfigJson = FPaths::ProjectDir() / TEXT(".beamable") / TEXT("connection-configuration.json");
+		if (FFileHelper::LoadFileToString(ConfigJson, *PathToConfigJson))
+		{
+			FJsonDataBag ConfigJsonBag;
+			if (ConfigJsonBag.FromJson(ConfigJson))
+			{
+				const auto Cid = ConfigJsonBag.GetString(TEXT("cid"));
+				const auto Pid = ConfigJsonBag.GetString(TEXT("pid"));
+
+				GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Cid.AsString = Cid;
+				GetMutableDefault<UBeamCoreSettings>()->TargetRealm.Pid.AsString = Pid;
+			}
+			else
+			{
+				const auto Err = FString::Printf(TEXT("%s%s"), *NoCliErr, TEXT("We also did not find a `.beamable/connection-configuration.json` file in your `.beamable` folder."));
+				RequestTracker->TriggerOperationError(Op, Err);
+			}
+		}
 	}
 
 	return Op;
@@ -121,37 +159,24 @@ FBeamOperationHandle UBeamCli::InitializeRealm(FBeamRealmHandle NewRealm)
 	FBeamRealmUser EditorUserData;
 	const auto Slot = Editor->GetMainEditorSlot(EditorUserData);
 
-	if (IsInstalled())
+	if (!IsInstalled())
 	{
-		// Make sure the project is initialized with the locally signed in credentials in UE
-		const auto Realm = GetDefault<UBeamCoreSettings>()->TargetRealm;
-		const auto Host = GetDefault<UBeamCoreSettings>()->BeamableEnvironment->APIUrl;
-
-		const auto Op = RequestTracker->CPP_BeginOperation({Slot}, GetName(), {});
-		const auto Cmd = NewObject<UBeamCliInitCommand>();
-		Cmd->OnStreamOutput = [this, Op](const TArray<UBeamCliInitStreamData*>& Stream, const TArray<int64>&, const FBeamOperationHandle&)
-		{
-			const auto Data = Stream.Last();
-			RequestTracker->TriggerOperationSuccess(Op, {});
-			UE_LOG(LogBeamCli, Display, TEXT("Initialized CLI with Unreal Project: %s %s %s"), *Data->Host, *Data->Cid, *Data->Pid)
-		};
-
-		RunCommandServer(Cmd, {
-			                 FString(TEXT("--host ") + Host),
-			                 FString(TEXT("--cid ") + Realm.Cid.AsString),
-			                 FString(TEXT("--pid ") + Realm.Pid.AsString),
-			                 FString(TEXT("--refresh-token ") + EditorUserData.AuthToken.RefreshToken)
-		                 }, Op);
-
-		return Op;
+		UE_LOG(LogBeamCli, Error, TEXT("CLI not installed or not detected. Please make sure you have the CLI installed!"))
+		return RequestTracker->CPP_BeginSuccessfulOperation({Slot}, GetName(), TEXT("CLI not installed or not detected. Please make sure you have the CLI installed!"), {});
 	}
 
-	UE_LOG(LogBeamCli, Error, TEXT("CLI not installed or not detected. Please make sure you have the CLI installed!"))
-	return RequestTracker->CPP_BeginErrorOperation({Slot}, GetName(), TEXT("CLI not installed or not detected. Please make sure you have the CLI installed!"), {});
+	return RequestTracker->CPP_BeginSuccessfulOperation({Slot}, GetName(), TEXT("CLI is installed."), {});
 }
 
 void UBeamCli::StartCliServer(FBeamOperationHandle Op)
 {
+	// Ensure the CLI is installed
+	if (!IsInstalled())
+	{
+		UE_LOG(LogBeamCli, Error, TEXT("CLI was not found locally. This system is not guaranteed to work because of this."));
+		return;
+	}
+
 	const auto ServerCmd = NewObject<UBeamCliServerServeCommand>();
 	ServerCmd->OnStreamOutput = [this, Op](const TArray<UBeamCliServerServeStreamData*>& Stream, const TArray<int64>&, const FBeamOperationHandle&)
 	{
@@ -173,14 +198,43 @@ void UBeamCli::StartCliServer(FBeamOperationHandle Op)
 	RunCommand(ServerCmd, {TEXT("-d 300")}, {});
 }
 
+void UBeamCli::StopCli()
+{
+	// Gather all running CLI commands. 
+	TArray<UBeamCliCommand*> ToStop = {};
+	for (UBeamCliCommand* RunningProcess : RunningProcesses)
+		ToStop.Add(RunningProcess);
+
+	// Stops all of them
+	for (UBeamCliCommand* Stop : ToStop)
+		StopCommand(Stop);
+
+	// Clear the Server URI so that the next command invocation re-starts it.
+	CurrentCliServerUri.Empty();
+}
+
 void UBeamCli::RunCommand(UBeamCliCommand* Command, const TArray<FString>& Params, const FBeamOperationHandle& Op)
 {
+	// Ensure the CLI is installed
+	if (!IsInstalled())
+	{
+		UE_LOG(LogBeamCli, Error, TEXT("CLI was not found locally. This system is not guaranteed to work because of this."));
+		return;
+	}
+
 	Command->Run(Params, Op);
 	RunningProcesses.Add(Command);
 }
 
 void UBeamCli::RunCommandServer(UBeamCliCommand* Command, const TArray<FString>& Params, const FBeamOperationHandle& Op)
 {
+	// Ensure the CLI is installed
+	if (!IsInstalled())
+	{
+		UE_LOG(LogBeamCli, Error, TEXT("CLI was not found locally. This system is not guaranteed to work because of this."));
+		return;
+	}
+
 	// First, we add the command to the list of running commands, so that we don't get it garbage collected in the case where we have to wait for the server to boot up.
 	RunningProcesses.Add(Command);
 
@@ -222,8 +276,8 @@ void UBeamCli::OnCommandCompleted(UBeamCliCommand* Command)
 }
 
 void UBeamCli::StopCommand(UBeamCliCommand* Command)
-{	
-	if(RunningProcesses.Remove(Command))
+{
+	if (RunningProcesses.Remove(Command))
 	{
 		Command->Stop();
 	}
@@ -231,6 +285,5 @@ void UBeamCli::StopCommand(UBeamCliCommand* Command)
 
 FString UBeamCli::GetPathToCli() const
 {
-	check(IsInstalled())
 	return UBeamCliCommand::PathToLocalCli;
 }
