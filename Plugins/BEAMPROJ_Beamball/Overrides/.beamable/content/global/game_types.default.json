@@ -1,0 +1,23 @@
+{
+  "MaxWaitDurationSecs": {
+    "data": 60
+  },
+  "Teams": {
+    "data": [
+      {
+        "Name": "TeamA",
+        "MinPlayers": 2,
+        "MaxPlayers": 2
+      }
+    ]
+  },
+  "StringRules": {
+    "data": []
+  },
+  "FederatedGameServerNamespace": {
+    "data": "beamball"
+  },
+  "NumericRules": {
+    "data": []
+  }
+}

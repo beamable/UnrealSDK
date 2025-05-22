@@ -187,7 +187,7 @@ private:
 public:
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, meta=(DefaultToSelf="CallingContext"))
 	static UBeamLobbySubsystem* GetSelf(const UObject* CallingContext) { return CallingContext->GetWorld()->GetGameInstance()->GetSubsystem<UBeamLobbySubsystem>(); }
-	
+
 	/**
 	 *  Gets the lobby that the given user is contained.
 	 *  By default, will use the Owner user slot.
@@ -202,6 +202,7 @@ public:
 	 * The callbacks exposed here are cleared automatically when you leave a lobby, but not when you join one.
 	 * We also pre-warm these instances for each configured UserSlot; for Test UserSlots, we instantiate them here.
 	 */
+	UFUNCTION(BlueprintCallable, meta=(AutoCreateRefTerm="UserSlot"))
 	UBeamLobbyState* GetCurrentSlotLobbyState(FUserSlot Slot);
 
 	/**
@@ -305,12 +306,14 @@ public:
 	 * LobbyData is data associated to the lobby and PlayerTags are a set of non-unique Name/Value pairs associated to each player.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby")
-	FBeamOperationHandle CreateOpenLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, FString Name, FString Desc, FBeamContentId MatchType, int32 MaxPlayers, TMap<FString, FString> LobbyData, TArray<FBeamTag> PlayerTags);
+	FBeamOperationHandle CreateOpenLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, FString Name, FString Desc, FBeamContentId MatchType, int32 MaxPlayers, TMap<FString, FString> LobbyData,
+	                                              TArray<FBeamTag> PlayerTags);
 
 	/**
 	 * @copydoc CreateOpenLobbyOperation 
 	 */
-	FBeamOperationHandle CPP_CreateOpenLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent, FString Name, FString Desc, FBeamContentId MatchType, int32 MaxPlayers = 32, TMap<FString, FString> LobbyData = {},
+	FBeamOperationHandle CPP_CreateOpenLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent, FString Name, FString Desc, FBeamContentId MatchType, int32 MaxPlayers = 32,
+	                                                  TMap<FString, FString> LobbyData = {},
 	                                                  TArray<FBeamTag> PlayerTags = {});
 
 	/**
@@ -319,12 +322,14 @@ public:
 	 * LobbyData is data associated to the lobby and PlayerTags are a set of non-unique Name/Value pairs associated to each player.
 	 */
 	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Lobby")
-	FBeamOperationHandle CreateClosedLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, FString Name, FString Desc, FBeamContentId MatchType, int32 MaxPlayers, TMap<FString, FString> LobbyData, TArray<FBeamTag> PlayerTags);
+	FBeamOperationHandle CreateClosedLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandler OnOperationEvent, FString Name, FString Desc, FBeamContentId MatchType, int32 MaxPlayers,
+	                                                TMap<FString, FString> LobbyData, TArray<FBeamTag> PlayerTags);
 
 	/**
 	 * @copydoc CreateClosedLobbyOperation 
 	 */
-	FBeamOperationHandle CPP_CreateClosedLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent, FString Name, FString Desc, FBeamContentId MatchType, int32 MaxPlayers = 32, TMap<FString, FString> LobbyData = {},
+	FBeamOperationHandle CPP_CreateClosedLobbyOperation(FUserSlot UserSlot, FBeamOperationEventHandlerCode OnOperationEvent, FString Name, FString Desc, FBeamContentId MatchType, int32 MaxPlayers = 32,
+	                                                    TMap<FString, FString> LobbyData = {},
 	                                                    TArray<FBeamTag> PlayerTags = {});
 
 	/**

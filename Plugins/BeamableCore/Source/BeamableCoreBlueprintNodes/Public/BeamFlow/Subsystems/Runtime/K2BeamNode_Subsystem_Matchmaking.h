@@ -22,6 +22,22 @@
  *                                                
  */
 
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_EventRegister_MatchmakingSubsystem"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_EventRegister_MatchmakingSubsystem : public UK2BeamNode_EventRegister
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Events - Matchmaking - Bind"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamMatchmakingSubsystem, GetSelf); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamMatchmakingSubsystem::StaticClass(); }
+};
+#undef LOCTEXT_NAMESPACE
+
 #define LOCTEXT_NAMESPACE "K2BeamNode_EventUnregister_MatchmakingSubsystem"
 
 UCLASS(meta=(BeamGetLocalState))

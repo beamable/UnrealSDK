@@ -3,12 +3,57 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeamFlow/K2BeamNode_EventUnregister.h"
 #include "BeamFlow/K2BeamNode_GetLocalState.h"
 #include "BeamFlow/K2BeamNode_GetLocalStateForeach.h"
 #include "BeamFlow/K2BeamNode_Operation.h"
 #include "Subsystems/Lobby/BeamLobbySubsystem.h"
 
 #include "K2BeamNode_Subsystem_Lobby.generated.h"
+
+
+/***
+ *      ______                          _         
+ *     |  ____|                        | |        
+ *     | |__    __   __   ___   _ __   | |_   ___ 
+ *     |  __|   \ \ / /  / _ \ | '_ \  | __| / __|
+ *     | |____   \ V /  |  __/ | | | | | |_  \__ \
+ *     |______|   \_/    \___| |_| |_|  \__| |___/
+ *                                                
+ *                                                
+ */
+
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_EventRegister_LobbySubsystem"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_EventRegister_LobbySubsystem : public UK2BeamNode_EventRegister
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Events - Lobby - Bind"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
+};
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_EventUnregister_LobbySubsystem"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_EventUnregister_LobbySubsystem : public UK2BeamNode_EventUnregister
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return FText::FromString("Events - Lobby - Unbind"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
+};
+#undef LOCTEXT_NAMESPACE
+
 
 //  _                    _      ____  _        _       
 // | |    ___   ___ __ _| |    / ___|| |_ __ _| |_ ___ 
@@ -28,6 +73,24 @@ class UK2BeamNode_GetLocalState_GetCurrentLobby : public UK2BeamNode_GetLocalSta
 	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
 
 	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetCurrentLobby); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_GetCurrentSlotLobbyState"
+
+UCLASS(meta=(BeamGetLocalState))
+class UK2BeamNode_GetLocalState_GetCurrentSlotLobbyState : public UK2BeamNode_GetLocalState
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Lobby - GetCurrentSlotLobbyState"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamLobbySubsystem, GetCurrentSlotLobbyState); }
 
 	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamLobbySubsystem::StaticClass(); }
 };
