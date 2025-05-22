@@ -43,29 +43,28 @@ namespace Beamable.BeamballMs
 			
 			public async Promise<ServerInfo> CreateGameServer(Lobby lobby)
 			{
+				// The delay it's just to fake the server creation (when it's pulling the actual server will take some time)
 				await Task.Delay(1000);
 
 				var userId = long.Parse(lobby.players[0].playerId);
 				
+				// We need to assume new user due the fact it is not called by an authenticated context
 				var newUser = AssumeNewUser(userId);
 				
+				// This is a way to fake running the match in the server after 10 seconds it will trigger a server callable 
+				// Which is close to an external server calling it with the match result
 				await newUser.Services.Scheduler.Schedule().Microservice<BeamballMs>(false)
 					.Run(micro => micro.CreateMatchResult, userId, lobby.lobbyId)
-					.After(TimeSpan.FromSeconds(20)) // Trigger the method 20 sec
+					.After(TimeSpan.FromSeconds(10)) // Trigger the method 10 sec
 					.Save($"create-result-{lobby.lobbyId}"); // save the job
 				
 				ServerInfo serverInfo = new ServerInfo()
 				{
 					globalData = new ()
 					{
-						{ "roomId", "roomId" },
 					},
 					playerData = new()
 					{
-						{"name", new ()
-						{
-							{"name", "Name"}
-						}},
 					}
 				};
 				
@@ -77,6 +76,7 @@ namespace Beamable.BeamballMs
 			{
 				BeamableLogger.Log("Creating match result for lobby " + lobbyId);
 
+				// As it is not an authenticated call we need to assume a new user on this
 				var newUser = AssumeNewUser(userId);
 				
 				Random random = new Random();
@@ -89,6 +89,7 @@ namespace Beamable.BeamballMs
 
 				Dictionary<string, string> properties = new Dictionary<string, string>();
 
+				// Create the fake match result and set it in the lobby data
 				if (lobby.players.HasValue)
 				{
 					foreach (var player in lobby.players.Value)
