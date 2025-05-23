@@ -206,6 +206,15 @@ public:
 
 
 	/**
+	 * @brief Attempts releases all the local rank entries for a specific leaderboard.
+	 *
+	 * @param LeaderboardId: The target leaderboard id.
+	 */
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Leaderboards",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext"))
+	void TryReleaseAllRankEntries(FString LeaderboardId);
+
+	/**
 	 * @brief Attempts to retrieve the page info of a player entry.
 	 *
 	 * Please make sure to fetch the information before try to get it.

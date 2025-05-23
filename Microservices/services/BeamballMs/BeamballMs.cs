@@ -98,7 +98,7 @@ namespace Beamable.BeamballMs
 					{
 						var score = random.Next(3, 35);
 						properties.Add(player.playerId, score.ToString());
-						await beamLeaderboardService.SetScore("leaderboards.other", score);
+						await beamLeaderboardService.SetScore("leaderboards.global", score);
 					}
 				}
 				

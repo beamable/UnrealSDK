@@ -181,7 +181,23 @@ bool UBeamLeaderboardsSubsystem::TryReleaseRankEntries(FString LeaderboardId, in
 		return RankEntry.Rank >= From && RankEntry.Rank < From + Max;
 	});
 
+	UpdatePlayerEntriesLeaderboardCache(LeaderboardId);
+
 	return false;
+}
+
+void UBeamLeaderboardsSubsystem::TryReleaseAllRankEntries(FString LeaderboardId)
+{
+	if (!LeaderboardsCache.Contains(LeaderboardId))
+	{
+		return;
+	}
+
+	auto LeaderboardView = &LeaderboardsCache[LeaderboardId];
+
+	LeaderboardView->RankEntries.Reset();
+
+	UpdatePlayerEntriesLeaderboardCache(LeaderboardId);
 }
 
 bool UBeamLeaderboardsSubsystem::TryGetPlayerPageInfo(FString LeaderboardId, FBeamGamerTag PlayerGamerTag, int PageSize, FBeamRankEntry& PlayerRankEntry, int& PlayerPage)
@@ -282,6 +298,9 @@ bool UBeamLeaderboardsSubsystem::TryReleasePageRankEntries(FString LeaderboardId
 	{
 		return RankEntry.Rank >= StartRank && RankEntry.Rank <= LastRank;
 	});
+
+
+	UpdatePlayerEntriesLeaderboardCache(LeaderboardId);
 
 	return true;
 }
@@ -840,9 +859,28 @@ void UBeamLeaderboardsSubsystem::UpdateLeaderboardCache(FBeamLeaderboardView Lea
 		LeaderboardViewReference->BoardSize = LeaderboardView.BoardSize;
 		LeaderboardViewReference->OutlierRankEntry = LeaderboardView.OutlierRankEntry;
 
-		//
+		TMap<int32, int64> LeaderboardCacheRank;
+
+		for (auto RankEntry : LeaderboardViewReference->RankEntries)
+		{
+			LeaderboardCacheRank.Add(RankEntry.Rank, RankEntry.PlayerGamerTag.AsLong);
+		}
+
 		for (auto RankEntry : LeaderboardView.RankEntries)
 		{
+			// Check if there's duplicated ranks
+			if (LeaderboardCacheRank.Contains(RankEntry.Rank) && LeaderboardCacheRank[RankEntry.Rank] != RankEntry.PlayerGamerTag.AsLong)
+			{
+				// Get the invalid entry index
+				auto CachedInvalidEntryGamerTag = LeaderboardCacheRank[RankEntry.Rank];
+				auto IndexInvalidEntry = LeaderboardViewReference->PlayerEntriesCache[CachedInvalidEntryGamerTag];
+
+				// Replace the invalid entry by the new one and skip the rest of the code.
+				LeaderboardViewReference->RankEntries[IndexInvalidEntry] = RankEntry;
+
+				continue;
+			}
+
 			if (LeaderboardViewReference->PlayerEntriesCache.Contains(RankEntry.PlayerGamerTag))
 			{
 				auto Index = LeaderboardViewReference->PlayerEntriesCache[RankEntry.PlayerGamerTag];
@@ -896,11 +934,14 @@ void UBeamLeaderboardsSubsystem::UpdatePlayerEntriesLeaderboardCache(const FStri
 
 	auto LeaderboardViewReference = &LeaderboardsCache[LeaderboardId];
 
-	// Sort the ranks 
-	LeaderboardViewReference->RankEntries.Sort([](const FBeamRankEntry& A, const FBeamRankEntry& B)
+	if (LeaderboardViewReference->RankEntries.Num() > 0)
 	{
-		return A.Rank < B.Rank;
-	});
+		// Sort the ranks 
+		LeaderboardViewReference->RankEntries.Sort([](const FBeamRankEntry& A, const FBeamRankEntry& B)
+		{
+			return A.Rank < B.Rank;
+		});
+	}
 
 	// Update the player cache
 	for (auto RankIndex = 0; RankIndex < LeaderboardViewReference->RankEntries.Num(); RankIndex++)
