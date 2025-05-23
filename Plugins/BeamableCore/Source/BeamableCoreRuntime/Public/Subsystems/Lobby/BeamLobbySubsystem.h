@@ -218,6 +218,45 @@ public:
 	bool TryGetCurrentLobby(FUserSlot Slot, ULobby*& Lobby);
 
 	/**
+	 *  Try to get a specific data from a ULobby* Object.
+	 *  The default value is what will be return in case of it fail to get the value.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetGlobalLobbyData(ULobby* Lobby, FString DataKey, FString DefaultValue, FString& GlobalData);
+
+	/**
+	 *  It will return the global data from a ULobby* Object as parallel lists of keys and values.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool GetAllLobbyGlobalData(ULobby* Lobby, TArray<FString>& Keys, TArray<FString>& Values);
+
+
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetLobbyPlayerData(ULobby* Lobby, FBeamGamerTag PlayerGamerTag, FString DataKey, FString DefaultValue, FString& PlayerData);
+
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool GetAllLobbyPlayerData(ULobby* Lobby, FBeamGamerTag PlayerGamerTag, TArray<FString>& Keys, TArray<FString>& Values);
+
+	/**
+	 *  Try to get a specific data from a ULobby* Object using the lobby id.
+	 *  The default value is what will be return in case of it fail to get the value.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetGlobalLobbyDataById(FGuid LobbyId, FString DataKey, FString DefaultValue, FString& GlobalData);
+
+	/**
+	 *  It will return the global data from a ULobby* Object as parallel lists of keys and values.
+	 */
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool GetAllLobbyGlobalDataById(FGuid LobbyId, TArray<FString>& Keys, TArray<FString>& Values);
+
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool TryGetLobbyPlayerDataById(FGuid LobbyId, FBeamGamerTag PlayerGamerTag, FString DataKey, FString DefaultValue, FString& PlayerData);
+
+	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))
+	bool GetAllLobbyPlayerDataById(FGuid LobbyId, FBeamGamerTag PlayerGamerTag, TArray<FString>& Keys, TArray<FString>& Values);
+
+	/**
 	 * Tries to get whatever the current local data for the given user slot's current lobby state. If you want a guarantee that this data is up-to-date call, [CPP_]RefreshLobbyOperation first.
 	 */
 	UFUNCTION(BlueprintCallable, meta=(ExpandBoolAsExecs="ReturnValue"))

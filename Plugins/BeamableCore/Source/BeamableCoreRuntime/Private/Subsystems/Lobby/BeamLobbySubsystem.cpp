@@ -132,6 +132,144 @@ bool UBeamLobbySubsystem::TryGetCurrentLobby(FUserSlot Slot, ULobby*& Lobby)
 	return false;
 }
 
+
+bool UBeamLobbySubsystem::TryGetGlobalLobbyData(ULobby* Lobby, FString DataKey, FString DefaultValue, FString& GlobalData)
+{
+	GlobalData = DefaultValue;
+
+	if (!Lobby || !Lobby->Data.IsSet)
+	{
+		return false;
+	}
+
+	if (!Lobby->Data.Val.Contains(DataKey))
+	{
+		return false;
+	}
+
+	GlobalData = Lobby->Data.Val[DataKey];
+
+	return true;
+}
+
+bool UBeamLobbySubsystem::GetAllLobbyGlobalData(ULobby* Lobby, TArray<FString>& Keys, TArray<FString>& Values)
+{
+	Keys.Reset();
+	Values.Reset();
+
+	if (!Lobby || !Lobby->Data.IsSet)
+	{
+		return false;
+	}
+
+	for (auto LobbyData : Lobby->Data.Val)
+	{
+		Keys.Add(LobbyData.Key);
+		Values.Add(LobbyData.Value);
+	}
+
+	return true;
+}
+
+bool UBeamLobbySubsystem::TryGetLobbyPlayerData(ULobby* Lobby, FBeamGamerTag PlayerGamerTag, FString DataKey, FString DefaultValue, FString& PlayerData)
+{
+	PlayerData = DefaultValue;
+
+	if (!Lobby)
+	{
+		return false;
+	}
+
+	if (Lobby->Players.IsSet)
+	{
+		for (auto PlayerLobby : Lobby->Players.Val)
+		{
+			if (PlayerLobby->PlayerId.Val == PlayerGamerTag)
+			{
+				if (PlayerLobby->Tags.IsSet)
+				{
+					for (auto BeamTag : PlayerLobby->Tags.Val)
+					{
+						if (BeamTag.Name.Val == DataKey)
+						{
+							PlayerData = BeamTag.Value.Val;
+							return true;
+						}
+					}
+				}
+				// If the tag is not set then return false
+				return false;
+			}
+		}
+	}
+	return false;
+}
+
+bool UBeamLobbySubsystem::GetAllLobbyPlayerData(ULobby* Lobby, FBeamGamerTag PlayerGamerTag, TArray<FString>& Keys, TArray<FString>& Values)
+{
+	Keys.Reset();
+	Values.Reset();
+
+	if (!Lobby || !Lobby->Data.IsSet)
+	{
+		return false;
+	}
+
+	if (Lobby->Players.IsSet)
+	{
+		for (auto PlayerLobby : Lobby->Players.Val)
+		{
+			if (PlayerLobby->PlayerId.Val == PlayerGamerTag)
+			{
+				if (PlayerLobby->Tags.IsSet)
+				{
+					for (auto BeamTag : PlayerLobby->Tags.Val)
+					{
+						Keys.Add(BeamTag.Name.Val);
+						Values.Add(BeamTag.Value.Val);
+					}
+					return true;
+				}
+				// If the tag is not set then return false
+				return false;
+			}
+		}
+	}
+	return false;
+}
+
+bool UBeamLobbySubsystem::TryGetGlobalLobbyDataById(FGuid LobbyId, FString DataKey, FString DefaultValue, FString& GlobalData)
+{
+	ULobby* Lobby;
+	TryGetLobbyById(LobbyId, Lobby);
+
+	return TryGetGlobalLobbyData(Lobby, DataKey, DefaultValue, GlobalData);
+}
+
+bool UBeamLobbySubsystem::GetAllLobbyGlobalDataById(FGuid LobbyId, TArray<FString>& Keys, TArray<FString>& Values)
+{
+	ULobby* Lobby;
+	TryGetLobbyById(LobbyId, Lobby);
+
+	return GetAllLobbyGlobalData(Lobby, Keys, Values);
+}
+
+bool UBeamLobbySubsystem::TryGetLobbyPlayerDataById(FGuid LobbyId, FBeamGamerTag PlayerGamerTag, FString DataKey, FString DefaultValue, FString& PlayerData)
+{
+	ULobby* Lobby;
+	TryGetLobbyById(LobbyId, Lobby);
+
+	return TryGetLobbyPlayerData(Lobby, PlayerGamerTag, DataKey, DefaultValue, PlayerData);
+}
+
+bool UBeamLobbySubsystem::GetAllLobbyPlayerDataById(FGuid LobbyId, FBeamGamerTag PlayerGamerTag, TArray<FString>& Keys, TArray<FString>& Values)
+{
+	ULobby* Lobby;
+	TryGetLobbyById(LobbyId, Lobby);
+
+	return GetAllLobbyPlayerData(Lobby, PlayerGamerTag, Keys, Values);
+}
+
 bool UBeamLobbySubsystem::TryGetCurrentLobbyState(FUserSlot Slot, UBeamLobbyState*& Lobby)
 {
 	Lobby = LocalPlayerLobbyInfo.FindChecked(Slot);
