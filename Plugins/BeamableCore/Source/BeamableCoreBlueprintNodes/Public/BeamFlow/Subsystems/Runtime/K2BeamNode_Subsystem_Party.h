@@ -130,6 +130,24 @@ class UK2BeamNode_GetLocalState_TryGetUserPartyState : public UK2BeamNode_GetLoc
 
 #undef LOCTEXT_NAMESPACE
 
+#define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalStateForeach_GetUserPartyPlayerStates"
+
+UCLASS(meta=(BeamGetLocalStateForeach))
+class UK2BeamNode_GetLocalStateForeach_GetUserPartyPlayerStates : public UK2BeamNode_GetLocalStateForeach
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Local State - Party - GetUserPartyPlayerStates"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetSelf); }
+
+	virtual FName GetFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamPartySubsystem, GetUserPartyPlayerStates); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamPartySubsystem::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
 #define LOCTEXT_NAMESPACE "K2BeamNode_GetLocalState_TryGetPlayerPartyState"
 
 UCLASS(meta=(BeamGetLocalState))

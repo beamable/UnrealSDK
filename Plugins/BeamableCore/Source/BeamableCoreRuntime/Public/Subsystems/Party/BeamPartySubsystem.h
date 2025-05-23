@@ -283,6 +283,17 @@ public:
 	bool TryGetUserPartyState(FUserSlot UserSlot, FBeamPartyState& PartyState);
 
 	/**
+	 * @brief Returns an iterator list for the Party Player State.
+	 *
+	 * This gets the PartyState from the local state.
+	 *
+	 * @return Returns False if the user is not in any party.
+	*/
+	UFUNCTION(BlueprintCallable, Category="Beam|Operation|Party",
+		meta=(DefaultToSelf="CallingContext", AdvancedDisplay="CallingContext", ExpandBoolAsExecs="ReturnValue"))
+	bool GetUserPartyPlayerStates(FUserSlot UserSlot, FGuid& PartyId, FBeamGamerTag& LeaderGamerTag, EBeamPartyRestriction& PartyRestriction, TArray<FBeamPartyPlayerState>& PlayerStates);
+
+	/**
 	 * @brief Attempts to retrieve the party state for a specific player id.
 	 *
 	 * This gets the PartyState from the local state.
