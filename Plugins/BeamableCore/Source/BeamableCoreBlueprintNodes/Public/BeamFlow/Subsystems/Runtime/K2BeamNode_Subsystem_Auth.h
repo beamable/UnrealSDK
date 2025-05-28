@@ -201,6 +201,42 @@ class UK2BeamNode_Operation_LoginExternalIdentity : public UK2BeamNode_Operation
 };
 #undef LOCTEXT_NAMESPACE
 
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_BeginLoginExternalIdentityTwoFactorOperation"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamNode_Operation_BeginLoginExternalIdentityTwoFactorOperation : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Login - BeginLoginExternalIdentityTwoFactorOperation"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
+
+	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, BeginLoginExternalIdentityTwoFactorOperation); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
+#define LOCTEXT_NAMESPACE "K2BeamNode_Operation_CommitLoginExternalIdentityTwoFactorOperation"
+
+UCLASS(meta=(BeamFlowNode))
+class UK2BeamNode_Operation_CommitLoginExternalIdentityTwoFactorOperation : public UK2BeamNode_Operation
+{
+	GENERATED_BODY()
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { return LOCTEXT("Title", "Operation - Login - CommitLoginExternalIdentityTwoFactorOperation"); }
+
+	virtual FName GetSubsystemSelfFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, GetSelf); }
+
+	virtual FName GetOperationFunctionName() const override { return GET_FUNCTION_NAME_CHECKED(UBeamRuntime, CommitLoginExternalIdentityTwoFactorOperation); }
+
+	virtual UClass* GetRuntimeSubsystemClass() const override { return UBeamRuntime::StaticClass(); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
 #define LOCTEXT_NAMESPACE "K2BeamNode_Operation_SignUpEmailAndPassword"
 
 UCLASS(meta=(BeamFlowNode))
