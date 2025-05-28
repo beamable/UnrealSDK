@@ -7,7 +7,7 @@
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalBool.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt32.h"
-#include "BeamableCore/Public/AutoGen/Enums/GroupType.h"
+#include "BeamableCore/Public/AutoGen/Enums/BeamGroupType.h"
 
 #include "GroupSearchRequestBody.generated.h"
 
@@ -18,7 +18,7 @@ class BEAMABLECORE_API UGroupSearchRequestBody : public UObject, public IBeamJso
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
-	EGroupType Type = {};
+	EBeamGroupType Type = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Has Slots", Category="Beam")
 	FOptionalBool bHasSlots = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="B Sub Group", Category="Beam")

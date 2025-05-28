@@ -17,8 +17,8 @@ public:
 	static FString GroupMembershipRequestBodyToJsonString(const UGroupMembershipRequestBody* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|Utils|Make/Break", DisplayName="Make GroupMembershipRequestBody", meta=(DefaultToSelf="Outer", AdvancedDisplay="Successor, Score, SubGroup, Outer", NativeMakeFunc))
-	static UGroupMembershipRequestBody* Make(EGroupType Type, int64 Group, FOptionalInt64 Successor, FOptionalInt64 Score, FOptionalInt64 SubGroup, UObject* Outer);
+	static UGroupMembershipRequestBody* Make(EBeamGroupType Type, int64 Group, FOptionalInt64 Successor, FOptionalInt64 Score, FOptionalInt64 SubGroup, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|GroupUsers|Utils|Make/Break", DisplayName="Break GroupMembershipRequestBody", meta=(NativeBreakFunc))
-	static void Break(const UGroupMembershipRequestBody* Serializable, EGroupType& Type, int64& Group, FOptionalInt64& Successor, FOptionalInt64& Score, FOptionalInt64& SubGroup);
+	static void Break(const UGroupMembershipRequestBody* Serializable, EBeamGroupType& Type, int64& Group, FOptionalInt64& Successor, FOptionalInt64& Score, FOptionalInt64& SubGroup);
 };

@@ -374,10 +374,10 @@ void UBeamMicroservicesEditor::OnUpdateLocalStateReceived(const TArray<UBeamCliP
 					const auto FederationLocalSettings = Federation->LocalSettings[i];
 
 					FLocalFederationData FedData;
-					FedData.Type = static_cast<EFederationType>(StaticEnum<EFederationType>()->GetValueByNameString("BEAM_" + FederationType, EGetByNameFlags::CheckAuthoredName));
+					FedData.Type = static_cast<EBeamFederationType>(StaticEnum<EBeamFederationType>()->GetValueByNameString("BEAM_" + FederationType, EGetByNameFlags::CheckAuthoredName));
 					switch (FedData.Type)
 					{
-					case EFederationType::BEAM_IFederatedGameServer:
+					case EBeamFederationType::BEAM_IFederatedGameServer:
 						FedData.LocalSettings_FederatedGamerServer = NewObject<UBeamCliFederationLocalSettingsGetIFederatedGameServerStreamData>();
 						FedData.LocalSettings_FederatedGamerServer->BeamDeserialize(FederationLocalSettings);
 						break;
@@ -472,7 +472,7 @@ void UBeamMicroservicesEditor::SaveFederationProperties(FString ServiceId, FStri
 	Params.Add(ServiceId);
 	Params.Add(TEXT("--fed-id"));
 	Params.Add(FedId);
-	if (Federation.Type == EFederationType::BEAM_IFederatedGameServer)
+	if (Federation.Type == EBeamFederationType::BEAM_IFederatedGameServer)
 	{
 		if (Federation.LocalSettings_FederatedGamerServer->ContentIds.Num())
 		{
@@ -482,7 +482,7 @@ void UBeamMicroservicesEditor::SaveFederationProperties(FString ServiceId, FStri
 		}
 	}
 
-	
+
 	Cmd->OnCompleted = [this](const int& ResCode, const FBeamOperationHandle& Op)
 	{
 		if (ResCode != 0)

@@ -22,16 +22,18 @@ FString UCreateMatchResultRequestArgsLibrary::CreateMatchResultRequestArgsToJson
 	return Result;
 }	
 
-UCreateMatchResultRequestArgs* UCreateMatchResultRequestArgsLibrary::Make(FString LobbyId, UObject* Outer)
+UCreateMatchResultRequestArgs* UCreateMatchResultRequestArgsLibrary::Make(int64 UserId, FString LobbyId, UObject* Outer)
 {
 	auto Serializable = NewObject<UCreateMatchResultRequestArgs>(Outer);
+	Serializable->UserId = UserId;
 	Serializable->LobbyId = LobbyId;
 	
 	return Serializable;
 }
 
-void UCreateMatchResultRequestArgsLibrary::Break(const UCreateMatchResultRequestArgs* Serializable, FString& LobbyId)
+void UCreateMatchResultRequestArgsLibrary::Break(const UCreateMatchResultRequestArgs* Serializable, int64& UserId, FString& LobbyId)
 {
+	UserId = Serializable->UserId;
 	LobbyId = Serializable->LobbyId;
 		
 }

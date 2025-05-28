@@ -22,7 +22,7 @@ FString UWebhookInvocationStrategyLibrary::WebhookInvocationStrategyToJsonString
 	return Result;
 }	
 
-UWebhookInvocationStrategy* UWebhookInvocationStrategyLibrary::Make(EWebhookInvocationType InvocationType, EWebhookRetryType RetryType, UObject* Outer)
+UWebhookInvocationStrategy* UWebhookInvocationStrategyLibrary::Make(EBeamWebhookInvocationType InvocationType, EBeamWebhookRetryType RetryType, UObject* Outer)
 {
 	auto Serializable = NewObject<UWebhookInvocationStrategy>(Outer);
 	Serializable->InvocationType = InvocationType;
@@ -31,7 +31,7 @@ UWebhookInvocationStrategy* UWebhookInvocationStrategyLibrary::Make(EWebhookInvo
 	return Serializable;
 }
 
-void UWebhookInvocationStrategyLibrary::Break(const UWebhookInvocationStrategy* Serializable, EWebhookInvocationType& InvocationType, EWebhookRetryType& RetryType)
+void UWebhookInvocationStrategyLibrary::Break(const UWebhookInvocationStrategy* Serializable, EBeamWebhookInvocationType& InvocationType, EBeamWebhookRetryType& RetryType)
 {
 	InvocationType = Serializable->InvocationType;
 	RetryType = Serializable->RetryType;

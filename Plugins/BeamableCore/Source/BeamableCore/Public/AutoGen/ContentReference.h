@@ -7,7 +7,7 @@
 #include "BeamBackend/SemanticTypes/BeamContentId.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalString.h"
 #include "BeamableCore/Public/AutoGen/Optionals/OptionalInt64.h"
-#include "BeamableCore/Public/AutoGen/Enums/ContentVisibility.h"
+#include "BeamableCore/Public/AutoGen/Enums/BeamContentVisibility.h"
 
 #include "ContentReference.generated.h"
 
@@ -28,7 +28,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Type", Category="Beam")
 	FString Type = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Visibility", Category="Beam")
-	EContentVisibility Visibility = {};
+	EBeamContentVisibility Visibility = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Tags", Category="Beam")
 	TArray<FString> Tags = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Checksum", Category="Beam")

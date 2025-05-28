@@ -13,6 +13,8 @@ class BEAMABLEUNREALMICROSERVICECLIENTS_API UCreateMatchResultRequestArgs : publ
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="User Id", Category="Beam")
+	int64 UserId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Lobby Id", Category="Beam")
 	FString LobbyId = {};
 

@@ -22,7 +22,7 @@ FString UGroupMembershipRequestBodyLibrary::GroupMembershipRequestBodyToJsonStri
 	return Result;
 }	
 
-UGroupMembershipRequestBody* UGroupMembershipRequestBodyLibrary::Make(EGroupType Type, int64 Group, FOptionalInt64 Successor, FOptionalInt64 Score, FOptionalInt64 SubGroup, UObject* Outer)
+UGroupMembershipRequestBody* UGroupMembershipRequestBodyLibrary::Make(EBeamGroupType Type, int64 Group, FOptionalInt64 Successor, FOptionalInt64 Score, FOptionalInt64 SubGroup, UObject* Outer)
 {
 	auto Serializable = NewObject<UGroupMembershipRequestBody>(Outer);
 	Serializable->Type = Type;
@@ -34,7 +34,7 @@ UGroupMembershipRequestBody* UGroupMembershipRequestBodyLibrary::Make(EGroupType
 	return Serializable;
 }
 
-void UGroupMembershipRequestBodyLibrary::Break(const UGroupMembershipRequestBody* Serializable, EGroupType& Type, int64& Group, FOptionalInt64& Successor, FOptionalInt64& Score, FOptionalInt64& SubGroup)
+void UGroupMembershipRequestBodyLibrary::Break(const UGroupMembershipRequestBody* Serializable, EBeamGroupType& Type, int64& Group, FOptionalInt64& Successor, FOptionalInt64& Score, FOptionalInt64& SubGroup)
 {
 	Type = Serializable->Type;
 	Group = Serializable->Group;

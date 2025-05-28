@@ -8,6 +8,6 @@
 #include "Content/MockBeamContentObject.h"
 
 
-BEGIN_DEFINE_SPEC(FBeamContentObjectSpec, "BeamableUnreal.ContentObject", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ProgramContext)
+BEGIN_DEFINE_SPEC(FBeamContentObjectSpec, "BeamableUnreal.ContentObject", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext)
 	UMockBeamContentObject* ContentObject;
 END_DEFINE_SPEC(FBeamContentObjectSpec)

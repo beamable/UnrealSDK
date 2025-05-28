@@ -7,7 +7,7 @@
 
 void UGroupSearchRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("type"), UGroupTypeLibrary::GroupTypeToSerializationName(Type));
+	Serializer->WriteValue(TEXT("type"), UBeamJsonUtils::EnumToSerializationName(Type));
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("hasSlots"), &bHasSlots, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("subGroup"), &bSubGroup, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("name"), &Name, Serializer);
@@ -23,7 +23,7 @@ void UGroupSearchRequestBody::BeamSerializeProperties(TUnrealJsonSerializer& Ser
 
 void UGroupSearchRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const
 {
-	Serializer->WriteValue(TEXT("type"), UGroupTypeLibrary::GroupTypeToSerializationName(Type));
+	Serializer->WriteValue(TEXT("type"), UBeamJsonUtils::EnumToSerializationName(Type));
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("hasSlots"), &bHasSlots, Serializer);
 	UBeamJsonUtils::SerializeOptional<bool>(TEXT("subGroup"), &bSubGroup, Serializer);
 	UBeamJsonUtils::SerializeOptional<FString>(TEXT("name"), &Name, Serializer);
@@ -39,7 +39,7 @@ void UGroupSearchRequestBody::BeamSerializeProperties(TUnrealPrettyJsonSerialize
 
 void UGroupSearchRequestBody::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag)
 {
-	Type = UGroupTypeLibrary::SerializationNameToGroupType(Bag->GetStringField(TEXT("type")));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("type")), Type);
 	UBeamJsonUtils::DeserializeOptional<bool>("hasSlots", Bag, bHasSlots, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<bool>("subGroup", Bag, bSubGroup, OuterOwner);
 	UBeamJsonUtils::DeserializeOptional<FString>("name", Bag, Name, OuterOwner);

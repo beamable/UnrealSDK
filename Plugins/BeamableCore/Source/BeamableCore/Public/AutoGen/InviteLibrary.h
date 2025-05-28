@@ -17,8 +17,8 @@ public:
 	static FString InviteToJsonString(const UInvite* Serializable, const bool Pretty);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Friends|Utils|Make/Break", DisplayName="Make Invite", meta=(DefaultToSelf="Outer", AdvancedDisplay="Outer", NativeMakeFunc))
-	static UInvite* Make(FBeamGamerTag PlayerId, EInvitationDirection Direction, UObject* Outer);
+	static UInvite* Make(FBeamGamerTag PlayerId, EBeamInvitationDirection Direction, UObject* Outer);
 
 	UFUNCTION(BlueprintPure, Category="Beam|Friends|Utils|Make/Break", DisplayName="Break Invite", meta=(NativeBreakFunc))
-	static void Break(const UInvite* Serializable, FBeamGamerTag& PlayerId, EInvitationDirection& Direction);
+	static void Break(const UInvite* Serializable, FBeamGamerTag& PlayerId, EBeamInvitationDirection& Direction);
 };

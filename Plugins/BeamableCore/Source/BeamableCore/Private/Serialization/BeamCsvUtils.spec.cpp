@@ -4,7 +4,7 @@
 #include "Serialization/BeamCsvUtils.h"
 
 
-BEGIN_DEFINE_SPEC(FBeamCsvUtilsSpec, "BeamableUnreal.BeamCsvUtils", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ProgramContext)
+BEGIN_DEFINE_SPEC(FBeamCsvUtilsSpec, "BeamableUnreal.BeamCsvUtils", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext)
 END_DEFINE_SPEC(FBeamCsvUtilsSpec)
 
 
@@ -36,28 +36,28 @@ void FBeamCsvUtilsSpec::Define()
 
 			const auto Row0 = *Table->FindRow<FBeamMockGetRequestCSVResponseRow>(FName(TEXT("0")), TEXT(""));
 			const auto Row1 = *Table->FindRow<FBeamMockGetRequestCSVResponseRow>(FName(TEXT("1")), TEXT(""));
-			const auto Row2 = *Table->FindRow<FBeamMockGetRequestCSVResponseRow>(FName(TEXT("2")), TEXT(""));			
+			const auto Row2 = *Table->FindRow<FBeamMockGetRequestCSVResponseRow>(FName(TEXT("2")), TEXT(""));
 
 			TestEqual<FName>("Row 0 - RowName parsed correctly", Table->GetRowNames()[0], TEXT("0"));
 			TestEqual("Row 0 - Field1 parsed correctly", Row0.Field1, 100);
 			TestEqual("Row 0 - Field2 parsed correctly", Row0.Field2, TEXT("a"));
-			TestEqual("Row 0 - Field3 parsed correctly", Row0.Field3, 100);			
+			TestEqual("Row 0 - Field3 parsed correctly", Row0.Field3, 100);
 			TestNotEqual<FString>("Row 0 - Field4 parsed correctly", Row0.Field4, TEXT("0"));
-			TestEqual<EGroupType>("Row 0 - Field5 parsed correctly", Row0.Field5, EGroupType::BEAM_guild);
+			TestEqual<EBeamGroupType>("Row 0 - Field5 parsed correctly", Row0.Field5, EBeamGroupType::BEAM_guild);
 
 			TestEqual<FName>("Row 1 - RowName parsed correctly", Table->GetRowNames()[1], TEXT("1"));
 			TestEqual("Row 1 - Field1 parsed correctly", Row1.Field1, 101);
 			TestEqual("Row 1 - Field2 parsed correctly", Row1.Field2, TEXT("b"));
 			TestEqual("Row 1 - Field3 parsed correctly", Row1.Field3, 101);
 			TestNotEqual<FString>("Row 1 - Field4 parsed correctly", Row1.Field4, TEXT("1"));
-			TestEqual<EGroupType>("Row 1 - Field5 parsed correctly", Row1.Field5, EGroupType::BEAM_subgroup);
+			TestEqual<EBeamGroupType>("Row 1 - Field5 parsed correctly", Row1.Field5, EBeamGroupType::BEAM_subgroup);
 
 			TestEqual<FName>("Row 2 - RowName parsed correctly", Table->GetRowNames()[2], TEXT("2"));
 			TestEqual("Row 2 - Field1 parsed correctly", Row2.Field1, 102);
 			TestEqual("Row 2 - Field2 parsed correctly", Row2.Field2, TEXT("c"));
 			TestEqual("Row 2 - Field3 parsed correctly", Row2.Field3, 102);
 			TestNotEqual<FString>("Row 2 - Field4 parsed correctly", Row2.Field4, TEXT("2"));
-			TestEqual<EGroupType>("Row 2 - Field5 parsed correctly", Row2.Field5, EGroupType::BEAM_guild);
+			TestEqual<EBeamGroupType>("Row 2 - Field5 parsed correctly", Row2.Field5, EBeamGroupType::BEAM_guild);
 		});
 
 		It("should parse the data correctly from the CSV (with header & turn key column into RowNames & keep key as field)", [this, WithoutHeaderCsv, WithHeaderCsv]()
@@ -74,7 +74,7 @@ void FBeamCsvUtilsSpec::Define()
 
 			const auto Row0 = *Table->FindRow<FBeamMockGetRequestCSVResponseRow>(FName(TEXT("0")), TEXT(""));
 			const auto Row1 = *Table->FindRow<FBeamMockGetRequestCSVResponseRow>(FName(TEXT("1")), TEXT(""));
-			const auto Row2 = *Table->FindRow<FBeamMockGetRequestCSVResponseRow>(FName(TEXT("2")), TEXT(""));			
+			const auto Row2 = *Table->FindRow<FBeamMockGetRequestCSVResponseRow>(FName(TEXT("2")), TEXT(""));
 
 			TestEqual<FName>("Row 0 - RowName parsed correctly", Table->GetRowNames()[0], TEXT("0"));
 			TestEqual("Row 0 - Field1 parsed correctly", Row0.Field1, 100);
@@ -102,22 +102,21 @@ void FBeamCsvUtilsSpec::Define()
 			FString Csv = TEXT(R"(Field4,Field1,Field2,Field3,Field5)");
 			Csv.Reserve(100000 * 9 + Csv.Len());
 
-			for (auto i = 0;i < 100000; i++)
+			for (auto i = 0; i < 100000; i++)
 				Csv.Appendf(TEXT("\n%d,0,0,0,0"), i);
 
 			UBeamCsvUtils::ParseIntoDataTable(Table, FBeamMockGetRequestCSVResponseRow::StaticStruct(), FBeamMockGetRequestCSVResponseRow::KeyField, Csv);
 			UBeamCsvUtils::StoreNameAsColumn<FBeamMockGetRequestCSVResponseRow>(Table, FBeamMockGetRequestCSVResponseRow::KeyField);
 
-			TestTrue("Parsed all lines", Table->GetRowNames().Num() == 100000);			
+			TestTrue("Parsed all lines", Table->GetRowNames().Num() == 100000);
 		});
-		
+
 		It("should add the header row correctly to a header-less csv", [this, WithoutHeaderCsv, WithHeaderCsv]()
-		{			
+		{
 			FString Csv = WithoutHeaderCsv;
 			UBeamCsvUtils::AddHeaderRow(Csv, FBeamMockGetRequestCSVResponseRow::HeaderFields);
 
 			TestEqual("Added header correctly", Csv, WithHeaderCsv);
 		});
-		
 	});
 }

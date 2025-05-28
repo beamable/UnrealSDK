@@ -37,7 +37,7 @@ public:
 	virtual void BuildBody(FString& BodyString) const override;
 
 	UFUNCTION(BlueprintPure, BlueprintInternalUseOnly, Category="Beam|BeamballMs|Utils|Make/Break", DisplayName="Make BeamballMsCreateMatchResult",  meta=(DefaultToSelf="RequestOwner", AdvancedDisplay="RequestOwner", AutoCreateRefTerm="CustomHeaders"))
-	static UBeamballMsCreateMatchResultRequest* Make(FString _LobbyId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
+	static UBeamballMsCreateMatchResultRequest* Make(int64 _UserId, FString _LobbyId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders);
 };
 
 UDELEGATE(BlueprintAuthorityOnly)

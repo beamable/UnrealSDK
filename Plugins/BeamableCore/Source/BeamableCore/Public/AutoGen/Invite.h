@@ -4,7 +4,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamBackend/SemanticTypes/BeamGamerTag.h"
-#include "BeamableCore/Public/AutoGen/Enums/InvitationDirection.h"
+#include "BeamableCore/Public/AutoGen/Enums/BeamInvitationDirection.h"
 
 #include "Invite.generated.h"
 
@@ -17,7 +17,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
 	FBeamGamerTag PlayerId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Direction", Category="Beam")
-	EInvitationDirection Direction = {};
+	EBeamInvitationDirection Direction = {};
 
 	
 

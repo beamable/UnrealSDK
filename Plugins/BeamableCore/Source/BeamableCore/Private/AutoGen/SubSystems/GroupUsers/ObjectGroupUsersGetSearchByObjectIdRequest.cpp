@@ -75,7 +75,7 @@ void UObjectGroupUsersGetSearchByObjectIdRequest::BuildRoute(FString& RouteStrin
 	}
 
 	bIsFirstQueryParam ? QueryParams.Append(TEXT("?")) : QueryParams.Append(TEXT("&"));
-	QueryParams.Appendf(TEXT("%s=%s"), TEXT("type"), *UGroupTypeLibrary::GroupTypeToSerializationName(Type));
+	QueryParams.Appendf(TEXT("%s=%s"), TEXT("type"), *UBeamJsonUtils::EnumToSerializationName(Type));
 	bIsFirstQueryParam = false;
 	
 	if(Limit.IsSet){
@@ -92,7 +92,7 @@ void UObjectGroupUsersGetSearchByObjectIdRequest::BuildBody(FString& BodyString)
 	
 }
 
-UObjectGroupUsersGetSearchByObjectIdRequest* UObjectGroupUsersGetSearchByObjectIdRequest::Make(int64 _ObjectId, FOptionalString _Name, FOptionalInt64 _ScoreMin, FOptionalString _SortField, FOptionalInt64 _UserScore, FOptionalBool _bHasSlots, FOptionalString _EnrollmentTypes, FOptionalInt32 _Offset, FOptionalInt64 _ScoreMax, FOptionalBool _bSubGroup, FOptionalInt32 _SortValue, EGroupType _Type, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UObjectGroupUsersGetSearchByObjectIdRequest* UObjectGroupUsersGetSearchByObjectIdRequest::Make(int64 _ObjectId, FOptionalString _Name, FOptionalInt64 _ScoreMin, FOptionalString _SortField, FOptionalInt64 _UserScore, FOptionalBool _bHasSlots, FOptionalString _EnrollmentTypes, FOptionalInt32 _Offset, FOptionalInt64 _ScoreMax, FOptionalBool _bSubGroup, FOptionalInt32 _SortValue, EBeamGroupType _Type, FOptionalInt32 _Limit, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UObjectGroupUsersGetSearchByObjectIdRequest* Req = NewObject<UObjectGroupUsersGetSearchByObjectIdRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
