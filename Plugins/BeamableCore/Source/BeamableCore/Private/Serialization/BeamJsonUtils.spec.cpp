@@ -1,4 +1,5 @@
-﻿#include <AutoGen/Optionals/OptionalDateTime.h>
+﻿#include <AutoGen/Enums/BeamContentType.h>
+#include <AutoGen/Optionals/OptionalDateTime.h>
 
 #include "BeamJsonUtilsMocks.h"
 
@@ -8,8 +9,9 @@
 #include "BeamBackend/SemanticTypes/BeamCid.h"
 
 
-BEGIN_DEFINE_SPEC(FBeamJsonUtilsSpec, "BeamableUnreal.BeamJsonUtils", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::ProgramContext)
+BEGIN_DEFINE_SPEC(FBeamJsonUtilsSpec, "BeamableUnreal.BeamJsonUtils", EAutomationTestFlags::ProductFilter | EAutomationTestFlags::EditorContext)
 END_DEFINE_SPEC(FBeamJsonUtilsSpec)
+
 
 void FBeamJsonUtilsSpec::Define()
 {
@@ -32,6 +34,7 @@ void FBeamJsonUtilsSpec::Define()
 			a = Bag->GetIntegerField(TEXT("a"));
 		}
 	};
+
 
 	struct FBeamArrayOfInt : FBeamArray
 	{
@@ -184,7 +187,7 @@ void FBeamJsonUtilsSpec::Define()
 
 		virtual void BeamSerializeProperties(TUnrealPrettyJsonSerializer& Serializer) const override
 		{
-			UBeamJsonUtils::SerializeJsonObject(TEXT("blob"),Blob, Serializer);
+			UBeamJsonUtils::SerializeJsonObject(TEXT("blob"), Blob, Serializer);
 		}
 
 		virtual void BeamDeserializeProperties(const TSharedPtr<FJsonObject>& Bag) override
@@ -215,7 +218,7 @@ void FBeamJsonUtilsSpec::Define()
 
 			TestEqual("Serialization output is not correct", OutJson, Expected);
 		});
-		
+
 		It("should output a JSON Object representing a FOptionalDateTime serialization", [this]()
 		{
 			// The date that will be used to reference 
@@ -237,7 +240,7 @@ void FBeamJsonUtilsSpec::Define()
 
 			// Creating the JSON to compare.
 			const FString ExpectedJson =
-						"{\"date\":\""+DateTimeStr+"\"}";
+				"{\"date\":\"" + DateTimeStr + "\"}";
 
 			TestEqual(DateTime.ToIso8601(), OutJson, ExpectedJson);
 		});
@@ -250,7 +253,7 @@ void FBeamJsonUtilsSpec::Define()
 			// Parse the date from STR to a DateTime
 			FDateTime DateTime;
 			FDateTime::ParseIso8601(*DateTimeStr, DateTime);
-			
+
 			//Serializing the DateTime
 			FString OutJson;
 			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
@@ -261,11 +264,11 @@ void FBeamJsonUtilsSpec::Define()
 
 			// Creating the JSON to compare.
 			const FString ExpectedJson =
-						"{\"date\":\""+DateTimeStr+"\"}";
+				"{\"date\":\"" + DateTimeStr + "\"}";
 
 			TestEqual(DateTime.ToIso8601(), OutJson, ExpectedJson);
 		});
-		
+
 		It("should output a blank JSON Object (Optional Primitive without Set Value)", [this]()
 		{
 			struct FTestOptionalInt : FBeamOptional
@@ -348,7 +351,7 @@ void FBeamJsonUtilsSpec::Define()
 			FString OutJson;
 			TUnrealJsonSerializer JsonSerializer = TJsonStringWriter<TCondensedJsonPrintPolicy<TCHAR>>::Create(&OutJson);
 			UBeamJsonUtils::SerializeUObject(asd, JsonSerializer);
-			JsonSerializer->Close();			
+			JsonSerializer->Close();
 
 			// Get a condensed string so we can easily compare with the condensed string we generate.
 			const FString ExpectedTemp =
@@ -465,6 +468,36 @@ void FBeamJsonUtilsSpec::Define()
 				TestEqual("FBeamSemanticType Optional serialized correctly", OutJson, Expected);
 			}
 		});
+
+		It("should serialize correctly a enum", [this]()
+		{
+			EBeamContentType Val = EBeamContentType::BEAM_content;
+
+			auto Result = UBeamJsonUtils::EnumToSerializationName(Val);
+			FString ExpectedResult = "content";
+
+			TestEqual("Enum Optional serialized correctly", Result, ExpectedResult);
+		});
+		
+		It("should deserialize a int correctly into a enum", [this]()
+		{
+			EBeamContentType ExpectedResult = EBeamContentType::BEAM_content;
+		
+			auto Result = UBeamJsonUtils::SerializationIndexToEnum<EBeamContentType>(0);
+		
+			TestEqual("Enum deserialize correctly", Result, ExpectedResult);
+		});
+		
+		It("should deserialize a string correctly into a enum", [this]()
+		{
+			EBeamContentType ExpectedResult = EBeamContentType::BEAM_content;
+		
+			auto Result = UBeamJsonUtils::SerializationNameToEnum<EBeamContentType>("content");
+		
+			TestEqual("Enum deserialized correctly", Result, ExpectedResult);
+		});
+
+
 
 		It("should output a regular JSON Field (Optional FBeamJsonSerializable with Value)", [this]()
 		{
@@ -606,8 +639,8 @@ void FBeamJsonUtilsSpec::Define()
 
 
 				// Get a condensed string so we can easily compare with the condensed string we generate.
-				const FString Expected ="{\"a\":[\""+ExpectedDate.ToIso8601()+"\",\""+ExpectedDate.ToIso8601()+"\",\""+ExpectedDate.ToIso8601()+"\"]}";
-	
+				const FString Expected = "{\"a\":[\"" + ExpectedDate.ToIso8601() + "\",\"" + ExpectedDate.ToIso8601() + "\",\"" + ExpectedDate.ToIso8601() + "\"]}";
+
 				TestEqual("Optional Array of FDateTime serialized correctly", OutJson, Expected);
 			}
 			// Test array with BeamJsonSerializable
@@ -753,7 +786,7 @@ void FBeamJsonUtilsSpec::Define()
 			BeamArray.BeamSerialize(JsonSerializer);
 			JsonSerializer->Close();
 
-			FString ExpectedDateItem = "\""+ReferenceDate.ToIso8601()+"\"";
+			FString ExpectedDateItem = "\"" + ReferenceDate.ToIso8601() + "\"";
 			// Get a condensed string so we can easily compare with the condensed string we generate.
 			const FString Expected = TEXT("["+ExpectedDateItem+","+ExpectedDateItem+","+ExpectedDateItem+"]");
 			TestEqual("JSON result", OutJson, Expected);
@@ -1239,11 +1272,11 @@ void FBeamJsonUtilsSpec::Define()
 		It("should output a JSON Object with an arbitrary JSON-blob in it", [this]()
 		{
 			FJsonDataBag Bag;
-			if(!Bag.FromJson(TEXT(R"({ "arbitraryBool": false, "arbitraryString": "string", "arbitraryNumber": 0 })")))
+			if (!Bag.FromJson(TEXT(R"({ "arbitraryBool": false, "arbitraryString": "string", "arbitraryNumber": 0 })")))
 			{
-				TestTrue(TEXT("Should never see this... means the string above isn't valid"), false);				
+				TestTrue(TEXT("Should never see this... means the string above isn't valid"), false);
 			}
-			
+
 			FBeamJsonBlob Blob{};
 			Blob.Blob = Bag.JsonObject;
 
@@ -1326,7 +1359,7 @@ void FBeamJsonUtilsSpec::Define()
 
 			TestEqual("date", Test.date, ExpectedDate);
 		});
-		
+
 		It("should deserialize a JSON Object as a UObject with nested properties", [this]()
 		{
 			// Get a condensed string so we can easily compare with the condensed string we generate.
@@ -1679,7 +1712,7 @@ void FBeamJsonUtilsSpec::Define()
 				FDateTime ExpectedDate = FDateTime::Now();
 				// Get a condensed string so we can easily compare with the condensed string we generate.
 				FString JsonInput =
-					"{\"a\": [\""+ExpectedDate.ToIso8601()+"\", \""+ExpectedDate.ToIso8601()+"\", \""+ExpectedDate.ToIso8601()+"\"]}";
+					"{\"a\": [\"" + ExpectedDate.ToIso8601() + "\", \"" + ExpectedDate.ToIso8601() + "\", \"" + ExpectedDate.ToIso8601() + "\"]}";
 
 				FTest Test2;
 				Test2.BeamDeserialize(JsonInput);

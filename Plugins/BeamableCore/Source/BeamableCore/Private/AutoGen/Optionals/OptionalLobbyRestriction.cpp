@@ -3,11 +3,11 @@
 
 FOptionalLobbyRestriction::FOptionalLobbyRestriction()
 {
-	Val = ELobbyRestriction();
+	Val = EBeamLobbyRestriction();
 	IsSet = false;
 }
 
-FOptionalLobbyRestriction::FOptionalLobbyRestriction(ELobbyRestriction Val): Val(Val)
+FOptionalLobbyRestriction::FOptionalLobbyRestriction(EBeamLobbyRestriction Val): Val(Val)
 {
 	IsSet = true;
 }
@@ -16,6 +16,6 @@ const void* FOptionalLobbyRestriction::GetAddr() const { return &Val; }
 
 void FOptionalLobbyRestriction::Set(const void* Data)
 {
-	Val = *((ELobbyRestriction*)Data);
+	Val = *((EBeamLobbyRestriction*)Data);
 	IsSet = true;
 }

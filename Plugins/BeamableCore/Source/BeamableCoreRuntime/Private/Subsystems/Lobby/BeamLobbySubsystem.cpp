@@ -327,7 +327,7 @@ void UBeamLobbySubsystem::PrepareUpdateDescription(FUserSlot Slot, const FString
 	UpdateCommands[Slot]->NewLobbyDescription = FOptionalString(NewDesc);
 }
 
-void UBeamLobbySubsystem::PrepareUpdateRestriction(FUserSlot Slot, const ELobbyRestriction& NewLobbyRestriction)
+void UBeamLobbySubsystem::PrepareUpdateRestriction(FUserSlot Slot, const EBeamLobbyRestriction& NewLobbyRestriction)
 {
 	UBeamLobbyState* LobbyState;
 	if (!GuardSlotIsInLobby(Slot, LobbyState)) return;
@@ -667,7 +667,7 @@ void UBeamLobbySubsystem::CreateOpenLobby(FUserSlot UserSlot, FString Name, FStr
 	});
 
 
-	FBeamRequestContext Ctx = RequestPostLobbies(UserSlot, Name, Desc, ELobbyRestriction::BEAM_Open, MatchType, 0, MaxPlayers, LobbyData, PlayerTags, Op, Handler);
+	FBeamRequestContext Ctx = RequestPostLobbies(UserSlot, Name, Desc, EBeamLobbyRestriction::BEAM_Open, MatchType, 0, MaxPlayers, LobbyData, PlayerTags, Op, Handler);
 }
 
 void UBeamLobbySubsystem::CreateClosedLobby(FUserSlot UserSlot, FString Name, FString Desc, FBeamContentId MatchType, int32 MaxPlayers, TMap<FString, FString> LobbyData, TArray<FBeamTag> PlayerTags,
@@ -694,7 +694,7 @@ void UBeamLobbySubsystem::CreateClosedLobby(FUserSlot UserSlot, FString Name, FS
 		}
 	});
 
-	FBeamRequestContext Ctx = RequestPostLobbies(UserSlot, Name, Desc, ELobbyRestriction::BEAM_Closed, MatchType, PasscodeSize, MaxPlayers, LobbyData, PlayerTags, Op, Handler);
+	FBeamRequestContext Ctx = RequestPostLobbies(UserSlot, Name, Desc, EBeamLobbyRestriction::BEAM_Closed, MatchType, PasscodeSize, MaxPlayers, LobbyData, PlayerTags, Op, Handler);
 }
 
 void UBeamLobbySubsystem::RefreshLobbyData(FUserSlot UserSlot, FGuid LobbyId, FBeamOperationHandle Op)
@@ -1229,7 +1229,7 @@ FBeamRequestContext UBeamLobbySubsystem::RequestGetLobbies(const FUserSlot& User
 	return Ctx;
 }
 
-FBeamRequestContext UBeamLobbySubsystem::RequestPostLobbies(const FUserSlot& UserSlot, FString LobbyName, FString LobbyDescription, ELobbyRestriction Restriction, FBeamContentId MatchType,
+FBeamRequestContext UBeamLobbySubsystem::RequestPostLobbies(const FUserSlot& UserSlot, FString LobbyName, FString LobbyDescription, EBeamLobbyRestriction Restriction, FBeamContentId MatchType,
                                                             int32 PasscodeLength, int32 MaxPlayers, TMap<FString, FString> LobbyData, TArray<FBeamTag> PlayerTags, FBeamOperationHandle Op,
                                                             FOnPostLobbiesFullResponse Handler) const
 {
@@ -1238,7 +1238,7 @@ FBeamRequestContext UBeamLobbySubsystem::RequestPostLobbies(const FUserSlot& Use
 	                                     FOptionalString(LobbyDescription),
 	                                     FOptionalLobbyRestriction(Restriction),
 	                                     !MatchType.AsString.IsEmpty() ? FOptionalBeamContentId(MatchType) : FOptionalBeamContentId(),
-	                                     Restriction == ELobbyRestriction::BEAM_Closed ? FOptionalInt32(PasscodeLength) : FOptionalInt32(),
+	                                     Restriction == EBeamLobbyRestriction::BEAM_Closed ? FOptionalInt32(PasscodeLength) : FOptionalInt32(),
 	                                     MaxPlayers ? FOptionalInt32(MaxPlayers) : FOptionalInt32(),
 	                                     PlayerTags.Num() ? FOptionalArrayOfBeamTag(PlayerTags) : FOptionalArrayOfBeamTag(),
 	                                     LobbyData.Num() ? FOptionalMapOfString{LobbyData} : FOptionalMapOfString(),

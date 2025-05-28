@@ -877,11 +877,11 @@ FBeamFriendState UBeamFriendsSubsystem::MakeFriendState(USocial* Social)
 
 	for (auto Invite : Social->Invites)
 	{
-		if (Invite->Direction == EInvitationDirection::BEAM_outgoing)
+		if (Invite->Direction == EBeamInvitationDirection::BEAM_outgoing)
 		{
 			FriendState.SentInvites.Add(FBeamFriendInvite(Invite->PlayerId));
 		}
-		else if (Invite->Direction == EInvitationDirection::BEAM_incoming)
+		else if (Invite->Direction == EBeamInvitationDirection::BEAM_incoming)
 		{
 			FriendState.ReceivedInvites.Add(FBeamFriendInvite(Invite->PlayerId));
 		}

@@ -22,7 +22,7 @@ FString UGroupMembershipResponseLibrary::GroupMembershipResponseToJsonString(con
 	return Result;
 }	
 
-UGroupMembershipResponse* UGroupMembershipResponseLibrary::Make(bool bMember, EGroupType Type, UGroupMetaData* Group, TArray<int64> SubGroups, FOptionalInt64 GamerTag, UObject* Outer)
+UGroupMembershipResponse* UGroupMembershipResponseLibrary::Make(bool bMember, EBeamGroupType Type, UGroupMetaData* Group, TArray<int64> SubGroups, FOptionalInt64 GamerTag, UObject* Outer)
 {
 	auto Serializable = NewObject<UGroupMembershipResponse>(Outer);
 	Serializable->bMember = bMember;
@@ -34,7 +34,7 @@ UGroupMembershipResponse* UGroupMembershipResponseLibrary::Make(bool bMember, EG
 	return Serializable;
 }
 
-void UGroupMembershipResponseLibrary::Break(const UGroupMembershipResponse* Serializable, bool& bMember, EGroupType& Type, UGroupMetaData*& Group, TArray<int64>& SubGroups, FOptionalInt64& GamerTag)
+void UGroupMembershipResponseLibrary::Break(const UGroupMembershipResponse* Serializable, bool& bMember, EBeamGroupType& Type, UGroupMetaData*& Group, TArray<int64>& SubGroups, FOptionalInt64& GamerTag)
 {
 	bMember = Serializable->bMember;
 	Type = Serializable->Type;

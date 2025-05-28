@@ -22,7 +22,7 @@ FString UInviteLibrary::InviteToJsonString(const UInvite* Serializable, const bo
 	return Result;
 }	
 
-UInvite* UInviteLibrary::Make(FBeamGamerTag PlayerId, EInvitationDirection Direction, UObject* Outer)
+UInvite* UInviteLibrary::Make(FBeamGamerTag PlayerId, EBeamInvitationDirection Direction, UObject* Outer)
 {
 	auto Serializable = NewObject<UInvite>(Outer);
 	Serializable->PlayerId = PlayerId;
@@ -31,7 +31,7 @@ UInvite* UInviteLibrary::Make(FBeamGamerTag PlayerId, EInvitationDirection Direc
 	return Serializable;
 }
 
-void UInviteLibrary::Break(const UInvite* Serializable, FBeamGamerTag& PlayerId, EInvitationDirection& Direction)
+void UInviteLibrary::Break(const UInvite* Serializable, FBeamGamerTag& PlayerId, EBeamInvitationDirection& Direction)
 {
 	PlayerId = Serializable->PlayerId;
 	Direction = Serializable->Direction;

@@ -4,7 +4,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "BeamBackend/SemanticTypes/BeamGamerTag.h"
-#include "BeamableCore/Public/AutoGen/Enums/FriendSource.h"
+#include "BeamableCore/Public/AutoGen/Enums/BeamFriendSource.h"
 
 #include "Friend.generated.h"
 
@@ -17,7 +17,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Player Id", Category="Beam")
 	FBeamGamerTag PlayerId = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Source", Category="Beam")
-	EFriendSource Source = {};
+	EBeamFriendSource Source = {};
 
 	
 

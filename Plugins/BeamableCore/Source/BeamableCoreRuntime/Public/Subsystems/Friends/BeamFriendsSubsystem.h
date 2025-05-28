@@ -24,14 +24,14 @@ struct BEAMABLECORERUNTIME_API FBeamFriendPresenceStatus
 	FDateTime LastOnline;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EPresenceStatus Status = EPresenceStatus::BEAM_Invisible;
+	EBeamPresenceStatus Status = EBeamPresenceStatus::BEAM_Invisible;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString Description;
 
 	FBeamFriendPresenceStatus() = default;
 
-	FBeamFriendPresenceStatus(bool bOnline, const FDateTime& LastOnline, EPresenceStatus Status, const FString& Description)
+	FBeamFriendPresenceStatus(bool bOnline, const FDateTime& LastOnline, EBeamPresenceStatus Status, const FString& Description)
 		: Online(bOnline),
 		  LastOnline(LastOnline),
 		  Status(Status),

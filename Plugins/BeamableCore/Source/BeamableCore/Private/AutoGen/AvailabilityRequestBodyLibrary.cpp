@@ -22,7 +22,7 @@ FString UAvailabilityRequestBodyLibrary::AvailabilityRequestBodyToJsonString(con
 	return Result;
 }	
 
-UAvailabilityRequestBody* UAvailabilityRequestBodyLibrary::Make(EGroupType Type, FOptionalBool bSubGroup, FOptionalString Name, FOptionalString Tag, UObject* Outer)
+UAvailabilityRequestBody* UAvailabilityRequestBodyLibrary::Make(EBeamGroupType Type, FOptionalBool bSubGroup, FOptionalString Name, FOptionalString Tag, UObject* Outer)
 {
 	auto Serializable = NewObject<UAvailabilityRequestBody>(Outer);
 	Serializable->Type = Type;
@@ -33,7 +33,7 @@ UAvailabilityRequestBody* UAvailabilityRequestBodyLibrary::Make(EGroupType Type,
 	return Serializable;
 }
 
-void UAvailabilityRequestBodyLibrary::Break(const UAvailabilityRequestBody* Serializable, EGroupType& Type, FOptionalBool& bSubGroup, FOptionalString& Name, FOptionalString& Tag)
+void UAvailabilityRequestBodyLibrary::Break(const UAvailabilityRequestBody* Serializable, EBeamGroupType& Type, FOptionalBool& bSubGroup, FOptionalString& Name, FOptionalString& Tag)
 {
 	Type = Serializable->Type;
 	bSubGroup = Serializable->bSubGroup;

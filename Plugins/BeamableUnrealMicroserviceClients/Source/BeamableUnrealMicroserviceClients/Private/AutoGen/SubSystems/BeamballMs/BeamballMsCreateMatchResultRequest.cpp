@@ -27,7 +27,7 @@ void UBeamballMsCreateMatchResultRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UBeamballMsCreateMatchResultRequest* UBeamballMsCreateMatchResultRequest::Make(FString _LobbyId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UBeamballMsCreateMatchResultRequest* UBeamballMsCreateMatchResultRequest::Make(int64 _UserId, FString _LobbyId, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UBeamballMsCreateMatchResultRequest* Req = NewObject<UBeamballMsCreateMatchResultRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};
@@ -37,6 +37,7 @@ UBeamballMsCreateMatchResultRequest* UBeamballMsCreateMatchResultRequest::Make(F
 	
 	// Makes a body and fill up with parameters (Blank if no body parameters exist)
 	Req->Body = NewObject<UCreateMatchResultRequestArgs>(Req);
+	Req->Body->UserId = _UserId;
 	Req->Body->LobbyId = _LobbyId;
 	
 

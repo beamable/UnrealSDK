@@ -4,7 +4,7 @@
 
 #include "Serialization/BeamJsonSerializable.h"
 #include "Serialization/BeamJsonUtils.h"
-#include "BeamableCore/Public/AutoGen/Enums/WebhookServiceType.h"
+#include "BeamableCore/Public/AutoGen/Enums/BeamWebhookServiceType.h"
 
 #include "ServiceRoute.generated.h"
 
@@ -19,7 +19,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Endpoint", Category="Beam")
 	FString Endpoint = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName="Service Type Str", Category="Beam")
-	EWebhookServiceType ServiceTypeStr = {};
+	EBeamWebhookServiceType ServiceTypeStr = {};
 
 	
 

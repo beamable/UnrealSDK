@@ -2,7 +2,7 @@
 
 #include "AutoGen/Optionals/OptionalLobbyRestrictionLibrary.h"
 
-FOptionalLobbyRestriction UOptionalLobbyRestrictionLibrary::MakeOptional(ELobbyRestriction Value)
+FOptionalLobbyRestriction UOptionalLobbyRestrictionLibrary::MakeOptional(EBeamLobbyRestriction Value)
 {
 	FOptionalLobbyRestriction Optional;
 	Optional.Val = Value;
@@ -10,7 +10,7 @@ FOptionalLobbyRestriction UOptionalLobbyRestrictionLibrary::MakeOptional(ELobbyR
 	return Optional;
 }
 
-FOptionalLobbyRestriction UOptionalLobbyRestrictionLibrary::Conv_OptionalFromValue(ELobbyRestriction Value)
+FOptionalLobbyRestriction UOptionalLobbyRestrictionLibrary::Conv_OptionalFromValue(EBeamLobbyRestriction Value)
 {
 	FOptionalLobbyRestriction Optional;
 	Optional.Val = Value;
@@ -18,13 +18,13 @@ FOptionalLobbyRestriction UOptionalLobbyRestrictionLibrary::Conv_OptionalFromVal
 	return Optional;
 }
 
-bool UOptionalLobbyRestrictionLibrary::HasValue(const FOptionalLobbyRestriction& Optional, ELobbyRestriction& Value)
+bool UOptionalLobbyRestrictionLibrary::HasValue(const FOptionalLobbyRestriction& Optional, EBeamLobbyRestriction& Value)
 {
 	Value = Optional.Val;
 	return Optional.IsSet;
 }
 
-ELobbyRestriction UOptionalLobbyRestrictionLibrary::GetOptionalValue(const FOptionalLobbyRestriction& Optional, ELobbyRestriction DefaultValue, bool& WasSet)
+EBeamLobbyRestriction UOptionalLobbyRestrictionLibrary::GetOptionalValue(const FOptionalLobbyRestriction& Optional, EBeamLobbyRestriction DefaultValue, bool& WasSet)
 {
 	WasSet = Optional.IsSet;
 	return WasSet ? Optional.Val : DefaultValue;
