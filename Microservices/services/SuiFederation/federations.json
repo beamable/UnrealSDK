@@ -1,1 +1,1 @@
-{"federations":{"SuiIdentity":[{"interface":"IFederatedInventory"}]}}
+{"federations":{"SuiIdentity":[{"interface":"IFederatedInventory"}],"SuiExternalIdentity":[{"interface":"IFederatedLogin"}]}}

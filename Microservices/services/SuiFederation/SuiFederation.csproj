@@ -50,13 +50,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <Target Name="PreBuild" BeforeTargets="Build">
-    <ItemGroup>
-      <NodeModulesFolder Include="node_modules" />
-    </ItemGroup>
-    <Exec Condition="!Exists('@(NodeModulesFolder)')" Command="npm install" />
+  <Target Name="NpmInstall" Condition="!Exists('node_modules')">
+    <Message Text="Installing npm packages..." Importance="high" />
+    <Exec Command="npm install" />
+  </Target>
+  <Target Name="NpmBuild" DependsOnTargets="NpmInstall">
+    <Message Text="Building npm project..." Importance="high" />
     <Exec Command="npm run build" />
     <Copy SourceFiles="js\bridge.js" DestinationFolder="$(OutputPath)\js" />
     <Copy SourceFiles="js\models.js" DestinationFolder="$(OutputPath)\js" />
   </Target>
+  <Target Name="PreBuild" BeforeTargets="Build" DependsOnTargets="NpmBuild" />
 </Project>
