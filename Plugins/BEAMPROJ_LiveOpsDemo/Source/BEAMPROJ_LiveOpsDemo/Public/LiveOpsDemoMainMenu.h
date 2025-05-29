@@ -23,6 +23,7 @@ class BEAMPROJ_LIVEOPSDEMO_API ULiveOpsDemoMainMenu : public UBeamLevelSubsystem
 
 	FString GetSuiMicroserviceName() const { return TEXT("SuiFederation"); }
 	FString GetSuiIdentityName() const { return TEXT("SuiIdentity"); }
+	FString GetSuiExternalIdentityName() const { return TEXT("SuiExternalIdentity"); }
 
 	virtual FString GetSpecificLevelName() const override { return FString(TEXT("LiveOpsDemo")); }
 
@@ -214,28 +215,91 @@ protected:
 					}
 					else
 					{
-						UE_LOG(LogTemp, Error, TEXT("Could not attach identity! ERROR=%s"), *Evt.EventCode);
+						UE_LOG(LogTemp, Error, TEXT("Could not attach 2FA identity! ERROR=%s"), *Evt.EventCode);
 						OnLiveOpsErrorConnecting.Broadcast();
 					}
 				});
 
-				// Now that we have the handler defined, we ask the Beamable SDK to attach the Sui identity to our new account.
-				// This should run once per new user.
+
+				// Now that we have the handler defined, we ask the Beamable SDK to get the 2FA to our new account.
 				Runtime->CPP_AttachExternalIdentityOperation(OwnerUserSlot,
-				                                             GetSuiMicroserviceName(),
-				                                             GetSuiIdentityName(),
-				                                             TEXT(""),
-				                                             TEXT(""),
-				                                             OnSuiIdentityAttachedHandler);
+				                                                           GetSuiMicroserviceName(),
+				                                                           GetSuiIdentityName(),
+				                                                           TEXT(""),
+				                                                           TEXT(""),
+				                                                           OnSuiIdentityAttachedHandler);
 			}
 			// If we already have an Sui Wallet associated with our account
 			// To create new accounts when interacting with this sample in PIE, hit the Reset PIE Users button in the Beamable Window. 
 			else
 			{
-				// Then, we can proceed with the sample flow
-				OnLiveOpsDemoReady.Broadcast();
+				const auto OnSuitIdentityFinishTwoFactorHandler = FBeamOperationEventHandlerCode::CreateLambda([this](FBeamOperationEvent Evt)
+				{
+					if (Evt.EventType == OET_SUCCESS)
+					{
+						// Then, we can proceed with the sample flow
+						OnLiveOpsDemoReady.Broadcast();
+					}
+					else
+					{
+						OnLiveOpsErrorConnecting.Broadcast();
+					}
+				});
+				// Handles the two factor challenge
+				const auto OnSuiIdentityBeginTwoFactorHandler = FBeamOperationEventHandlerCode::CreateLambda([this, OnSuitIdentityFinishTwoFactorHandler, UserSlot](FBeamOperationEvent Evt)
+				{
+					// If successful, we will get the two factor challenge
+					if (Evt.EventType == OET_SUCCESS)
+					{
+						UChallengeSolutionObject* ChallengeSolution = Cast<UChallengeSolutionObject>(Evt.EventData.GetInterface());
+						
+						FString SolutionSteps = GetBase64Decode(ChallengeSolution->ChallengeToken);
+
+						ChallengeSolution->Solution = SolutionSteps;
+						
+						// Now that we have the handler defined, we ask the Beamable SDK to attach the Sui identity to our new account.
+						// This should run once per new user.
+						Runtime->CPP_CommitLoginExternalIdentityTwoFactorOperation(UserSlot,
+						                                                           GetSuiMicroserviceName(),
+						                                                           GetSuiExternalIdentityName(),
+						                                                           ChallengeSolution,
+						                                                           SuiWalletId,
+						                                                           OnSuitIdentityFinishTwoFactorHandler
+						);
+					}
+					else
+					{
+						UE_LOG(LogTemp, Error, TEXT("Could not start the 2FA for identity! ERROR=%s"), *Evt.EventCode);
+						// OnLiveOpsErrorConnecting.Broadcast();
+					}
+				});
+
+				Runtime->CPP_BeginLoginExternalIdentityTwoFactorOperation(UserSlot, GetSuiMicroserviceName(),
+				                                                          GetSuiExternalIdentityName(),
+				                                                          SuiWalletId,
+				                                                          OnSuiIdentityBeginTwoFactorHandler);
 			}
 		}
+	}
+
+	FString GetBase64Decode(FString Base64String)
+	{
+		TArray<uint8> DecodedBytes;
+		bool bSuccess = FBase64::Decode(Base64String, DecodedBytes);
+
+		if (bSuccess) {
+			// Convert the decoded bytes to a string
+			FString DecodedString;
+			for (uint8 Byte : DecodedBytes) {
+				DecodedString += (TCHAR)Byte;
+			}
+
+			return DecodedString;
+		} else {
+			UE_LOG(LogTemp, Error, TEXT("Base64 decoding failed!"));
+		}
+
+		return "";
 	}
 
 	UFUNCTION()
@@ -295,9 +359,9 @@ protected:
 				// Modify the item
 				FBeamInventoryUpdateCommand Cmds;
 				Inventory->BeginInventoryUpdate(OwnerUserSlot, Cmds, true);
-				Inventory->PrepareModifyItem(OwnerUserSlot, Item);				
+				Inventory->PrepareModifyItem(OwnerUserSlot, Item);
 				Inventory->CPP_CommitInventoryUpdateOperation(OwnerUserSlot, FBeamOperationEventHandlerCode::CreateLambda([this](FBeamOperationEvent Evt)
-				{					
+				{
 					// Once the modification is done, update the UI.
 					OnInventoryItemsUpdated.Broadcast();
 				}));
