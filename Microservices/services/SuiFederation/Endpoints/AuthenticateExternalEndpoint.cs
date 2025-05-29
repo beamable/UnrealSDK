@@ -44,12 +44,21 @@ public class AuthenticateExternalEndpoint: IEndpoint
         // Challenge-based authentication
         if (!string.IsNullOrEmpty(challenge) && !string.IsNullOrEmpty(solution))
         {
+            if (await _configuration.FakeChallengeSolution && solution == challenge)
+            {
+                return new FederatedAuthenticationResponse
+                {
+                    user_id = token
+                };
+            }
+
             if (await AccountsService.IsSignatureValid(token, challenge, solution))
                 // User identity is confirmed
                 return new FederatedAuthenticationResponse
                 {
                     user_id = token
                 };
+
 
             // Signature is invalid, user identity isn't confirmed
             BeamableLogger.LogWarning(
