@@ -3,11 +3,11 @@
 
 FOptionalPresenceStatus::FOptionalPresenceStatus()
 {
-	Val = EPresenceStatus();
+	Val = EBeamPresenceStatus();
 	IsSet = false;
 }
 
-FOptionalPresenceStatus::FOptionalPresenceStatus(EPresenceStatus Val): Val(Val)
+FOptionalPresenceStatus::FOptionalPresenceStatus(EBeamPresenceStatus Val): Val(Val)
 {
 	IsSet = true;
 }
@@ -16,6 +16,6 @@ const void* FOptionalPresenceStatus::GetAddr() const { return &Val; }
 
 void FOptionalPresenceStatus::Set(const void* Data)
 {
-	Val = *((EPresenceStatus*)Data);
+	Val = *((EBeamPresenceStatus*)Data);
 	IsSet = true;
 }

@@ -6,6 +6,7 @@
 #include "AutoGen/Optionals/OptionalGamerTag.h"
 #include "AutoGen/SubSystems/Friends/PostFriendsInviteRequest.h"
 #include "BeamNotifications/SubSystems/BeamInventoryNotifications.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Subsystems/Inventory/BeamInventorySubsystem.h"
 
 #define stringify( name ) # name
@@ -107,6 +108,26 @@ bool UBeamPartySubsystem::TryGetUserPartyState(FUserSlot UserSlot, FBeamPartySta
 	}
 
 	return TryGetPlayerPartyState(RealmUser.GamerTag, PartyState);
+}
+
+bool UBeamPartySubsystem::GetUserPartyPlayerStates(FUserSlot UserSlot, FGuid& PartyId, FBeamGamerTag& LeaderGamerTag, EBeamPartyRestriction& PartyRestriction, TArray<FBeamPartyPlayerState>& PlayerStates)
+{
+	FBeamPartyState PartyState;
+	if (!TryGetUserPartyState(UserSlot, PartyState))
+	{
+		return false;
+	}
+
+	PartyId = PartyState.PartyId;
+	LeaderGamerTag = PartyState.Leader;
+	PartyRestriction = PartyState.Restriction;
+
+	PlayerStates.Reset();
+	for (auto PlayerState : PartyState.PlayerStates)
+	{
+		PlayerStates.Add(PlayerState.Value);
+	}
+	return true;
 }
 
 bool UBeamPartySubsystem::TryGetPlayerPartyState(FBeamGamerTag PlayerGamerTag, FBeamPartyState& PartyState)
@@ -1537,9 +1558,13 @@ void UBeamPartySubsystem::PartyUpdatedMessageHandler(FPartyRefreshNotificationMe
 void UBeamPartySubsystem::HandlePartyEventReceivedUpdatePartyState(FGuid PartyId, FUserSlot UserSlot,
                                                                    EBeamPartyEvent PartyEvent)
 {
-	UEnum* pEnum = FindObject<UEnum>(GetOuter(), TEXT(stringify(EBeamPartyEvent)), true);
+	UEnum* pEnum = StaticEnum<EBeamPartyEvent>();
 
-	FString PartyEventName = pEnum->GetNameStringByIndex(static_cast<int32>(PartyEvent));
+	FString PartyEventName = "";
+	if (pEnum)
+	{
+		PartyEventName = pEnum->GetNameStringByIndex(static_cast<int32>(PartyEvent));
+	}
 
 	FBeamOperationEventHandlerCode Handler = FBeamOperationEventHandlerCode::CreateLambda(
 		[this, PartyId, UserSlot, PartyEvent, PartyEventName](FBeamOperationEvent Evt)
@@ -1565,9 +1590,13 @@ void UBeamPartySubsystem::HandlePartyEventReceivedUpdatePartyState(FGuid PartyId
 void UBeamPartySubsystem::HandlePartyEventReceivedUpdateInvitesState(FGuid PartyId, FUserSlot UserSlot,
                                                                      EBeamPartyEvent PartyEvent)
 {
-	UEnum* pEnum = FindObject<UEnum>(GetOuter(), TEXT(stringify(EBeamPartyEvent)), true);
+	UEnum* pEnum = StaticEnum<EBeamPartyEvent>();
 
-	FString PartyEventName = pEnum->GetNameStringByIndex(static_cast<int32>(PartyEvent));
+	FString PartyEventName = "";
+	if (pEnum)
+	{
+		PartyEventName = pEnum->GetNameStringByIndex(static_cast<int32>(PartyEvent));
+	}
 
 	FBeamOperationEventHandlerCode Handler = FBeamOperationEventHandlerCode::CreateLambda(
 		[this, PartyId, UserSlot, PartyEvent, PartyEventName](FBeamOperationEvent Evt)

@@ -1531,7 +1531,7 @@ TSharedRef<FOnlineSession> FOnlineSessionBeamable::CreateSessionFromLobby(ULobby
 void FOnlineSessionBeamable::MapLobbyToSessionSettings(ULobby* Lobby, FOnlineSessionSettings& SessionSettings)
 {
 	const auto BeamOssSettings = GetDefault<UOnlineSubsystemBeamableSettings>();
-	if (Lobby->Restriction.Val == ELobbyRestriction::BEAM_Open)
+	if (Lobby->Restriction.Val == EBeamLobbyRestriction::BEAM_Open)
 	{
 		SessionSettings.NumPublicConnections = Lobby->MaxPlayers.Val;
 		SessionSettings.NumPrivateConnections = 0;
@@ -1549,7 +1549,7 @@ void FOnlineSessionBeamable::MapLobbyToSessionSettings(ULobby* Lobby, FOnlineSes
 	}
 
 	// Map the passcode if its there
-	if (Lobby->Restriction.Val == ELobbyRestriction::BEAM_Closed)
+	if (Lobby->Restriction.Val == EBeamLobbyRestriction::BEAM_Closed)
 	{
 		SessionSettings.Set(FName(BeamOssSettings->LobbyPasscodeSettingsKey), Lobby->Passcode.Val);
 	}
@@ -1582,7 +1582,7 @@ void FOnlineSessionBeamable::MapLobbyToOnlineSession(ULobby* Lobby, FOnlineSessi
 {
 	const auto BeamOssSettings = GetDefault<UOnlineSubsystemBeamableSettings>();
 	Session->OwningUserId = FUniqueNetIdBeamable::Create(Lobby->Host.Val.AsString);
-	if (Lobby->Restriction.Val == ELobbyRestriction::BEAM_Open)
+	if (Lobby->Restriction.Val == EBeamLobbyRestriction::BEAM_Open)
 	{
 		Session->NumOpenPublicConnections = Lobby->MaxPlayers.Val - Lobby->Players.Val.Num();
 		Session->NumOpenPrivateConnections = 0;

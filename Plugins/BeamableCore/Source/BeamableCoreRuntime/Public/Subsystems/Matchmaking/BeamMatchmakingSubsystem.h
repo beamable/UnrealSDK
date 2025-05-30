@@ -170,8 +170,8 @@ public:
 	/**
 	 * Checks if the given user slot is in a queue. 
 	 */
-	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="Slot"))
-	bool IsUserSlotInQueue(const FUserSlot& Slot);
+	UFUNCTION(BlueprintCallable, Category="Beam", meta=(AutoCreateRefTerm="Slot", ExpandBoolAsExecs="ReturnValue"))
+	bool IsUserSlotInQueue(FUserSlot Slot);
 
 	/**
 	 * Gets the TicketId for the given user slot, if any. 

@@ -1,4 +1,5 @@
-﻿using Beamable.Server;
+﻿using System;
+using Beamable.Server;
 using System.Threading.Tasks;
 
 namespace Beamable.BeamballMs

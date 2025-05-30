@@ -635,6 +635,16 @@ public:
 		return TEnum();
 	}
 
+	template <typename TEnum>
+	static TEnum SerializationIndexToEnum(int Value)
+	{
+		static_assert(TIsUEnumClass<TEnum>::Value);
+
+		const UEnum* Enum = StaticEnum<TEnum>();
+
+		return static_cast<TEnum>(Enum->GetValueByIndex(Value));
+	}
+
 	template <typename TSerializationType>
 	static void DeserializeSemanticType(const TSharedPtr<FJsonValue>& JsonField, FBeamSemanticType& ToDeserialize, TWeakObjectPtr<UObject> OuterOwner = (UObject*)GetTransientPackage())
 	{
@@ -757,6 +767,26 @@ public:
 			ToDeserialize.BeamDeserializeProperties(OwnerBag->GetObjectField(Identifier));
 	}
 
+	template <typename TDataType>
+	static void GetEnumFromJsonField(const TSharedPtr<FJsonValue> JsonField, TDataType& ParsedEnum)
+	{
+		if (JsonField->Type == EJson::String)
+		{
+			FString Parsed = JsonField->AsString();
+			ParsedEnum = SerializationNameToEnum<TDataType>(Parsed);
+		}
+		else if (JsonField->Type == EJson::Number)
+		{
+			int Parsed = JsonField->AsNumber();
+			ParsedEnum = SerializationIndexToEnum<TDataType>(Parsed);
+		}
+		else
+		{
+			// This is impossible, the enum should be only a number or string
+			ensureAlways(false);
+		}
+	}
+
 	template <typename TOptionalType, typename TDataType = TOptionalType, typename TSemanticTypeRepresentation = TDataType>
 	static void DeserializeOptional(const FString& Identifier, const TSharedPtr<FJsonObject>& OwnerBag, FBeamOptional& ToDeserialize,
 	                                TWeakObjectPtr<UObject> OwnerOuter = (UObject*)GetTransientPackage())
@@ -836,8 +866,9 @@ public:
 					}
 					else if constexpr (TIsUEnumClass<TDataType>::Value)
 					{
-						FString Parsed = Item->AsString();
-						ParsedMap.Add(Key, SerializationNameToEnum<TDataType>(Parsed));
+						TDataType ParsedEnum;
+						GetEnumFromJsonField<TDataType>(JsonField, ParsedEnum);
+						ParsedMap.Add(Key, ParsedEnum);
 					}
 					else if constexpr (std::is_same_v<TDataType, int8>)
 					{
@@ -943,8 +974,9 @@ public:
 					}
 					else if constexpr (TIsUEnumClass<TDataType>::Value)
 					{
-						FString Parsed = ArrayJsonItem->AsString();
-						ParsedArray.Add(SerializationNameToEnum<TDataType>(Parsed));
+						TDataType ParsedEnum;
+						GetEnumFromJsonField<TDataType>(JsonField, ParsedEnum);
+						ParsedArray.Add(ParsedEnum);
 					}
 					else if constexpr (std::is_same_v<TDataType, int8>)
 					{
@@ -1055,8 +1087,8 @@ public:
 				}
 				else if constexpr (TIsUEnumClass<TDataType>::Value)
 				{
-					FString Parsed = JsonField->AsString();
-					TDataType ParsedEnum = SerializationNameToEnum<TDataType>(Parsed);
+					TDataType ParsedEnum;
+					GetEnumFromJsonField<TDataType>(JsonField, ParsedEnum);
 					FBeamOptional::Set(&ToDeserialize, &ParsedEnum);
 				}
 				else if constexpr (std::is_same_v<TDataType, int8>)
@@ -1171,8 +1203,8 @@ public:
 			}
 			else if constexpr (TIsUEnumClass<TDataType>::Value)
 			{
-				FString Parsed = JsonValue->AsString();
-				TDataType ParsedEnum = SerializationNameToEnum<TDataType>(Parsed);
+				TDataType ParsedEnum;
+				GetEnumFromJsonField<TDataType>(JsonValue, ParsedEnum);
 				Array.Add(ParsedEnum);
 			}
 			else if constexpr (std::is_same_v<TDataType, FDateTime>)
@@ -1293,8 +1325,9 @@ public:
 			}
 			else if constexpr (TIsUEnumClass<TMapType>::Value)
 			{
-				FString Parsed = Value.Value->AsString();
-				TMapType ParsedEnum = SerializationNameToEnum<TDataType>(Parsed);
+				TDataType ParsedEnum;
+				GetEnumFromJsonField<TDataType>(JsonValue, ParsedEnum);
+
 				Map.Add(Key, ParsedEnum);
 			}
 			else if constexpr (std::is_same_v<TMapType, FDateTime>)
@@ -1384,8 +1417,16 @@ public:
 		}
 		else if constexpr (TIsUEnumClass<TPrimitiveType>::Value)
 		{
-			FString Parsed = JsonField;
-			ToDeserialize = SerializationNameToEnum<TPrimitiveType>(Parsed);
+			int EnumIndex = 0;
+			// Try to get the index if we can't then parse as a string
+			if (FDefaultValueHelper::ParseInt(JsonField, EnumIndex))
+			{
+				ToDeserialize = SerializationIndexToEnum<TPrimitiveType>(EnumIndex);
+			}
+			else
+			{
+				ToDeserialize = SerializationNameToEnum<TPrimitiveType>(JsonField);
+			}
 		}
 		else if constexpr (std::is_same_v<TPrimitiveType, FGuid>)
 		{

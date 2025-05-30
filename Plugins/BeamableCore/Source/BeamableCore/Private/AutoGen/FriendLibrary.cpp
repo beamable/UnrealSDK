@@ -22,7 +22,7 @@ FString UFriendLibrary::FriendToJsonString(const UFriend* Serializable, const bo
 	return Result;
 }	
 
-UFriend* UFriendLibrary::Make(FBeamGamerTag PlayerId, EFriendSource Source, UObject* Outer)
+UFriend* UFriendLibrary::Make(FBeamGamerTag PlayerId, EBeamFriendSource Source, UObject* Outer)
 {
 	auto Serializable = NewObject<UFriend>(Outer);
 	Serializable->PlayerId = PlayerId;
@@ -31,7 +31,7 @@ UFriend* UFriendLibrary::Make(FBeamGamerTag PlayerId, EFriendSource Source, UObj
 	return Serializable;
 }
 
-void UFriendLibrary::Break(const UFriend* Serializable, FBeamGamerTag& PlayerId, EFriendSource& Source)
+void UFriendLibrary::Break(const UFriend* Serializable, FBeamGamerTag& PlayerId, EBeamFriendSource& Source)
 {
 	PlayerId = Serializable->PlayerId;
 	Source = Serializable->Source;

@@ -166,8 +166,10 @@ if [ $? -eq 0 ] && [ $INSTALL_MOBILE_SDK = "true" ]; then
         fi
       fi
     fi
-else
-  echo "WARNING: You are NOT running as Administrator! It's required to SDK install."
+else 
+  if [ $INSTALL_MOBILE_SDK = "true" ]; then
+    echo "WARNING: You are NOT running as Administrator! It's required to SDK install."
+  fi
 fi
 
 if ! command -v dotnet >/dev/null 2>&1; then

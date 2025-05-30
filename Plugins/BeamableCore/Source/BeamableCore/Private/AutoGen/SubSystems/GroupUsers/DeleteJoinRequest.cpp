@@ -27,7 +27,7 @@ void UDeleteJoinRequest::BuildBody(FString& BodyString) const
 	JsonSerializer->Close();
 }
 
-UDeleteJoinRequest* UDeleteJoinRequest::Make(int64 _ObjectId, EGroupType _Type, int64 _Group, FOptionalInt64 _Successor, FOptionalInt64 _Score, FOptionalInt64 _SubGroup, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
+UDeleteJoinRequest* UDeleteJoinRequest::Make(int64 _ObjectId, EBeamGroupType _Type, int64 _Group, FOptionalInt64 _Successor, FOptionalInt64 _Score, FOptionalInt64 _SubGroup, UObject* RequestOwner, TMap<FString, FString> CustomHeaders)
 {
 	UDeleteJoinRequest* Req = NewObject<UDeleteJoinRequest>(RequestOwner);
 	Req->CustomHeaders = TMap{CustomHeaders};

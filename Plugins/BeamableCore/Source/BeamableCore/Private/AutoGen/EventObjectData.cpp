@@ -14,7 +14,7 @@ void UEventObjectData::BeamSerializeProperties(TUnrealJsonSerializer& Serializer
 {
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("done"), bDone, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("running"), bRunning, Serializer);
-	Serializer->WriteValue(TEXT("state"), UEventStateLibrary::EventStateToSerializationName(State));
+	Serializer->WriteValue(TEXT("state"), UBeamJsonUtils::EnumToSerializationName(State));
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("leaderboardId"), LeaderboardId, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
 	UBeamJsonUtils::SerializeUObject<UEvent*>("content", Content, Serializer);
@@ -35,7 +35,7 @@ void UEventObjectData::BeamSerializeProperties(TUnrealPrettyJsonSerializer& Seri
 {
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("done"), bDone, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("running"), bRunning, Serializer);
-	Serializer->WriteValue(TEXT("state"), UEventStateLibrary::EventStateToSerializationName(State));
+	Serializer->WriteValue(TEXT("state"), UBeamJsonUtils::EnumToSerializationName(State));
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("leaderboardId"), LeaderboardId, Serializer);
 	UBeamJsonUtils::SerializeRawPrimitive(TEXT("id"), Id, Serializer);
 	UBeamJsonUtils::SerializeUObject<UEvent*>("content", Content, Serializer);
@@ -56,7 +56,7 @@ void UEventObjectData::BeamDeserializeProperties(const TSharedPtr<FJsonObject>& 
 {
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("done")), bDone);
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("running")), bRunning);
-	State = UEventStateLibrary::SerializationNameToEventState(Bag->GetStringField(TEXT("state")));
+	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("state")), State);
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("leaderboardId")), LeaderboardId);
 	UBeamJsonUtils::DeserializeRawPrimitive(Bag->GetStringField(TEXT("id")), Id);
 	UBeamJsonUtils::DeserializeUObject<UEvent*>("content", Bag, Content, OuterOwner);
